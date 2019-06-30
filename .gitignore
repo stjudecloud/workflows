@@ -1,0 +1,4 @@
+# Blacklist common bioinformatics formats used in these workflows.
+**/*.fastq.gz
+**/*.fa
+**/*.gtf
