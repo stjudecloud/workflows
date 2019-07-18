@@ -7,14 +7,10 @@ task fastqc {
         fastqc -f bam \
             -o ${basename}_fastqc_results \
             -t ${ncpu} \
-            ${bam}; \
-        cd ${basename}_fastqc_results; \
-        dir=`pwd`; \
-        ln *.gz "$dir"; \
-        ls > file-list.txt
+            ${bam};
     }
 
     output {
-        Array[File] files = read_lines("file-list.txt")
+        Array[File] out_files = glob("${basename}_fastqc_results/*")
     }
 }
