@@ -19,10 +19,17 @@ task quickcheck {
 
 task split {
     File bam
-    String? unaccounted_bam
+    Boolean? reject_unaccounted
+    String basename = basename(bam, ".bam")
 
     command {
-        samtools split -u ${default="unaccounted.bam" unaccounted_bam} -f '%*_%!.%.' ${bam}
+        samtools split -u ${basename}.unaccounted_reads.bam} -f '%*_%!.%.' ${bam}; \
+        samtools view ${basename}.unaccounted_reads.bam > unaccounted_reads.bam; \
+        if [ ${default='true' reject_unaccounted} && -s unaccounted_reads.bam ] \
+            then exit 1; \
+            else rm ${basename}.unaccounted_reads.bam unaccounted_reads.bam; \
+        fi \
+        rm unaccounted_reads.bam
     }
     
     output {
