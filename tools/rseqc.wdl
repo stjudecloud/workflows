@@ -5,7 +5,7 @@ task infer_experiment {
     File refgene_bed 
  
     command {
-        infer_experiment.py -i bam -r refgene_bed ${"-s" + sample_size} ${"-q" + map_qual} 
+        infer_experiment.py -i ${bam} -r ${refgene_bed} ${"-s" + sample_size} ${"-q" + map_qual} 
     }
 
     output {
