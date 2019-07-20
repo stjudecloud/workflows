@@ -33,7 +33,7 @@ task split {
     }
     
     output {
-       Array[File] out_bams = glob("*.bam")
+       Array[File] split_bams = glob("*.bam")
     }
 }
 

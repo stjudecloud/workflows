@@ -8,3 +8,12 @@ task print_version {
     }
 
 }
+
+task fqlint {
+    File read1
+    File read2
+
+    command {
+        fq lint ${read1} ${read2}
+    }
+}

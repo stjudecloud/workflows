@@ -25,3 +25,20 @@ task validate_bam {
             IGNORE=INVALID_PLATFORM_VALUE
     }
 }
+
+task bam_to_fastq {
+    File bam
+    String basename = basename(bam, ".bam")
+
+    command {
+        picard SamToFastq INPUT=${bam} \
+            FASTQ=${basename}_R1.fastq \
+            SECOND_END_FASTQ=${basename}_R2.fastq \
+            RE_REVERSE=true
+    }
+
+    output {
+        File read1 = "${basename}_R1.fastq"
+        File read2 = "${basename}_R2.fastq"
+    }
+}
