@@ -4,7 +4,8 @@ ENV PATH /opt/conda/bin:$PATH
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install wget -y
+    apt-get install wget -y && \
+    rm -r /var/lib/apt/lists/*
 
 RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O miniconda.sh && \
     bash miniconda.sh -b -p /opt/conda/ && \
@@ -23,4 +24,5 @@ RUN conda update -n base -c defaults conda -y && \
     qualimap==2.2.2c \
     multiqc==1.7 \
     rseqc==3.0.0 \
-    -y
+    -y && \
+    conda clean --all -y
