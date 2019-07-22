@@ -6,7 +6,7 @@ task bamqc {
     command {
         qualimap bamqc -bam ${bam} \
             -outdir ${basename}_qualimap_results \
-            -nt ${ncpu};
+            -nt ${ncpu}
     }
 
     output {

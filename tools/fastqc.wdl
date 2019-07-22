@@ -7,7 +7,7 @@ task fastqc {
         fastqc -f bam \
             -o ${basename}_fastqc_results \
             -t ${ncpu} \
-            ${bam};
+            ${bam}
     }
 
     output {

@@ -23,8 +23,8 @@ task split {
     String basename = basename(bam, ".bam")
 
     command {
-        samtools split -u ${basename}.unaccounted_reads.bam -f '%*_%!.%.' ${bam}; 
-        samtools view ${basename}.unaccounted_reads.bam > unaccounted_reads.bam; 
+        samtools split -u ${basename}.unaccounted_reads.bam -f '%*_%!.%.' ${bam}
+        samtools view ${basename}.unaccounted_reads.bam > unaccounted_reads.bam
         if [ ${default='true' reject_unaccounted} -a -s unaccounted_reads.bam ] 
             then exit 1; 
             else rm ${basename}.unaccounted_reads.bam

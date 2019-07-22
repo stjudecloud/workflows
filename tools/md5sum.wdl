@@ -11,7 +11,7 @@ task compute_checksum {
     File infile 
 
     command {
-        md5sum $infile 
+        md5sum ${infile}
     }
     output {
         String out = read_string(stdout())
@@ -21,7 +21,7 @@ task check_checksum {
     File infile
   
     command { 
-        md5sum -c $infile
+        md5sum -c ${infile}
     } 
     output {
         String out = read_string(stdout())
