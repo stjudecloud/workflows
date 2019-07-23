@@ -1,15 +1,16 @@
 import "../tools/star.wdl"
 
 workflow star_alignment {
-    File read_one_fastq
-    File read_two_fastq
-    File stardb
+    Array[File] read_one_fastqs
+    Array[File] read_two_fastqs
+    File stardb_dir
+    String output_prefix
 
     call star.alignment {
         input:
-            read_one_fastq=read_one_fastq,
-            read_two_fastq=read_two_fastq,
-            stardb=stardb,
-            outprefix="Output."
+            read_one_fastqs=read_one_fastqs,
+            read_two_fastqs=read_two_fastqs,
+            stardb_dir=stardb_dir,
+            output_prefix=output_prefix
     }
 }

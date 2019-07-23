@@ -12,27 +12,32 @@ task build_db {
     Int ncpu
     File reference_fasta
     File gencode_gtf
-    File stardb
+    String stardb_dir_name
 
     command {
+        mkdir ${stardb_dir_name};
         STAR --runMode genomeGenerate \
-            --genomeDir ${stardb} \
+            --genomeDir ${stardb_dir_name} \
             --runThreadN ${ncpu} \
             --genomeFastaFiles ${reference_fasta} \
             --sjdbGTFfile ${gencode_gtf} \
             --sjdbOverhang 125
     }
+
+    output {
+        File out_dir = stardb_dir_name
+    }
 }
 
 task alignment {
-    File read_one_fastq
-    File read_two_fastq
-    File stardb
-    String outprefix
+    Array[File] read_one_fastqs
+    Array[File] read_two_fastqs
+    File stardb_dir
+    String output_prefix
 
     command {
-        echo STAR --readFilesIn ${read_one_fastq} ${read_two_fastq} \
-             --genomeDir ${stardb} \
+        STAR --readFilesIn ${sep=',' read_one_fastqs} ${sep=',' read_two_fastqs} \
+             --genomeDir ${stardb_dir} \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \
              --outSAMtype BAM SortedByCoordinate \
@@ -46,7 +51,7 @@ task alignment {
              --alignSJDBoverhangMin 1 \
              --outFilterMatchNminOverLread 0.66 \
              --outFilterScoreMinOverLread 0.66 \
-             --outFileNamePrefix ${outprefix} \
+             --outFileNamePrefix ${output_prefix} \
              --twopassMode Basic
     }
 }
