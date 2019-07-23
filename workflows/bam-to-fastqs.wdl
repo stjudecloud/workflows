@@ -13,4 +13,9 @@ workflow bam_to_fastqs {
     scatter (reads in zip(bam_to_fastq.read1, bam_to_fastq.read2)) {
         call fq.fqlint { input: read1=reads.left, read2=reads.right}
     }
+
+    output {
+        Array[File] read1s = bam_to_fastq.read1
+        Array[File] read2s = bam_to_fastq.read2
+    }
 }
