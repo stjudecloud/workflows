@@ -9,7 +9,7 @@ task mark_duplicates {
             CREATE_INDEX=false \
             CREATE_MD5_FILE=false \
             COMPRESSION_LEVEL=5 \
-            # METRICS_FILE=$METRICS_FILE
+            METRICS_FILE=${basename}.metrics.txt
     }
 
     output {
@@ -24,6 +24,11 @@ task validate_bam {
         picard ValidateSamFile I=${bam} \
             IGNORE=INVALID_PLATFORM_VALUE
     }
+
+    output {
+        String out = read_string(stdout())
+    }
+
 }
 
 task bam_to_fastq {

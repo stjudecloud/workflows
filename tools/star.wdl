@@ -54,4 +54,7 @@ task alignment {
              --outFileNamePrefix ${output_prefix} \
              --twopassMode Basic
     }
+    output {
+       File bam = output_prefix + "Aligned.sortedByCoord.out.bam" 
+    }
 }

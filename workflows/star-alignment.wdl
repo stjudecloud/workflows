@@ -13,4 +13,8 @@ workflow star_alignment {
             stardb_dir=stardb_dir,
             output_prefix=output_prefix
     }
+
+    output {
+       File bam = alignment.bam 
+    }
 }
