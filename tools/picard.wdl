@@ -28,7 +28,6 @@ task validate_bam {
     output {
         String out = read_string(stdout())
     }
-
 }
 
 task bam_to_fastq {

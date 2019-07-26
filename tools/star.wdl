@@ -34,6 +34,7 @@ task alignment {
     Array[File] read_two_fastqs
     File stardb_dir
     String output_prefix
+    String? read_groups
 
     command {
         STAR --readFilesIn ${sep=',' read_one_fastqs} ${sep=',' read_two_fastqs} \
@@ -52,7 +53,8 @@ task alignment {
              --outFilterMatchNminOverLread 0.66 \
              --outFilterScoreMinOverLread 0.66 \
              --outFileNamePrefix ${output_prefix} \
-             --twopassMode Basic
+             --twopassMode Basic \
+             ${"--outSAMattrRGline " + read_groups}
     }
     output {
        File bam = output_prefix + "Aligned.sortedByCoord.out.bam" 
