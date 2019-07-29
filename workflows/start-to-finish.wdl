@@ -40,12 +40,12 @@ workflow start_to_finish {
     call picard.mark_duplicates { input: bam=star_alignment.bam }
     call picard.validate_bam { input: bam=mark_duplicates.out }
     call qc.parse_validate_bam { input: in=validate_bam.out }
-    #call fastqc.fastqc { input: bam=mark_duplicates.out, ncpu=ncpu }   
+    call fastqc.fastqc { input: bam=mark_duplicates.out, ncpu=ncpu }   
     call rseqc.infer_experiment { input: bam=mark_duplicates.out, refgene_bed=refgene_bed}
     call qc.parse_infer_experiment { input: in=infer_experiment.out } 
-    #call qualimap.bamqc { input: bam=mark_duplicates.out, ncpu=ncpu }
-    #call qualimap.rnaseq { input: bam=mark_duplicates.out, gtf: gencode_gtf }
-    #call htseq.count { input: bam=mark_duplicates.out, gff=gencode_gff }
+    call qualimap.bamqc { input: bam=mark_duplicates.out, ncpu=ncpu }
+    call qualimap.rnaseq { input: bam=mark_duplicates.out, gencode_gtf=gencode_gtf }
+    call htseq.count { input: bam=mark_duplicates.out, gff=gencode_gff }
     #call samtools.flagstat
     #call samtools.index
     #call md5sum.comput_checksum
