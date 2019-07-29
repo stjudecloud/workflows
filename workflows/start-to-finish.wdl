@@ -46,9 +46,9 @@ workflow start_to_finish {
     call qualimap.bamqc { input: bam=mark_duplicates.out, ncpu=ncpu }
     call qualimap.rnaseq { input: bam=mark_duplicates.out, gencode_gtf=gencode_gtf }
     call htseq.count { input: bam=mark_duplicates.out, gff=gencode_gff }
-    #call samtools.flagstat
-    #call samtools.index
-    #call md5sum.comput_checksum
+    call samtools.flagstat { input: bam=mark_duplicates.out }
+    call samtools.index { input: bam=mark_duplicates.out }
+    call md5sum.compute_checksum { input: infile=mark_duplicates.out }
     #call multiqc 
 
 }
