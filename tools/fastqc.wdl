@@ -4,6 +4,7 @@ task fastqc {
     String basename = basename(bam, ".bam")
 
     command {
+        mkdir ${basename}_fastqc_results
         fastqc -f bam \
             -o ${basename}_fastqc_results \
             -t ${ncpu} \
