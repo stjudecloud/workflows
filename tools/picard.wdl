@@ -22,11 +22,11 @@ task validate_bam {
     
     command {
         picard ValidateSamFile I=${bam} \
-            IGNORE=INVALID_PLATFORM_VALUE
+            IGNORE=INVALID_PLATFORM_VALUE > stdout.txt
     }
 
     output {
-        String out = read_string(stdout())
+        String out = read_string("stdout.txt")
     }
 }
 
