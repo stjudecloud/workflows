@@ -8,7 +8,7 @@ import "../tools/qualimap.wdl"
 import "../tools/htseq.wdl"
 import "../tools/samtools.wdl"
 import "../tools/md5sum.wdl"
-#import "../tools/multiqc.wdl"
+import "../tools/multiqc.wdl"
 import "../tools/qc.wdl"
 import "../tools/util.wdl"
 
@@ -49,6 +49,15 @@ workflow start_to_finish {
     call samtools.flagstat { input: bam=mark_duplicates.out }
     call samtools.index { input: bam=mark_duplicates.out }
     call md5sum.compute_checksum { input: infile=mark_duplicates.out }
-    #call multiqc 
+    call multiqc.multiqc {
+        input:
+            star=star_alignment.bam,
+            dups=mark_duplicates.out,
+            validate_sam_string=validate_bam.out,
+            qualimap_bamqc=bamqc.out_files,
+            qualimap_rnaseq=rnaseq.out_files,
+            fastqc=fastqc.out_files,
+            flagstat=flagstat.flagstat
+    }
 
 }
