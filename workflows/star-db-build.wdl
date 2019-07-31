@@ -14,6 +14,6 @@ workflow build_db {
     }
 
     output {
-        File out_dir = build_db.out_dir
+        File out_dir = build_db.dir
     }
 }

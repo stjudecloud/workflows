@@ -4,8 +4,8 @@ task multiqc {
     String validate_sam_string
     Array[File] qualimap_bamqc
     Array[File] qualimap_rnaseq
-    Array[File] fastqc
-    File flagstat
+    Array[File] fastqc_files
+    File flagstat_file
 
     command {
         echo ${star} > file_list.txt
@@ -18,10 +18,10 @@ task multiqc {
         for file in ${sep=' ' qualimap_rnaseq} ; do
             echo $file >> file_list.txt
         done
-        for file in ${sep=' ' fastqc} ; do
+        for file in ${sep=' ' fastqc_files} ; do
             echo $file >> file_list.txt
         done
-        echo ${flagstat} >> file_list.txt
+        echo ${flagstat_file} >> file_list.txt
 
         multiqc --file-list file_list.txt -o multiqc_results
     }

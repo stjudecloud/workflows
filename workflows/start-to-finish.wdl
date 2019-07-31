@@ -36,7 +36,7 @@ workflow start_to_finish {
             output_prefix="out",
             read_groups=prepare_read_groups_for_star.out
     }
-    call picard.mark_duplicates { input: bam=star_alignment.bam }
+    call picard.mark_duplicates { input: bam=star_alignment.star_bam }
     call picard.validate_bam { input: bam=mark_duplicates.out }
     call qc.parse_validate_bam { input: in=validate_bam.out }
     call fastqc.fastqc { input: bam=mark_duplicates.out, ncpu=ncpu }   
@@ -50,13 +50,13 @@ workflow start_to_finish {
     call md5sum.compute_checksum { input: infile=mark_duplicates.out }
     call multiqc.multiqc {
         input:
-            star=star_alignment.bam,
+            star=star_alignment.star_bam,
             dups=mark_duplicates.out,
             validate_sam_string=validate_bam.out,
             qualimap_bamqc=bamqc.out_files,
             qualimap_rnaseq=rnaseq.out_files,
-            fastqc=fastqc.out_files,
-            flagstat=flagstat.flagstat
+            fastqc_files=fastqc.out_files,
+            flagstat_file=flagstat.flagstat
     }
 
 }

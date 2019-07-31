@@ -25,7 +25,7 @@ task build_db {
     }
 
     output {
-        File out_dir = stardb_dir_name
+        File dir = stardb_dir_name
     }
 }
 
@@ -57,6 +57,6 @@ task alignment {
              ${"--outSAMattrRGline " + read_groups}
     }
     output {
-       File bam = output_prefix + "Aligned.sortedByCoord.out.bam" 
+       File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam" 
     }
 }

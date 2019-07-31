@@ -17,6 +17,6 @@ workflow star_alignment {
     }
 
     output {
-       File bam = alignment.bam 
+       File star_bam = alignment.star_bam 
     }
 }
