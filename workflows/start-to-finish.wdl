@@ -16,7 +16,6 @@ workflow start_to_finish {
     File reference_fasta 
     File gencode_gtf
     File refgene_bed
-    File gencode_gff
     File bam
     Int ncpu = 1
 
@@ -45,7 +44,7 @@ workflow start_to_finish {
     call qc.parse_infer_experiment { input: in=infer_experiment.out } 
     call qualimap.bamqc { input: bam=mark_duplicates.out, ncpu=ncpu }
     call qualimap.rnaseq { input: bam=mark_duplicates.out, gencode_gtf=gencode_gtf }
-    call htseq.count { input: bam=mark_duplicates.out, gff=gencode_gff }
+    call htseq.count { input: bam=mark_duplicates.out, gtf=gencode_gtf }
     call samtools.flagstat { input: bam=mark_duplicates.out }
     call samtools.index { input: bam=mark_duplicates.out }
     call md5sum.compute_checksum { input: infile=mark_duplicates.out }
