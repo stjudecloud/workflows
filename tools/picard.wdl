@@ -12,6 +12,10 @@ task mark_duplicates {
             METRICS_FILE=${basename}.metrics.txt
     }
 
+    runtime {
+        memory: 50000
+    }
+
     output {
         File out = "${basename}.duplicates.bam"
     }
@@ -39,6 +43,10 @@ task bam_to_fastq {
             FASTQ=${basename}_R1.fastq \
             SECOND_END_FASTQ=${basename}_R2.fastq \
             RE_REVERSE=true
+    }
+
+    runtime{
+        memory: 25000
     }
 
     output {

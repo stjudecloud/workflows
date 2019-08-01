@@ -6,7 +6,12 @@ task bamqc {
     command {
         qualimap bamqc -bam ${bam} \
             -outdir ${basename}_qualimap_results \
-            -nt ${ncpu}
+            -nt ${ncpu} \
+            --java-mem-size=6g
+    }
+
+    runtime {
+        memory: 8000
     }
 
     output {
@@ -20,7 +25,11 @@ task rnaseq {
     String strand = "strand-specific-reverse"
  
     command {
-        qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${strand} -pe
+        qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${strand} -pe --java-mem-size=6G
+    }
+
+    runtime {
+        memory: 8000
     }
 
     output {

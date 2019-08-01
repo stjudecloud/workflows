@@ -19,9 +19,14 @@ task build_db {
         STAR --runMode genomeGenerate \
             --genomeDir ${stardb_dir_name} \
             --runThreadN ${ncpu} \
+            --limitGenomeGenerateRAM=45000000000 \
             --genomeFastaFiles ${reference_fasta} \
             --sjdbGTFfile ${gencode_gtf} \
             --sjdbOverhang 125
+    }
+
+    runtime {
+        memory: 50000
     }
 
     output {
@@ -56,6 +61,11 @@ task alignment {
              --twopassMode Basic \
              ${"--outSAMattrRGline " + read_groups}
     }
+
+    runtime {
+        memory: 50000
+    }
+
     output {
        File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam" 
     }
