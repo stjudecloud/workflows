@@ -59,11 +59,12 @@ task alignment {
              --outFilterScoreMinOverLread 0.66 \
              --outFileNamePrefix ${output_prefix} \
              --twopassMode Basic \
+             --limitBAMsortRAM 58000000000 \
              ${"--outSAMattrRGline " + read_groups}
     }
 
     runtime {
-        memory: 50000
+        memory: 75000
     }
 
     output {
