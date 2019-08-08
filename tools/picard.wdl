@@ -13,7 +13,7 @@ task mark_duplicates {
     }
 
     runtime {
-        memory: 50000
+        memory: "50G"
     }
 
     output {
@@ -46,7 +46,7 @@ task bam_to_fastq {
     }
 
     runtime{
-        memory: 25000
+        memory: "25G"	
     }
 
     output {

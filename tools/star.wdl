@@ -26,7 +26,7 @@ task build_db {
     }
 
     runtime {
-        memory: 50000
+        memory: "50G"
     }
 
     output {
@@ -64,7 +64,7 @@ task alignment {
     }
 
     runtime {
-        memory: 75000
+        memory: "75G"
     }
 
     output {

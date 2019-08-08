@@ -11,7 +11,7 @@ task bamqc {
     }
 
     runtime {
-        memory: 8000
+        memory: "8G"
     }
 
     output {
@@ -29,7 +29,7 @@ task rnaseq {
     }
 
     runtime {
-        memory: 8000
+        memory: "8G"
     }
 
     output {
