@@ -1,10 +1,11 @@
 FROM ubuntu:18.04 as builder
 
-ENV PATH /opt/conda/bin:$PATH
+ENV PATH /opt/conda/bin:/root/.cargo/bin:$PATH
 
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install wget -y && \
+    apt-get install gcc -y && \
     rm -r /var/lib/apt/lists/*
 
 RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O miniconda.sh && \
@@ -26,3 +27,6 @@ RUN conda update -n base -c defaults conda -y && \
     rseqc==3.0.0 \
     -y && \
     conda clean --all -y
+
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && bash -c 'source $HOME/.cargo/env &&  cargo install --git https://github.com/stjude/fqlib.git'
+
