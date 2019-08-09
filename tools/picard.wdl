@@ -1,15 +1,15 @@
 task mark_duplicates {
     File bam
-    String basename = basename(bam, ".bam")
+    String prefix = basename(bam, ".bam")
 
     command {
         picard MarkDuplicates I=${bam} \
-            O=${basename}.duplicates.bam \
+            O=${prefix}.duplicates.bam \
             VALIDATION_STRINGENCY=SILENT \
             CREATE_INDEX=false \
             CREATE_MD5_FILE=false \
             COMPRESSION_LEVEL=5 \
-            METRICS_FILE=${basename}.metrics.txt
+            METRICS_FILE=${prefix}.metrics.txt
     }
 
     runtime {
@@ -17,7 +17,7 @@ task mark_duplicates {
     }
 
     output {
-        File out = "${basename}.duplicates.bam"
+        File out = "${prefix}.duplicates.bam"
     }
 }
 
@@ -36,12 +36,12 @@ task validate_bam {
 
 task bam_to_fastq {
     File bam
-    String basename = basename(bam, ".bam")
+    String prefix = basename(bam, ".bam")
 
     command {
         picard SamToFastq INPUT=${bam} \
-            FASTQ=${basename}_R1.fastq \
-            SECOND_END_FASTQ=${basename}_R2.fastq \
+            FASTQ=${prefix}_R1.fastq \
+            SECOND_END_FASTQ=${prefix}_R2.fastq \
             RE_REVERSE=true
     }
 
@@ -50,7 +50,7 @@ task bam_to_fastq {
     }
 
     output {
-        File read1 = "${basename}_R1.fastq"
-        File read2 = "${basename}_R2.fastq"
+        File read1 = "${prefix}_R1.fastq"
+        File read2 = "${prefix}_R2.fastq"
     }
 }

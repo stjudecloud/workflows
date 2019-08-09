@@ -1,11 +1,11 @@
 task bamqc {
     File bam
     Int ncpu
-    String basename = basename(bam, ".bam")
+    String prefix = basename(bam, ".bam")
 
     command {
         qualimap bamqc -bam ${bam} \
-            -outdir ${basename}_qualimap_results \
+            -outdir ${prefix}_qualimap_results \
             -nt ${ncpu} \
             --java-mem-size=6g
     }
@@ -15,7 +15,7 @@ task bamqc {
     }
 
     output {
-        Array[File] out_files = glob("${basename}_qualimap_results/*")
+        Array[File] out_files = glob("${prefix}_qualimap_results/*")
     }
 }
 task rnaseq {
