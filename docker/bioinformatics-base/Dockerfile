@@ -28,5 +28,4 @@ RUN conda update -n base -c defaults conda -y && \
     -y && \
     conda clean --all -y
 
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && bash -c 'source $HOME/.cargo/env &&  cargo install --git https://github.com/stjude/fqlib.git'
-
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && bash -c 'source $HOME/.cargo/env &&  cargo install --git https://github.com/stjude/fqlib.git --root /usr/local'
