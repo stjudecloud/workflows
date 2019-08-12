@@ -1,6 +1,11 @@
+FROM rust:1.36.0 as fqlib-builder
+RUN cargo install \
+      --git https://github.com/stjude/fqlib.git \
+      --root /opt/fqlib/
+
 FROM ubuntu:18.04 as builder
 
-ENV PATH /opt/conda/bin:/root/.cargo/bin:$PATH
+ENV PATH /opt/conda/bin:$PATH
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -25,7 +30,8 @@ RUN conda update -n base -c defaults conda -y && \
     qualimap==2.2.2c \
     multiqc==1.7 \
     rseqc==3.0.0 \
+    htseq==0.11.2 \
     -y && \
     conda clean --all -y
 
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && bash -c 'source $HOME/.cargo/env &&  cargo install --git https://github.com/stjude/fqlib.git --root /usr/local'
+COPY --from=fqlib-builder /opt/fqlib/bin/fq /usr/local/bin/
