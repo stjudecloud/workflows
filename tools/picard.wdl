@@ -14,6 +14,7 @@ task mark_duplicates {
 
     runtime {
         memory: "50G"
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output {
@@ -27,6 +28,10 @@ task validate_bam {
     command {
         picard ValidateSamFile I=${bam} \
             IGNORE=INVALID_PLATFORM_VALUE > stdout.txt
+    }
+
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output {
@@ -47,6 +52,7 @@ task bam_to_fastq {
 
     runtime{
         memory: "25G"	
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output {

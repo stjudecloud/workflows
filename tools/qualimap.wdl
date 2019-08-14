@@ -12,6 +12,7 @@ task bamqc {
 
     runtime {
         memory: "8G"
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output {
@@ -30,6 +31,7 @@ task rnaseq {
 
     runtime {
         memory: "8G"
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output {

@@ -3,6 +3,10 @@ task print_version {
         samtools --version
     }
 
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+    }
+
     output {
         String out = read_string(stdout())
     }
@@ -14,6 +18,10 @@ task quickcheck {
 
     command {
         samtools quickcheck ${bam}
+    }
+
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 }
 
@@ -31,7 +39,11 @@ task split {
         fi 
         rm unaccounted_reads.bam
     }
-    
+ 
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+    }
+   
     output {
        Array[File] split_bams = glob("*.bam")
     }
@@ -44,6 +56,10 @@ task flagstat {
 
     command {
         samtools flagstat ${bam} > ${outfile}
+    }
+
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output { 
@@ -60,6 +76,11 @@ task index {
     command {
         samtools index ${bam} ${outfile}
     }
+
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+    }
+
     output {
        File bai = outfile
     }

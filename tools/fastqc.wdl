@@ -11,6 +11,10 @@ task fastqc {
             ${bam}
     }
 
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+    }
+
     output {
         Array[File] out_files = glob("${prefix}_fastqc_results/*")
     }

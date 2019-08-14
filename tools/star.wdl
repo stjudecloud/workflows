@@ -3,6 +3,10 @@ task print_version {
         STAR --version
     }
 
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+    }
+
     output {
         String out = read_string(stdout())
     }
@@ -27,6 +31,7 @@ task build_db {
 
     runtime {
         memory: "50G"
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output {
@@ -65,6 +70,7 @@ task alignment {
 
     runtime {
         memory: "75G"
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output {

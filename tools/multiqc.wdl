@@ -26,6 +26,10 @@ task multiqc {
         multiqc --file-list file_list.txt -o multiqc_results
     }
 
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+    }
+
     output {
         File out = "multiqc_results"
     }

@@ -4,6 +4,11 @@ task get_read_groups {
    command {
         samtools view -H ${bam} | grep "@RG" > stdout.txt
    }
+
+   runtime {
+       docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+   }
+
    output { 
        String out = read_string("stdout.txt")
    }
@@ -15,6 +20,10 @@ task prepare_read_groups_for_star {
    command <<< 
        echo "${read_groups}" | cut -f 2- | sed -e 's/\t/ /g' | awk '{print}' ORS=' , '| sed 's/ , $//' > stdout.txt
    >>>
+
+   runtime {
+       docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+   }
 
    output { 
        String out = read_string("stdout.txt")

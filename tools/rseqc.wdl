@@ -8,6 +8,10 @@ task infer_experiment {
         infer_experiment.py -i ${bam} -r ${refgene_bed} ${"-s" + sample_size} ${"-q" + map_qual} > stdout.txt 
     }
 
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+    }
+
     output {
        String out = read_string("stdout.txt")
     }

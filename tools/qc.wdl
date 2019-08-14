@@ -16,6 +16,11 @@ task parse_validate_bam {
               exit -1 
         fi
     }
+
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+    }
+
 }
 
 task parse_infer_experiment {
@@ -48,6 +53,10 @@ task parse_infer_experiment {
            echo "infer_experiment failed to determine type" > /dev/stderr
            exit -1 
         fi
+    }
+
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output {
