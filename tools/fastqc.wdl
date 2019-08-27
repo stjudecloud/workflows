@@ -1,3 +1,8 @@
+## Description: 
+##
+## This WDL tool wraps the FastQC tool (https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
+## FastQC generates quality control metrics for sequencing pipelines. 
+
 task fastqc {
     File bam
     Int ncpu

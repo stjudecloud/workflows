@@ -1,3 +1,8 @@
+## Description: 
+##
+## This WDL tool wraps the QualiMap tool (http://qualimap.bioinfo.cipf.es/).
+## QualiMap computes metrics to facilitate evaluation of sequencing data. 
+
 task bamqc {
     File bam
     Int ncpu

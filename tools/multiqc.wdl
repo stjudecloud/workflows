@@ -1,3 +1,8 @@
+## Description: 
+##
+## This WDL tool wraps the MultiQC tool (https://multiqc.info/).
+## MultiQC aggregates quality control results for bioinformatics.
+
 task multiqc {
     File star
     File dups

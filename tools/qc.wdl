@@ -1,3 +1,7 @@
+## Description: 
+##
+## This WDL tool includes custom scripts to parse and validate QC output.  
+
 task parse_validate_bam {
     String in
     Boolean strict = true

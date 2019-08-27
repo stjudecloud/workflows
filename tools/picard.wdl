@@ -1,3 +1,8 @@
+## Description: 
+##
+## This WDL tool wraps the PicardTools library (https://broadinstitute.github.io/picard/).
+## PicardTools is a set of Java tools for manipulating sequencing data. 
+
 task mark_duplicates {
     File bam
     String prefix = basename(bam, ".bam")
