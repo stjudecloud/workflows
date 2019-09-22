@@ -32,6 +32,7 @@ RUN conda update -n base -c defaults conda -y && \
     multiqc==1.7 \
     rseqc==3.0.0 \
     htseq==0.11.2 \
+    deeptools==3.3.1 \
     -y && \
     conda clean --all -y
 
