@@ -37,6 +37,7 @@ import "../tools/md5sum.wdl"
 import "../tools/multiqc.wdl"
 import "../tools/qc.wdl"
 import "../tools/util.wdl"
+import "../tools/deeptools.wdl"
 
 workflow start_to_finish {
     File reference_fasta 
@@ -74,6 +75,7 @@ workflow start_to_finish {
     call samtools.flagstat { input: bam=mark_duplicates.out }
     call samtools.index { input: bam=mark_duplicates.out }
     call md5sum.compute_checksum { input: infile=mark_duplicates.out }
+    call deeptools.bamCoverage { input: bam=mark_duplicates.out, bai=index.bai }
     call multiqc.multiqc {
         input:
             star=star_alignment.star_bam,
