@@ -2,3 +2,8 @@
 **/*.fastq.gz
 **/*.fa
 **/*.gtf
+**/*.bam
+**/*.log
+
+# Blacklist Cromwell files
+**/cromwell*
