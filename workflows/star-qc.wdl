@@ -28,7 +28,6 @@ workflow star_qc {
     Int ncpu
 
     call samtools.quickcheck { input: bam=bam }
-    call picard.mark_duplicates { input: bam=bam }
     call picard.validate_bam { input: bam=bam }
     call fastqc.fastqc { input: bam=bam, ncpu=ncpu }
     call qualimap.bamqc { input: bam=bam, ncpu=ncpu }
