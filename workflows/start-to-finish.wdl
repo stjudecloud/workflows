@@ -1,7 +1,7 @@
 ## Description: 
 ##
 ## This WDL workflow runs the STAR RNA-seq alignment workflow for St. Jude Cloud. The workflow takes an input BAM file and splits it into fastq files for each read in the pair. 
-## The read pairs are then passed through STAR alignment to generate a BAM file. The BAM is run through Picard's MarkDuplicates and several QC steps including FastQC and Qualimap.
+## The read pairs are then passed through STAR alignment to generate a BAM file. The BAM is run through several QC steps including FastQC and Qualimap.
 ## Quantification is done using htseq-count. A final QC report is produced by MultiQC to generate a combined overview of the QC results for the sample.  
 ##
 ## Inputs: 
