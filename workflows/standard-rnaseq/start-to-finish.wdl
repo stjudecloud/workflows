@@ -24,20 +24,20 @@
 ##THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-import "./bam-to-fastqs.wdl" as b2fq
+import "../bam-to-fastqs.wdl" as b2fq
 import "./star-db-build.wdl" as stardb_build
 import "./star-alignment.wdl" as align
-import "../tools/picard.wdl" 
-import "../tools/fastqc.wdl"
-import "../tools/rseqc.wdl"
-import "../tools/qualimap.wdl"
-import "../tools/htseq.wdl"
-import "../tools/samtools.wdl"
-import "../tools/md5sum.wdl"
-import "../tools/multiqc.wdl"
-import "../tools/qc.wdl"
-import "../tools/util.wdl"
-import "../tools/deeptools.wdl"
+import "../../tools/picard.wdl" 
+import "../../tools/fastqc.wdl"
+import "../../tools/rseqc.wdl"
+import "../../tools/qualimap.wdl"
+import "../../tools/htseq.wdl"
+import "../../tools/samtools.wdl"
+import "../../tools/md5sum.wdl"
+import "../../tools/multiqc.wdl"
+import "../../tools/qc.wdl"
+import "../../tools/util.wdl"
+import "../../tools/deeptools.wdl"
 
 workflow start_to_finish {
     File reference_fasta 

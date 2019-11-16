@@ -6,4 +6,4 @@
 **/*.log
 
 # Blacklist Cromwell files
-**/cromwell*
+cromwell*
