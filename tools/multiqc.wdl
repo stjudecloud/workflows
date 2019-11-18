@@ -5,7 +5,6 @@
 
 task multiqc {
     File star
-    File dups
     String validate_sam_string
     Array[File] qualimap_bamqc
     Array[File] qualimap_rnaseq
@@ -14,7 +13,6 @@ task multiqc {
 
     command {
         echo ${star} > file_list.txt
-        echo ${dups} >> file_list.txt
         echo ${validate_sam_string} > validate_sam.txt
         echo validate_sam.txt >> file_list.txt
         for file in ${sep=' ' qualimap_bamqc} ; do
