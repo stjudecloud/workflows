@@ -11,6 +11,7 @@ ENV PATH /opt/conda/bin:$PATH
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install wget -y && \
+    apt-get install zip -y && \
     apt-get install gcc -y && \
     rm -r /var/lib/apt/lists/*
 
