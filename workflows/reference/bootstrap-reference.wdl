@@ -27,7 +27,7 @@ import "../../tools/wget.wdl"
 
 workflow bootstrap_reference {
     String reference_fa_url
-		String gencode_gtf_url
+    String gencode_gtf_url
 
     call wget.download as reference_download { input: url=reference_fa_url, outfilename="GRCh38_no_alt.fa.gz" }
     call gzip.unzip as reference_unzip { input: infile=reference_download.outfile }
@@ -44,7 +44,7 @@ workflow bootstrap_reference {
 
     output {
       File reference_fa = reference_unzip.outfile
-			File gencode_gtf = gencode_unzip.outfile
+      File gencode_gtf = gencode_unzip.outfile
       File stardb = star_db_build.dir
     }
 }

@@ -26,10 +26,10 @@ task download {
     }
 
     command {
-			wget ${url} -O ${outfilename}
+      wget ${url} -O ${outfilename}
     }
 
-		output {
-			File outfile = outfilename
-		}
+    output {
+      File outfile = outfilename
+    }
 }
