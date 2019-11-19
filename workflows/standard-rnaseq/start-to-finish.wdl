@@ -24,20 +24,20 @@
 ##THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-import "../bam-to-fastqs.wdl" as b2fq
-import "./star-db-build.wdl" as stardb_build
-import "./star-alignment.wdl" as align
-import "../../tools/picard.wdl" 
-import "../../tools/fastqc.wdl"
-import "../../tools/rseqc.wdl"
-import "../../tools/qualimap.wdl"
-import "../../tools/htseq.wdl"
-import "../../tools/samtools.wdl"
-import "../../tools/md5sum.wdl"
-import "../../tools/multiqc.wdl"
-import "../../tools/qc.wdl"
-import "../../tools/util.wdl"
-import "../../tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/star-db-build.wdl" as stardb_build
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/star-alignment.wdl" as align
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/fastqc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/rseqc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/md5sum.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/multiqc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/qc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/deeptools.wdl"
 
 workflow start_to_finish {
     File reference_fasta 
