@@ -22,13 +22,14 @@ task build_db {
     File reference_fasta
     File gencode_gtf
     String stardb_dir_name
+    String ram_limit="45000000000"
 
     command {
         mkdir ${stardb_dir_name};
         STAR --runMode genomeGenerate \
             --genomeDir ${stardb_dir_name} \
             --runThreadN ${ncpu} \
-            --limitGenomeGenerateRAM=45000000000 \
+            --limitGenomeGenerateRAM ${ram_limit} \
             --genomeFastaFiles ${reference_fasta} \
             --sjdbGTFfile ${gencode_gtf} \
             --sjdbOverhang 125
