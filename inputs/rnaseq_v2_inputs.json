@@ -1,0 +1,6 @@
+{
+	"start_to_finish.reference_fasta": "https://cromwell54a899592ce2.blob.core.windows.net/inputs/rnaseq_v2/GRCh38_no_alt.fa",
+	"start_to_finish.gencode_gtf": "https://cromwell54a899592ce2.blob.core.windows.net/inputs/rnaseq_v2/gencode.v31.annotation.gtf",
+	"start_to_finish.refgene_bed": "https://cromwell54a899592ce2.blob.core.windows.net/inputs/rnaseq_v2/gencode.v31.annotation.bed",
+	"start_to_finish.bam": "https://cromwell54a899592ce2.blob.core.windows.net/inputs/SJBALL030052_R1.RNA-Seq.subset2.bam"
+}
