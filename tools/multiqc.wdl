@@ -27,6 +27,7 @@ task multiqc {
         echo ${flagstat_file} >> file_list.txt
 
         multiqc --file-list file_list.txt -o multiqc_results
+        zip multiqc_results
     }
 
     runtime {
@@ -34,6 +35,6 @@ task multiqc {
     }
 
     output {
-        File out = "multiqc_results"
+        File out = "multiqc_results.zip"
     }
 }
