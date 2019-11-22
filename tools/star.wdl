@@ -50,11 +50,13 @@ task build_db {
 task alignment {
     Array[File] read_one_fastqs
     Array[File] read_two_fastqs
-    File stardb_dir
+    File stardb_zip
+    String stardb_dir = basename(stardb_zip, ".zip")
     String output_prefix
     String? read_groups
 
     command {
+        unzip ${stardb_zip};
         STAR --readFilesIn ${sep=',' read_one_fastqs} ${sep=',' read_two_fastqs} \
              --genomeDir ${stardb_dir} \
              --outSAMunmapped Within \

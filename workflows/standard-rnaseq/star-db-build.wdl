@@ -39,6 +39,7 @@ workflow build_db {
     }
 
     output {
+        # File out_dir = build_db.dir
         File stardb_zip = build_db.zip
     }
 }

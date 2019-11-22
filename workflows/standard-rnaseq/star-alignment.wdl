@@ -30,7 +30,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_
 workflow star_alignment {
     Array[File] read_one_fastqs
     Array[File] read_two_fastqs
-    File stardb_dir
+    File stardb_zip
     String output_prefix
     String? read_groups
 
@@ -38,7 +38,7 @@ workflow star_alignment {
         input:
             read_one_fastqs=read_one_fastqs,
             read_two_fastqs=read_two_fastqs,
-            stardb_dir=stardb_dir,
+            stardb_zip=stardb_zip,
             output_prefix=output_prefix,
             read_groups=read_groups
     }
