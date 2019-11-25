@@ -84,5 +84,12 @@ workflow start_to_finish {
             fastqc_files=fastqc.out_files,
             flagstat_file=flagstat.flagstat
     }
+    output {
+        star_alignment.star_bam
+        samtools.index.bai
+        htseq.count.out
+        samtools.flagstat.flagstat
+        multiqc.out
+    }
 
 }
