@@ -86,9 +86,9 @@ workflow start_to_finish {
     }
     output {
         star_alignment.star_bam
-        samtools.index.bai
-        htseq.count.out
-        samtools.flagstat.flagstat
+        index.bai
+        count.out
+        flagstat.flagstat
         multiqc.out
     }
 
