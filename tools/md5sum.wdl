@@ -1,4 +1,4 @@
-## Description: 
+## Description:
 ##
 ## This WDL tool wraps the md5sum tool from the GNU core 
 ## utilities (https://github.com/coreutils/coreutils).

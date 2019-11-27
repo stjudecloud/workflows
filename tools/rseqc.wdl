@@ -1,4 +1,4 @@
-## Description: 
+## Description:
 ##
 ## This WDL tool wraps the RSeQC tool (http://rseqc.sourceforge.net).
 ## RSeQC is a package for quality control of RNA-seq data.

@@ -1,4 +1,4 @@
-## Description: 
+## Description:
 ##
 ## This WDL tool wraps the fq tool (https://github.com/stjude/fqlib).
 ## The fq library provides methods for manipulating Illumina generated 

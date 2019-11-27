@@ -1,4 +1,4 @@
-## Description: 
+## Description:
 ##
 ## This WDL tool wraps the SAMtools package (http://samtools.sourceforge.net/).
 ## SAMtools provides utlities for manipulating SAM format sequence alignments.
