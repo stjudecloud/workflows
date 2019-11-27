@@ -9,7 +9,7 @@ task parse_validate_bam {
     command {
         if [ "${strict}" == "true" ]
         then 
-           if [ $(echo "${in}" | grep -c "ERROR") -gt 0 ] 
+           if [ $(echo "${in}" | grep -c "ERROR") -gt 0 ]
            then 
               echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
               exit -1 
@@ -24,7 +24,6 @@ task parse_validate_bam {
     runtime {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
-
 }
 
 task parse_infer_experiment {

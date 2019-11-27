@@ -86,6 +86,6 @@ task alignment {
     }
 
     output {
-       File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam" 
+       File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam"
     }
 }

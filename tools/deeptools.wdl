@@ -6,7 +6,7 @@
 task bamCoverage {
     File bam
     File bai
-    String prefix = basename(bam, ".bam")   
+    String prefix = basename(bam, ".bam")
  
     command {
         if [ ! -e ${bam}.bai ] 

@@ -15,7 +15,6 @@ task print_version {
     output {
         String out = read_string(stdout())
     }
-
 }
 
 task quickcheck {
@@ -39,7 +38,7 @@ task split {
     command {
         samtools split -u ${prefix}.unaccounted_reads.bam -f '%*_%!.%.' ${bam}
         samtools view ${prefix}.unaccounted_reads.bam > unaccounted_reads.bam
-        if [ ${default='true' reject_unaccounted} -a -s unaccounted_reads.bam ] 
+        if [ ${default='true' reject_unaccounted} -a -s unaccounted_reads.bam ]
             then exit 1; 
             else rm ${prefix}.unaccounted_reads.bam
         fi 
@@ -50,7 +49,7 @@ task split {
          disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
-   
+
     output {
        Array[File] split_bams = glob("*.bam")
     }

@@ -25,6 +25,7 @@ task bamqc {
         Array[File] out_files = glob("${prefix}_qualimap_results/*")
     }
 }
+
 task rnaseq {
     File bam
     File gencode_gtf

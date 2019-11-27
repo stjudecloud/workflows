@@ -16,7 +16,6 @@ task print_version {
     output {
         String out = read_string(stdout())
     }
-
 }
 
 task fqlint {

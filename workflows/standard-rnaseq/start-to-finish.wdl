@@ -23,7 +23,6 @@
 ##
 ##THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/bam-to-fastqs.wdl" as b2fq
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/star-db-build.wdl" as stardb_build
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/star-alignment.wdl" as align
@@ -40,7 +39,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/deeptools.wdl"
 
 workflow start_to_finish {
-    File reference_fasta 
+    File reference_fasta
     File gencode_gtf
     File refgene_bed
     File bam
@@ -91,5 +90,4 @@ workflow start_to_finish {
         flagstat.flagstat
         multiqc.out
     }
-
 }

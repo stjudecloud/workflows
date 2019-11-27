@@ -26,7 +26,7 @@
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/star.wdl"
 
 workflow build_db {
-    File reference_fasta 
+    File reference_fasta
     File gencode_gtf 
     String stardb_dir_name
 
