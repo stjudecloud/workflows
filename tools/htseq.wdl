@@ -14,7 +14,8 @@ task count {
     }
 
     runtime {
-        memory: "8G"
+        memory: "8 GB"
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
    

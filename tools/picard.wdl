@@ -18,7 +18,8 @@ task mark_duplicates {
     }
 
     runtime {
-        memory: "50G"
+        memory: "50 GB"
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -36,6 +37,7 @@ task validate_bam {
     }
 
     runtime {
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -56,7 +58,8 @@ task bam_to_fastq {
     }
 
     runtime{
-        memory: "25G"	
+        memory: "25 GB"
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

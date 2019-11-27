@@ -24,6 +24,7 @@ task fqlint {
     File read2
 
     runtime {
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

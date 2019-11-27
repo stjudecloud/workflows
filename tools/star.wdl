@@ -38,7 +38,8 @@ task build_db {
     }
 
     runtime {
-        memory: "50G"
+        memory: "50 GB"
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -79,7 +80,8 @@ task alignment {
     }
 
     runtime {
-        memory: "75G"
+        memory: "75 GB"
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

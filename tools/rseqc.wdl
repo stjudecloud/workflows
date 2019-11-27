@@ -14,6 +14,7 @@ task infer_experiment {
     }
 
     runtime {
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

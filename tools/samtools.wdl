@@ -26,6 +26,7 @@ task quickcheck {
     }
 
     runtime {
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 }
@@ -46,6 +47,7 @@ task split {
     }
  
     runtime {
+         disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
    
@@ -64,6 +66,7 @@ task flagstat {
     }
 
     runtime {
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -83,6 +86,7 @@ task index {
     }
 
     runtime {
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

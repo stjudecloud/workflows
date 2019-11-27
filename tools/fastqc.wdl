@@ -17,6 +17,7 @@ task fastqc {
     }
 
     runtime {
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

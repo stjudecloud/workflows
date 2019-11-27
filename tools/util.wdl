@@ -12,6 +12,7 @@ task get_read_groups {
    }
 
    runtime {
+       disk: "80 GB"
        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
    }
 

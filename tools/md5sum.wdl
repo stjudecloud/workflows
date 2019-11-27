@@ -26,6 +26,7 @@ task compute_checksum {
     }
 
     runtime {
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -41,6 +42,7 @@ task check_checksum {
     } 
 
     runtime {
+        disk: "80 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
