@@ -9,7 +9,7 @@ At the time of writing, all workflows are written in [WDL][wdl] and are tested u
 The easiest way to get started is to install [bioconda][bioconda] and the run the following commands:
 
 ```bash
-conda create -n workflows-dev -c bioconda cromwell==0.40 -y
+conda create -n workflows-dev -c conda-forge cromwell==47 -y
 conda activate workflows-dev
 git clone git@github.com:stjudecloud/workflows.git
 cd workflows
