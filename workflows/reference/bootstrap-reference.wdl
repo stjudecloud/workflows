@@ -8,7 +8,9 @@
 ##
 ## Output: 
 ##
-## TODO
+## reference_fa - Gzipped reference FASTA file (check `inputs.json` for default reference genome used).
+## gencode_gtf - Gzipped gencode GTF file (check `inputs.json` for default gene model used).
+## stardb - Built STAR database based on the FASTA and GTF above.
 ##
 ## LICENSING :
 ## MIT License
