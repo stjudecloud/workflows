@@ -38,7 +38,7 @@ workflow bootstrap_reference {
             reference_fasta=reference_unzip.outfile,
             gencode_gtf=gencode_unzip.outfile,
             stardb_dir_name="./STARDB",
-            ncpu=8,
+            ncpu=4,
             ram_limit="10000000000"
     }
 
