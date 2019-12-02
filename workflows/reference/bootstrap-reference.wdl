@@ -39,7 +39,7 @@ workflow bootstrap_reference {
         input:
             reference_fasta=reference_unzip.outfile,
             gencode_gtf=gencode_unzip.outfile,
-            stardb_dir_name="./STARDB",
+            stardb_dir_name="STARDB",
             ncpu=4,
             ram_limit="10000000000"
     }
@@ -47,6 +47,6 @@ workflow bootstrap_reference {
     output {
       File reference_fa = reference_unzip.outfile
       File gencode_gtf = gencode_unzip.outfile
-      File stardb = star_db_build.dir
+      File stardb_zip = star_db_build.zip
     }
 }

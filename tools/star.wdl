@@ -22,6 +22,7 @@ task build_db {
     File reference_fasta
     File gencode_gtf
     String stardb_dir_name
+    String stardb_zip_name = stardb_dir_name + ".zip"
     String ram_limit="45000000000"
 
     command {
@@ -33,6 +34,7 @@ task build_db {
             --genomeFastaFiles ${reference_fasta} \
             --sjdbGTFfile ${gencode_gtf} \
             --sjdbOverhang 125
+        zip -r ${stardb_zip_name} ${stardb_dir_name}
     }
 
     runtime {
@@ -41,7 +43,7 @@ task build_db {
     }
 
     output {
-        File dir = stardb_dir_name
+        File zip = stardb_zip_name
     }
 }
 

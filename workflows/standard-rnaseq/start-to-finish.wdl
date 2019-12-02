@@ -59,7 +59,7 @@ workflow start_to_finish {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,
             read_two_fastqs=bam_to_fastqs.read2s,
-            stardb_dir=build_db.out_dir,
+            stardb_dir=build_db.stardb_zip,
             output_prefix="out",
             read_groups=prepare_read_groups_for_star.out
     }
