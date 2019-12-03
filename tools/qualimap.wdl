@@ -33,12 +33,12 @@ task rnaseq {
     String strand = "strand-specific-reverse"
  
     command {
-        qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${strand} -pe --java-mem-size=12G
+        qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${strand} -pe --java-mem-size=14G
     }
 
     runtime {
         memory: "16 GB"
-        disk: "80 GB"
+        disk: "200 GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
