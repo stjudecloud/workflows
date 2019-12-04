@@ -7,6 +7,9 @@ task mark_duplicates {
     File bam
     String prefix = basename(bam, ".bam")
 
+    Int bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+
     command {
         picard MarkDuplicates I=${bam} \
             O=${prefix}.duplicates.bam \
@@ -19,7 +22,7 @@ task mark_duplicates {
 
     runtime {
         memory: "50 GB"
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -30,6 +33,9 @@ task mark_duplicates {
 
 task validate_bam {
     File bam
+
+    Int bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
     
     command {
         picard ValidateSamFile I=${bam} \
@@ -37,7 +43,7 @@ task validate_bam {
     }
 
     runtime {
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -50,6 +56,9 @@ task bam_to_fastq {
     File bam
     String prefix = basename(bam, ".bam")
 
+    Int bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 4) + 10)
+
     command {
         picard SamToFastq INPUT=${bam} \
             FASTQ=${prefix}_R1.fastq \
@@ -59,7 +68,7 @@ task bam_to_fastq {
 
     runtime{
         memory: "25 GB"
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

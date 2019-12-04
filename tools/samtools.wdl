@@ -20,12 +20,15 @@ task print_version {
 task quickcheck {
     File bam
 
+    Int bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+
     command {
         samtools quickcheck ${bam}
     }
 
     runtime {
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 }
@@ -34,6 +37,9 @@ task split {
     File bam
     Boolean? reject_unaccounted
     String prefix = basename(bam, ".bam")
+
+    Int bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
         samtools split -u ${prefix}.unaccounted_reads.bam -f '%*_%!.%.' ${bam}
@@ -46,7 +52,7 @@ task split {
     }
  
     runtime {
-         disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -60,12 +66,15 @@ task flagstat {
 
     String outfile = basename(bam, ".bam")+".flagstat.txt"
 
+    Int bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+
     command {
         samtools flagstat ${bam} > ${outfile}
     }
 
     runtime {
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -80,12 +89,15 @@ task index {
     String name = basename(bam)
     String outfile = basename(bam)+".bai"
 
+    Int bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+
     command {
         samtools index ${bam} ${outfile}
     }
 
     runtime {
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

@@ -8,6 +8,9 @@ task fastqc {
     Int ncpu
     String prefix = basename(bam, ".bam")
 
+    Int bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+
     command {
         mkdir ${prefix}_fastqc_results
         fastqc -f bam \
@@ -17,7 +20,7 @@ task fastqc {
     }
 
     runtime {
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

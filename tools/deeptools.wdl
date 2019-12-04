@@ -7,6 +7,9 @@ task bamCoverage {
     File bam
     File bai
     String prefix = basename(bam, ".bam")
+
+    Int bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 4) + 10)
  
     command {
         if [ ! -e ${bam}.bai ] 
@@ -18,7 +21,7 @@ task bamCoverage {
     }
 
     runtime {
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

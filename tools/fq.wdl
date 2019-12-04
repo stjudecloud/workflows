@@ -22,8 +22,12 @@ task fqlint {
     File read1
     File read2
 
+    Int read1_size = size(read1, "GiB")
+    Int read2_size = size(read2, "GiB")
+    Int disk_size = ceil(((read1_size + read2_size) * 2) + 10)
+
     runtime {
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

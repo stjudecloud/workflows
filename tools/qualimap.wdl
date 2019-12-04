@@ -8,6 +8,9 @@ task bamqc {
     Int ncpu
     String prefix = basename(bam, ".bam")
 
+    Int bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+
     command {
         qualimap bamqc -bam ${bam} \
             -outdir ${prefix}_qualimap_results \
@@ -17,7 +20,7 @@ task bamqc {
 
     runtime {
         memory: "8 GB"
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -31,6 +34,10 @@ task rnaseq {
     File gencode_gtf
     String outdir = "qualimap_rnaseq"
     String strand = "strand-specific-reverse"
+
+    Int bam_size = size(bam, "GiB")
+    Int gencode_gtf_size = size(gencode_gtf, "GiB")
+    Int disk_size = ceil(((bam_size + gencode_gtf_size) * 6) + 10)
  
     command {
         qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${strand} -pe --java-mem-size=14G
@@ -38,7 +45,7 @@ task rnaseq {
 
     runtime {
         memory: "16 GB"
-        disk: "200 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

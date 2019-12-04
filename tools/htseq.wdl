@@ -8,6 +8,10 @@ task count {
     File gtf
     String strand = "reverse"
     String outfile = basename(bam, ".bam") + ".counts.txt"
+
+    Int bam_size = size(bam, "GiB")
+    Int gtf_size = size(gtf, "GiB")
+    Int disk_size = ceil(((bam_size + gtf_size) * 2) + 10)
  
     command {
         htseq-count -f bam -r pos -s ${strand} -m union -i gene_name --secondary-alignments ignore --supplementary-alignments ignore ${bam} ${gtf} > ${outfile}
@@ -15,7 +19,7 @@ task count {
 
     runtime {
         memory: "8 GB"
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
    

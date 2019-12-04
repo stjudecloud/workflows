@@ -11,6 +11,9 @@ task multiqc {
     Array[File] fastqc_files
     File flagstat_file
 
+    Int star_size = size(star, "GiB")
+    Int disk_size = ceil((bam_size * 4) + 10)
+
     command {
         echo ${star} > file_list.txt
         echo ${validate_sam_string} > validate_sam.txt
@@ -31,7 +34,7 @@ task multiqc {
     }
 
     runtime {
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

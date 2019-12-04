@@ -25,6 +25,10 @@ task build_db {
     String stardb_zip_name = stardb_dir_name + ".zip"
     String ram_limit="45000000000"
 
+    Int reference_fasta_size = size(reference_fasta, "GiB")
+    Int gencode_gtf_size = size(gencode_gtf, "GiB")
+    Int disk_size = ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)
+
     command {
         mkdir ${stardb_dir_name};
         STAR --runMode genomeGenerate \
@@ -39,7 +43,7 @@ task build_db {
 
     runtime {
         memory: "50 GB"
-        disk: "80 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -55,6 +59,11 @@ task alignment {
     String stardb_dir = basename(stardb_zip, ".zip")
     String output_prefix
     String? read_groups
+
+    Int read_one_fastqs_size = size(read_one_fastqs, "GiB")
+    Int read_two_fastqs_size = size(read_two_fastqs, "GiB")
+    Int stardb_zip_size = size(stardb_zip, "GiB")
+    Int disk_size = ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_zip_size) * 3) + 10)
 
     command {
         unzip ${stardb_zip};
@@ -80,8 +89,8 @@ task alignment {
     }
 
     runtime {
-        memory: "75 GB"
-        disk: "80 GB"
+        memory: "50 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
