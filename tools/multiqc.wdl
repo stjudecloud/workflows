@@ -12,7 +12,7 @@ task multiqc {
     File flagstat_file
 
     Float star_size = size(star, "GiB")
-    Int disk_size = ceil((bam_size * 4) + 10)
+    Int disk_size = ceil((star_size * 4) + 10)
 
     command {
         echo ${star} > file_list.txt
