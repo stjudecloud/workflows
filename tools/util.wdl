@@ -6,7 +6,7 @@
 task get_read_groups {
     File bam
 
-    Int bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {

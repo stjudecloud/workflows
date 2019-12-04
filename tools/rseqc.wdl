@@ -9,8 +9,8 @@ task infer_experiment {
     Int? map_qual
     File refgene_bed
 
-    Int bam_size = size(bam, "GiB")
-    Int refgene_bed_size = size(refgene_bed, "GiB")
+    Float bam_size = size(bam, "GiB")
+    Float refgene_bed_size = size(refgene_bed, "GiB")
     Int disk_size = ceil(((bam_size + refgene_bed_size) * 2) + 10)
  
     command {

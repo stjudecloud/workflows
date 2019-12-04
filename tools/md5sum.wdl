@@ -21,7 +21,7 @@ task print_version {
 task compute_checksum {
     File infile
 
-    Int infile_size = size(infile, "GiB")
+    Float infile_size = size(infile, "GiB")
     Int disk_size = ceil((infile_size * 2) + 10)
 
     command {
@@ -40,7 +40,7 @@ task compute_checksum {
 task check_checksum {
     File infile
   
-    Int infile_size = size(infile, "GiB")
+    Float infile_size = size(infile, "GiB")
     Int disk_size = ceil((infile_size * 2) + 10)
 
     command { 

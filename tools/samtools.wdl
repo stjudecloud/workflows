@@ -38,7 +38,7 @@ task split {
     Boolean? reject_unaccounted
     String prefix = basename(bam, ".bam")
 
-    Int bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
@@ -66,7 +66,7 @@ task flagstat {
 
     String outfile = basename(bam, ".bam")+".flagstat.txt"
 
-    Int bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
@@ -89,7 +89,7 @@ task index {
     String name = basename(bam)
     String outfile = basename(bam)+".bai"
 
-    Int bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {

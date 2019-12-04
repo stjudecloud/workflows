@@ -11,7 +11,7 @@ task multiqc {
     Array[File] fastqc_files
     File flagstat_file
 
-    Int star_size = size(star, "GiB")
+    Float star_size = size(star, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
 
     command {

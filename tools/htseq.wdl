@@ -9,8 +9,8 @@ task count {
     String strand = "reverse"
     String outfile = basename(bam, ".bam") + ".counts.txt"
 
-    Int bam_size = size(bam, "GiB")
-    Int gtf_size = size(gtf, "GiB")
+    Float bam_size = size(bam, "GiB")
+    Float gtf_size = size(gtf, "GiB")
     Int disk_size = ceil(((bam_size + gtf_size) * 2) + 10)
  
     command {

@@ -7,7 +7,7 @@ task mark_duplicates {
     File bam
     String prefix = basename(bam, ".bam")
 
-    Int bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
@@ -34,7 +34,7 @@ task mark_duplicates {
 task validate_bam {
     File bam
 
-    Int bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
     
     command {
@@ -56,7 +56,7 @@ task bam_to_fastq {
     File bam
     String prefix = basename(bam, ".bam")
 
-    Int bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
 
     command {

@@ -8,7 +8,7 @@ task bamqc {
     Int ncpu
     String prefix = basename(bam, ".bam")
 
-    Int bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
@@ -35,8 +35,8 @@ task rnaseq {
     String outdir = "qualimap_rnaseq"
     String strand = "strand-specific-reverse"
 
-    Int bam_size = size(bam, "GiB")
-    Int gencode_gtf_size = size(gencode_gtf, "GiB")
+    Float bam_size = size(bam, "GiB")
+    Float gencode_gtf_size = size(gencode_gtf, "GiB")
     Int disk_size = ceil(((bam_size + gencode_gtf_size) * 6) + 10)
  
     command {

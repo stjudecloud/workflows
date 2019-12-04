@@ -25,8 +25,8 @@ task build_db {
     String stardb_zip_name = stardb_dir_name + ".zip"
     String ram_limit="45000000000"
 
-    Int reference_fasta_size = size(reference_fasta, "GiB")
-    Int gencode_gtf_size = size(gencode_gtf, "GiB")
+    Float reference_fasta_size = size(reference_fasta, "GiB")
+    Float gencode_gtf_size = size(gencode_gtf, "GiB")
     Int disk_size = ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)
 
     command {
@@ -60,9 +60,9 @@ task alignment {
     String output_prefix
     String? read_groups
 
-    Int read_one_fastqs_size = size(read_one_fastqs, "GiB")
-    Int read_two_fastqs_size = size(read_two_fastqs, "GiB")
-    Int stardb_zip_size = size(stardb_zip, "GiB")
+    Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
+    Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
+    Float stardb_zip_size = size(stardb_zip, "GiB")
     Int disk_size = ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_zip_size) * 3) + 10)
 
     command {

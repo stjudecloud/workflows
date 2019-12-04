@@ -22,8 +22,8 @@ task fqlint {
     File read1
     File read2
 
-    Int read1_size = size(read1, "GiB")
-    Int read2_size = size(read2, "GiB")
+    Float read1_size = size(read1, "GiB")
+    Float read2_size = size(read2, "GiB")
     Int disk_size = ceil(((read1_size + read2_size) * 2) + 10)
 
     runtime {
