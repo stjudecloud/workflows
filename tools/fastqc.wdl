@@ -3,11 +3,14 @@
 ## This WDL tool wraps the FastQC tool (https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
 ## FastQC generates quality control metrics for sequencing pipelines. 
 
-task fastqc {
-    File bam
-    Int ncpu
-    String prefix = basename(bam, ".bam")
+version 1.0
 
+task fastqc {
+    input {
+        File bam
+        Int ncpu
+        String prefix = basename(bam, ".bam")
+    }
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 

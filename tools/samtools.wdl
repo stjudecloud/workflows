@@ -3,6 +3,8 @@
 ## This WDL tool wraps the SAMtools package (http://samtools.sourceforge.net/).
 ## SAMtools provides utlities for manipulating SAM format sequence alignments.
 
+version 1.0
+
 task print_version {
     command {
         samtools --version
@@ -18,8 +20,9 @@ task print_version {
 }
 
 task quickcheck {
-    File bam
-
+    input {
+        File bam
+    }
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -34,10 +37,11 @@ task quickcheck {
 }
 
 task split {
-    File bam
-    Boolean? reject_unaccounted
-    String prefix = basename(bam, ".bam")
-
+    input {
+        File bam
+        Boolean? reject_unaccounted
+        String prefix = basename(bam, ".bam")
+    }
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -61,11 +65,12 @@ task split {
     }
 }
 
-task flagstat { 
-    File bam
+task flagstat {
+    input {
+        File bam
 
-    String outfile = basename(bam, ".bam")+".flagstat.txt"
-
+        String outfile = basename(bam, ".bam")+".flagstat.txt"
+    }
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -84,11 +89,12 @@ task flagstat {
 }
 
 task index {
-    File bam
-    
-    String name = basename(bam)
-    String outfile = basename(bam)+".bai"
-
+    input {
+        File bam
+        
+        String name = basename(bam)
+        String outfile = basename(bam)+".bai"
+    }
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 

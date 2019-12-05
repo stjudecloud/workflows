@@ -3,14 +3,17 @@
 ## This WDL tool wraps the MultiQC tool (https://multiqc.info/).
 ## MultiQC aggregates quality control results for bioinformatics.
 
-task multiqc {
-    File star
-    String validate_sam_string
-    Array[File] qualimap_bamqc
-    Array[File] qualimap_rnaseq
-    Array[File] fastqc_files
-    File flagstat_file
+version 1.0
 
+task multiqc {
+    input {
+        File star
+        String validate_sam_string
+        Array[File] qualimap_bamqc
+        Array[File] qualimap_rnaseq
+        Array[File] fastqc_files
+        File flagstat_file
+    }
     Float star_size = size(star, "GiB")
     Int disk_size = ceil((star_size * 4) + 10)
 

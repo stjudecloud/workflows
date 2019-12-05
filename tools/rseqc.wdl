@@ -3,12 +3,15 @@
 ## This WDL tool wraps the RSeQC tool (http://rseqc.sourceforge.net).
 ## RSeQC is a package for quality control of RNA-seq data.
 
-task infer_experiment {
-    File bam
-    Int? sample_size
-    Int? map_qual
-    File refgene_bed
+version 1.0
 
+task infer_experiment {
+    input {
+        File bam
+        Int? sample_size
+        Int? map_qual
+        File refgene_bed
+    }
     Float bam_size = size(bam, "GiB")
     Float refgene_bed_size = size(refgene_bed, "GiB")
     Int disk_size = ceil(((bam_size + refgene_bed_size) * 2) + 10)

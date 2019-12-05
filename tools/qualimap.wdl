@@ -3,11 +3,14 @@
 ## This WDL tool wraps the QualiMap tool (http://qualimap.bioinfo.cipf.es/).
 ## QualiMap computes metrics to facilitate evaluation of sequencing data. 
 
-task bamqc {
-    File bam
-    Int ncpu
-    String prefix = basename(bam, ".bam")
+version 1.0
 
+task bamqc {
+    input {
+        File bam
+        Int ncpu
+        String prefix = basename(bam, ".bam")
+    }
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -30,11 +33,12 @@ task bamqc {
 }
 
 task rnaseq {
-    File bam
-    File gencode_gtf
-    String outdir = "qualimap_rnaseq"
-    String strand = "strand-specific-reverse"
-
+    input {
+        File bam
+        File gencode_gtf
+        String outdir = "qualimap_rnaseq"
+        String strand = "strand-specific-reverse"
+    }
     Float bam_size = size(bam, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
     Int disk_size = ceil(((bam_size + gencode_gtf_size) * 6) + 10)

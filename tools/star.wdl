@@ -55,13 +55,14 @@ task build_db {
 }
 
 task alignment {
-    Array[File] read_one_fastqs
-    Array[File] read_two_fastqs
-    File stardb_zip
-    String stardb_dir = basename(stardb_zip, ".zip")
-    String output_prefix
-    String? read_groups
-
+    input {
+      Array[File] read_one_fastqs
+      Array[File] read_two_fastqs
+      File stardb_zip
+      String stardb_dir = basename(stardb_zip, ".zip")
+      String output_prefix
+      String? read_groups
+    }
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
     Float stardb_zip_size = size(stardb_zip, "GiB")

@@ -33,12 +33,16 @@
 ## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+version 1.0
+
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/star.wdl"
 
 workflow build_db {
-    File reference_fasta
-    File gencode_gtf 
-    String stardb_dir_name
+    input {
+        File reference_fasta
+        File gencode_gtf 
+        String stardb_dir_name
+    }
 
     call star.build_db {
         input:

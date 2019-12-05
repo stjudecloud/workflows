@@ -1,14 +1,17 @@
 ## Description:
 ##
 ## This WDL tool wraps the htseq tool (https://github.com/simon-anders/htseq).
-## HTSeq is a Python library for analyzing sequencing data. 
+## HTSeq is a Python library for analyzing sequencing data.
+
+version 1.0
 
 task count {
-    File bam
-    File gtf
-    String strand = "reverse"
-    String outfile = basename(bam, ".bam") + ".counts.txt"
-
+    input {
+        File bam
+        File gtf
+        String strand = "reverse"
+        String outfile = basename(bam, ".bam") + ".counts.txt"
+    }
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
     Int disk_size = ceil(((bam_size + gtf_size) * 2) + 10)

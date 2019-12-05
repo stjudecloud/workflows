@@ -54,11 +54,13 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/deeptools.wdl"
 
 workflow start_to_finish {
-    File reference_fasta
-    File gencode_gtf
-    File refgene_bed
-    File bam
-    Int ncpu = 1
+    input {
+        File reference_fasta
+        File gencode_gtf
+        File refgene_bed
+        File bam
+        Int ncpu = 1
+    }
 
     call stardb_build.build_db {
         input:
@@ -99,10 +101,10 @@ workflow start_to_finish {
             flagstat_file=flagstat.flagstat
     }
     output {
-        star_alignment.star_bam
-        index.bai
-        count.out
-        flagstat.flagstat
-        multiqc.out
+        File bam = star_alignment.star_bam
+        File bai = index.bai
+        File counts = count.out
+        File flagstat = flagstat.flagstat
+        File multiqc_zip = multiqc.out
     }
 }

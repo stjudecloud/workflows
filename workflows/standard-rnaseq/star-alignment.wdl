@@ -35,14 +35,18 @@
 ## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+version 1.0
+
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/star.wdl"
 
 workflow star_alignment {
-    Array[File] read_one_fastqs
-    Array[File] read_two_fastqs
-    File stardb_zip
-    String output_prefix
-    String? read_groups
+    input {
+        Array[File] read_one_fastqs
+        Array[File] read_two_fastqs
+        File stardb_zip
+        String output_prefix
+        String? read_groups
+    }
 
     call star.alignment {
         input:

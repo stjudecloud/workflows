@@ -5,6 +5,8 @@
 ## md5sum is a utility for generating and verifying MD5
 ## hashes.  
 
+version 1.0
+
 task print_version {
     command {
         md5sum --version
@@ -19,8 +21,9 @@ task print_version {
     }
 }
 task compute_checksum {
-    File infile
-
+    input {
+        File infile
+    }
     Float infile_size = size(infile, "GiB")
     Int disk_size = ceil((infile_size * 2) + 10)
 
@@ -38,8 +41,9 @@ task compute_checksum {
     }
 }
 task check_checksum {
-    File infile
-  
+    input {
+        File infile
+    }
     Float infile_size = size(infile, "GiB")
     Int disk_size = ceil((infile_size * 2) + 10)
 

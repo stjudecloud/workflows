@@ -1,12 +1,15 @@
 ## Description:
 ##
 ## This WDL tool wraps the PicardTools library (https://broadinstitute.github.io/picard/).
-## PicardTools is a set of Java tools for manipulating sequencing data. 
+## PicardTools is a set of Java tools for manipulating sequencing data.
+
+version 1.0
 
 task mark_duplicates {
-    File bam
-    String prefix = basename(bam, ".bam")
-
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+    }
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -32,8 +35,9 @@ task mark_duplicates {
 }
 
 task validate_bam {
-    File bam
-
+    input {
+        File bam
+    }
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
     
@@ -53,9 +57,10 @@ task validate_bam {
 }
 
 task bam_to_fastq {
-    File bam
-    String prefix = basename(bam, ".bam")
-
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+    }
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
 

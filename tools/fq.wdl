@@ -4,6 +4,8 @@
 ## The fq library provides methods for manipulating Illumina generated 
 ## FastQ files.
 
+version 1.0
+
 task print_version {
     command {
         fq --version
@@ -19,9 +21,10 @@ task print_version {
 }
 
 task fqlint {
-    File read1
-    File read2
-
+    input {
+        File read1
+        File read2
+    }
     Float read1_size = size(read1, "GiB")
     Float read2_size = size(read2, "GiB")
     Int disk_size = ceil(((read1_size + read2_size) * 2) + 10)

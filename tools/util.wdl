@@ -3,11 +3,15 @@
 ## This WDL tool includes custom scripts to parse and reformat 
 ## task output as part of a workflow. 
 
-task get_read_groups {
-    File bam
+version 1.0
 
-    Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+task get_read_groups {
+    input {
+        File bam
+
+        Float bam_size = size(bam, "GiB")
+        Int disk_size = ceil((bam_size * 2) + 10)
+    }
 
     command {
         samtools view -H ${bam} | grep "@RG" > stdout.txt
@@ -24,10 +28,12 @@ task get_read_groups {
 }
 
 task prepare_read_groups_for_star {
-    String read_groups
+    input {
+        String read_groups
+    }
 
     command <<<
-        echo "${read_groups}" | cut -f 2- | sed -e 's/\t/ /g' | awk '{print}' ORS=' , '| sed 's/ , $//' > stdout.txt
+        echo "~{read_groups}" | cut -f 2- | sed -e 's/\t/ /g' | awk '{print}' ORS=' , '| sed 's/ , $//' > stdout.txt
     >>>
 
     runtime {
