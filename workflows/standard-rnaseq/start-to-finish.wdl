@@ -36,6 +36,8 @@
 ## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+version 1.0
+
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/bam-to-fastqs.wdl" as b2fq
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/star-db-build.wdl" as stardb_build
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/star-alignment.wdl" as align
