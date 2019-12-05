@@ -2,6 +2,8 @@
 ##
 ## This WDL tool wraps any functionality related to gzip.
 
+version 1.0
+
 task print_version {
     command {
         gzip --version
@@ -18,8 +20,10 @@ task print_version {
 }
 
 task unzip {
-    File infile
-    String outfilename = basename(infile, ".gz")
+    input {
+        File infile
+      String outfilename = basename(infile, ".gz")
+    }
 
     runtime {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
