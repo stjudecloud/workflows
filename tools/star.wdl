@@ -20,13 +20,14 @@ task print_version {
 }
 
 task build_db {
-    Int ncpu
-    File reference_fasta
-    File gencode_gtf
-    String stardb_dir_name
-    String stardb_zip_name = stardb_dir_name + ".zip"
-    String ram_limit="45000000000"
-
+    input {
+        Int ncpu
+        File reference_fasta
+        File gencode_gtf
+        String stardb_dir_name
+        String stardb_zip_name = stardb_dir_name + ".zip"
+        String ram_limit = "45000000000"
+    }
     Float reference_fasta_size = size(reference_fasta, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
     Int disk_size = ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)

@@ -8,10 +8,9 @@ version 1.0
 task get_read_groups {
     input {
         File bam
-
-        Float bam_size = size(bam, "GiB")
-        Int disk_size = ceil((bam_size * 2) + 10)
     }
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
         samtools view -H ${bam} | grep "@RG" > stdout.txt
