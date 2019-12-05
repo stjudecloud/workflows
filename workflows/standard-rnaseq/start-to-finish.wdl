@@ -101,10 +101,10 @@ workflow start_to_finish {
             flagstat_file=flagstat.flagstat
     }
     output {
-        File bam = star_alignment.star_bam
-        File bai = index.bai
-        File counts = count.out
-        File flagstat = flagstat.flagstat
-        File multiqc_zip = multiqc.out
+        File output_bam = star_alignment.star_bam
+        File output_bai = index.bai
+        File output_counts = count.out
+        File output_flagstat = flagstat.flagstat
+        File output_multiqc_zip = multiqc.out
     }
 }
