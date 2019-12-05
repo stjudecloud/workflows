@@ -1,6 +1,4 @@
 {
-  "rnaseq_standard.gencode_gtf": "/cromwell54a899592ce2/inputs/rnaseq_v2/gencode.v31.annotation.gtf",
-  "rnaseq_standard.refgene_bed": "/cromwell54a899592ce2/inputs/rnaseq_v2/gencode.v31.annotation.bed",
-  "rnaseq_standard.bam": "/cromwell54a899592ce2/inputs/SJBALL030052_R1.RNA-Seq.bam",
-  "rnaseq_standard.stardb_zip": "/cromwell54a899592ce2/inputs/rnaseq_v2/stardb.zip"
+  "rnaseq_star_db_build.reference_fa_url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz",
+  "rnaseq_star_db_build.gencode_gtf_url": "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_31/gencode.v31.annotation.gtf.gz"
 }
