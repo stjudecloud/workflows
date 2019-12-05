@@ -36,24 +36,31 @@
 version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/gzip.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/wget.wdl"
 
-workflow build_db {
+workflow rnaseq_star_db_build {
     input {
-        File reference_fasta
-        File gencode_gtf 
-        String stardb_dir_name
+        String reference_fa_url
+        String gencode_gtf_url
     }
 
-    call star.build_db {
+    call wget.download as reference_download { input: url=reference_fa_url, outfilename="GRCh38_no_alt.fa.gz" }
+    call gzip.unzip as reference_unzip { input: infile=reference_download.outfile }
+    call wget.download as gencode_download { input: url=gencode_gtf_url, outfilename="gencode.v31.gtf.gz" }
+    call gzip.unzip as gencode_unzip { input: infile=gencode_download.outfile }
+    call star.build_db as star_db_build {
         input:
-            reference_fasta=reference_fasta,
-            gencode_gtf=gencode_gtf,
-            stardb_dir_name=stardb_dir_name,
-            ncpu=4
+            reference_fasta=reference_unzip.outfile,
+            gencode_gtf=gencode_unzip.outfile,
+            stardb_dir_name="STARDB",
+            ncpu=4,
     }
 
     output {
-        # File out_dir = build_db.dir
-        File stardb_zip = build_db.zip
+      File reference_fa = reference_unzip.outfile
+      File gencode_gtf = gencode_unzip.outfile
+      File stardb_zip = star_db_build.zip
     }
 }

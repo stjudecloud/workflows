@@ -1,6 +1,0 @@
-{
-    "start_to_finish.reference_fasta": "/cromwell54a899592ce2/inputs/rnaseq_v2/GRCh38_no_alt.fa",
-    "start_to_finish.gencode_gtf": "/cromwell54a899592ce2/inputs/rnaseq_v2/gencode.v31.annotation.gtf",
-    "start_to_finish.refgene_bed": "/cromwell54a899592ce2/inputs/rnaseq_v2/gencode.v31.annotation.bed",
-    "start_to_finish.bam": "/cromwell54a899592ce2/inputs/SJBALL030052_R1.RNA-Seq.bam"
-}

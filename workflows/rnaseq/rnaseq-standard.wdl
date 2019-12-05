@@ -38,9 +38,8 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/standard-rnaseq/star-db-build.wdl" as stardb_build
-import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/standard-rnaseq/star-alignment.wdl" as align
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/workflows/bam-to-fastqs.wdl" as b2f
+import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/star.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/fastqc.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/rseqc.wdl"
@@ -53,47 +52,41 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/deeptools.wdl"
 
-workflow start_to_finish {
+workflow rnaseq_standard {
     input {
-        File reference_fasta
         File gencode_gtf
         File refgene_bed
         File bam
+        File stardb_zip
         Int ncpu = 1
     }
 
-    call stardb_build.build_db {
-        input:
-            reference_fasta=reference_fasta,
-            gencode_gtf=gencode_gtf,
-            stardb_dir_name="stardb"
-    }
     call util.get_read_groups { input: bam=bam }
     call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out }
     call b2fq.bam_to_fastqs { input: bam=bam }
-    call align.star_alignment {
+    call star.alignment {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,
             read_two_fastqs=bam_to_fastqs.read2s,
-            stardb_zip=build_db.stardb_zip,
+            stardb_zip=stardb_zip,
             output_prefix="out",
             read_groups=prepare_read_groups_for_star.out
     }
-    call picard.validate_bam { input: bam=star_alignment.star_bam }
+    call picard.validate_bam { input: bam=alignment.star_bam }
     call qc.parse_validate_bam { input: in=validate_bam.out }
-    call fastqc.fastqc { input: bam=star_alignment.star_bam, ncpu=ncpu }   
-    call rseqc.infer_experiment { input: bam=star_alignment.star_bam, refgene_bed=refgene_bed}
+    call fastqc.fastqc { input: bam=alignment.star_bam, ncpu=ncpu }   
+    call rseqc.infer_experiment { input: bam=alignment.star_bam, refgene_bed=refgene_bed}
     call qc.parse_infer_experiment { input: in=infer_experiment.out } 
-    call qualimap.bamqc { input: bam=star_alignment.star_bam, ncpu=ncpu }
-    call qualimap.rnaseq { input: bam=star_alignment.star_bam, gencode_gtf=gencode_gtf }
-    call htseq.count { input: bam=star_alignment.star_bam, gtf=gencode_gtf }
-    call samtools.flagstat { input: bam=star_alignment.star_bam }
-    call samtools.index { input: bam=star_alignment.star_bam }
-    call md5sum.compute_checksum { input: infile=star_alignment.star_bam } 
-    call deeptools.bamCoverage { input: bam=star_alignment.star_bam, bai=index.bai }
+    call qualimap.bamqc { input: bam=alignment.star_bam, ncpu=ncpu }
+    call qualimap.rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
+    call htseq.count { input: bam=alignment.star_bam, gtf=gencode_gtf }
+    call samtools.flagstat { input: bam=alignment.star_bam }
+    call samtools.index { input: bam=alignment.star_bam }
+    call md5sum.compute_checksum { input: infile=alignment.star_bam } 
+    call deeptools.bamCoverage { input: bam=alignment.star_bam, bai=index.bai }
     call multiqc.multiqc {
         input:
-            star=star_alignment.star_bam,
+            star=alignment.star_bam,
             validate_sam_string=validate_bam.out,
             qualimap_bamqc=bamqc.out_files,
             qualimap_rnaseq=rnaseq.out_files,
@@ -101,7 +94,7 @@ workflow start_to_finish {
             flagstat_file=flagstat.flagstat
     }
     output {
-        File output_bam = star_alignment.star_bam
+        File output_bam = alignment.star_bam
         File output_bai = index.bai
         File output_counts = count.out
         File output_flagstat = flagstat.flagstat
