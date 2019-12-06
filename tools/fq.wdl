@@ -6,7 +6,7 @@
 
 version 1.0
 
-task print_version {
+task fq_print_version {
     command {
         fq --version
     }

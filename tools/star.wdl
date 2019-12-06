@@ -5,7 +5,7 @@
 
 version 1.0
 
-task print_version {
+task star_print_version {
     command {
         STAR --version
     }

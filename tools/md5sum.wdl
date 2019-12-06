@@ -7,7 +7,7 @@
 
 version 1.0
 
-task print_version {
+task md5sum_print_version {
     command {
         md5sum --version
     }

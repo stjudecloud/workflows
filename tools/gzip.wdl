@@ -4,7 +4,7 @@
 
 version 1.0
 
-task print_version {
+task gzip_print_version {
     command {
         gzip --version
     }

@@ -5,7 +5,7 @@
 
 version 1.0
 
-task print_version {
+task samtools_print_version {
     command {
         samtools --version
     }
