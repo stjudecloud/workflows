@@ -68,7 +68,8 @@ task bam_to_fastq {
         picard SamToFastq INPUT=${bam} \
             FASTQ=${prefix}_R1.fastq \
             SECOND_END_FASTQ=${prefix}_R2.fastq \
-            RE_REVERSE=true
+            RE_REVERSE=true \
+            VALIDATION_STRINGENCY=SILENT
     }
 
     runtime{
