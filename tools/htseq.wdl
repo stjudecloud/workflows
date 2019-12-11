@@ -9,7 +9,8 @@ task count {
     input {
         File bam
         File gtf
-        String strand = "reverse"
+        String? strand
+        String stranded = select_first([strand, "no"])
         String outfile = basename(bam, ".bam") + ".counts.txt"
     }
     Float bam_size = size(bam, "GiB")
@@ -17,7 +18,7 @@ task count {
     Int disk_size = ceil(((bam_size + gtf_size) * 2) + 10)
  
     command {
-        htseq-count -f bam -r pos -s ${strand} -m union -i gene_name --secondary-alignments ignore --supplementary-alignments ignore ${bam} ${gtf} > ${outfile}
+        htseq-count -f bam -r pos -s ${stranded} -m union -i gene_name --secondary-alignments ignore --supplementary-alignments ignore ${bam} ${gtf} > ${outfile}
     }
 
     runtime {

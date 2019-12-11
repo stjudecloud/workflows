@@ -58,6 +58,7 @@ workflow rnaseq_standard {
         File refgene_bed
         File bam
         File stardb_zip
+        String strand
         Int ncpu = 1
     }
 
@@ -79,7 +80,7 @@ workflow rnaseq_standard {
     call qc.parse_infer_experiment { input: in=infer_experiment.out } 
     call qualimap.bamqc { input: bam=alignment.star_bam, ncpu=ncpu }
     call qualimap.rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
-    call htseq.count { input: bam=alignment.star_bam, gtf=gencode_gtf }
+    call htseq.count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand }
     call samtools.flagstat { input: bam=alignment.star_bam }
     call samtools.index { input: bam=alignment.star_bam }
     call md5sum.compute_checksum { input: infile=alignment.star_bam } 
