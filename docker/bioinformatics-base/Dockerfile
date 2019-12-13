@@ -10,9 +10,7 @@ ENV PATH /opt/conda/bin:$PATH
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install wget -y && \
-    apt-get install zip -y && \
-    apt-get install gcc -y && \
+    apt-get install wget zip gcc zlib1g-dev -y && \
     rm -r /var/lib/apt/lists/*
 
 RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O miniconda.sh && \
@@ -36,5 +34,7 @@ RUN conda update -n base -c defaults conda -y && \
     deeptools==3.3.1 \
     -y && \
     conda clean --all -y
+
+RUN pip install --no-cache-dir ngsderive
 
 COPY --from=fqlib-builder /opt/fqlib/bin/fq /usr/local/bin/
