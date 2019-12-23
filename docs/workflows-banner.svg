@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="803px" height="330px" viewBox="0 0 803 330" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>workflows-banner</title>
+    <desc>Created with Sketch.</desc>
+    <g id="workflows-banner" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-2" transform="translate(36.000000, 52.000000)">
+            <g id="process" transform="translate(0.000000, 7.000000)" fill-rule="nonzero">
+                <polygon id="Path" fill="#002856" points="0 16 74 16 74 33 0 33"></polygon>
+                <path d="M231.666667,115 L207,115 L207,98.5 L231.666667,98.5 C249.804803,98.5 264.555556,83.7015625 264.555556,65.5 C264.555556,47.3005858 249.804803,32.5 231.666667,32.5 L207,32.5 L207,16 L231.666667,16 C258.87066,16 281,38.2041017 281,65.5 C281,92.7958983 258.87066,115 231.666667,115 Z" id="Path" fill="#002856"></path>
+                <path d="M74,197 L49.3333333,197 C22.1293404,197 0,174.795898 0,147.5 C0,120.204102 22.1293404,98 49.3333333,98 L74,98 L74,114.5 L49.3333333,114.5 C31.1951966,114.5 16.4444444,129.300586 16.4444444,147.5 C16.4444444,165.701562 31.1951966,180.5 49.3333333,180.5 L74,180.5 L74,197 Z" id="Path" fill="#002856"></path>
+                <polygon id="Path" fill="#002856" points="206 180 267 180 267 197 206 197"></polygon>
+                <polygon id="Path" fill="#002856" points="239.865784 220 230 206.950723 254.125646 189 230 171.049277 239.865784 158 281 189"></polygon>
+                <g id="Group" transform="translate(66.000000, 0.000000)" fill="#FDB71A">
+                    <polygon id="Path" points="0 -0.00213327692 0 49.1517129 149 49.1517129 149 -0.00213327692"></polygon>
+                    <polygon id="Path" points="0 81.9209436 0 131.07479 149 131.07479 149 81.9209436"></polygon>
+                    <polygon id="Path" points="0 163.844021 0 212.997867 149 212.997867 149 163.844021"></polygon>
+                </g>
+                <polygon id="Path" fill="#FF9233" points="143 0 215.52 0 215.52 49 143 49"></polygon>
+                <polygon id="Path" fill="#FF9233" points="143 82 215.52 82 215.52 131 143 131"></polygon>
+                <polygon id="Path" fill="#FF9233" points="143 164 215.52 164 215.52 213 143 213"></polygon>
+            </g>
+            <text id="stjude.cloud" font-family="StJudeSans-Regular, St Jude Sans" font-size="42" font-weight="normal" fill="#002856">
+                <tspan x="321" y="95">stjude.cloud</tspan>
+            </text>
+            <text id="WORKFLOWS" font-family="StJudeSans-Bold, St Jude Sans" font-size="60" font-weight="bold" fill="#FDB71A">
+                <tspan x="321" y="159">WORKFLOWS</tspan>
+            </text>
+            <rect id="Rectangle" stroke="#002856" stroke-width="12" x="65" y="6" width="151" height="51" rx="8"></rect>
+            <rect id="Rectangle-Copy" stroke="#002856" stroke-width="12" x="65" y="90" width="151" height="48" rx="8"></rect>
+            <rect id="Rectangle-Copy-2" stroke="#002856" stroke-width="12" x="65" y="171" width="151" height="48" rx="8"></rect>
+        </g>
+    </g>
+</svg>
