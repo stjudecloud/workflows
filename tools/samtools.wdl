@@ -92,15 +92,10 @@ task flagstat {
        File flagstat = outfile
     }
     meta {
-        authors: [
-           {
-              name: "Andrew Thrasher"
-              email: "andrew.thrasher@stjude.org"
-           }, {
-              name: "Andrew Frantz"
-              email: "andrew.frantz@stjude.org"
-           }
-        ]
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
         description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
     }
     parameter_meta {
