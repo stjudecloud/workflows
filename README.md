@@ -1,6 +1,16 @@
-# Workflows
+<p align="center">
+  <a href=""><img src="./docs/workflows-banner-flowchart.svg" width="850" title="St. Jude Cloud Workflows"></a>
+  <a href="https://stjude.cloud/docs" target="_blank">
+    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
+  </a>
+  <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+  </a>
+</p>
 
-This repository contains all bioinformatics workflows used on the St. Jude Cloud project. Officially, the repository is in beta — the project is adding workflows as they are developed and put into production.
+> This repository contains all bioinformatics workflows used on the St. Jude Cloud project. Officially, the repository is in beta — the project is adding workflows as they are developed and put into production.
+
+### 🏠 [Homepage](https://stjude.cloud)
 
 ## Getting Started
 
@@ -40,21 +50,30 @@ The current workflows exist in this repo with the following statuses:
 | Build References | v2.0.0 *(beta)* | Build reference files used in harmonization pipelines. | None                                                                               | [Workflow](./workflows/reference/bootstrap-reference.wdl)   | ![In Development](https://img.shields.io/static/v1?label=Status&message=Development&color=orange&style=flat-square) |
 | Standard RNA-Seq | v2.0.0 *(beta)* | Standard RNA-Seq harmonization pipeline.               | [Specification](https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.html) | [Workflow](./workflows/standard-rnaseq/start-to-finish.wdl) | ![In Development](https://img.shields.io/static/v1?label=Status&message=Development&color=orange&style=flat-square) |
 
+## Author
+
+👤 **St. Jude Cloud Team**
+
+* Website: https://stjude.cloud
+* Github: [@stjudecloud](https://github.com/stjudecloud)
+* Twitter: [@StJudeResearch](https://twitter.com/StJudeResearch)
+
 ## Tests
 
 Given that this repo is still new, there are no tests. When we add tests, we will update the README.
 
-## Contributing
+## 🤝 Contributing
 
-Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
 
 ## Versioning
 
 When versioned, workflows will be versioned according to the [SemVer](http://semver.org/) guidelines. For now, we do not guarantee that all workflows will have an associated version.
 
-## License
+## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+Copyright © 2019 [St. Jude Cloud Team](https://github.com/stjudecloud).<br />
+This project is [MIT](https://github.com/stjudecloud/workflows/blob/master/LICENSE.md) licensed.
 
 [wdl]: http://openwdl.org/
 [cromwell]: https://github.com/broadinstitute/cromwell
