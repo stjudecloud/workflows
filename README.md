@@ -1,5 +1,5 @@
 <p align="center">
-  <a href=""><img src="./docs/workflows-banner.svg" width="850" title="St. Jude Cloud"></a>
+  <a href=""><img src="./docs/workflows-banner-flowchart.svg" width="850" title="St. Jude Cloud Workflows"></a>
   <a href="https://stjude.cloud/docs" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
   </a>
