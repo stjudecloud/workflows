@@ -24,7 +24,16 @@ task parse_validate_bam {
     runtime {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
-
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool is a utility for parsing the output of Picard's ValidateSamFile command."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+    }
 }
 
 task parse_infer_experiment {
@@ -66,5 +75,14 @@ task parse_infer_experiment {
     output {
         String out = read_string("stdout.txt")
     }
-
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool parses the output of RSeQC's infer_experiment package."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+    }
 }

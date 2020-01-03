@@ -20,4 +20,15 @@ task infer_experiment {
     output {
        String out = read_string("stdout.txt")
     }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool RSeQC's infer_experiment on the input BAM file to infer strandedness information of the underlying RNA-seq experiment."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+        refgene_bed: "RefGene features in BED format"
+    }
 }

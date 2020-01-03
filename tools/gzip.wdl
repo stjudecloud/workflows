@@ -32,4 +32,12 @@ task unzip {
     output {
       File outfile = outfilename
     }
+    meta {
+        author: "Clay McLeod"
+        email: "clay.mcleod@stjude.org"
+        description: "This WDL tool unzips a gzip archive" 
+    }
+    parameter_meta {
+        infile: "Archive in gzip format to be extracted"
+    }
 }

@@ -28,6 +28,16 @@ task quickcheck {
     runtime {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+    }
 }
 
 task split {
@@ -52,6 +62,17 @@ task split {
     output {
        Array[File] split_bams = glob("*.bam")
     }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+        reject_unaccounted: "If true, error if there are reads present that do not have read group information."
+    }
 }
 
 task flagstat { 
@@ -69,6 +90,21 @@ task flagstat {
 
     output { 
        File flagstat = outfile
+    }
+    meta {
+        authors: [
+           {
+              name: "Andrew Thrasher"
+              email: "andrew.thrasher@stjude.org"
+           }, {
+              name: "Andrew Frantz"
+              email: "andrew.frantz@stjude.org"
+           }
+        ]
+        description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
     }
 }
 
@@ -88,5 +124,15 @@ task index {
 
     output {
        File bai = outfile
+    }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
     }
 }

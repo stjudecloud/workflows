@@ -32,4 +32,13 @@ task download {
     output {
       File outfile = outfilename
     }
+    meta {
+        author: "Clay McLeod"
+        email: "clay.mcleod@stjude.org"
+        description: "This WDL tool uses wget to download a file from a remote URL to the local filesystem" 
+    }
+    parameter_meta {
+        url: "URL of the file to download"
+        outfilename: "Name to use for the output file"
+    }
 }

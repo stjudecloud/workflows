@@ -45,6 +45,17 @@ task build_db {
     output {
         File zip = stardb_zip_name
     }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs STAR's build command to generate a STAR format reference for alignment." 
+    }
+    parameter_meta {
+        reference_fasta: "The FASTA format reference file for the genome"
+        gencode_gtf: "GTF format feature file with Gencode features"
+    }
 }
 
 task alignment {
@@ -83,5 +94,18 @@ task alignment {
 
     output {
        File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam" 
+    }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
+    }
+    parameter_meta {
+        read_one_fastqs: "An array of FastQ files containing read one information"
+        read_two_fastqs: "An array of FastQ files containing read two information in the same order as the read one FastQ"
+        stardb_dir: "A directory containing the STAR reference files"
+        read_groups: "A string containing the read group information to output in the BAM file"
     }
 }

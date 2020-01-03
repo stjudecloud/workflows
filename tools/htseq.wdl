@@ -21,4 +21,15 @@ task count {
     output {
        File out = "${outfile}"
     }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool performs read counting for a set of features in the input BAM file."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+        gtf: "Input genomic features in GTF format to count reads for"
+    }
 }
