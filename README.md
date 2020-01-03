@@ -70,10 +70,6 @@ Contributions, issues and feature requests are welcome!<br />Feel free to check 
 
 When versioned, workflows will be versioned according to the [SemVer](http://semver.org/) guidelines. For now, we do not guarantee that all workflows will have an associated version.
 
-## Show your support
-
-Give a ⭐️ if this project helped you!
-
 ## 📝 License
 
 Copyright © 2019 [St. Jude Cloud Team](https://github.com/stjudecloud).<br />
