@@ -82,7 +82,7 @@ workflow rnaseq_standard {
     call ngsderive.infer_strand { input: bam=bam, bai=index.bai, gtf=gencode_gtf }
     call qualimap.bamqc { input: bam=alignment.star_bam, ncpu=ncpu }
     call qualimap.rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
-    call htseq.count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand, inferred_strand=infer_strand.strandedness }
+    call htseq.count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand }
     call samtools.flagstat { input: bam=alignment.star_bam }
     call md5sum.compute_checksum { input: infile=alignment.star_bam }
     call deeptools.bamCoverage { input: bam=alignment.star_bam, bai=index.bai }
