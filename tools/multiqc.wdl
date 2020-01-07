@@ -13,6 +13,7 @@ task multiqc {
         Array[File] qualimap_rnaseq
         Array[File] fastqc_files
         File flagstat_file
+        File bigwig_file
     }
     Float star_size = size(star, "GiB")
     Int disk_size = ceil((star_size * 4) + 10)
@@ -31,9 +32,10 @@ task multiqc {
             echo $file >> file_list.txt
         done
         echo ${flagstat_file} >> file_list.txt
+        echo ${bigwig_file} >> file_list.txt
 
         multiqc --file-list file_list.txt -o multiqc_results
-        zip -r multiqc_results.zip multiqc_results
+        tar -czf multiqc_results.tar.gz multiqc_results
     }
 
     runtime {
@@ -42,6 +44,6 @@ task multiqc {
     }
 
     output {
-        File out = "multiqc_results.zip"
+        File out = "multiqc_results.tar.gz"
     }
 }

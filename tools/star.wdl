@@ -25,7 +25,7 @@ task build_db {
         File reference_fasta
         File gencode_gtf
         String stardb_dir_name
-        String stardb_zip_name = stardb_dir_name + ".zip"
+        String stardb_out_name = stardb_dir_name + ".tar.gz"
         String ram_limit = "45000000000"
     }
     Float reference_fasta_size = size(reference_fasta, "GiB")
@@ -41,7 +41,7 @@ task build_db {
             --genomeFastaFiles ${reference_fasta} \
             --sjdbGTFfile ${gencode_gtf} \
             --sjdbOverhang 125
-        zip -r ${stardb_zip_name} ${stardb_dir_name}
+        tar -czf ${stardb_out_name} ${stardb_dir_name}
     }
 
     runtime {
@@ -51,7 +51,7 @@ task build_db {
     }
 
     output {
-        File zip = stardb_zip_name
+        File stardb_out = stardb_out_name
     }
 }
 
@@ -60,7 +60,7 @@ task alignment {
       Array[File] read_one_fastqs
       Array[File] read_two_fastqs
       File stardb_zip
-      String stardb_dir = basename(stardb_zip, ".zip")
+      String stardb_dir = basename(stardb_zip, ".tar.gz")
       String output_prefix
       String? read_groups
     }
@@ -70,7 +70,7 @@ task alignment {
     Int disk_size = ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_zip_size) * 3) + 10)
 
     command {
-        unzip ${stardb_zip};
+        tar -xzf ${stardb_zip};
         STAR --readFilesIn ${sep=',' read_one_fastqs} ${sep=',' read_two_fastqs} \
              --genomeDir ${stardb_dir} \
              --outSAMunmapped Within \

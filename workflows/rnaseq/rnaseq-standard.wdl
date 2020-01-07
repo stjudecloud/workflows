@@ -42,7 +42,6 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/star.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/fastqc.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/rseqc.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/htseq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_azure/tools/samtools.wdl"
@@ -58,13 +57,14 @@ workflow rnaseq_standard {
         File refgene_bed
         File bam
         File stardb_zip
-        String strand
+        String? strand
         Int ncpu = 1
     }
 
     call util.get_read_groups { input: bam=bam }
     call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out }
     call b2fq.bam_to_fastqs { input: bam=bam }
+
     call star.alignment {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,
@@ -73,17 +73,17 @@ workflow rnaseq_standard {
             output_prefix="out",
             read_groups=prepare_read_groups_for_star.out
     }
+
+    call samtools.index { input: bam=alignment.star_bam }
     call picard.validate_bam { input: bam=alignment.star_bam }
     call qc.parse_validate_bam { input: in=validate_bam.out }
-    call fastqc.fastqc { input: bam=alignment.star_bam, ncpu=ncpu }   
-    call rseqc.infer_experiment { input: bam=alignment.star_bam, refgene_bed=refgene_bed}
-    call qc.parse_infer_experiment { input: in=infer_experiment.out } 
+    call fastqc.fastqc { input: bam=alignment.star_bam, ncpu=ncpu }
+    call ngsderive.infer_strand { input: bam=bam, bai=index.bai, gtf=gencode_gtf }
     call qualimap.bamqc { input: bam=alignment.star_bam, ncpu=ncpu }
     call qualimap.rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
-    call htseq.count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand }
+    call htseq.count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand, inferred_strand=infer_strand.strandedness }
     call samtools.flagstat { input: bam=alignment.star_bam }
-    call samtools.index { input: bam=alignment.star_bam }
-    call md5sum.compute_checksum { input: infile=alignment.star_bam } 
+    call md5sum.compute_checksum { input: infile=alignment.star_bam }
     call deeptools.bamCoverage { input: bam=alignment.star_bam, bai=index.bai }
     call multiqc.multiqc {
         input:
@@ -92,7 +92,8 @@ workflow rnaseq_standard {
             qualimap_bamqc=bamqc.out_files,
             qualimap_rnaseq=rnaseq.out_files,
             fastqc_files=fastqc.out_files,
-            flagstat_file=flagstat.flagstat
+            flagstat_file=flagstat.flagstat,
+            bigwig_file=bamCoverage.bigwig
     }
     output {
         File output_bam = alignment.star_bam

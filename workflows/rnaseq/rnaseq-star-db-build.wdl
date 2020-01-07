@@ -61,6 +61,6 @@ workflow rnaseq_star_db_build {
     output {
       File reference_fa = reference_unzip.outfile
       File gencode_gtf = gencode_unzip.outfile
-      File stardb_zip = star_db_build.zip
+      File stardb_zip = star_db_build.stardb_out
     }
 }
