@@ -60,6 +60,7 @@ workflow rnaseq_standard {
         File stardb_zip
         String? strand
         Int ncpu = 1
+        String output_prefix = "out"
     }
 
     call util.get_read_groups { input: bam=bam }
@@ -71,7 +72,7 @@ workflow rnaseq_standard {
             read_one_fastqs=bam_to_fastqs.read1s,
             read_two_fastqs=bam_to_fastqs.read2s,
             stardb_zip=stardb_zip,
-            output_prefix="out",
+            output_prefix=output_prefix,
             read_groups=prepare_read_groups_for_star.out
     }
 
