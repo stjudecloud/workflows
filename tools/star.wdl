@@ -25,12 +25,15 @@ task build_db {
         File reference_fasta
         File gencode_gtf
         String stardb_dir_name
-        String stardb_out_name = stardb_dir_name + ".tar.gz"
         String ram_limit = "45000000000"
+        Int memory_gb = 50
+        Int? disk_size_gb
     }
+    String stardb_out_name = stardb_dir_name + ".tar.gz"
+
     Float reference_fasta_size = size(reference_fasta, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
-    Int disk_size = ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)
+    Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)])
 
     command {
         mkdir ${stardb_dir_name};
@@ -45,7 +48,7 @@ task build_db {
     }
 
     runtime {
-        memory: "50 GB"
+        memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
@@ -58,17 +61,20 @@ task build_db {
 
 task alignment {
     input {
-      Array[File] read_one_fastqs
-      Array[File] read_two_fastqs
-      File stardb_zip
-      String stardb_dir = basename(stardb_zip, ".tar.gz")
-      String output_prefix
-      String? read_groups
+        Array[File] read_one_fastqs
+        Array[File] read_two_fastqs
+        File stardb_zip
+        String output_prefix
+        String? read_groups
+        Int memory_gb = 50
+        Int? disk_size_gb
     }
+    String stardb_dir = basename(stardb_zip, ".tar.gz")
+
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
     Float stardb_zip_size = size(stardb_zip, "GiB")
-    Int disk_size = ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_zip_size) * 3) + 10)
+    Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_zip_size) * 3) + 10)])
 
     command {
         tar -xzf ${stardb_zip};
@@ -94,7 +100,7 @@ task alignment {
     }
 
     runtime {
-        memory: "50 GB"
+        memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
