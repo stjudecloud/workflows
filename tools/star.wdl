@@ -47,6 +47,7 @@ task build_db {
     runtime {
         memory: "50 GB"
         disk: disk_size + " GB"
+        cpu: ncpu
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
