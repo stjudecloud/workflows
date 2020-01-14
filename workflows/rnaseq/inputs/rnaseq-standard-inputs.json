@@ -1,6 +1,5 @@
 {
   "rnaseq_standard.gencode_gtf": "/cromwell54a899592ce2/inputs/rnaseq_v2/gencode.v31.annotation.gtf",
-  "rnaseq_standard.refgene_bed": "/cromwell54a899592ce2/inputs/rnaseq_v2/gencode.v31.annotation.bed",
   "rnaseq_standard.bam": "/cromwell54a899592ce2/inputs/SJBALL030052_R1.RNA-Seq.bam",
   "rnaseq_standard.stardb_zip": "/cromwell54a899592ce2/inputs/rnaseq_v2/stardb.tar.gz",
   "rnaseq_standard.strand": "reverse"

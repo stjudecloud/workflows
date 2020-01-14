@@ -11,7 +11,6 @@
 ##
 ## reference_fasta - the genome for which to generate STAR reference files in FASTA format 
 ## gencode_gtf - the gene model file for the reference genome to use when generating STAR reference files 
-## refgene_bed - refgene variants in BED format
 ## bam - input BAM file to realign
 ## ncpu (optional) - the number of CPUs to use when running steps that support multithreading 
 ##
@@ -55,7 +54,6 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/jobin/rnaseq_v2_
 workflow rnaseq_standard {
     input {
         File gencode_gtf
-        File refgene_bed
         File bam
         File stardb_zip
         String? strand
