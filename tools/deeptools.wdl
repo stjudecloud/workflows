@@ -24,4 +24,13 @@ task bamCoverage {
     output {
         File bigwig = "${prefix}.bw"
     }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL tool generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html)."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+        bai: "BAM index file corresponding to the input BAM"
+    }
 } 

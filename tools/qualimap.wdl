@@ -23,6 +23,16 @@ task bamqc {
     output {
         Array[File] out_files = glob("${prefix}_qualimap_results/*")
     }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs QualiMap's bamqc tool on the input BAM file."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+    }
 }
 task rnaseq {
     File bam
@@ -41,5 +51,17 @@ task rnaseq {
 
     output {
         Array[File] out_files = glob("${outdir}/*")
+    }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool generates runs QualiMap's rnaseq tool on the input BAM file."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+        gencode_gtf: "A GTF format features file containing Gencode features"
+        strand: "Strand information for RNA-seq experiments. Options: [strand-specific-forward, strand-specific-reverse, non-strand-specific]"
     }
 }

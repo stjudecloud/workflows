@@ -36,4 +36,19 @@ task multiqc {
     output {
         File out = "multiqc_results"
     }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool generates a MultiQC quality control metrics report summary from input QC result files."
+    }
+    parameter_meta {
+        star: "A STAR aligned BAM file"
+        validate_sam_string: "A string output from Picard's ValidateSam tool"
+        qualimap_bamqc: "An array of files output by Qualimap's BamQC mode"
+        qualimap_rnaseq: "An array of files output by Qualimap's RNA-seq mode"
+        fastqc_files: "An array of files output by FastQC"
+        flagstat_file: "A file containing the output of Samtools' flagstat command for the input STAR aligned BAM file"
+    }
 }

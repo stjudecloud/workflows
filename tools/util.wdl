@@ -18,6 +18,16 @@ task get_read_groups {
    output { 
        String out = read_string("stdout.txt")
    }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool is a utility to get read group information from a BAM file and write it out to as a string" 
+    }
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+    }
 }
 
 task prepare_read_groups_for_star {
@@ -34,4 +44,14 @@ task prepare_read_groups_for_star {
    output { 
        String out = read_string("stdout.txt")
    }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool is a utility to reformat read group information from a BAM file into a format that can be passed in to the STAR aligner."
+    }
+    parameter_meta {
+        read_groups: "The read group portion of a BAM header as a string"
+    }
 }
