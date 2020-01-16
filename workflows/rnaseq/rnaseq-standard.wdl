@@ -82,7 +82,7 @@ workflow rnaseq_standard {
     call htseq.count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand }
     call samtools.flagstat { input: bam=alignment.star_bam }
     call md5sum.compute_checksum { input: infile=alignment.star_bam }
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=alignment.star_bam, bai=index.bai }
+    call deeptools.bamCoverage { input: bam=alignment.star_bam, bai=index.bai }
     call multiqc.multiqc {
         input:
             star=alignment.star_bam,

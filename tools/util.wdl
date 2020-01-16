@@ -49,7 +49,6 @@ task prepare_read_groups_for_star {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
-<<<<<<< HEAD
    output { 
        String out = read_string("stdout.txt")
    }
@@ -62,9 +61,5 @@ task prepare_read_groups_for_star {
     }
     parameter_meta {
         read_groups: "The read group portion of a BAM header as a string"
-=======
-    output {
-        String out = read_string("stdout.txt")
->>>>>>> jobin/rnaseq_v2_azure
     }
 }
