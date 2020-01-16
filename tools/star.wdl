@@ -83,10 +83,10 @@ task alignment {
     }
     
     String stardb_dir = basename(stardb_zip, ".tar.gz")
-
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
     Float stardb_zip_size = size(stardb_zip, "GiB")
+    Int limit_sort_ram = (memory_gb - 0.9) * 1000000000
     Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_zip_size) * 3) + 10)])
 
     command {
@@ -109,7 +109,7 @@ task alignment {
              --outFilterScoreMinOverLread 0.66 \
              --outFileNamePrefix ${output_prefix} \
              --twopassMode Basic \
-             --limitBAMsortRAM 58000000000 \
+             --limitBAMsortRAM ${limit_sort_ram} \
              ${"--outSAMattrRGline " + read_groups}
     }
 
