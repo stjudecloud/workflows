@@ -36,7 +36,7 @@ task parse_validate_bam {
         description: "This WDL tool is a utility for parsing the output of Picard's ValidateSamFile command."
     }
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        in: "Output file from Picard ValidateSamFile"
     }
 }
 
@@ -86,9 +86,9 @@ task parse_infer_experiment {
         email: "andrew.thrasher@stjude.org"
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool parses the output of RSeQC's infer_experiment package."
+        description: "This WDL tool parses the output of RSeQC's infer_experiment.py script."
     }
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        in: "Output file from RSeQC's infer_experiment.py script."
     }
 }

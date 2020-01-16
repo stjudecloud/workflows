@@ -133,7 +133,7 @@ task alignment {
     parameter_meta {
         read_one_fastqs: "An array of FastQ files containing read one information"
         read_two_fastqs: "An array of FastQ files containing read two information in the same order as the read one FastQ"
-        stardb_dir: "A directory containing the STAR reference files"
+        stardb_zip: "A ZIP file containing the STAR reference files"
         read_groups: "A string containing the read group information to output in the BAM file"
     }
 }
