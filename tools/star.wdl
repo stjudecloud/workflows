@@ -21,7 +21,7 @@ task star_print_version {
 
 task build_db {
     input {
-        Int ncpu
+        Int ncpu = 1
         File reference_fasta
         File gencode_gtf
         String stardb_dir_name
@@ -61,6 +61,7 @@ task build_db {
 
 task alignment {
     input {
+        Int ncpu = 1
         Array[File] read_one_fastqs
         Array[File] read_two_fastqs
         File stardb_zip
@@ -69,6 +70,7 @@ task alignment {
         Int memory_gb = 50
         Int? disk_size_gb
     }
+    
     String stardb_dir = basename(stardb_zip, ".tar.gz")
 
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
@@ -80,6 +82,7 @@ task alignment {
         tar -xzf ${stardb_zip};
         STAR --readFilesIn ${sep=',' read_one_fastqs} ${sep=',' read_two_fastqs} \
              --genomeDir ${stardb_dir} \
+             --runThreadN ${ncpu} \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \
              --outSAMtype BAM SortedByCoordinate \
@@ -100,6 +103,7 @@ task alignment {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'

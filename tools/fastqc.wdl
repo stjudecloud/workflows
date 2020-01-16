@@ -8,7 +8,7 @@ version 1.0
 task fastqc {
     input {
         File bam
-        Int ncpu
+        Int ncpu = 1
         String prefix = basename(bam, ".bam")
     }
     Float bam_size = size(bam, "GiB")

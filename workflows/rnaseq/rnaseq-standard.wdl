@@ -12,7 +12,6 @@
 ## reference_fasta - the genome for which to generate STAR reference files in FASTA format 
 ## gencode_gtf - the gene model file for the reference genome to use when generating STAR reference files 
 ## bam - input BAM file to realign
-## ncpu (optional) - the number of CPUs to use when running steps that support multithreading 
 ##
 ## LICENSING:
 ##
@@ -57,7 +56,6 @@ workflow rnaseq_standard {
         File bam
         File stardb_zip
         String? strand
-        Int ncpu = 1
         String output_prefix = "out"
     }
 
@@ -77,12 +75,12 @@ workflow rnaseq_standard {
     call samtools.index { input: bam=alignment.star_bam }
     call picard.validate_bam { input: bam=alignment.star_bam }
     call qc.parse_validate_bam { input: in=validate_bam.out }
-    call fastqc.fastqc { input: bam=alignment.star_bam, ncpu=ncpu }
-    call ngsderive.infer_strand as ngsderive_strandedness { input: bam=bam, bai=index.bai, gtf=gencode_gtf }
-    call qualimap.bamqc as qualimap_bamqc { input: bam=alignment.star_bam, ncpu=ncpu }
-    call qualimap.rnaseq as qualimap_rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
-    call htseq.count as htseq_count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand }
-    call samtools.flagstat as samtools_flagstat { input: bam=alignment.star_bam }
+    call fastqc.fastqc { input: bam=alignment.star_bam}
+    call ngsderive.infer_strand { input: bam=bam, bai=index.bai, gtf=gencode_gtf }
+    call qualimap.bamqc { input: bam=alignment.star_bam}
+    call qualimap.rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
+    call htseq.count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand }
+    call samtools.flagstat { input: bam=alignment.star_bam }
     call md5sum.compute_checksum { input: infile=alignment.star_bam }
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=alignment.star_bam, bai=index.bai }
     call multiqc.multiqc {
