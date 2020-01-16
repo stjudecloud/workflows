@@ -1,15 +1,19 @@
-## Description: 
+## Description:
 ##
 ## This WDL tool includes custom scripts to parse and validate QC output.  
 
+version 1.0
+
 task parse_validate_bam {
-    String in
-    Boolean strict = true
+    input {
+        String in
+        Boolean strict = true
+    }
  
     command {
         if [ "${strict}" == "true" ]
         then 
-           if [ $(echo "${in}" | grep -c "ERROR") -gt 0 ] 
+           if [ $(echo "${in}" | grep -c "ERROR") -gt 0 ]
            then 
               echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
               exit -1 
@@ -37,7 +41,9 @@ task parse_validate_bam {
 }
 
 task parse_infer_experiment {
-    String in
+    input {
+        String in
+    }
 
     command { 
         if [ $(echo "${in}" | grep -c 'PairEnd') -gt 0 ]

@@ -1,9 +1,11 @@
-## Description: 
+## Description:
 ##
 ## This WDL tool wraps the STAR aligner (https://github.com/alexdobin/STAR).
-## STAR is an RNA-seq aligner. 
+## STAR is an RNA-seq aligner.
 
-task print_version {
+version 1.0
+
+task star_print_version {
     command {
         STAR --version
     }
@@ -18,12 +20,20 @@ task print_version {
 }
 
 task build_db {
-    Int ncpu
-    File reference_fasta
-    File gencode_gtf
-    String stardb_dir_name
-    String stardb_zip_name = stardb_dir_name + ".zip"
-    String ram_limit="45000000000"
+    input {
+        Int ncpu = 1
+        File reference_fasta
+        File gencode_gtf
+        String stardb_dir_name
+        String ram_limit = "45000000000"
+        Int memory_gb = 50
+        Int? disk_size_gb
+    }
+    String stardb_out_name = stardb_dir_name + ".tar.gz"
+
+    Float reference_fasta_size = size(reference_fasta, "GiB")
+    Float gencode_gtf_size = size(gencode_gtf, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)])
 
     command {
         mkdir ${stardb_dir_name};
@@ -34,16 +44,18 @@ task build_db {
             --genomeFastaFiles ${reference_fasta} \
             --sjdbGTFfile ${gencode_gtf} \
             --sjdbOverhang 125
-        zip -r ${stardb_zip_name} ${stardb_dir_name}
+        tar -czf ${stardb_out_name} ${stardb_dir_name}
     }
 
     runtime {
-        memory: "50G"
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        cpu: ncpu
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output {
-        File zip = stardb_zip_name
+        File stardb_out = stardb_out_name
     }
     meta {
         author: "Andrew Thrasher"
@@ -59,15 +71,29 @@ task build_db {
 }
 
 task alignment {
-    Array[File] read_one_fastqs
-    Array[File] read_two_fastqs
-    File stardb_dir
-    String output_prefix
-    String? read_groups
+    input {
+        Int ncpu = 1
+        Array[File] read_one_fastqs
+        Array[File] read_two_fastqs
+        File stardb_zip
+        String output_prefix
+        String? read_groups
+        Int memory_gb = 50
+        Int? disk_size_gb
+    }
+    
+    String stardb_dir = basename(stardb_zip, ".tar.gz")
+
+    Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
+    Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
+    Float stardb_zip_size = size(stardb_zip, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_zip_size) * 3) + 10)])
 
     command {
+        tar -xzf ${stardb_zip};
         STAR --readFilesIn ${sep=',' read_one_fastqs} ${sep=',' read_two_fastqs} \
              --genomeDir ${stardb_dir} \
+             --runThreadN ${ncpu} \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \
              --outSAMtype BAM SortedByCoordinate \
@@ -88,12 +114,14 @@ task alignment {
     }
 
     runtime {
-        memory: "75G"
+        cpu: ncpu
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
     output {
-       File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam" 
+       File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam"
     }
     meta {
         author: "Andrew Thrasher"

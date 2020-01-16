@@ -1,11 +1,17 @@
-## Description: 
+## Description:
 ##
 ## This WDL tool wraps the PicardTools library (https://broadinstitute.github.io/picard/).
-## PicardTools is a set of Java tools for manipulating sequencing data. 
+## PicardTools is a set of Java tools for manipulating sequencing data.
+
+version 1.0
 
 task mark_duplicates {
-    File bam
-    String prefix = basename(bam, ".bam")
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+    }
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
         picard MarkDuplicates I=${bam} \
@@ -18,7 +24,8 @@ task mark_duplicates {
     }
 
     runtime {
-        memory: "50G"
+        memory: "50 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -38,7 +45,11 @@ task mark_duplicates {
 }
 
 task validate_bam {
-    File bam
+    input {
+        File bam
+    }
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
     
     command {
         picard ValidateSamFile I=${bam} \
@@ -46,6 +57,7 @@ task validate_bam {
     }
 
     runtime {
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 
@@ -65,18 +77,24 @@ task validate_bam {
 }
 
 task bam_to_fastq {
-    File bam
-    String prefix = basename(bam, ".bam")
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+    }
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 4) + 10)
 
     command {
         picard SamToFastq INPUT=${bam} \
             FASTQ=${prefix}_R1.fastq \
             SECOND_END_FASTQ=${prefix}_R2.fastq \
-            RE_REVERSE=true
+            RE_REVERSE=true \
+            VALIDATION_STRINGENCY=SILENT
     }
 
     runtime{
-        memory: "25G"	
+        memory: "25 GB"
+        disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
 

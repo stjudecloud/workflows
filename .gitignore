@@ -6,4 +6,7 @@
 **/*.log
 
 # Blacklist Cromwell files
-cromwell*
+**/cromwell*
+
+# Blacklist OS generated files
+.DS_Store

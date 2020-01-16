@@ -2,7 +2,9 @@
 ##
 ## This WDL tool wraps the wget tool.
 
-task print_version {
+version 1.0
+
+task wget_print_version {
     command {
         wget --version
     }
@@ -18,8 +20,10 @@ task print_version {
 }
 
 task download {
-    String url 
-    String outfilename
+    input {
+        String url 
+        String outfilename
+    }
 
     runtime {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
