@@ -14,7 +14,10 @@
 
 ## Getting Started
 
-At the time of writing, all workflows are written in [WDL][wdl] and are tested using [Cromwell][cromwell]. Although we do not test outside of Cromwell, we expect that the workflows will work just as well using other runners.
+At the time of writing, all workflows are written in [WDL][wdl] and are tested
+using [Cromwell][cromwell]. We use [Oliver][oliver] to easily interact with the
+Cromwell server to perform various tasks. Although we do not test outside of Cromwell, we
+expect that the workflows will work just as well using other runners.
 
 The easiest way to get started is to install [bioconda][bioconda] and the run the following commands:
 
@@ -78,3 +81,4 @@ This project is [MIT](https://github.com/stjudecloud/workflows/blob/master/LICEN
 [wdl]: http://openwdl.org/
 [cromwell]: https://github.com/broadinstitute/cromwell
 [bioconda]: https://bioconda.github.io/
+[oliver]: https://github.com/stjudecloud/oliver
