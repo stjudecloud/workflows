@@ -1,13 +1,13 @@
 {
   "rnaseq_standard.gencode_gtf": "/cromwell/inputs/rnaseq_v2/gencode.v31.annotation.gtf",
-  "rnaseq_standard.bam": "/cromwell/inputs/Sample.RNA-Seq.bam",
+  "rnaseq_standard.input_bam": "/cromwell/inputs/Sample.RNA-Seq.bam",
   "rnaseq_standard.stardb_tar_gz": "/cromwell/inputs/rnaseq_v2/stardb.tar.gz",
   "rnaseq_standard.strand": "reverse",
   "rnaseq_standard.output_prefix": "Sample.",
   "rnaseq_standard.alignment.ncpu": "Int (optional, default = 1)",
   "rnaseq_standard.alignment.disk_size_gb": "Int? (optional)",
   "rnaseq_standard.alignment.memory_gb": "Int (optional, default = 50)",
-  "rnaseq_standard.bamqc.ncpu": "Int (optional, default = 1)",
+  "rnaseq_standard.qualimap_bamqc.ncpu": "Int (optional, default = 1)",
   "rnaseq_standard.fastqc.ncpu": "Int (optional, default = 1)"
 }
 

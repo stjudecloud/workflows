@@ -53,15 +53,15 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/dee
 workflow rnaseq_standard {
     input {
         File gencode_gtf
-        File bam
+        File input_bam
         File stardb_tar_gz
         String? strand
         String output_prefix = "out"
     }
 
-    call util.get_read_groups { input: bam=bam }
+    call util.get_read_groups { input: bam=input_bam }
     call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out }
-    call b2fq.bam_to_fastqs { input: bam=bam }
+    call b2fq.bam_to_fastqs { input: bam=input_bam }
 
     call star.alignment {
         input:
@@ -72,33 +72,36 @@ workflow rnaseq_standard {
             read_groups=prepare_read_groups_for_star.out
     }
 
-    call samtools.index { input: bam=alignment.star_bam }
+    call samtools.index as samtools_index { input: bam=alignment.star_bam }
     call picard.validate_bam { input: bam=alignment.star_bam }
     call qc.parse_validate_bam { input: in=validate_bam.out }
-    call fastqc.fastqc { input: bam=alignment.star_bam}
-    call ngsderive.infer_strand { input: bam=bam, bai=index.bai, gtf=gencode_gtf }
-    call qualimap.bamqc { input: bam=alignment.star_bam}
-    call qualimap.rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
-    call htseq.count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand }
-    call samtools.flagstat { input: bam=alignment.star_bam }
+    call fastqc.fastqc { input: bam=alignment.star_bam }
+    call ngsderive.infer_strand as ngsderive_strandedness { input: bam=bam, bai=samtools_index.bai, gtf=gencode_gtf }
+    call qualimap.bamqc as qualimap_bamqc { input: bam=alignment.star_bam }
+    call qualimap.rnaseq as qualimap_rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
+    call htseq.count as htseq_count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand }
+    call samtools.flagstat as samtools_flagstat { input: bam=alignment.star_bam }
     call md5sum.compute_checksum { input: infile=alignment.star_bam }
-    call deeptools.bamCoverage { input: bam=alignment.star_bam, bai=index.bai }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=alignment.star_bam, bai=samtools_index.bai }
     call multiqc.multiqc {
         input:
             star=alignment.star_bam,
             validate_sam_string=validate_bam.out,
-            qualimap_bamqc=bamqc.out_files,
-            qualimap_rnaseq=rnaseq.out_files,
+            qualimap_bamqc=qualimap_bamqc.out_files,
+            qualimap_rnaseq=qualimap_rnaseq.out_files,
             fastqc_files=fastqc.out_files,
-            flagstat_file=flagstat.flagstat,
-            bigwig_file=bamCoverage.bigwig,
+            flagstat_file=samtools_flagstat.flagstat,
+            bigwig_file=deeptools_bamCoverage.bigwig,
             star_log=alignment.star_log
     }
     output {
-        File output_bam = alignment.star_bam
-        File output_bai = index.bai
-        File output_counts = count.out
-        File output_flagstat = flagstat.flagstat
-        File output_multiqc_zip = multiqc.out
+        File bam = alignment.star_bam
+        File bam_checksum = compute_checksum.outfile
+        File bam_index = samtools_index.bai
+        File bigwig = deeptools_bamCoverage.bigwig
+        File gene_counts = htseq_count.out
+        File flagstat = samtools_flagstat.flagstat
+        File multiqc_zip = multiqc.out
+        String inferred_strandedness = ngsderive_strandedness.strandedness
     }
 }
