@@ -75,22 +75,22 @@ task alignment {
         Int ncpu = 1
         Array[File] read_one_fastqs
         Array[File] read_two_fastqs
-        File stardb_zip
+        File stardb_tar_gz
         String output_prefix
         String? read_groups
         Int memory_gb = 50
         Int? disk_size_gb
     }
     
-    String stardb_dir = basename(stardb_zip, ".tar.gz")
+    String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
-    Float stardb_zip_size = size(stardb_zip, "GiB")
+    Float stardb_tar_gz_size = size(stardb_tar_gz, "GiB")
     Int limit_sort_ram = (memory_gb - 0.9) * 1000000000
-    Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_zip_size) * 3) + 10)])
+    Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10)])
 
     command {
-        tar -xzf ${stardb_zip};
+        tar -xzf ${stardb_tar_gz};
         STAR --readFilesIn ${sep=',' read_one_fastqs} ${sep=',' read_two_fastqs} \
              --genomeDir ${stardb_dir} \
              --runThreadN ${ncpu} \
@@ -134,7 +134,7 @@ task alignment {
     parameter_meta {
         read_one_fastqs: "An array of FastQ files containing read one information"
         read_two_fastqs: "An array of FastQ files containing read two information in the same order as the read one FastQ"
-        stardb_zip: "A ZIP file containing the STAR reference files"
+        stardb_tar_gz: "A gzipped TAR file containing the STAR reference files"
         read_groups: "A string containing the read group information to output in the BAM file"
     }
 }

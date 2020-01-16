@@ -54,7 +54,7 @@ workflow rnaseq_standard {
     input {
         File gencode_gtf
         File bam
-        File stardb_zip
+        File stardb_tar_gz
         String? strand
         String output_prefix = "out"
     }
@@ -67,7 +67,7 @@ workflow rnaseq_standard {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,
             read_two_fastqs=bam_to_fastqs.read2s,
-            stardb_zip=stardb_zip,
+            stardb_tar_gz=stardb_tar_gz,
             output_prefix=output_prefix,
             read_groups=prepare_read_groups_for_star.out
     }

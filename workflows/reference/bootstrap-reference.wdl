@@ -47,6 +47,6 @@ workflow bootstrap_reference {
     output {
       File reference_fa = reference_unzip.outfile
       File gencode_gtf = gencode_unzip.outfile
-      File stardb_zip = star_db_build.stardb_out
+      File stardb_tar_gz = star_db_build.stardb_out
     }
 }
