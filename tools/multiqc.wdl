@@ -14,6 +14,7 @@ task multiqc {
         Array[File] fastqc_files
         File flagstat_file
         File bigwig_file
+        File star_log
     }
     Float star_size = size(star, "GiB")
     Int disk_size = ceil((star_size * 4) + 10)
@@ -33,6 +34,7 @@ task multiqc {
         done
         echo ${flagstat_file} >> file_list.txt
         echo ${bigwig_file} >> file_list.txt
+        echo ${star_log} >> file_list.txt
 
         multiqc --file-list file_list.txt -o multiqc_results
         tar -czf multiqc_results.tar.gz multiqc_results

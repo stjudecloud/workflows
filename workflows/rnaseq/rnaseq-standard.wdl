@@ -91,7 +91,8 @@ workflow rnaseq_standard {
             qualimap_rnaseq=rnaseq.out_files,
             fastqc_files=fastqc.out_files,
             flagstat_file=flagstat.flagstat,
-            bigwig_file=bamCoverage.bigwig
+            bigwig_file=bamCoverage.bigwig,
+            star_log=alignment.star_log
     }
     output {
         File output_bam = alignment.star_bam
