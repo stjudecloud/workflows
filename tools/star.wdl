@@ -108,7 +108,7 @@ task alignment {
              --outFilterScoreMinOverLread 0.66 \
              --outFileNamePrefix ${output_prefix} \
              --twopassMode Basic \
-             --limitBAMsortRAM ${((memory_gb - 2) * 1000000000)} \
+             --limitBAMsortRAM ${(memory_gb - 2) + "000000000"} \
              ${"--outSAMattrRGline " + read_groups}
     }
 
