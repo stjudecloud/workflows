@@ -48,17 +48,19 @@ task rnaseq {
         File gencode_gtf
         String outdir = "qualimap_rnaseq"
         String strand = "strand-specific-reverse"
+        Int memory_gb = 16
+        Int? disk_size_gb
     }
     Float bam_size = size(bam, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
-    Int disk_size = ceil(((bam_size + gencode_gtf_size) * 6) + 10)
+    Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 6) + 10)])
  
     command {
         qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${strand} -pe --java-mem-size=14G
     }
 
     runtime {
-        memory: "16 GB"
+        memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
