@@ -91,6 +91,7 @@ task alignment {
 
     command {
         tar -xzf ${stardb_tar_gz};
+        ls
         STAR --readFilesIn ${sep=',' read_one_fastqs} ${sep=',' read_two_fastqs} \
              --genomeDir ${stardb_dir} \
              --runThreadN ${ncpu} \
