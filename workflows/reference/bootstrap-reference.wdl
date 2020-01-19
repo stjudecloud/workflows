@@ -23,9 +23,9 @@
 ##
 ##THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import "../../tools/gzip.wdl"
-import "../../tools/star.wdl"
-import "../../tools/wget.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/gzip.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/wget.wdl"
 
 workflow bootstrap_reference {
     String reference_fa_url
