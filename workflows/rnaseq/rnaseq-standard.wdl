@@ -76,7 +76,7 @@ workflow rnaseq_standard {
     call picard.validate_bam { input: bam=alignment.star_bam }
     call qc.parse_validate_bam { input: in=validate_bam.out }
     call fastqc.fastqc { input: bam=alignment.star_bam }
-    call ngsderive.infer_strand as ngsderive_strandedness { input: bam=bam, bai=samtools_index.bai, gtf=gencode_gtf }
+    call ngsderive.infer_strand as ngsderive_strandedness { input: bam=alignment.star_bam, bai=samtools_index.bai, gtf=gencode_gtf }
     call qualimap.bamqc as qualimap_bamqc { input: bam=alignment.star_bam }
     call qualimap.rnaseq as qualimap_rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
     call htseq.count as htseq_count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand }
