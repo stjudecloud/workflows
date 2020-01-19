@@ -11,6 +11,7 @@ task fastqc {
         Int ncpu = 1
         String prefix = basename(bam, ".bam")
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -30,11 +31,13 @@ task fastqc {
     output {
         Array[File] out_files = glob("${prefix}_fastqc_results/*")
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
     }

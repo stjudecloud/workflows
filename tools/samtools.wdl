@@ -23,6 +23,7 @@ task quickcheck {
     input {
         File bam
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -34,11 +35,13 @@ task quickcheck {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
     }
@@ -50,6 +53,7 @@ task split {
         Boolean? reject_unaccounted
         String prefix = basename(bam, ".bam")
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -71,11 +75,13 @@ task split {
     output {
        Array[File] split_bams = glob("*.bam")
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         reject_unaccounted: "If true, error if there are reads present that do not have read group information."
@@ -88,6 +94,7 @@ task flagstat {
 
         String outfile = basename(bam, ".bam")+".flagstat.txt"
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -101,13 +108,15 @@ task flagstat {
     }
 
     output { 
-       File flagstat = outfile
+        File flagstat = outfile
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
     }
@@ -116,10 +125,10 @@ task flagstat {
 task index {
     input {
         File bam
-        
         String name = basename(bam)
         String outfile = basename(bam)+".bai"
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -133,13 +142,15 @@ task index {
     }
 
     output {
-       File bai = outfile
+        File bai = outfile
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
     }

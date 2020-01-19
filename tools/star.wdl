@@ -29,8 +29,8 @@ task build_db {
         Int memory_gb = 50
         Int? disk_size_gb
     }
-    String stardb_out_name = stardb_dir_name + ".tar.gz"
 
+    String stardb_out_name = stardb_dir_name + ".tar.gz"
     Float reference_fasta_size = size(reference_fasta, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)])
@@ -57,11 +57,13 @@ task build_db {
     output {
         File stardb_out = stardb_out_name
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool runs STAR's build command to generate a STAR format reference for alignment." 
     }
+
     parameter_meta {
         reference_fasta: "The FASTA format reference file for the genome"
         gencode_gtf: "GTF format feature file with Gencode features"
@@ -118,14 +120,16 @@ task alignment {
     }
 
     output {
-       File star_log = output_prefix + "Log.final.out"
-       File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam"
+        File star_log = output_prefix + "Log.final.out"
+        File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam"
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
     }
+
     parameter_meta {
         read_one_fastqs: "An array of FastQ files containing read one information"
         read_two_fastqs: "An array of FastQ files containing read two information in the same order as the read one FastQ"

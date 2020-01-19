@@ -16,6 +16,7 @@ task multiqc {
         File bigwig_file
         File star_log
     }
+
     Float star_size = size(star, "GiB")
     Int disk_size = ceil((star_size * 4) + 10)
 
@@ -48,11 +49,13 @@ task multiqc {
     output {
         File out = "multiqc_results.tar.gz"
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates a MultiQC quality control metrics report summary from input QC result files."
     }
+
     parameter_meta {
         star: "A STAR aligned BAM file"
         validate_sam_string: "A string output from Picard's ValidateSam tool"

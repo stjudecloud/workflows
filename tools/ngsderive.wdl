@@ -12,6 +12,7 @@ task infer_strand {
         File bai
         File gtf
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(((bam_size) * 2) + 10)
  
@@ -27,6 +28,6 @@ task infer_strand {
     }
 
     output {
-       String strandedness = read_string(stdout())
+        String strandedness = read_string(stdout())
     }
 }

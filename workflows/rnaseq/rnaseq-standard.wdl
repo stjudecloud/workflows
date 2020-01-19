@@ -62,7 +62,6 @@ workflow rnaseq_standard {
     call util.get_read_groups { input: bam=input_bam }
     call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out }
     call b2fq.bam_to_fastqs { input: bam=input_bam }
-
     call star.alignment {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,
@@ -71,7 +70,6 @@ workflow rnaseq_standard {
             output_prefix=output_prefix,
             read_groups=prepare_read_groups_for_star.out
     }
-
     call samtools.index as samtools_index { input: bam=alignment.star_bam }
     call picard.validate_bam { input: bam=alignment.star_bam }
     call qc.parse_validate_bam { input: in=validate_bam.out }
@@ -94,6 +92,7 @@ workflow rnaseq_standard {
             bigwig_file=deeptools_bamCoverage.bigwig,
             star_log=alignment.star_log
     }
+
     output {
         File bam = alignment.star_bam
         File bam_checksum = compute_checksum.outfile

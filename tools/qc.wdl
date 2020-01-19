@@ -28,11 +28,13 @@ task parse_validate_bam {
     runtime {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool is a utility for parsing the output of Picard's ValidateSamFile command."
     }
+
     parameter_meta {
         in: "Output file from Picard ValidateSamFile"
     }
@@ -79,11 +81,13 @@ task parse_infer_experiment {
     output {
         String out = read_string("stdout.txt")
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool parses the output of RSeQC's infer_experiment.py script."
     }
+
     parameter_meta {
         in: "Output file from RSeQC's infer_experiment.py script."
     }

@@ -13,6 +13,7 @@ task count {
         String stranded = select_first([strand, "no"])
         String outfile = basename(bam, ".bam") + ".counts.txt"
     }
+
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
     Int disk_size = ceil(((bam_size + gtf_size) * 2) + 10)
@@ -28,13 +29,15 @@ task count {
     }
    
     output {
-       File out = "${outfile}"
+        File out = "${outfile}"
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool performs read counting for a set of features in the input BAM file."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         gtf: "Input genomic features in GTF format to count reads for"

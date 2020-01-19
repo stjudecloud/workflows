@@ -11,13 +11,14 @@ task bamCoverage {
         File bai
         String prefix = basename(bam, ".bam")
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
  
     command {
         if [ ! -e ${bam}.bai ] 
         then 
-           ln -s ${bai} ${bam}.bai
+            ln -s ${bai} ${bam}.bai
         fi
  
         bamCoverage --bam ${bam} --outFileName ${prefix}.bw --outFileFormat bigwig --numberOfProcessors "max"
@@ -31,11 +32,13 @@ task bamCoverage {
     output {
         File bigwig = "${prefix}.bw"
     }
+
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
         description: "This WDL tool generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html)."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         bai: "BAM index file corresponding to the input BAM"

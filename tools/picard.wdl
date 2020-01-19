@@ -10,6 +10,7 @@ task mark_duplicates {
         File bam
         String prefix = basename(bam, ".bam")
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -32,11 +33,13 @@ task mark_duplicates {
     output {
         File out = "${prefix}.duplicates.bam"
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool marks duplicate reads in the input BAM file using Picard."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
     }
@@ -46,6 +49,7 @@ task validate_bam {
     input {
         File bam
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
     
@@ -62,11 +66,13 @@ task validate_bam {
     output {
         String out = read_string("stdout.txt")
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool validates the input BAM file for correct formatting using Picard."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
     }
@@ -77,6 +83,7 @@ task bam_to_fastq {
         File bam
         String prefix = basename(bam, ".bam")
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
 
@@ -98,11 +105,13 @@ task bam_to_fastq {
         File read1 = "${prefix}_R1.fastq"
         File read2 = "${prefix}_R2.fastq"
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool converts the input BAM file into paired FastQ format files."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
     }

@@ -11,6 +11,7 @@ task bamqc {
         Int ncpu = 1
         String prefix = basename(bam, ".bam")
     }
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -30,11 +31,13 @@ task bamqc {
     output {
         Array[File] out_files = glob("${prefix}_qualimap_results/*")
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool runs QualiMap's bamqc tool on the input BAM file."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
     }
@@ -49,6 +52,7 @@ task rnaseq {
         Int memory_gb = 16
         Int? disk_size_gb
     }
+
     Float bam_size = size(bam, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 6) + 10)])
@@ -66,11 +70,13 @@ task rnaseq {
     output {
         Array[File] out_files = glob("${outdir}/*")
     }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates runs QualiMap's rnaseq tool on the input BAM file."
     }
+
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         gencode_gtf: "A GTF format features file containing Gencode features"
