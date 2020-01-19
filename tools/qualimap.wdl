@@ -31,10 +31,8 @@ task bamqc {
         Array[File] out_files = glob("${prefix}_qualimap_results/*")
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool runs QualiMap's bamqc tool on the input BAM file."
     }
     parameter_meta {
@@ -69,10 +67,8 @@ task rnaseq {
         Array[File] out_files = glob("${outdir}/*")
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates runs QualiMap's rnaseq tool on the input BAM file."
     }
     parameter_meta {

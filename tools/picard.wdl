@@ -33,10 +33,8 @@ task mark_duplicates {
         File out = "${prefix}.duplicates.bam"
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool marks duplicate reads in the input BAM file using Picard."
     }
     parameter_meta {
@@ -65,10 +63,8 @@ task validate_bam {
         String out = read_string("stdout.txt")
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool validates the input BAM file for correct formatting using Picard."
     }
     parameter_meta {
@@ -103,10 +99,8 @@ task bam_to_fastq {
         File read2 = "${prefix}_R2.fastq"
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool converts the input BAM file into paired FastQ format files."
     }
     parameter_meta {

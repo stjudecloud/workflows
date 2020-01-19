@@ -25,10 +25,8 @@ task get_read_groups {
        String out = read_string("stdout.txt")
    }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool is a utility to get read group information from a BAM file and write it out to as a string" 
     }
     parameter_meta {
@@ -53,10 +51,8 @@ task prepare_read_groups_for_star {
        String out = read_string("stdout.txt")
    }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool is a utility to reformat read group information from a BAM file into a format that can be passed in to the STAR aligner."
     }
     parameter_meta {

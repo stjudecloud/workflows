@@ -31,10 +31,8 @@ task fastqc {
         Array[File] out_files = glob("${prefix}_fastqc_results/*")
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
     }
     parameter_meta {

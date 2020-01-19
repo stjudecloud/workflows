@@ -43,10 +43,8 @@ task compute_checksum {
         File outfile = outfile
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates an MD5 checksum for the input file."
     }
     parameter_meta {
@@ -73,10 +71,8 @@ task check_checksum {
         String out = read_string("stdout.txt")
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool checks a list of MD5 checksums against the corresponding files to verify integrity" 
     }
     parameter_meta {

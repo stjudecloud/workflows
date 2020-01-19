@@ -38,10 +38,8 @@ task fqlint {
         fq lint ${read1} ${read2}
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool performs quality control on the input FastQ pairs to ensure proper formatting."
     }
     parameter_meta {

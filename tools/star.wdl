@@ -58,10 +58,8 @@ task build_db {
         File stardb_out = stardb_out_name
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool runs STAR's build command to generate a STAR format reference for alignment." 
     }
     parameter_meta {
@@ -124,10 +122,8 @@ task alignment {
        File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam"
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
     }
     parameter_meta {

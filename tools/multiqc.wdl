@@ -49,10 +49,8 @@ task multiqc {
         File out = "multiqc_results.tar.gz"
     }
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates a MultiQC quality control metrics report summary from input QC result files."
     }
     parameter_meta {
