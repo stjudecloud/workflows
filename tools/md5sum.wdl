@@ -25,12 +25,12 @@ task compute_checksum {
         File infile
     }
 
-    String outfile = basename(infile) + ".md5"
+    String outfilename = basename(infile) + ".md5"
     Float infile_size = size(infile, "GiB")
     Int disk_size = ceil((infile_size * 2) + 10)
 
     command {
-        md5sum ${infile} > ${outfile}
+        md5sum ${infile} > ${outfilename}
     }
 
     runtime {
@@ -39,8 +39,8 @@ task compute_checksum {
     }
 
     output {
-        String stdout = read_string(outfile)
-        File outfile = outfile
+        String stdout = read_string(outfilename)
+        File outfile = outfilename
     }
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
