@@ -39,13 +39,13 @@ version 1.0
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/bam-to-fastqs.wdl" as b2fq
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qc.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
@@ -75,7 +75,7 @@ workflow rnaseq_standard {
     call samtools.index as samtools_index { input: bam=alignment.star_bam }
     call picard.validate_bam { input: bam=alignment.star_bam }
     call qc.parse_validate_bam { input: in=validate_bam.out }
-    call fastqc.fastqc { input: bam=alignment.star_bam }
+    call fqc.fastqc { input: bam=alignment.star_bam }
     call ngsderive.infer_strand as ngsderive_strandedness { input: bam=alignment.star_bam, bai=samtools_index.bai, gtf=gencode_gtf }
     call qualimap.bamqc as qualimap_bamqc { input: bam=alignment.star_bam }
     call qualimap.rnaseq as qualimap_rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
@@ -83,14 +83,14 @@ workflow rnaseq_standard {
     call samtools.flagstat as samtools_flagstat { input: bam=alignment.star_bam }
     call md5sum.compute_checksum { input: infile=alignment.star_bam }
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=alignment.star_bam, bai=samtools_index.bai }
-    call multiqc.multiqc {
+    call mqc.multiqc {
         input:
             star=alignment.star_bam,
             validate_sam_string=validate_bam.out,
             qualimap_bamqc=qualimap_bamqc.out_files,
             qualimap_rnaseq=qualimap_rnaseq.out_files,
             fastqc_files=fastqc.out_files,
-            flagstat_file=samtools_flagstat.flagstat,
+            flagstat_file=samtools_flagstat.outfile,
             bigwig_file=deeptools_bamCoverage.bigwig,
             star_log=alignment.star_log
     }
@@ -100,7 +100,7 @@ workflow rnaseq_standard {
         File bam_index = samtools_index.bai
         File bigwig = deeptools_bamCoverage.bigwig
         File gene_counts = htseq_count.out
-        File flagstat = samtools_flagstat.flagstat
+        File flagstat = samtools_flagstat.outfile
         File multiqc_zip = multiqc.out
         String inferred_strandedness = ngsderive_strandedness.strandedness
     }

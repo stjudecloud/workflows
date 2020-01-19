@@ -16,7 +16,7 @@ task infer_strand {
     Int disk_size = ceil(((bam_size) * 2) + 10)
  
     command {
-        cat ~{gtf} | sort -k1,1 -k4,4n -k5,5n | bgzip > annotation.gtf.gz
+        sort -k1,1 -k4,4n -k5,5n ~{gtf} | bgzip > annotation.gtf.gz
         tabix -p gff annotation.gtf.gz
         ngsderive strandedness ~{bam} -g annotation.gtf.gz | tail -1 | cut -d$'\t' -f5
     }

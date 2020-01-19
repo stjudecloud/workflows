@@ -23,15 +23,20 @@ task multiqc {
         echo ${star} > file_list.txt
         echo ${validate_sam_string} > validate_sam.txt
         echo validate_sam.txt >> file_list.txt
+
         for file in ${sep=' ' qualimap_bamqc} ; do
             echo $file >> file_list.txt
         done
+
         for file in ${sep=' ' qualimap_rnaseq} ; do
             echo $file >> file_list.txt
         done
+
         for file in ${sep=' ' fastqc_files} ; do
             echo $file >> file_list.txt
         done
+
+        # shellcheck disable=SC2129
         echo ${flagstat_file} >> file_list.txt
         echo ${bigwig_file} >> file_list.txt
         echo ${star_log} >> file_list.txt
