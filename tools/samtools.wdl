@@ -60,7 +60,7 @@ task split {
     command {
         samtools split -u ${prefix}.unaccounted_reads.bam -f '%*_%!.%.' ${bam}
         samtools view ${prefix}.unaccounted_reads.bam > unaccounted_reads.bam
-        if [ ${default='true' reject_unaccounted} -a -s unaccounted_reads.bam ]
+        if ${default='true' reject_unaccounted} && [ -s unaccounted_reads.bam ]
             then exit 1; 
             else rm ${prefix}.unaccounted_reads.bam
         fi 
@@ -92,14 +92,14 @@ task flagstat {
     input {
         File bam
 
-        String outfile = basename(bam, ".bam")+".flagstat.txt"
+        String outfilename = basename(bam, ".bam")+".flagstat.txt"
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
-        samtools flagstat ${bam} > ${outfile}
+        samtools flagstat ${bam} > ${outfilename}
     }
 
     runtime {
@@ -108,7 +108,7 @@ task flagstat {
     }
 
     output { 
-        File flagstat = outfile
+       File outfile = outfilename
     }
 
     meta {
@@ -125,7 +125,6 @@ task flagstat {
 task index {
     input {
         File bam
-        String name = basename(bam)
         String outfile = basename(bam)+".bai"
     }
 
