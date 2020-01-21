@@ -19,6 +19,8 @@ task infer_strand {
     command {
         cat ~{gtf} | sort -k1,1 -k4,4n -k5,5n | bgzip > annotation.gtf.gz
         tabix -p gff annotation.gtf.gz
+        mv ~{bai} ~{bam}.bai 
+        ls
         ngsderive strandedness ~{bam} -g annotation.gtf.gz | tail +1 | cut -d$'\t' -f5
     }
 
