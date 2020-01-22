@@ -95,7 +95,7 @@ task alignment {
              --runThreadN ${ncpu} \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \
-             --outSAMtype BAM SortedByCoordinate \
+             --outSAMtype BAM Unsorted \
              --outSAMattributes NH HI AS nM NM MD XS \
              --outFilterMultimapScoreRange 1 \
              --outFilterMultimapNmax 20 \

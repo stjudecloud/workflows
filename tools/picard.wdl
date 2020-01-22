@@ -41,7 +41,7 @@ task mark_duplicates {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to mark duplicates"
     }
 }
 
@@ -74,7 +74,7 @@ task validate_bam {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to validate"
     }
 }
 
@@ -113,6 +113,39 @@ task bam_to_fastq {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to convert to FastQ"
+    }
+}
+
+task sort {
+    input {
+        File bam
+        String sort_order = "coordinate"
+        String output_filename = basename(bam, ".bam") + ".sorted.bam"
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 4) + 10)
+
+    command {
+        picard SortSam I=${bam} \
+           O=${output_filename} \
+           SO=${sort_order} 
+    }
+    runtime {
+        memory: "25 GB"
+        disk: disk_size + " GB"
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+    }
+    output {
+        File sorted_bam = output_filename
+    }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL tool sorts the input BAM file."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to sort"
     }
 }

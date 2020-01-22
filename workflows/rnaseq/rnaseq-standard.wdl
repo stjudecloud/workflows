@@ -70,20 +70,21 @@ workflow rnaseq_standard {
             output_prefix=output_prefix,
             read_groups=prepare_read_groups_for_star.out
     }
-    call samtools.index as samtools_index { input: bam=alignment.star_bam }
-    call picard.validate_bam { input: bam=alignment.star_bam }
+    call picard.sort as picard_sort { input: bam=alignment.star_bam }
+    call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam }
+    call picard.validate_bam { input: bam=picard_sort.sorted_bam }
     call qc.parse_validate_bam { input: in=validate_bam.out }
-    call fqc.fastqc { input: bam=alignment.star_bam }
-    call ngsderive.infer_strand as ngsderive_strandedness { input: bam=alignment.star_bam, bai=samtools_index.bai, gtf=gencode_gtf }
-    call qualimap.bamqc as qualimap_bamqc { input: bam=alignment.star_bam }
-    call qualimap.rnaseq as qualimap_rnaseq { input: bam=alignment.star_bam, gencode_gtf=gencode_gtf }
-    call htseq.count as htseq_count { input: bam=alignment.star_bam, gtf=gencode_gtf, strand=strand }
-    call samtools.flagstat as samtools_flagstat { input: bam=alignment.star_bam }
-    call md5sum.compute_checksum { input: infile=alignment.star_bam }
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=alignment.star_bam, bai=samtools_index.bai }
+    call fqc.fastqc { input: bam=picard_sort.sorted_bam }
+    call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf }
+    call qualimap.bamqc as qualimap_bamqc { input: bam=picard_sort.sorted_bam }
+    call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gencode_gtf=gencode_gtf }
+    call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, strand=strand }
+    call samtools.flagstat as samtools_flagstat { input: bam=picard_sort.sorted_bam }
+    call md5sum.compute_checksum { input: infile=picard_sort.sorted_bam }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai }
     call mqc.multiqc {
         input:
-            star=alignment.star_bam,
+            star=picard_sort.sorted_bam,
             validate_sam_string=validate_bam.out,
             qualimap_bamqc=qualimap_bamqc.out_files,
             qualimap_rnaseq=qualimap_rnaseq.out_files,
@@ -94,7 +95,7 @@ workflow rnaseq_standard {
     }
 
     output {
-        File bam = alignment.star_bam
+        File bam = picard_sort.sorted_bam
         File bam_checksum = compute_checksum.outfile
         File bam_index = samtools_index.bai
         File bigwig = deeptools_bamCoverage.bigwig
