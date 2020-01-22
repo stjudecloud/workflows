@@ -17,11 +17,11 @@ task multiqc {
         File star_log
     }
 
-    Float star_size = size(star, "GiB")
+    Float star_size = size(sorted_bam, "GiB")
     Int disk_size = ceil((star_size * 4) + 10)
 
     command {
-        echo ${star} > file_list.txt
+        echo ${sorted_bam} > file_list.txt
         echo ${validate_sam_string} > validate_sam.txt
         echo validate_sam.txt >> file_list.txt
 
