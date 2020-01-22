@@ -121,7 +121,7 @@ task alignment {
 
     output {
         File star_log = output_prefix + "Log.final.out"
-        File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam"
+        File star_bam = output_prefix + "Aligned.out.bam"
     }
 
     meta {
