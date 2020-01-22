@@ -7,7 +7,7 @@ version 1.0
 
 task multiqc {
     input {
-        File star
+        File sorted_bam
         String validate_sam_string
         Array[File] qualimap_bamqc
         Array[File] qualimap_rnaseq
@@ -62,7 +62,7 @@ task multiqc {
     }
 
     parameter_meta {
-        star: "A STAR aligned BAM file"
+        sorted_bam: "A aligned, sorted BAM file"
         validate_sam_string: "A string output from Picard's ValidateSam tool"
         qualimap_bamqc: "An array of files output by Qualimap's BamQC mode"
         qualimap_rnaseq: "An array of files output by Qualimap's RNA-seq mode"

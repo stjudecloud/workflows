@@ -84,7 +84,7 @@ workflow rnaseq_standard {
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai }
     call mqc.multiqc {
         input:
-            star=picard_sort.sorted_bam,
+            sorted_bam=picard_sort.sorted_bam,
             validate_sam_string=validate_bam.out,
             qualimap_bamqc=qualimap_bamqc.out_files,
             qualimap_rnaseq=qualimap_rnaseq.out_files,
