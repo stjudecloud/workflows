@@ -20,8 +20,7 @@ task infer_strand {
         sort -k1,1 -k4,4n -k5,5n ~{gtf} | bgzip > annotation.gtf.gz
         tabix -p gff annotation.gtf.gz
         mv ~{bai} ~{bam}.bai 
-        ls
-        ngsderive strandedness ~{bam} -g annotation.gtf.gz | tail +1 | cut -d$'\t' -f5
+        ngsderive strandedness ~{bam} -g annotation.gtf.gz | awk 'NR > 1' | cut -d$'\t' -f5
     }
 
     runtime {
