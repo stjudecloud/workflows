@@ -82,6 +82,7 @@ task bam_to_fastq {
     input {
         File bam
         String prefix = basename(bam, ".bam")
+        Int memory_gb = 25
     }
 
     Float bam_size = size(bam, "GiB")
@@ -96,7 +97,7 @@ task bam_to_fastq {
     }
 
     runtime{
-        memory: "25 GB"
+        memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
