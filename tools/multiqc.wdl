@@ -7,7 +7,7 @@ version 1.0
 
 task multiqc {
     input {
-        File star
+        File sorted_bam
         String validate_sam_string
         Array[File] qualimap_bamqc
         Array[File] qualimap_rnaseq
@@ -17,11 +17,11 @@ task multiqc {
         File star_log
     }
 
-    Float star_size = size(star, "GiB")
+    Float star_size = size(sorted_bam, "GiB")
     Int disk_size = ceil((star_size * 4) + 10)
 
     command {
-        echo ${star} > file_list.txt
+        echo ${sorted_bam} > file_list.txt
         echo ${validate_sam_string} > validate_sam.txt
         echo validate_sam.txt >> file_list.txt
 
@@ -62,7 +62,7 @@ task multiqc {
     }
 
     parameter_meta {
-        star: "A STAR aligned BAM file"
+        sorted_bam: "A aligned, sorted BAM file"
         validate_sam_string: "A string output from Picard's ValidateSam tool"
         qualimap_bamqc: "An array of files output by Qualimap's BamQC mode"
         qualimap_rnaseq: "An array of files output by Qualimap's RNA-seq mode"

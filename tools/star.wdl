@@ -95,7 +95,7 @@ task alignment {
              --runThreadN ${ncpu} \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \
-             --outSAMtype BAM SortedByCoordinate \
+             --outSAMtype BAM Unsorted \
              --outSAMattributes NH HI AS nM NM MD XS \
              --outFilterMultimapScoreRange 1 \
              --outFilterMultimapNmax 20 \
@@ -121,7 +121,7 @@ task alignment {
 
     output {
         File star_log = output_prefix + "Log.final.out"
-        File star_bam = output_prefix + "Aligned.sortedByCoord.out.bam"
+        File star_bam = output_prefix + "Aligned.out.bam"
     }
 
     meta {
