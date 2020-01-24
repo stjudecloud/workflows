@@ -36,19 +36,19 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qc.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/workflows/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/fastqc.wdl" as fqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/md5sum.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/qc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/cmcleod/infer-strand-for-counts/tools/deeptools.wdl"
 
 workflow rnaseq_standard {
     input {
