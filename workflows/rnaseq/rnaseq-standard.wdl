@@ -55,7 +55,7 @@ workflow rnaseq_standard {
         File gencode_gtf
         File input_bam
         File stardb_tar_gz
-        String? strand
+        String strand = ""
         String output_prefix = "out"
     }
 
@@ -78,7 +78,7 @@ workflow rnaseq_standard {
     call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf }
     call qualimap.bamqc as qualimap_bamqc { input: bam=picard_sort.sorted_bam }
     call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gencode_gtf=gencode_gtf }
-    call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, strand=strand }
+    call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, strand=strand, inferred=ngsderive_strandedness.strandedness}
     call samtools.flagstat as samtools_flagstat { input: bam=picard_sort.sorted_bam }
     call md5sum.compute_checksum { input: infile=picard_sort.sorted_bam }
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai }
