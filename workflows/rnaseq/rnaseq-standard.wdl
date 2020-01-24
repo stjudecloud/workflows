@@ -101,7 +101,9 @@ workflow rnaseq_standard {
         File bigwig = deeptools_bamCoverage.bigwig
         File gene_counts = htseq_count.out
         File flagstat = samtools_flagstat.outfile
-        Array[File] fastqc_files = fastqc.out_files
+        Array[File] fastqc_results = fastqc.out_files
+        Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
+        Array[File] qualimap_rnaseq_results = qualimap_rnaseq.out_files
         File multiqc_zip = multiqc.out
         String inferred_strandedness = ngsderive_strandedness.strandedness
     }
