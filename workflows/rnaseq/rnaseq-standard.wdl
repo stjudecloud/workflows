@@ -105,6 +105,6 @@ workflow rnaseq_standard {
         Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
         Array[File] qualimap_rnaseq_results = qualimap_rnaseq.out_files
         File multiqc_zip = multiqc.out
-        String inferred_strandedness = ngsderive_strandedness.strandedness
+        File inferred_strandedness = ngsderive_strandedness.strandedness_file
     }
 }

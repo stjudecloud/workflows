@@ -30,5 +30,6 @@ task infer_strand {
 
     output {
         String strandedness = read_string(stdout())
+        File strandedness_file = stdout()
     }
 }
