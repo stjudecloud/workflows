@@ -9,10 +9,17 @@ task count {
     input {
         File bam
         File gtf
-        String? strand
-        String stranded = select_first([strand, "no"])
+        String strand
+        String inferred
         String outfile = basename(bam, ".bam") + ".counts.txt"
     }
+
+    String stranded = if (strand != "") then strand else
+                 if (inferred == "Stranded-Reverse") then "reverse" else
+                 if (inferred == "Stranded-Forward") then "yes" else 
+                 if (inferred == "Unstranded") then "no" else
+                 "unknown" # this will intentionally cause htseq to error. You will need to manually specify
+                           # in this case.
 
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
