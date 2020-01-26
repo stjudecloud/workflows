@@ -35,6 +35,7 @@
 
 version 1.0
 
+
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
@@ -42,12 +43,13 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.
 workflow bam_to_fastqs {
     input {
         File bam
+        Int? bam_to_fastq_memory_gb
     }
 
     call samtools.quickcheck { input: bam=bam }
     call samtools.split { input: bam=bam }
     scatter (split_bam in split.split_bams) {
-        call picard.bam_to_fastq { input: bam=split_bam }
+        call picard.bam_to_fastq { input: bam=split_bam, memory_gb=bam_to_fastq_memory_gb }
     }
     scatter (reads in zip(bam_to_fastq.read1, bam_to_fastq.read2)) {
         call fq.fqlint { input: read1=reads.left, read2=reads.right}

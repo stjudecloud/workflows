@@ -82,7 +82,7 @@ task bam_to_fastq {
     input {
         File bam
         String prefix = basename(bam, ".bam")
-        Int memory_gb = 40
+        Int? memory_gb = 40
     }
 
     Float bam_size = size(bam, "GiB")
