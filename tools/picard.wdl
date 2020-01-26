@@ -123,6 +123,7 @@ task sort {
         File bam
         String sort_order = "coordinate"
         String output_filename = basename(bam, ".bam") + ".sorted.bam"
+        Int? memory_gb = 25
     }
 
     Float bam_size = size(bam, "GiB")
@@ -134,7 +135,7 @@ task sort {
            SO=${sort_order} 
     }
     runtime {
-        memory: "25 GB"
+        memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
