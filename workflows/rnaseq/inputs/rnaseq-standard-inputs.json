@@ -9,8 +9,9 @@
     "rnaseq_standard.alignment.disk_size_gb": "Int? (optional)",
     "rnaseq_standard.alignment.memory_gb": "Int (optional, default = 50)",
     "rnaseq_standard.picard_sort.memory_gb": "Int? (optional, default = 25)",
+    "rnaseq_standard.fastqc.ncpu": "Int (optional, default = 1)",
     "rnaseq_standard.qualimap_bamqc.ncpu": "Int (optional, default = 1)",
     "rnaseq_standard.qualimap_rnaseq.memory_gb": "Int (optional, default = 16)",
-    "rnaseq_standard.fastqc.ncpu": "Int (optional, default = 1)"
+    "rnaseq_standard.htseq_count.memory_gb": "Int? (optional, default = 20)"
 }
 

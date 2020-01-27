@@ -12,6 +12,7 @@ task count {
         String strand
         String inferred
         String outfile = basename(bam, ".bam") + ".counts.txt"
+        Int? memory_gb = 20
     }
 
     String stranded = if (strand != "") then strand else
@@ -30,7 +31,7 @@ task count {
     }
 
     runtime {
-        memory: "8 GB"
+        memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
