@@ -82,14 +82,15 @@ task bam_to_fastq {
     input {
         File bam
         String prefix = basename(bam, ".bam")
-        Int? memory_gb = 40
+        Int memory_gb = 40
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
+    Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
-        picard SamToFastq INPUT=${bam} \
+        picard -Xmx${java_heap_size}g SamToFastq INPUT=${bam} \
             FASTQ=${prefix}_R1.fastq \
             SECOND_END_FASTQ=${prefix}_R2.fastq \
             RE_REVERSE=true \
