@@ -57,12 +57,11 @@ workflow rnaseq_standard {
         File stardb_tar_gz
         String strand = ""
         String output_prefix = "out"
-        Int? bam_to_fastq_memory_gb = 40
     }
 
     call util.get_read_groups { input: bam=input_bam }
     call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out }
-    call b2fq.bam_to_fastqs { input: bam=input_bam, bam_to_fastq_memory_gb=bam_to_fastq_memory_gb }
+    call b2fq.bam_to_fastqs { input: bam=input_bam }
     call star.alignment {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,

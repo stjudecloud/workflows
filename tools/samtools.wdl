@@ -50,6 +50,7 @@ task quickcheck {
 task split {
     input {
         File bam
+        Int? ncpu = 1
         Boolean? reject_unaccounted
         String prefix = basename(bam, ".bam")
     }
@@ -58,7 +59,7 @@ task split {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
-        samtools split -u ${prefix}.unaccounted_reads.bam -f '%*_%!.%.' ${bam}
+        samtools split --threads ${ncpu} -u ${prefix}.unaccounted_reads.bam -f '%*_%!.%.' ${bam}
         samtools view ${prefix}.unaccounted_reads.bam > unaccounted_reads.bam
         if ${default='true' reject_unaccounted} && [ -s unaccounted_reads.bam ]
             then exit 1; 
@@ -68,6 +69,7 @@ task split {
     }
  
     runtime {
+        cpu: ncpu
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }

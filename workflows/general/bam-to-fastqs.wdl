@@ -43,11 +43,12 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.
 workflow bam_to_fastqs {
     input {
         File bam
-        Int? bam_to_fastq_memory_gb
+        Int? samtools_sort_ncpu = 1
+        Int? bam_to_fastq_memory_gb = 40
     }
 
     call samtools.quickcheck { input: bam=bam }
-    call samtools.split { input: bam=bam }
+    call samtools.split { input: ncpu=samtools_sort_ncpu, bam=bam }
     scatter (split_bam in split.split_bams) {
         call picard.bam_to_fastq { input: bam=split_bam, memory_gb=bam_to_fastq_memory_gb }
     }
