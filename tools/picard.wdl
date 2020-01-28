@@ -9,13 +9,15 @@ task mark_duplicates {
     input {
         File bam
         String prefix = basename(bam, ".bam")
+        Int memory_gb = 50
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
+    Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
-        picard MarkDuplicates I=${bam} \
+        picard -Xmx${java_heap_size}g MarkDuplicates I=${bam} \
             O=${prefix}.duplicates.bam \
             VALIDATION_STRINGENCY=SILENT \
             CREATE_INDEX=false \
@@ -25,7 +27,7 @@ task mark_duplicates {
     }
 
     runtime {
-        memory: "50 GB"
+        memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
@@ -129,9 +131,10 @@ task sort {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
+    Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
-        picard SortSam I=${bam} \
+        picard -Xmx${java_heap_size}g SortSam I=${bam} \
            O=${output_filename} \
            SO=${sort_order} 
     }
