@@ -10,6 +10,7 @@ task fastqc {
         File bam
         Int ncpu = 1
         String prefix = basename(bam, ".bam")
+        Int memory_gb = 4
     }
 
     Float bam_size = size(bam, "GiB")
@@ -24,6 +25,7 @@ task fastqc {
     }
 
     runtime {
+        memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
     }
