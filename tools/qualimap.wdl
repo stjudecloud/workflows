@@ -50,18 +50,30 @@ task rnaseq {
         File bam
         File gencode_gtf
         String outdir = "qualimap_rnaseq"
-        String strand = "strand-specific-reverse"
         Int memory_gb = 16
         Int? disk_size_gb
         Int max_retries = 1
+        String strand = ""
+        String inferred = ""
     }
 
+    String stranded = if (strand != "") then 
+                        if (strand == "reverse") then "strand-specific-reverse" else
+                        if (strand == "yes") then "strand-specific-forward" else
+                        if (strand == "no") then "non-strand-specific"
+                        else "unknown-strand"
+                      else 
+                        if (inferred == "Stranded-Reverse") then "strand-specific-reverse" else
+                        if (inferred == "Stranded-Forward") then "strand-specific-forward" else 
+                        if (inferred == "Unstranded") then "non-strand-specific" else
+                        "unknown-strand" # this will intentionally cause htseq to error. You will need to manually specify
+                                         # in this case
     Float bam_size = size(bam, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 8) + 10)])
  
     command {
-        qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${strand} -pe --java-mem-size=14G
+        qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${stranded} -pe --java-mem-size=14G
     }
 
     runtime {
