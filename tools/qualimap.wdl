@@ -68,12 +68,15 @@ task rnaseq {
                         if (inferred == "Unstranded") then "non-strand-specific" else
                         "unknown-strand" # this will intentionally cause htseq to error. You will need to manually specify
                                          # in this case
+
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
     Float bam_size = size(bam, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 8) + 10)])
  
     command {
-        qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${stranded} -pe --java-mem-size=14G
+        qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${stranded} -pe --java-mem-size=${java_heap_size}G
     }
 
     runtime {
