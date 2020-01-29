@@ -28,6 +28,7 @@ task build_db {
         String ram_limit = "45000000000"
         Int memory_gb = 50
         Int? disk_size_gb
+        Int max_retries = 1
     }
 
     String stardb_out_name = stardb_dir_name + ".tar.gz"
@@ -52,6 +53,7 @@ task build_db {
         disk: disk_size + " GB"
         cpu: ncpu
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {
@@ -80,6 +82,7 @@ task alignment {
         String? read_groups
         Int memory_gb = 50
         Int? disk_size_gb
+        Int max_retries = 1
     }
     
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
@@ -117,6 +120,7 @@ task alignment {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {

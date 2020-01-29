@@ -22,10 +22,12 @@ task unzip {
     input {
         File infile
         String outfilename = basename(infile, ".gz")
+        Int max_retries = 1
     }
 
     runtime {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     command {

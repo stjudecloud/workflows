@@ -57,31 +57,33 @@ workflow rnaseq_standard {
         File stardb_tar_gz
         String strand = ""
         String output_prefix = "out"
+        Int max_retries = 1
     }
 
-    call util.get_read_groups { input: bam=input_bam }
-    call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out }
-    call b2fq.bam_to_fastqs { input: bam=input_bam }
+    call util.get_read_groups { input: bam=input_bam, max_retries=max_retries }
+    call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out, max_retries=max_retries }
+    call b2fq.bam_to_fastqs { input: bam=input_bam, max_retries=max_retries }
     call star.alignment {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,
             read_two_fastqs=bam_to_fastqs.read2s,
             stardb_tar_gz=stardb_tar_gz,
             output_prefix=output_prefix,
-            read_groups=prepare_read_groups_for_star.out
+            read_groups=prepare_read_groups_for_star.out,
+            max_retries=max_retries
     }
-    call picard.sort as picard_sort { input: bam=alignment.star_bam }
-    call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam }
-    call picard.validate_bam { input: bam=picard_sort.sorted_bam }
-    call qc.parse_validate_bam { input: in=validate_bam.out }
-    call fqc.fastqc { input: bam=picard_sort.sorted_bam }
-    call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf }
-    call qualimap.bamqc as qualimap_bamqc { input: bam=picard_sort.sorted_bam }
-    call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gencode_gtf=gencode_gtf }
-    call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, strand=strand, inferred=ngsderive_strandedness.strandedness}
-    call samtools.flagstat as samtools_flagstat { input: bam=picard_sort.sorted_bam }
-    call md5sum.compute_checksum { input: infile=picard_sort.sorted_bam }
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai }
+    call picard.sort as picard_sort { input: bam=alignment.star_bam, max_retries=max_retries }
+    call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
+    call picard.validate_bam { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
+    call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
+    call fqc.fastqc { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
+    call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
+    call qualimap.bamqc as qualimap_bamqc { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
+    call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gencode_gtf=gencode_gtf, max_retries=max_retries }
+    call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, strand=strand, inferred=ngsderive_strandedness.strandedness, max_retries=max_retries }
+    call samtools.flagstat as samtools_flagstat { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
+    call md5sum.compute_checksum { input: infile=picard_sort.sorted_bam, max_retries=max_retries }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, max_retries=max_retries }
     call mqc.multiqc {
         input:
             sorted_bam=picard_sort.sorted_bam,
@@ -91,7 +93,8 @@ workflow rnaseq_standard {
             fastqc_files=fastqc.out_files,
             flagstat_file=samtools_flagstat.outfile,
             bigwig_file=deeptools_bamCoverage.bigwig,
-            star_log=alignment.star_log
+            star_log=alignment.star_log, 
+            max_retries=max_retries
     }
 
     output {

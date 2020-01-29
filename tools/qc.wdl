@@ -8,6 +8,7 @@ task parse_validate_bam {
     input {
         String in
         Boolean strict = true
+        Int max_retries = 1
     }
  
     command {
@@ -27,6 +28,7 @@ task parse_validate_bam {
 
     runtime {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     meta {
@@ -43,6 +45,7 @@ task parse_validate_bam {
 task parse_infer_experiment {
     input {
         String in
+        Int max_retries = 1
     }
 
     command { 
@@ -76,6 +79,7 @@ task parse_infer_experiment {
 
     runtime {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {

@@ -15,6 +15,7 @@ task multiqc {
         File flagstat_file
         File bigwig_file
         File star_log
+        Int max_retries = 1
     }
 
     Float star_size = size(sorted_bam, "GiB")
@@ -49,6 +50,7 @@ task multiqc {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {

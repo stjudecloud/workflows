@@ -24,6 +24,7 @@ task md5sum_print_version {
 task compute_checksum {
     input {
         File infile
+        Int max_retries = 1
     }
 
     String outfilename = basename(infile) + ".md5"
@@ -37,6 +38,7 @@ task compute_checksum {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {
@@ -58,6 +60,7 @@ task compute_checksum {
 task check_checksum {
     input {
         File infile
+        Int max_retries = 1
     }
 
     Float infile_size = size(infile, "GiB")
@@ -70,6 +73,7 @@ task check_checksum {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {

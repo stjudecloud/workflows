@@ -11,6 +11,7 @@ task infer_experiment {
         Int? sample_size
         Int? map_qual
         File refgene_bed
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -24,6 +25,7 @@ task infer_experiment {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {

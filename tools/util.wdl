@@ -8,6 +8,7 @@ version 1.0
 task get_read_groups {
     input {
         File bam
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -20,6 +21,7 @@ task get_read_groups {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output { 
@@ -40,6 +42,7 @@ task get_read_groups {
 task prepare_read_groups_for_star {
     input {
         String read_groups
+        Int max_retries = 1
     }
 
     command <<<
@@ -48,6 +51,7 @@ task prepare_read_groups_for_star {
 
     runtime {
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output { 

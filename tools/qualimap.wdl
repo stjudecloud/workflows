@@ -10,6 +10,7 @@ task bamqc {
         File bam
         Int ncpu = 1
         String prefix = basename(bam, ".bam")
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -26,6 +27,7 @@ task bamqc {
         memory: "8 GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {
@@ -51,6 +53,7 @@ task rnaseq {
         String strand = "strand-specific-reverse"
         Int memory_gb = 16
         Int? disk_size_gb
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -65,6 +68,7 @@ task rnaseq {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {

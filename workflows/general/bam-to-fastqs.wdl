@@ -45,15 +45,16 @@ workflow bam_to_fastqs {
         File bam
         Int? samtools_sort_ncpu = 1
         Int bam_to_fastq_memory_gb = 40
+        Int max_retries = 1
     }
 
-    call samtools.quickcheck { input: bam=bam }
-    call samtools.split { input: ncpu=samtools_sort_ncpu, bam=bam }
+    call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
+    call samtools.split { input: ncpu=samtools_sort_ncpu, bam=bam, max_retries=max_retries }
     scatter (split_bam in split.split_bams) {
-        call picard.bam_to_fastq { input: bam=split_bam, memory_gb=bam_to_fastq_memory_gb }
+        call picard.bam_to_fastq { input: bam=split_bam, memory_gb=bam_to_fastq_memory_gb, max_retries=max_retries }
     }
     scatter (reads in zip(bam_to_fastq.read1, bam_to_fastq.read2)) {
-        call fq.fqlint { input: read1=reads.left, read2=reads.right}
+        call fq.fqlint { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
     }
 
     output {

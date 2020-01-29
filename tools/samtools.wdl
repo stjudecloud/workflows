@@ -22,6 +22,7 @@ task samtools_print_version {
 task quickcheck {
     input {
         File bam
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -34,6 +35,7 @@ task quickcheck {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     meta {
@@ -53,6 +55,7 @@ task split {
         Int? ncpu = 1
         Boolean? reject_unaccounted
         String prefix = basename(bam, ".bam")
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -72,6 +75,7 @@ task split {
         cpu: ncpu
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {
@@ -93,8 +97,8 @@ task split {
 task flagstat {
     input {
         File bam
-
         String outfilename = basename(bam, ".bam")+".flagstat.txt"
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -107,6 +111,7 @@ task flagstat {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output { 
@@ -128,6 +133,7 @@ task index {
     input {
         File bam
         String outfile = basename(bam)+".bai"
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -140,6 +146,7 @@ task index {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {

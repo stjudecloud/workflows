@@ -24,6 +24,7 @@ task fqlint {
     input {
         File read1
         File read2
+        Int max_retries = 1
     }
 
     Float read1_size = size(read1, "GiB")
@@ -33,6 +34,7 @@ task fqlint {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     command {

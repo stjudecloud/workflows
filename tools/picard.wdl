@@ -10,6 +10,7 @@ task mark_duplicates {
         File bam
         String prefix = basename(bam, ".bam")
         Int memory_gb = 50
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -30,6 +31,7 @@ task mark_duplicates {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {
@@ -50,6 +52,7 @@ task mark_duplicates {
 task validate_bam {
     input {
         File bam
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -63,6 +66,7 @@ task validate_bam {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {
@@ -85,6 +89,7 @@ task bam_to_fastq {
         File bam
         String prefix = basename(bam, ".bam")
         Int memory_gb = 40
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -103,6 +108,7 @@ task bam_to_fastq {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
 
     output {
@@ -127,6 +133,7 @@ task sort {
         String sort_order = "coordinate"
         String output_filename = basename(bam, ".bam") + ".sorted.bam"
         Int? memory_gb = 25
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -142,6 +149,7 @@ task sort {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
     }
     output {
         File sorted_bam = output_filename
