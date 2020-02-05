@@ -52,14 +52,16 @@ task mark_duplicates {
 task validate_bam {
     input {
         File bam
+        Int memory_gb = 8
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
+    Int java_heap_size = ceil(memory_gb * 0.9)
     
     command {
-        picard ValidateSamFile I=${bam} \
+        picard -Xmx${java_heap_size}g ValidateSamFile I=${bam} \
             IGNORE=INVALID_PLATFORM_VALUE > stdout.txt
     }
 
