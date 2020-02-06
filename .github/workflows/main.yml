@@ -18,9 +18,9 @@ jobs:
     - name: Run miniwdl
       run: |
         files=$(find . -name '*.wdl')
-        for file in files; do
+        for file in $files; do
           sed -i 's/https:\/\/raw\.githubusercontent\.com\/stjudecloud\/workflows\/master\///g' $file
         done
-        for file in files; do
+        for file in $files; do
           miniwdl check $file
         done
