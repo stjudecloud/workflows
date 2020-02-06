@@ -66,6 +66,7 @@ task validate_bam {
     }
 
     runtime {
+        memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
