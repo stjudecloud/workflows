@@ -19,7 +19,7 @@ jobs:
       run: |
         files=$(find . -name '*.wdl')
         for file in $files; do
-          sed -i "s/https:\/\/raw\.githubusercontent\.com\/stjudecloud\/workflows\/master/$(pwd)/g" "$file"
+          sed -i 's,https://raw.githubusercontent.com/stjudecloud/workflows/master,'"$(pwd)"',g' "$file"
         done
         for file in $files; do
           miniwdl check $file
