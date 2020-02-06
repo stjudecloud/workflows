@@ -17,4 +17,10 @@ jobs:
         pip install miniwdl
     - name: Run miniwdl
       run: |
-        miniwdl check workflows/rnaseq/rnaseq-standard.wdl
+        files=$(find . -name '*.wdl')
+        for file in files; do
+          sed -i 's/https:\/\/raw\.githubusercontent\.com\/stjudecloud\/workflows\/master\///g' $file
+        done
+        for file in files; do
+          miniwdl check $file
+        done
