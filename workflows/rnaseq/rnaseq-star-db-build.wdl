@@ -37,7 +37,6 @@ version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/gzip.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/wget.wdl"
 
 workflow rnaseq_star_db_build {
