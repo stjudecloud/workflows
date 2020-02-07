@@ -17,10 +17,12 @@ jobs:
         pip install miniwdl
     - name: Run miniwdl
       run: |
-        files=$(find . -name '*.wdl')
-        for file in $files; do
+        EXITCODE=0
+        echo "Checking WDL files using \`miniwdl check\`."
+        for file in $(find . -name '*.wdl'); do
+          echo "  [*] $file"
           sed -i 's,https://raw.githubusercontent.com/stjudecloud/workflows/master,'"$(pwd)"',g' "$file"
+          miniwdl check $file > /dev/null 
+          EXITCODE=$(($? || $EXITCODE))
         done
-        for file in $files; do
-          miniwdl check $file
-        done
+        exit $EXITCODE 
