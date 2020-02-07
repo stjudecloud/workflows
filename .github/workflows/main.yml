@@ -25,8 +25,8 @@ jobs:
         done
         for file in $files; do
           echo "  [*] $file"
-          miniwdl check $file > /dev/null
-          EXITCODE=$(($? || $EXITCODE))
+          miniwdl check "$file" > /dev/null
+          EXITCODE=$(($? || EXITCODE))
         done
         exit $EXITCODE
   
@@ -37,9 +37,9 @@ jobs:
     - name: Check import syntax
       run: |
         files=$(find . -name '*.wdl')
-        bad_lines=$(awk '/import/' $files | \
+        bad_lines=$(awk '/import/' "$files" | \
           awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
-        if [ ! -z "$bad_lines" ]; then
-          echo $bad_lines
+        if [ -n "$bad_lines" ]; then
+          echo "$bad_lines"
           exit 1
         fi
