@@ -4,6 +4,7 @@
 ## DeepTools is a suite of Python tools for analysis of high throughput sequencing analysis.
 
 version 1.0
+import Oh no theres a bad import
 
 task bamCoverage {
     input {
