@@ -3,7 +3,7 @@ name: CI
 on: [push]
 
 jobs:
-  check:
+  miniwdl_check:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -24,3 +24,15 @@ jobs:
         for file in $files; do
           miniwdl check $file
         done
+  
+  import_syntax_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check import syntax
+      run: |
+        files=$(find . -name '*.wdl')
+        bad_lines=$(awk '!/import.*master/' $files)
+        if [ -z "$bad_lines" ];
+          exit 1
+        fi
