@@ -35,5 +35,5 @@ jobs:
         bad_lines=$(grep import $files | grep -v master)
         if [ ! -z "$bad_lines" ]; then
           echo $bad_lines
-          exit 1
+          exit 42
         fi
