@@ -56,10 +56,11 @@ task split {
         Boolean? reject_unaccounted
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
+        Int? disk_size_gb
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
     command {
         samtools split --threads ${ncpu} -u ${prefix}.unaccounted_reads.bam -f '%*_%!.%.' ${bam}
