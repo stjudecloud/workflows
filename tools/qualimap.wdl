@@ -11,20 +11,23 @@ task bamqc {
         Int ncpu = 1
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
+        Int memory_gb = 8
+        Int? disk_size_gb
     }
+    Int java_heap_size = ceil(memory_gb * 0.9)
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
     command {
         qualimap bamqc -bam ${bam} \
             -outdir ${prefix}_qualimap_results \
             -nt ${ncpu} \
-            --java-mem-size=6g
+            --java-mem-size=${java_heap_size}g
     }
 
     runtime {
-        memory: "8 GB"
+        memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
