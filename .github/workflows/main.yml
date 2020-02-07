@@ -3,7 +3,7 @@ name: CI
 on: [push]
 
 jobs:
-  check:
+  miniwdl_check:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -17,10 +17,29 @@ jobs:
         pip install miniwdl
     - name: Run miniwdl
       run: |
+        EXITCODE=0
+        echo "Checking WDL files using \`miniwdl check\`."
         files=$(find . -name '*.wdl')
         for file in $files; do
           sed -i 's,https://raw.githubusercontent.com/stjudecloud/workflows/master,'"$(pwd)"',g' "$file"
         done
         for file in $files; do
-          miniwdl check $file
+          echo "  [*] $file"
+          miniwdl check $file > /dev/null
+          EXITCODE=$(($? || $EXITCODE))
         done
+        exit $EXITCODE
+  
+  import_syntax_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check import syntax
+      run: |
+        files=$(find . -name '*.wdl')
+        bad_lines=$(awk '/import/' $files | \
+          awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
+        if [ ! -z "$bad_lines" ]; then
+          echo $bad_lines
+          exit 1
+        fi
