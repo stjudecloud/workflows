@@ -32,15 +32,16 @@ jobs:
     - name: Check import syntax
       run: |
         files=$(find . -name '*.wdl')
-        echo $files
         lines_with_import=$(grep import $files)
-        echo $lines_with_import
-        set +e
-        lines_without_master=$(grep -v master <<< $lines_with_import)
-        set -e
-        echo $lines_without_master
-        #bad_lines=$(grep import $files | grep -v master)
-        if [ ! -z "$lines_without_master" ]; then
-          #echo $bad_lines
+        set +e # it's ok if grep has an RC of 1
+        bad_lines=$(grep import $files | grep -v master)
+        RC=$?
+        set -e # go back to quitting on non 0 RCs
+        if [ "$RC" -gt 1 ]; then
+          echo Something went wrong during grep command
+          exit $RC
+        fi
+        if [ ! -z "$bad_lines" ]; then
+          echo $bad_lines
           exit 1
         fi
