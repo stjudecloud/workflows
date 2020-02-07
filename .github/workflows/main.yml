@@ -32,7 +32,7 @@ jobs:
     - name: Check import syntax
       run: |
         files=$(find . -name '*.wdl')
-        bad_lines=$(awk '!/import.*master/' $files)
+        bad_lines=$(grep import $files | grep -v master)
         if [ -z "$bad_lines" ]; then
           exit 1
         fi
