@@ -33,4 +33,7 @@ jobs:
       run: |
         files=$(find . -name '*.wdl')
         bad_lines=$(grep import $files | grep -v master)
-        [ ! -z "$bad_lines" ] && exit 1
+        if [ ! -z "$bad_lines" ]; then
+          echo $bad_lines
+          exit 1
+        fi
