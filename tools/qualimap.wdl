@@ -76,7 +76,7 @@ task rnaseq {
 
     Float bam_size = size(bam, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 8) + 10)])
+    Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 12) + 10)])
  
     command {
         qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${stranded} -pe --java-mem-size=${java_heap_size}G
