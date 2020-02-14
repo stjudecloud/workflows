@@ -100,6 +100,7 @@ task flagstat {
         File bam
         String outfilename = basename(bam, ".bam")+".flagstat.txt"
         Int max_retries = 1
+	Int memory_gb = 5
     }
 
     Float bam_size = size(bam, "GiB")
@@ -111,6 +112,7 @@ task flagstat {
 
     runtime {
         disk: disk_size + " GB"
+        memory: memory_gb + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
     }
@@ -135,6 +137,7 @@ task index {
         File bam
         String outfile = basename(bam)+".bai"
         Int max_retries = 1
+	Int memory_gb = 15
     }
 
     Float bam_size = size(bam, "GiB")
@@ -146,6 +149,7 @@ task index {
 
     runtime {
         disk: disk_size + " GB"
+	memory: memory_gb + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
     }

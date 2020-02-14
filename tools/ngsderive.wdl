@@ -12,6 +12,7 @@ task infer_strand {
         File bai
         File gtf
         Int max_retries = 1
+	Int memory_gb = 5
     }
 
     Float bam_size = size(bam, "GiB")
@@ -26,6 +27,7 @@ task infer_strand {
 
     runtime {
         disk: disk_size + " GB"
+        memory: memory_gb + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
     }
