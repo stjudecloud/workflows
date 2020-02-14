@@ -136,11 +136,12 @@ task sort {
         String sort_order = "coordinate"
         String output_filename = basename(bam, ".bam") + ".sorted.bam"
         Int? memory_gb = 25
+        Int? disk_size_gb
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 4) + 10)
+    Int disk_size = select_first([disk_size_gb, ceil((bam_size * 4) + 10)])
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
