@@ -12,7 +12,7 @@ task infer_strand {
         File bai
         File gtf
         Int max_retries = 1
-	Int memory_gb = 5
+        Int memory_gb = 5
     }
 
     Float bam_size = size(bam, "GiB")

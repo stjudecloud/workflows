@@ -11,7 +11,7 @@ task bamCoverage {
         File bai
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
-	Int memory_gb = 5
+        Int memory_gb = 5
     }
 
     Float bam_size = size(bam, "GiB")
@@ -28,7 +28,7 @@ task bamCoverage {
 
     runtime {
         disk: disk_size + " GB"
-	memory: memory_gb + " GB"
+        memory: memory_gb + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
     }
