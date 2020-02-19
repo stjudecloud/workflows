@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:4.7.12-alpine
+FROM continuumio/miniconda3:4.7.12
 
 RUN /opt/conda/bin/conda create -n star \
                  -c bioconda \

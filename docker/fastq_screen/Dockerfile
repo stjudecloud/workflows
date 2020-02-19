@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:latest
+FROM continuumio/miniconda3:4.7.12
 
 RUN /opt/conda/bin/conda create -n fastq_screen \
                  -c bioconda \
@@ -8,5 +8,4 @@ RUN /opt/conda/bin/conda create -n fastq_screen \
     && /opt/conda/bin/conda clean --all
 ENV PATH /opt/conda/envs/fastq_screen/bin:$PATH
 
-CMD [ "-h" ]
 ENTRYPOINT [ "fastq_screen" ]

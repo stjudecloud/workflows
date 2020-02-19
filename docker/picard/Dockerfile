@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:4.7.12-alpine
+FROM continuumio/miniconda3:4.7.12
 
 RUN /opt/conda/bin/conda create -n picard \
                  -c bioconda \
@@ -9,4 +9,4 @@ RUN /opt/conda/bin/conda create -n picard \
     && /opt/conda/bin/conda clean --all
 ENV PATH /opt/conda/envs/picard/bin:$PATH
 
-ENTRYPOINT [ "/usr/bin/env", "bash", "-c", "bash picard"]
+ENTRYPOINT [ "/usr/bin/env", "bash", "-c", "bash picard" ]
