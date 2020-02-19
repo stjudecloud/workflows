@@ -5,8 +5,9 @@
 **/*.bam
 **/*.log
 
-# Blacklist Cromwell files
+# Blacklist Cromwell and Womtool files
 **/cromwell*
+**/womtool*
 
 # Blacklist OS generated files
 .DS_Store
