@@ -37,3 +37,33 @@ task infer_strand {
         File strandedness_file = stdout()
     }
 }
+
+task read_length {
+    input {
+        File bam
+        File bai
+        Int max_retries = 1
+        Int memory_gb = 5
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil(((bam_size) * 2) + 10)
+ 
+    command {
+        mv ~{bai} ~{bam}.bai 
+        ngsderive readlen ~{bam} | awk 'NR > 1' | cut -d$'\t' -f5
+    }
+
+    runtime {
+        disk: disk_size + " GB"
+        memory: memory_gb + " GB"
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
+    }
+
+    output {
+        String read_length = read_string(stdout())
+        File read_length_file = stdout()
+    }
+
+}
