@@ -62,7 +62,8 @@ task validate_bam {
     
     command {
         picard -Xmx${java_heap_size}g ValidateSamFile I=${bam} \
-            IGNORE=INVALID_PLATFORM_VALUE > stdout.txt
+            IGNORE=INVALID_PLATFORM_VALUE \
+            IGNORE=MISSING_PLATFORM_VALUE > stdout.txt
     }
 
     runtime {
