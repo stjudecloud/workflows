@@ -24,51 +24,96 @@ version 1.0
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qc.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
-#import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
 
 workflow quality_check {
     input {
+        File gencode_gtf
+        String experiment
         File bam
+        String strand = ""
         Int max_retries = 1
     }
 
-    call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call picard.validate_bam { input: bam=bam, max_retries=max_retries }
-    call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
-    call qualimap.bamqc as qualimap_bamqc { input: bam=bam, max_retries=max_retries }
-#    call qualimap.rnaseq as qualimap_rnaseq { input: bam=bam, gencode_gtf=gencode_gtf, strand=strand, inferred=ngsderive_strandedness.strandedness, max_retries=max_retries }
-    call fqc.fastqc { input: bam=bam, max_retries=max_retries }
-    call samtools.flagstat as samtools_flagstat { input: bam=bam, max_retries=max_retries }
-    call samtools.index as samtools_index { input: bam=bam, max_retries=max_retries }
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=bam, bai=samtools_index.bai, max_retries=max_retries }
-#    call ngsderive.infer_strand as ngsderive_strandedness { input: bam=bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
-    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
-    call mqc.multiqc {
+    call parse_input {
         input:
-            sorted_bam=bam,
-            validate_sam_string=validate_bam.out,
-            qualimap_bamqc=qualimap_bamqc.out_files,
-#            qualimap_rnaseq=qualimap_rnaseq.out_files,
-            fastqc_files=fastqc.out_files,
-            flagstat_file=samtools_flagstat.outfile,
-            bigwig_file=deeptools_bamCoverage.bigwig,
-            max_retries=max_retries
+            input_experiment=experiment,
+            input_bam=bam,
+            input_strand=strand
+    }
+
+    call samtools.quickcheck { input: bam=parse_input.bam_dup, max_retries=max_retries }
+    call picard.validate_bam { input: bam=parse_input.bam_dup, max_retries=max_retries }
+    call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
+    call samtools.index as samtools_index { input: bam=parse_input.bam_dup, max_retries=max_retries }
+    call qualimap.bamqc as qualimap_bamqc { input: bam=parse_input.bam_dup, max_retries=max_retries }
+    call fqc.fastqc { input: bam=parse_input.bam_dup, max_retries=max_retries }
+    call samtools.flagstat as samtools_flagstat { input: bam=parse_input.bam_dup, max_retries=max_retries }
+    call md5sum.compute_checksum { input: infile=parse_input.bam_dup, max_retries=max_retries }
+
+    if (experiment == "RNA") {
+        call ngsderive.infer_strand as ngsderive_strandedness { input: bam=parse_input.bam_dup, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam=parse_input.bam_dup, gencode_gtf=gencode_gtf, strand=strand, inferred=ngsderive_strandedness.strandedness, max_retries=max_retries }
+        call mqc.multiqc as multiqc_rnaseq {
+            input:
+                sorted_bam=parse_input.bam_dup,
+                validate_sam_string=validate_bam.out,
+                qualimap_bamqc=qualimap_bamqc.out_files,
+                qualimap_rnaseq=qualimap_rnaseq.out_files,
+                fastqc_files=fastqc.out_files,
+                flagstat_file=samtools_flagstat.outfile,
+                max_retries=max_retries
+        }
+    }
+    if (experiment != "RNA") {
+        call mqc.multiqc {
+            input:
+                sorted_bam=parse_input.bam_dup,
+                validate_sam_string=validate_bam.out,
+                qualimap_bamqc=qualimap_bamqc.out_files,
+                fastqc_files=fastqc.out_files,
+                flagstat_file=samtools_flagstat.outfile,
+                max_retries=max_retries
+        }
     }
 
     output {
         File bam_checksum = compute_checksum.outfile
         File bam_index = samtools_index.bai
-        File bigwig = deeptools_bamCoverage.bigwig
         File flagstat = samtools_flagstat.outfile
         Array[File] fastqc_results = fastqc.out_files
         Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
-#        Array[File] qualimap_rnaseq_results = qualimap_rnaseq.out_files
-        File multiqc_zip = multiqc.out
-#        File inferred_strandedness = ngsderive_strandedness.strandedness_file
+        Array[File]? qualimap_rnaseq_results = qualimap_rnaseq.out_files
+        File? multiqc_zip = multiqc.out
+        File? multiqc_rnaseq_zip = multiqc_rnaseq.out
+        File? inferred_strandedness = ngsderive_strandedness.strandedness_file
+    }
+}
+
+task parse_input {
+    input {
+        String input_experiment
+        File input_bam
+        String input_strand = ""
+    }
+
+    command {
+        if [ "~{input_experiment}" != "WGS" ] && [ "~{input_experiment}" != "WES" ] && [ "~{input_experiment}" != "RNA" ]; then
+            >&2 echo "experiment input must be 'WGS', 'WES', or 'RNA'"
+            exit 1
+        fi
+
+        if [ -z "~{input_strand}" ] && [ "~{input_strand}" != "reverse" ] && [ "~{input_strand}" != "yes" ] && [ "~{input_strand}" != "no" ]; then
+            >&2 echo "strand must be empty, 'reverse', 'yes', or 'no'"
+            exit 1
+        fi
+    }
+
+    output {
+        File bam_dup = input_bam
     }
 }

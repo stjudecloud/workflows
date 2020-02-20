@@ -10,11 +10,11 @@ task multiqc {
         File sorted_bam
         String validate_sam_string
         Array[File] qualimap_bamqc
-        Array[File] qualimap_rnaseq
+        Array[File]? qualimap_rnaseq
         Array[File] fastqc_files
         File flagstat_file
-        File bigwig_file
-        File star_log
+        File? bigwig_file
+        File? star_log
         Int max_retries = 1
     }
 
