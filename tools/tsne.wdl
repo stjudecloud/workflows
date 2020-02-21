@@ -15,8 +15,8 @@ task plot {
     }
 
     command {
-        itsne-main -b ${blacklist} -g ${gencode_gtf} -c ${covariates} -o ${outfile} \
-            ${true='--input-sample ' false='' defined(inputs)}${sep='--input-sample ' inputs} \
+        itsne-main --debug-rscript -b ${blacklist} -g ${gencode_gtf} -c ${covariates} -o ${outfile} \
+            ${true='--input-sample ' false='' defined(inputs)}${sep=' --input-sample ' inputs} \
             ${sep=' ' counts} ${sep=' ' input_counts}
     }
   

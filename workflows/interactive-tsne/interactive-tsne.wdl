@@ -33,7 +33,8 @@ workflow interactive_tsne {
 
     call gzip.unzip as uncompress_gencode { input: infile=gencode_gtf }
     scatter (bam in in_bams) {
-        call rnav2.rnaseq_standard { input: gencode_gtf=uncompress_gencode.outfile, input_bam=bam, stardb_tar_gz=stardb }
+        call util.file_basename as bam_name { input: in_file=bam, suffix=".bam" }
+        call rnav2.rnaseq_standard { input: gencode_gtf=uncompress_gencode.outfile, input_bam=bam, stardb_tar_gz=stardb, output_prefix=bam_name.out + '.' }
     }
 
     if (! defined(reference_counts)){
@@ -58,16 +59,17 @@ workflow interactive_tsne {
     call tar.untar { input: infile=unzip.outfile }
 
     scatter (bam in in_bams){
-        call util.file_basename { input: in_file=bam, suffix=".bam" }
+        call util.file_prefix { input: in_file=bam }
     }
 
     # generate covariates information for input samples and add to covariates file.
-    call tsne.append_input { input: inputs=file_basename.out, covariates_infile=covariates_input}
+    
+    call tsne.append_input { input: inputs=file_prefix.out, covariates_infile=covariates_input}
     
     call tsne.plot {
         input:
             counts=untar.outfiles,
-            inputs=file_basename.out,
+            inputs=file_prefix.out,
             input_counts=rnaseq_standard.gene_counts,
             blacklist=blacklist_download.outfile,
             covariates=append_input.covariates_outfile,
