@@ -1,3 +1,9 @@
+## Description:
+##
+## This WDL tool implements a t-SNE (t-Distribute Stochastic Neighbor Embedding) plot to 
+## visualize the relationship between input samples and a reference data set.
+## [https://lvdmaaten.github.io/tsne/]
+
 version 1.0
 
 task plot {
@@ -63,6 +69,11 @@ task validate_tissue_type {
         memory: memory_gb + " GB"
     }
 
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+    }
+
     parameter_meta {
         tissue_type: {
             help: "Provide the tissue type to compare against: [blood, brain, solid]"
@@ -93,5 +104,13 @@ task append_input {
         File covariates_outfile = "covariates.combined.tsv"
     }
 
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+    }
 
+    parameter_meta {
+        inputs: "An array of input samples to append to the covariates file"
+        covariates_infile: "A file of covariate data with the format 'sample\tdiagnosis\tstrandedness\tlibrary_type\tread_length'"
+    }
 }

@@ -1,3 +1,41 @@
+## Description:
+##
+## This WDL workflow remaps input bams and compares them to St. Jude RNA-seq samples using 
+## a t-SNE plot. 
+##
+## Inputs:
+##
+## in_bams - bams to compare to reference data
+## tissue_type - tissue type of the input samples [blood, brain, solid]
+## gencode_gtf - Gencode annotation file
+##
+## Output:
+##
+## tsne_plot - t-SNE plot including the input samples compared to reference data
+## generated_counts - RNAseq count data for the input bams
+## generated_mappings - Bam output from the St. Jude Cloud RNA-seq workflow for each input bam
+##
+## LICENSING:
+## 
+## MIT License
+##
+## Copyright 2020 St. Jude Children's Research Hospital
+##
+## Permission is hereby granted, free of charge, to any person obtaining a copy of this
+## software and associated documentation files (the "Software"), to deal in the Software
+## without restriction, including without limitation the rights to use, copy, modify, merge,
+## publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+## to whom the Software is furnished to do so, subject to the following conditions:
+##
+## The above copyright notice and this permission notice shall be included in all copies or
+## substantial portions of the Software.
+##
+## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+## BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+## NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 version 1.0
 
 import "../rnaseq/rnaseq-standard.wdl" as rnav2
