@@ -27,8 +27,6 @@ task infer_strand {
             | awk 'NR > 1' | cut -d$'\t' -f5 > ${out_file}
     }
 
-    Array[String] tmp_arr = read_lines(out_file)
-
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
@@ -36,7 +34,7 @@ task infer_strand {
     }
 
     output {
-        String strandedness = select_first(tmp_arr)
+        String strandedness = read_string(out_file)
         File strandedness_file = out_file
     }
 }
