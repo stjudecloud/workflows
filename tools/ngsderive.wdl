@@ -11,11 +11,10 @@ task infer_strand {
         File bam
         File bai
         File gtf
-        String output_prefix
         Int max_retries = 1
     }
 
-    File out_file = output_prefix + "strandedness.txt"
+    File out_file = basename(bam, ".bam") + ".strandedness.txt"
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(((bam_size) * 2) + 10)
  
