@@ -81,7 +81,7 @@ task append_input {
         cat ${covariates_infile} > "covariates.combined.tsv"
         for sample in ${sep=" " inputs}
         do
-            echo -e "$sample\tinput\tinput\tinput\tinput"
+            echo -e "$sample\t$sample\tinput\tinput\tinput"
         done >> "covariates.combined.tsv"
     }
 

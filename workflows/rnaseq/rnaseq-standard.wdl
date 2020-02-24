@@ -55,7 +55,7 @@ workflow rnaseq_standard {
         File gencode_gtf
         File input_bam
         File stardb_tar_gz
-        String? strand = ""
+        String strand = ""
         String output_prefix = basename(input_bam, ".bam")
         Int max_retries = 1
     }

@@ -66,7 +66,7 @@ workflow interactive_tsne {
     
     call tsne.append_input { input: inputs=file_prefix.out, covariates_infile=covariates_input}
     
-    call tsne.plot {
+    call tsne.plot as generate_plot{
         input:
             counts=untar.outfiles,
             inputs=file_prefix.out,
@@ -77,4 +77,9 @@ workflow interactive_tsne {
             outfile=outfile
     }
      
+    output {
+        File tsne_plot = generate_plot.html
+        Array[File] generated_counts = rnaseq_standard.gene_counts
+        Array[File] generated_mappings = rnaseq_standard.bam
+    } 
 }
