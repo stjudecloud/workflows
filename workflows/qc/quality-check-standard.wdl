@@ -107,7 +107,7 @@ task parse_input {
             exit 1
         fi
 
-        if [ -z "~{input_strand}" ] && [ "~{input_strand}" != "reverse" ] && [ "~{input_strand}" != "yes" ] && [ "~{input_strand}" != "no" ]; then
+        if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "reverse" ] && [ "~{input_strand}" != "yes" ] && [ "~{input_strand}" != "no" ]; then
             >&2 echo "strand must be empty, 'reverse', 'yes', or 'no'"
             exit 1
         fi
