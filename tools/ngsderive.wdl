@@ -15,7 +15,7 @@ task infer_strand {
         Int max_retries = 1
     }
 
-    File strandedness_file = output_prefix + "strandedness.txt"
+    File out_file = output_prefix + "strandedness.txt"
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(((bam_size) * 2) + 10)
  
@@ -24,10 +24,10 @@ task infer_strand {
         tabix -p gff annotation.gtf.gz
         mv ~{bai} ~{bam}.bai 
         ngsderive strandedness ~{bam} -g annotation.gtf.gz \
-            | awk 'NR > 1' | cut -d$'\t' -f5 > ${strandedness_file}
+            | awk 'NR > 1' | cut -d$'\t' -f5 > ${out_file}
     }
 
-    Array[String] tmp_arr = read_lines(strandedness_file)
+    Array[String] tmp_arr = read_lines(out_file)
 
     runtime {
         disk: disk_size + " GB"
@@ -37,6 +37,6 @@ task infer_strand {
 
     output {
         String strandedness = select_first(tmp_arr)
-        File strandedness_file = strandedness_file
+        File strandedness_file = out_file
     }
 }
