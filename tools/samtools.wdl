@@ -52,7 +52,7 @@ task quickcheck {
 task split {
     input {
         File bam
-        Int? ncpu = 1
+        Int ncpu = 1
         Boolean? reject_unaccounted
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
