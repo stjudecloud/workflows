@@ -37,7 +37,7 @@ jobs:
     - name: Check import syntax
       run: |
         files=$(find . -name '*.wdl')
-        bad_lines=$(awk '/import/' "$files" | \
+        bad_lines=$(awk '/import/' $files | \
           awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
         if [ -n "$bad_lines" ]; then
           echo "$bad_lines"
