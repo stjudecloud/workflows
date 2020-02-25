@@ -31,7 +31,7 @@ task untar {
 
     command {
         mkdir tar_output
-        tar  --no-same-owner -xf ${infile} -C tar_output
+        tar --no-same-owner -xf ${infile} -C tar_output
     }
 
     output {
