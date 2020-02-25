@@ -1,9 +1,8 @@
-FROM continuumio/miniconda3:4.7.12
+FROM sjcloud-conda
 
-RUN /opt/conda/bin/conda create -n star \
-                 -c bioconda \
+RUN conda create -n star \
                  star==2.7.1a -y \
-    && /opt/conda/bin/conda clean --all
+    && conda clean --all
 ENV PATH /opt/conda/envs/star/bin:$PATH
 
 ENTRYPOINT [ "STAR" ]
