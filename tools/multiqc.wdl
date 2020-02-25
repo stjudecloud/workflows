@@ -17,7 +17,6 @@ task multiqc {
         File star_log
         Int max_retries = 1
         Int memory_gb = 5
-
     }
 
     Float star_size = size(sorted_bam, "GiB")
