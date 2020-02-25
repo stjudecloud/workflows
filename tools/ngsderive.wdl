@@ -46,12 +46,13 @@ task read_length {
         Int memory_gb = 5
     }
 
+    String out_file = basename(bam, ".bam") + ".readlength.txt"
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(((bam_size) * 2) + 10)
  
     command {
         mv ~{bai} ~{bam}.bai 
-        ngsderive readlen ~{bam} | awk 'NR > 1' | cut -d$'\t' -f5
+        ngsderive readlen ~{bam} | awk 'NR > 1' | cut -d$'\t' -f5 > ~{out_file}
     }
 
     runtime {
@@ -62,8 +63,8 @@ task read_length {
     }
 
     output {
-        String read_length = read_string(stdout())
-        File read_length_file = stdout()
+        String computed_read_length = read_string(out_file)
+        File read_length_file = out_file
     }
 
 }
