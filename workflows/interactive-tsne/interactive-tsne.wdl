@@ -58,7 +58,7 @@ workflow interactive_tsne {
     }
     
     if(! defined(gene_blacklist)){
-        String blacklist_url = "https://stjudecloud.blob.core.windows.net/interactive-tsne/gene.blacklist.tsv"
+        String blacklist_url = "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/gene.blacklist.tsv"
         call wget.download as blacklist_download { input: url=blacklist_url, outfilename="blacklist.txt" }
     }
 
@@ -82,15 +82,15 @@ workflow interactive_tsne {
 
     if (! defined(reference_counts)){
         # Based on tissue type selection we can provide reference data
-        String reference_url = if (tissue_type == 'blood') then "https://stjudecloud.blob.core.windows.net/interactive-tsne/blood_counts.tar.gz" else
-                               if (tissue_type == 'brain') then "https://stjudecloud.blob.core.windows.net/interactive-tsne/brain_counts.tar.gz" else
-                               if (tissue_type == 'solid') then "https://stjudecloud.blob.core.windows.net/interactive-tsne/solid_counts.tar.gz"
+        String reference_url = if (tissue_type == 'blood') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/blood_counts.tar.gz" else
+                               if (tissue_type == 'brain') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/brain_counts.tar.gz" else
+                               if (tissue_type == 'solid') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/solid_counts.tar.gz"
                                else "" 
         call wget.download as reference_counts_download { input: url=reference_url, outfilename="counts.tar.gz"}
 
-        String covariates_url = if (tissue_type == 'blood') then "https://stjudecloud.blob.core.windows.net/interactive-tsne/blood_covariates.test.tsv" else
-                               if (tissue_type == 'brain') then "https://stjudecloud.blob.core.windows.net/interactive-tsne/brain_covariates.test.tsv" else
-                               if (tissue_type == 'solid') then "https://stjudecloud.blob.core.windows.net/interactive-tsne/solid_covariates.test.tsv"
+        String covariates_url = if (tissue_type == 'blood') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/blood_covariates.test.tsv" else
+                               if (tissue_type == 'brain') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/brain_covariates.test.tsv" else
+                               if (tissue_type == 'solid') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/solid_covariates.test.tsv"
                                else "" 
         call wget.download as covariates_download { input: url=covariates_url, outfilename="covariates.tsv" }
     }
