@@ -1,4 +1,4 @@
-FROM sjcloud-conda
+FROM conda-base
 
 RUN conda create -n star \
         star==2.7.1a -y \

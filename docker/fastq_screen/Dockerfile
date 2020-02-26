@@ -1,4 +1,4 @@
-FROM sjcloud-conda
+FROM conda-base
 
 RUN conda create -n fastq_screen \
         fastq-screen==0.13.0 \

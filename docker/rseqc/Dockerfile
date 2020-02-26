@@ -1,4 +1,4 @@
-FROM sjcloud-conda
+FROM conda-base
 
 RUN conda create -n rseqc \
         rseqc==3.0.0 \

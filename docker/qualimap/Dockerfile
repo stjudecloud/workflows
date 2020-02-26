@@ -1,4 +1,4 @@
-FROM sjcloud-conda
+FROM conda-base
 
 RUN conda create -n qualimap \
         qualimap==2.2.2c \

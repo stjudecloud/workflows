@@ -1,4 +1,4 @@
-FROM sjcloud-conda
+FROM conda-base
 
 RUN conda create -n picard \
         picard==2.20.2 \
