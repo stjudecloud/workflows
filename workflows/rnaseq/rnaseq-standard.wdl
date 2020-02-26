@@ -9,9 +9,12 @@
 ##
 ## Inputs:
 ##
-## reference_fasta - the genome for which to generate STAR reference files in FASTA format 
-## gencode_gtf - the gene model file for the reference genome to use when generating STAR reference files 
+## gencode_gtf - the gene model file for the reference genome to use when generating STAR reference files
 ## bam - input BAM file to realign
+## stardb_tar_gz - the star db folder in tar.gz format. Refer to 'bootstrap-reference' workflow on how to generate it.
+## strand - string of the file's strandedness (yes/no/reverse)
+## output_prefix - output prefix to add to output files
+## max_retries - number of times to retry from retryable failures
 ##
 ## LICENSING:
 ##
@@ -107,7 +110,7 @@ workflow rnaseq_standard {
         Array[File] fastqc_results = fastqc.out_files
         Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
         Array[File] qualimap_rnaseq_results = qualimap_rnaseq.out_files
-        File multiqc_zip = multiqc.out
+        File multiqc_tar_gz = multiqc.out
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
     }
 }
