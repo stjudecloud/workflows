@@ -39,8 +39,8 @@
 version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/rnaseq/rnaseq-standard.wdl" as rnav2
-import "https://raw.githubusercontent.com/stjudecloud/workflows/mastertools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/mastertools/tsne.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tsne.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tar.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/gzip.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/wget.wdl"
