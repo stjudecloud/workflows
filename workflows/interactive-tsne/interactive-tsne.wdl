@@ -71,8 +71,8 @@ workflow interactive_tsne {
 
     call gzip.unzip as uncompress_gencode { input: infile=gencode_gtf }
     scatter (bam in in_bams) {
-        call util.file_basename as bam_name { input: in_file=bam, suffix=".bam" }
-        call rnav2.rnaseq_standard { input: gencode_gtf=uncompress_gencode.outfile, input_bam=bam, stardb_tar_gz=stardb, output_prefix=bam_name.out + '.' }
+        String name = basename(bam, ".bam")
+        call rnav2.rnaseq_standard { input: gencode_gtf=uncompress_gencode.outfile, input_bam=bam, stardb_tar_gz=stardb, output_prefix=name + '.' }
     }
 
     if (! defined(reference_counts)){
