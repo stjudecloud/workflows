@@ -10,7 +10,7 @@ task tar_print_version {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'ubuntu:18.04'
     }
 
     output {
