@@ -38,12 +38,12 @@
 
 version 1.0
 
-import "../rnaseq/rnaseq-standard.wdl" as rnav2
-import "../../tools/util.wdl"
-import "../../tools/tsne.wdl"
-import "../../tools/tar.wdl"
-import "../../tools/gzip.wdl"
-import "../../tools/wget.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/rnaseq/rnaseq-standard.wdl" as rnav2
+import "https://raw.githubusercontent.com/stjudecloud/workflows/mastertools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/mastertools/tsne.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tar.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/gzip.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/wget.wdl"
 
 workflow interactive_tsne {
     input { 
