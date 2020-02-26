@@ -88,9 +88,9 @@ workflow interactive_tsne {
                                else "" 
         call wget.download as reference_counts_download { input: url=reference_url, outfilename="counts.tar.gz"}
 
-        String covariates_url = if (tissue_type == 'blood') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/blood_covariates.test.tsv" else
-                               if (tissue_type == 'brain') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/brain_covariates.test.tsv" else
-                               if (tissue_type == 'solid') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/solid_covariates.test.tsv"
+        String covariates_url = if (tissue_type == 'blood') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/blood_covariates.tsv" else
+                               if (tissue_type == 'brain') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/brain_covariates.tsv" else
+                               if (tissue_type == 'solid') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/solid_covariates.tsv"
                                else "" 
         call wget.download as covariates_download { input: url=covariates_url, outfilename="covariates.tsv" }
     }
