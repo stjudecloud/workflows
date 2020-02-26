@@ -81,7 +81,7 @@ task file_basename {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'ubuntu:18.04'
         maxRetries: max_retries
     }
 
