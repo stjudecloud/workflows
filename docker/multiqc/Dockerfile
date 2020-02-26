@@ -1,8 +1,8 @@
 FROM sjcloud-conda
 
 RUN conda create -n multiqc \
-                 multiqc==1.7 \
-                 -y \
+        multiqc==1.7 \
+        -y \
     && conda clean --all
 ENV PATH /opt/conda/envs/multiqc/bin:$PATH
 
