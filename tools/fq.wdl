@@ -33,7 +33,7 @@ task fqlint {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/fqlib:0.2.0'
         maxRetries: max_retries
     }
 

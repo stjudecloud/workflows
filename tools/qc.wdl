@@ -27,7 +27,7 @@ task parse_validate_bam {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
         maxRetries: max_retries
     }
 
@@ -78,7 +78,7 @@ task parse_infer_experiment {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
         maxRetries: max_retries
     }
 

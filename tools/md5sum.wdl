@@ -13,7 +13,7 @@ task md5sum_print_version {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
     }
 
     output {
@@ -37,7 +37,7 @@ task compute_checksum {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
         maxRetries: max_retries
     }
 
@@ -72,7 +72,7 @@ task check_checksum {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
         maxRetries: max_retries
     }
 

@@ -10,7 +10,7 @@ task wget_print_version {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
     }
 
     output {
@@ -26,7 +26,7 @@ task download {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
         maxRetries: max_retries
     }
 

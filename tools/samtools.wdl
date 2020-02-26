@@ -11,7 +11,7 @@ task samtools_print_version {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/samtools:0.1.0'
     }
 
     output {
@@ -34,7 +34,7 @@ task quickcheck {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/samtools:0.1.0'
         maxRetries: max_retries
     }
 
@@ -75,7 +75,7 @@ task split {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/samtools:0.1.0'
         maxRetries: max_retries
     }
 
@@ -111,7 +111,7 @@ task flagstat {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/samtools:0.1.0'
         maxRetries: max_retries
     }
 
@@ -146,7 +146,7 @@ task index {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'docker.pkg.github.com/stjudecloud/workflows/samtools:0.1.0'
         maxRetries: max_retries
     }
 
