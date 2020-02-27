@@ -25,7 +25,7 @@ task fqlint {
         File read1
         File read2
         Int max_retries = 1
-        Int memory_gb = 5 
+        Int memory_gb = 8 
     }
 
     Float read1_size = size(read1, "GiB")
