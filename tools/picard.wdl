@@ -52,6 +52,7 @@ task mark_duplicates {
 task validate_bam {
     input {
         File bam
+        Boolean strict = true
         Int memory_gb = 8
         Int max_retries = 1
     }
@@ -64,6 +65,19 @@ task validate_bam {
         picard -Xmx${java_heap_size}g ValidateSamFile I=${bam} \
             IGNORE=INVALID_PLATFORM_VALUE \
             IGNORE=MISSING_PLATFORM_VALUE > stdout.txt
+
+        if [ "${strict}" == "true" ]
+        then
+            if [ "$(grep -c "ERROR" stdout.txt)" -gt 0 ]
+            then
+                echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
+                exit 1
+            fi
+        elif [ "$(grep -Ec "ERROR|WARNING" stdout.txt)" -gt 0 ]
+        then
+            echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
+            exit 1
+        fi
     }
 
     runtime {

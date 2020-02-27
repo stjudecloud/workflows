@@ -64,7 +64,6 @@ workflow rnaseq_standard {
     }
 
     call util.get_read_groups { input: bam=input_bam, max_retries=max_retries }
-    call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out, max_retries=max_retries }
     call b2fq.bam_to_fastqs { input: bam=input_bam, max_retries=max_retries }
     call star.alignment {
         input:
@@ -72,13 +71,12 @@ workflow rnaseq_standard {
             read_two_fastqs=bam_to_fastqs.read2s,
             stardb_tar_gz=stardb_tar_gz,
             output_prefix=output_prefix,
-            read_groups=prepare_read_groups_for_star.out,
+            read_groups=get_read_groups.out,
             max_retries=max_retries
     }
     call picard.sort as picard_sort { input: bam=alignment.star_bam, max_retries=max_retries }
     call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call picard.validate_bam { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
-    call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
     call fqc.fastqc { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
     call qualimap.bamqc as qualimap_bamqc { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
