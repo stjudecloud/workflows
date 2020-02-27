@@ -55,12 +55,12 @@ workflow interactive_tsne {
         File gene_blacklist
         String tissue_type
         String output_filename = "output.html"
-        File? blood_counts
-        File? brain_counts
-        File? solid_counts
-        File? blood_covariates
-        File? brain_covariates
-        File? solid_covariates
+        File blood_counts
+        File brain_counts
+        File solid_counts
+        File blood_covariates
+        File brain_covariates
+        File solid_covariates
     }
    
     call tsne.validate_tissue_type { input: tissue_type=tissue_type }
