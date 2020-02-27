@@ -76,7 +76,8 @@ task validate_tissue_type {
 
     parameter_meta {
         tissue_type: {
-            help: "Provide the tissue type to compare against: [blood, brain, solid]"
+            help: "Provide the tissue type to compare against: [blood, brain, solid]",
+            choices: ['blood', 'brain', 'solid']
         }
     }
 }

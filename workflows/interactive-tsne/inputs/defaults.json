@@ -1,0 +1,11 @@
+{
+    "interactive_tsne.stardb_tar_gz": "dx://project-FjFfvV89F80QvvxJ8131yzpB:file-Fjvvg9j9p5b17Y0p3gKYPPxY",
+    "interactive_tsne.gencode_gtf": "dx://project-FjFfvV89F80QvvxJ8131yzpB:file-Fjvq5109F80zfJ2F21y01zy4",
+    "interactive_tsne.gene_blacklist": "dx://project-FjFfvV89F80QvvxJ8131yzpB:file-Fk84jFj97xxp1jxP9Zp6JJF4",
+    "interactive_tsne.blood_counts" : "dx://project-FjFfvV89F80QvvxJ8131yzpB:file-Fk84p889pJJkf0Vk32G80q85",
+    "interactive_tsne.blood_covariates" : "dx://project-FjFfvV89F80QvvxJ8131yzpB:file-Fk7ykg09yY9KzFFf7j3Q054J",
+    "interactive_tsne.brain_counts" : "dx://project-FjFfvV89F80QvvxJ8131yzpB:file-Fk84p889pJJkf0Vk32G80q85",
+    "interactive_tsne.brain_covariates" : "dx://project-FjFfvV89F80QvvxJ8131yzpB:file-Fk7ykg09yY9KzFFf7j3Q054J",
+    "interactive_tsne.solid_counts" : "dx://project-FjFfvV89F80QvvxJ8131yzpB:file-Fk84p889pJJkf0Vk32G80q85",
+    "interactive_tsne.solid_covariates" : "dx://project-FjFfvV89F80QvvxJ8131yzpB:file-Fk7ykg09yY9KzFFf7j3Q054J"
+}

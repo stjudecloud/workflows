@@ -49,54 +49,44 @@ workflow interactive_tsne {
     input { 
         Array[File] in_bams
         File gencode_gtf
-        File? stardb_tar_gz
+        File stardb_tar_gz
         File? reference_counts
         File? covariates_file
-        File? gene_blacklist
+        File gene_blacklist
         String tissue_type
-        String? output_filename
+        String output_filename = "output.html"
+        File? blood_counts
+        File? brain_counts
+        File? solid_counts
+        File? blood_covariates
+        File? brain_covariates
+        File? solid_covariates
     }
-    
-    if(! defined(gene_blacklist)){
-        String blacklist_url = "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/gene.blacklist.tsv"
-        call wget.download as blacklist_download { input: url=blacklist_url, outfilename="blacklist.txt" }
-    }
-
-    File blacklist = select_first([gene_blacklist, blacklist_download.outfile])
-
-    String outfile = select_first([output_filename, "output.html"])
-    
-    if (! defined(stardb_tar_gz)){
-        String star_url = "https://stjudecloud.blob.core.windows.net/reference/RNA-seq/v2/STARDB.tar.gz"
-        call wget.download as star_download { input: url=star_url, outfilename="STARDB.tar.gz" }
-    }
-    File stardb = select_first([stardb_tar_gz, star_download.outfile])
-
+   
     call tsne.validate_tissue_type { input: tissue_type=tissue_type }
  
     call gzip.unzip as uncompress_gencode { input: infile=gencode_gtf }
     scatter (bam in in_bams) {
         String name = basename(bam, ".bam")
-        call rnav2.rnaseq_standard { input: gencode_gtf=uncompress_gencode.outfile, input_bam=bam, stardb_tar_gz=stardb, output_prefix=name + '.' }
+        call rnav2.rnaseq_standard { input: gencode_gtf=uncompress_gencode.outfile, input_bam=bam, stardb_tar_gz=stardb_tar_gz, output_prefix=name + '.', strand="" }
     }
 
     if (! defined(reference_counts)){
         # Based on tissue type selection we can provide reference data
-        String reference_url = if (tissue_type == 'blood') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/blood_counts.tar.gz" else
-                               if (tissue_type == 'brain') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/brain_counts.tar.gz" else
-                               if (tissue_type == 'solid') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/solid_counts.tar.gz"
+        File reference = if (tissue_type == 'blood') then blood_counts else
+                               if (tissue_type == 'brain') then brain_counts else
+                               if (tissue_type == 'solid') then solid_counts
                                else "" 
-        call wget.download as reference_counts_download { input: url=reference_url, outfilename="counts.tar.gz"}
-
-        String covariates_url = if (tissue_type == 'blood') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/blood_covariates.tsv" else
-                               if (tissue_type == 'brain') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/brain_covariates.tsv" else
-                               if (tissue_type == 'solid') then "https://stjudecloud.blob.core.windows.net/reference/interactive-tsne/solid_covariates.tsv"
+        
+        File covariates = if (tissue_type == 'blood') then blood_covariates else
+                               if (tissue_type == 'brain') then brain_covariates else
+                               if (tissue_type == 'solid') then solid_covariates
                                else "" 
-        call wget.download as covariates_download { input: url=covariates_url, outfilename="covariates.tsv" }
+        
     }
 
-    File reference_file = select_first([reference_counts, reference_counts_download.outfile])
-    File covariates_input = select_first([covariates_file, covariates_download.outfile])
+    File reference_file = select_first([reference_counts, reference])
+    File covariates_input = select_first([covariates_file, covariates])
 
     call gzip.unzip { input: infile=reference_file }
     call tar.untar { input: infile=unzip.outfile }
@@ -105,8 +95,7 @@ workflow interactive_tsne {
         call util.file_prefix { input: in_file=bam }
     }
 
-    # generate covariates information for input samples and add to covariates file.
-    
+    # generate covariates information for input samples and add to covariates file.   
     call tsne.append_input { input: inputs=file_prefix.out, covariates_infile=covariates_input}
     
     call tsne.plot as generate_plot{
@@ -114,15 +103,15 @@ workflow interactive_tsne {
             counts=untar.outfiles,
             inputs=file_prefix.out,
             input_counts=rnaseq_standard.gene_counts,
-            blacklist=blacklist,
+            blacklist=gene_blacklist,
             covariates=append_input.covariates_outfile,
             gencode_gtf=gencode_gtf,
-            outfile=outfile
+            outfile=output_filename
     }
      
     output {
         File tsne_plot = generate_plot.html
         Array[File] generated_counts = rnaseq_standard.gene_counts
         Array[File] generated_mappings = rnaseq_standard.bam
-    } 
+    }
 }
