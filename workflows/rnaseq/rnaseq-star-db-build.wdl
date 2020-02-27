@@ -4,13 +4,14 @@
 ##
 ## Inputs:
 ##
-## reference_fasta - the genome for which to generate STAR reference files in FASTA format 
-## gencode_gtf - the gene model file for the reference genome to use when generating STAR reference files 
-## stardb_dir_name - a name to use for the output STAR reference directory
+## reference_fa_url - URL to retrieve the reference FASTA file from.
+## gencode_gtf_url - URL to retrieve the reference gencode GTF file.
 ##
 ## Output: 
 ##
-## out_dir - a directory containing the STAR reference files corresponding to the input genome 
+## reference_fa - the reference FASTA file
+## gencode_gtf - the reference gencode GTF file
+## stardb_tar_gz - the STAR DB folder in .tar.gz format
 ##
 ## LICENSING:
 ##
