@@ -1,9 +1,14 @@
-FROM docker.pkg.github.com/stjudecloud/workflows/conda-base:0.1.0
+FROM conda-base AS builder
 
 RUN conda create -n picard \
         picard==2.20.2 \
         -y \
     && conda clean --all
+
+FROM debian:10-slim
+COPY --from=builder /opt/conda/envs/picard/bin/ /opt/conda/envs/picard/bin/
+COPY --from=builder /opt/conda/envs/picard/lib/ /opt/conda/envs/picard/lib/
+COPY --from=builder /opt/conda/envs/picard/share/ /opt/conda/envs/picard/share
 ENV PATH /opt/conda/envs/picard/bin:$PATH
 
 ENTRYPOINT [ "picard" ]

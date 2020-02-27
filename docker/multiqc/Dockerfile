@@ -1,9 +1,13 @@
-FROM docker.pkg.github.com/stjudecloud/workflows/conda-base:0.1.0
+FROM conda-base AS builder
 
 RUN conda create -n multiqc \
         multiqc==1.7 \
         -y \
     && conda clean --all
+
+FROM debian:10-slim
+COPY --from=builder /opt/conda/envs/multiqc/bin/ /opt/conda/envs/multiqc/bin/
+COPY --from=builder /opt/conda/envs/multiqc/lib/ /opt/conda/envs/multiqc/lib/
 ENV PATH /opt/conda/envs/multiqc/bin:$PATH
 
 ENTRYPOINT [ "multiqc" ]

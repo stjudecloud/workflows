@@ -1,9 +1,11 @@
-FROM docker.pkg.github.com/stjudecloud/workflows/conda-base:0.1.0
+FROM conda-base as builder
 
 RUN conda create -n star \
         star==2.7.1a \
         -y \
     && conda clean --all
-ENV PATH /opt/conda/envs/star/bin:$PATH
 
+FROM debian:10-slim
+COPY --from=builder /opt/conda/envs/star/bin /opt/conda/envs/star/bin
+ENV PATH /opt/conda/envs/star/bin:$PATH
 ENTRYPOINT [ "STAR" ]
