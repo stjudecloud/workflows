@@ -1,9 +1,13 @@
-FROM docker.pkg.github.com/stjudecloud/workflows/conda-base:0.1.0
+FROM conda-base AS builder
 
 RUN conda create -n samtools \
         samtools==1.9 \
         -y \
     && conda clean --all
+
+FROM debian:10-slim
+COPY --from=builder /opt/conda/envs/samtools/bin/ /opt/conda/envs/samtools/bin/
+COPY --from=builder /opt/conda/envs/samtools/lib/ /opt/conda/envs/samtools/lib/
 ENV PATH /opt/conda/envs/samtools/bin:$PATH
 
 ENTRYPOINT [ "samtools" ]

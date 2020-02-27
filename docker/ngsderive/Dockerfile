@@ -1,4 +1,4 @@
-FROM docker.pkg.github.com/stjudecloud/workflows/conda-base:0.1.0
+FROM conda-base
 
 RUN apt-get update && \
     apt-get upgrade -y && \
