@@ -1,4 +1,4 @@
-FROM conda-base AS builder
+FROM stjudecloud/conda-base:1.0.0-alpha AS builder
 
 RUN conda create -n samtools \
         samtools==1.9 \

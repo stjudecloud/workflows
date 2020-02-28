@@ -11,7 +11,7 @@ task star_print_version {
     }
 
     runtime {
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/star:0.1.0'
+        docker: 'stjudecloud/star:1.0.0-alpha'
     }
 
     output {
@@ -52,7 +52,7 @@ task build_db {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/star:0.1.0'
+        docker: 'stjudecloud/star:1.0.0-alpha'
         maxRetries: max_retries
     }
 
@@ -119,7 +119,7 @@ task alignment {
         cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/star:0.1.0'
+        docker: 'stjudecloud/star:1.0.0-alpha'
         maxRetries: max_retries
     }
 

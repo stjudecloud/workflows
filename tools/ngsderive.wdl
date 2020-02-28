@@ -28,7 +28,7 @@ task infer_strand {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/ngsderive:0.1.0'
+        docker: 'stjudecloud/ngsderive:1.0.0-alpha'
         maxRetries: max_retries
     }
 

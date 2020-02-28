@@ -1,4 +1,4 @@
-FROM conda-base as builder
+FROM stjudecloud/conda-base:1.0.0-alpha AS builder
 
 RUN conda create -n star \
         star==2.7.1a \

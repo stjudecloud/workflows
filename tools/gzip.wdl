@@ -10,7 +10,7 @@ task gzip_print_version {
     }
 
     runtime {
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
+        docker: 'stjudecloud/util:1.0.0-alpha'
     }
 
     output {
@@ -26,7 +26,7 @@ task unzip {
     }
 
     runtime {
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
+        docker: 'stjudecloud/util:1.0.0-alpha'
         maxRetries: max_retries
     }
 

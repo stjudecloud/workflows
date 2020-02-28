@@ -24,7 +24,7 @@ task infer_experiment {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/rseqc:0.1.0'
+        docker: 'stjudecloud/rseqc:1.0.0-alpha'
         maxRetries: max_retries
     }
 

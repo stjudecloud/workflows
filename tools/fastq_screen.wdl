@@ -9,7 +9,6 @@ task build_db {
     String tar_filename = filename + ".tar.gz"
 
     command {
-        echo "hello, world!"
         fastq_screen --get_genomes 
         mv FastQ_Screen_Genomes/ ${filename}/
         tar -czf ${tar_filename} ${filename}/
@@ -17,7 +16,7 @@ task build_db {
  #
     runtime {
         disk: "30 GB"
-        docker: "fastq_screen:bleeding-edge"
+        docker: "fastq_screen:1.0.0-alpha"
         maxRetries: max_retries
     }
 

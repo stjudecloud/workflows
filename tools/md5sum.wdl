@@ -13,7 +13,7 @@ task md5sum_print_version {
     }
 
     runtime {
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
+        docker: 'stjudecloud/util:1.0.0-alpha'
     }
 
     output {
@@ -37,7 +37,7 @@ task compute_checksum {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
+        docker: 'stjudecloud/util:1.0.0-alpha'
         maxRetries: max_retries
     }
 
@@ -72,7 +72,7 @@ task check_checksum {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
+        docker: 'stjudecloud/util:1.0.0-alpha'
         maxRetries: max_retries
     }
 

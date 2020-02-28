@@ -20,7 +20,7 @@ task get_read_groups {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
+        docker: 'stjudecloud/util:1.0.0-alpha'
         maxRetries: max_retries
     }
 
@@ -50,7 +50,7 @@ task prepare_read_groups_for_star {
     >>>
 
     runtime {
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/util:0.1.0'
+        docker: 'stjudecloud/util:1.0.0-alpha'
         maxRetries: max_retries
     }
 

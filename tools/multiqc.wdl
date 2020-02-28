@@ -49,7 +49,7 @@ task multiqc {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/multiqc:0.1.0'
+        docker: 'stjudecloud/multiqc:1.0.0-alpha'
         maxRetries: max_retries
     }
 

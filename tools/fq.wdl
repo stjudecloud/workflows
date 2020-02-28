@@ -12,7 +12,7 @@ task fq_print_version {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/fqlib:1.0.0-alpha'
     }
 
     output {
@@ -33,7 +33,7 @@ task fqlint {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'docker.pkg.github.com/stjudecloud/workflows/fqlib:0.2.0'
+        docker: 'stjudecloud/fqlib:1.0.0-alpha'
         maxRetries: max_retries
     }
 

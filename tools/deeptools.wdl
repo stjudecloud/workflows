@@ -27,7 +27,7 @@ task bamCoverage {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/deeptools:1.0.0-alpha'
         maxRetries: max_retries
     }
 
