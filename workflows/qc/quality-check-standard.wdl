@@ -54,6 +54,8 @@ workflow quality_check {
     call fqc.fastqc { input: bam=parse_input.bam_dup, max_retries=max_retries }
     call samtools.flagstat as samtools_flagstat { input: bam=parse_input.bam_dup, max_retries=max_retries }
     call md5sum.compute_checksum { input: infile=parse_input.bam_dup, max_retries=max_retries }
+    call ngsderive.instrument as ngsderive_instrument { input: bam=parse_input.bam_dup, max_retries=max_retries }
+    call ngsderive.readlen as ngsderive_readlen { input: bam=parse_input.bam_dup, max_retries=max_retries }
 
     if (experiment == "RNA") {
         call ngsderive.infer_strand as ngsderive_strandedness { input: bam=parse_input.bam_dup, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
@@ -91,6 +93,8 @@ workflow quality_check {
         File? multiqc_zip = multiqc.out
         File? multiqc_rnaseq_zip = multiqc_rnaseq.out
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
+        File instrument_file = ngsderive_instrument.instrument_file
+        File readlen_file = ngsderive_readlen.readlen_file
     }
 }
 
