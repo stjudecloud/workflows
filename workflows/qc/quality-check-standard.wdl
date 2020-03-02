@@ -27,6 +27,8 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastqc.wdl" as fqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastq_screen.wdl" as fq_screen
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/md5sum.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/multiqc.wdl" as mqc
 
