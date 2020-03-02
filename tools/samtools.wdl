@@ -184,7 +184,7 @@ task subsample {
                 -v initial_frac=$initial_frac \
                     'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
             )
-        samtools view -b -s $frac ~{bam} > subsampled.bam
+        samtools view -h -b -s $frac ~{bam} > subsampled.bam
     >>>
 
     output {
