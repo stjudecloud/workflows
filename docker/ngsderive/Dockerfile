@@ -2,7 +2,7 @@ FROM stjudecloud/conda-base:1.0.0-alpha
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install gcc zlib1g-dev libbz2-dev libcurl4-openssl-dev build-essential libssl-dev -y && \
+    apt-get install gcc zlib1g-dev libbz2-dev libcurl4-openssl-dev build-essential libssl-dev tabix -y && \
     rm -r /var/lib/apt/lists/*
 
 RUN conda create -n ngsderive \
