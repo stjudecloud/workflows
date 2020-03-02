@@ -184,6 +184,10 @@ task subsample {
                 -v initial_frac=$initial_frac \
                     'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
             )
+        echo "desired reads = $desired_reads"
+        echo "initial fraction = $initial_frac"
+        echo "initial reads = $initial_reads"
+        echo "new fraction = $frac"
         samtools view -b -s $frac ${bam} > subsampled.bam
     >>>
 
