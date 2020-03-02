@@ -13,7 +13,7 @@ task build_db {
         mv FastQ_Screen_Genomes/ ${filename}/
         tar -czf ${tar_filename} ${filename}/
     }
- #
+ 
     runtime {
         disk: "30 GB"
         docker: "fastq_screen:1.0.0-alpha"
@@ -32,3 +32,33 @@ task build_db {
 
     parameter_meta {}
 } 
+
+task fastq_screen {
+    input {
+        File read1
+        File read2
+        File db
+        String? format = "illumina"
+        Int? num_reads = 100000
+        Int? max_retries = 1
+    }
+
+    read1_outfilename = basename(read1, ".fastq") + "_screen.txt"
+    read2_outfilename = basename(read1, ".fastq") + "_screen.txt"
+
+    command {
+        tar -xsf ${db}
+        cat ${db}/fastq_screen.conf
+        fastq_screen --conf ${db}/fastq_screen.conf --illumina1_3 ${read1} ${read2}
+    }
+ 
+    runtime {
+        docker: "fastq_screen:1.0.0-alpha"
+        maxRetries: max_retries
+    }
+
+    output {
+        File read1_outfile = read1_outfilename
+        File read2_outfile = read2_outfilename
+    }
+}

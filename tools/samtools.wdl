@@ -164,3 +164,36 @@ task index {
         bam: "Input BAM format file to generate coverage for"
     }
 }
+
+task subsample {
+    input {
+        File bam
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+
+    command {
+        desired_reads=500000
+        initial_frac=0.001
+        initial_reads=$(samtools view -s $initial_frac ${bam} | wc -l)
+        frac=$( \
+            awk -v desired_reads=$desired_reads \
+                -v initial_reads=$initial_reads \
+                -v initial_frac=$initial_frac \
+                    'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
+            )
+        samtools view -b -s $frac ${bam} > subsampled.bam
+    }
+
+    output {
+        File sampled_bam = subsampled.bam
+    }
+
+    runtime {
+        disk: disk_size + " GB"
+        docker: 'stjudecloud/samtools:1.0.0-alpha'
+        maxRetries: max_retries
+    }
+}
