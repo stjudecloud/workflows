@@ -174,9 +174,9 @@ task subsample {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
-    command {
+    command <<<
         desired_reads=500000
-        initial_frac=0.001
+        initial_frac=0.00001
         initial_reads=$(samtools view -s $initial_frac ${bam} | wc -l)
         frac=$( \
             awk -v desired_reads=$desired_reads \
@@ -185,10 +185,10 @@ task subsample {
                     'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
             )
         samtools view -b -s $frac ${bam} > subsampled.bam
-    }
+    >>>
 
     output {
-        File sampled_bam = subsampled.bam
+        File sampled_bam = "subsampled.bam"
     }
 
     runtime {

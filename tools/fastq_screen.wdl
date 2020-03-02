@@ -43,8 +43,8 @@ task fastq_screen {
         Int? max_retries = 1
     }
 
-    read1_outfilename = basename(read1, ".fastq") + "_screen.txt"
-    read2_outfilename = basename(read1, ".fastq") + "_screen.txt"
+    String read1_outfilename = basename(read1, ".fastq") + "_screen.txt"
+    String read2_outfilename = basename(read1, ".fastq") + "_screen.txt"
 
     command {
         tar -xsf ${db}
