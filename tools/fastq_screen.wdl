@@ -16,7 +16,7 @@ task build_db {
  
     runtime {
         disk: "30 GB"
-        docker: "fastq_screen:1.0.0-alpha"
+        docker: "stjudecloud/fastq_screen:1.0.0-alpha"
         maxRetries: max_retries
     }
 
