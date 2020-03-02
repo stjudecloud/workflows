@@ -53,7 +53,7 @@ task fastq_screen {
     }
  
     runtime {
-        docker: "fastq_screen:1.0.0-alpha"
+        docker: "stjudecloud/fastq_screen:1.0.0-alpha"
         maxRetries: max_retries
     }
 
