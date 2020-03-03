@@ -18,11 +18,11 @@ task fastqc {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
-        mkdir ${prefix}_fastqc_results
+        mkdir ~{prefix}_fastqc_results
         fastqc -f bam \
-            -o ${prefix}_fastqc_results \
-            -t ${ncpu} \
-            ${bam}
+            -o ~{prefix}_fastqc_results \
+            -t ~{ncpu} \
+            ~{bam}
     }
 
     runtime {
@@ -33,7 +33,7 @@ task fastqc {
     }
 
     output {
-        Array[File] out_files = glob("${prefix}_fastqc_results/*")
+        Array[File] out_files = glob("~{prefix}_fastqc_results/*")
     }
 
     meta {

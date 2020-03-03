@@ -22,26 +22,26 @@ task multiqc {
     Int disk_size = ceil((star_size * 4) + 10)
 
     command {
-        echo ${sorted_bam} > file_list.txt
-        echo ${validate_sam_string} > validate_sam.txt
+        echo ~{sorted_bam} > file_list.txt
+        echo ~{validate_sam_string} > validate_sam.txt
         echo validate_sam.txt >> file_list.txt
 
-        for file in ${sep=' ' qualimap_bamqc} ; do
+        for file in ~{sep=' ' qualimap_bamqc} ; do
             echo $file >> file_list.txt
         done
 
-        for file in ${sep=' ' qualimap_rnaseq} ; do
+        for file in ~{sep=' ' qualimap_rnaseq} ; do
             echo $file >> file_list.txt
         done
 
-        for file in ${sep=' ' fastqc_files} ; do
+        for file in ~{sep=' ' fastqc_files} ; do
             echo $file >> file_list.txt
         done
 
         # shellcheck disable=SC2129
-        echo ${flagstat_file} >> file_list.txt
-        echo ${bigwig_file} >> file_list.txt
-        echo ${star_log} >> file_list.txt
+        echo ~{flagstat_file} >> file_list.txt
+        echo ~{bigwig_file} >> file_list.txt
+        echo ~{star_log} >> file_list.txt
 
         multiqc --file-list file_list.txt -o multiqc_results
         tar -czf multiqc_results.tar.gz multiqc_results

@@ -22,8 +22,8 @@ task infer_strand {
         sort -k1,1 -k4,4n -k5,5n ~{gtf} | bgzip > annotation.gtf.gz
         tabix -p gff annotation.gtf.gz
         mv ~{bai} ~{bam}.bai 
-        ngsderive strandedness ~{bam} -g annotation.gtf.gz > ${out_file}
-        awk 'NR > 1' ${outfile} | cut -d$'\t' -f5 > strandedness.txt
+        ngsderive strandedness ~{bam} -g annotation.gtf.gz > ~{out_file}
+        awk 'NR > 1' ~{out_file} | cut -d$'\t' -f5 > strandedness.txt
     }
 
     runtime {
@@ -49,7 +49,7 @@ task instrument {
     Int disk_size = ceil(((bam_size) * 1.25) + 10)
 
     command {
-        ngsderive instrument ~{bam} > ${out_file}
+        ngsderive instrument ~{bam} > ~{out_file}
     }
 
     runtime {
@@ -74,7 +74,7 @@ task readlen {
     Int disk_size = ceil(((bam_size) * 1.25) + 10)
 
     command {
-        ngsderive readlen ~{bam} > ${out_file}
+        ngsderive readlen ~{bam} > ~{out_file}
     }
 
     runtime {

@@ -19,7 +19,7 @@ task infer_experiment {
     Int disk_size = ceil(((bam_size + refgene_bed_size) * 2) + 10)
  
     command {
-        infer_experiment.py -i ${bam} -r ${refgene_bed} ${"-s" + sample_size} ${"-q" + map_qual} > stdout.txt
+        infer_experiment.py -i ~{bam} -r ~{refgene_bed} ~{"-s" + sample_size} ~{"-q" + map_qual} > stdout.txt
     }
 
     runtime {

@@ -29,7 +29,7 @@ task quickcheck {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
-        samtools quickcheck ${bam}
+        samtools quickcheck ~{bam}
     }
 
     runtime {
@@ -63,11 +63,11 @@ task split {
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
     command {
-        samtools split --threads ${ncpu} -u ${prefix}.unaccounted_reads.bam -f '%*_%!.%.' ${bam}
-        samtools view ${prefix}.unaccounted_reads.bam > unaccounted_reads.bam
-        if ${default='true' reject_unaccounted} && [ -s unaccounted_reads.bam ]
+        samtools split --threads ~{ncpu} -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
+        samtools view ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
+        if ~{default='true' reject_unaccounted} && [ -s unaccounted_reads.bam ]
             then exit 1; 
-            else rm ${prefix}.unaccounted_reads.bam
+            else rm ~{prefix}.unaccounted_reads.bam
         fi 
         rm unaccounted_reads.bam
     }
@@ -106,7 +106,7 @@ task flagstat {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
-        samtools flagstat ${bam} > ${outfilename}
+        samtools flagstat ~{bam} > ~{outfilename}
     }
 
     runtime {
@@ -141,7 +141,7 @@ task index {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
-        samtools index ${bam} ${outfile}
+        samtools index ~{bam} ~{outfile}
     }
 
     runtime {

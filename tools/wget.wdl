@@ -31,7 +31,7 @@ task download {
     }
 
     command {
-        wget ${url} -O ${outfilename}
+        wget ~{url} -O ~{outfilename}
     }
 
     output {

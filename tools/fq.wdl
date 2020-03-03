@@ -38,7 +38,7 @@ task fqlint {
     }
 
     command {
-        fq lint ${read1} ${read2}
+        fq lint ~{read1} ~{read2}
     }
 
     meta {

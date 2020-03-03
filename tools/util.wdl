@@ -15,7 +15,7 @@ task get_read_groups {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
-        samtools view -H ${bam} | grep "@RG" > stdout.txt
+        samtools view -H ~{bam} | grep "@RG" > stdout.txt
     }
 
     runtime {
