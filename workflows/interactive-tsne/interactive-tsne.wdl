@@ -55,12 +55,12 @@ workflow interactive_tsne {
         File gene_blacklist
         String tissue_type
         String output_filename = "output.html"
-        File blood_counts
-        File brain_counts
-        File solid_counts
-        File blood_covariates
-        File brain_covariates
-        File solid_covariates
+        File? blood_counts
+        File? brain_counts
+        File? solid_counts
+        File? blood_covariates
+        File? brain_covariates
+        File? solid_covariates
     }
    
     call tsne.validate_tissue_type { input: tissue_type=tissue_type }
@@ -73,12 +73,12 @@ workflow interactive_tsne {
 
     if (! defined(reference_counts)){
         # Based on tissue type selection we can provide reference data
-        File reference = if (tissue_type == 'blood') then blood_counts else
+        File? reference = if (tissue_type == 'blood') then blood_counts else
                                if (tissue_type == 'brain') then brain_counts else
                                if (tissue_type == 'solid') then solid_counts
                                else "" 
         
-        File covariates = if (tissue_type == 'blood') then blood_covariates else
+        File? covariates = if (tissue_type == 'blood') then blood_covariates else
                                if (tissue_type == 'brain') then brain_covariates else
                                if (tissue_type == 'solid') then solid_covariates
                                else "" 
@@ -113,5 +113,16 @@ workflow interactive_tsne {
         File tsne_plot = generate_plot.html
         Array[File] generated_counts = rnaseq_standard.gene_counts
         Array[File] generated_mappings = rnaseq_standard.bam
+    }
+
+    parameter_meta {
+        in_bams: {
+            help: "Provide bams to run for comparison"
+        }
+        tissue_type: {
+            help: "Provide the tissue type to compare against: [blood, brain, solid]",
+            choices: ['blood', 'brain', 'solid']
+        }
+        output_filename: "Name for the output HTML t-SNE plot"
     }
 }
