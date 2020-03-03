@@ -22,8 +22,8 @@ task infer_strand {
         sort -k1,1 -k4,4n -k5,5n ~{gtf} | bgzip > annotation.gtf.gz
         tabix -p gff annotation.gtf.gz
         mv ~{bai} ~{bam}.bai 
-        ngsderive strandedness ~{bam} -g annotation.gtf.gz \
-            | awk 'NR > 1' | cut -d$'\t' -f5 > ${out_file}
+        ngsderive strandedness ~{bam} -g annotation.gtf.gz > ${out_file}
+        awk 'NR > 1' ${outfile} | cut -d$'\t' -f5 > strandedness.txt
     }
 
     runtime {
@@ -33,7 +33,7 @@ task infer_strand {
     }
 
     output {
-        String strandedness = read_string(out_file)
+        String strandedness = read_string("strandedness.txt")
         File strandedness_file = out_file
     }
 }
