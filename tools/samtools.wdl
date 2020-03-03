@@ -180,11 +180,11 @@ task subsample {
         initial_reads=$(samtools view -s $initial_frac ~{bam} | wc -l)
         frac=$( \
             awk -v desired_reads=$desired_reads \
-                -v initial_reads=$initial_reads \
+                -v initial_reads="$initial_reads" \
                 -v initial_frac=$initial_frac \
                     'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
             )
-        samtools view -h -b -s $frac ~{bam} > subsampled.bam
+        samtools view -h -b -s "$frac" ~{bam} > subsampled.bam
     >>>
 
     output {
