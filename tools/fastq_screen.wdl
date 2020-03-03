@@ -9,7 +9,8 @@ task build_db {
     String tar_filename = filename + ".tar.gz"
 
     command {
-        fastq_screen --get_genomes 
+        fastq_screen --get_genomes
+        cat FastQ_Screen_Genomes/fastq_screen.conf
         mv FastQ_Screen_Genomes/ ~{filename}/
         tar -czf ~{tar_filename} ~{filename}/
     }
@@ -45,11 +46,12 @@ task fastq_screen {
 
     String read1_outfilename = basename(read1, ".fastq") + "_screen.txt"
     String read2_outfilename = basename(read1, ".fastq") + "_screen.txt"
+    String db_name = basename(db, ".tar.gz")
 
     command {
         tar -xsf ~{db}
-        cat ~{db}/fastq_screen.conf
-        fastq_screen --conf ~{db}/fastq_screen.conf --illumina1_3 ~{read1} ~{read2}
+        cat ~{db_name}/fastq_screen.conf
+        fastq_screen --conf ~{db_name}/fastq_screen.conf --illumina1_3 ~{read1} ~{read2}
     }
  
     runtime {
