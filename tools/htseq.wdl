@@ -9,7 +9,7 @@ task count {
     input {
         File bam
         File gtf
-        String strand
+        String strand = ""
         String inferred
         String outfile = basename(bam, ".bam") + ".counts.txt"
         Int? memory_gb = 20

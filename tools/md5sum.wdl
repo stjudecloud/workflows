@@ -25,6 +25,7 @@ task compute_checksum {
     input {
         File infile
         Int max_retries = 1
+        Int memory_gb = 5
     }
 
     String outfilename = basename(infile) + ".md5"
@@ -37,6 +38,7 @@ task compute_checksum {
 
     runtime {
         disk: disk_size + " GB"
+        memory: memory_gb + " GB"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
     }

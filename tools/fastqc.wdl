@@ -10,7 +10,7 @@ task fastqc {
         File bam
         Int ncpu = 1
         String prefix = basename(bam, ".bam")
-        Int memory_gb = 4
+        Int memory_gb = 5
         Int max_retries = 1
     }
 

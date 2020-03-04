@@ -56,7 +56,7 @@ workflow rnaseq_standard {
         File input_bam
         File stardb_tar_gz
         String strand = ""
-        String output_prefix = "out"
+        String output_prefix = basename(input_bam, ".bam")
         Int max_retries = 1
     }
 

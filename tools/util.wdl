@@ -68,3 +68,23 @@ task prepare_read_groups_for_star {
         read_groups: "The read group portion of a BAM header as a string"
     }
 }
+
+task file_prefix {
+    input {
+        File in_file
+        Int max_retries = 1
+    }
+
+    command <<<
+        basename ~{in_file} | awk -F '.' '{print $1}' > stdout.txt
+    >>>
+
+    runtime {
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
+    }
+
+    output { 
+        String out = read_string("stdout.txt")
+    }
+}
