@@ -51,7 +51,7 @@ task fastq_screen {
 
     command {
         tar -xsf ~{db}
-        mv ~{db_name} /root/
+        mv ~{db_name} /home/
         fastq_screen --conf ~{conf} --illumina1_3 ~{read1} ~{read2}
     }
  
