@@ -50,9 +50,9 @@ task fastq_screen {
     String db_name = basename(db, ".tar.gz")
 
     command {
-        cp ~{db} /home/
-        rm ~{db}
-        tar -xsf /home/~{db}
+        # mkdir /data
+        mv ~{db} /
+        tar -xsf /~{db}.tar.gz
         fastq_screen --conf ~{conf} --illumina1_3 ~{read1} ~{read2}
     }
  
