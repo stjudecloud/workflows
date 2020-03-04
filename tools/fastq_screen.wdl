@@ -39,6 +39,7 @@ task fastq_screen {
         File read1
         File read2
         File db
+        File conf
         String? format = "illumina"
         Int? num_reads = 100000
         Int? max_retries = 1
@@ -50,8 +51,8 @@ task fastq_screen {
 
     command {
         tar -xsf ~{db}
-        cat ~{db_name}/fastq_screen.conf
-        fastq_screen --conf ~{db_name}/fastq_screen.conf --illumina1_3 ~{read1} ~{read2}
+        mv ~{db_name} /root/
+        fastq_screen --conf ~{conf} --illumina1_3 ~{read1} ~{read2}
     }
  
     runtime {
