@@ -150,6 +150,7 @@ task index {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
+        dx_instance_type: "azure:mem2_ssd1_x4"
         docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
     }
