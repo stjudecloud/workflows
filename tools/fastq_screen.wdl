@@ -51,7 +51,7 @@ task fastq_screen {
 
     command {
         # mkdir /data
-        mv ~{db} /opt
+        cp ~{db} /opt
         tar -xsf /opt/~{db_name}.tar.gz
         fastq_screen --conf ~{conf} --aligner bowtie2 --illumina1_3 ~{read1} ~{read2}
     }
