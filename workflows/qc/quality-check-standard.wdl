@@ -46,7 +46,8 @@ workflow quality_check {
         input:
             input_experiment=experiment,
             input_bam=bam,
-            input_strand=strand
+            input_strand=strand,
+            input_fq_db=fastq_screen_db
     }
 
     call samtools.quickcheck { input: bam=parse_input.bam_dup, max_retries=max_retries }
@@ -113,6 +114,7 @@ task parse_input {
         String input_experiment
         File input_bam
         String input_strand = ""
+        File input_fq_db
     }
 
     command {
@@ -123,6 +125,11 @@ task parse_input {
 
         if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "reverse" ] && [ "~{input_strand}" != "yes" ] && [ "~{input_strand}" != "no" ]; then
             >&2 echo "strand must be empty, 'reverse', 'yes', or 'no'"
+            exit 1
+        fi
+
+        if [ "$(basename ~{input_fq_db})" != "fastq-screen-db.tar.gz" ]; then
+            >&2 echo "FastQ Screen database must be archived and named fastq-screen-db.tar.gz"
             exit 1
         fi
     }
