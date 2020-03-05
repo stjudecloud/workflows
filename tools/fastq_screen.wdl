@@ -46,16 +46,18 @@ task fastq_screen {
 
     String read1_outfilename = basename(read1, ".fastq") + "_screen.txt"
     String read2_outfilename = basename(read1, ".fastq") + "_screen.txt"
-    String db_name = basename(db, ".tar.gz")
+    String db_name = basename(db)
 
     command {
         # mkdir /data
         echo first ls
         ls /tmp
         cp ~{db} /tmp
+        echo ''
         echo after cp
         ls /tmp
-        tar -xsf /tmp/~{db_name}.tar.gz
+        tar -xsf /tmp/~{db_name}
+        echo ''
         echo after tar
         ls /tmp
         fastq_screen --conf /home/fastq_screen.conf --aligner bowtie2 --illumina1_3 ~{read1} ~{read2}
