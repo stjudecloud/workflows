@@ -74,6 +74,7 @@ workflow quality_check {
                 qualimap_bamqc=qualimap_bamqc.out_files,
                 qualimap_rnaseq=qualimap_rnaseq.out_files,
                 fastqc_files=fastqc.out_files,
+                fastq_screen=fastq_screen.out_files,
                 flagstat_file=samtools_flagstat.outfile,
                 max_retries=max_retries
         }
@@ -85,6 +86,7 @@ workflow quality_check {
                 validate_sam_string=validate_bam.out,
                 qualimap_bamqc=qualimap_bamqc.out_files,
                 fastqc_files=fastqc.out_files,
+                fastq_screen=fastq_screen.out_files,
                 flagstat_file=samtools_flagstat.outfile,
                 max_retries=max_retries
         }
@@ -97,6 +99,7 @@ workflow quality_check {
         Array[File] fastqc_results = fastqc.out_files
         Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
         Array[File]? qualimap_rnaseq_results = qualimap_rnaseq.out_files
+        Array[File] fastq_screen_results = fastq_screen.out_files
         File? multiqc_zip = multiqc.out
         File? multiqc_rnaseq_zip = multiqc_rnaseq.out
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file

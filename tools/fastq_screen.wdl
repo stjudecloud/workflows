@@ -43,8 +43,7 @@ task fastq_screen {
         Int? max_retries = 1
     }
 
-    String read1_outfilename = basename(read1, ".fastq") + "_screen.txt"
-    String read2_outfilename = basename(read1, ".fastq") + "_screen.txt"
+    String output_basename = basename(read1, ".fastq") + "_screen"
     String db_name = basename(db)
 
     command {
@@ -59,7 +58,6 @@ task fastq_screen {
     }
 
     output {
-        File read1_outfile = read1_outfilename
-        File read2_outfile = read2_outfilename
+        Array[File] out_files = glob("~{output_basename}*")
     }
 }

@@ -12,6 +12,7 @@ task multiqc {
         Array[File] qualimap_bamqc
         Array[File]? qualimap_rnaseq
         Array[File] fastqc_files
+        Array[File] fastq_screen
         File flagstat_file
         File? bigwig_file
         File? star_log
@@ -35,6 +36,10 @@ task multiqc {
         done
 
         for file in ~{sep=' ' fastqc_files} ; do
+            echo $file >> file_list.txt
+        done
+
+        for file in ~{sep=' ' fastq_screen} ; do
             echo $file >> file_list.txt
         done
 
