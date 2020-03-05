@@ -38,7 +38,7 @@ task fastq_screen {
         File read1
         File read2
         File db
-        String? format = "illumina"
+        String format
         Int? num_reads = 100000
         Int? max_retries = 1
     }
@@ -49,7 +49,17 @@ task fastq_screen {
     command {
         cp ~{db} /tmp
         tar -xsf /tmp/~{db_name} -C /tmp/
-        fastq_screen --conf /home/fastq_screen.conf --aligner bowtie2 ~{read1} ~{read2}
+
+        format_arg=''
+        if [ "~{format}" = "illumina1.3" ]; then
+            format_arg='--illumina1_3'
+        fi;
+        fastq_screen \
+            $format_arg \
+            --subset ~{num_reads} \
+            --conf /home/fastq_screen.conf \
+            --aligner bowtie2 \
+            ~{read1} ~{read2}
     }
  
     runtime {

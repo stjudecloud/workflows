@@ -36,6 +36,7 @@ workflow quality_check {
     input {
         File gencode_gtf
         File fastq_screen_db
+        String fastq_format = "sanger"
         String experiment
         File bam
         String strand = ""
@@ -47,7 +48,8 @@ workflow quality_check {
             input_experiment=experiment,
             input_bam=bam,
             input_strand=strand,
-            input_fq_db=fastq_screen_db
+            input_fq_db=fastq_screen_db,
+            input_fq_format=fastq_format
     }
 
     call samtools.quickcheck { input: bam=parse_input.bam_dup, max_retries=max_retries }
@@ -60,7 +62,7 @@ workflow quality_check {
     call samtools.subsample as samtools_subsample { input: bam=parse_input.bam_dup, max_retries=max_retries }
     call picard.bam_to_fastq as b2fq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
     call fq.fqlint { input: read1=b2fq.read1, read2=b2fq.read2, max_retries=max_retries }
-    call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, max_retries=max_retries}
+    call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries}
     call md5sum.compute_checksum { input: infile=parse_input.bam_dup, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=parse_input.bam_dup, max_retries=max_retries }
     call ngsderive.readlen as ngsderive_readlen { input: bam=parse_input.bam_dup, max_retries=max_retries }
@@ -113,8 +115,9 @@ task parse_input {
     input {
         String input_experiment
         File input_bam
-        String input_strand = ""
+        String input_strand
         File input_fq_db
+        String input_fq_format
     }
 
     command {
@@ -129,7 +132,12 @@ task parse_input {
         fi
 
         if [ "$(basename ~{input_fq_db})" != "fastq-screen-db.tar.gz" ]; then
-            >&2 echo "FastQ Screen database must be archived and named fastq-screen-db.tar.gz"
+            >&2 echo "FastQ Screen database (input \"fastq_screen_db\") must be archived and named fastq-screen-db.tar.gz"
+            exit 1
+        fi
+
+        if [ -n "~{input_fq_format}" ] && [ "~{input_fq_format}" != "sanger" ] && [ "~{input_fq_format}" != "illunima1.3" ]; then
+            >&2 echo "fastq_format must be empty, 'sanger', or 'illumina1.3'"
             exit 1
         fi
     }
