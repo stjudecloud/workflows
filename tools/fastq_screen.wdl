@@ -49,17 +49,7 @@ task fastq_screen {
     String db_name = basename(db)
 
     command {
-        # mkdir /data
-        echo first ls
-        ls /tmp
-        cp ~{db} /tmp
-        echo ''
-        echo after cp
-        ls /tmp
-        tar -xsf /tmp/~{db_name}
-        echo ''
-        echo after tar
-        ls /tmp
+        tar -xsf /tmp/~{db_name} -C /tmp/
         fastq_screen --conf /home/fastq_screen.conf --aligner bowtie2 --illumina1_3 ~{read1} ~{read2}
     }
  
