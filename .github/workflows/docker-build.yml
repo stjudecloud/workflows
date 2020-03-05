@@ -1,0 +1,20 @@
+name: docker-build
+
+on:
+  push:
+    branches-ignore:
+    - 'master'
+
+jobs:
+  docker_build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build and push docker images
+      run: |
+        for dir in $(ls docker); do
+            tool_name=$(echo "$dir" | awk '{print tolower($0)}')
+            tag=${GITHUB_REF##*/}
+            docker build -t stjudecloud/$tool_name:$tag docker/$dir/$tag
+            docker push stjudecloud/$tool_name:$tag
+        done

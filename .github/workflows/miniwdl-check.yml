@@ -1,4 +1,4 @@
-name: CI
+name: miniwdl-check
 
 on: [push]
 
@@ -29,17 +29,3 @@ jobs:
           EXITCODE=$(($? || EXITCODE))
         done
         exit $EXITCODE
-  
-  import_syntax_check:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Check import syntax
-      run: |
-        files=$(find . -name '*.wdl')
-        bad_lines=$(awk '/import/' $files | \
-          awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
-        if [ -n "$bad_lines" ]; then
-          echo "$bad_lines"
-          exit 1
-        fi
