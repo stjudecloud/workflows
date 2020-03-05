@@ -36,7 +36,6 @@ workflow quality_check {
     input {
         File gencode_gtf
         File fastq_screen_db
-        File fastq_screen_conf
         String experiment
         File bam
         String strand = ""
@@ -57,11 +56,10 @@ workflow quality_check {
     call qualimap.bamqc as qualimap_bamqc { input: bam=parse_input.bam_dup, max_retries=max_retries }
     call fqc.fastqc { input: bam=parse_input.bam_dup, max_retries=max_retries }
     call samtools.flagstat as samtools_flagstat { input: bam=parse_input.bam_dup, max_retries=max_retries }
-    # call fq_screen.build_db as fq_screen_build_db { input: max_retries=max_retries }
     call samtools.subsample as samtools_subsample { input: bam=parse_input.bam_dup, max_retries=max_retries }
     call picard.bam_to_fastq as b2fq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
     call fq.fqlint { input: read1=b2fq.read1, read2=b2fq.read2, max_retries=max_retries }
-    call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, conf=fastq_screen_conf, max_retries=max_retries}
+    call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, max_retries=max_retries}
     call md5sum.compute_checksum { input: infile=parse_input.bam_dup, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=parse_input.bam_dup, max_retries=max_retries }
     call ngsderive.readlen as ngsderive_readlen { input: bam=parse_input.bam_dup, max_retries=max_retries }

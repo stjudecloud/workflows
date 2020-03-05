@@ -39,7 +39,6 @@ task fastq_screen {
         File read1
         File read2
         File db
-        File conf
         String? format = "illumina"
         Int? num_reads = 100000
         Int? max_retries = 1
@@ -59,7 +58,7 @@ task fastq_screen {
         tar -xsf /tmp/~{db_name}.tar.gz
         echo after tar
         ls /tmp
-        fastq_screen --conf ~{conf} --aligner bowtie2 --illumina1_3 ~{read1} ~{read2}
+        fastq_screen --conf /home/fastq_screen.conf --aligner bowtie2 --illumina1_3 ~{read1} ~{read2}
     }
  
     runtime {
