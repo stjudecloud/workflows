@@ -49,6 +49,7 @@ task fastq_screen {
     String db_name = basename(db)
 
     command {
+        cp ~{db} /tmp
         tar -xsf /tmp/~{db_name} -C /tmp/
         fastq_screen --conf /home/fastq_screen.conf --aligner bowtie2 --illumina1_3 ~{read1} ~{read2}
     }
