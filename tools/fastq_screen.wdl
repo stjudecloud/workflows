@@ -10,7 +10,6 @@ task build_db {
 
     command {
         fastq_screen --get_genomes
-        cat FastQ_Screen_Genomes/fastq_screen.conf
         mv FastQ_Screen_Genomes/ ~{filename}/
         tar -czf ~{tar_filename} ~{filename}/
     }
