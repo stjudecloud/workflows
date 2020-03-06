@@ -1,0 +1,32 @@
+name: lint-check
+
+on: [push]
+
+jobs:
+  import_syntax_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check import syntax
+      run: |
+        files=$(find . -name '*.wdl')
+        bad_lines=$(awk '/import/' $files | \
+          awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
+        if [ -n "$bad_lines" ]; then
+          echo "$bad_lines"
+          exit 1
+        fi
+  docker_pull_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Ensure SemVer'd docker images are being pulled
+      run: |
+        files=$(find . -name '*.wdl')
+        for word in $(awk '/docker: /' $files); do
+          tag=$(echo $word | awk -F ':' '!/docker/ {print substr($2, 1, length($2)-1)}')
+          if ! [[ $tag =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
+            >&2 echo "All Docker containers must be using an official SemVer tagged image"
+            exit 1
+          fi
+        done
