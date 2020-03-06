@@ -23,10 +23,14 @@ jobs:
     - name: Ensure SemVer'd docker images are being pulled
       run: |
         files=$(find . -name '*.wdl')
-        for word in $(awk '/docker: /' $files); do
-          tag=$(echo $word | awk -F ':' '!/docker/ {print substr($2, 1, length($2)-1)}')
-          if ! [[ $tag =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
-            >&2 echo "All Docker containers must be using an official SemVer tagged image"
-            exit 1
-          fi
+        for file in $files; do
+          awk '/docker: /' < "$file" | while IFS= read -r line; do
+            tag=$(echo "$line" | awk -F ':' '{print substr($3, 1, length($3)-1)}')
+            if ! [[ $tag =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
+              >&2 echo "All Docker containers must be using an official SemVer tagged image"
+              >&2 echo "Offending line: $line"
+              >&2 echo "In file: $file"
+              exit 1
+            fi
+          done
         done
