@@ -17,10 +17,11 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build and push docker images
       run: |
-        for dir in $(ls docker); do
-            tool_name=$(echo "$dir" | awk '{print tolower($0)}')
-            tag_dir=$(ls docker/"$dir")
+        for dir in docker/*; do
+          tool_name=$(echo "$dir" | awk '{print tolower($0)}')
+          for tag_dir in docker/"$dir"/*; do
             tag=branch-${GITHUB_REF##*/}-$tag_dir
-            docker build -t stjudecloud/$tool_name:$tag docker/$dir/$tag_dir
-            docker push stjudecloud/$tool_name:$tag
+            docker build -t stjudecloud/"$tool_name":"$tag" docker/"$dir"/"$tag_dir"
+            docker push stjudecloud/"$tool_name":"$tag"
+          done
         done
