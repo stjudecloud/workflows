@@ -1,0 +1,24 @@
+name: docker-build-master
+
+on:
+  push:
+    branches:
+    - 'master'
+
+jobs:
+  docker_build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: azure/docker-login@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - uses: actions/checkout@v2
+    - name: Build and push docker images
+      run: |
+        for dir in $(ls docker); do
+            tool_name=$(echo "$dir" | awk '{print tolower($0)}')
+            tag=$(ls docker/"$dir")
+            docker build -t stjudecloud/$tool_name:$tag docker/$dir/$tag
+            docker push stjudecloud/$tool_name:$tag
+        done
