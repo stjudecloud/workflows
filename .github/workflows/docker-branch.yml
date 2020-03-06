@@ -1,0 +1,46 @@
+name: docker-build-branch
+
+on:
+  push:
+    branches-ignore:
+    - 'master'
+
+jobs:
+  docker_semver_compliance:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check Docker image subdirectories are SemVer compliant
+      run: |
+        for dir in docker/*; do
+          dir=$(basename "$dir")
+          for tag in docker/"$dir"/*; do
+            tag=$(basename "$tag")
+            # check tag is SemVer compliant
+            if ! [[ $tag =~ [^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$] ]]; then
+              >&2 echo "Tag subdirectory $tag for tool $dir is not SemVer compliant."
+              exit 1
+            fi;
+          done
+        done
+  docker_build_branch:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: azure/docker-login@v1
+      with:
+        login-server: https://index.docker.io/v1/
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - uses: actions/checkout@v2
+    - name: Build and push docker images
+      run: |
+        for dir in docker/*; do
+          dir=$(basename "$dir")
+          tool_name=$(echo "$dir" | awk '{print tolower($0)}')
+          for tag_dir in docker/"$dir"/*; do
+            tag_dir=$(basename "$tag_dir")
+            tag=branch-${GITHUB_REF##*/}-$tag_dir
+            docker build -t stjudecloud/"$tool_name":"$tag" docker/"$dir"/"$tag_dir"
+            docker push stjudecloud/"$tool_name":"$tag"
+          done
+        done
