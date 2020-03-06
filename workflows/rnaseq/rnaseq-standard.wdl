@@ -60,9 +60,11 @@ workflow rnaseq_standard {
         Int max_retries = 1
     }
 
-    call util.get_read_groups { input: bam=input_bam, max_retries=max_retries }
+    call parse_input { input: input_bam=input_bam, input_strand=strand }
+
+    call util.get_read_groups { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
     call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out, max_retries=max_retries }
-    call b2fq.bam_to_fastqs { input: bam=input_bam, max_retries=max_retries }
+    call b2fq.bam_to_fastqs { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
     call star.alignment {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,
@@ -109,5 +111,23 @@ workflow rnaseq_standard {
         Array[File] qualimap_rnaseq_results = qualimap_rnaseq.out_files
         File multiqc_zip = multiqc.out
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
+    }
+}
+
+task parse_input {
+    input {
+        File input_bam
+        String input_strand
+    }
+
+    command {
+        if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "reverse" ] && [ "~{input_strand}" != "yes" ] && [ "~{input_strand}" != "no" ]; then
+            >&2 echo "strand must be empty, 'reverse', 'yes', or 'no'"
+            exit 1
+        fi
+    }
+
+    output {
+        File bam_after_input_validated = input_bam
     }
 }
