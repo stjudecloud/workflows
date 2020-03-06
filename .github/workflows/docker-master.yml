@@ -1,4 +1,4 @@
-name: docker-build-master
+name: docker-master
 
 on:
   push:
