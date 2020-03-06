@@ -1,7 +1,7 @@
 FROM stjudecloud/conda-base:1.0.0-alpha AS builder
 
 RUN conda create -n picard \
-        picard==2.20.2 \
+        picard==2.20.2=0 \
         -y \
     && conda clean --all
 
