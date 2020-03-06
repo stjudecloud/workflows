@@ -1,0 +1,21 @@
+name: docker-semver-compliance
+
+on: [pull_request]
+
+jobs:
+    docker_build:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+      - name: Check Docker image subdirectories are SemVer compliant
+        run: |
+          for dir in docker/*; do
+            tool_name=$(echo "$dir" | awk '{print tolower($0)}')
+            for tag in docker/"$dir"/*; do
+              # check tag is SemVer compliant
+              if ! [[ $tag =~ [^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$] ]]; then
+                >&2 echo "Tag subdirectory $tag for tool $dir is not SemVer compliant."
+                exit 1
+              fi;
+            done
+          done
