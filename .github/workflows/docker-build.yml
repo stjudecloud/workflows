@@ -20,7 +20,7 @@ jobs:
         for dir in $(ls docker); do
             tool_name=$(echo "$dir" | awk '{print tolower($0)}')
             tag_dir=$(ls docker/"$dir")
-            tag=branch-${GITHUB_REF##*/}
+            tag=branch-${GITHUB_REF##*/}-$tag_dir
             docker build -t stjudecloud/$tool_name:$tag docker/$dir/$tag_dir
             docker push stjudecloud/$tool_name:$tag
         done
