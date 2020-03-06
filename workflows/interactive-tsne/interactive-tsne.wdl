@@ -106,7 +106,8 @@ workflow interactive_tsne {
             blacklist=gene_blacklist,
             covariates=append_input.covariates_outfile,
             gencode_gtf=gencode_gtf,
-            outfile=output_filename
+            outfile=output_filename,
+            tissue_type=tissue_type
     }
      
     output {

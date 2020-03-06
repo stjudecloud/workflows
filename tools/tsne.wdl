@@ -15,14 +15,16 @@ task plot {
         File covariates
         File gencode_gtf
         String outfile = "tsne.html"
+        String? tissue_type
         Int max_retries = 1
-        Int memory_gb = 5
+        Int memory_gb = 15
         Int disk_size = 15
     }
 
     command {
         itsne-main --debug-rscript -b ${blacklist} -g ${gencode_gtf} -c ${covariates} -o ${outfile} \
             ${true='--input-sample ' false='' defined(inputs)}${sep=' --input-sample ' inputs} \
+            ${'--tissue-type ' + tissue_type}
             ${sep=' ' counts} ${sep=' ' input_counts}
     }
   
