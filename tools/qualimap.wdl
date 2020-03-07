@@ -16,7 +16,7 @@ task bamqc {
     }
 
     Int java_heap_size = ceil(memory_gb * 0.9)
-    String out_file = prefix + ".tar.gz"
+    String out_file = select_first([prefix, "qualimap_bamqc_results"]) + ".tar.gz"
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
