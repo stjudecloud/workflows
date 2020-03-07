@@ -21,16 +21,16 @@
 
 version 1.0
 
-import "../../tools/samtools.wdl"
-import "../../tools/picard.wdl"
-import "../../tools/qc.wdl"
-import "../../tools/qualimap.wdl"
-import "../../tools/ngsderive.wdl"
-import "../../tools/fastqc.wdl" as fqc
-import "../../tools/fastq_screen.wdl" as fq_screen
-import "../../tools/fq.wdl"
-import "../../tools/md5sum.wdl"
-import "../../tools/multiqc.wdl" as mqc
+mport "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
+mport "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
+mport "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qc.wdl"
+mport "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qualimap.wdl"
+mport "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
+mport "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastqc.wdl" as fqc
+mport "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastq_screen.wdl" as fq_screen
+mport "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fq.wdl"
+mport "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/md5sum.wdl"
+mport "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/multiqc.wdl" as mqc
 
 workflow quality_check {
     input {
