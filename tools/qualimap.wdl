@@ -9,21 +9,23 @@ task bamqc {
     input {
         File bam
         Int ncpu = 1
-        String prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam") + "_qualimap_bamqc_results"
         Int max_retries = 1
         Int memory_gb = 8
         Int? disk_size_gb
     }
-    Int java_heap_size = ceil(memory_gb * 0.9)
 
+    Int java_heap_size = ceil(memory_gb * 0.9)
+    String out_file = prefix + ".tar.gz"
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
     command {
         qualimap bamqc -bam ~{bam} \
-            -outdir ~{prefix}_qualimap_results \
+            -outdir ~{prefix} \
             -nt ~{ncpu} \
             --java-mem-size=~{java_heap_size}g
+        tar -czf ~{out_file} ~{prefix}
     }
 
     runtime {
@@ -34,7 +36,7 @@ task bamqc {
     }
 
     output {
-        Array[File] out_files = glob("~{prefix}_qualimap_results/*")
+        File results = out_file
     }
 
     meta {
@@ -52,7 +54,7 @@ task rnaseq {
     input {
         File bam
         File gencode_gtf
-        String outdir = "qualimap_rnaseq"
+        String prefix = basename(bam, ".bam") + "_qualimap_rnaseq_results"
         Int memory_gb = 16
         Int? disk_size_gb
         Int max_retries = 1
@@ -60,6 +62,7 @@ task rnaseq {
         String inferred = ""
     }
 
+    String out_file = prefix + ".tar.gz"
     String stranded = if (strand != "") then 
                         if (strand == "reverse") then "strand-specific-reverse" else
                         if (strand == "yes") then "strand-specific-forward" else
@@ -73,13 +76,13 @@ task rnaseq {
                                          # in this case
 
     Int java_heap_size = ceil(memory_gb * 0.9)
-
     Float bam_size = size(bam, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 12) + 10)])
  
     command {
-        qualimap rnaseq -bam ~{bam} -gtf ~{gencode_gtf} -outdir ~{outdir} -oc qualimap_counts.txt -p ~{stranded} -pe --java-mem-size=~{java_heap_size}G
+        qualimap rnaseq -bam ~{bam} -gtf ~{gencode_gtf} -outdir ~{prefix} -oc qualimap_counts.txt -p ~{stranded} -pe --java-mem-size=~{java_heap_size}G
+        tar -czf ~{out_file} ~{prefix}
     }
 
     runtime {
@@ -90,7 +93,7 @@ task rnaseq {
     }
 
     output {
-        Array[File] out_files = glob("~{outdir}/*")
+        File results = out_file
     }
 
     meta {

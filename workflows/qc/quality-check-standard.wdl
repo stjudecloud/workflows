@@ -21,16 +21,16 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qc.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/multiqc.wdl" as mqc
+import "../../tools/samtools.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/qc.wdl"
+import "../../tools/qualimap.wdl"
+import "../../tools/ngsderive.wdl"
+import "../../tools/fastqc.wdl" as fqc
+import "../../tools/fastq_screen.wdl" as fq_screen
+import "../../tools/fq.wdl"
+import "../../tools/md5sum.wdl"
+import "../../tools/multiqc.wdl" as mqc
 
 workflow quality_check {
     input {
@@ -76,8 +76,8 @@ workflow quality_check {
             input:
                 sorted_bam=parse_input.bam_after_input_validated,
                 validate_sam_string=validate_bam.out,
-                qualimap_bamqc=qualimap_bamqc.out_files,
-                qualimap_rnaseq=qualimap_rnaseq.out_files,
+                qualimap_bamqc=qualimap_bamqc.results,
+                qualimap_rnaseq=qualimap_rnaseq.results,
                 fastqc_files=fastqc.out_files,
                 fastq_screen=fastq_screen.out_files,
                 flagstat_file=samtools_flagstat.outfile,
@@ -89,7 +89,7 @@ workflow quality_check {
             input:
                 sorted_bam=parse_input.bam_after_input_validated,
                 validate_sam_string=validate_bam.out,
-                qualimap_bamqc=qualimap_bamqc.out_files,
+                qualimap_bamqc=qualimap_bamqc.results,
                 fastqc_files=fastqc.out_files,
                 fastq_screen=fastq_screen.out_files,
                 flagstat_file=samtools_flagstat.outfile,
@@ -102,8 +102,8 @@ workflow quality_check {
         File bam_index = samtools_index.bai
         File flagstat = samtools_flagstat.outfile
         Array[File] fastqc_results = fastqc.out_files
-        Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
-        Array[File]? qualimap_rnaseq_results = qualimap_rnaseq.out_files
+        File qualimap_bamqc_results = qualimap_bamqc.results
+        File? qualimap_rnaseq_results = qualimap_rnaseq.results
         Array[File] fastq_screen_results = fastq_screen.out_files
         File? multiqc_zip = multiqc.out
         File? multiqc_rnaseq_zip = multiqc_rnaseq.out
