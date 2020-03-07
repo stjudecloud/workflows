@@ -16,7 +16,8 @@ task bamqc {
     }
 
     Int java_heap_size = ceil(memory_gb * 0.9)
-    String out_file = select_first([prefix, "qualimap_bamqc_results"]) + ".tar.gz"
+    String out_directory = select_first([prefix, "qualimap_bamqc_results"])
+    String out_tar_gz_file = out_directory + ".tar.gz"
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
@@ -25,7 +26,8 @@ task bamqc {
             -outdir ~{prefix} \
             -nt ~{ncpu} \
             --java-mem-size=~{java_heap_size}g
-        tar -czf ~{out_file} ~{prefix}
+        find ~{out_tar_gz_file}
+        tar -czf ~{out_tar_gz_file} ~{prefix}
     }
 
     runtime {
@@ -36,7 +38,7 @@ task bamqc {
     }
 
     output {
-        File results = out_file
+        File results = out_tar_gz_file
     }
 
     meta {
