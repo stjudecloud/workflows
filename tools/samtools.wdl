@@ -168,8 +168,9 @@ task index {
 task subsample {
     input {
         File bam
+        String outname = basename(bam, ".bam") + ".subsampled.bam"
         Int max_retries = 1
-        Int desired_reads=500000
+        Int desired_reads = 500000
     }
 
     Float bam_size = size(bam, "GiB")
@@ -187,16 +188,16 @@ task subsample {
                     -v initial_frac=$initial_frac \
                         'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
                 )
-            samtools view -h -b -s "$frac" ~{bam} > subsampled.bam
+            samtools view -h -b -s "$frac" ~{bam} > ~{outname}
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
-            mv ~{bam} subsampled.bam
+            mv ~{bam} ~{outname}
         fi
     >>>
 
     output {
-        File sampled_bam = "subsampled.bam"
+        File sampled_bam = outname
     }
 
     runtime {
