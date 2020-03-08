@@ -26,7 +26,7 @@ task bamqc {
             -outdir ~{prefix} \
             -nt ~{ncpu} \
             --java-mem-size=~{java_heap_size}g
-        find ~{out_tar_gz_file}
+        find ~{prefix}
         tar -czf ~{out_tar_gz_file} ~{prefix}
     }
 
