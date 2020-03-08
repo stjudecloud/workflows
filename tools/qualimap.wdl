@@ -26,7 +26,6 @@ task bamqc {
             -outdir ~{out_directory} \
             -nt ~{ncpu} \
             --java-mem-size=~{java_heap_size}g
-        find ~{out_directory}
         tar -czf ~{out_tar_gz_file} ~{out_directory}
     }
 
@@ -84,7 +83,6 @@ task rnaseq {
     Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 12) + 10)])
  
     command {
-        set -x
         qualimap rnaseq -bam ~{bam} \
                         -gtf ~{gencode_gtf} \
                         -outdir ~{out_directory} \
