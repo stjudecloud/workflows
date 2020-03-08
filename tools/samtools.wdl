@@ -175,6 +175,7 @@ task subsample {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command <<<
+        set +x
         desired_reads=500000
         initial_frac=0.00001
         initial_reads=$(samtools view -s $initial_frac ~{bam} | wc -l)
