@@ -90,8 +90,8 @@ workflow rnaseq_standard {
         input:
             sorted_bam=picard_sort.sorted_bam,
             validate_sam_string=validate_bam.out,
-            qualimap_bamqc=qualimap_bamqc.out_files,
-            qualimap_rnaseq=qualimap_rnaseq.out_files,
+            qualimap_bamqc=qualimap_bamqc.results,
+            qualimap_rnaseq=qualimap_rnaseq.results,
             fastqc_files=fastqc.out_files,
             flagstat_file=samtools_flagstat.outfile,
             bigwig_file=deeptools_bamCoverage.bigwig,
@@ -107,8 +107,8 @@ workflow rnaseq_standard {
         File gene_counts = htseq_count.out
         File flagstat = samtools_flagstat.outfile
         Array[File] fastqc_results = fastqc.out_files
-        Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
-        Array[File] qualimap_rnaseq_results = qualimap_rnaseq.out_files
+        File qualimap_bamqc_results = qualimap_bamqc.results
+        File qualimap_rnaseq_results = qualimap_rnaseq.results
         File multiqc_zip = multiqc.out
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
     }
