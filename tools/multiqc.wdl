@@ -9,8 +9,8 @@ task multiqc {
     input {
         File sorted_bam
         String validate_sam_string
-        File qualimap_bamqc
-        File? qualimap_rnaseq
+        Array[File] qualimap_bamqc
+        Array[File]? qualimap_rnaseq
         Array[File] fastqc_files
         Array[File] fastq_screen
         File flagstat_file
@@ -27,15 +27,11 @@ task multiqc {
         echo ~{validate_sam_string} > validate_sam.txt
         echo validate_sam.txt >> file_list.txt
 
-        mkdir qualimap_bamqc/
-        tar -xzf ~{qualimap_bamqc} --strip-components=1 -C qualimap_bamqc/;
-        for file in `find qualimap_bamqc`; do
+        for file in ~{sep=' ' qualimap_bamqc} ; do
             echo $file >> file_list.txt
         done
 
-        mkdir qualimap_rnaseq/
-        tar -xzf ~{qualimap_rnaseq} --strip-components=1 -C qualimap_rnaseq/;
-        for file in `find qualimap_rnaseq`; do
+        for file in ~{sep=' ' qualimap_rnaseq} ; do
             echo $file >> file_list.txt
         done
 

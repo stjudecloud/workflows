@@ -76,8 +76,8 @@ workflow quality_check {
             input:
                 sorted_bam=parse_input.bam_after_input_validated,
                 validate_sam_string=validate_bam.out,
-                qualimap_bamqc=qualimap_bamqc.results,
-                qualimap_rnaseq=qualimap_rnaseq.results,
+                qualimap_bamqc=qualimap_bamqc.out_files,
+                qualimap_rnaseq=qualimap_rnaseq.out_files,
                 fastqc_files=fastqc.out_files,
                 fastq_screen=fastq_screen.out_files,
                 flagstat_file=samtools_flagstat.outfile,
@@ -89,7 +89,7 @@ workflow quality_check {
             input:
                 sorted_bam=parse_input.bam_after_input_validated,
                 validate_sam_string=validate_bam.out,
-                qualimap_bamqc=qualimap_bamqc.results,
+                qualimap_bamqc=qualimap_bamqc.out_files,
                 fastqc_files=fastqc.out_files,
                 fastq_screen=fastq_screen.out_files,
                 flagstat_file=samtools_flagstat.outfile,
@@ -102,8 +102,8 @@ workflow quality_check {
         File bam_index = samtools_index.bai
         File flagstat = samtools_flagstat.outfile
         Array[File] fastqc_results = fastqc.out_files
-        File qualimap_bamqc_results = qualimap_bamqc.results
-        File? qualimap_rnaseq_results = qualimap_rnaseq.results
+        Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
+        Array[File]? qualimap_rnaseq_results = qualimap_rnaseq.out_files
         Array[File] fastq_screen_results = fastq_screen.out_files
         File? multiqc_zip = multiqc.out
         File? multiqc_rnaseq_zip = multiqc_rnaseq.out
