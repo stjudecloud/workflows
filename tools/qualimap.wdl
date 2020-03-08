@@ -34,7 +34,7 @@ task bamqc {
     }
 
     output {
-        Array[File] out_files = glob("~{prefix}_qualimap_results/**/*")
+        Array[File] out_files = glob("~{prefix}_qualimap_results/*")
     }
 
     meta {
@@ -95,7 +95,7 @@ task rnaseq {
     }
 
     output {
-        Array[File] out_files = glob("~{prefix}_qualimap_rnaseq_results/**/*")
+        Array[File] out_files = glob("~{prefix}_qualimap_rnaseq_results/*")
     }
 
     meta {
