@@ -21,16 +21,16 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qc.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/qc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/fastqc.wdl" as fqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/fastq_screen.wdl" as fq_screen
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/md5sum.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/multiqc.wdl" as mqc
 
 workflow quality_check {
     input {
