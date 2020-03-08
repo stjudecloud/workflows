@@ -176,7 +176,6 @@ task subsample {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command <<<
-        set -x
         if [[ "$(samtools view ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
             # subsample it.

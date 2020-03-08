@@ -23,11 +23,11 @@ task bamqc {
 
     command {
         qualimap bamqc -bam ~{bam} \
-            -outdir ~{prefix} \
+            -outdir ~{out_directory} \
             -nt ~{ncpu} \
             --java-mem-size=~{java_heap_size}g
-        find ~{prefix}
-        tar -czf ~{out_tar_gz_file} ~{prefix}
+        find ~{out_directory}
+        tar -czf ~{out_tar_gz_file} ~{out_directory}
     }
 
     runtime {
@@ -64,7 +64,8 @@ task rnaseq {
         String inferred = ""
     }
 
-    String out_file = prefix + ".tar.gz"
+    String out_directory = select_first([prefix, "qualimap_rnaseq_results"])
+    String out_tar_gz_file = out_directory + ".tar.gz"
     String stranded = if (strand != "") then 
                         if (strand == "reverse") then "strand-specific-reverse" else
                         if (strand == "yes") then "strand-specific-forward" else
@@ -83,8 +84,15 @@ task rnaseq {
     Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 12) + 10)])
  
     command {
-        qualimap rnaseq -bam ~{bam} -gtf ~{gencode_gtf} -outdir ~{prefix} -oc qualimap_counts.txt -p ~{stranded} -pe --java-mem-size=~{java_heap_size}G
-        tar -czf ~{out_file} ~{prefix}
+        set -x
+        qualimap rnaseq -bam ~{bam} \
+                        -gtf ~{gencode_gtf} \
+                        -outdir ~{out_directory} \
+                        -oc qualimap_counts.txt \
+                        -p ~{stranded} \
+                        -pe \
+                        --java-mem-size=~{java_heap_size}G
+        tar -czf ~{out_tar_gz_file} ~{out_directory}
     }
 
     runtime {
@@ -95,7 +103,7 @@ task rnaseq {
     }
 
     output {
-        File results = out_file
+        File results = out_tar_gz_file
     }
 
     meta {
