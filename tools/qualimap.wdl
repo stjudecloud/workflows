@@ -59,21 +59,21 @@ task rnaseq {
         Int memory_gb = 16
         Int? disk_size_gb
         Int max_retries = 1
-        String strand = ""
-        String inferred = ""
+        String provided_strand = ""
+        String inferred_strand = ""
     }
 
     String out_directory = select_first([prefix, "qualimap_rnaseq_results"])
     String out_tar_gz_file = out_directory + ".tar.gz"
-    String stranded = if (strand != "") then 
-                        if (strand == "reverse") then "strand-specific-reverse" else
-                        if (strand == "yes") then "strand-specific-forward" else
-                        if (strand == "no") then "non-strand-specific"
+    String stranded = if (provided_strand != "") then 
+                        if (provided_strand == "stranded-reverse") then "strand-specific-reverse" else
+                        if (provided_strand == "stranded-forward") then "strand-specific-forward" else
+                        if (provided_strand == "unstranded") then "non-strand-specific"
                         else "unknown-strand"
                       else 
-                        if (inferred == "Stranded-Reverse") then "strand-specific-reverse" else
-                        if (inferred == "Stranded-Forward") then "strand-specific-forward" else 
-                        if (inferred == "Unstranded") then "non-strand-specific" else
+                        if (inferred_strand == "Stranded-Reverse") then "strand-specific-reverse" else
+                        if (inferred_strand == "Stranded-Forward") then "strand-specific-forward" else 
+                        if (inferred_strand == "Unstranded") then "non-strand-specific" else
                         "unknown-strand" # this will intentionally cause htseq to error. You will need to manually specify
                                          # in this case
 

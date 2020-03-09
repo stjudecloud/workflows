@@ -43,11 +43,13 @@ workflow quality_check {
         Int max_retries = 1
     }
 
+    String provided_strand = strand
+
     call parse_input {
         input:
             input_experiment=experiment,
             input_bam=bam,
-            input_strand=strand,
+            input_strand=provided_strand,
             input_fq_db=fastq_screen_db,
             input_fq_format=fastq_format
     }
@@ -71,7 +73,7 @@ workflow quality_check {
 
     if (experiment == "RNA") {
         call ngsderive.infer_strand as ngsderive_strandedness { input: bam=parse_input.bam_after_input_validated, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=parse_input.bam_after_input_validated, gencode_gtf=gencode_gtf, strand=strand, inferred=ngsderive_strandedness.strandedness, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam=parse_input.bam_after_input_validated, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
             input:
                 sorted_bam=parse_input.bam_after_input_validated,
@@ -128,8 +130,8 @@ task parse_input {
             exit 1
         fi
 
-        if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "reverse" ] && [ "~{input_strand}" != "yes" ] && [ "~{input_strand}" != "no" ]; then
-            >&2 echo "strand must be empty, 'reverse', 'yes', or 'no'"
+        if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "stranded-reverse" ] && [ "~{input_strand}" != "stranded-forward" ] && [ "~{input_strand}" != "unstranded" ]; then
+            >&2 echo "strand must be empty, 'stranded-reverse', 'stranded-forward', or 'unstranded'"
             exit 1
         fi
 
