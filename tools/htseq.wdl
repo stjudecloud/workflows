@@ -10,16 +10,16 @@ task count {
         File bam
         File gtf
         String provided_strand
-        String inferred
+        String inferred_strand
         String outfile = basename(bam, ".bam") + ".counts.txt"
         Int? memory_gb = 20
         Int max_retries = 1
     }
 
     String stranded = if (provided_strand != "") then provided_strand else
-                 if (inferred == "Stranded-Reverse") then "reverse" else
-                 if (inferred == "Stranded-Forward") then "yes" else 
-                 if (inferred == "Unstranded") then "no" else
+                 if (inferred_strand == "Stranded-Reverse") then "reverse" else
+                 if (inferred_strand == "Stranded-Forward") then "yes" else 
+                 if (inferred_strand == "Unstranded") then "no" else
                  "unknown" # this will intentionally cause htseq to error. You will need to manually specify
                            # in this case.
 
