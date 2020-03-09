@@ -66,7 +66,7 @@ workflow quality_check {
     call fq.fqlint { input: read1=b2fq.read1, read2=b2fq.read2, max_retries=max_retries }
     call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries }
     
-    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
+    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call ngsderive.instrument as ngsderive_instrument { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call ngsderive.readlen as ngsderive_readlen { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
 
