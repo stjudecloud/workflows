@@ -114,6 +114,6 @@ task rnaseq {
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         gencode_gtf: "A GTF format features file containing Gencode features"
-        strand: "Strand information for RNA-seq experiments. Options: [strand-specific-forward, strand-specific-reverse, non-strand-specific]"
+        provided_strand: "Strand information for RNA-seq experiments. Options: [strand-specific-forward, strand-specific-reverse, non-strand-specific]"
     }
 }
