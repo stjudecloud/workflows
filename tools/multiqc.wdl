@@ -29,13 +29,15 @@ task multiqc {
 
         mkdir qualimap_bamqc/
         tar -xzf ~{qualimap_bamqc} --strip-components=1 -C qualimap_bamqc/;
-        for file in `find qualimap_bamqc`; do
+        echo qualimap_bamqc/genome_results.txt >> file_list.txt
+        for file in `find qualimap_bamqc/raw_data_qualimapReport/`; do
             echo $file >> file_list.txt
         done
 
         mkdir qualimap_rnaseq/
         tar -xzf ~{qualimap_rnaseq} --strip-components=1 -C qualimap_rnaseq/;
-        for file in `find qualimap_rnaseq`; do
+        echo qualimap_rnaseq/rnaseq_qc_results.txt >> file_list.txt
+        for file in `find qualimap_rnaseq/raw_data_qualimapReport/`; do
             echo $file >> file_list.txt
         done
 
