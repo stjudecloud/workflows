@@ -48,35 +48,34 @@ workflow quality_check {
     call parse_input {
         input:
             input_experiment=experiment,
-            input_bam=bam,
             input_strand=provided_strand,
             input_fq_db=fastq_screen_db,
             input_fq_format=fastq_format
     }
 
-    call samtools.quickcheck { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call picard.validate_bam { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
+    call samtools.quickcheck { input: bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call picard.validate_bam { input: bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
-    call samtools.index as samtools_index { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call qualimap.bamqc as qualimap_bamqc { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call fqc.fastqc { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call samtools.flagstat as samtools_flagstat { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
+    call samtools.index as samtools_index { input: bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call qualimap.bamqc as qualimap_bamqc { input: bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call fqc.fastqc { input: bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call samtools.flagstat as samtools_flagstat { input: bam, max_retries=max_retries, wait_var=parse_input.input_check }
 
-    call samtools.subsample as samtools_subsample { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
+    call samtools.subsample as samtools_subsample { input: bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call picard.bam_to_fastq as b2fq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
     call fq.fqlint { input: read1=b2fq.read1, read2=b2fq.read2, max_retries=max_retries }
-    call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries}
+    call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries }
     
-    call md5sum.compute_checksum { input: infile=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call ngsderive.instrument as ngsderive_instrument { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call ngsderive.readlen as ngsderive_readlen { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
+    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
+    call ngsderive.instrument as ngsderive_instrument { input: bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call ngsderive.readlen as ngsderive_readlen { input: bam, max_retries=max_retries, wait_var=parse_input.input_check }
 
     if (experiment == "RNA") {
-        call ngsderive.infer_strand as ngsderive_strandedness { input: bam=parse_input.bam_after_input_validated, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=parse_input.bam_after_input_validated, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
+        call ngsderive.infer_strand as ngsderive_strandedness { input: bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
             input:
-                sorted_bam=parse_input.bam_after_input_validated,
+                sorted_bam=wait_var=parse_input.input_check,
                 validate_sam_string=validate_bam.out,
                 qualimap_bamqc=qualimap_bamqc.results,
                 qualimap_rnaseq=qualimap_rnaseq.results,
@@ -89,7 +88,7 @@ workflow quality_check {
     if (experiment != "RNA") {
         call mqc.multiqc {
             input:
-                sorted_bam=parse_input.bam_after_input_validated,
+                sorted_bam=bam,
                 validate_sam_string=validate_bam.out,
                 qualimap_bamqc=qualimap_bamqc.results,
                 fastqc_files=fastqc.out_files,
@@ -118,7 +117,6 @@ workflow quality_check {
 task parse_input {
     input {
         String input_experiment
-        File input_bam
         String input_strand
         File input_fq_db
         String input_fq_format
@@ -147,6 +145,6 @@ task parse_input {
     }
 
     output {
-        File bam_after_input_validated = input_bam
+        String input_check = ""
     }
 }

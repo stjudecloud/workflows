@@ -12,6 +12,7 @@ task infer_experiment {
         Int? map_qual
         File refgene_bed
         Int max_retries = 1
+        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
