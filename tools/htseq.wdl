@@ -9,14 +9,14 @@ task count {
     input {
         File bam
         File gtf
-        String strand
+        String provided_strand
         String inferred
         String outfile = basename(bam, ".bam") + ".counts.txt"
         Int? memory_gb = 20
         Int max_retries = 1
     }
 
-    String stranded = if (strand != "") then strand else
+    String stranded = if (provided_strand != "") then provided_strand else
                  if (inferred == "Stranded-Reverse") then "reverse" else
                  if (inferred == "Stranded-Forward") then "yes" else 
                  if (inferred == "Unstranded") then "no" else
