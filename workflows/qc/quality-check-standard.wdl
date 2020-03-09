@@ -85,7 +85,7 @@ workflow quality_check {
                 max_retries=max_retries
         }
     }
-    if (experiment != "RNA") {
+    if (experiment == "WGS" || experiment == "WES") {
         call mqc.multiqc {
             input:
                 sorted_bam=bam,
@@ -145,6 +145,6 @@ task parse_input {
     }
 
     output {
-        String input_check = ""
+        String input_check = "passed"
     }
 }
