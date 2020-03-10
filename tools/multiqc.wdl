@@ -50,7 +50,6 @@ task multiqc {
             echo $file >> file_list.txt
         done
 
-        # shellcheck disable=SC2129
         echo ~{flagstat_file} >> file_list.txt
         echo ~{bigwig_file} >> file_list.txt
         echo ~{star_log} >> file_list.txt
