@@ -43,7 +43,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow
 workflow bam_to_fastqs {
     input {
         File bam
-        Int? samtools_sort_ncpu = 1
+        Int samtools_sort_ncpu = 1
         Int bam_to_fastq_memory_gb = 40
         Int max_retries = 1
     }
