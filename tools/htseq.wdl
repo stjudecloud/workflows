@@ -12,7 +12,7 @@ task count {
         String provided_strand
         String inferred_strand
         String outfile = basename(bam, ".bam") + ".counts.txt"
-        Int? memory_gb = 20
+        Int memory_gb = 20
         Int max_retries = 1
     }
 

@@ -138,7 +138,7 @@ task sort {
         File bam
         String sort_order = "coordinate"
         String output_filename = basename(bam, ".bam") + ".sorted.bam"
-        Int? memory_gb = 25
+        Int memory_gb = 25
         Int? disk_size_gb
         Int max_retries = 1
         String wait_var
