@@ -36,9 +36,9 @@
 version 1.0
 
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/qualimap-tar/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fq.wdl"
 
 workflow bam_to_fastqs {
     input {
