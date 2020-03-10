@@ -25,7 +25,7 @@ task build_db {
         File reference_fasta
         File gencode_gtf
         String stardb_dir_name
-        String ram_limit = "45000000000"
+        String ram_limit = "45000000000" # This value is too large to be an Int type, so we store it as a string
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
