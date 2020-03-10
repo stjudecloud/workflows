@@ -9,13 +9,18 @@ jobs:
     - uses: actions/checkout@v2
     - name: Check import syntax
       run: |
-        files=$(find . -name '*.wdl')
-        bad_lines=$(awk '/import/' $files | \
-          awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
-        if [ -n "$bad_lines" ]; then
-          echo "$bad_lines"
-          exit 1
-        fi
+        EXITCODE=0
+        for file in $(find . -name '*.wdl'); do
+          bad_lines=$(awk '/import/' "$file" | \
+            awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
+          if [ -n "$bad_lines" ]; then
+            >&2 echo "Must import files from the master branch on gihub."
+            >&2 echo "The following lines in file $file are bad:"
+            >&2 echo "$bad_lines"
+            EXITCODE=1
+          fi
+        done
+        exit $EXITCODE
   docker_pull_check:
     runs-on: ubuntu-latest
     steps:
