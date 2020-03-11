@@ -125,7 +125,7 @@ task alignment {
         cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/star:1.0.0-alpha'
+        docker: 'stjudecloud/star:branch-qc-workflow-1.0.0-alpha'
         maxRetries: max_retries
     }
 
