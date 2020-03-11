@@ -15,7 +15,7 @@ task get_read_groups {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command <<<
-        samtools view -H ${bam} | grep "@RG" \
+        samtools view -H ~{bam} | grep "@RG" \
             | cut -f 2- \
             | sed -e 's/\t/ /g' \
             | awk '{print}' ORS=' , ' \

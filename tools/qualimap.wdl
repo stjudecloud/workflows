@@ -20,10 +20,10 @@ task bamqc {
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
     command {
-        qualimap bamqc -bam ${bam} \
-            -outdir ${prefix}_qualimap_results \
-            -nt ${ncpu} \
-            --java-mem-size=${java_heap_size}g
+        qualimap bamqc -bam ~{bam} \
+            -outdir ~{prefix}_qualimap_results \
+            -nt ~{ncpu} \
+            --java-mem-size=~{java_heap_size}g
     }
 
     runtime {
@@ -34,7 +34,7 @@ task bamqc {
     }
 
     output {
-        Array[File] out_files = glob("${prefix}_qualimap_results/*")
+        Array[File] out_files = glob("~{prefix}_qualimap_results/*")
     }
 
     meta {
@@ -79,7 +79,7 @@ task rnaseq {
     Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 12) + 10)])
  
     command {
-        qualimap rnaseq -bam ${bam} -gtf ${gencode_gtf} -outdir ${outdir} -oc qualimap_counts.txt -p ${stranded} -pe --java-mem-size=${java_heap_size}G
+        qualimap rnaseq -bam ~{bam} -gtf ~{gencode_gtf} -outdir ~{outdir} -oc qualimap_counts.txt -p ~{stranded} -pe --java-mem-size=~{java_heap_size}G
     }
 
     runtime {
@@ -90,7 +90,7 @@ task rnaseq {
     }
 
     output {
-        Array[File] out_files = glob("${outdir}/*")
+        Array[File] out_files = glob("~{outdir}/*")
     }
 
     meta {

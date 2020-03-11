@@ -31,7 +31,7 @@ task unzip {
     }
 
     command {
-        gunzip ${infile} -c > ${outfilename}
+        gunzip ~{infile} -c > ~{outfilename}
     }
 
     output {

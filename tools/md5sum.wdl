@@ -33,7 +33,7 @@ task compute_checksum {
     Int disk_size = ceil((infile_size * 2) + 10)
 
     command {
-        md5sum ${infile} > ${outfilename}
+        md5sum ~{infile} > ~{outfilename}
     }
 
     runtime {
@@ -69,7 +69,7 @@ task check_checksum {
     Int disk_size = ceil((infile_size * 2) + 10)
 
     command { 
-        md5sum -c ${infile} > stdout.txt
+        md5sum -c ~{infile} > stdout.txt
     } 
 
     runtime {

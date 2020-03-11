@@ -11,23 +11,23 @@ task parse_infer_experiment {
     }
 
     command { 
-        if [ "$(echo "${in}" | grep -c 'PairEnd')" -gt 0 ]
+        if [ "$(echo "~{in}" | grep -c 'PairEnd')" -gt 0 ]
         then
-            if (( $(echo "$(echo "${in}" | tail -n 1 | sed  's/^.*: //') > 0.5" | bc -l ) ))
+            if (( $(echo "$(echo "~{in}" | tail -n 1 | sed  's/^.*: //') > 0.5" | bc -l ) ))
             then
                echo 'strand-specific-reverse' > stdout.txt
-            elif (( $(echo "$(echo "${in}" | tail -n 2 | head -n 1 | sed  's/^.*: //') > 0.5" | bc -l ) ))
+            elif (( $(echo "$(echo "~{in}" | tail -n 2 | head -n 1 | sed  's/^.*: //') > 0.5" | bc -l ) ))
             then 
                echo 'strand-specific-forward' > stdout.txt
             else
                echo 'non-strand-specific' > stdout.txt
             fi
-        elif [ "$(echo "${in}" | grep -c 'SingleEnd')" -gt 0 ]
+        elif [ "$(echo "~{in}" | grep -c 'SingleEnd')" -gt 0 ]
         then 
-            if (( $(echo "$(echo "${in}" | tail -n 1 | sed  's/^.*: //') > 0.5" | bc -l ) ))
+            if (( $(echo "$(echo "~{in}" | tail -n 1 | sed  's/^.*: //') > 0.5" | bc -l ) ))
             then
                echo 'strand-specific-reverse' > stdout.txt
-            elif (( $(echo "$(echo "${in}" | tail -n 2 | head -n 1 | sed  's/^.*: //') > 0.5" | bc -l ) ))
+            elif (( $(echo "$(echo "~{in}" | tail -n 2 | head -n 1 | sed  's/^.*: //') > 0.5" | bc -l ) ))
             then 
                echo 'strand-specific-forward' > stdout.txt
             else

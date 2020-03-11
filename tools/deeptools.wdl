@@ -18,12 +18,12 @@ task bamCoverage {
     Int disk_size = ceil((bam_size * 4) + 10)
  
     command {
-        if [ ! -e ${bam}.bai ] 
+        if [ ! -e ~{bam}.bai ]
         then 
-            ln -s ${bai} ${bam}.bai
+            ln -s ~{bai} ~{bam}.bai
         fi
  
-        bamCoverage --bam ${bam} --outFileName ${prefix}.bw --outFileFormat bigwig --numberOfProcessors "max"
+        bamCoverage --bam ~{bam} --outFileName ~{prefix}.bw --outFileFormat bigwig --numberOfProcessors "max"
     }
 
     runtime {
@@ -34,7 +34,7 @@ task bamCoverage {
     }
 
     output {
-        File bigwig = "${prefix}.bw"
+        File bigwig = "~{prefix}.bw"
     }
 
     meta {
