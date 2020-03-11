@@ -25,6 +25,7 @@ task compute_checksum {
     input {
         File infile
         Int max_retries = 1
+        String wait_var = ""
     }
 
     String outfilename = basename(infile) + ".md5"

@@ -9,14 +9,15 @@ task multiqc {
     input {
         File sorted_bam
         String validate_sam_string
-        Array[File] qualimap_bamqc
-        Array[File]? qualimap_rnaseq
+        File qualimap_bamqc
+        File? qualimap_rnaseq
         Array[File] fastqc_files
         Array[File] fastq_screen
         File flagstat_file
         File? bigwig_file
         File? star_log
         Int max_retries = 1
+        String wait_var = ""
     }
 
     Float star_size = size(sorted_bam, "GiB")
@@ -27,11 +28,17 @@ task multiqc {
         echo ~{validate_sam_string} > validate_sam.txt
         echo validate_sam.txt >> file_list.txt
 
-        for file in ~{sep=' ' qualimap_bamqc} ; do
+        mkdir qualimap_bamqc/
+        tar -xzf ~{qualimap_bamqc} --strip-components=1 -C qualimap_bamqc/;
+        echo qualimap_bamqc/genome_results.txt >> file_list.txt
+        for file in `find qualimap_bamqc/raw_data_qualimapReport/`; do
             echo $file >> file_list.txt
         done
 
-        for file in ~{sep=' ' qualimap_rnaseq} ; do
+        mkdir qualimap_rnaseq/
+        tar -xzf ~{qualimap_rnaseq} --strip-components=1 -C qualimap_rnaseq/;
+        echo qualimap_rnaseq/rnaseq_qc_results.txt >> file_list.txt
+        for file in `find qualimap_rnaseq/raw_data_qualimapReport/`; do
             echo $file >> file_list.txt
         done
 
@@ -43,7 +50,6 @@ task multiqc {
             echo $file >> file_list.txt
         done
 
-        # shellcheck disable=SC2129
         echo ~{flagstat_file} >> file_list.txt
         echo ~{bigwig_file} >> file_list.txt
         echo ~{star_log} >> file_list.txt

@@ -42,6 +42,7 @@ task instrument {
     input {
         File bam
         Int max_retries = 1
+        String wait_var = ""
     }
 
     String out_file = basename(bam, ".bam") + ".instrument.txt"
@@ -67,6 +68,7 @@ task readlen {
     input {
         File bam
         Int max_retries = 1
+        String wait_var = ""
     }
 
     String out_file = basename(bam, ".bam") + ".readlen.txt"

@@ -36,19 +36,19 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qc.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/workflows/general/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastqc.wdl" as fqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/md5sum.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/deeptools.wdl"
 
 workflow rnaseq_standard {
     input {
@@ -60,7 +60,9 @@ workflow rnaseq_standard {
         Int max_retries = 1
     }
 
-    call parse_input { input: input_bam=input_bam, input_strand=strand }
+    String provided_strand = strand
+
+    call parse_input { input: input_bam=input_bam, input_strand=provided_strand }
 
     call util.get_read_groups { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
     call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out, max_retries=max_retries }
@@ -81,8 +83,8 @@ workflow rnaseq_standard {
     call fqc.fastqc { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
     call qualimap.bamqc as qualimap_bamqc { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
-    call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gencode_gtf=gencode_gtf, strand=strand, inferred=ngsderive_strandedness.strandedness, max_retries=max_retries }
-    call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, strand=strand, inferred=ngsderive_strandedness.strandedness, max_retries=max_retries }
+    call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
+    call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
     call samtools.flagstat as samtools_flagstat { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call md5sum.compute_checksum { input: infile=picard_sort.sorted_bam, max_retries=max_retries }
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, max_retries=max_retries }
@@ -90,8 +92,8 @@ workflow rnaseq_standard {
         input:
             sorted_bam=picard_sort.sorted_bam,
             validate_sam_string=validate_bam.out,
-            qualimap_bamqc=qualimap_bamqc.out_files,
-            qualimap_rnaseq=qualimap_rnaseq.out_files,
+            qualimap_bamqc=qualimap_bamqc.results,
+            qualimap_rnaseq=qualimap_rnaseq.results,
             fastqc_files=fastqc.out_files,
             flagstat_file=samtools_flagstat.outfile,
             bigwig_file=deeptools_bamCoverage.bigwig,
@@ -107,8 +109,8 @@ workflow rnaseq_standard {
         File gene_counts = htseq_count.out
         File flagstat = samtools_flagstat.outfile
         Array[File] fastqc_results = fastqc.out_files
-        Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
-        Array[File] qualimap_rnaseq_results = qualimap_rnaseq.out_files
+        File qualimap_bamqc_results = qualimap_bamqc.results
+        File qualimap_rnaseq_results = qualimap_rnaseq.results
         File multiqc_zip = multiqc.out
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
     }

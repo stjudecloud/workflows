@@ -23,6 +23,7 @@ task quickcheck {
     input {
         File bam
         Int max_retries = 1
+        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
@@ -52,9 +53,10 @@ task quickcheck {
 task split {
     input {
         File bam
-        Int? ncpu = 1
+        Int ncpu = 1
         Boolean? reject_unaccounted
         String prefix = basename(bam, ".bam")
+        String wait_var = ""
         Int max_retries = 1
         Int? disk_size_gb
     }
@@ -100,6 +102,7 @@ task flagstat {
         File bam
         String outfilename = basename(bam, ".bam")+".flagstat.txt"
         Int max_retries = 1
+        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
@@ -135,6 +138,7 @@ task index {
         File bam
         String outfile = basename(bam)+".bai"
         Int max_retries = 1
+        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
@@ -168,27 +172,37 @@ task index {
 task subsample {
     input {
         File bam
+        String outname = basename(bam, ".bam") + ".subsampled.bam"
         Int max_retries = 1
+        Int desired_reads = 500000
+        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command <<<
-        desired_reads=500000
-        initial_frac=0.00001
-        initial_reads=$(samtools view -s $initial_frac ~{bam} | wc -l)
-        frac=$( \
-            awk -v desired_reads=$desired_reads \
-                -v initial_reads="$initial_reads" \
-                -v initial_frac=$initial_frac \
-                    'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
-            )
-        samtools view -h -b -s "$frac" ~{bam} > subsampled.bam
+        if [[ "$(samtools view ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
+            # the BAM has at least ~{desired_reads} reads, meaning we should
+            # subsample it.
+            initial_frac=0.00001
+            initial_reads=$(samtools view -s $initial_frac ~{bam} | wc -l)
+            frac=$( \
+                awk -v desired_reads=~{desired_reads} \
+                    -v initial_reads="$initial_reads" \
+                    -v initial_frac=$initial_frac \
+                        'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
+                )
+            samtools view -h -b -s "$frac" ~{bam} > ~{outname}
+        else
+            # the BAM has less than ~{desired_reads} reads, meaning we should
+            # just use it directly without subsampling.
+            mv ~{bam} ~{outname}
+        fi
     >>>
 
     output {
-        File sampled_bam = "subsampled.bam"
+        File sampled_bam = outname
     }
 
     runtime {

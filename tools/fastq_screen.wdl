@@ -3,7 +3,7 @@ version 1.0
 task build_db {
     input {
         String filename = "fastq-screen-db"
-        Int? max_retries = 1
+        Int max_retries = 1
     }
 
     String tar_filename = filename + ".tar.gz"
@@ -39,8 +39,8 @@ task fastq_screen {
         File read2
         File db
         String format
-        Int? num_reads = 100000
-        Int? max_retries = 1
+        Int num_reads = 100000
+        Int max_retries = 1
     }
 
     String output_basename = basename(read1, ".fastq") + "_screen"

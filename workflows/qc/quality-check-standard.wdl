@@ -43,53 +43,54 @@ workflow quality_check {
         Int max_retries = 1
     }
 
+    String provided_strand = strand
+
     call parse_input {
         input:
             input_experiment=experiment,
-            input_bam=bam,
-            input_strand=strand,
+            input_strand=provided_strand,
             input_fq_db=fastq_screen_db,
             input_fq_format=fastq_format
     }
 
-    call samtools.quickcheck { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call picard.validate_bam { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
+    call samtools.quickcheck { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call picard.validate_bam { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
-    call samtools.index as samtools_index { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call qualimap.bamqc as qualimap_bamqc { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call fqc.fastqc { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call samtools.flagstat as samtools_flagstat { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
+    call samtools.index as samtools_index { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call qualimap.bamqc as qualimap_bamqc { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call fqc.fastqc { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call samtools.flagstat as samtools_flagstat { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
 
-    call samtools.subsample as samtools_subsample { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
+    call samtools.subsample as samtools_subsample { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call picard.bam_to_fastq as b2fq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
     call fq.fqlint { input: read1=b2fq.read1, read2=b2fq.read2, max_retries=max_retries }
-    call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries}
+    call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries }
     
-    call md5sum.compute_checksum { input: infile=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call ngsderive.instrument as ngsderive_instrument { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
-    call ngsderive.readlen as ngsderive_readlen { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
+    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call ngsderive.instrument as ngsderive_instrument { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call ngsderive.readlen as ngsderive_readlen { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
 
     if (experiment == "RNA") {
-        call ngsderive.infer_strand as ngsderive_strandedness { input: bam=parse_input.bam_after_input_validated, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=parse_input.bam_after_input_validated, gencode_gtf=gencode_gtf, strand=strand, inferred=ngsderive_strandedness.strandedness, max_retries=max_retries }
+        call ngsderive.infer_strand as ngsderive_strandedness { input: bam=bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam=bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
             input:
-                sorted_bam=parse_input.bam_after_input_validated,
+                sorted_bam=bam,
                 validate_sam_string=validate_bam.out,
-                qualimap_bamqc=qualimap_bamqc.out_files,
-                qualimap_rnaseq=qualimap_rnaseq.out_files,
+                qualimap_bamqc=qualimap_bamqc.results,
+                qualimap_rnaseq=qualimap_rnaseq.results,
                 fastqc_files=fastqc.out_files,
                 fastq_screen=fastq_screen.out_files,
                 flagstat_file=samtools_flagstat.outfile,
                 max_retries=max_retries
         }
     }
-    if (experiment != "RNA") {
+    if (experiment == "WGS" || experiment == "WES") {
         call mqc.multiqc {
             input:
-                sorted_bam=parse_input.bam_after_input_validated,
+                sorted_bam=bam,
                 validate_sam_string=validate_bam.out,
-                qualimap_bamqc=qualimap_bamqc.out_files,
+                qualimap_bamqc=qualimap_bamqc.results,
                 fastqc_files=fastqc.out_files,
                 fastq_screen=fastq_screen.out_files,
                 flagstat_file=samtools_flagstat.outfile,
@@ -102,8 +103,8 @@ workflow quality_check {
         File bam_index = samtools_index.bai
         File flagstat = samtools_flagstat.outfile
         Array[File] fastqc_results = fastqc.out_files
-        Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
-        Array[File]? qualimap_rnaseq_results = qualimap_rnaseq.out_files
+        File qualimap_bamqc_results = qualimap_bamqc.results
+        File? qualimap_rnaseq_results = qualimap_rnaseq.results
         Array[File] fastq_screen_results = fastq_screen.out_files
         File? multiqc_zip = multiqc.out
         File? multiqc_rnaseq_zip = multiqc_rnaseq.out
@@ -116,7 +117,6 @@ workflow quality_check {
 task parse_input {
     input {
         String input_experiment
-        File input_bam
         String input_strand
         File input_fq_db
         String input_fq_format
@@ -128,8 +128,8 @@ task parse_input {
             exit 1
         fi
 
-        if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "reverse" ] && [ "~{input_strand}" != "yes" ] && [ "~{input_strand}" != "no" ]; then
-            >&2 echo "strand must be empty, 'reverse', 'yes', or 'no'"
+        if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "stranded-reverse" ] && [ "~{input_strand}" != "stranded-forward" ] && [ "~{input_strand}" != "unstranded" ]; then
+            >&2 echo "strand must be empty, 'stranded-reverse', 'stranded-forward', or 'unstranded'"
             exit 1
         fi
 
@@ -145,6 +145,6 @@ task parse_input {
     }
 
     output {
-        File bam_after_input_validated = input_bam
+        String input_check = "passed"
     }
 }
