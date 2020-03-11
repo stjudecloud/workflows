@@ -62,11 +62,11 @@ workflow rnaseq_standard {
 
     String provided_strand = strand
 
-    call parse_input { input: input_bam=input_bam, input_strand=provided_strand }
+    call parse_input { input: input_strand=provided_strand }
 
-    call util.get_read_groups { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
+    call util.get_read_groups { input: bam=input_bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out, max_retries=max_retries }
-    call b2fq.bam_to_fastqs { input: bam=parse_input.bam_after_input_validated, max_retries=max_retries }
+    call b2fq.bam_to_fastqs { input: bam=input_bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call star.alignment {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,
@@ -118,7 +118,6 @@ workflow rnaseq_standard {
 
 task parse_input {
     input {
-        File input_bam
         String input_strand
     }
 
@@ -130,6 +129,6 @@ task parse_input {
     }
 
     output {
-        File bam_after_input_validated = input_bam
+        String input_check = "passed"
     }
 }

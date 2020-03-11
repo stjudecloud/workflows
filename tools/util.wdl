@@ -9,6 +9,7 @@ task get_read_groups {
     input {
         File bam
         Int max_retries = 1
+        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
