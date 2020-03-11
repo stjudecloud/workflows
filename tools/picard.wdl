@@ -141,7 +141,7 @@ task sort {
         Int memory_gb = 25
         Int? disk_size_gb
         Int max_retries = 1
-        String wait_var
+        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
