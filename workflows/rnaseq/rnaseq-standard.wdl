@@ -39,19 +39,19 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qc.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/workflows/general/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/fastqc.wdl" as fqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/md5sum.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/qc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/improvements/tools/deeptools.wdl"
 
 workflow rnaseq_standard {
     input {
