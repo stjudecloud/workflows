@@ -93,7 +93,13 @@ task alignment {
 
     command {
         tar -xzf ~{stardb_tar_gz};
-        STAR --readFilesIn ~{sep=',' read_one_fastqs} ~{sep=',' read_two_fastqs} \
+
+        python /home/sort_star_input.py \
+            --read_one_fastqs ~{sep=',' read_one_fastqs} \
+            --read_two_fastqs ~{sep=',' read_two_fastqs} \
+            --read_groups "~{read_groups}"
+
+        STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
              --genomeDir ~{stardb_dir} \
              --runThreadN ~{ncpu} \
              --outSAMunmapped Within \
@@ -112,7 +118,7 @@ task alignment {
              --outFileNamePrefix ~{output_prefix} \
              --twopassMode Basic \
              --limitBAMsortRAM ~{(memory_gb - 2) + "000000000"} \
-             ~{"--outSAMattrRGline " + read_groups}
+             --outSAMattrRGline $(cat read_groups_sorted.txt)
     }
 
     runtime {

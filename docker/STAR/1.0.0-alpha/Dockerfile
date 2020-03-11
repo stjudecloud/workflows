@@ -5,7 +5,8 @@ RUN conda create -n star \
         -y \
     && conda clean --all
 
-FROM debian:10-slim
-COPY --from=builder /opt/conda/envs/star/bin /opt/conda/envs/star/bin
 ENV PATH /opt/conda/envs/star/bin:$PATH
+
+COPY ./sort_star_input.py /home
+
 ENTRYPOINT [ "STAR" ]
