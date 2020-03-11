@@ -14,7 +14,7 @@ jobs:
           bad_lines=$(awk '/import/' "$file" | \
             awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
           if [ -n "$bad_lines" ]; then
-            >&2 echo "Must import files from the master branch on gihub."
+            >&2 echo "Must import files from the master branch on Github."
             >&2 echo "The following lines in file $file are bad:"
             >&2 echo "$bad_lines"
             EXITCODE=1
