@@ -24,6 +24,7 @@ version 1.0
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qc.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/deeptools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastqc.wdl" as fqc
@@ -60,6 +61,7 @@ workflow quality_check {
     call qualimap.bamqc as qualimap_bamqc { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call fqc.fastqc { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call samtools.flagstat as samtools_flagstat { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=bam, bai=samtools_index.bai, max_retries=max_retries }
 
     call samtools.subsample as samtools_subsample { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call picard.bam_to_fastq as b2fq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
@@ -77,6 +79,7 @@ workflow quality_check {
             input:
                 sorted_bam=bam,
                 validate_sam_string=validate_bam.out,
+                bigwig_file=deeptools_bamCoverage.bigwig,
                 qualimap_bamqc=qualimap_bamqc.results,
                 qualimap_rnaseq=qualimap_rnaseq.results,
                 fastqc_files=fastqc.out_files,
@@ -90,6 +93,7 @@ workflow quality_check {
             input:
                 sorted_bam=bam,
                 validate_sam_string=validate_bam.out,
+                bigwig_file=deeptools_bamCoverage.bigwig,
                 qualimap_bamqc=qualimap_bamqc.results,
                 fastqc_files=fastqc.out_files,
                 fastq_screen=fastq_screen.out_files,
@@ -106,6 +110,7 @@ workflow quality_check {
         File qualimap_bamqc_results = qualimap_bamqc.results
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         Array[File] fastq_screen_results = fastq_screen.out_files
+        File bigwig = deeptools_bamCoverage.bigwig
         File? multiqc_zip = multiqc.out
         File? multiqc_rnaseq_zip = multiqc_rnaseq.out
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file

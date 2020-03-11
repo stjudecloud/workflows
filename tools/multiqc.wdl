@@ -14,7 +14,7 @@ task multiqc {
         Array[File] fastqc_files
         Array[File] fastq_screen
         File flagstat_file
-        File? bigwig_file
+        File bigwig_file
         File? star_log
         Int max_retries = 1
         String wait_var = ""
