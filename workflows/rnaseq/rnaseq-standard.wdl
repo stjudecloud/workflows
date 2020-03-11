@@ -64,7 +64,7 @@ workflow rnaseq_standard {
 
     call parse_input { input: input_strand=provided_strand }
 
-    call util.get_read_groups { input: bam=input_bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call samtools.get_read_groups { input: bam=input_bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out, max_retries=max_retries }
     call b2fq.bam_to_fastqs { input: bam=input_bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call star.alignment {
@@ -83,14 +83,13 @@ workflow rnaseq_standard {
     call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
     call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
     call md5sum.compute_checksum { input: infile=picard_sort.sorted_bam, max_retries=max_retries }
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, max_retries=max_retries }
 
     output {
         File bam = picard_sort.sorted_bam
         File bam_checksum = compute_checksum.outfile
         File bam_index = samtools_index.bai
-        File bigwig = deeptools_bamCoverage.bigwig
         File gene_counts = htseq_count.out
+        File inferred_strandedness = ngsderive_strandedness.strandedness_file
     }
 }
 
