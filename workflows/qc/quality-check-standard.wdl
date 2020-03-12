@@ -72,7 +72,7 @@ workflow quality_check {
     call ngsderive.instrument as ngsderive_instrument { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call ngsderive.readlen as ngsderive_readlen { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
 
-    if (experiment == "RNA") {
+    if (experiment == "RNA-seq") {
         call ngsderive.infer_strand as ngsderive_strandedness { input: bam=bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
@@ -128,8 +128,8 @@ task parse_input {
     }
 
     command {
-        if [ "~{input_experiment}" != "WGS" ] && [ "~{input_experiment}" != "WES" ] && [ "~{input_experiment}" != "RNA" ]; then
-            >&2 echo "experiment input must be 'WGS', 'WES', or 'RNA'"
+        if [ "~{input_experiment}" != "WGS" ] && [ "~{input_experiment}" != "WES" ] && [ "~{input_experiment}" != "RNA-seq" ]; then
+            >&2 echo "experiment input must be 'WGS', 'WES', or 'RNA-seq'"
             exit 1
         fi
 
