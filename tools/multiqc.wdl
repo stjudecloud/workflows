@@ -28,10 +28,11 @@ task multiqc {
         echo ~{validate_sam_string} > validate_sam.txt
         echo validate_sam.txt >> file_list.txt
 
-        mkdir qualimap_bamqc/
-        tar -xzf ~{qualimap_bamqc} --strip-components=1 -C qualimap_bamqc/;
-        echo qualimap_bamqc/genome_results.txt >> file_list.txt
-        for file in `find qualimap_bamqc/raw_data_qualimapReport/`; do
+        qualimap_bamqc_dir=$(basename ~{sorted_bam} '.bam')
+        mkdir "$qualimap_bamqc_dir"
+        tar -xzf ~{qualimap_bamqc} --strip-components=1 -C "$qualimap_bamqc_dir"/;
+        echo "$qualimap_bamqc_dir"/genome_results.txt >> file_list.txt
+        for file in `find "$qualimap_bamqc_dir"/raw_data_qualimapReport/`; do
             echo $file >> file_list.txt
         done
 
