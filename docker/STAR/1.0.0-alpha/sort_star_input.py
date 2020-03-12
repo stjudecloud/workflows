@@ -1,48 +1,33 @@
 import argparse
+import os
 
+
+def sort_lists(target_list, key_list):
+    for i in range(1, len(key_list)):
+        key = key_list[i]
+        target = target_list[i]
+        j = i - 1
+        while j >= 0 and key < key_list[j]:
+            key_list[j+1] = key_list[j]
+            target_list[j+1] = target_list[j]
+            j -= 1
+        key_list[j+1] = key
+        target_list[j+1] = target
 
 def sort_fastqs(read_one_fastqs, read_two_fastqs):
-    read1_names = [fastq.split('/')[-1] for fastq in read_one_fastqs]
-    read2_names = [fastq.split('/')[-1] for fastq in read_two_fastqs]
-    
-    for i in range(1, len(read1_names)):
-        key = read1_names[i]
-        key_pair = read_one_fastqs[i]
-        j = i - 1
-        while j >= 0 and key < read1_names[j]:
-            read1_names[j+1] = read1_names[j]
-            read_one_fastqs[j+1] = read_one_fastqs[j]
-            j -= 1
-        read1_names[j+1] = key
-        read_one_fastqs[j+1] = key_pair
-    
-    for i in range(1, len(read2_names)):
-        key = read2_names[i]
-        key_pair = read_two_fastqs[i]
-        j = i - 1
-        while j >= 0 and key < read2_names[j]:
-            read2_names[j+1] = read2_names[j]
-            read_two_fastqs[j+1] = read_two_fastqs[j]
-            j -= 1
-        read2_names[j+1] = key
-        read_two_fastqs[j+1] = key_pair
-      
+    read_one_basenames = [fastq.split(os.sep)[-1] for fastq in read_one_fastqs]
+    sort_lists(read_one_fastqs, read_one_basenames)
+
+    read_two_basenames = [fastq.split(os.sep)[-1] for fastq in read_two_fastqs]
+    sort_lists(read_two_fastqs, read_two_basenames)
+
     return (read_one_fastqs, read_two_fastqs)
 
 def sort_read_groups(read_groups_string):
     read_groups = [rg for rg in read_groups_string.split(' , ')]
     rgids = [flags.split(' ')[0].split(':')[1] for flags in read_groups]
 
-    for i in range(1, len(rgids)):
-        key = rgids[i]
-        key_pair = read_groups[i]
-        j = i - 1
-        while j >= 0 and key < rgids[j]:
-            rgids[j+1] = rgids[j]
-            read_groups[j+1] = read_groups[j]
-            j -= 1
-        rgids[j+1] = key
-        read_groups[j+1] = key_pair
+    sort_lists(read_groups, rgids)
 
     return (read_groups, rgids)
 
@@ -57,13 +42,13 @@ def validate(read_one_fastqs, read_two_fastqs, rgids):
             raise SystemExit('Error: read group id not in fastqs')
 
 def write_outfiles(read_one_fastqs, read_two_fastqs, read_groups):
-    read1_file = open('read_one_fastqs_sorted.txt', 'w')
-    read1_file.write(','.join(read_one_fastqs))
-    read1_file.close()
+    read_one_file = open('read_one_fastqs_sorted.txt', 'w')
+    read_one_file.write(','.join(read_one_fastqs))
+    read_one_file.close()
 
-    read2_file = open('read_two_fastqs_sorted.txt', 'w')
-    read2_file.write(','.join(read_two_fastqs))
-    read2_file.close()
+    read_two_file = open('read_two_fastqs_sorted.txt', 'w')
+    read_two_file.write(','.join(read_two_fastqs))
+    read_two_file.close()
 
     read_group_file = open('read_groups_sorted.txt', 'w')
     read_group_file.write(' , '.join(read_groups))
@@ -85,4 +70,5 @@ if __name__ == '__main__':
         args.read_one_fastqs, args.read_two_fastqs
     )
     read_groups, rgids = sort_read_groups(args.read_groups)
+    validate(read_one_fastqs, read_two_fastqs, rgids)
     write_outfiles(read_one_fastqs, read_two_fastqs, read_groups)
