@@ -58,12 +58,12 @@ task validate_bam {
         String wait_var = ""
     }
 
-    Float bam_size = size(input_bam, "GiB")
+    Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
     Int java_heap_size = ceil(memory_gb * 0.9)
     
     command {
-        picard -Xmx~{java_heap_size}g ValidateSamFile I=~{input_bam} \
+        picard -Xmx~{java_heap_size}g ValidateSamFile I=~{bam} \
             IGNORE=INVALID_PLATFORM_VALUE > stdout.txt
     }
 
