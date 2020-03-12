@@ -60,6 +60,7 @@ task rnaseq {
         Int memory_gb = 16
         Int? disk_size_gb
         Int max_retries = 1
+        Boolean paired_end = false
         String provided_strand = ""
         String inferred_strand = ""
     }
@@ -77,6 +78,7 @@ task rnaseq {
                         if (inferred_strand == "Unstranded") then "non-strand-specific" else
                         "unknown-strand" # this will intentionally cause qualimap to error. You will need to manually specify
                                          # in this case
+    String paired_end_arg = if (paired_end) then "-pe" else ""
 
     Int java_heap_size = ceil(memory_gb * 0.9)
     Float bam_size = size(bam, "GiB")
@@ -89,7 +91,7 @@ task rnaseq {
                         -outdir ~{out_directory} \
                         -oc qualimap_counts.txt \
                         -p ~{stranded} \
-                        -pe \
+                        ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
         tar -czf ~{out_tar_gz_file} ~{out_directory}
     }

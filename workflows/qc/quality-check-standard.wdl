@@ -41,6 +41,7 @@ workflow quality_check {
         String strand = ""
         File fastq_screen_db
         String fastq_format = "sanger"
+        Boolean paired_end = false
         Int max_retries = 1
     }
 
@@ -76,7 +77,7 @@ workflow quality_check {
     
     if (experiment == "RNA-seq") {
         call ngsderive.infer_strand as ngsderive_strandedness { input: bam=bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam=bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
             input:
                 sorted_bam=bam,
