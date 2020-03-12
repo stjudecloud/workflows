@@ -67,9 +67,9 @@ task rnaseq {
     String out_directory = select_first([prefix, "qualimap_rnaseq_results"])
     String out_tar_gz_file = out_directory + ".tar.gz"
     String stranded = if (provided_strand != "") then 
-                        if (provided_strand == "stranded-reverse") then "strand-specific-reverse" else
-                        if (provided_strand == "stranded-forward") then "strand-specific-forward" else
-                        if (provided_strand == "unstranded") then "non-strand-specific"
+                        if (provided_strand == "Stranded-Reverse") then "strand-specific-reverse" else
+                        if (provided_strand == "Stranded-Forward") then "strand-specific-forward" else
+                        if (provided_strand == "Unstranded") then "non-strand-specific"
                         else "unknown-strand"
                       else 
                         if (inferred_strand == "Stranded-Reverse") then "strand-specific-reverse" else

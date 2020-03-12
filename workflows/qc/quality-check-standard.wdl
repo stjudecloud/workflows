@@ -135,8 +135,8 @@ task parse_input {
             exit 1
         fi
 
-        if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "stranded-reverse" ] && [ "~{input_strand}" != "stranded-forward" ] && [ "~{input_strand}" != "unstranded" ]; then
-            >&2 echo "strand must be empty, 'stranded-reverse', 'stranded-forward', or 'unstranded'"
+        if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "Stranded-Reverse" ] && [ "~{input_strand}" != "Stranded-Forward" ] && [ "~{input_strand}" != "Unstranded" ]; then
+            >&2 echo "strand must be empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
             exit 1
         fi
 
