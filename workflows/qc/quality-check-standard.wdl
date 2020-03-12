@@ -59,7 +59,6 @@ workflow quality_check {
 
     call picard.validate_bam { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
-    call samtools.quickcheck { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
 
     call samtools.flagstat as samtools_flagstat { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call samtools.index as samtools_index { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
