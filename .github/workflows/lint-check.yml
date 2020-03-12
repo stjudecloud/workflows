@@ -11,12 +11,14 @@ jobs:
       run: |
         EXITCODE=0
         for file in $(find . -name '*.wdl'); do
-          bad_lines=$(awk '/import/' "$file" | \
-            awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
+          echo "Checking file $file..."
+          import_lines=$(awk '/import/' "$file")
+          bad_lines=$(echo "$import_lines" | awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
           if [ -n "$bad_lines" ]; then
             >&2 echo "Must import files from the master branch on Github."
-            >&2 echo "The following lines in file $file are bad:"
+            >&2 echo "The following lines are bad:"
             >&2 echo "$bad_lines"
+            >&2 echo ""
             EXITCODE=1
           fi
         done
