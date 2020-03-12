@@ -48,7 +48,6 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/multiqc.wdl" as mqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qc.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/deeptools.wdl"
 
 workflow rnaseq_standard {
     input {
