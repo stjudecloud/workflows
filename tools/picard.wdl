@@ -52,7 +52,7 @@ task mark_duplicates {
 
 task validate_bam {
     input {
-        File input_bam
+        File bam
         Int memory_gb = 8
         Int max_retries = 1
         String wait_var = ""
@@ -76,7 +76,7 @@ task validate_bam {
 
     output {
         String out = read_string("stdout.txt")
-        File bam = input_bam
+        File bam = bam
     }
 
     meta {
