@@ -76,7 +76,7 @@ task validate_bam {
 
     output {
         String out = read_string("stdout.txt")
-        File bam = bam
+        File validated_bam = bam
     }
 
     meta {
