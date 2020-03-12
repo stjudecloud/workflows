@@ -72,6 +72,6 @@ task fastq_screen {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs Fast Q Screen."
+        description: "This WDL tool runs Fast Q Screen on a pair of fastqs."
     }
 }
