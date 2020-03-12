@@ -75,7 +75,7 @@ task rnaseq {
                         if (inferred_strand == "Stranded-Reverse") then "strand-specific-reverse" else
                         if (inferred_strand == "Stranded-Forward") then "strand-specific-forward" else 
                         if (inferred_strand == "Unstranded") then "non-strand-specific" else
-                        "unknown-strand" # this will intentionally cause htseq to error. You will need to manually specify
+                        "unknown-strand" # this will intentionally cause qualimap to error. You will need to manually specify
                                          # in this case
 
     Int java_heap_size = ceil(memory_gb * 0.9)
