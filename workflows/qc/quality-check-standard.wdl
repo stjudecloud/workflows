@@ -130,25 +130,27 @@ task parse_input {
     }
 
     command {
+        EXITCODE=0
         if [ "~{input_experiment}" != "WGS" ] && [ "~{input_experiment}" != "WES" ] && [ "~{input_experiment}" != "RNA-seq" ]; then
             >&2 echo "experiment input must be 'WGS', 'WES', or 'RNA-seq'"
-            exit 1
+            EXITCODE=1
         fi
 
         if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "Stranded-Reverse" ] && [ "~{input_strand}" != "Stranded-Forward" ] && [ "~{input_strand}" != "Unstranded" ]; then
             >&2 echo "strand must be empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
-            exit 1
+            EXITCODE=1
         fi
 
         if [ "$(basename ~{input_fq_db})" != "fastq-screen-db.tar.gz" ]; then
             >&2 echo "FastQ Screen database (input \"fastq_screen_db\") must be archived and named fastq-screen-db.tar.gz"
-            exit 1
+            EXITCODE=1
         fi
 
         if [ -n "~{input_fq_format}" ] && [ "~{input_fq_format}" != "sanger" ] && [ "~{input_fq_format}" != "illunima1.3" ]; then
             >&2 echo "fastq_format must be empty, 'sanger', or 'illumina1.3'"
-            exit 1
+            EXITCODE=1
         fi
+        exit $EXITCODE
     }
 
     output {
