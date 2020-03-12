@@ -43,7 +43,7 @@ task fastq_screen {
         Int max_retries = 1
     }
 
-    String output_basename = basename(read1, ".fastq") + "_screen"
+    String output_basename = basename(read1, "R1.fastq") + "screen"
     String db_name = basename(db)
 
     command {
