@@ -21,26 +21,26 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/md5sum.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qc.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/deeptools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastq_screen.wdl" as fq_screen
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/md5sum.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastq_screen.wdl" as fq_screen
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/multiqc.wdl" as mqc
 
 workflow quality_check {
     input {
+        File bam
         File gencode_gtf
+        String experiment
+        String strand = ""
         File fastq_screen_db
         String fastq_format = "sanger"
-        String experiment
-        File bam
-        String strand = ""
         Int max_retries = 1
     }
 
@@ -54,24 +54,26 @@ workflow quality_check {
             input_fq_format=fastq_format
     }
 
-    call samtools.quickcheck { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+
     call picard.validate_bam { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
-    call samtools.index as samtools_index { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
-    call qualimap.bamqc as qualimap_bamqc { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
-    call fqc.fastqc { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call samtools.quickcheck { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+
     call samtools.flagstat as samtools_flagstat { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call samtools.index as samtools_index { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+
+    call fqc.fastqc { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=bam, bai=samtools_index.bai, max_retries=max_retries }
+    call ngsderive.instrument as ngsderive_instrument { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call ngsderive.readlen as ngsderive_readlen { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call qualimap.bamqc as qualimap_bamqc { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
 
     call samtools.subsample as samtools_subsample { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
     call picard.bam_to_fastq as b2fq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
     call fq.fqlint { input: read1=b2fq.read1, read2=b2fq.read2, max_retries=max_retries }
     call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries }
     
-    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries, wait_var=parse_input.input_check }
-    call ngsderive.instrument as ngsderive_instrument { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
-    call ngsderive.readlen as ngsderive_readlen { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
-
     if (experiment == "RNA-seq") {
         call ngsderive.infer_strand as ngsderive_strandedness { input: bam=bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
@@ -79,12 +81,12 @@ workflow quality_check {
             input:
                 sorted_bam=bam,
                 validate_sam_string=validate_bam.out,
+                flagstat_file=samtools_flagstat.outfile,
+                fastqc_files=fastqc.out_files,
                 bigwig_file=deeptools_bamCoverage.bigwig,
                 qualimap_bamqc=qualimap_bamqc.results,
-                qualimap_rnaseq=qualimap_rnaseq.results,
-                fastqc_files=fastqc.out_files,
                 fastq_screen=fastq_screen.out_files,
-                flagstat_file=samtools_flagstat.outfile,
+                qualimap_rnaseq=qualimap_rnaseq.results,
                 max_retries=max_retries
         }
     }
@@ -93,11 +95,11 @@ workflow quality_check {
             input:
                 sorted_bam=bam,
                 validate_sam_string=validate_bam.out,
+                flagstat_file=samtools_flagstat.outfile,
+                fastqc_files=fastqc.out_files,
                 bigwig_file=deeptools_bamCoverage.bigwig,
                 qualimap_bamqc=qualimap_bamqc.results,
-                fastqc_files=fastqc.out_files,
                 fastq_screen=fastq_screen.out_files,
-                flagstat_file=samtools_flagstat.outfile,
                 max_retries=max_retries
         }
     }
@@ -107,15 +109,15 @@ workflow quality_check {
         File bam_index = samtools_index.bai
         File flagstat = samtools_flagstat.outfile
         Array[File] fastqc_results = fastqc.out_files
-        File qualimap_bamqc_results = qualimap_bamqc.results
-        File? qualimap_rnaseq_results = qualimap_rnaseq.results
-        Array[File] fastq_screen_results = fastq_screen.out_files
         File bigwig = deeptools_bamCoverage.bigwig
-        File? multiqc_zip = multiqc.out
-        File? multiqc_rnaseq_zip = multiqc_rnaseq.out
-        File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File instrument_file = ngsderive_instrument.instrument_file
         File readlen_file = ngsderive_readlen.readlen_file
+        File qualimap_bamqc_results = qualimap_bamqc.results
+        Array[File] fastq_screen_results = fastq_screen.out_files
+        File? inferred_strandedness = ngsderive_strandedness.strandedness_file
+        File? qualimap_rnaseq_results = qualimap_rnaseq.results
+        File? multiqc_zip = multiqc.out
+        File? multiqc_rnaseq_zip = multiqc_rnaseq.out
     }
 }
 
