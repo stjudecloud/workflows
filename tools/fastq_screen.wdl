@@ -51,7 +51,7 @@ task fastq_screen {
         tar -xsf /tmp/~{db_name} -C /tmp/
 
         format_arg=''
-        if [ "~{format}" = "illumina1.3" ]; then
+        if [[ "~{format}" = "illumina1.3" ]]; then
             format_arg='--illumina1_3'
         fi;
         fastq_screen \
