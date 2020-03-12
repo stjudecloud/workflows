@@ -55,31 +55,31 @@ workflow quality_check {
             input_fq_format=fastq_format
     }
 
-    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
 
-    call picard.validate_bam { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call picard.validate_bam { input: input_bam=bam, max_retries=max_retries }
     call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
 
-    call samtools.flagstat as samtools_flagstat { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
-    call samtools.index as samtools_index { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call samtools.flagstat as samtools_flagstat { input: bam=validate_bam.bam, max_retries=max_retries }
+    call samtools.index as samtools_index { input: bam=validate_bam.bam, max_retries=max_retries }
 
-    call fqc.fastqc { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=bam, bai=samtools_index.bai, max_retries=max_retries }
-    call ngsderive.instrument as ngsderive_instrument { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
-    call ngsderive.readlen as ngsderive_readlen { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
-    call qualimap.bamqc as qualimap_bamqc { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call fqc.fastqc { input: bam=validate_bam.bam, max_retries=max_retries }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=validate_bam.bam, bai=samtools_index.bai, max_retries=max_retries }
+    call ngsderive.instrument as ngsderive_instrument { input: bam=validate_bam.bam, max_retries=max_retries }
+    call ngsderive.readlen as ngsderive_readlen { input: bam=validate_bam.bam, max_retries=max_retries }
+    call qualimap.bamqc as qualimap_bamqc { input: bam=validate_bam.bam, max_retries=max_retries }
 
-    call samtools.subsample as samtools_subsample { input: bam=bam, max_retries=max_retries, wait_var=parse_input.input_check }
+    call samtools.subsample as samtools_subsample { input: bam=validate_bam.bam, max_retries=max_retries }
     call picard.bam_to_fastq as b2fq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
     call fq.fqlint { input: read1=b2fq.read1, read2=b2fq.read2, max_retries=max_retries }
     call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries }
     
     if (experiment == "RNA-seq") {
-        call ngsderive.infer_strand as ngsderive_strandedness { input: bam=bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
+        call ngsderive.infer_strand as ngsderive_strandedness { input: bam=validate_bam.bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
             input:
-                sorted_bam=bam,
+                sorted_bam=validate_bam.bam,
                 validate_sam_string=validate_bam.out,
                 flagstat_file=samtools_flagstat.outfile,
                 fastqc_files=fastqc.out_files,
@@ -93,7 +93,7 @@ workflow quality_check {
     if (experiment == "WGS" || experiment == "WES") {
         call mqc.multiqc {
             input:
-                sorted_bam=bam,
+                sorted_bam=validate_bam.bam,
                 validate_sam_string=validate_bam.out,
                 flagstat_file=samtools_flagstat.outfile,
                 fastqc_files=fastqc.out_files,
