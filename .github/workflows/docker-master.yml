@@ -17,6 +17,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build and push docker images
       run: |
+        EXITCODE=0
         for dir in docker/*; do
           tool_name=$(basename "$(echo "$dir" | awk '{print tolower($0)}')")
           for tag in "$dir"/*; do
@@ -24,9 +25,12 @@ jobs:
             # check tag is SemVer compliant
             if ! [[ $tag =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
               >&2 echo "Tag subdirectory $tag for tool $dir is not SemVer compliant."
-              exit 1
-            fi;
-            docker build -t stjudecloud/"$tool_name":"$tag" "$dir"/"$tag"
-            docker push stjudecloud/"$tool_name":"$tag"
+              >&2 echo "This container will not be built."
+              EXITCODE=1
+            else
+              docker build -t stjudecloud/"$tool_name":"$tag" "$dir"/"$tag"
+              docker push stjudecloud/"$tool_name":"$tag"
+            fi
           done
         done
+        exit $EXITCODE

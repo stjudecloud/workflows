@@ -29,6 +29,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Ensure SemVer'd docker images are being pulled
       run: |
+        EXITCODE=0
         files=$(find . -name '*.wdl')
         for file in $files; do
           awk '/docker: /' < "$file" | while IFS= read -r line; do
@@ -37,7 +38,8 @@ jobs:
               >&2 echo "All Docker containers must be using an official SemVer tagged image"
               >&2 echo "Offending line: $line"
               >&2 echo "In file: $file"
-              exit 1
+              EXITCODE=1
             fi
           done
         done
+        exit $EXITCODE
