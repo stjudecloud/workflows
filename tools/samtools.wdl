@@ -46,7 +46,7 @@ task quickcheck {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to quickcheck"
     }
 }
 
@@ -92,7 +92,7 @@ task split {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to split"
         reject_unaccounted: "If true, error if there are reads present that do not have read group information."
     }
 }
@@ -128,7 +128,7 @@ task get_read_groups {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to get read groups for"
     }
 }
 
@@ -164,7 +164,7 @@ task flagstat {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to generate flagstat for"
     }
 }
 
@@ -200,7 +200,7 @@ task index {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to index"
     }
 }
 
