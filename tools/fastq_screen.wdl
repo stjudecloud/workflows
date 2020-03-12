@@ -25,12 +25,10 @@ task build_db {
     }
 
     meta {
-        author: "Clay McLeod"
-        email: "clay.mcleod@STJUDE.org"
-        description: ""
+        author: "Clay McLeod, Andrew Frantz"
+        email: "clay.mcleod@STJUDE.org, andrew.frantz@stjude.org"
+        description: "This WDL tool downloads the Fast Q Screen database and archives it."
     }
-
-    parameter_meta {}
 } 
 
 task fastq_screen {
@@ -69,5 +67,11 @@ task fastq_screen {
 
     output {
         Array[File] out_files = glob("~{output_basename}*")
+    }
+
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs Fast Q Screen."
     }
 }
