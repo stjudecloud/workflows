@@ -36,6 +36,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow
 workflow quality_check {
     input {
         File bam
+        File bam_index
         File? gencode_gtf
         String experiment
         String strand = ""
@@ -61,10 +62,8 @@ workflow quality_check {
     call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
 
     call samtools.flagstat as samtools_flagstat { input: bam=validate_bam.validated_bam, max_retries=max_retries }
-    call samtools.index as samtools_index { input: bam=validate_bam.validated_bam, max_retries=max_retries }
-
     call fqc.fastqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=validate_bam.validated_bam, bai=samtools_index.bai, max_retries=max_retries }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=validate_bam.validated_bam, bai=bam_index, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call ngsderive.readlen as ngsderive_readlen { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call qualimap.bamqc as qualimap_bamqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
@@ -75,7 +74,7 @@ workflow quality_check {
     call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries }
     
     if (experiment == "RNA-seq") {
-        call ngsderive.infer_strand as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
+        call ngsderive.infer_strand as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
             input:
@@ -106,7 +105,6 @@ workflow quality_check {
 
     output {
         File bam_checksum = compute_checksum.outfile
-        File bam_index = samtools_index.bai
         File flagstat = samtools_flagstat.outfile
         Array[File] fastqc_results = fastqc.out_files
         File bigwig = deeptools_bamCoverage.bigwig

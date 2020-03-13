@@ -1,5 +1,6 @@
 {
     "quality_check.bam": "/cromwell/inputs/sample.bam",
+    "quality_check.bam_index": "/cromwell/inputs/sample.bam.bai",
     "quality_check.gencode_gtf": "/cromwell/inputs/gencode.v31.annotation.gtf (only required for RNA-seq data)",
     "quality_check.experiment": "<WGS/WES/RNA-seq>",
     "quality_check.strand": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified, we will try to guess using ngsderive)",
