@@ -36,7 +36,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow
 workflow quality_check {
     input {
         File bam
-        File gencode_gtf?
+        File? gencode_gtf
         String experiment
         String strand = ""
         File fastq_screen_db
