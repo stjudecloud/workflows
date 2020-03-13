@@ -46,7 +46,6 @@ workflow bam_to_fastqs {
         Int samtools_sort_ncpu = 1
         Int bam_to_fastq_memory_gb = 40
         Int max_retries = 1
-        String wait_var = ""
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }

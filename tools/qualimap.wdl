@@ -13,7 +13,6 @@ task bamqc {
         Int max_retries = 1
         Int memory_gb = 8
         Int? disk_size_gb
-        String wait_var = ""
     }
 
     Int java_heap_size = ceil(memory_gb * 0.9)

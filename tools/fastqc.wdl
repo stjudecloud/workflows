@@ -12,7 +12,6 @@ task fastqc {
         String prefix = basename(bam, ".bam")
         Int memory_gb = 4
         Int max_retries = 1
-        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")

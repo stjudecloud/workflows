@@ -23,7 +23,6 @@ task quickcheck {
     input {
         File bam
         Int max_retries = 1
-        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
@@ -56,7 +55,6 @@ task split {
         Int ncpu = 1
         Boolean? reject_unaccounted
         String prefix = basename(bam, ".bam")
-        String wait_var = ""
         Int max_retries = 1
         Int? disk_size_gb
     }
@@ -101,7 +99,6 @@ task get_read_groups {
     input {
         File bam
         Int max_retries = 1
-        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
@@ -137,7 +134,6 @@ task flagstat {
         File bam
         String outfilename = basename(bam, ".bam")+".flagstat.txt"
         Int max_retries = 1
-        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
@@ -173,7 +169,6 @@ task index {
         File bam
         String outfile = basename(bam)+".bai"
         Int max_retries = 1
-        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
@@ -210,7 +205,6 @@ task subsample {
         String outname = basename(bam, ".bam") + ".subsampled.bam"
         Int max_retries = 1
         Int desired_reads = 500000
-        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")

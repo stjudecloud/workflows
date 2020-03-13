@@ -11,7 +11,6 @@ task mark_duplicates {
         String prefix = basename(bam, ".bam")
         Int memory_gb = 50
         Int max_retries = 1
-        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
@@ -55,7 +54,6 @@ task validate_bam {
         File bam
         Int memory_gb = 8
         Int max_retries = 1
-        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
@@ -96,7 +94,6 @@ task bam_to_fastq {
         String prefix = basename(bam, ".bam")
         Int memory_gb = 40
         Int max_retries = 1
-        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")
@@ -142,7 +139,6 @@ task sort {
         Int memory_gb = 25
         Int? disk_size_gb
         Int max_retries = 1
-        String wait_var = ""
     }
 
     Float bam_size = size(bam, "GiB")

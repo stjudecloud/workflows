@@ -17,7 +17,6 @@ task multiqc {
         File bigwig_file
         File? star_log
         Int max_retries = 1
-        String wait_var = ""
     }
 
     Float star_size = size(sorted_bam, "GiB")
