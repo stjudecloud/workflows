@@ -1,8 +1,12 @@
 import argparse
 import os
+from typing import List, Tuple
 
 
-def sort_lists(target_list, key_list):
+def sort_lists(
+    target_list: List[any],
+    key_list: List[any]
+) -> None:
     for i in range(1, len(key_list)):
         key = key_list[i]
         target = target_list[i]
@@ -14,7 +18,10 @@ def sort_lists(target_list, key_list):
         key_list[j+1] = key
         target_list[j+1] = target
 
-def sort_fastqs(read_one_fastqs, read_two_fastqs):
+def sort_fastqs(
+    read_one_fastqs: List[str],
+    read_two_fastqs: List[str]
+) -> Tuple[List[str], List[str]]:
     read_one_basenames = [fastq.split(os.sep)[-1] for fastq in read_one_fastqs]
     sort_lists(read_one_fastqs, read_one_basenames)
 
@@ -23,7 +30,9 @@ def sort_fastqs(read_one_fastqs, read_two_fastqs):
 
     return (read_one_fastqs, read_two_fastqs)
 
-def sort_read_groups(read_groups_string):
+def sort_read_groups(
+    read_groups_string: str
+) -> Tuple[List[str], List[str]]:
     read_groups = [rg for rg in read_groups_string.split(' , ')]
     rgids = [flags.split(' ')[0].split(':')[1] for flags in read_groups]
 
@@ -31,7 +40,11 @@ def sort_read_groups(read_groups_string):
 
     return (read_groups, rgids)
 
-def validate(read_one_fastqs, read_two_fastqs, rgids):
+def validate(
+    read_one_fastqs: List[str],
+    read_two_fastqs: List[str],
+    rgids: Lst[str]
+) -> None:
     if (len(read_one_fastqs) != len(rgids)):
         raise argparse.ArgumentError(
             'Must have same number of read groups as fastq pairs'
@@ -44,7 +57,11 @@ def validate(read_one_fastqs, read_two_fastqs, rgids):
                 'read group IDs and fastq file names'
             )
 
-def write_outfiles(read_one_fastqs, read_two_fastqs, read_groups):
+def write_outfiles(
+    read_one_fastqs: List[str],
+    read_two_fastqs: List[str],
+    read_groups: Lst[str]
+) -> None:
     read_one_file = open('read_one_fastqs_sorted.txt', 'w')
     read_one_file.write(','.join(read_one_fastqs))
     read_one_file.close()
