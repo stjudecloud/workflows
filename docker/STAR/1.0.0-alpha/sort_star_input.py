@@ -1,3 +1,14 @@
+"""Sort fastq pairs and read group information prior to being passed to STAR.
+
+We discovered that when providing STAR with read group split fastqs and also
+supplying STAR with header information via the `--outSAMattrRGline` parameter,
+that the read group information for individual reads becomes jumbled.
+
+The simplest solution for this was to first pass exactly what would be passed
+to STAR into this program, sort it correctly, and write the reordered
+arguments out to files which can be supplied to STAR via the `cat` command.
+"""
+
 import argparse
 import os
 from typing import List, Tuple
@@ -7,6 +18,17 @@ def sort_lists(
     target_list: List[any],
     key_list: List[any]
 ) -> None:
+    """Reorder a target list according to the sorting of a key list.
+
+    Given two lists, sort_lists() will reorder both. `key_list` will
+    be sorted in ascending order, and the index changes of `key_list`
+    will be reflected in `target_list`.
+    
+    Args:
+        target_list (list): List which will be reordered.
+            The contents of `target_list` are not considered during ordering.
+        key_list (list): List whose contents determine target list's ordering.
+    """
     for i in range(1, len(key_list)):
         key = key_list[i]
         target = target_list[i]
@@ -18,21 +40,34 @@ def sort_lists(
         key_list[j+1] = key
         target_list[j+1] = target
 
-def sort_fastqs(
-    read_one_fastqs: List[str],
-    read_two_fastqs: List[str]
-) -> Tuple[List[str], List[str]]:
-    read_one_basenames = [fastq.split(os.sep)[-1] for fastq in read_one_fastqs]
-    sort_lists(read_one_fastqs, read_one_basenames)
+def sort_fastqs(fastq_files: List[str]) -> List[str]]:
+    """Sort and return a list of file paths according to their basename."""
+    fastq_basenames = [fastq.split(os.sep)[-1] for fastq in fastq_files]
 
-    read_two_basenames = [fastq.split(os.sep)[-1] for fastq in read_two_fastqs]
-    sort_lists(read_two_fastqs, read_two_basenames)
+    sort_lists(fastq_files, fastq_basenames)
 
-    return (read_one_fastqs, read_two_fastqs)
+    return fastq_files
 
 def sort_read_groups(
     read_groups_string: str
 ) -> Tuple[List[str], List[str]]:
+    """Reorder the argument to the STAR `--outSAMattrRGline` parameter.
+
+    The call to sort_lists() could be substituted by using the `sorted()`
+    method on both lists, since what's being sorted on comes
+    first in the strings.
+    The `rgids` list is needed later in the program,
+    and using the same function as `sort_fastqs()` contributes to consistency.
+    
+    Args:
+        read_groups_string (str): Exactly what would be passed to STAR
+            after `--outSAMattrRGline`.
+    
+    Returns:
+        list: A list consisting of the input string split on ' , ',
+            and then sorted by the read group ID values.
+        list: A sorted list of values to the 'ID' key.
+    """
     read_groups = [rg for rg in read_groups_string.split(' , ')]
     rgids = [flags.split(' ')[0].split(':')[1] for flags in read_groups]
 
@@ -45,6 +80,17 @@ def validate(
     read_two_fastqs: List[str],
     rgids: Lst[str]
 ) -> None:
+    """Ensure that the final strings are ready to be passed to STAR.
+    
+    The first check is that there is the same number of read groups as
+    fastq pairs. Next, it's checked that each read group ID is
+    present in a synced fastq pair.
+
+    Args:
+        read_one_fastqs (list): list of file paths
+        read_two_fastqs (list): list of file paths
+        rgids (list): list of values to the 'ID' key
+    """
     if (len(read_one_fastqs) != len(rgids)):
         raise argparse.ArgumentError(
             'Must have same number of read groups as fastq pairs'
@@ -62,6 +108,7 @@ def write_outfiles(
     read_two_fastqs: List[str],
     read_groups: Lst[str]
 ) -> None:
+    """Concatenate each element in each list and write results to files."""
     read_one_file = open('read_one_fastqs_sorted.txt', 'w')
     read_one_file.write(','.join(read_one_fastqs))
     read_one_file.close()
@@ -86,9 +133,10 @@ if __name__ == '__main__':
         raise argparse.ArgumentError(
             'Must have the same number of read one fastqs as read two fastqs'
         )
-    read_one_fastqs, read_two_fastqs = sort_fastqs(
-        args.read_one_fastqs, args.read_two_fastqs
-    )
+    
+    read_one_fastqs = sort_fastqs(args.read_one_fastqs)
+    read_two_fastqs = sort_fastqs(args.read_two_fastqs)
     read_groups, rgids = sort_read_groups(args.read_groups)
+
     validate(read_one_fastqs, read_two_fastqs, rgids)
     write_outfiles(read_one_fastqs, read_two_fastqs, read_groups)
