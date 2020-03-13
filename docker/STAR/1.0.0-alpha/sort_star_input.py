@@ -39,7 +39,10 @@ def validate(read_one_fastqs, read_two_fastqs, rgids):
     
     for i, id in enumerate(rgids):
         if (id not in read_one_fastqs[i]) or (id not in read_two_fastqs[i]):
-            raise SystemExit('Error: read group id not in fastqs')
+            raise SystemExit(
+                'Error: There\'s a mismatch between '
+                'read group IDs and fastq file names'
+            )
 
 def write_outfiles(read_one_fastqs, read_two_fastqs, read_groups):
     read_one_file = open('read_one_fastqs_sorted.txt', 'w')
