@@ -40,7 +40,7 @@ def sort_lists(
         key_list[j+1] = key
         target_list[j+1] = target
 
-def sort_fastqs(fastq_files: List[str]) -> List[str]]:
+def sort_fastqs(fastq_files: List[str]) -> List[str]:
     """Sort and return a list of file paths according to their basename."""
     fastq_basenames = [fastq.split(os.sep)[-1] for fastq in fastq_files]
 
@@ -78,7 +78,7 @@ def sort_read_groups(
 def validate(
     read_one_fastqs: List[str],
     read_two_fastqs: List[str],
-    rgids: Lst[str]
+    rgids: List[str]
 ) -> None:
     """Ensure that the final strings are ready to be passed to STAR.
     
@@ -106,7 +106,7 @@ def validate(
 def write_outfiles(
     read_one_fastqs: List[str],
     read_two_fastqs: List[str],
-    read_groups: Lst[str]
+    read_groups: List[str]
 ) -> None:
     """Concatenate each element in each list and write results to files."""
     read_one_file = open('read_one_fastqs_sorted.txt', 'w')
