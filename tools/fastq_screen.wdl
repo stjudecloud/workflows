@@ -27,7 +27,7 @@ task build_db {
     meta {
         author: "Clay McLeod, Andrew Frantz"
         email: "clay.mcleod@STJUDE.org, andrew.frantz@stjude.org"
-        description: "This WDL tool downloads the Fast Q Screen database and archives it."
+        description: "This WDL tool downloads the FastQ Screen database and archives it."
     }
 } 
 
