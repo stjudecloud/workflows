@@ -109,7 +109,7 @@ task alignment {
              --alignSJDBoverhangMin 1 \
              --outFilterMatchNminOverLread 0.66 \
              --outFilterScoreMinOverLread 0.66 \
-             --outFileNamePrefix ~{output_prefix} \
+             --outFileNamePrefix ~{output_prefix + "."} \
              --twopassMode Basic \
              --limitBAMsortRAM ~{(memory_gb - 2) + "000000000"} \
              ~{"--outSAMattrRGline " + read_groups}
