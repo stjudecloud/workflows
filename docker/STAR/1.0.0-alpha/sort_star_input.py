@@ -123,11 +123,11 @@ def write_outfiles(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--read_one_fastqs', nargs='+', required=True,
-        help='Space delimented list of read one fastq file paths'
+    parser.add_argument('--read_one_fastqs', required=True,
+        help='Comma delimited list of read one fastq file paths'
     )
-    parser.add_argument('--read_two_fastqs', nargs='+', required=True,
-        help='Space delimented list of read two fastq file paths'
+    parser.add_argument('--read_two_fastqs', required=True,
+        help='Comma delimited list of read two fastq file paths'
     )
     parser.add_argument('--read_groups', required=True,
         help='Exactly what would be passed to STAR '
@@ -136,14 +136,17 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
+
+    read_one_fastqs = args.read_one_fastqs.split(',')
+    read_two_fastqs = args.read_two_fastqs.split(',')
     
-    if (len(args.read_one_fastqs) != len(args.read_two_fastqs)):
+    if (len(read_one_fastqs) != len(read_two_fastqs)):
         raise argparse.ArgumentError(
             'Must have the same number of read one fastqs as read two fastqs'
         )
     
-    read_one_fastqs = sort_fastqs(args.read_one_fastqs)
-    read_two_fastqs = sort_fastqs(args.read_two_fastqs)
+    read_one_fastqs = sort_fastqs(read_one_fastqs)
+    read_two_fastqs = sort_fastqs(read_two_fastqs)
     read_groups, rgids = sort_read_groups(args.read_groups)
 
     validate(read_one_fastqs, read_two_fastqs, rgids)
