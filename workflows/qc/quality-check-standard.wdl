@@ -42,7 +42,7 @@ workflow quality_check {
         String strand = ""
         File fastq_screen_db
         String fastq_format = "sanger"
-        Boolean paired_end = false
+        Boolean paired_end = true
         Int max_retries = 1
     }
 
