@@ -52,7 +52,7 @@ task mark_duplicates {
 task validate_bam {
     input {
         File bam
-        Boolean only_exit_on_errors = true
+        Boolean ignore_warnings = true
         Int memory_gb = 8
         Int max_retries = 1
     }
@@ -64,9 +64,10 @@ task validate_bam {
     command {
         picard -Xmx~{java_heap_size}g ValidateSamFile I=~{bam} \
             IGNORE=INVALID_PLATFORM_VALUE \
-            IGNORE=MISSING_PLATFORM_VALUE > stdout.txt
+            IGNORE=MISSING_PLATFORM_VALUE \
+            MAX_OUTPUT=100000 > stdout.txt
 
-        if [ "~{only_exit_on_errors}" == "true" ]
+        if [ "~{ignore_warnings}" == "true" ]
         then
             if [ "$(grep -c "ERROR" stdout.txt)" -gt 0 ]
             then
