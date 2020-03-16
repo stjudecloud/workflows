@@ -51,6 +51,7 @@ workflow quality_check {
     call parse_input {
         input:
             input_experiment=experiment,
+            input_gtf=gencode_gtf,
             input_strand=provided_strand,
             input_fq_db=fastq_screen_db,
             input_fq_format=fastq_format
@@ -122,15 +123,23 @@ workflow quality_check {
 task parse_input {
     input {
         String input_experiment
+        File? input_gtf
         String input_strand
         File input_fq_db
         String input_fq_format
     }
 
+    String no_gtf = if defined(input_gtf) then "" else "true"
+
     command {
         EXITCODE=0
         if [ "~{input_experiment}" != "WGS" ] && [ "~{input_experiment}" != "WES" ] && [ "~{input_experiment}" != "RNA-seq" ]; then
             >&2 echo "experiment input must be 'WGS', 'WES', or 'RNA-seq'"
+            EXITCODE=1
+        fi
+
+        if [ "~{input_experiment}" = "RNA-seq" ] && [ "~{no_gtf}" = "true" ]; then
+            >&2 echo "Must supply a Gencode GTF if experiment = 'RNA-seq'"
             EXITCODE=1
         fi
 
