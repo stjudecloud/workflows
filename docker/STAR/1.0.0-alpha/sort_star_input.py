@@ -124,10 +124,10 @@ def write_outfiles(
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--read_one_fastqs', required=True,
-        help='Comma delimited list of read one fastq file paths'
+        help='Comma delimited (without spaces) list of read one fastq file paths'
     )
     parser.add_argument('--read_two_fastqs', required=True,
-        help='Comma delimited list of read two fastq file paths'
+        help='Comma delimited (without spaces) list of read two fastq file paths'
     )
     parser.add_argument('--read_groups', required=True,
         help='Exactly what would be passed to STAR '
