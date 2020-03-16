@@ -9,9 +9,12 @@
 ##
 ## Inputs:
 ##
-## reference_fasta - the genome for which to generate STAR reference files in FASTA format 
-## gencode_gtf - the gene model file for the reference genome to use when generating STAR reference files 
+## gencode_gtf - the gene model file for the reference genome to use when generating STAR reference files
 ## bam - input BAM file to realign
+## stardb_tar_gz - the star db folder in tar.gz format. Refer to 'bootstrap-reference' workflow on how to generate it.
+## strand - string of the file's strandedness (yes/no/reverse)
+## output_prefix - output prefix to add to output files
+## max_retries - number of times to retry from retryable failures
 ##
 ## LICENSING:
 ##
@@ -61,7 +64,6 @@ workflow rnaseq_standard {
     }
 
     call util.get_read_groups { input: bam=input_bam, max_retries=max_retries }
-    call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out, max_retries=max_retries }
     call b2fq.bam_to_fastqs { input: bam=input_bam, max_retries=max_retries }
     call star.alignment {
         input:
@@ -69,13 +71,12 @@ workflow rnaseq_standard {
             read_two_fastqs=bam_to_fastqs.read2s,
             stardb_tar_gz=stardb_tar_gz,
             output_prefix=output_prefix,
-            read_groups=prepare_read_groups_for_star.out,
+            read_groups=get_read_groups.out,
             max_retries=max_retries
     }
     call picard.sort as picard_sort { input: bam=alignment.star_bam, max_retries=max_retries }
     call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call picard.validate_bam { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
-    call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
     call fqc.fastqc { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
     call qualimap.bamqc as qualimap_bamqc { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
@@ -107,7 +108,7 @@ workflow rnaseq_standard {
         Array[File] fastqc_results = fastqc.out_files
         Array[File] qualimap_bamqc_results = qualimap_bamqc.out_files
         Array[File] qualimap_rnaseq_results = qualimap_rnaseq.out_files
-        File multiqc_zip = multiqc.out
+        File multiqc_tar_gz = multiqc.out
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
     }
 }

@@ -25,7 +25,7 @@ task build_db {
         File reference_fasta
         File gencode_gtf
         String stardb_dir_name
-        String ram_limit = "45000000000"
+        String ram_limit = "45000000000" # This value is too large to be an Int type, so we store it as a string
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
@@ -37,15 +37,15 @@ task build_db {
     Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)])
 
     command {
-        mkdir ${stardb_dir_name};
+        mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \
-            --genomeDir ${stardb_dir_name} \
-            --runThreadN ${ncpu} \
-            --limitGenomeGenerateRAM ${ram_limit} \
-            --genomeFastaFiles ${reference_fasta} \
-            --sjdbGTFfile ${gencode_gtf} \
+            --genomeDir ~{stardb_dir_name} \
+            --runThreadN ~{ncpu} \
+            --limitGenomeGenerateRAM ~{ram_limit} \
+            --genomeFastaFiles ~{reference_fasta} \
+            --sjdbGTFfile ~{gencode_gtf} \
             --sjdbOverhang 125
-        tar -czf ${stardb_out_name} ${stardb_dir_name}
+        tar -czf ~{stardb_out_name} ~{stardb_dir_name}
     }
 
     runtime {
@@ -92,10 +92,10 @@ task alignment {
     Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10)])
 
     command {
-        tar -xzf ${stardb_tar_gz};
-        STAR --readFilesIn ${sep=',' read_one_fastqs} ${sep=',' read_two_fastqs} \
-             --genomeDir ${stardb_dir} \
-             --runThreadN ${ncpu} \
+        tar -xzf ~{stardb_tar_gz};
+        STAR --readFilesIn ~{sep=',' read_one_fastqs} ~{sep=',' read_two_fastqs} \
+             --genomeDir ~{stardb_dir} \
+             --runThreadN ~{ncpu} \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \
              --outSAMtype BAM Unsorted \
@@ -109,10 +109,10 @@ task alignment {
              --alignSJDBoverhangMin 1 \
              --outFilterMatchNminOverLread 0.66 \
              --outFilterScoreMinOverLread 0.66 \
-             --outFileNamePrefix ${output_prefix} \
+             --outFileNamePrefix ~{output_prefix + "."} \
              --twopassMode Basic \
-             --limitBAMsortRAM ${(memory_gb - 2) + "000000000"} \
-             ${"--outSAMattrRGline " + read_groups}
+             --limitBAMsortRAM ~{(memory_gb - 2) + "000000000"} \
+             ~{"--outSAMattrRGline " + read_groups}
     }
 
     runtime {
@@ -124,8 +124,8 @@ task alignment {
     }
 
     output {
-        File star_log = output_prefix + "Log.final.out"
-        File star_bam = output_prefix + "Aligned.out.bam"
+        File star_log = output_prefix + ".Log.final.out"
+        File star_bam = output_prefix + ".Aligned.out.bam"
     }
 
     meta {

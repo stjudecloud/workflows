@@ -18,13 +18,13 @@ task mark_duplicates {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
-        picard -Xmx${java_heap_size}g MarkDuplicates I=${bam} \
-            O=${prefix}.duplicates.bam \
+        picard -Xmx~{java_heap_size}g MarkDuplicates I=~{bam} \
+            O=~{prefix}.duplicates.bam \
             VALIDATION_STRINGENCY=SILENT \
             CREATE_INDEX=false \
             CREATE_MD5_FILE=false \
             COMPRESSION_LEVEL=5 \
-            METRICS_FILE=${prefix}.metrics.txt
+            METRICS_FILE=~{prefix}.metrics.txt
     }
 
     runtime {
@@ -35,7 +35,7 @@ task mark_duplicates {
     }
 
     output {
-        File out = "${prefix}.duplicates.bam"
+        File out = "~{prefix}.duplicates.bam"
     }
 
     meta {
@@ -52,6 +52,7 @@ task mark_duplicates {
 task validate_bam {
     input {
         File bam
+        Boolean ignore_warnings = true
         Int memory_gb = 8
         Int max_retries = 1
     }
@@ -61,9 +62,23 @@ task validate_bam {
     Int java_heap_size = ceil(memory_gb * 0.9)
     
     command {
-        picard -Xmx${java_heap_size}g ValidateSamFile I=${bam} \
+        picard -Xmx~{java_heap_size}g ValidateSamFile I=~{bam} \
             IGNORE=INVALID_PLATFORM_VALUE \
-            IGNORE=MISSING_PLATFORM_VALUE > stdout.txt
+            IGNORE=MISSING_PLATFORM_VALUE \
+            MAX_OUTPUT=100000 > stdout.txt
+
+        if [ "~{ignore_warnings}" == "true" ]
+        then
+            if [ "$(grep -c "ERROR" stdout.txt)" -gt 0 ]
+            then
+                echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
+                exit 1
+            fi
+        elif [ "$(grep -Ec "ERROR|WARNING" stdout.txt)" -gt 0 ]
+        then
+            echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
+            exit 1
+        fi
     }
 
     runtime {
@@ -101,9 +116,9 @@ task bam_to_fastq {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
-        picard -Xmx${java_heap_size}g SamToFastq INPUT=${bam} \
-            FASTQ=${prefix}_R1.fastq \
-            SECOND_END_FASTQ=${prefix}_R2.fastq \
+        picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
+            FASTQ=~{prefix}_R1.fastq \
+            SECOND_END_FASTQ=~{prefix}_R2.fastq \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
     }
@@ -116,8 +131,8 @@ task bam_to_fastq {
     }
 
     output {
-        File read1 = "${prefix}_R1.fastq"
-        File read2 = "${prefix}_R2.fastq"
+        File read1 = "~{prefix}_R1.fastq"
+        File read2 = "~{prefix}_R2.fastq"
     }
 
     meta {
@@ -146,9 +161,9 @@ task sort {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
-        picard -Xmx${java_heap_size}g SortSam I=${bam} \
-           O=${output_filename} \
-           SO=${sort_order} 
+        picard -Xmx~{java_heap_size}g SortSam I=~{bam} \
+           O=~{output_filename} \
+           SO=~{sort_order}
     }
     runtime {
         memory: memory_gb + " GB"
