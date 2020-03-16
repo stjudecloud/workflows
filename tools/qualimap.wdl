@@ -25,6 +25,7 @@ task bamqc {
         qualimap bamqc -bam ~{bam} \
             -outdir ~{out_directory} \
             -nt ~{ncpu} \
+            -nw 400 \
             --java-mem-size=~{java_heap_size}g
         tar -czf ~{out_tar_gz_file} ~{out_directory}
     }
