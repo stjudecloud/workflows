@@ -39,7 +39,7 @@ task get_read_groups {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to get read groups from"
     }
 }
 

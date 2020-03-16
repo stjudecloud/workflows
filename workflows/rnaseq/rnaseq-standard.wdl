@@ -68,7 +68,6 @@ workflow rnaseq_standard {
     call picard.validate_bam as validate_input_bam { input: bam=input_bam, max_retries=max_retries }
 
     call util.get_read_groups { input: bam=validate_input_bam.validated_bam, max_retries=max_retries }
-    call util.prepare_read_groups_for_star { input: read_groups=get_read_groups.out, max_retries=max_retries }
     call b2fq.bam_to_fastqs { input: bam=validate_input_bam.validated_bam, max_retries=max_retries }
     call star.alignment {
         input:
