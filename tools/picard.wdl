@@ -52,18 +52,32 @@ task mark_duplicates {
 task validate_bam {
     input {
         File bam
+        Boolean ignore_missing_platform = true
+        Boolean summary_mode = false
+        Boolean index_validation_stringency_less_exhaustive = false
         Int memory_gb = 8
         Int max_retries = 1
     }
+
+    ignore_missing_platform_arg = if ignore_missing_platform
+        then "IGNORE=MISSING_PLATFORM_VALUE"
+        else ""
+    mode_arg = if summary_mode then "MODE=SUMMARY" else ""
+    stringency_arg = if index_validation_stringency_less_exhaustive
+        then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
+        else ""
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
     Int java_heap_size = ceil(memory_gb * 0.9)
     
     command {
-        picard -Xmx~{java_heap_size}g ValidateSamFile I=~{bam} \
+        picard -Xmx~{java_heap_size}g ValidateSamFile \
+            I=~{bam} \
             IGNORE=INVALID_PLATFORM_VALUE \
-            IGNORE=MISSING_PLATFORM_VALUE \
+            ~{ignore_missing_platform_arg} \
+            ~{mode_arg} \
+            ~{stringency_arg} \
             > stdout.txt
     }
 
