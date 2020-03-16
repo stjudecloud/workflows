@@ -66,7 +66,7 @@ workflow quality_check {
     call fqc.fastqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=validate_bam.validated_bam, bai=bam_index, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=validate_bam.validated_bam, max_retries=max_retries }
-    call ngsderive.readlen as ngsderive_readlen { input: bam=validate_bam.validated_bam, max_retries=max_retries }
+    call ngsderive.read_length as ngsderive_read_length { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call qualimap.bamqc as qualimap_bamqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
 
     call samtools.subsample as samtools_subsample { input: bam=validate_bam.validated_bam, max_retries=max_retries }
@@ -110,7 +110,7 @@ workflow quality_check {
         Array[File] fastqc_results = fastqc.out_files
         File bigwig = deeptools_bamCoverage.bigwig
         File instrument_file = ngsderive_instrument.instrument_file
-        File readlen_file = ngsderive_readlen.readlen_file
+        File read_length_file = ngsderive_read_length.read_length_file
         File qualimap_bamqc_results = qualimap_bamqc.results
         Array[File] fastq_screen_results = fastq_screen.out_files
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
