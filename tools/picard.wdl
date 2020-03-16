@@ -59,11 +59,11 @@ task validate_bam {
         Int max_retries = 1
     }
 
-    String ignore_missing_platform_arg = if ignore_missing_platform
+    String ignore_missing_platform_arg = if (ignore_missing_platform)
         then "IGNORE=MISSING_PLATFORM_VALUE"
         else ""
-    String mode_arg = if summary_mode then "MODE=SUMMARY" else ""
-    String stringency_arg = if index_validation_stringency_less_exhaustive
+    String mode_arg = if (summary_mode) then "MODE=SUMMARY" else ""
+    String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
         else ""
 
