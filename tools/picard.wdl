@@ -62,7 +62,9 @@ task validate_bam {
     
     command {
         picard -Xmx~{java_heap_size}g ValidateSamFile I=~{bam} \
-            IGNORE=INVALID_PLATFORM_VALUE > stdout.txt
+            IGNORE=INVALID_PLATFORM_VALUE \
+            IGNORE=MISSING_PLATFORM_VALUE \
+            > stdout.txt
     }
 
     runtime {
@@ -146,9 +148,14 @@ task sort {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
-        picard -Xmx~{java_heap_size}g SortSam I=~{bam} \
-           O=~{output_filename} \
-           SO=~{sort_order} 
+        picard -Xmx~{java_heap_size}g SortSam \
+            I=~{bam} \
+            O=~{output_filename} \
+            SO=~{sort_order} \
+            CREATE_INDEX=false \
+            CREATE_MD5_FILE=false \
+            COMPRESSION_LEVEL=5 \
+            VALIDATION_STRINGENCY=SILENT
     }
     runtime {
         memory: memory_gb + " GB"
