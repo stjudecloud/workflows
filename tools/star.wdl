@@ -95,8 +95,8 @@ task alignment {
         tar -xzf ~{stardb_tar_gz};
 
         python /home/sort_star_input.py \
-            --read_one_fastqs ~{sep=',' read_one_fastqs} \
-            --read_two_fastqs ~{sep=',' read_two_fastqs} \
+            --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+            --read_two_fastqs "~{sep=',' read_two_fastqs}" \
             --read_groups "~{read_groups}"
 
         STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
