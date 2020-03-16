@@ -5,18 +5,26 @@
 
 version 1.0
 
-task prepare_read_groups_for_star {
+task get_read_groups {
     input {
-        String read_groups
+        File bam
         Int max_retries = 1
     }
 
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+
     command <<<
-        echo "~{read_groups}" | cut -f 2- | sed -e 's/\t/ /g' | awk '{print}' ORS=' , '| sed 's/ , $//' > stdout.txt
+        samtools view -H ~{bam} | grep "@RG" \
+            | cut -f 2- \
+            | sed -e 's/\t/ /g' \
+            | awk '{print}' ORS=' , ' \
+            | sed 's/ , $//' >> stdout.txt
     >>>
 
     runtime {
-        docker: 'stjudecloud/util:1.0.0-alpha'
+        disk: disk_size + " GB"
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
     }
 
@@ -27,10 +35,30 @@ task prepare_read_groups_for_star {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool is a utility to reformat read group information from a BAM file into a format that can be passed in to the STAR aligner."
+        description: "This WDL tool is a utility to get read group information from a BAM file and write it out to as a string" 
     }
 
     parameter_meta {
-        read_groups: "The read group portion of a BAM header as a string"
+        bam: "Input BAM format file to generate coverage for"
+    }
+}
+
+task file_prefix {
+    input {
+        File in_file
+        Int max_retries = 1
+    }
+
+    command <<<
+        basename ~{in_file} | awk -F '.' '{print $1}' > stdout.txt
+    >>>
+
+    runtime {
+        docker: 'stjudecloud/util:1.0.0-alpha'
+        maxRetries: max_retries
+    }
+
+    output { 
+        String out = read_string("stdout.txt")
     }
 }

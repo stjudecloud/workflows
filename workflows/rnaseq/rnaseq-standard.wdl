@@ -9,9 +9,12 @@
 ##
 ## Inputs:
 ##
-## reference_fasta - the genome for which to generate STAR reference files in FASTA format 
-## gencode_gtf - the gene model file for the reference genome to use when generating STAR reference files 
+## gencode_gtf - the gene model file for the reference genome to use when generating STAR reference files
 ## bam - input BAM file to realign
+## stardb_tar_gz - the star db folder in tar.gz format. Refer to 'bootstrap-reference' workflow on how to generate it.
+## strand - string of the file's strandedness (yes/no/reverse)
+## output_prefix - output prefix to add to output files
+## max_retries - number of times to retry from retryable failures
 ##
 ## LICENSING:
 ##
@@ -55,7 +58,7 @@ workflow rnaseq_standard {
         File input_bam
         File stardb_tar_gz
         String strand = ""
-        String output_prefix = "out"
+        String output_prefix = basename(input_bam, ".bam")
         Int max_retries = 1
     }
 
@@ -73,7 +76,7 @@ workflow rnaseq_standard {
             read_two_fastqs=bam_to_fastqs.read2s,
             stardb_tar_gz=stardb_tar_gz,
             output_prefix=output_prefix,
-            read_groups=prepare_read_groups_for_star.out,
+            read_groups=get_read_groups.out,
             max_retries=max_retries
     }
     call picard.sort as picard_sort { input: bam=alignment.star_bam, max_retries=max_retries }

@@ -11,13 +11,14 @@ task bamCoverage {
         File bai
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
+        Int memory_gb = 5
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
  
     command {
-        if [ ! -e ~{bam}.bai ] 
+        if [ ! -e ~{bam}.bai ]
         then 
             ln -s ~{bai} ~{bam}.bai
         fi
@@ -27,6 +28,7 @@ task bamCoverage {
 
     runtime {
         disk: disk_size + " GB"
+        memory: memory_gb + " GB"
         docker: 'stjudecloud/deeptools:1.0.0-alpha'
         maxRetries: max_retries
     }

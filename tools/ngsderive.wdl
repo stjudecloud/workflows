@@ -12,6 +12,7 @@ task infer_strand {
         File bai
         File? gtf
         Int max_retries = 1
+        Int memory_gb = 5
     }
 
     String out_file = basename(bam, ".bam") + ".strandedness.txt"
@@ -29,6 +30,7 @@ task infer_strand {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/ngsderive:1.0.0-alpha'
+        memory: memory_gb + " GB"
         maxRetries: max_retries
     }
 
@@ -86,4 +88,35 @@ task readlen {
     output {
         File readlen_file = out_file
     }
+}
+
+task read_length {
+    input {
+        File bam
+        File bai
+        Int max_retries = 1
+        Int memory_gb = 5
+    }
+
+    String out_file = basename(bam, ".bam") + ".readlength.txt"
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil(((bam_size) * 2) + 10)
+ 
+    command {
+        mv ~{bai} ~{bam}.bai 
+        ngsderive readlen ~{bam} | awk 'NR > 1' | cut -d$'\t' -f5 > ~{out_file}
+    }
+
+    runtime {
+        disk: disk_size + " GB"
+        memory: memory_gb + " GB"
+        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        maxRetries: max_retries
+    }
+
+    output {
+        String computed_read_length = read_string(out_file)
+        File read_length_file = out_file
+    }
+
 }

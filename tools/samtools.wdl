@@ -134,6 +134,7 @@ task flagstat {
         File bam
         String outfilename = basename(bam, ".bam")+".flagstat.txt"
         Int max_retries = 1
+        Int memory_gb = 5
     }
 
     Float bam_size = size(bam, "GiB")
@@ -146,6 +147,7 @@ task flagstat {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/samtools:1.0.0-alpha'
+        memory: memory_gb + " GB"
         maxRetries: max_retries
     }
 
@@ -169,6 +171,7 @@ task index {
         File bam
         String outfile = basename(bam)+".bai"
         Int max_retries = 1
+        Int memory_gb = 15
     }
 
     Float bam_size = size(bam, "GiB")
@@ -181,6 +184,8 @@ task index {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/samtools:1.0.0-alpha'
+        memory: memory_gb + " GB"
+        dx_instance_type: "azure:mem2_ssd1_x4"
         maxRetries: max_retries
     }
 

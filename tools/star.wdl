@@ -25,7 +25,7 @@ task build_db {
         File reference_fasta
         File gencode_gtf
         String stardb_dir_name
-        String ram_limit = "45000000000"
+        String ram_limit = "45000000000" # This value is too large to be an Int type, so we store it as a string
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
@@ -115,7 +115,7 @@ task alignment {
              --alignSJDBoverhangMin 1 \
              --outFilterMatchNminOverLread 0.66 \
              --outFilterScoreMinOverLread 0.66 \
-             --outFileNamePrefix ~{output_prefix} \
+             --outFileNamePrefix ~{output_prefix + "."} \
              --twopassMode Basic \
              --limitBAMsortRAM ~{(memory_gb - 2) + "000000000"} \
              --outSAMattrRGline $(cat read_groups_sorted.txt)
@@ -130,8 +130,8 @@ task alignment {
     }
 
     output {
-        File star_log = output_prefix + "Log.final.out"
-        File star_bam = output_prefix + "Aligned.out.bam"
+        File star_log = output_prefix + ".Log.final.out"
+        File star_bam = output_prefix + ".Aligned.out.bam"
     }
 
     meta {

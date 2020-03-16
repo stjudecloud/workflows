@@ -55,6 +55,7 @@ task validate_bam {
         Boolean ignore_missing_platform = true
         Boolean summary_mode = false
         Boolean index_validation_stringency_less_exhaustive = false
+        Boolean ignore_warnings = true
         Int memory_gb = 8
         Int max_retries = 1
     }
@@ -78,7 +79,21 @@ task validate_bam {
             ~{ignore_missing_platform_arg} \
             ~{mode_arg} \
             ~{stringency_arg} \
+            MAX_OUTPUT=100000 \
             > stdout.txt
+
+        if [ "~{ignore_warnings}" == "true" ]
+        then
+            if [ "$(grep -c "ERROR" stdout.txt)" -gt 0 ]
+            then
+                echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
+                exit 1
+            fi
+        elif [ "$(grep -Ec "ERROR|WARNING" stdout.txt)" -gt 0 ]
+        then
+            echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
+            exit 1
+        fi
     }
 
     runtime {

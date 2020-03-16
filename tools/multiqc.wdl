@@ -17,6 +17,7 @@ task multiqc {
         File bigwig_file
         File? star_log
         Int max_retries = 1
+        Int memory_gb = 5
     }
 
     Float star_size = size(sorted_bam, "GiB")
@@ -41,6 +42,7 @@ task multiqc {
         tar -xzf ~{qualimap_rnaseq} --strip-components=1 -C qualimap_rnaseq/;
         echo qualimap_rnaseq/rnaseq_qc_results.txt >> file_list.txt
         for file in $(find qualimap_rnaseq/raw_data_qualimapReport/); do
+
             echo $file >> file_list.txt
         done
 
@@ -52,6 +54,7 @@ task multiqc {
             echo $file >> file_list.txt
         done
 
+        # shellcheck disable=SC2129
         echo ~{flagstat_file} >> file_list.txt
         echo ~{bigwig_file} >> file_list.txt
         echo ~{star_log} >> file_list.txt
@@ -63,6 +66,7 @@ task multiqc {
     runtime {
         disk: disk_size + " GB"
         docker: 'stjudecloud/multiqc:1.0.0-alpha'
+        memory: memory_gb + " GB"
         maxRetries: max_retries
     }
 
