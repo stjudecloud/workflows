@@ -16,14 +16,17 @@ task count {
         Int max_retries = 1
     }
 
-    String stranded = if (provided_strand == "Stranded-Reverse") then "reverse" else
-                if (provided_strand == "Stranded-Forward") then "yes" else 
-                if (provided_strand == "Unstranded") then "no" else
-                if (inferred_strand == "Stranded-Reverse") then "reverse" else
-                if (inferred_strand == "Stranded-Forward") then "yes" else 
-                if (inferred_strand == "Unstranded") then "no" else
-                "unknown" # this will intentionally cause htseq to error. You will need to manually specify
-                           # in this case.
+    String stranded = if (provided_strand != "") then 
+                        if (provided_strand == "Stranded-Reverse") then "strand-specific-reverse" else
+                        if (provided_strand == "Stranded-Forward") then "strand-specific-forward" else
+                        if (provided_strand == "Unstranded") then "non-strand-specific"
+                        else "unknown-strand"
+                      else 
+                        if (inferred_strand == "Stranded-Reverse") then "strand-specific-reverse" else
+                        if (inferred_strand == "Stranded-Forward") then "strand-specific-forward" else 
+                        if (inferred_strand == "Unstranded") then "non-strand-specific" else
+                        "unknown-strand" # this will intentionally cause htseq to error. You will need to manually specify
+                                         # in this case
 
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
