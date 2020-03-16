@@ -95,40 +95,6 @@ task split {
     }
 }
 
-task get_read_groups {
-    input {
-        File bam
-        Int max_retries = 1
-    }
-
-    Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
-
-    command {
-        samtools view -H ~{bam} | grep "^@RG" > stdout.txt
-    }
-
-    runtime {
-        disk: disk_size + " GB"
-        docker: 'stjudecloud/samtools:1.0.0-alpha'
-        maxRetries: max_retries
-    }
-
-    output { 
-        String out = read_string("stdout.txt")
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool is a utility to get read group information from a BAM file and write it out to as a string" 
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to get read groups for"
-    }
-}
-
 task flagstat {
     input {
         File bam

@@ -24,7 +24,7 @@ task get_read_groups {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/samtools:1.0.0-alpha'
         maxRetries: max_retries
     }
 
