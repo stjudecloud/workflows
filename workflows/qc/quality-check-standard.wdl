@@ -66,7 +66,7 @@ workflow quality_check {
     call fqc.fastqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=validate_bam.validated_bam, bai=bam_index, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=validate_bam.validated_bam, max_retries=max_retries }
-    call ngsderive.read_length as ngsderive_read_length { input: bam=validate_bam.validated_bam, max_retries=max_retries }
+    call ngsderive.read_length as ngsderive_read_length { input: bam=validate_bam.validated_bam, bai=bam_index, max_retries=max_retries }
     call qualimap.bamqc as qualimap_bamqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
 
     call samtools.subsample as samtools_subsample { input: bam=validate_bam.validated_bam, max_retries=max_retries }
