@@ -9,14 +9,13 @@ task bamqc {
     input {
         File bam
         Int ncpu = 1
-        String prefix = basename(bam, ".bam") + "_qualimap_bamqc_results"
+        String out_directory = basename(bam, ".bam") + '.stats'
         Int max_retries = 1
         Int memory_gb = 8
         Int? disk_size_gb
     }
 
     Int java_heap_size = ceil(memory_gb * 0.9)
-    String out_directory = select_first([prefix, "qualimap_bamqc_results"])
     String out_tar_gz_file = out_directory + ".tar.gz"
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
@@ -56,7 +55,7 @@ task rnaseq {
     input {
         File bam
         File? gencode_gtf
-        String prefix = basename(bam, ".bam") + "_qualimap_rnaseq_results"
+        String out_directory = basename(bam, ".bam") + "_qualimap_rnaseq_results"
         Int memory_gb = 16
         Int? disk_size_gb
         Int max_retries = 1
@@ -65,7 +64,6 @@ task rnaseq {
         String inferred_strand = ""
     }
 
-    String out_directory = select_first([prefix, "qualimap_rnaseq_results"])
     String out_tar_gz_file = out_directory + ".tar.gz"
     String stranded = if (provided_strand != "") then 
                         if (provided_strand == "Stranded-Reverse") then "strand-specific-reverse" else

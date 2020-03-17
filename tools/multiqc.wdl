@@ -28,10 +28,7 @@ task multiqc {
         echo ~{validate_sam_string} > validate_sam.txt
         echo validate_sam.txt >> file_list.txt
 
-        # MultiQC should be able to strip any extensions on the BAM name
-        # down to the sample name, and will use that sample name for results
-        qualimap_bamqc_dir=$(basename ~{sorted_bam} '.bam')
-        mkdir "$qualimap_bamqc_dir"
+        qualimap_bamqc_dir=$(basename $qualimap_bamqc ".tar.gz")
         tar -xzf ~{qualimap_bamqc} --strip-components=1 -C "$qualimap_bamqc_dir"/;
         echo "$qualimap_bamqc_dir"/genome_results.txt >> file_list.txt
         for file in $(find "$qualimap_bamqc_dir"/raw_data_qualimapReport/); do
