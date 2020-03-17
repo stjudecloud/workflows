@@ -11,12 +11,12 @@ arguments out to files which can be supplied to STAR via the `cat` command.
 
 import argparse
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Any
 
 
 def sort_lists(
-    target_list: List[any],
-    key_list: List[any]
+    target_list: List[Any],
+    key_list: List[Any]
 ) -> None:
     """Reorder a target list according to the sorting of a key list.
 
