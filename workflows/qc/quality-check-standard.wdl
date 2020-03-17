@@ -74,7 +74,7 @@ workflow quality_check {
     call fq.fqlint { input: read1=b2fq.read1, read2=b2fq.read2, max_retries=max_retries }
     call fq_screen.fastq_screen as fastq_screen { input: read1=b2fq.read1, read2=b2fq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries }
     
-    if (experiment == "RNA-seq") {
+    if (experiment == "RNA-Seq") {
         call ngsderive.infer_strand as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
@@ -133,13 +133,13 @@ task parse_input {
 
     command {
         EXITCODE=0
-        if [ "~{input_experiment}" != "WGS" ] && [ "~{input_experiment}" != "WES" ] && [ "~{input_experiment}" != "RNA-seq" ]; then
-            >&2 echo "experiment input must be 'WGS', 'WES', or 'RNA-seq'"
+        if [ "~{input_experiment}" != "WGS" ] && [ "~{input_experiment}" != "WES" ] && [ "~{input_experiment}" != "RNA-Seq" ]; then
+            >&2 echo "experiment input must be 'WGS', 'WES', or 'RNA-Seq'"
             EXITCODE=1
         fi
 
-        if [ "~{input_experiment}" = "RNA-seq" ] && [ "~{no_gtf}" = "true" ]; then
-            >&2 echo "Must supply a Gencode GTF if experiment = 'RNA-seq'"
+        if [ "~{input_experiment}" = "RNA-Seq" ] && [ "~{no_gtf}" = "true" ]; then
+            >&2 echo "Must supply a Gencode GTF if experiment = 'RNA-Seq'"
             EXITCODE=1
         fi
 
