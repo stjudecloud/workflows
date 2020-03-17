@@ -9,14 +9,15 @@ task bamqc {
     input {
         File bam
         Int ncpu = 1
-        String out_directory = basename(bam, ".bam") + '.stats'
         Int max_retries = 1
         Int memory_gb = 8
         Int? disk_size_gb
     }
+    
+    String out_directory = basename(bam, ".bam") + '.stats'
+    String out_tar_gz_file = out_directory + ".tar.gz"
 
     Int java_heap_size = ceil(memory_gb * 0.9)
-    String out_tar_gz_file = out_directory + ".tar.gz"
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
