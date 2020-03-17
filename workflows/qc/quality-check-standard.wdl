@@ -24,7 +24,6 @@ version 1.0
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/md5sum.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qc.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/htseq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastqc.wdl" as fqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/deeptools.wdl"
@@ -77,7 +76,6 @@ workflow quality_check {
     
     if (experiment == "RNA-seq") {
         call ngsderive.infer_strand as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf, max_retries=max_retries }
-        call htseq.count as htseq_count { input: bam=validate_bam.validated_bam, gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
             input:
@@ -116,7 +114,6 @@ workflow quality_check {
         File qualimap_bamqc_results = qualimap_bamqc.results
         Array[File] fastq_screen_results = fastq_screen.out_files
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
-        File? htseq_count_file = htseq_count.out
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? multiqc_zip = multiqc.out
         File? multiqc_rnaseq_zip = multiqc_rnaseq.out

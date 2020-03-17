@@ -8,7 +8,7 @@ version 1.0
 task count {
     input {
         File bam
-        File? gtf
+        File gtf
         String provided_strand
         String inferred_strand
         String outfile = basename(bam, ".bam") + ".counts.txt"
