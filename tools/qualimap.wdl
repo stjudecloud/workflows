@@ -13,7 +13,7 @@ task bamqc {
         Int memory_gb = 8
         Int? disk_size_gb
     }
-    
+
     String out_directory = basename(bam, ".bam") + '.stats'
     String out_tar_gz_file = out_directory + ".tar.gz"
 
@@ -56,7 +56,6 @@ task rnaseq {
     input {
         File bam
         File? gencode_gtf
-        String out_directory = basename(bam, ".bam") + "_qualimap_rnaseq_results"
         Int memory_gb = 16
         Int? disk_size_gb
         Int max_retries = 1
@@ -65,6 +64,7 @@ task rnaseq {
         String inferred_strand = ""
     }
 
+    String out_directory = basename(bam, ".bam") + "_qualimap_rnaseq_results"
     String out_tar_gz_file = out_directory + ".tar.gz"
     String stranded = if (provided_strand != "") then 
                         if (provided_strand == "Stranded-Reverse") then "strand-specific-reverse" else
