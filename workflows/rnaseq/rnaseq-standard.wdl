@@ -45,7 +45,6 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/htseq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qc.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/util.wdl"
 
 workflow rnaseq_standard {

@@ -23,7 +23,6 @@ version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/md5sum.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qc.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastqc.wdl" as fqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/deeptools.wdl"
