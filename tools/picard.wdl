@@ -56,6 +56,7 @@ task validate_bam {
         Boolean summary_mode = false
         Boolean index_validation_stringency_less_exhaustive = false
         Boolean ignore_warnings = true
+        String output_filename = basename(bam, ".bam") + ".validation_report.txt"
         Int memory_gb = 8
         Int max_retries = 1
     }
@@ -67,6 +68,7 @@ task validate_bam {
     String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
         else ""
+    String ignore_warnings_string = if (ignore_warnings) then "true" else ""
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
@@ -80,17 +82,15 @@ task validate_bam {
             ~{mode_arg} \
             ~{stringency_arg} \
             MAX_OUTPUT=100000 \
-            > stdout.txt
+            > ~{output_filename}
 
-        if [ "~{ignore_warnings}" == "true" ]
-        then
-            if [ "$(grep -c "ERROR" stdout.txt)" -gt 0 ]
-            then
-                echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
-                exit 1
-            fi
-        elif [ "$(grep -Ec "ERROR|WARNING" stdout.txt)" -gt 0 ]
-        then
+        if [ "~{ignore_warnings_string}" == "true" ]; then
+            GREP_PATTERN="ERROR"
+        else
+            GREP_PATTERN="(ERROR|WARNING)"
+        fi
+
+        if [ "$(grep -Ec "$GREP_PATTERN" ~{output_filename})" -gt 0 ]; then
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
             exit 1
         fi
@@ -104,7 +104,7 @@ task validate_bam {
     }
 
     output {
-        String out = read_string("stdout.txt")
+        File out = output_filename
         File validated_bam = bam
     }
 

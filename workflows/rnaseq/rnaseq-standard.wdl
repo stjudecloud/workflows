@@ -77,7 +77,6 @@ workflow rnaseq_standard {
     call picard.sort as picard_sort { input: bam=alignment.star_bam, max_retries=max_retries }
     call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call picard.validate_bam { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
-    call qc.parse_validate_bam { input: in=validate_bam.out, max_retries=max_retries }
     call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
     call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
 

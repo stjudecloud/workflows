@@ -8,7 +8,7 @@ version 1.0
 task multiqc {
     input {
         File sorted_bam
-        String validate_sam_string
+        File validate_sam_file
         File qualimap_bamqc
         File? qualimap_rnaseq
         Array[File] fastqc_files
@@ -25,8 +25,7 @@ task multiqc {
 
     command {
         echo ~{sorted_bam} > file_list.txt
-        echo ~{validate_sam_string} > validate_sam.txt
-        echo validate_sam.txt >> file_list.txt
+        echo ~{validate_sam_file} >> file_list.txt
 
         qualimap_bamqc_dir=$(basename $qualimap_bamqc ".tar.gz")
         tar -xzf ~{qualimap_bamqc} --strip-components=1 -C "$qualimap_bamqc_dir"/;
