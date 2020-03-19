@@ -76,7 +76,7 @@ task multiqc {
 
     parameter_meta {
         sorted_bam: "A aligned, sorted BAM file"
-        validate_sam_string: "A string output from Picard's ValidateSam tool"
+        validate_sam_file: "A file output from Picard's ValidateSam tool"
         qualimap_bamqc: "An array of files output by Qualimap's BamQC mode"
         qualimap_rnaseq: "An array of files output by Qualimap's RNA-seq mode"
         fastqc_files: "An array of files output by FastQC"
