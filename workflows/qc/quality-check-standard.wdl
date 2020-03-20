@@ -158,6 +158,10 @@ task parse_input {
         exit $EXITCODE
     }
 
+    runtime {
+        docker: 'stjudecloud/util:1.0.0-alpha'
+    }
+
     output {
         String input_check = "passed"
     }
