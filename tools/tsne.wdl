@@ -24,7 +24,7 @@ task plot {
     command {
         itsne-main --debug-rscript -b ${blacklist} -g ${gencode_gtf} -c ${covariates} -o ${outfile} \
             ${true='--input-sample ' false='' defined(inputs)}${sep=' --input-sample ' inputs} \
-            ${'--tissue-type ' + tissue_type}
+            ${'--tissue-type ' + tissue_type} \ 
             ${sep=' ' counts} ${sep=' ' input_counts}
     }
   
