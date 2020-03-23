@@ -34,10 +34,10 @@ task multiqc {
             echo $file >> file_list.txt
         done
 
-        mkdir qualimap_rnaseq/
-        tar -xzf ~{qualimap_rnaseq} --strip-components=1 -C qualimap_rnaseq/;
-        echo qualimap_rnaseq/rnaseq_qc_results.txt >> file_list.txt
-        for file in $(find qualimap_rnaseq/raw_data_qualimapReport/); do
+        qualimap_rnaseq_dir=$(basename $qualimap_rnaseq ".tar.gz")
+        tar -xzf ~{qualimap_rnaseq} --strip-components=1 -C "$qualimap_rnaseq_dir"/;
+        echo "$qualimap_rnaseq_dir"/rnaseq_qc_results.txt >> file_list.txt
+        for file in $(find "$qualimap_rnaseq_dir"/raw_data_qualimapReport/); do
             echo $file >> file_list.txt
         done
 
@@ -53,7 +53,8 @@ task multiqc {
         echo ~{bigwig_file} >> file_list.txt
         echo ~{star_log} >> file_list.txt
 
-        multiqc --file-list file_list.txt -o multiqc_results
+        multiqc --cl_config "extra_fn_clean_exts: '_qualimap_bamqc_results'" \
+            --file-list file_list.txt -o multiqc_results
         tar -czf multiqc_results.tar.gz multiqc_results
     }
 
