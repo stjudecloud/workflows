@@ -14,50 +14,24 @@ import os
 from typing import List, Tuple, Any
 
 
-def sort_lists(
-    target_list: List[Any],
-    key_list: List[Any]
-) -> None:
-    """Reorder a target list according to the sorting of a key list.
-
-    Given two lists, sort_lists() will reorder both. `key_list` will
-    be sorted in ascending order, and the index changes of `key_list`
-    will be reflected in `target_list`.
-    
-    Args:
-        target_list (list): List which will be reordered.
-            The contents of `target_list` are not considered during ordering.
-        key_list (list): List whose contents determine target list's ordering.
-    """
-    for i in range(1, len(key_list)):
-        key = key_list[i]
-        target = target_list[i]
-        j = i - 1
-        while j >= 0 and key < key_list[j]:
-            key_list[j+1] = key_list[j]
-            target_list[j+1] = target_list[j]
-            j -= 1
-        key_list[j+1] = key
-        target_list[j+1] = target
-
 def sort_fastqs(fastq_files: List[str]) -> List[str]:
     """Sort and return a list of file paths according to their basename."""
     fastq_basenames = [fastq.split(os.sep)[-1] for fastq in fastq_files]
 
-    sort_lists(fastq_files, fastq_basenames)
+    sorted_filepaths, sorted_basenames = zip(*sorted(zip(fastq_files, fastq_basenames), key = lambda item: item[1]))
 
-    return fastq_files
+    return sorted_filepaths
 
 def sort_read_groups(
     read_groups_string: str
 ) -> Tuple[List[str], List[str]]:
     """Reorder the argument to the STAR `--outSAMattrRGline` parameter.
 
-    The call to sort_lists() could be substituted by using the `sorted()`
+    The sort line could be substituted by using the `sorted()`
     method on both lists, since what's being sorted on comes
     first in the strings.
-    The `rgids` list is needed later in the program,
-    and using the same function as `sort_fastqs()` contributes to consistency.
+    However the `rgids` list is needed later in the program,
+    and using the same method as `sort_fastqs()` contributes to consistency.
     
     Args:
         read_groups_string (str): Exactly what would be passed to STAR
@@ -71,9 +45,9 @@ def sort_read_groups(
     read_groups = [rg for rg in read_groups_string.split(' , ')]
     rgids = [flags.split(' ')[0].split(':')[1] for flags in read_groups]
 
-    sort_lists(read_groups, rgids)
+    sorted_read_groups, sorted_rgids = zip(*sorted(zip(read_groups, rgids), key = lambda item: item[1]))
 
-    return (read_groups, rgids)
+    return (sorted_read_groups, sorted_rgids)
 
 def validate(
     read_one_fastqs: List[str],
@@ -145,9 +119,13 @@ if __name__ == '__main__':
             'Must have the same number of read one fastqs as read two fastqs'
         )
     
-    read_one_fastqs = sort_fastqs(read_one_fastqs)
-    read_two_fastqs = sort_fastqs(read_two_fastqs)
-    read_groups, rgids = sort_read_groups(args.read_groups)
+    sorted_read_one_fastqs = sort_fastqs(read_one_fastqs)
+    sorted_read_two_fastqs = sort_fastqs(read_two_fastqs)
+    sorted_read_groups, sorted_rgids = sort_read_groups(args.read_groups)
 
-    validate(read_one_fastqs, read_two_fastqs, rgids)
-    write_outfiles(read_one_fastqs, read_two_fastqs, read_groups)
+    validate(sorted_read_one_fastqs, sorted_read_two_fastqs, sorted_rgids)
+    write_outfiles(
+        sorted_read_one_fastqs,
+        sorted_read_two_fastqs,
+        sorted_read_groups
+    )
