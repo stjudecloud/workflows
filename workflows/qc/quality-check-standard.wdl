@@ -48,7 +48,7 @@ workflow quality_check {
     parameter_meta {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
-        gencode_gtf: "GTF file provided by Gencode. Required for RNA-Seq data"
+        gencode_gtf: "GTF file provided by Gencode. **Required** for RNA-Seq data"
         experiment: "'WGS', 'WES', or 'RNA-Seq'"
         strand: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. Only needed for RNA-Seq data. If missing, will be inferred"
         fastq_screen_db: "Database for FastQ Screen. Can be generated using `make-qc-reference.wdl`. Must be named 'fastq-screen-db.tar.gz'"
