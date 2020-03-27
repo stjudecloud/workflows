@@ -1,6 +1,12 @@
-## LICENSING:
+## # Quality Check Standard
+##
+## This workflow runs a variety of quality checking software on any BAM file.
+## It can be WGS, WES, or Transcriptome data. The results are aggregated and
+## run through [MultiQC](https://multiqc.info/).
+##
+## ## LICENSING:
 ## 
-## MIT License
+## #### MIT License
 ##
 ## Copyright 2019 St. Jude Children's Research Hospital
 ##
