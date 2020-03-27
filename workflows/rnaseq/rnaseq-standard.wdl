@@ -7,15 +7,6 @@
 ## A final QC report is produced by MultiQC to generate a combined overview of the QC results
 ## for the sample.
 ##
-## ## Inputs:
-##
-## `gencode_gtf` - the gene model file for the reference genome to use when generating STAR reference files
-## `bam` - input BAM file to realign
-## `stardb_tar_gz` - the star db folder in tar.gz format. Refer to `rnaseq-star-db-build` workflow on how to generate it.
-## `strand` - string of the file's strandedness ('Stranded-Reverse', 'Stranded-Forward', or 'Unstranded')
-## `output_prefix` - output prefix to add to output files
-## `max_retries` - number of times to retry from retryable failures
-##
 ## ## LICENSING:
 ##
 ## #### MIT License
