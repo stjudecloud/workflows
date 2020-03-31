@@ -88,7 +88,7 @@ workflow quality_check {
     call samtools.subsample as samtools_subsample { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
     call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
-    call fq_screen.fastq_screen as fastq_screen { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries }
+    call fq_screen.fastq_screen as fastq_screen { input: read1=fqlint.validated_read1, read2=fqlint.validated_read2, db=fastq_screen_db, format=fastq_format, max_retries=max_retries }
     
     if (experiment == "RNA-Seq") {
         call ngsderive.infer_strand as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf, max_retries=max_retries }

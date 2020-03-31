@@ -43,6 +43,11 @@ task fqlint {
         fq lint ~{read1} ~{read2}
     }
 
+    output {
+        File validated_read1 = read1
+        File validated_read2 = read2
+    }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
