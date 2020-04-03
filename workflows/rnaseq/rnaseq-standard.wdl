@@ -82,6 +82,7 @@ workflow rnaseq_standard {
     output {
         File bam = picard_sort.sorted_bam
         File bam_index = samtools_index.bai
+        File star_log = alignment.star_log
         File gene_counts = htseq_count.out
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
     }
