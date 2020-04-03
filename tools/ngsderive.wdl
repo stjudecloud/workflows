@@ -1,6 +1,6 @@
-## Description:
+## # ngsderive
 ##
-## This WDL tool wraps the ngsderive package (https://github.com/claymcleod/ngsderive).
+## This WDL tool wraps the [ngsderive package](https://github.com/claymcleod/ngsderive).
 ## ngsderive is a utility tool to backwards compute strandedness, readlength, instrument
 ## for next-generation sequencing data.
 

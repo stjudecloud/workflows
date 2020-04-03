@@ -1,8 +1,8 @@
-## Description:
+## # t-SNE:
 ##
 ## This WDL tool implements a t-SNE (t-Distribute Stochastic Neighbor Embedding) plot to 
 ## visualize the relationship between input samples and a reference data set.
-## [https://lvdmaaten.github.io/tsne/]
+## (https://lvdmaaten.github.io/tsne/)
 
 version 1.0
 

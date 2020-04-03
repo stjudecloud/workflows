@@ -1,4 +1,4 @@
-## Description: 
+## # gzip 
 ##
 ## This WDL tool wraps any functionality related to gzip.
 

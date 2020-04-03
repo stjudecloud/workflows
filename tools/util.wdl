@@ -1,4 +1,4 @@
-## Description:
+## # Utilities
 ##
 ## This WDL tool includes custom scripts to parse and reformat 
 ## task output as part of a workflow. 

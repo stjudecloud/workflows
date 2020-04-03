@@ -1,6 +1,6 @@
-## Description:
+## # HTSeq
 ##
-## This WDL tool wraps the htseq tool (https://github.com/simon-anders/htseq).
+## This WDL tool wraps the [htseq](https://github.com/simon-anders/htseq) tool.
 ## HTSeq is a Python library for analyzing sequencing data.
 
 version 1.0

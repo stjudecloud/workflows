@@ -1,6 +1,6 @@
-## Description:
+## # MultiQC
 ##
-## This WDL tool wraps the MultiQC tool (https://multiqc.info/).
+## This WDL tool wraps the [MultiQC](https://multiqc.info/) tool.
 ## MultiQC aggregates quality control results for bioinformatics.
 
 version 1.0

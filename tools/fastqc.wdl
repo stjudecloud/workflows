@@ -1,6 +1,6 @@
-## Description:
+## # FastQC
 ##
-## This WDL tool wraps the FastQC tool (https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
+## This WDL tool wraps the [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) tool.
 ## FastQC generates quality control metrics for sequencing pipelines. 
 
 version 1.0

@@ -1,6 +1,6 @@
-## Description:
+## # STAR
 ##
-## This WDL tool wraps the STAR aligner (https://github.com/alexdobin/STAR).
+## This WDL tool wraps the [STAR aligner](https://github.com/alexdobin/STAR).
 ## STAR is an RNA-seq aligner.
 
 version 1.0

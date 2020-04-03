@@ -1,21 +1,21 @@
-## Description:
+## # RNASeq STAR DB build
 ##
 ## This WDL workflow generates a set of genome reference files usable by the STAR aligner from an input reference file in FASTA format.  
 ##
-## Inputs:
+## ### Output: 
 ##
-## reference_fa_url - URL to retrieve the reference FASTA file from.
-## gencode_gtf_url - URL to retrieve the reference gencode GTF file.
+## reference_fa
+## : the reference FASTA file
 ##
-## Output: 
+## gencode_gtf
+## : the reference gencode GTF file
 ##
-## reference_fa - the reference FASTA file
-## gencode_gtf - the reference gencode GTF file
-## stardb_tar_gz - the STAR DB folder in .tar.gz format
+## stardb_tar_gz
+## : the STAR DB folder in .tar.gz format
 ##
-## LICENSING:
+## ## LICENSING
 ##
-## MIT License
+## #### MIT License
 ##
 ## Copyright 2019 St. Jude Children's Research Hospital
 ##
@@ -44,6 +44,11 @@ workflow rnaseq_star_db_build {
     input {
         String reference_fa_url
         String gencode_gtf_url
+    }
+
+    parameter_meta {
+        reference_fa_url: "URL to retrieve the reference FASTA file from."
+        gencode_gtf_url: "URL to retrieve the reference gencode GTF file."
     }
 
     call wget.download as reference_download { input: url=reference_fa_url, outfilename="GRCh38_no_alt.fa.gz" }

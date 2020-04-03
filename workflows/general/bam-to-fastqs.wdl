@@ -1,20 +1,19 @@
-## Description:
+## # Bam to FastQs
 ##
 ## This WDL workflow converts an input BAM file to a set of fastq files for read 1 and read 2.
 ## It performs QC checks along the way to validate the input and output.
 ##
-## Inputs:
+## ### Output:
 ##
-## bam - the input bam to convert to fastqs
+## read1s
+## : an array of files with the first read in the pair
 ##
-## Output:
+## read2s
+## : an array of files with the second read in the pair
 ##
-## read1s - an array of files with the first read in the pair
-## read2s - an array of files with the second read in the pair
-##
-## LICENSING:
+## ## LICENSING:
 ## 
-## MIT License
+## #### MIT License
 ##
 ## Copyright 2019 St. Jude Children's Research Hospital
 ##
@@ -46,6 +45,13 @@ workflow bam_to_fastqs {
         Int samtools_sort_ncpu = 1
         Int bam_to_fastq_memory_gb = 40
         Int max_retries = 1
+    }
+
+    parameter_meta {
+        bam: "BAM file to split into fastqs."
+        samtools_sort_ncpu: "Number of CPUs to use while sorting the BAM."
+        bam_to_fastq_memory_gb: "How much memory to provide while converting to fastqs."
+        max_retries: "Maximum number of times to retry on a failure."
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }

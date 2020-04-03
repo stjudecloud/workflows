@@ -1,6 +1,6 @@
-## Description:
+## # Deeptools
 ##
-## This WDL tool wraps the DeepTools tool (https://deeptools.readthedocs.io/en/develop/index.html).
+## This WDL tool wraps the [DeepTools](https://deeptools.readthedocs.io/en/develop/index.html) tool.
 ## DeepTools is a suite of Python tools for analysis of high throughput sequencing analysis.
 
 version 1.0

@@ -1,4 +1,4 @@
-## Description: 
+## # tar 
 ##
 ## This WDL tool wraps any functionality related to tar.
 

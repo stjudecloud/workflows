@@ -1,7 +1,6 @@
 ## Description:
 ##
-## This WDL tool wraps the md5sum tool from the GNU core 
-## utilities (https://github.com/coreutils/coreutils).
+## This WDL tool wraps the md5sum tool from the [GNU core utilities](https://github.com/coreutils/coreutils).
 ## md5sum is a utility for generating and verifying MD5
 ## hashes.  
 

@@ -1,3 +1,7 @@
+## # FastQ Screen
+##
+## Methods for bootstrapping and running [FastQ Screen](https://www.bioinformatics.babraham.ac.uk/projects/fastq_screen/_build/html/index.html)
+
 version 1.0
 
 task build_db {
