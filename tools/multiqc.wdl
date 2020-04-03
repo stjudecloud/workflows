@@ -14,7 +14,6 @@ task multiqc {
         Array[File] fastqc_files
         Array[File] fastq_screen
         File flagstat_file
-        File bigwig_file
         File? star_log
         Int max_retries = 1
         Int memory_gb = 5
@@ -27,15 +26,15 @@ task multiqc {
         echo ~{sorted_bam} > file_list.txt
         echo ~{validate_sam_file} >> file_list.txt
 
-        qualimap_bamqc_dir=$(basename $qualimap_bamqc ".tar.gz")
-        tar -xzf ~{qualimap_bamqc} --strip-components=1 -C "$qualimap_bamqc_dir"/;
+        qualimap_bamqc_dir=$(basename ~{qualimap_bamqc} ".tar.gz")
+        tar -xzf ~{qualimap_bamqc}
         echo "$qualimap_bamqc_dir"/genome_results.txt >> file_list.txt
         for file in $(find "$qualimap_bamqc_dir"/raw_data_qualimapReport/); do
             echo $file >> file_list.txt
         done
 
-        qualimap_rnaseq_dir=$(basename $qualimap_rnaseq ".tar.gz")
-        tar -xzf ~{qualimap_rnaseq} --strip-components=1 -C "$qualimap_rnaseq_dir"/;
+        qualimap_rnaseq_dir=$(basename ~{qualimap_rnaseq} ".tar.gz")
+        tar -xzf ~{qualimap_rnaseq}
         echo "$qualimap_rnaseq_dir"/rnaseq_qc_results.txt >> file_list.txt
         for file in $(find "$qualimap_rnaseq_dir"/raw_data_qualimapReport/); do
             echo $file >> file_list.txt

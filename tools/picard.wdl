@@ -56,7 +56,7 @@ task validate_bam {
         Boolean summary_mode = false
         Boolean index_validation_stringency_less_exhaustive = false
         Boolean ignore_warnings = true
-        String output_filename = basename(bam, ".bam") + ".validation_report.txt"
+        String output_filename = basename(bam, ".bam") + ".ValidateSamFile.txt"
         Int memory_gb = 8
         Int max_retries = 1
     }

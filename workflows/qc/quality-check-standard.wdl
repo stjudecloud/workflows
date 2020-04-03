@@ -99,7 +99,6 @@ workflow quality_check {
                 validate_sam_file=validate_bam.out,
                 flagstat_file=samtools_flagstat.outfile,
                 fastqc_files=fastqc.out_files,
-                bigwig_file=deeptools_bamCoverage.bigwig,
                 qualimap_bamqc=qualimap_bamqc.results,
                 fastq_screen=fastq_screen.out_files,
                 qualimap_rnaseq=qualimap_rnaseq.results,
@@ -113,7 +112,6 @@ workflow quality_check {
                 validate_sam_file=validate_bam.out,
                 flagstat_file=samtools_flagstat.outfile,
                 fastqc_files=fastqc.out_files,
-                bigwig_file=deeptools_bamCoverage.bigwig,
                 qualimap_bamqc=qualimap_bamqc.results,
                 fastq_screen=fastq_screen.out_files,
                 max_retries=max_retries
