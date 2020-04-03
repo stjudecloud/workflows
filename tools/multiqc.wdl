@@ -49,7 +49,6 @@ task multiqc {
         done
 
         echo ~{flagstat_file} >> file_list.txt
-        echo ~{bigwig_file} >> file_list.txt
         echo ~{star_log} >> file_list.txt
 
         multiqc --cl_config "extra_fn_clean_exts: '_qualimap_bamqc_results'" \
