@@ -123,6 +123,7 @@ workflow quality_check {
 
     output {
         File bam_checksum = compute_checksum.outfile
+        File validate_sam_file = validate_bam.out,
         File flagstat = samtools_flagstat.outfile
         Array[File] fastqc_results = fastqc.out_files
         File bigwig = deeptools_bamCoverage.bigwig
