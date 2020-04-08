@@ -22,9 +22,13 @@ task multiqc {
     Float star_size = size(sorted_bam, "GiB")
     Int disk_size = ceil((star_size * 4) + 10)
 
+    String rnaseq = if defined(qualimap_rnaseq) then "true" else ""
+
     command {
         echo ~{sorted_bam} > file_list.txt
         echo ~{validate_sam_file} >> file_list.txt
+        echo ~{flagstat_file} >> file_list.txt
+        echo ~{star_log} >> file_list.txt
 
         qualimap_bamqc_dir=$(basename ~{qualimap_bamqc} ".tar.gz")
         tar -xzf ~{qualimap_bamqc}
@@ -33,12 +37,14 @@ task multiqc {
             echo $file >> file_list.txt
         done
 
-        qualimap_rnaseq_dir=$(basename ~{qualimap_rnaseq} ".tar.gz")
-        tar -xzf ~{qualimap_rnaseq}
-        echo "$qualimap_rnaseq_dir"/rnaseq_qc_results.txt >> file_list.txt
-        for file in $(find "$qualimap_rnaseq_dir"/raw_data_qualimapReport/); do
-            echo $file >> file_list.txt
-        done
+        if [ "~{rnaseq}" = "true" ]; then
+            qualimap_rnaseq_dir=$(basename ~{qualimap_rnaseq} ".tar.gz")
+            tar -xzf ~{qualimap_rnaseq}
+            echo "$qualimap_rnaseq_dir"/rnaseq_qc_results.txt >> file_list.txt
+            for file in $(find "$qualimap_rnaseq_dir"/raw_data_qualimapReport/); do
+                echo $file >> file_list.txt
+            done
+        fi
 
         for file in ~{sep=' ' fastqc_files} ; do
             echo $file >> file_list.txt
@@ -47,9 +53,6 @@ task multiqc {
         for file in ~{sep=' ' fastq_screen} ; do
             echo $file >> file_list.txt
         done
-
-        echo ~{flagstat_file} >> file_list.txt
-        echo ~{star_log} >> file_list.txt
 
         multiqc --cl_config "extra_fn_clean_exts: '_qualimap_bamqc_results'" \
             --file-list file_list.txt -o multiqc_results

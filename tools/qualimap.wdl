@@ -27,6 +27,11 @@ task bamqc {
             -nt ~{ncpu} \
             -nw 400 \
             --java-mem-size=~{java_heap_size}g
+        
+        if [ ! -d "~{out_directory}"]; then
+            exit 1
+        fi
+
         tar -czf ~{out_tar_gz_file} ~{out_directory}
     }
 
@@ -92,6 +97,11 @@ task rnaseq {
                         -p ~{stranded} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
+        
+        if [ ! -d "~{out_directory}"]; then
+            exit 1
+        fi
+        
         tar -czf ~{out_tar_gz_file} ~{out_directory}
     }
 
