@@ -28,7 +28,7 @@ task bamqc {
             -nw 400 \
             --java-mem-size=~{java_heap_size}g
         
-        if [ ! -d "~{out_directory}"]; then
+        if [ ! -d "~{out_directory}/raw_data_qualimapReport/"]; then
             exit 1
         fi
 
@@ -98,7 +98,7 @@ task rnaseq {
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
         
-        if [ ! -d "~{out_directory}"]; then
+        if [ ! -d "~{out_directory}/raw_data_qualimapReport/"]; then
             exit 1
         fi
         
