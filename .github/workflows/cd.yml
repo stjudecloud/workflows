@@ -23,7 +23,7 @@ jobs:
       - name: Prepare Docs
         run: cp README.md docs/index.md && sed -i.bak 's/\.\/docs/\.\//g' docs/index.md
       - name: Build Docs
-        run:
+        run: |
           wdldoc -o docs .
           mkdocs build
       - name: Deploy
