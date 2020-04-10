@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Convert WDL documentation to Markdown for rendering.">
+  <meta name="author" content="St. Jude Cloud">
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>wdldoc</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Home";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> wdldoc</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
+    <ul class="current">
+    </ul>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">wdldoc</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/stjudecloud/wdldoc/edit/master/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p align="center">
+  <a href="https://github.com/stjudecloud/workflows"><img src=".//workflows-banner-flowchart.jpg" width="800" title="St. Jude Cloud Workflows"></a>
+  <a href="https://actions-badge.atrox.dev/stjudecloud/workflows/goto">
+    <img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fstjudecloud%2Fworkflows%2Fbadge&style=flat" />
+  </a>
+  <a href="https://stjude.cloud/docs" target="_blank">
+    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
+  </a>
+  <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+  </a>
+</p>
+
+<blockquote>
+<p>This repository contains all bioinformatics workflows used on the St. Jude Cloud project. Officially, the repository is in beta — the project is adding workflows as they are developed and put into production.</p>
+</blockquote>
+<h3 id="homepage">🏠 <a href="https://stjude.cloud">Homepage</a></h3>
+<h2 id="getting-started">Getting Started</h2>
+<p>At the time of writing, all workflows are written in <a href="http://openwdl.org/">WDL</a> and are tested
+using <a href="https://github.com/broadinstitute/cromwell">Cromwell</a>. We use <a href="https://github.com/stjudecloud/oliver">Oliver</a> to easily interact with the
+Cromwell server to perform various tasks. Although we do not test outside of Cromwell, we
+expect that the workflows will work just as well using other runners.</p>
+<p>The easiest way to get started is to install <a href="https://bioconda.github.io/">bioconda</a> and the run the following commands:</p>
+<pre><code class="bash">conda create -n workflows-dev -c conda-forge cromwell==47 -y
+conda activate workflows-dev
+git clone git@github.com:stjudecloud/workflows.git
+cd workflows
+</code></pre>
+
+<p>Any of the workflows in <a href="https://github.com/stjudecloud/workflows/tree/master/workflows">the workflows</a> folder is a good place to start, e.g.</p>
+<pre><code class="bash">cromwell run workflows/reference/bootstrap-reference.wdl --inputs workflows/reference/inputs.json
+</code></pre>
+
+<h2 id="repository-structure">Repository Structure</h2>
+<p>The repository is laid out as follows:</p>
+<ul>
+<li><code>conf</code> - Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.</li>
+<li><code>docker</code> - Dockerfiles used in our workflows. All docker images are published to <a href="https://hub.docker.com/u/stjudecloud">Docker Hub</a>.</li>
+<li>At the time of writing, there is only one Docker image heavily in use, which is our <a href="./docker/bioinformatics-base/Dockerfile">bioinformatics base image</a>.</li>
+<li><code>tools</code> - All tools we have wrapped as individual WDL tasks.</li>
+<li><code>workflows</code> - Directory containing all end-to-end bioinformatics workflows.</li>
+</ul>
+<h2 id="workflows-available">Workflows Available</h2>
+<p>The current workflows exist in this repo with the following statuses:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Version</th>
+<th>Description</th>
+<th>Specification</th>
+<th>Workflow</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build References</td>
+<td>v2.0.0 <em>(beta)</em></td>
+<td>Build reference files used in harmonization pipelines.</td>
+<td>None</td>
+<td><a href="./workflows/reference/bootstrap-reference.wdl">Workflow</a></td>
+<td><img alt="In Development" src="https://img.shields.io/static/v1?label=Status&amp;message=Development&amp;color=orange&amp;style=flat-square" /></td>
+</tr>
+<tr>
+<td>Standard RNA-Seq</td>
+<td>v2.0.0 <em>(beta)</em></td>
+<td>Standard RNA-Seq harmonization pipeline.</td>
+<td><a href="https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.html">Specification</a></td>
+<td><a href="./workflows/rnaseq/rnaseq-standard.wdl">Workflow</a></td>
+<td><img alt="In Development" src="https://img.shields.io/static/v1?label=Status&amp;message=Development&amp;color=orange&amp;style=flat-square" /></td>
+</tr>
+</tbody>
+</table>
+<h2 id="author">Author</h2>
+<p>👤 <strong>St. Jude Cloud Team</strong></p>
+<ul>
+<li>Website: https://stjude.cloud</li>
+<li>Github: <a href="https://github.com/stjudecloud">@stjudecloud</a></li>
+<li>Twitter: <a href="https://twitter.com/StJudeResearch">@StJudeResearch</a></li>
+</ul>
+<h2 id="tests">Tests</h2>
+<p>Given that this repo is still new, there are no tests. When we add tests, we will update the README.</p>
+<h2 id="contributing">🤝 Contributing</h2>
+<p>Contributions, issues and feature requests are welcome!<br />Feel free to check <a href="https://github.com/stjudecloud/workflows/issues">issues page</a>. You can also take a look at the <a href="https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md">contributing guide</a>.</p>
+<h2 id="versioning">Versioning</h2>
+<p>When versioned, workflows will be versioned according to the <a href="http://semver.org/">SemVer</a> guidelines. For now, we do not guarantee that all workflows will have an associated version.</p>
+<h2 id="license">📝 License</h2>
+<p>Copyright © 2019 <a href="https://github.com/stjudecloud">St. Jude Cloud Team</a>.<br />
+This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md">MIT</a> licensed.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>© 2020 St. Jude Children's Research Hospital</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/stjudecloud/wdldoc/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+    </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.1
+Build Date UTC : 2020-04-10 19:23:27
+-->
