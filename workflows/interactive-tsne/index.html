@@ -9,7 +9,7 @@
   <meta name="author" content="St. Jude Cloud">
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>Interactive tsne - St. Jude WDL workflows</title>
+  <title>Interactive t-SNE - St. Jude WDL workflows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -18,7 +18,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Interactive tsne";
+    var mkdocs_page_name = "Interactive t-SNE";
     var mkdocs_page_input_path = "workflows/interactive-tsne.md";
     var mkdocs_page_url = null;
   </script>
@@ -81,7 +81,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../tasks/tar/">tar</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/tsne/">t-SNE:</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/tsne/">t-SNE</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../tasks/util/">Utilities</a>
                     </li>
@@ -92,19 +92,31 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Interactive tsne</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Interactive t-SNE</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
+    <li class="toctree-l2"><a class="reference internal" href="#output">Output</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#required">Required</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#optional">Optional</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#defaults">Defaults</a>
+    <li class="toctree-l3"><a class="reference internal" href="#mit-license">MIT License</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
+    <li class="toctree-l2"><a class="reference internal" href="#interactive_tsne">interactive_tsne</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
+    </li>
+        </ul>
     </li>
     </ul>
                     </li>
@@ -142,7 +154,7 @@
         
       
     
-    <li>Interactive tsne</li>
+    <li>Interactive t-SNE</li>
     <li class="wy-breadcrumbs-aside">
       
         <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/interactive-tsne.md"
@@ -156,18 +168,18 @@
           <div role="main">
             <div class="section">
               
-                <p>This WDL workflow remaps input bams and compares them to St. Jude RNA-seq samples using 
+                <h1 id="interactive-t-sne">Interactive t-SNE</h1>
+<p>This WDL workflow remaps input bams and compares them to St. Jude RNA-seq samples using 
 a t-SNE plot. </p>
-<p>Inputs:</p>
-<p>in_bams - bams to compare to reference data
-tissue_type - tissue type of the input samples [blood, brain, solid]
-gencode_gtf - Gencode annotation file</p>
-<p>Output:</p>
-<p>tsne_plot - t-SNE plot including the input samples compared to reference data
-generated_counts - RNAseq count data for the input bams
-generated_mappings - Bam output from the St. Jude Cloud RNA-seq workflow for each input bam</p>
-<p>LICENSING:</p>
-<p>MIT License</p>
+<h3 id="output">Output</h3>
+<p>tsne_plot
+: t-SNE plot including the input samples compared to reference data</p>
+<p>generated_counts
+: RNAseq count data for the input bams</p>
+<p>generated_mappings
+: Bam output from the St. Jude Cloud RNA-seq workflow for each input bam</p>
+<h2 id="licensing">LICENSING</h2>
+<h4 id="mit-license">MIT License</h4>
 <p>Copyright 2020 St. Jude Children's Research Hospital</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
 software and associated documentation files (the "Software"), to deal in the Software
