@@ -1,0 +1,30 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - rfcs/qc-workflow
+
+jobs:
+  gh-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
+      - name: Install Dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install mkdocs
+      - name: Prepare Docs
+        run: cp README.md docs/index.md && sed -i.bak 's/\.\/docs/\.\//g' docs/index.md
+      - name: Build Docs
+        run: mkdocs build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site

@@ -1,0 +1,8 @@
+site_name: "wdldoc"
+repo_url: "https://github.com/stjudecloud/wdldoc"
+
+site_description: "Convert WDL documentation to Markdown for rendering."
+site_author: "St. Jude Cloud"
+copyright: "© 2020 St. Jude Children's Research Hospital"
+
+theme: readthedocs
