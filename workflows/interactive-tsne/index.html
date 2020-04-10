@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="St. Jude Cloud">
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Interactive tsne - wdldoc</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Interactive tsne";
+    var mkdocs_page_input_path = "workflows/interactive-tsne.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> wdldoc</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tasks</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/deeptools/">Deeptools</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastq_screen/">FastQ Screen</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastqc/">FastQC</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/fq/">FQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/gzip/">gzip</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/htseq/">HTSeq</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/md5sum/">Md5sum</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/multiqc/">MultiQC</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/ngsderive/">ngsderive</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/picard/">Picard</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/qualimap/">QualiMap</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/samtools/">SAMtools</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/star/">STAR</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/tar/">tar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/tsne/">t-SNE:</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/util/">Utilities</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/wget/">wget</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Workflows</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Interactive tsne</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required">Required</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional">Optional</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#defaults">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">wdldoc</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Workflows &raquo;</li>
+        
+      
+    
+    <li>Interactive tsne</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/stjudecloud/wdldoc/edit/master/docs/workflows/interactive-tsne.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p>This WDL workflow remaps input bams and compares them to St. Jude RNA-seq samples using 
+a t-SNE plot. </p>
+<p>Inputs:</p>
+<p>in_bams - bams to compare to reference data
+tissue_type - tissue type of the input samples [blood, brain, solid]
+gencode_gtf - Gencode annotation file</p>
+<p>Output:</p>
+<p>tsne_plot - t-SNE plot including the input samples compared to reference data
+generated_counts - RNAseq count data for the input bams
+generated_mappings - Bam output from the St. Jude Cloud RNA-seq workflow for each input bam</p>
+<p>LICENSING:</p>
+<p>MIT License</p>
+<p>Copyright 2020 St. Jude Children's Research Hospital</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+<h2 id="interactive_tsne">interactive_tsne</h2>
+<h3 id="inputs">Inputs</h3>
+<h4 id="required">Required</h4>
+<ul>
+<li><code>tissue_type</code> (String, <strong>required</strong>): {'help': 'Provide the tissue type to compare against: [blood, brain, solid]', 'choices': ['blood', 'brain', 'solid']}</li>
+<li><code>gene_blacklist</code> (File, <strong>required</strong>)</li>
+<li><code>stardb_tar_gz</code> (File, <strong>required</strong>)</li>
+<li><code>gencode_gtf</code> (File, <strong>required</strong>)</li>
+<li><code>in_bams</code> (Array[File], <strong>required</strong>): {'help': 'Provide bams to run for comparison'}</li>
+</ul>
+<h4 id="optional">Optional</h4>
+<ul>
+<li><code>rnaseq_standard.htseq_count.memory_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.qualimap_rnaseq.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.qualimap_bamqc.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.picard_sort.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.picard_sort.memory_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.alignment.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.split.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.split.reject_unaccounted</code> (Boolean?)</li>
+<li><code>solid_covariates</code> (File?)</li>
+<li><code>brain_covariates</code> (File?)</li>
+<li><code>blood_covariates</code> (File?)</li>
+<li><code>solid_counts</code> (File?)</li>
+<li><code>brain_counts</code> (File?)</li>
+<li><code>blood_counts</code> (File?)</li>
+<li><code>covariates_file</code> (File?)</li>
+<li><code>reference_counts</code> (File?)</li>
+</ul>
+<h4 id="defaults">Defaults</h4>
+<ul>
+<li><code>generate_plot.disk_size</code> (Int, default=15)</li>
+<li><code>generate_plot.memory_gb</code> (Int, default=15)</li>
+<li><code>generate_plot.max_retries</code> (Int, default=1)</li>
+<li><code>append_input.memory_gb</code> (Int, default=5)</li>
+<li><code>file_prefix.max_retries</code> (Int, default=1)</li>
+<li><code>untar.max_retries</code> (Int, default=1)</li>
+<li><code>unzip.max_retries</code> (Int, default=1)</li>
+<li><code>unzip.outfilename</code> (String, default=basename(infile,".gz"))</li>
+<li><code>rnaseq_standard.multiqc.memory_gb</code> (Int, default=5)</li>
+<li><code>rnaseq_standard.deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
+<li><code>rnaseq_standard.deeptools_bamCoverage.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>rnaseq_standard.compute_checksum.memory_gb</code> (Int, default=5)</li>
+<li><code>rnaseq_standard.samtools_flagstat.memory_gb</code> (Int, default=5)</li>
+<li><code>rnaseq_standard.samtools_flagstat.outfilename</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
+<li><code>rnaseq_standard.htseq_count.outfile</code> (String, default=basename(bam,".bam") + ".counts.txt")</li>
+<li><code>rnaseq_standard.qualimap_rnaseq.memory_gb</code> (Int, default=16)</li>
+<li><code>rnaseq_standard.qualimap_rnaseq.outdir</code> (String, default="qualimap_rnaseq")</li>
+<li><code>rnaseq_standard.qualimap_bamqc.memory_gb</code> (Int, default=8)</li>
+<li><code>rnaseq_standard.qualimap_bamqc.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>rnaseq_standard.qualimap_bamqc.ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
+<li><code>rnaseq_standard.fastqc.memory_gb</code> (Int, default=5)</li>
+<li><code>rnaseq_standard.fastqc.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>rnaseq_standard.fastqc.ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.validate_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>rnaseq_standard.validate_bam.ignore_warnings</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.samtools_index.memory_gb</code> (Int, default=15)</li>
+<li><code>rnaseq_standard.samtools_index.outfile</code> (String, default=basename(bam) + ".bai")</li>
+<li><code>rnaseq_standard.picard_sort.output_filename</code> (String, default=basename(bam,".bam") + ".sorted.bam"): Name for the output HTML t-SNE plot</li>
+<li><code>rnaseq_standard.picard_sort.sort_order</code> (String, default="coordinate")</li>
+<li><code>rnaseq_standard.alignment.memory_gb</code> (Int, default=50)</li>
+<li><code>rnaseq_standard.alignment.ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.fqlint.memory_gb</code> (Int, default=8)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>rnaseq_standard.bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.samtools_sort_ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.max_retries</code> (Int, default=1)</li>
+<li><code>uncompress_gencode.max_retries</code> (Int, default=1)</li>
+<li><code>uncompress_gencode.outfilename</code> (String, default=basename(infile,".gz"))</li>
+<li><code>validate_tissue_type.memory_gb</code> (Int, default=5)</li>
+<li><code>output_filename</code> (String, default="output.html"): Name for the output HTML t-SNE plot</li>
+</ul>
+<h3 id="outputs">Outputs</h3>
+<ul>
+<li><code>tsne_plot</code> (File)</li>
+<li><code>generated_counts</code> (Array[File])</li>
+<li><code>generated_mappings</code> (Array[File])</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../make-qc-reference/" class="btn btn-neutral float-right" title="Make QC Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../bam-to-fastqs/" class="btn btn-neutral" title="Bam to FastQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>© 2020 St. Jude Children's Research Hospital</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/stjudecloud/wdldoc/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../bam-to-fastqs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../make-qc-reference/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
