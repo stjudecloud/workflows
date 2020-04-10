@@ -25,6 +25,10 @@ task multiqc {
     String rnaseq = if defined(qualimap_rnaseq) then "true" else ""
 
     command {
+        # set ENV variables for `multiqc`
+        export LC_ALL=C.UTF-8
+        export LANG=C.UTF-8
+        
         echo ~{sorted_bam} > file_list.txt
         echo ~{validate_sam_file} >> file_list.txt
         echo ~{flagstat_file} >> file_list.txt
