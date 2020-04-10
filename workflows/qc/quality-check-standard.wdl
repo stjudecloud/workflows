@@ -4,7 +4,7 @@
 ## It can be WGS, WES, or Transcriptome data. The results are aggregated and
 ## run through [MultiQC](https://multiqc.info/).
 ##
-## ## LICENSING:
+## ## LICENSING
 ## 
 ## #### MIT License
 ##

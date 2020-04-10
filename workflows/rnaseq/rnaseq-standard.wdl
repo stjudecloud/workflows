@@ -7,7 +7,7 @@
 ## A final QC report is produced by MultiQC to generate a combined overview of the QC results
 ## for the sample.
 ##
-## ## LICENSING:
+## ## LICENSING
 ##
 ## #### MIT License
 ##
