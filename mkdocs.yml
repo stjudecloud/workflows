@@ -1,7 +1,7 @@
-site_name: "wdldoc"
-repo_url: "https://github.com/stjudecloud/wdldoc"
+site_name: "St. Jude WDL workflows"
+repo_url: "https://github.com/stjudecloud/workflows"
 
-site_description: "Convert WDL documentation to Markdown for rendering."
+site_description: "Repository containing bioinformatics workflows used on the St. Jude Cloud project."
 site_author: "St. Jude Cloud"
 copyright: "© 2020 St. Jude Children's Research Hospital"
 
