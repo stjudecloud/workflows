@@ -31,7 +31,6 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/deeptools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/fq.wdl"
@@ -82,7 +81,6 @@ workflow quality_check {
 
     call samtools.flagstat as samtools_flagstat { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call fqc.fastqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=validate_bam.validated_bam, bai=bam_index, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call ngsderive.read_length as ngsderive_read_length { input: bam=validate_bam.validated_bam, bai=bam_index, max_retries=max_retries }
     call qualimap.bamqc as qualimap_bamqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
@@ -126,7 +124,6 @@ workflow quality_check {
         File validate_sam_file = validate_bam.out
         File flagstat = samtools_flagstat.outfile
         Array[File] fastqc_results = fastqc.out_files
-        File bigwig = deeptools_bamCoverage.bigwig
         File instrument_file = ngsderive_instrument.instrument_file
         File read_length_file = ngsderive_read_length.read_length_file
         File qualimap_bamqc_results = qualimap_bamqc.results

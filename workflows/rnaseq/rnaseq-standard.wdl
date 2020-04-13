@@ -37,6 +37,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/htseq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/deeptools.wdl"
 
 workflow rnaseq_standard {
     input {
@@ -78,6 +79,7 @@ workflow rnaseq_standard {
     call picard.validate_bam { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
     call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, max_retries=max_retries }
 
     output {
         File bam = picard_sort.sorted_bam
@@ -85,6 +87,7 @@ workflow rnaseq_standard {
         File star_log = alignment.star_log
         File gene_counts = htseq_count.out
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
+        File bigwig = deeptools_bamCoverage.bigwig
     }
 }
 
