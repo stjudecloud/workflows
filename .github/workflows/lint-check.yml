@@ -11,7 +11,7 @@ jobs:
       run: |
         EXITCODE=0
         for file in $(find . -name '*.wdl'); do
-          echo "Checking file $file..."
+          >&2 echo "Checking file $file..."
           import_lines=$(awk '/import/' "$file")
           bad_lines=$(echo "$import_lines" | awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
           if [ -n "$bad_lines" ]; then
