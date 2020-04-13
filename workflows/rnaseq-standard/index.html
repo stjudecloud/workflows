@@ -217,6 +217,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
+<li><code>deeptools_bamCoverage.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>htseq_count.memory_gb</code> (Int, default=20)</li>
 <li><code>htseq_count.outfile</code> (String, default=basename(bam,".bam") + ".counts.txt")</li>
 <li><code>ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
@@ -255,6 +257,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>star_log</code> (File)</li>
 <li><code>gene_counts</code> (File)</li>
 <li><code>inferred_strandedness</code> (File)</li>
+<li><code>bigwig</code> (File)</li>
 </ul>
 <h2 id="parse_input">parse_input</h2>
 <h3 id="inputs_1">Inputs</h3>
