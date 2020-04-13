@@ -40,6 +40,6 @@ jobs:
               >&2 echo "In file: $file"
               EXITCODE=1
             fi
-          done < <(awk '/docker: /' < "$file")
+          done < <(awk '/docker: .*stjudecloud/' < "$file")
         done
         exit $EXITCODE
