@@ -9,7 +9,7 @@
   <meta name="author" content="St. Jude Cloud">
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>Interactive tsne from counts - St. Jude WDL workflows</title>
+  <title>Interactive tsne from bams - St. Jude WDL workflows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Interactive tsne from counts";
-    var mkdocs_page_input_path = "workflows/interactive_tsne_from_counts.md";
+    var mkdocs_page_name = "Interactive tsne from bams";
+    var mkdocs_page_input_path = "workflows/interactive_tsne_from_bams.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -94,9 +94,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../interactive-tsne/">Interactive t-SNE</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_bams/">Interactive tsne from bams</a>
-                    </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Interactive tsne from counts</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Interactive tsne from bams</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -111,6 +109,8 @@
     <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
     </li>
     </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_counts/">Interactive tsne from counts</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                     </li>
@@ -146,10 +146,10 @@
         
       
     
-    <li>Interactive tsne from counts</li>
+    <li>Interactive tsne from bams</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/interactive_tsne_from_counts.md"
+        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/interactive_tsne_from_bams.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -185,14 +185,14 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="interactive_tsne_from_counts">interactive_tsne_from_counts</h2>
+<h2 id="interactive_tsne_from_bams">interactive_tsne_from_bams</h2>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
 <li><code>tissue_type</code> (String, <strong>required</strong>): {'help': 'Provide the tissue type to compare against: [blood, brain, solid]', 'choices': ['blood', 'brain', 'solid']}</li>
 <li><code>gene_blacklist</code> (File, <strong>required</strong>)</li>
 <li><code>gencode_gtf</code> (File, <strong>required</strong>)</li>
-<li><code>in_counts</code> (Array[File], <strong>required</strong>): {'help': 'Provide count files to run for comparison'}</li>
+<li><code>in_bams</code> (Array[File], <strong>required</strong>): {'help': 'Provide bams to run for comparison'}</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -215,11 +215,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>untar.max_retries</code> (Int, default=1)</li>
 <li><code>unzip.max_retries</code> (Int, default=1)</li>
 <li><code>unzip.outfilename</code> (String, default=basename(infile,".gz"))</li>
+<li><code>count.max_retries</code> (Int, default=1)</li>
+<li><code>count.memory_gb</code> (Int, default=20)</li>
+<li><code>count.outfile</code> (String, default=basename(bam,".bam") + ".counts.txt")</li>
+<li><code>infer.memory_gb</code> (Int, default=5)</li>
+<li><code>infer.max_retries</code> (Int, default=1)</li>
+<li><code>index.memory_gb</code> (Int, default=15)</li>
+<li><code>index.max_retries</code> (Int, default=1)</li>
+<li><code>index.outfile</code> (String, default=basename(bam) + ".bai")</li>
+<li><code>uncompress_gencode.max_retries</code> (Int, default=1)</li>
+<li><code>uncompress_gencode.outfilename</code> (String, default=basename(infile,".gz"))</li>
+<li><code>validate_tissue_type.memory_gb</code> (Int, default=5)</li>
 <li><code>output_filename</code> (String, default="output.html"): Name for the output HTML t-SNE plot</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>tsne_plot</code> (File)</li>
+<li><code>generated_counts</code> (Array[File])</li>
 </ul>
               
             </div>
@@ -228,10 +240,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../make-qc-reference/" class="btn btn-neutral float-right" title="Make QC Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../interactive_tsne_from_counts/" class="btn btn-neutral float-right" title="Interactive tsne from counts">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../interactive_tsne_from_bams/" class="btn btn-neutral" title="Interactive tsne from bams"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../interactive-tsne/" class="btn btn-neutral" title="Interactive t-SNE"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -261,10 +273,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
           <a href="https://github.com/stjudecloud/workflows/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../interactive_tsne_from_bams/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../interactive-tsne/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../make-qc-reference/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../interactive_tsne_from_counts/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
