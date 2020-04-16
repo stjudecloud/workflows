@@ -9,7 +9,7 @@
   <meta name="author" content="St. Jude Cloud">
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>Bam to FastQs - St. Jude WDL workflows</title>
+  <title>Quality Check Standard - St. Jude WDL workflows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Bam to FastQs";
-    var mkdocs_page_input_path = "workflows/bam-to-fastqs.md";
+    var mkdocs_page_name = "Quality Check Standard";
+    var mkdocs_page_input_path = "workflows/quality-check-standard.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -90,17 +90,23 @@
                 </ul>
                 <p class="caption"><span class="caption-text">Workflows</span></p>
                 <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Bam to FastQs</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../interactive-tsne/">Interactive t-SNE</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_counts/">Interactive tsne from counts</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Quality Check Standard</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#output">Output:</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING:</a>
+    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#mit-license">MIT License</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bam_to_fastqs">bam_to_fastqs</a>
+    <li class="toctree-l2"><a class="reference internal" href="#quality_check">quality_check</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -116,15 +122,21 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parse_input">parse_input</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_1">Optional</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_1">Outputs</a>
+    </li>
+        </ul>
+    </li>
     </ul>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive-tsne/">Interactive t-SNE</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_counts/">Interactive tsne from counts</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
                     </li>
@@ -156,10 +168,10 @@
         
       
     
-    <li>Bam to FastQs</li>
+    <li>Quality Check Standard</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/bam-to-fastqs.md"
+        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/quality-check-standard.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -170,15 +182,11 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="bam-to-fastqs">Bam to FastQs</h1>
-<p>This WDL workflow converts an input BAM file to a set of fastq files for read 1 and read 2.
-It performs QC checks along the way to validate the input and output.</p>
-<h3 id="output">Output:</h3>
-<p>read1s
-: an array of files with the first read in the pair</p>
-<p>read2s
-: an array of files with the second read in the pair</p>
-<h2 id="licensing">LICENSING:</h2>
+                <h1 id="quality-check-standard">Quality Check Standard</h1>
+<p>This workflow runs a variety of quality checking software on any BAM file.
+It can be WGS, WES, or Transcriptome data. The results are aggregated and
+run through <a href="https://multiqc.info/">MultiQC</a>.</p>
+<h2 id="licensing">LICENSING</h2>
 <h4 id="mit-license">MIT License</h4>
 <p>Copyright 2019 St. Jude Children's Research Hospital</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
@@ -193,30 +201,84 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="bam_to_fastqs">bam_to_fastqs</h2>
+<h2 id="quality_check">quality_check</h2>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>bam</code> (File, <strong>required</strong>): BAM file to split into fastqs.</li>
+<li><code>fastq_screen_db</code> (File, <strong>required</strong>): Database for FastQ Screen. Can be generated using <code>make-qc-reference.wdl</code>. Must be named 'fastq-screen-db.tar.gz'</li>
+<li><code>experiment</code> (String, <strong>required</strong>): 'WGS', 'WES', or 'RNA-Seq'</li>
+<li><code>bam_index</code> (File, <strong>required</strong>): BAM index file corresponding to the input BAM</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to quality check</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>split.disk_size_gb</code> (Int?)</li>
-<li><code>split.reject_unaccounted</code> (Boolean?)</li>
+<li><code>multiqc.star_log</code> (File?): Log file generated by the RNA-Seq aligner STAR</li>
+<li><code>multiqc.qualimap_rnaseq</code> (File?)</li>
+<li><code>qualimap_rnaseq.disk_size_gb</code> (Int?)</li>
+<li><code>qualimap_bamqc.disk_size_gb</code> (Int?)</li>
+<li><code>star_log</code> (File?): Log file generated by the RNA-Seq aligner STAR</li>
+<li><code>gencode_gtf</code> (File?): GTF file provided by Gencode. <strong>Required</strong> for RNA-Seq data</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>multiqc.memory_gb</code> (Int, default=5)</li>
+<li><code>multiqc_rnaseq.memory_gb</code> (Int, default=5)</li>
+<li><code>qualimap_rnaseq.memory_gb</code> (Int, default=16)</li>
+<li><code>ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
+<li><code>fastq_screen.num_reads</code> (Int, default=100000)</li>
 <li><code>fqlint.memory_gb</code> (Int, default=8)</li>
+<li><code>bam_to_fastq.memory_gb</code> (Int, default=40)</li>
 <li><code>bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>split.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>max_retries</code> (Int, default=1): Maximum number of times to retry on a failure.</li>
-<li><code>bam_to_fastq_memory_gb</code> (Int, default=40): How much memory to provide while converting to fastqs.</li>
-<li><code>samtools_sort_ncpu</code> (Int, default=1): Number of CPUs to use while sorting the BAM.</li>
+<li><code>samtools_subsample.desired_reads</code> (Int, default=500000)</li>
+<li><code>samtools_subsample.outname</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
+<li><code>qualimap_bamqc.memory_gb</code> (Int, default=8)</li>
+<li><code>qualimap_bamqc.ncpu</code> (Int, default=1)</li>
+<li><code>ngsderive_read_length.memory_gb</code> (Int, default=5)</li>
+<li><code>fastqc.memory_gb</code> (Int, default=5)</li>
+<li><code>fastqc.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>fastqc.ncpu</code> (Int, default=1)</li>
+<li><code>samtools_flagstat.memory_gb</code> (Int, default=5)</li>
+<li><code>samtools_flagstat.outfilename</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
+<li><code>validate_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>validate_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
+<li><code>validate_bam.ignore_warnings</code> (Boolean, default=true)</li>
+<li><code>compute_checksum.memory_gb</code> (Int, default=5)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>paired_end</code> (Boolean, default=true): Whether the data is paired end</li>
+<li><code>fastq_format</code> (String, default="sanger"): Encoding format used for PHRED quality scores</li>
+<li><code>strand</code> (String, default=""): empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. Only needed for RNA-Seq data. If missing, will be inferred</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>read1s</code> (Array[File])</li>
-<li><code>read2s</code> (Array[File])</li>
+<li><code>bam_checksum</code> (File)</li>
+<li><code>validate_sam_file</code> (File)</li>
+<li><code>flagstat</code> (File)</li>
+<li><code>fastqc_results</code> (Array[File])</li>
+<li><code>instrument_file</code> (File)</li>
+<li><code>read_length_file</code> (File)</li>
+<li><code>qualimap_bamqc_results</code> (File)</li>
+<li><code>fastq_screen_results</code> (Array[File])</li>
+<li><code>inferred_strandedness</code> (File?)</li>
+<li><code>qualimap_rnaseq_results</code> (File?)</li>
+<li><code>multiqc_zip</code> (File?)</li>
+<li><code>multiqc_rnaseq_zip</code> (File?)</li>
+</ul>
+<h2 id="parse_input">parse_input</h2>
+<h3 id="inputs_1">Inputs</h3>
+<h4 id="required_1">Required</h4>
+<ul>
+<li><code>input_fq_format</code> (String, <strong>required</strong>)</li>
+<li><code>input_fq_db</code> (File, <strong>required</strong>)</li>
+<li><code>input_strand</code> (String, <strong>required</strong>)</li>
+<li><code>input_experiment</code> (String, <strong>required</strong>)</li>
+</ul>
+<h4 id="optional_1">Optional</h4>
+<ul>
+<li><code>input_gtf</code> (File?)</li>
+</ul>
+<h3 id="outputs_1">Outputs</h3>
+<ul>
+<li><code>input_check</code> (String)</li>
 </ul>
               
             </div>
@@ -225,10 +287,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../interactive-tsne/" class="btn btn-neutral float-right" title="Interactive t-SNE">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../rnaseq-standard/" class="btn btn-neutral float-right" title="RNA-Seq Standard">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../../tasks/wget/" class="btn btn-neutral" title="wget"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../make-qc-reference/" class="btn btn-neutral" title="Make QC Reference"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -258,10 +320,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
           <a href="https://github.com/stjudecloud/workflows/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../../tasks/wget/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../make-qc-reference/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../interactive-tsne/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../rnaseq-standard/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

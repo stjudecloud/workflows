@@ -120,6 +120,14 @@
     </li>
     </ul>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_counts/">Interactive tsne from counts</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
                     </li>
                 </ul>
@@ -199,11 +207,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>rnaseq_standard.htseq_count.memory_gb</code> (Int?)</li>
-<li><code>rnaseq_standard.qualimap_rnaseq.disk_size_gb</code> (Int?)</li>
-<li><code>rnaseq_standard.qualimap_bamqc.disk_size_gb</code> (Int?)</li>
 <li><code>rnaseq_standard.picard_sort.disk_size_gb</code> (Int?)</li>
-<li><code>rnaseq_standard.picard_sort.memory_gb</code> (Int?)</li>
 <li><code>rnaseq_standard.alignment.disk_size_gb</code> (Int?)</li>
 <li><code>rnaseq_standard.bam_to_fastqs.split.disk_size_gb</code> (Int?)</li>
 <li><code>rnaseq_standard.bam_to_fastqs.split.reject_unaccounted</code> (Boolean?)</li>
@@ -226,26 +230,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>untar.max_retries</code> (Int, default=1)</li>
 <li><code>unzip.max_retries</code> (Int, default=1)</li>
 <li><code>unzip.outfilename</code> (String, default=basename(infile,".gz"))</li>
-<li><code>rnaseq_standard.multiqc.memory_gb</code> (Int, default=5)</li>
 <li><code>rnaseq_standard.deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
 <li><code>rnaseq_standard.deeptools_bamCoverage.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>rnaseq_standard.compute_checksum.memory_gb</code> (Int, default=5)</li>
-<li><code>rnaseq_standard.samtools_flagstat.memory_gb</code> (Int, default=5)</li>
-<li><code>rnaseq_standard.samtools_flagstat.outfilename</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
+<li><code>rnaseq_standard.htseq_count.memory_gb</code> (Int, default=20)</li>
 <li><code>rnaseq_standard.htseq_count.outfile</code> (String, default=basename(bam,".bam") + ".counts.txt")</li>
-<li><code>rnaseq_standard.qualimap_rnaseq.memory_gb</code> (Int, default=16)</li>
-<li><code>rnaseq_standard.qualimap_rnaseq.outdir</code> (String, default="qualimap_rnaseq")</li>
-<li><code>rnaseq_standard.qualimap_bamqc.memory_gb</code> (Int, default=8)</li>
-<li><code>rnaseq_standard.qualimap_bamqc.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>rnaseq_standard.qualimap_bamqc.ncpu</code> (Int, default=1)</li>
 <li><code>rnaseq_standard.ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
-<li><code>rnaseq_standard.fastqc.memory_gb</code> (Int, default=5)</li>
-<li><code>rnaseq_standard.fastqc.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>rnaseq_standard.fastqc.ncpu</code> (Int, default=1)</li>
 <li><code>rnaseq_standard.validate_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>rnaseq_standard.validate_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt"): Name for the output HTML t-SNE plot</li>
 <li><code>rnaseq_standard.validate_bam.ignore_warnings</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>rnaseq_standard.validate_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>rnaseq_standard.validate_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
 <li><code>rnaseq_standard.samtools_index.memory_gb</code> (Int, default=15)</li>
 <li><code>rnaseq_standard.samtools_index.outfile</code> (String, default=basename(bam) + ".bai")</li>
+<li><code>rnaseq_standard.picard_sort.memory_gb</code> (Int, default=25)</li>
 <li><code>rnaseq_standard.picard_sort.output_filename</code> (String, default=basename(bam,".bam") + ".sorted.bam"): Name for the output HTML t-SNE plot</li>
 <li><code>rnaseq_standard.picard_sort.sort_order</code> (String, default="coordinate")</li>
 <li><code>rnaseq_standard.alignment.memory_gb</code> (Int, default=50)</li>
@@ -255,6 +253,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>rnaseq_standard.bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
 <li><code>rnaseq_standard.bam_to_fastqs.samtools_sort_ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.validate_input_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>rnaseq_standard.validate_input_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt"): Name for the output HTML t-SNE plot</li>
+<li><code>rnaseq_standard.validate_input_bam.ignore_warnings</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>rnaseq_standard.validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>rnaseq_standard.validate_input_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
 <li><code>rnaseq_standard.max_retries</code> (Int, default=1)</li>
 <li><code>uncompress_gencode.max_retries</code> (Int, default=1)</li>
 <li><code>uncompress_gencode.outfilename</code> (String, default=basename(infile,".gz"))</li>
@@ -274,7 +278,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../rnaseq-star-db-build/" class="btn btn-neutral float-right" title="RNASeq STAR DB build">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../interactive_tsne_from_counts/" class="btn btn-neutral float-right" title="Interactive tsne from counts">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../bam-to-fastqs/" class="btn btn-neutral" title="Bam to FastQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -310,7 +314,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
         <span><a href="../bam-to-fastqs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../rnaseq-star-db-build/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../interactive_tsne_from_counts/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

@@ -9,7 +9,7 @@
   <meta name="author" content="St. Jude Cloud">
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>Bam to FastQs - St. Jude WDL workflows</title>
+  <title>Make QC Reference - St. Jude WDL workflows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Bam to FastQs";
-    var mkdocs_page_input_path = "workflows/bam-to-fastqs.md";
+    var mkdocs_page_name = "Make QC Reference";
+    var mkdocs_page_input_path = "workflows/make-qc-reference.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -90,24 +90,18 @@
                 </ul>
                 <p class="caption"><span class="caption-text">Workflows</span></p>
                 <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Bam to FastQs</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../interactive-tsne/">Interactive t-SNE</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_counts/">Interactive tsne from counts</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Make QC Reference</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#output">Output:</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING:</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#mit-license">MIT License</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bam_to_fastqs">bam_to_fastqs</a>
+    <li class="toctree-l2"><a class="reference internal" href="#make_qc_reference">make_qc_reference</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
-    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -117,12 +111,6 @@
         </ul>
     </li>
     </ul>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive-tsne/">Interactive t-SNE</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_counts/">Interactive tsne from counts</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
                     </li>
@@ -156,10 +144,10 @@
         
       
     
-    <li>Bam to FastQs</li>
+    <li>Make QC Reference</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/bam-to-fastqs.md"
+        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/make-qc-reference.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -170,53 +158,20 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="bam-to-fastqs">Bam to FastQs</h1>
-<p>This WDL workflow converts an input BAM file to a set of fastq files for read 1 and read 2.
-It performs QC checks along the way to validate the input and output.</p>
-<h3 id="output">Output:</h3>
-<p>read1s
-: an array of files with the first read in the pair</p>
-<p>read2s
-: an array of files with the second read in the pair</p>
-<h2 id="licensing">LICENSING:</h2>
-<h4 id="mit-license">MIT License</h4>
-<p>Copyright 2019 St. Jude Children's Research Hospital</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
-software and associated documentation files (the "Software"), to deal in the Software
-without restriction, including without limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
-to whom the Software is furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="bam_to_fastqs">bam_to_fastqs</h2>
+                <h1 id="make-qc-reference">Make QC Reference</h1>
+<p>Create the reference DB needed by FastQ Screen in the <code>quality-check-standard</code> workflow.
+The output will be named <code>fastq-screen-db.tar.gz</code>, and should not be renamed before
+starting the <code>quality-check-standard</code> workflow.</p>
+<h2 id="make_qc_reference">make_qc_reference</h2>
 <h3 id="inputs">Inputs</h3>
-<h4 id="required">Required</h4>
-<ul>
-<li><code>bam</code> (File, <strong>required</strong>): BAM file to split into fastqs.</li>
-</ul>
-<h4 id="optional">Optional</h4>
-<ul>
-<li><code>split.disk_size_gb</code> (Int?)</li>
-<li><code>split.reject_unaccounted</code> (Boolean?)</li>
-</ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>fqlint.memory_gb</code> (Int, default=8)</li>
-<li><code>bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>split.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>max_retries</code> (Int, default=1): Maximum number of times to retry on a failure.</li>
-<li><code>bam_to_fastq_memory_gb</code> (Int, default=40): How much memory to provide while converting to fastqs.</li>
-<li><code>samtools_sort_ncpu</code> (Int, default=1): Number of CPUs to use while sorting the BAM.</li>
+<li><code>fastq_screen_build_db.max_retries</code> (Int, default=1)</li>
+<li><code>fastq_screen_build_db.filename</code> (String, default="fastq-screen-db")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>read1s</code> (Array[File])</li>
-<li><code>read2s</code> (Array[File])</li>
+<li><code>fastq_screen_db</code> (File)</li>
 </ul>
               
             </div>
@@ -225,10 +180,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../interactive-tsne/" class="btn btn-neutral float-right" title="Interactive t-SNE">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../quality-check-standard/" class="btn btn-neutral float-right" title="Quality Check Standard">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../../tasks/wget/" class="btn btn-neutral" title="wget"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../interactive_tsne_from_counts/" class="btn btn-neutral" title="Interactive tsne from counts"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -258,10 +213,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
           <a href="https://github.com/stjudecloud/workflows/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../../tasks/wget/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../interactive_tsne_from_counts/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../interactive-tsne/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../quality-check-standard/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
