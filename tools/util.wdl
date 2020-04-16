@@ -1,4 +1,4 @@
-## Description:
+## # Utilities
 ##
 ## This WDL tool includes custom scripts to parse and reformat 
 ## task output as part of a workflow. 
@@ -24,7 +24,7 @@ task get_read_groups {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/samtools:1.0.0'
         maxRetries: max_retries
     }
 
@@ -39,7 +39,7 @@ task get_read_groups {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to get read groups from"
     }
 }
 
@@ -54,7 +54,7 @@ task file_prefix {
     >>>
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/util:1.0.0'
         maxRetries: max_retries
     }
 

@@ -1,4 +1,4 @@
-## Description: 
+## # tar 
 ##
 ## This WDL tool wraps any functionality related to tar.
 
@@ -10,7 +10,7 @@ task tar_print_version {
     }
 
     runtime {
-        docker: 'ubuntu:18.04'
+        docker: 'stjudecloud/util:1.0.0'
     }
 
     output {
@@ -25,7 +25,7 @@ task untar {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/util:1.0.0'
         maxRetries: max_retries
     }
 

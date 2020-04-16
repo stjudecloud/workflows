@@ -1,6 +1,6 @@
-## Description:
+## # Deeptools
 ##
-## This WDL tool wraps the DeepTools tool (https://deeptools.readthedocs.io/en/develop/index.html).
+## This WDL tool wraps the [DeepTools](https://deeptools.readthedocs.io/en/develop/index.html) tool.
 ## DeepTools is a suite of Python tools for analysis of high throughput sequencing analysis.
 
 version 1.0
@@ -29,7 +29,7 @@ task bamCoverage {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/deeptools:1.0.0'
         maxRetries: max_retries
     }
 

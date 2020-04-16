@@ -5,8 +5,12 @@
 **/*.bam
 **/*.log
 
-# Blacklist Cromwell files
+# Blacklist Cromwell and Womtool files
 **/cromwell*
+**/womtool*
 
 # Blacklist OS generated files
 .DS_Store
+
+# Commonly used folder for putting miniwdl results in during testing
+results/

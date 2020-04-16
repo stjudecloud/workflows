@@ -1,6 +1,6 @@
-## Description:
+## # Picard
 ##
-## This WDL tool wraps the PicardTools library (https://broadinstitute.github.io/picard/).
+## This WDL tool wraps the [PicardTools library](https://broadinstitute.github.io/picard/).
 ## PicardTools is a set of Java tools for manipulating sequencing data.
 
 version 1.0
@@ -30,7 +30,7 @@ task mark_duplicates {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/picard:1.0.0'
         maxRetries: max_retries
     }
 
@@ -52,30 +52,45 @@ task mark_duplicates {
 task validate_bam {
     input {
         File bam
+        Boolean ignore_missing_platform = true
+        Boolean summary_mode = false
+        Boolean index_validation_stringency_less_exhaustive = false
         Boolean ignore_warnings = true
+        String output_filename = basename(bam, ".bam") + ".ValidateSamFile.txt"
         Int memory_gb = 8
         Int max_retries = 1
     }
+
+    String ignore_missing_platform_arg = if (ignore_missing_platform)
+        then "IGNORE=MISSING_PLATFORM_VALUE"
+        else ""
+    String mode_arg = if (summary_mode) then "MODE=SUMMARY" else ""
+    String stringency_arg = if (index_validation_stringency_less_exhaustive)
+        then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
+        else ""
+    String ignore_warnings_string = if (ignore_warnings) then "true" else ""
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
     Int java_heap_size = ceil(memory_gb * 0.9)
     
     command {
-        picard -Xmx~{java_heap_size}g ValidateSamFile I=~{bam} \
+        picard -Xmx~{java_heap_size}g ValidateSamFile \
+            I=~{bam} \
             IGNORE=INVALID_PLATFORM_VALUE \
-            IGNORE=MISSING_PLATFORM_VALUE \
-            MAX_OUTPUT=100000 > stdout.txt
+            ~{ignore_missing_platform_arg} \
+            ~{mode_arg} \
+            ~{stringency_arg} \
+            MAX_OUTPUT=100000 \
+            > ~{output_filename}
 
-        if [ "~{ignore_warnings}" == "true" ]
-        then
-            if [ "$(grep -c "ERROR" stdout.txt)" -gt 0 ]
-            then
-                echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
-                exit 1
-            fi
-        elif [ "$(grep -Ec "ERROR|WARNING" stdout.txt)" -gt 0 ]
-        then
+        if [ "~{ignore_warnings_string}" == "true" ]; then
+            GREP_PATTERN="ERROR"
+        else
+            GREP_PATTERN="(ERROR|WARNING)"
+        fi
+
+        if [ "$(grep -Ec "$GREP_PATTERN" ~{output_filename})" -gt 0 ]; then
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
             exit 1
         fi
@@ -84,12 +99,13 @@ task validate_bam {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/picard:1.0.0'
         maxRetries: max_retries
     }
 
     output {
-        String out = read_string("stdout.txt")
+        File out = output_filename
+        File validated_bam = bam
     }
 
     meta {
@@ -126,7 +142,7 @@ task bam_to_fastq {
     runtime{
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/picard:1.0.0'
         maxRetries: max_retries
     }
 
@@ -151,7 +167,7 @@ task sort {
         File bam
         String sort_order = "coordinate"
         String output_filename = basename(bam, ".bam") + ".sorted.bam"
-        Int? memory_gb = 25
+        Int memory_gb = 25
         Int? disk_size_gb
         Int max_retries = 1
     }
@@ -161,14 +177,19 @@ task sort {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
-        picard -Xmx~{java_heap_size}g SortSam I=~{bam} \
-           O=~{output_filename} \
-           SO=~{sort_order}
+        picard -Xmx~{java_heap_size}g SortSam \
+            I=~{bam} \
+            O=~{output_filename} \
+            SO=~{sort_order} \
+            CREATE_INDEX=false \
+            CREATE_MD5_FILE=false \
+            COMPRESSION_LEVEL=5 \
+            VALIDATION_STRINGENCY=SILENT
     }
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/picard:1.0.0'
         maxRetries: max_retries
     }
     output {

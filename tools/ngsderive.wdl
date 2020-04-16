@@ -1,6 +1,6 @@
-## Description:
+## # ngsderive
 ##
-## This WDL tool wraps the ngsderive package (https://github.com/claymcleod/ngsderive).
+## This WDL tool wraps the [ngsderive package](https://github.com/claymcleod/ngsderive).
 ## ngsderive is a utility tool to backwards compute strandedness, readlength, instrument
 ## for next-generation sequencing data.
 
@@ -10,11 +10,12 @@ task infer_strand {
     input {
         File bam
         File bai
-        File gtf
+        File? gtf
         Int max_retries = 1
         Int memory_gb = 5
     }
 
+    String out_file = basename(bam, ".bam") + ".strandedness.txt"
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(((bam_size) * 2) + 10)
  
@@ -22,19 +23,45 @@ task infer_strand {
         sort -k1,1 -k4,4n -k5,5n ~{gtf} | bgzip > annotation.gtf.gz
         tabix -p gff annotation.gtf.gz
         mv ~{bai} ~{bam}.bai 
-        ngsderive strandedness ~{bam} -g annotation.gtf.gz | awk 'NR > 1' | cut -d$'\t' -f5
+        ngsderive strandedness ~{bam} -g annotation.gtf.gz > ~{out_file}
+        awk 'NR > 1' ~{out_file} | cut -d$'\t' -f5 > strandedness.txt
     }
 
     runtime {
         disk: disk_size + " GB"
+        docker: 'stjudecloud/ngsderive:1.0.0'
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
     }
 
     output {
-        String strandedness = read_string(stdout())
-        File strandedness_file = stdout()
+        String strandedness = read_string("strandedness.txt")
+        File strandedness_file = out_file
+    }
+}
+
+task instrument {
+    input {
+        File bam
+        Int max_retries = 1
+    }
+
+    String out_file = basename(bam, ".bam") + ".instrument.txt"
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil(((bam_size) * 1.25) + 10)
+
+    command {
+        ngsderive instrument ~{bam} > ~{out_file}
+    }
+
+    runtime {
+        disk: disk_size + " GB"
+        docker: 'stjudecloud/ngsderive:1.0.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        File instrument_file = out_file
     }
 }
 
@@ -58,7 +85,7 @@ task read_length {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/ngsderive:1.0.0'
         maxRetries: max_retries
     }
 

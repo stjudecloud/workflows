@@ -1,4 +1,4 @@
-## Description: 
+## # wget 
 ##
 ## This WDL tool wraps the wget tool.
 
@@ -10,7 +10,7 @@ task wget_print_version {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/util:1.0.0'
     }
 
     output {
@@ -26,7 +26,7 @@ task download {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/util:1.0.0'
         maxRetries: max_retries
     }
 

@@ -1,0 +1,45 @@
+name: lint-check
+
+on: [push]
+
+jobs:
+  import_syntax_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check import syntax
+      run: |
+        EXITCODE=0
+        for file in $(find . -name '*.wdl'); do
+          >&2 echo "Checking file $file..."
+          import_lines=$(awk '/import/' "$file")
+          bad_lines=$(echo "$import_lines" | awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/')
+          if [ -n "$bad_lines" ]; then
+            >&2 echo "Must import files from the master branch on Github."
+            >&2 echo "The following lines are bad:"
+            >&2 echo "$bad_lines"
+            >&2 echo ""
+            EXITCODE=1
+          fi
+        done
+        exit $EXITCODE
+  docker_pull_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Ensure SemVer'd docker images are being pulled
+      run: |
+        EXITCODE=0
+        files=$(find . -name '*.wdl')
+        for file in $files; do
+          while IFS= read -r line; do
+            tag=$(echo "$line" | awk -F ':' '{print substr($3, 1, length($3)-1)}')
+            if ! [[ $tag =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
+              >&2 echo "All Docker containers must be using an official SemVer tagged image"
+              >&2 echo "Offending line: $line"
+              >&2 echo "In file: $file"
+              EXITCODE=1
+            fi
+          done < <(awk '/docker: .*stjudecloud/' < "$file")
+        done
+        exit $EXITCODE

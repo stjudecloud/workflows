@@ -1,6 +1,6 @@
-## Description:
+## # SAMtools
 ##
-## This WDL tool wraps the SAMtools package (http://samtools.sourceforge.net/).
+## This WDL tool wraps the [SAMtools package](http://samtools.sourceforge.net/).
 ## SAMtools provides utlities for manipulating SAM format sequence alignments.
 
 version 1.0
@@ -11,7 +11,7 @@ task samtools_print_version {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/samtools:1.0.0'
     }
 
     output {
@@ -34,7 +34,7 @@ task quickcheck {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/samtools:1.0.0'
         maxRetries: max_retries
     }
 
@@ -45,7 +45,7 @@ task quickcheck {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to quickcheck"
     }
 }
 
@@ -75,7 +75,7 @@ task split {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/samtools:1.0.0'
         maxRetries: max_retries
     }
 
@@ -90,7 +90,7 @@ task split {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to split"
         reject_unaccounted: "If true, error if there are reads present that do not have read group information."
     }
 }
@@ -112,8 +112,8 @@ task flagstat {
 
     runtime {
         disk: disk_size + " GB"
+        docker: 'stjudecloud/samtools:1.0.0'
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
     }
 
@@ -128,7 +128,7 @@ task flagstat {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to generate flagstat for"
     }
 }
 
@@ -149,9 +149,9 @@ task index {
 
     runtime {
         disk: disk_size + " GB"
+        docker: 'stjudecloud/samtools:1.0.0'
         memory: memory_gb + " GB"
         dx_instance_type: "azure:mem2_ssd1_x4"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
         maxRetries: max_retries
     }
 
@@ -166,6 +166,48 @@ task index {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to index"
+    }
+}
+
+task subsample {
+    input {
+        File bam
+        String outname = basename(bam, ".bam") + ".subsampled.bam"
+        Int max_retries = 1
+        Int desired_reads = 500000
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+
+    command <<<
+        if [[ "$(samtools view ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
+            # the BAM has at least ~{desired_reads} reads, meaning we should
+            # subsample it.
+            initial_frac=0.00001
+            initial_reads=$(samtools view -s $initial_frac ~{bam} | wc -l)
+            frac=$( \
+                awk -v desired_reads=~{desired_reads} \
+                    -v initial_reads="$initial_reads" \
+                    -v initial_frac=$initial_frac \
+                        'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
+                )
+            samtools view -h -b -s "$frac" ~{bam} > ~{outname}
+        else
+            # the BAM has less than ~{desired_reads} reads, meaning we should
+            # just use it directly without subsampling.
+            mv ~{bam} ~{outname}
+        fi
+    >>>
+
+    output {
+        File sampled_bam = outname
+    }
+
+    runtime {
+        disk: disk_size + " GB"
+        docker: 'stjudecloud/samtools:1.0.0'
+        maxRetries: max_retries
     }
 }

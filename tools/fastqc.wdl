@@ -1,6 +1,6 @@
-## Description:
+## # FastQC
 ##
-## This WDL tool wraps the FastQC tool (https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
+## This WDL tool wraps the [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) tool.
 ## FastQC generates quality control metrics for sequencing pipelines. 
 
 version 1.0
@@ -28,7 +28,7 @@ task fastqc {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/fastqc:1.0.0'
         maxRetries: max_retries
     }
 

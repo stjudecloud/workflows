@@ -1,6 +1,6 @@
-## Description:
+## # FQ
 ##
-## This WDL tool wraps the fq tool (https://github.com/stjude/fqlib).
+## This WDL tool wraps the [fq tool](https://github.com/stjude/fqlib).
 ## The fq library provides methods for manipulating Illumina generated 
 ## FastQ files.
 
@@ -12,7 +12,7 @@ task fq_print_version {
     }
 
     runtime {
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/fqlib:1.0.0'
     }
 
     output {
@@ -35,12 +35,17 @@ task fqlint {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/bioinformatics-base:bleeding-edge'
+        docker: 'stjudecloud/fqlib:1.0.0'
         maxRetries: max_retries
     }
 
     command {
         fq lint ~{read1} ~{read2}
+    }
+
+    output {
+        File validated_read1 = read1
+        File validated_read2 = read2
     }
 
     meta {

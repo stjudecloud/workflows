@@ -1,23 +1,22 @@
-## Description:
+## # Interactive t-SNE
 ##
 ## This WDL workflow remaps input bams and compares them to St. Jude RNA-seq samples using 
 ## a t-SNE plot. 
 ##
-## Inputs:
+## ### Output
 ##
-## in_bams - bams to compare to reference data
-## tissue_type - tissue type of the input samples [blood, brain, solid]
-## gencode_gtf - Gencode annotation file
+## tsne_plot
+## : t-SNE plot including the input samples compared to reference data
 ##
-## Output:
+## generated_counts
+## : RNAseq count data for the input bams
 ##
-## tsne_plot - t-SNE plot including the input samples compared to reference data
-## generated_counts - RNAseq count data for the input bams
-## generated_mappings - Bam output from the St. Jude Cloud RNA-seq workflow for each input bam
-##
-## LICENSING:
+## generated_mappings
+## : Bam output from the St. Jude Cloud RNA-seq workflow for each input bam
 ## 
-## MIT License
+## ## LICENSING
+## 
+## #### MIT License
 ##
 ## Copyright 2020 St. Jude Children's Research Hospital
 ##
