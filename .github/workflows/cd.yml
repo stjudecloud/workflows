@@ -3,7 +3,7 @@ name: CD
 on:
   push:
     branches:
-      - rfcs/qc-workflow
+      - master
 
 jobs:
   gh-pages:
@@ -18,7 +18,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install wdldoc~=1.4.0
+          python3 -m pip install wdldoc~=1.5.0
           python3 -m pip install mkdocs
       - name: Prepare Docs
         run: cp README.md docs/index.md && sed -i.bak 's/\.\/docs/\.\//g' docs/index.md

@@ -1,4 +1,4 @@
-FROM stjudecloud/conda-base:1.0.0-alpha AS builder
+FROM stjudecloud/conda-base:1.0.0 AS builder
 
 RUN conda create -n htseq \
         htseq==0.11.2 \

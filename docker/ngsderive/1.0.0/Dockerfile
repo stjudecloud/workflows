@@ -1,4 +1,4 @@
-FROM stjudecloud/conda-base:1.0.0-alpha
+FROM stjudecloud/conda-base:1.0.0
 
 RUN apt-get update && \
     apt-get upgrade -y && \
