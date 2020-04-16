@@ -24,7 +24,7 @@ task get_read_groups {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/samtools:1.0.0-alpha'
+        docker: 'stjudecloud/samtools:1.0.0'
         maxRetries: max_retries
     }
 
@@ -54,7 +54,7 @@ task file_prefix {
     >>>
 
     runtime {
-        docker: 'stjudecloud/util:1.0.0-alpha'
+        docker: 'stjudecloud/util:1.0.0'
         maxRetries: max_retries
     }
 

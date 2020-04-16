@@ -30,14 +30,14 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rfcs/qc-workflow/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 
 workflow rnaseq_standard {
     input {
@@ -104,7 +104,7 @@ task parse_input {
     }
 
     runtime {
-        docker: 'stjudecloud/util:1.0.0-alpha'
+        docker: 'stjudecloud/util:1.0.0'
     }
 
     output {

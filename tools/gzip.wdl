@@ -10,7 +10,7 @@ task gzip_print_version {
     }
 
     runtime {
-        docker: 'stjudecloud/util:1.0.0-alpha'
+        docker: 'stjudecloud/util:1.0.0'
     }
 
     output {
@@ -26,7 +26,7 @@ task unzip {
     }
 
     runtime {
-        docker: 'stjudecloud/util:1.0.0-alpha'
+        docker: 'stjudecloud/util:1.0.0'
         maxRetries: max_retries
     }
 

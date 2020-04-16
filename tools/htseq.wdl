@@ -48,7 +48,7 @@ task count {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/htseq:1.0.0-alpha'
+        docker: 'stjudecloud/htseq:1.0.0'
         maxRetries: max_retries
     }
    

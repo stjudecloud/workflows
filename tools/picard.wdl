@@ -30,7 +30,7 @@ task mark_duplicates {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/picard:1.0.0-alpha'
+        docker: 'stjudecloud/picard:1.0.0'
         maxRetries: max_retries
     }
 
@@ -99,7 +99,7 @@ task validate_bam {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/picard:1.0.0-alpha'
+        docker: 'stjudecloud/picard:1.0.0'
         maxRetries: max_retries
     }
 
@@ -142,7 +142,7 @@ task bam_to_fastq {
     runtime{
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/picard:1.0.0-alpha'
+        docker: 'stjudecloud/picard:1.0.0'
         maxRetries: max_retries
     }
 
@@ -189,7 +189,7 @@ task sort {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/picard:1.0.0-alpha'
+        docker: 'stjudecloud/picard:1.0.0'
         maxRetries: max_retries
     }
     output {
