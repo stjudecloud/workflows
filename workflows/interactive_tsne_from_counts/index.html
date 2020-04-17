@@ -98,8 +98,6 @@
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Interactive t-SNE from Counts</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs:</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#output">Output</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING</a>
@@ -110,7 +108,7 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#interactive_tsne_from_counts">interactive_tsne_from_counts</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
@@ -178,10 +176,9 @@
 <p>This WDL workflow compares counts files to St. Jude RNA-seq samples using 
 a t-SNE plot.</p>
 <ul>
-<li>The count-based t-SNE pipeline requires that alignment must be against the <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz">GRCh38_no_alt reference</a>. It should use parameters as specifed in our <a href="https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.0.html">RNA-seq workflow</a> to minimize any discrepancies caused by differing alignment specification.
- The count-based t-SNE pipeline requires that feature counts be generated with htseq-count as described in our <a href="https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.0.html">RNA-seq workflow</a>. This pipeline uses <a href="ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_31/gencode.v31.annotation.gtf.gz">Gencode v31</a> annotations.</li>
+<li>The count-based t-SNE pipeline requires that alignment must be against the <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz">GRCh38_no_alt reference</a>. It should use parameters as specifed in our <a href="https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.0.html">RNA-seq workflow</a> to minimize any discrepancies caused by differing alignment specification.</li>
+<li>The count-based t-SNE pipeline requires that feature counts be generated with htseq-count as described in our <a href="https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.0.html">RNA-seq workflow</a>. This pipeline uses <a href="ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_31/gencode.v31.annotation.gtf.gz">Gencode v31</a> annotations.</li>
 </ul>
-<h3 id="inputs">Inputs:</h3>
 <h3 id="output">Output</h3>
 <dl>
 <dt>tsne_plot</dt>
@@ -203,7 +200,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FO
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
 <h2 id="interactive_tsne_from_counts">interactive_tsne_from_counts</h2>
-<h3 id="inputs_1">Inputs</h3>
+<h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
 <li><code>tissue_type</code> (String, <strong>required</strong>): {'help': 'Provide the tissue type to compare against: [blood, brain, solid]', 'choices': ['blood', 'brain', 'solid']}</li>
