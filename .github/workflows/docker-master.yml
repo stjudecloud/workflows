@@ -30,6 +30,7 @@ jobs:
             else
               docker build -t stjudecloud/"$tool_name":"$tag" "$dir"/"$tag"
               docker push stjudecloud/"$tool_name":"$tag"
+              docker rmi stjudecloud/"$tool_name":"$tag"
             fi
           done
         done
