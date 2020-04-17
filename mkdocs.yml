@@ -6,3 +6,6 @@ site_author: "St. Jude Cloud"
 copyright: "© 2020 St. Jude Children's Research Hospital"
 
 theme: readthedocs
+
+markdown_extensions:
+    - def_list
