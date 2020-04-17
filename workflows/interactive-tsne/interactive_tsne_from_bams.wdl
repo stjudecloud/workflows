@@ -3,6 +3,9 @@
 ## This WDL workflow compares gene counts from BAM files to St. Jude RNA-seq samples using 
 ## a t-SNE plot.
 ##
+## * The BAM-based t-SNE pipeline requires that alignment must be against the [GRCh38_no_alt reference](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz). It should use parameters as specifed in our [RNA-seq workflow](https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.0.html) to minimize any discrepancies caused by differing alignment specification.
+##
+## ### Inputs:
 ## ### Output
 ##
 ## tsne_plot
