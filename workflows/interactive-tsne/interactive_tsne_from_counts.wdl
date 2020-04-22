@@ -74,10 +74,7 @@ workflow interactive_tsne_from_counts {
 
     File reference_file = select_first([reference_counts, reference])
     File covariates_input = select_first([covariates_file, covariates])
-
-    call gzip.unzip { input: infile=reference_file }
-    call tar.untar { input: infile=unzip.outfile }
-
+    
     scatter (count in in_counts){
         call util.file_prefix { input: in_file=count }
     }
@@ -87,7 +84,7 @@ workflow interactive_tsne_from_counts {
     
     call tsne.plot as generate_plot{
         input:
-            counts=untar.outfiles,
+            counts=reference_file,
             inputs=file_prefix.out,
             input_counts=in_counts,
             blacklist=gene_blacklist,

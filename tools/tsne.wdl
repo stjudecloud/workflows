@@ -8,7 +8,7 @@ version 1.0
 
 task plot {
     input {
-        Array[File] counts
+        File counts
         Array[String]? inputs
         Array[File]? input_counts
         File blacklist
@@ -22,16 +22,22 @@ task plot {
     }
 
     command {
+
+        echo "tar.gz"
+        mkdir counts
+        tar --no-same-owner -C counts -zxf ${counts}
+        count_arg=$(ls counts/*)
+
         itsne-main --debug-rscript -b ${blacklist} -g ${gencode_gtf} -c ${covariates} -o ${outfile} \
             ${true='--input-sample ' false='' defined(inputs)}${sep=' --input-sample ' inputs} \
-            ${'--tissue-type ' + tissue_type} ${sep=' ' counts} ${sep=' ' input_counts}
+            ${'--tissue-type ' + tissue_type} $count_arg ${sep=' ' input_counts}
     }
   
 
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/interactive-tsne:0.0.1'
+        docker: 'stjudecloud/interactive-tsne:0.0.2-alpha'
         maxRetries: max_retries
     }
 
@@ -94,7 +100,8 @@ task append_input {
         cat ${covariates_infile} > "covariates.combined.tsv"
         for sample in ${sep=" " inputs}
         do
-            echo -e "$sample\t$sample\tinput\tinput\tinput"
+            #echo -e "$sample\t$sample\tinput\tinput\tinput"
+            echo -e "$sample\tinput\t$sample"
         done >> "covariates.combined.tsv"
     }
 

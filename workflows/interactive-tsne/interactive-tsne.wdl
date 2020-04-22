@@ -87,9 +87,6 @@ workflow interactive_tsne {
     File reference_file = select_first([reference_counts, reference])
     File covariates_input = select_first([covariates_file, covariates])
 
-    call gzip.unzip { input: infile=reference_file }
-    call tar.untar { input: infile=unzip.outfile }
-
     scatter (bam in in_bams){
         call util.file_prefix { input: in_file=bam }
     }
@@ -99,7 +96,7 @@ workflow interactive_tsne {
     
     call tsne.plot as generate_plot{
         input:
-            counts=untar.outfiles,
+            counts=reference_file,
             inputs=file_prefix.out,
             input_counts=rnaseq_standard.gene_counts,
             blacklist=gene_blacklist,
