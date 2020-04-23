@@ -18,6 +18,8 @@ task bamCoverage {
     Int disk_size = ceil((bam_size * 4) + 10)
  
     command {
+        set -euo pipefail
+        
         if [ ! -e ~{bam}.bai ]
         then 
             ln -s ~{bai} ~{bam}.bai

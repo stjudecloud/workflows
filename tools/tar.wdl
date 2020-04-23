@@ -30,6 +30,8 @@ task untar {
     }
 
     command {
+        set -euo pipefail
+        
         mkdir tar_output
         tar --no-same-owner -xf ${infile} -C tar_output
     }

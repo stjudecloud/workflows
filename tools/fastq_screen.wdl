@@ -13,6 +13,8 @@ task build_db {
     String tar_filename = filename + ".tar.gz"
 
     command {
+        set -euo pipefail
+        
         fastq_screen --get_genomes
         mv FastQ_Screen_Genomes/ ~{filename}/
         tar -czf ~{tar_filename} ~{filename}/
@@ -49,6 +51,8 @@ task fastq_screen {
     String db_name = basename(db)
 
     command {
+        set -euo pipefail
+        
         cp ~{db} /tmp
         tar -xsf /tmp/~{db_name} -C /tmp/
 

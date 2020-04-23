@@ -15,6 +15,8 @@ task get_read_groups {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command <<<
+        set -euo pipefail
+        
         samtools view -H ~{bam} | grep "@RG" \
             | cut -f 2- \
             | sed -e 's/\t/ /g' \
@@ -50,6 +52,8 @@ task file_prefix {
     }
 
     command <<<
+        set -euo pipefail
+        
         basename ~{in_file} | awk -F '.' '{print $1}' > stdout.txt
     >>>
 

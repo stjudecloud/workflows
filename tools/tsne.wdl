@@ -91,6 +91,8 @@ task append_input {
     }
 
     command {
+        set -euo pipefail
+        
         cat ${covariates_infile} > "covariates.combined.tsv"
         for sample in ${sep=" " inputs}
         do

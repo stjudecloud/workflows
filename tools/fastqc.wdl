@@ -18,6 +18,8 @@ task fastqc {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
+        set -euo pipefail
+        
         mkdir ~{prefix}_fastqc_results
         fastqc -f bam \
             -o ~{prefix}_fastqc_results \

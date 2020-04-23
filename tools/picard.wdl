@@ -75,6 +75,8 @@ task validate_bam {
     Int java_heap_size = ceil(memory_gb * 0.9)
     
     command {
+        set -eo pipefail
+        
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             I=~{bam} \
             IGNORE=INVALID_PLATFORM_VALUE \

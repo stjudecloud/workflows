@@ -37,6 +37,8 @@ task build_db {
     Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)])
 
     command {
+        set -euo pipefail
+        
         mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \
             --genomeDir ~{stardb_dir_name} \
@@ -92,6 +94,8 @@ task alignment {
     Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10)])
 
     command {
+        set -euo pipefail
+        
         tar -xzf ~{stardb_tar_gz};
 
         python /home/sort_star_input.py \

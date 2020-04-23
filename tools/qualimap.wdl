@@ -22,6 +22,8 @@ task bamqc {
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
     command {
+        set -euo pipefail
+        
         qualimap bamqc -bam ~{bam} \
             -outdir ~{out_directory} \
             -nt ~{ncpu} \
@@ -91,6 +93,8 @@ task rnaseq {
     Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 12) + 10)])
  
     command {
+        set -euo pipefail
+        
         qualimap rnaseq -bam ~{bam} \
                         -gtf ~{gencode_gtf} \
                         -outdir ~{out_directory} \

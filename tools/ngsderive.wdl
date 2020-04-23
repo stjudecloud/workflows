@@ -20,6 +20,8 @@ task infer_strand {
     Int disk_size = ceil(((bam_size) * 2) + 10)
  
     command {
+        set -euo pipefail
+        
         sort -k1,1 -k4,4n -k5,5n ~{gtf} | bgzip > annotation.gtf.gz
         tabix -p gff annotation.gtf.gz
         mv ~{bai} ~{bam}.bai 
@@ -78,6 +80,8 @@ task read_length {
     Int disk_size = ceil(((bam_size) * 2) + 10)
  
     command {
+        set -euo pipefail
+        
         mv ~{bai} ~{bam}.bai 
         ngsderive readlen ~{bam} | awk 'NR > 1' | cut -d$'\t' -f5 > ~{out_file}
     }

@@ -63,6 +63,8 @@ task split {
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
     command {
+        set -euo pipefail
+        
         samtools split --threads ~{ncpu} -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
         samtools view ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
         if ~{default='true' reject_unaccounted} && [ -s unaccounted_reads.bam ]
@@ -182,6 +184,8 @@ task subsample {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command <<<
+        set -euo pipefail
+        
         if [[ "$(samtools view ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
             # subsample it.

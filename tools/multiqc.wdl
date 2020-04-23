@@ -25,6 +25,8 @@ task multiqc {
     String rnaseq = if defined(qualimap_rnaseq) then "true" else ""
 
     command {
+        set -eo pipefail
+        
         # set ENV variables for `multiqc`
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
