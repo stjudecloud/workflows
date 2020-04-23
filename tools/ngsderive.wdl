@@ -24,7 +24,7 @@ task infer_strand {
         
         sort -k1,1 -k4,4n -k5,5n ~{gtf} | bgzip > annotation.gtf.gz
         tabix -p gff annotation.gtf.gz
-        mv ~{bai} ~{bam}.bai 
+        mv ~{bai} ~{bam}.bai || true
         ngsderive strandedness ~{bam} -g annotation.gtf.gz > ~{out_file}
         awk 'NR > 1' ~{out_file} | cut -d$'\t' -f5 > strandedness.txt
     }
@@ -82,7 +82,7 @@ task read_length {
     command {
         set -euo pipefail
         
-        mv ~{bai} ~{bam}.bai 
+        mv ~{bai} ~{bam}.bai || true
         ngsderive readlen ~{bam} | awk 'NR > 1' | cut -d$'\t' -f5 > ~{out_file}
     }
 
