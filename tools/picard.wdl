@@ -91,7 +91,8 @@ task validate_bam {
         else
             GREP_PATTERN="(ERROR|WARNING)"
         fi
-
+        
+        set +x
         if [ "$(grep -Ec "$GREP_PATTERN" ~{output_filename})" -gt 0 ]; then
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
             exit 1
