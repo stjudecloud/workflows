@@ -77,7 +77,7 @@ workflow quality_check {
 
     call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
 
-    call picard.validate_bam { input: bam=bam, ignore_missing_platform=false, summary_mode=true, index_validation_stringency_less_exhaustive=true, max_retries=max_retries }
+    call picard.validate_bam { input: bam=bam, summary_mode=true, max_retries=max_retries }
 
     call samtools.flagstat as samtools_flagstat { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call fqc.fastqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
