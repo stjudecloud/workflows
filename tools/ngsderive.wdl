@@ -29,7 +29,7 @@ task infer_strand {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/ngsderive:1.0.0'
+        docker: 'stjudecloud/ngsderive:1.0.1'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
