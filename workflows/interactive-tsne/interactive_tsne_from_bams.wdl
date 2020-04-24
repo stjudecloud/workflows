@@ -62,13 +62,9 @@ workflow interactive_tsne_from_bams {
         File? brain_covariates
         File? solid_covariates
     }
-   
-    call tsne.validate_tissue_type { input: tissue_type=tissue_type }
  
     call gzip.unzip as uncompress_gencode { input: infile=gencode_gtf }
-    scatter (bam in in_bams) {
-        String name = basename(bam, ".bam")
-        
+    scatter (bam in in_bams) {       
         call samtools.index as index { input: bam=bam}
         call ngsderive.infer_strand as infer { input: bam=bam, bai=index.bai, gtf=uncompress_gencode.outfile}
         call htseq.count as count { input: bam=bam, gtf=uncompress_gencode.outfile, provided_strand="", inferred_strand=infer.strandedness}
@@ -112,6 +108,7 @@ workflow interactive_tsne_from_bams {
      
     output {
         File tsne_plot = generate_plot.html
+        File tsne_matrix = generate_plot.matrix
         Array[File] generated_counts = count.out
     }
 

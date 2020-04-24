@@ -62,8 +62,6 @@ workflow interactive_tsne {
         File? solid_covariates
     }
    
-    call tsne.validate_tissue_type { input: tissue_type=tissue_type }
- 
     call gzip.unzip as uncompress_gencode { input: infile=gencode_gtf }
     scatter (bam in in_bams) {
         String name = basename(bam, ".bam")
@@ -108,6 +106,7 @@ workflow interactive_tsne {
      
     output {
         File tsne_plot = generate_plot.html
+        File tsne_matrix = generate_plot.matrix
         Array[File] generated_counts = rnaseq_standard.gene_counts
         Array[File] generated_mappings = rnaseq_standard.bam
     }

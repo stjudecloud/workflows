@@ -69,7 +69,6 @@ workflow interactive_tsne_from_counts {
                                if (tissue_type == 'brain') then brain_covariates else
                                if (tissue_type == 'solid') then solid_covariates
                                else "" 
-        
     }
 
     File reference_file = select_first([reference_counts, reference])
@@ -96,6 +95,7 @@ workflow interactive_tsne_from_counts {
      
     output {
         File tsne_plot = generate_plot.html
+        File tsne_matrix = generate_plot.matrix
     }
 
     parameter_meta {
