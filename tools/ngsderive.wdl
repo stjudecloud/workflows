@@ -83,7 +83,7 @@ task read_length {
         set -euo pipefail
         
         mv ~{bai} ~{bam}.bai || true
-        ngsderive readlen ~{bam} | awk 'NR > 1' | cut -d$'\t' -f5 > ~{out_file}
+        ngsderive readlen ~{bam} > ~{out_file}
     }
 
     runtime {
