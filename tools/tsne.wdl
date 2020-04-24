@@ -28,7 +28,7 @@ task plot {
         tar --no-same-owner -C counts -zxf ${counts}
         count_arg=$(ls counts/*)
 
-        itsne-main --debug-rscript -b ${blacklist} -g ${gencode_gtf} -c ${covariates} -o ${outfile} \
+        itsne-main --debug-rscript --save-data -b ${blacklist} -g ${gencode_gtf} -c ${covariates} -o ${outfile} \
             ${true='--input-sample ' false='' defined(inputs)}${sep=' --input-sample ' inputs} \
             ${'--tissue-type ' + tissue_type} $count_arg ${sep=' ' input_counts}
     }
@@ -44,6 +44,7 @@ task plot {
 
     output {
         File html = outfile
+        File matrix = "tsne.txt"
     }
 
     meta {
