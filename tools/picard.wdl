@@ -74,9 +74,7 @@ task validate_bam {
     Int disk_size = ceil((bam_size * 2) + 10)
     Int java_heap_size = ceil(memory_gb * 0.9)
     
-    command {
-        set -eo pipefail
-        
+    command {       
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             I=~{bam} \
             IGNORE=INVALID_PLATFORM_VALUE \
@@ -86,6 +84,7 @@ task validate_bam {
             MAX_OUTPUT=100000 \
             > ~{output_filename}
 
+        set -eo pipefail
         if [ "~{ignore_warnings_string}" == "true" ]; then
             GREP_PATTERN="ERROR"
         else
