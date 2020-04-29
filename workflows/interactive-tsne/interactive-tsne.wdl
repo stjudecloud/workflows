@@ -62,8 +62,6 @@ workflow interactive_tsne {
         File? solid_covariates
     }
    
-    call tsne.validate_tissue_type { input: tissue_type=tissue_type }
- 
     call gzip.unzip as uncompress_gencode { input: infile=gencode_gtf }
     scatter (bam in in_bams) {
         String name = basename(bam, ".bam")
@@ -87,9 +85,6 @@ workflow interactive_tsne {
     File reference_file = select_first([reference_counts, reference])
     File covariates_input = select_first([covariates_file, covariates])
 
-    call gzip.unzip { input: infile=reference_file }
-    call tar.untar { input: infile=unzip.outfile }
-
     scatter (bam in in_bams){
         call util.file_prefix { input: in_file=bam }
     }
@@ -99,7 +94,7 @@ workflow interactive_tsne {
     
     call tsne.plot as generate_plot{
         input:
-            counts=untar.outfiles,
+            counts=reference_file,
             inputs=file_prefix.out,
             input_counts=rnaseq_standard.gene_counts,
             blacklist=gene_blacklist,
@@ -111,6 +106,7 @@ workflow interactive_tsne {
      
     output {
         File tsne_plot = generate_plot.html
+        File tsne_matrix = generate_plot.matrix
         Array[File] generated_counts = rnaseq_standard.gene_counts
         Array[File] generated_mappings = rnaseq_standard.bam
     }
