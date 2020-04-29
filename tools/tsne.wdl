@@ -37,7 +37,7 @@ task plot {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/interactive-tsne:0.0.2-alpha'
+        docker: 'stjudecloud/interactive-tsne:0.0.2'
         maxRetries: max_retries
     }
 
@@ -101,7 +101,6 @@ task append_input {
         cat ${covariates_infile} > "covariates.combined.tsv"
         for sample in ${sep=" " inputs}
         do
-            #echo -e "$sample\t$sample\tinput\tinput\tinput"
             echo -e "$sample\tinput\t$sample"
         done >> "covariates.combined.tsv"
     }
