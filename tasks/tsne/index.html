@@ -51,6 +51,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../build_for_dnanexus/">Building WDL workflows for DNAnexus</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Tasks</span></p>
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../deeptools/">Deeptools</a>
@@ -209,7 +213,7 @@ visualize the relationship between input samples and a reference data set.
 <li><code>gencode_gtf</code> (File, <strong>required</strong>)</li>
 <li><code>covariates</code> (File, <strong>required</strong>): A tab delimited file with Sample, Diagnosis, Strandedness, LibraryType, ReadLength. Valid values for strandedness: [Stranded, Unstranded]. Valid values for LibraryType: [mRNA, totalRNA]. ReadLength should be specified similar to the form PE100bp.</li>
 <li><code>blacklist</code> (File, <strong>required</strong>)</li>
-<li><code>counts</code> (Array[File], <strong>required</strong>)</li>
+<li><code>counts</code> (File, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -227,6 +231,7 @@ visualize the relationship between input samples and a reference data set.
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>html</code> (File)</li>
+<li><code>matrix</code> (File)</li>
 </ul>
 <h2 id="validate_tissue_type">validate_tissue_type</h2>
 <dl>

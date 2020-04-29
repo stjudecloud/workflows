@@ -51,6 +51,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../build_for_dnanexus/">Building WDL workflows for DNAnexus</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Tasks</span></p>
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../../tasks/deeptools/">Deeptools</a>
@@ -231,9 +235,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>generate_plot.max_retries</code> (Int, default=1)</li>
 <li><code>append_input.memory_gb</code> (Int, default=5)</li>
 <li><code>file_prefix.max_retries</code> (Int, default=1)</li>
-<li><code>untar.max_retries</code> (Int, default=1)</li>
-<li><code>unzip.max_retries</code> (Int, default=1)</li>
-<li><code>unzip.outfilename</code> (String, default=basename(infile,".gz"))</li>
 <li><code>rnaseq_standard.deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
 <li><code>rnaseq_standard.deeptools_bamCoverage.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>rnaseq_standard.htseq_count.memory_gb</code> (Int, default=20)</li>
@@ -266,12 +267,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>rnaseq_standard.max_retries</code> (Int, default=1)</li>
 <li><code>uncompress_gencode.max_retries</code> (Int, default=1)</li>
 <li><code>uncompress_gencode.outfilename</code> (String, default=basename(infile,".gz"))</li>
-<li><code>validate_tissue_type.memory_gb</code> (Int, default=5)</li>
 <li><code>output_filename</code> (String, default="output.html"): Name for the output HTML t-SNE plot</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>tsne_plot</code> (File)</li>
+<li><code>tsne_matrix</code> (File)</li>
 <li><code>generated_counts</code> (Array[File])</li>
 <li><code>generated_mappings</code> (Array[File])</li>
 </ul>
