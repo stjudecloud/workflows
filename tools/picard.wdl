@@ -55,6 +55,7 @@ task validate_bam {
         Boolean ignore_missing_platform = true
         Boolean summary_mode = false
         Boolean index_validation_stringency_less_exhaustive = false
+        Boolean ignore_mapping_quality = true
         Boolean ignore_warnings = true
         String output_filename = basename(bam, ".bam") + ".ValidateSamFile.txt"
         Int memory_gb = 8
@@ -67,6 +68,9 @@ task validate_bam {
     String mode_arg = if (summary_mode) then "MODE=SUMMARY" else ""
     String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
+        else ""
+    String mapping_quality_arg = if (ignore_mapping_quality)
+        then "IGNORE=INVALID_MAPPING_QUALITY"
         else ""
     String ignore_warnings_string = if (ignore_warnings) then "true" else ""
 
