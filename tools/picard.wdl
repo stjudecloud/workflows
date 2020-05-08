@@ -83,6 +83,7 @@ task validate_bam {
             I=~{bam} \
             IGNORE=INVALID_PLATFORM_VALUE \
             ~{ignore_missing_platform_arg} \
+            ~{mapping_quality_arg} \
             ~{mode_arg} \
             ~{stringency_arg} \
             MAX_OUTPUT=100000 \
