@@ -51,6 +51,9 @@ task file_prefix {
         Int max_retries = 1
     }
 
+    Float infile_size = size(infile, "GiB")
+    Int disk_size = ceil(infile_size * 2)
+
     command <<<
         set -euo pipefail
         
@@ -58,6 +61,7 @@ task file_prefix {
     >>>
 
     runtime {
+        disk: disk_size + " GB"
         docker: 'stjudecloud/util:1.0.0'
         maxRetries: max_retries
     }

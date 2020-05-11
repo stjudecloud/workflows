@@ -104,6 +104,7 @@ task parse_input {
     }
 
     runtime {
+        disk: "1 GB"
         docker: 'stjudecloud/util:1.0.0'
     }
 

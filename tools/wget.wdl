@@ -20,12 +20,14 @@ task wget_print_version {
 
 task download {
     input {
-        String url 
+        String url
         String outfilename
+        Int disk_size_GB = 10
         Int max_retries = 1
     }
 
     runtime {
+        disk: disk_size_GB + " GB"
         docker: 'stjudecloud/util:1.0.0'
         maxRetries: max_retries
     }

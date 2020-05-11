@@ -144,6 +144,9 @@ task parse_input {
         String input_fq_format
     }
 
+    Float db_size = size(input_fq_db, "GiB")
+    Int disk_size = ceil(db_size * 2)
+
     String no_gtf = if defined(input_gtf) then "" else "true"
 
     command {
@@ -176,6 +179,7 @@ task parse_input {
     }
 
     runtime {
+        disk: disk_size + " GB"
         docker: 'stjudecloud/util:1.0.0'
     }
 

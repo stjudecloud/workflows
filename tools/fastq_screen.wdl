@@ -47,6 +47,9 @@ task fastq_screen {
         Int max_retries = 1
     }
 
+    Float db_size = size(db, "GiB")
+    Int disk_size = ceil(db_size * 2)
+
     String output_basename = basename(read1, "R1.fastq")
     String db_name = basename(db)
 
@@ -69,6 +72,7 @@ task fastq_screen {
     }
  
     runtime {
+        disk: disk_size + " GB"
         docker: "stjudecloud/fastq_screen:1.0.0"
         maxRetries: max_retries
     }
