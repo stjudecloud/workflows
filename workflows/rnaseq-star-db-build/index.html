@@ -87,8 +87,6 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../tasks/tsne/">t-SNE</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/util/">Utilities</a>
-                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../tasks/wget/">wget</a>
                     </li>
                 </ul>
@@ -96,17 +94,9 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive-tsne/">Interactive t-SNE</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_bams/">Interactive t-SNE from BAMs</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_counts/">Interactive t-SNE from Counts</a>
-                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">RNASeq STAR DB build</a>
     <ul class="current">
@@ -221,9 +211,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>gencode_unzip.max_retries</code> (Int, default=1)</li>
 <li><code>gencode_unzip.outfilename</code> (String, default=basename(infile,".gz"))</li>
 <li><code>gencode_download.max_retries</code> (Int, default=1)</li>
+<li><code>gencode_download.disk_size_GB</code> (Int, default=10)</li>
 <li><code>reference_unzip.max_retries</code> (Int, default=1)</li>
 <li><code>reference_unzip.outfilename</code> (String, default=basename(infile,".gz"))</li>
 <li><code>reference_download.max_retries</code> (Int, default=1)</li>
+<li><code>reference_download.disk_size_GB</code> (Int, default=10)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -239,7 +231,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="../rnaseq-standard/" class="btn btn-neutral" title="RNA-Seq Standard"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../quality-check-standard/" class="btn btn-neutral" title="Quality Check Standard"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -269,7 +261,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
           <a href="https://github.com/stjudecloud/workflows/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../rnaseq-standard/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../quality-check-standard/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
     </span>
