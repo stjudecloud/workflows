@@ -116,7 +116,7 @@ workflow interactive_tsne {
             help: "Provide bams to run for comparison"
         }
         tissue_type: {
-            help: "Provide the tissue type to compare against: [blood, brain, solid]",
+            help: "Provide the tissue type to compare against",
             choices: ['blood', 'brain', 'solid']
         }
         output_filename: "Name for the output HTML t-SNE plot"
