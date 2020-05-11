@@ -5,20 +5,6 @@
 
 version 1.0
 
-task star_print_version {
-    command {
-        STAR --version
-    }
-
-    runtime {
-        docker: 'stjudecloud/star:1.0.0'
-    }
-
-    output {
-        String out = read_string(stdout())
-    }
-}
-
 task build_db {
     input {
         Int ncpu = 1

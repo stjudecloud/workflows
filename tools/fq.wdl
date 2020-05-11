@@ -6,20 +6,6 @@
 
 version 1.0
 
-task fq_print_version {
-    command {
-        fq --version
-    }
-
-    runtime {
-        docker: 'stjudecloud/fqlib:1.0.0'
-    }
-
-    output {
-        String out = read_string(stdout())
-    }
-}
-
 task fqlint {
     input {
         File read1

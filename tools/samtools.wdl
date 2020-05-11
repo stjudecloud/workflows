@@ -5,20 +5,6 @@
 
 version 1.0
 
-task samtools_print_version {
-    command {
-        samtools --version
-    }
-
-    runtime {
-        docker: 'stjudecloud/samtools:1.0.0'
-    }
-
-    output {
-        String out = read_string(stdout())
-    }
-}
-
 task quickcheck {
     input {
         File bam

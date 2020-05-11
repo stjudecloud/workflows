@@ -2,22 +2,6 @@
 ##
 ## This WDL tool wraps the wget tool.
 
-version 1.0
-
-task wget_print_version {
-    command {
-        wget --version
-    }
-
-    runtime {
-        docker: 'stjudecloud/util:1.0.0'
-    }
-
-    output {
-        String out = read_string(stdout())
-    }
-}
-
 task download {
     input {
         String url

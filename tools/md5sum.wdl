@@ -6,20 +6,6 @@
 
 version 1.0
 
-task md5sum_print_version {
-    command {
-        md5sum --version
-    }
-
-    runtime {
-        docker: 'stjudecloud/util:1.0.0'
-    }
-
-    output {
-        String out = read_string(stdout())
-    }
-}
-
 task compute_checksum {
     input {
         File infile
