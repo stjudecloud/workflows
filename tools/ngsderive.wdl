@@ -21,8 +21,19 @@ task infer_strand {
  
     command {
         set -euo pipefail
+
+        annotation=~{gtf}
+        if [ $(file ~{gtf} | grep -c "gzip compressed data") -eq 1 ]
+        then
+            gzip -dc ~{gtf} > annotation.gtf
+            annotation="annotation.gtf"
+        elif [ $(file ~{gtf} | grep -c "bzip2 compressed data") -eq 1 ]
+        then
+            bzip2 -dc ~{gtf} > annotation.gtf
+            annotation="annotation.gtf"
+        fi
         
-        sort -k1,1 -k4,4n -k5,5n ~{gtf} | bgzip > annotation.gtf.gz
+        sort -k1,1 -k4,4n -k5,5n $annotation | bgzip > annotation.gtf.gz
         tabix -p gff annotation.gtf.gz
         mv ~{bai} ~{bam}.bai || true
         ngsderive strandedness ~{bam} -g annotation.gtf.gz > ~{out_file}
