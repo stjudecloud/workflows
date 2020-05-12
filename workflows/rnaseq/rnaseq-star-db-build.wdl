@@ -37,7 +37,6 @@
 version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/gzip.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/wget.wdl"
 
 workflow rnaseq_star_db_build {
@@ -52,20 +51,18 @@ workflow rnaseq_star_db_build {
     }
 
     call wget.download as reference_download { input: url=reference_fa_url, outfilename="GRCh38_no_alt.fa.gz" }
-    call gzip.unzip as reference_unzip { input: infile=reference_download.outfile }
     call wget.download as gencode_download { input: url=gencode_gtf_url, outfilename="gencode.v31.gtf.gz" }
-    call gzip.unzip as gencode_unzip { input: infile=gencode_download.outfile }
     call star.build_db as star_db_build {
         input:
-            reference_fasta=reference_unzip.outfile,
-            gencode_gtf=gencode_unzip.outfile,
+            reference_fasta=reference_download.outfile,
+            gencode_gtf=gencode_download.outfile,
             stardb_dir_name="STARDB",
             ncpu=4,
     }
 
     output {
-      File reference_fa = reference_unzip.outfile
-      File gencode_gtf = gencode_unzip.outfile
+      File reference_fa = reference_download.outfile
+      File gencode_gtf = gencode_download.outfile
       File stardb_tar_gz = star_db_build.stardb_out
     }
 }

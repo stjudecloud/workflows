@@ -40,8 +40,6 @@ version 1.0
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/rnaseq/rnaseq-standard.wdl" as rnav2
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tsne.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tar.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/gzip.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/wget.wdl"
 
 workflow interactive_tsne {
@@ -61,11 +59,10 @@ workflow interactive_tsne {
         File? brain_covariates
         File? solid_covariates
     }
-   
-    call gzip.unzip as uncompress_gencode { input: infile=gencode_gtf }
+
     scatter (bam in in_bams) {
         String name = basename(bam, ".bam")
-        call rnav2.rnaseq_standard { input: gencode_gtf=uncompress_gencode.outfile, input_bam=bam, stardb_tar_gz=stardb_tar_gz, output_prefix=name, strand="" }
+        call rnav2.rnaseq_standard { input: gencode_gtf=gencode_gtf, input_bam=bam, stardb_tar_gz=stardb_tar_gz, output_prefix=name, strand="" }
     }
 
     if (! defined(reference_counts)){

@@ -24,14 +24,19 @@ task build_db {
 
     command {
         set -euo pipefail
+
+        gtf=$(basename ~{gencode_gtf} ".gz")
+        gunzip ~{gencode_gtf} || true
+        ref_fasta=$(basename ~{reference_fasta} ".gz")
+        gunzip ~{reference_fasta} || true
         
         mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \
             --genomeDir ~{stardb_dir_name} \
             --runThreadN ~{ncpu} \
             --limitGenomeGenerateRAM ~{ram_limit} \
-            --genomeFastaFiles ~{reference_fasta} \
-            --sjdbGTFfile ~{gencode_gtf} \
+            --genomeFastaFiles $ref_fasta \
+            --sjdbGTFfile $gtf \
             --sjdbOverhang 125
         tar -czf ~{stardb_out_name} ~{stardb_dir_name}
     }

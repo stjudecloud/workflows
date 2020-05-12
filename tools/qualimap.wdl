@@ -94,9 +94,12 @@ task rnaseq {
  
     command {
         set -euo pipefail
+
+        gtf=$(basename ~{gencode_gtf} ".gz")
+        gunzip ~{gencode_gtf} || true
         
         qualimap rnaseq -bam ~{bam} \
-                        -gtf ~{gencode_gtf} \
+                        -gtf $gtf \
                         -outdir ~{out_directory} \
                         -oc qualimap_counts.txt \
                         -p ~{stranded} \

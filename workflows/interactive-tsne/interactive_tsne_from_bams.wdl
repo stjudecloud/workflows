@@ -61,12 +61,11 @@ workflow interactive_tsne_from_bams {
         File? brain_covariates
         File? solid_covariates
     }
- 
-    call gzip.unzip as uncompress_gencode { input: infile=gencode_gtf }
+
     scatter (bam in in_bams) {       
         call samtools.index as index { input: bam=bam}
-        call ngsderive.infer_strand as infer { input: bam=bam, bai=index.bai, gtf=uncompress_gencode.outfile}
-        call htseq.count as count { input: bam=bam, gtf=uncompress_gencode.outfile, provided_strand="", inferred_strand=infer.strandedness}
+        call ngsderive.infer_strand as infer { input: bam=bam, bai=index.bai, gtf=gencode_gtf}
+        call htseq.count as count { input: bam=bam, gtf=gencode_gtf, provided_strand="", inferred_strand=infer.strandedness}
     }
 
     if (! defined(reference_counts)){

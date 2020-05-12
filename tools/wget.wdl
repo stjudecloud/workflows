@@ -16,9 +16,9 @@ task download {
         maxRetries: max_retries
     }
 
-    command {
+    command <<<
         wget ~{url} -O ~{outfilename}
-    }
+    >>>
 
     output {
         File outfile = outfilename
