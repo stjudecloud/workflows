@@ -35,7 +35,7 @@ task plot {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/interactive-tsne:0.0.3'
+        docker: 'stjudecloud/interactive-tsne:0.0.4'
         maxRetries: max_retries
     }
 
