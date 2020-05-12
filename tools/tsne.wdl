@@ -22,8 +22,6 @@ task plot {
     }
 
     command {
-
-        echo "tar.gz"
         mkdir counts
         tar --no-same-owner -C counts -zxf ${counts}
         count_arg=$(ls counts/*)
@@ -37,7 +35,7 @@ task plot {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/interactive-tsne:0.0.2'
+        docker: 'stjudecloud/interactive-tsne:0.0.3'
         maxRetries: max_retries
     }
 
@@ -54,39 +52,6 @@ task plot {
 
     parameter_meta {
         covariates: "A tab delimited file with Sample, Diagnosis, Strandedness, LibraryType, ReadLength. Valid values for strandedness: [Stranded, Unstranded]. Valid values for LibraryType: [mRNA, totalRNA]. ReadLength should be specified similar to the form PE100bp."
-    }
-}
-
-task validate_tissue_type {
-    input {
-        String tissue_type
-        Int memory_gb = 5
-    }
-
-    Int valid = if (tissue_type == 'blood') then 0 else
-                if (tissue_type == 'brain') then 0 else
-                if (tissue_type == 'solid') then 0 
-                else 1
-
-
-    command {
-        exit ${valid}
-    }
-
-    runtime{
-        memory: memory_gb + " GB"
-    }
-
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-    }
-
-    parameter_meta {
-        tissue_type: {
-            help: "Provide the tissue type to compare against: [blood, brain, solid]",
-            choices: ['blood', 'brain', 'solid']
-        }
     }
 }
 
