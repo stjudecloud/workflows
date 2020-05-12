@@ -9,7 +9,7 @@
   <meta name="author" content="St. Jude Cloud">
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>RNASeq STAR DB build - St. Jude WDL workflows</title>
+  <title>Interactive t-SNE - St. Jude WDL workflows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "RNASeq STAR DB build";
-    var mkdocs_page_input_path = "workflows/rnaseq-star-db-build.md";
+    var mkdocs_page_name = "Interactive t-SNE";
+    var mkdocs_page_input_path = "workflows/interactive-tsne.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -92,17 +92,7 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive-tsne/">Interactive t-SNE</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_counts/">Interactive t-SNE from Counts</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
-                    </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">RNASeq STAR DB build</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Interactive t-SNE</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#output">Output</a>
     </li>
@@ -112,7 +102,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#rnaseq_star_db_build">rnaseq_star_db_build</a>
+    <li class="toctree-l2"><a class="reference internal" href="#interactive_tsne">interactive_tsne</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -129,6 +119,16 @@
         </ul>
     </li>
     </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_counts/">Interactive t-SNE from Counts</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
                     </li>
                 </ul>
       </div>
@@ -156,10 +156,10 @@
         
       
     
-    <li>RNASeq STAR DB build</li>
+    <li>Interactive t-SNE</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/rnaseq-star-db-build.md"
+        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/interactive-tsne.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -170,20 +170,21 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="rnaseq-star-db-build">RNASeq STAR DB build</h1>
-<p>This WDL workflow generates a set of genome reference files usable by the STAR aligner from an input reference file in FASTA format.  </p>
+                <h1 id="interactive-t-sne">Interactive t-SNE</h1>
+<p>This WDL workflow remaps input bams and compares them to St. Jude RNA-seq samples using 
+a t-SNE plot. </p>
 <h3 id="output">Output</h3>
 <dl>
-<dt>reference_fa</dt>
-<dd>the reference FASTA file</dd>
-<dt>gencode_gtf</dt>
-<dd>the reference gencode GTF file</dd>
-<dt>stardb_tar_gz</dt>
-<dd>the STAR DB folder in .tar.gz format</dd>
+<dt>tsne_plot</dt>
+<dd>t-SNE plot including the input samples compared to reference data</dd>
+<dt>generated_counts</dt>
+<dd>RNAseq count data for the input bams</dd>
+<dt>generated_mappings</dt>
+<dd>Bam output from the St. Jude Cloud RNA-seq workflow for each input bam</dd>
 </dl>
 <h2 id="licensing">LICENSING</h2>
 <h4 id="mit-license">MIT License</h4>
-<p>Copyright 2019 St. Jude Children's Research Hospital</p>
+<p>Copyright 2020 St. Jude Children's Research Hospital</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
 software and associated documentation files (the "Software"), to deal in the Software
 without restriction, including without limitation the rights to use, copy, modify, merge,
@@ -196,32 +197,78 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="rnaseq_star_db_build">rnaseq_star_db_build</h2>
+<h2 id="interactive_tsne">interactive_tsne</h2>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>gencode_gtf_url</code> (String, <strong>required</strong>): URL to retrieve the reference gencode GTF file.</li>
-<li><code>reference_fa_url</code> (String, <strong>required</strong>): URL to retrieve the reference FASTA file from.</li>
+<li><code>tissue_type</code> (String, <strong>required</strong>): Provide the tissue type to compare against; <strong>Choices</strong>: ['blood', 'brain', 'solid']</li>
+<li><code>gene_blacklist</code> (File, <strong>required</strong>)</li>
+<li><code>stardb_tar_gz</code> (File, <strong>required</strong>)</li>
+<li><code>gencode_gtf</code> (File, <strong>required</strong>)</li>
+<li><code>in_bams</code> (Array[File], <strong>required</strong>): Provide bams to run for comparison</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>star_db_build.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.picard_sort.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.alignment.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.split.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.split.reject_unaccounted</code> (Boolean?)</li>
+<li><code>solid_covariates</code> (File?)</li>
+<li><code>brain_covariates</code> (File?)</li>
+<li><code>blood_covariates</code> (File?)</li>
+<li><code>solid_counts</code> (File?)</li>
+<li><code>brain_counts</code> (File?)</li>
+<li><code>blood_counts</code> (File?)</li>
+<li><code>covariates_file</code> (File?)</li>
+<li><code>reference_counts</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>star_db_build.max_retries</code> (Int, default=1)</li>
-<li><code>star_db_build.memory_gb</code> (Int, default=50)</li>
-<li><code>star_db_build.ram_limit</code> (String, default="45000000000")</li>
-<li><code>gencode_download.max_retries</code> (Int, default=1)</li>
-<li><code>gencode_download.disk_size_GB</code> (Int, default=10)</li>
-<li><code>reference_download.max_retries</code> (Int, default=1)</li>
-<li><code>reference_download.disk_size_GB</code> (Int, default=10)</li>
+<li><code>generate_plot.disk_size</code> (Int, default=15)</li>
+<li><code>generate_plot.memory_gb</code> (Int, default=15)</li>
+<li><code>generate_plot.max_retries</code> (Int, default=1)</li>
+<li><code>append_input.memory_gb</code> (Int, default=5)</li>
+<li><code>file_prefix.max_retries</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
+<li><code>rnaseq_standard.deeptools_bamCoverage.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>rnaseq_standard.htseq_count.memory_gb</code> (Int, default=20)</li>
+<li><code>rnaseq_standard.htseq_count.outfile</code> (String, default=basename(bam,".bam") + ".counts.txt")</li>
+<li><code>rnaseq_standard.ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
+<li><code>rnaseq_standard.validate_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>rnaseq_standard.validate_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt"): Name for the output HTML t-SNE plot</li>
+<li><code>rnaseq_standard.validate_bam.ignore_warnings</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_bam.ignore_mapping_quality</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>rnaseq_standard.validate_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>rnaseq_standard.validate_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.samtools_index.memory_gb</code> (Int, default=15)</li>
+<li><code>rnaseq_standard.samtools_index.outfile</code> (String, default=basename(bam) + ".bai")</li>
+<li><code>rnaseq_standard.picard_sort.memory_gb</code> (Int, default=25)</li>
+<li><code>rnaseq_standard.picard_sort.output_filename</code> (String, default=basename(bam,".bam") + ".sorted.bam"): Name for the output HTML t-SNE plot</li>
+<li><code>rnaseq_standard.picard_sort.sort_order</code> (String, default="coordinate")</li>
+<li><code>rnaseq_standard.alignment.memory_gb</code> (Int, default=50)</li>
+<li><code>rnaseq_standard.alignment.ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.fqlint.memory_gb</code> (Int, default=8)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>rnaseq_standard.bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.samtools_sort_ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.validate_input_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>rnaseq_standard.validate_input_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt"): Name for the output HTML t-SNE plot</li>
+<li><code>rnaseq_standard.validate_input_bam.ignore_warnings</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_input_bam.ignore_mapping_quality</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>rnaseq_standard.validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>rnaseq_standard.validate_input_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.max_retries</code> (Int, default=1)</li>
+<li><code>output_filename</code> (String, default="output.html"): Name for the output HTML t-SNE plot</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>reference_fa</code> (File)</li>
-<li><code>gencode_gtf</code> (File)</li>
-<li><code>stardb_tar_gz</code> (File)</li>
+<li><code>tsne_plot</code> (File)</li>
+<li><code>tsne_matrix</code> (File)</li>
+<li><code>generated_counts</code> (Array[File])</li>
+<li><code>generated_mappings</code> (Array[File])</li>
 </ul>
               
             </div>
@@ -230,8 +277,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="../interactive_tsne_from_counts/" class="btn btn-neutral float-right" title="Interactive t-SNE from Counts">Next <span class="icon icon-circle-arrow-right"></span></a>
       
-        <a href="../rnaseq-standard/" class="btn btn-neutral" title="RNA-Seq Standard"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+        <a href="../bam-to-fastqs/" class="btn btn-neutral" title="Bam to FastQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -261,8 +310,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
           <a href="https://github.com/stjudecloud/workflows/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../rnaseq-standard/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../bam-to-fastqs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
+      
+        <span style="margin-left: 15px"><a href="../interactive_tsne_from_counts/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

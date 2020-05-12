@@ -65,17 +65,9 @@
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">FQ</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#fq_print_version">fq_print_version</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
-    </li>
-        </ul>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#fqlint">fqlint</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
@@ -83,13 +75,11 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_1">Outputs</a>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
     </li>
         </ul>
     </li>
     </ul>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../gzip/">gzip</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../htseq/">HTSeq</a>
                     </li>
@@ -107,9 +97,9 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../star/">STAR</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../tar/">tar</a>
-                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../tsne/">t-SNE</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../util/">Utilities</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../wget/">wget</a>
                     </li>
@@ -118,9 +108,15 @@
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workflows/interactive-tsne/">Interactive t-SNE</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workflows/interactive_tsne_from_counts/">Interactive t-SNE from Counts</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workflows/rnaseq-standard/">RNA-Seq Standard</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/rnaseq-star-db-build/">RNASeq STAR DB build</a>
                     </li>
@@ -168,13 +164,6 @@
 <p>This WDL tool wraps the <a href="https://github.com/stjude/fqlib">fq tool</a>.
 The fq library provides methods for manipulating Illumina generated 
 FastQ files.</p>
-<h2 id="fq_print_version">fq_print_version</h2>
-<h3 id="inputs">Inputs</h3>
-<p><strong>None</strong></p>
-<h3 id="outputs">Outputs</h3>
-<ul>
-<li><code>out</code> (String)</li>
-</ul>
 <h2 id="fqlint">fqlint</h2>
 <dl>
 <dt>author</dt>
@@ -184,7 +173,7 @@ FastQ files.</p>
 <dt>description</dt>
 <dd>This WDL tool performs quality control on the input FastQ pairs to ensure proper formatting.</dd>
 </dl>
-<h3 id="inputs_1">Inputs</h3>
+<h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
 <li><code>read2</code> (File, <strong>required</strong>): Input FastQ with read two</li>
@@ -195,7 +184,7 @@ FastQ files.</p>
 <li><code>memory_gb</code> (Int, default=8)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 </ul>
-<h3 id="outputs_1">Outputs</h3>
+<h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>validated_read1</code> (File)</li>
 <li><code>validated_read2</code> (File)</li>
@@ -207,7 +196,7 @@ FastQ files.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../gzip/" class="btn btn-neutral float-right" title="gzip">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../htseq/" class="btn btn-neutral float-right" title="HTSeq">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../fastqc/" class="btn btn-neutral" title="FastQC"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -243,7 +232,7 @@ FastQ files.</p>
         <span><a href="../fastqc/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../gzip/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../htseq/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
