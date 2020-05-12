@@ -51,7 +51,7 @@ task file_prefix {
         Int max_retries = 1
     }
 
-    Float infile_size = size(infile, "GiB")
+    Float infile_size = size(in_file, "GiB")
     Int disk_size = ceil(infile_size * 2)
 
     command <<<
