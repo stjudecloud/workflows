@@ -41,8 +41,6 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/sam
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tsne.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tar.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/gzip.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/wget.wdl"
 
 workflow interactive_tsne_from_bams {
