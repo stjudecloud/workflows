@@ -22,12 +22,14 @@ task build_db {
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)])
 
-    command {
+    command <<<
         set -euo pipefail
 
-        gtf=$(basename ~{gencode_gtf} ".gz")
+        orig_gtf=~{gencode_gtf}
+        gtf="${orig_gtf%.gz}"
         gunzip ~{gencode_gtf} || true
-        ref_fasta=$(basename ~{reference_fasta} ".gz")
+        orig_fasta=~{reference_fasta}
+        ref_fasta="${orig_fasta%.gz}"
         gunzip ~{reference_fasta} || true
         
         mkdir ~{stardb_dir_name};
@@ -39,7 +41,7 @@ task build_db {
             --sjdbGTFfile $gtf \
             --sjdbOverhang 125
         tar -czf ~{stardb_out_name} ~{stardb_dir_name}
-    }
+    >>>
 
     runtime {
         memory: memory_gb + " GB"
