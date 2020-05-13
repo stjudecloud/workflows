@@ -9,7 +9,7 @@
   <meta name="author" content="St. Jude Cloud">
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>Interactive t-SNE from BAMs - St. Jude WDL workflows</title>
+  <title>RNA-Seq Expression Classification from BAMs - St. Jude WDL workflows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Interactive t-SNE from BAMs";
-    var mkdocs_page_input_path = "workflows/interactive_tsne_from_bams.md";
+    var mkdocs_page_name = "RNA-Seq Expression Classification from BAMs";
+    var mkdocs_page_input_path = "workflows/rnaseq_expression_classification_from_bams.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -92,9 +92,17 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive-tsne/">Interactive t-SNE</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Interactive t-SNE from BAMs</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq_expression_classification/">RNA-Seq Expression Classification</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">RNA-Seq Expression Classification from BAMs</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#output">Output</a>
     </li>
@@ -104,7 +112,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#interactive_tsne_from_bams">interactive_tsne_from_bams</a>
+    <li class="toctree-l2"><a class="reference internal" href="#rnaseq_expression_classification_from_bams">rnaseq_expression_classification_from_bams</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -122,15 +130,7 @@
     </li>
     </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../interactive_tsne_from_counts/">Interactive t-SNE from Counts</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq_expression_classification_from_counts/">RNA-Seq Expression Classification from Counts</a>
                     </li>
                 </ul>
       </div>
@@ -158,10 +158,10 @@
         
       
     
-    <li>Interactive t-SNE from BAMs</li>
+    <li>RNA-Seq Expression Classification from BAMs</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/interactive_tsne_from_bams.md"
+        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/rnaseq_expression_classification_from_bams.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -172,11 +172,11 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="interactive-t-sne-from-bams">Interactive t-SNE from BAMs</h1>
+                <h1 id="rna-seq-expression-classification-from-bams">RNA-Seq Expression Classification from BAMs</h1>
 <p>This WDL workflow compares gene counts from BAM files to St. Jude RNA-seq samples using 
 a t-SNE plot.</p>
 <ul>
-<li>The BAM-based t-SNE pipeline requires that alignment must be against the <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz">GRCh38_no_alt reference</a>. It should use parameters as specifed in our <a href="https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.0.html">RNA-seq workflow</a> to minimize any discrepancies caused by differing alignment specification.</li>
+<li>The BAM-based RNA-Seq Expression Classification pipeline requires that alignment must be against the <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz">GRCh38_no_alt reference</a>. It should use parameters as specifed in our <a href="https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.0.html">RNA-seq workflow</a> to minimize any discrepancies caused by differing alignment specification.</li>
 </ul>
 <h3 id="output">Output</h3>
 <dl>
@@ -200,7 +200,7 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="interactive_tsne_from_bams">interactive_tsne_from_bams</h2>
+<h2 id="rnaseq_expression_classification_from_bams">rnaseq_expression_classification_from_bams</h2>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
@@ -235,7 +235,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>index.memory_gb</code> (Int, default=15)</li>
 <li><code>index.max_retries</code> (Int, default=1)</li>
 <li><code>index.outfile</code> (String, default=basename(bam) + ".bai")</li>
-<li><code>output_filename</code> (String, default="output.html"): Name for the output HTML t-SNE plot</li>
+<li><code>output_filename</code> (String, default="output.html"): Name for the output HTML RNA-Seq Expression Classification plot</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -250,10 +250,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../interactive_tsne_from_counts/" class="btn btn-neutral float-right" title="Interactive t-SNE from Counts">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../rnaseq_expression_classification_from_counts/" class="btn btn-neutral float-right" title="RNA-Seq Expression Classification from Counts">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../interactive-tsne/" class="btn btn-neutral" title="Interactive t-SNE"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../rnaseq_expression_classification/" class="btn btn-neutral" title="RNA-Seq Expression Classification"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -283,10 +283,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
           <a href="https://github.com/stjudecloud/workflows/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../interactive-tsne/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../rnaseq_expression_classification/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../interactive_tsne_from_counts/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../rnaseq_expression_classification_from_counts/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
