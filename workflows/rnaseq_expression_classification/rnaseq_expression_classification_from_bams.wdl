@@ -1,7 +1,9 @@
-## # Interactive t-SNE
+## # RNA-Seq Expression Classification from BAMs
 ##
-## This WDL workflow remaps input bams and compares them to St. Jude RNA-seq samples using 
-## a t-SNE plot. 
+## This WDL workflow compares gene counts from BAM files to St. Jude RNA-seq samples using 
+## a t-SNE plot.
+##
+## * The BAM-based RNA-Seq Expression Classification pipeline requires that alignment must be against the [GRCh38_no_alt reference](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz). It should use parameters as specifed in our [RNA-seq workflow](https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.0.html) to minimize any discrepancies caused by differing alignment specification.
 ##
 ## ### Output
 ##
@@ -11,9 +13,6 @@
 ## generated_counts
 ## : RNAseq count data for the input bams
 ##
-## generated_mappings
-## : Bam output from the St. Jude Cloud RNA-seq workflow for each input bam
-## 
 ## ## LICENSING
 ## 
 ## #### MIT License
@@ -37,16 +36,16 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/rnaseq/rnaseq-standard.wdl" as rnav2
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tsne.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/wget.wdl"
 
-workflow interactive_tsne {
+workflow rnaseq_expression_classification_from_bams {
     input { 
         Array[File] in_bams
         File gencode_gtf
-        File stardb_tar_gz
         File? reference_counts
         File? covariates_file
         File gene_blacklist
@@ -59,10 +58,11 @@ workflow interactive_tsne {
         File? brain_covariates
         File? solid_covariates
     }
-
-    scatter (bam in in_bams) {
-        String name = basename(bam, ".bam")
-        call rnav2.rnaseq_standard { input: gencode_gtf=gencode_gtf, input_bam=bam, stardb_tar_gz=stardb_tar_gz, output_prefix=name, strand="" }
+ 
+    scatter (bam in in_bams) {       
+        call samtools.index as index { input: bam=bam}
+        call ngsderive.infer_strand as infer { input: bam=bam, bai=index.bai, gtf=gencode_gtf}
+        call htseq.count as count { input: bam=bam, gtf=gencode_gtf, provided_strand="", inferred_strand=infer.strandedness}
     }
 
     if (! defined(reference_counts)){
@@ -93,7 +93,7 @@ workflow interactive_tsne {
         input:
             counts=reference_file,
             inputs=file_prefix.out,
-            input_counts=rnaseq_standard.gene_counts,
+            input_counts=count.out,
             blacklist=gene_blacklist,
             covariates=append_input.covariates_outfile,
             gencode_gtf=gencode_gtf,
@@ -104,8 +104,7 @@ workflow interactive_tsne {
     output {
         File tsne_plot = generate_plot.html
         File tsne_matrix = generate_plot.matrix
-        Array[File] generated_counts = rnaseq_standard.gene_counts
-        Array[File] generated_mappings = rnaseq_standard.bam
+        Array[File] generated_counts = count.out
     }
 
     parameter_meta {
@@ -116,6 +115,6 @@ workflow interactive_tsne {
             help: "Provide the tissue type to compare against",
             choices: ['blood', 'brain', 'solid']
         }
-        output_filename: "Name for the output HTML t-SNE plot"
+        output_filename: "Name for the output HTML RNA-Seq Expression Classification plot"
     }
 }
