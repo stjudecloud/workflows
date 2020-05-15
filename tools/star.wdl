@@ -69,7 +69,7 @@ task build_db {
 
 task alignment {
     input {
-        Int ncpu = 1
+        Int? ncpu
         Array[File] read_one_fastqs
         Array[File] read_two_fastqs
         File stardb_tar_gz
@@ -88,7 +88,11 @@ task alignment {
 
     command {
         set -euo pipefail
-        
+
+        n_cores=~{ncpu}
+        if [ ! ~{ncpu} ]; then
+            n_cores=`nproc`
+        fi        
         tar -xzf ~{stardb_tar_gz};
 
         python /home/sort_star_input.py \
@@ -98,7 +102,7 @@ task alignment {
 
         STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
              --genomeDir ~{stardb_dir} \
-             --runThreadN ~{ncpu} \
+             --runThreadN $n_cores \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \
              --outSAMtype BAM Unsorted \
@@ -119,7 +123,7 @@ task alignment {
     }
 
     runtime {
-        cpu: ncpu
+        cpu: select_first([ncpu, 1])
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/star:1.0.0'
