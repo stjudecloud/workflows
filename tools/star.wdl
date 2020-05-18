@@ -69,7 +69,7 @@ task build_db {
 
 task alignment {
     input {
-        Int ncpu = 1
+        Int ncpu = 8
         Array[File] read_one_fastqs
         Array[File] read_two_fastqs
         File stardb_tar_gz
