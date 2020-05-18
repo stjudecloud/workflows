@@ -7,7 +7,7 @@ version 1.0
 
 task build_db {
     input {
-        Int ncpu = 1
+        Int ncpu = 8
         File reference_fasta
         File gencode_gtf
         String stardb_dir_name
