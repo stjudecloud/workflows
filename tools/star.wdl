@@ -26,11 +26,14 @@ task build_db {
         set -euo pipefail
 
         orig_gtf=~{gencode_gtf}
-        gtf="${orig_gtf%.gz}"
-        gunzip ~{gencode_gtf} || true
+        gtf=$(basename "${orig_gtf%.gz}")
+        cp ~{gencode_gtf} $gtf
+        gunzip -c ~{gencode_gtf} > $gtf || true
+
         orig_fasta=~{reference_fasta}
-        ref_fasta="${orig_fasta%.gz}"
-        gunzip ~{reference_fasta} || true
+        ref_fasta=$(basename "${orig_fasta%.gz}")
+        cp ~{reference_fasta} $ref_fasta
+        gunzip -c ~{reference_fasta} > $ref_fasta || true
         
         mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \
@@ -40,6 +43,7 @@ task build_db {
             --genomeFastaFiles $ref_fasta \
             --sjdbGTFfile $gtf \
             --sjdbOverhang 125
+        rm $gtf $ref_fasta
         tar -czf ~{stardb_out_name} ~{stardb_dir_name}
     >>>
 
