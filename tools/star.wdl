@@ -27,13 +27,11 @@ task build_db {
 
         orig_gtf=~{gencode_gtf}
         gtf=$(basename "${orig_gtf%.gz}")
-        cp ~{gencode_gtf} $gtf
-        gunzip -c ~{gencode_gtf} > $gtf || true
+        gunzip -c ~{gencode_gtf} > $gtf || cp ~{gencode_gtf} $gtf
 
         orig_fasta=~{reference_fasta}
         ref_fasta=$(basename "${orig_fasta%.gz}")
-        cp ~{reference_fasta} $ref_fasta
-        gunzip -c ~{reference_fasta} > $ref_fasta || true
+        gunzip -c ~{reference_fasta} > $ref_fasta || cp ~{reference_fasta} $ref_fasta
         
         mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \

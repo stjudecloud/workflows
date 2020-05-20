@@ -97,8 +97,7 @@ task rnaseq {
 
         orig=~{gencode_gtf}
         gtf=$(basename "${orig%.gz}")
-        cp ~{gencode_gtf} $gtf
-        gunzip -c ~{gencode_gtf} > $gtf || true
+        gunzip -c ~{gencode_gtf} > $gtf || cp ~{gencode_gtf} $gtf
         
         qualimap rnaseq -bam ~{bam} \
                         -gtf $gtf \
