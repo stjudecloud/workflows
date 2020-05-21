@@ -13,7 +13,7 @@ task bamCoverage {
         Int max_retries = 1
         Int memory_gb = 5
         Int ncpu = 1
-        Boolean use_ncpu = false
+        Boolean detect_nproc = false
     }
 
     Float bam_size = size(bam, "GiB")
@@ -23,7 +23,7 @@ task bamCoverage {
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ ${true='true' false='' use_ncpu} ]
+        if [ ${true='true' false='' detect_nproc} ]
         then
             n_cores="max""
         fi

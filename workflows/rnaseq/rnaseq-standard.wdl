@@ -47,7 +47,7 @@ workflow rnaseq_standard {
         String strand = ""
         String output_prefix = basename(input_bam, ".bam")
         Int max_retries = 1
-        Boolean use_ncpu = false
+        Boolean detect_nproc = false
     }
 
     parameter_meta {
@@ -57,7 +57,7 @@ workflow rnaseq_standard {
         strand: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
         output_prefix: "Prefix for output files"
         max_retries: "Number of times to retry failed steps"
-        use_ncpu: "Determine number of cores and use all for multi-core steps"
+        detect_nproc: "Determine number of cores and use all for multi-core steps"
     }
 
     String provided_strand = strand
@@ -66,7 +66,7 @@ workflow rnaseq_standard {
     call picard.validate_bam as validate_input_bam { input: bam=input_bam, max_retries=max_retries }
 
     call util.get_read_groups { input: bam=validate_input_bam.validated_bam, max_retries=max_retries }
-    call b2fq.bam_to_fastqs { input: bam=validate_input_bam.validated_bam, max_retries=max_retries, use_ncpu=use_ncpu }
+    call b2fq.bam_to_fastqs { input: bam=validate_input_bam.validated_bam, max_retries=max_retries, detect_nproc=detect_nproc }
     call star.alignment {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,
@@ -75,10 +75,10 @@ workflow rnaseq_standard {
             output_prefix=output_prefix,
             read_groups=get_read_groups.out,
             max_retries=max_retries,
-            use_ncpu=use_ncpu
+            detect_nproc=detect_nproc
     }
     call picard.sort as picard_sort { input: bam=alignment.star_bam, max_retries=max_retries }
-    call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam, max_retries=max_retries, use_ncpu=use_ncpu }
+    call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam, max_retries=max_retries, detect_nproc=detect_nproc }
     call picard.validate_bam { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call ngsderive.infer_strand as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gencode_gtf, max_retries=max_retries }
     call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, max_retries=max_retries }

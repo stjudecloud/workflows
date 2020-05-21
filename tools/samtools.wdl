@@ -43,7 +43,7 @@ task split {
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
         Int? disk_size_gb
-        Boolean use_ncpu = false
+        Boolean detect_nproc = false
     }
 
     Float bam_size = size(bam, "GiB")
@@ -53,7 +53,7 @@ task split {
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ ${true='true' false='' use_ncpu} ]
+        if [ ${true='true' false='' detect_nproc} ]
         then
             n_cores=`nproc`
         fi
@@ -134,7 +134,7 @@ task index {
         String outfile = basename(bam)+".bai"
         Int max_retries = 1
         Int memory_gb = 15
-        Boolean use_ncpu = false
+        Boolean detect_nproc = false
     }
 
     Float bam_size = size(bam, "GiB")
@@ -142,7 +142,7 @@ task index {
 
     command {
         n_cores=~{ncpu}
-        if [ ${true='true' false='' use_ncpu} ]
+        if [ ${true='true' false='' detect_nproc} ]
         then
             n_cores=`nproc`
         fi
@@ -181,7 +181,7 @@ task subsample {
         Int max_retries = 1
         Int desired_reads = 500000
         Int ncpu = 1
-        Boolean use_ncpu = false
+        Boolean detect_nproc = false
     }
 
     Float bam_size = size(bam, "GiB")
@@ -191,7 +191,7 @@ task subsample {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ ${true='true' false='' use_ncpu} ]
+        if [ ${true='true' false='' detect_nproc} ]
         then
             n_cores=`nproc`
         fi

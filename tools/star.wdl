@@ -15,7 +15,7 @@ task build_db {
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
-        Boolean use_ncpu = false
+        Boolean detect_nproc = false
     }
 
     String stardb_out_name = stardb_dir_name + ".tar.gz"
@@ -27,7 +27,7 @@ task build_db {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ ${true='true' false='' use_ncpu} ]
+        if [ ${true='true' false='' detect_nproc} ]
         then
             n_cores=`nproc`
         fi
@@ -85,7 +85,7 @@ task alignment {
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
-        Boolean use_ncpu = false
+        Boolean detect_nproc = false
     }
     
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
@@ -98,7 +98,7 @@ task alignment {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ ${true='true' false='' use_ncpu} ]
+        if [ ${true='true' false='' detect_nproc} ]
         then
             n_cores=`nproc`
         fi
