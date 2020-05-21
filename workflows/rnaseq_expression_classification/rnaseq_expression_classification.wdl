@@ -57,11 +57,12 @@ workflow rnaseq_expression_classification {
         File? blood_covariates
         File? brain_covariates
         File? solid_covariates
+        Boolean use_ncpu = false
     }
 
     scatter (bam in in_bams) {
         String name = basename(bam, ".bam")
-        call rnav2.rnaseq_standard { input: gencode_gtf=gencode_gtf, input_bam=bam, stardb_tar_gz=stardb_tar_gz, output_prefix=name, strand="" }
+        call rnav2.rnaseq_standard { input: gencode_gtf=gencode_gtf, input_bam=bam, stardb_tar_gz=stardb_tar_gz, output_prefix=name, strand="", use_ncpu=use_ncpu }
     }
 
     if (! defined(reference_counts)){

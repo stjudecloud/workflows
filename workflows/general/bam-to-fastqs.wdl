@@ -45,6 +45,7 @@ workflow bam_to_fastqs {
         Int samtools_sort_ncpu = 1
         Int bam_to_fastq_memory_gb = 40
         Int max_retries = 1
+        Boolean use_ncpu = false
     }
 
     parameter_meta {
@@ -55,7 +56,7 @@ workflow bam_to_fastqs {
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call samtools.split { input: ncpu=samtools_sort_ncpu, bam=bam, max_retries=max_retries }
+    call samtools.split { input: ncpu=samtools_sort_ncpu, bam=bam, max_retries=max_retries, use_ncpu=use_ncpu }
     scatter (split_bam in split.split_bams) {
         call picard.bam_to_fastq { input: bam=split_bam, memory_gb=bam_to_fastq_memory_gb, max_retries=max_retries }
     }

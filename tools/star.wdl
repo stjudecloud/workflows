@@ -15,6 +15,7 @@ task build_db {
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
+        Boolean use_ncpu = false
     }
 
     String stardb_out_name = stardb_dir_name + ".tar.gz"
@@ -24,6 +25,12 @@ task build_db {
 
     command <<<
         set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ ${true='true' false='' use_ncpu} ]
+        then
+            n_cores=`nproc`
+        fi
 
         orig_gtf=~{gencode_gtf}
         gtf="${orig_gtf%.gz}"
@@ -35,7 +42,7 @@ task build_db {
         mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \
             --genomeDir ~{stardb_dir_name} \
-            --runThreadN ~{ncpu} \
+            --runThreadN $n_cores \
             --limitGenomeGenerateRAM ~{ram_limit} \
             --genomeFastaFiles $ref_fasta \
             --sjdbGTFfile $gtf \
@@ -78,6 +85,7 @@ task alignment {
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
+        Boolean use_ncpu = false
     }
     
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
@@ -90,9 +98,11 @@ task alignment {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ ! ~{ncpu} ]; then
+        if [ ${true='true' false='' use_ncpu} ]
+        then
             n_cores=`nproc`
-        fi        
+        fi
+
         tar -xzf ~{stardb_tar_gz};
 
         python /home/sort_star_input.py \
