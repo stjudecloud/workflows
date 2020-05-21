@@ -57,7 +57,7 @@ workflow rnaseq_standard {
         strand: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
         output_prefix: "Prefix for output files"
         max_retries: "Number of times to retry failed steps"
-        detect_nproc: "Determine number of cores and use all for multi-core steps"
+        detect_nproc: "Use all available cores for multi-core steps"
     }
 
     String provided_strand = strand

@@ -25,7 +25,7 @@ task bamCoverage {
         n_cores=~{ncpu}
         if [ ${true='true' false='' detect_nproc} ]
         then
-            n_cores="max""
+            n_cores="max"
         fi
 
         if [ ! -e ~{bam}.bai ]
