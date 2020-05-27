@@ -33,11 +33,12 @@ task build_db {
         fi
 
         orig_gtf=~{gencode_gtf}
-        gtf="${orig_gtf%.gz}"
-        gunzip ~{gencode_gtf} || true
+        gtf=$(basename "${orig_gtf%.gz}")
+        gunzip -c ~{gencode_gtf} > $gtf || cp ~{gencode_gtf} $gtf
+
         orig_fasta=~{reference_fasta}
-        ref_fasta="${orig_fasta%.gz}"
-        gunzip ~{reference_fasta} || true
+        ref_fasta=$(basename "${orig_fasta%.gz}")
+        gunzip -c ~{reference_fasta} > $ref_fasta || cp ~{reference_fasta} $ref_fasta
         
         mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \
@@ -47,6 +48,7 @@ task build_db {
             --genomeFastaFiles $ref_fasta \
             --sjdbGTFfile $gtf \
             --sjdbOverhang 125
+        rm $gtf $ref_fasta
         tar -czf ~{stardb_out_name} ~{stardb_dir_name}
     >>>
 
@@ -76,7 +78,7 @@ task build_db {
 
 task alignment {
     input {
-        Int? ncpu
+        Int ncpu = 1
         Array[File] read_one_fastqs
         Array[File] read_two_fastqs
         File stardb_tar_gz

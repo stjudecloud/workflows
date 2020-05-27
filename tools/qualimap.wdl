@@ -96,8 +96,8 @@ task rnaseq {
         set -euo pipefail
 
         orig=~{gencode_gtf}
-        gtf="${orig%.gz}"
-        gunzip ~{gencode_gtf} || true
+        gtf=$(basename "${orig%.gz}")
+        gunzip -c ~{gencode_gtf} > $gtf || cp ~{gencode_gtf} $gtf
         
         qualimap rnaseq -bam ~{bam} \
                         -gtf $gtf \
@@ -106,6 +106,7 @@ task rnaseq {
                         -p ~{stranded} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
+        rm $gtf
         
         # Check if qualimap succeeded
         if [ ! -d "~{out_directory}/raw_data_qualimapReport/" ]; then
