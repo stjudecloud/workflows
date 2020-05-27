@@ -12,6 +12,8 @@ task bamCoverage {
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
         Int memory_gb = 5
+        Int ncpu = 1
+        Boolean detect_nproc = false
     }
 
     Float bam_size = size(bam, "GiB")
@@ -20,15 +22,22 @@ task bamCoverage {
     command {
         set -euo pipefail
         
+        n_cores=~{ncpu}
+        if [ ${true='true' false='' detect_nproc} ]
+        then
+            n_cores="max"
+        fi
+
         if [ ! -e ~{bam}.bai ]
         then 
             ln -s ~{bai} ~{bam}.bai
         fi
  
-        bamCoverage --bam ~{bam} --outFileName ~{prefix}.bw --outFileFormat bigwig --numberOfProcessors "max"
+        bamCoverage --bam ~{bam} --outFileName ~{prefix}.bw --outFileFormat bigwig --numberOfProcessors "$n_cores"
     }
 
     runtime {
+        cpu: ncpu
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
         docker: 'stjudecloud/deeptools:1.0.0'

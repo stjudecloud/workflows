@@ -43,6 +43,7 @@ task split {
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
         Int? disk_size_gb
+        Boolean detect_nproc = false
     }
 
     Float bam_size = size(bam, "GiB")
@@ -51,8 +52,14 @@ task split {
     command {
         set -euo pipefail
         
-        samtools split --threads ~{ncpu} -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
-        samtools view ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
+        n_cores=~{ncpu}
+        if [ ${true='true' false='' detect_nproc} ]
+        then
+            n_cores=`nproc`
+        fi
+
+        samtools split --threads $n_cores -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
+        samtools view  --threads $n_cores ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
         if ~{default='true' reject_unaccounted} && [ -s unaccounted_reads.bam ]
             then exit 1; 
             else rm ~{prefix}.unaccounted_reads.bam
@@ -123,19 +130,28 @@ task flagstat {
 task index {
     input {
         File bam
+        Int ncpu = 1
         String outfile = basename(bam)+".bai"
         Int max_retries = 1
         Int memory_gb = 15
+        Boolean detect_nproc = false
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
-        samtools index ~{bam} ~{outfile}
+        n_cores=~{ncpu}
+        if [ ${true='true' false='' detect_nproc} ]
+        then
+            n_cores=`nproc`
+        fi
+
+        samtools index --threads $n_cores ~{bam} ~{outfile}
     }
 
     runtime {
+        cpu: ncpu
         disk: disk_size + " GB"
         docker: 'stjudecloud/samtools:1.0.0'
         memory: memory_gb + " GB"
@@ -164,6 +180,8 @@ task subsample {
         String outname = basename(bam, ".bam") + ".subsampled.bam"
         Int max_retries = 1
         Int desired_reads = 500000
+        Int ncpu = 1
+        Boolean detect_nproc = false
     }
 
     Float bam_size = size(bam, "GiB")
@@ -171,19 +189,25 @@ task subsample {
 
     command <<<
         set -euo pipefail
-        
-        if [[ "$(samtools view ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
+
+        n_cores=~{ncpu}
+        if [ ${true='true' false='' detect_nproc} ]
+        then
+            n_cores=`nproc`
+        fi
+
+        if [[ "$(samtools view --threads $n_cores ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
             # subsample it.
             initial_frac=0.00001
-            initial_reads=$(samtools view -s $initial_frac ~{bam} | wc -l)
+            initial_reads=$(samtools view --threads $n_cores -s $initial_frac ~{bam} | wc -l)
             frac=$( \
                 awk -v desired_reads=~{desired_reads} \
                     -v initial_reads="$initial_reads" \
                     -v initial_frac=$initial_frac \
                         'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
                 )
-            samtools view -h -b -s "$frac" ~{bam} > ~{outname}
+            samtools view --threads $n_cores -h -b -s "$frac" ~{bam} > ~{outname}
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
@@ -196,6 +220,7 @@ task subsample {
     }
 
     runtime {
+        cpu: ncpu
         disk: disk_size + " GB"
         docker: 'stjudecloud/samtools:1.0.0'
         maxRetries: max_retries
