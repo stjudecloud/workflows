@@ -221,6 +221,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>deeptools_bamCoverage.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
+<li><code>deeptools_bamCoverage.ncpu</code> (Int, default=1)</li>
 <li><code>deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
 <li><code>deeptools_bamCoverage.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>htseq_count.memory_gb</code> (Int, default=20)</li>
@@ -235,11 +237,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>validate_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
 <li><code>samtools_index.memory_gb</code> (Int, default=15)</li>
 <li><code>samtools_index.outfile</code> (String, default=basename(bam) + ".bai")</li>
+<li><code>samtools_index.ncpu</code> (Int, default=1)</li>
 <li><code>picard_sort.memory_gb</code> (Int, default=25)</li>
 <li><code>picard_sort.output_filename</code> (String, default=basename(bam,".bam") + ".sorted.bam")</li>
 <li><code>picard_sort.sort_order</code> (String, default="coordinate")</li>
 <li><code>alignment.memory_gb</code> (Int, default=50)</li>
-<li><code>alignment.ncpu</code> (Int, default=8)</li>
+<li><code>alignment.ncpu</code> (Int, default=1)</li>
 <li><code>bam_to_fastqs.fqlint.memory_gb</code> (Int, default=8)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
@@ -252,6 +255,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
 <li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
 <li><code>validate_input_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
+<li><code>detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>output_prefix</code> (String, default=basename(input_bam,".bam")): Prefix for output files</li>
 <li><code>strand</code> (String, default=""): empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred</li>
