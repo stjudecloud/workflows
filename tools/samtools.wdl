@@ -147,7 +147,7 @@ task index {
             n_cores=`nproc`
         fi
 
-        samtools index --threads $n_cores ~{bam} ~{outfile}
+        samtools index -@ $n_cores ~{bam} ~{outfile}
     }
 
     runtime {
