@@ -7,7 +7,7 @@ version 1.0
 
 task build_db {
     input {
-        Int ncpu = 8
+        Int ncpu = 1
         File reference_fasta
         File gencode_gtf
         String stardb_dir_name
@@ -15,6 +15,7 @@ task build_db {
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
+        Boolean detect_nproc = false
     }
 
     String stardb_out_name = stardb_dir_name + ".tar.gz"
@@ -24,6 +25,12 @@ task build_db {
 
     command <<<
         set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ ${true='true' false='' detect_nproc} ]
+        then
+            n_cores=`nproc`
+        fi
 
         orig_gtf=~{gencode_gtf}
         gtf=$(basename "${orig_gtf%.gz}")
@@ -36,7 +43,7 @@ task build_db {
         mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \
             --genomeDir ~{stardb_dir_name} \
-            --runThreadN ~{ncpu} \
+            --runThreadN $n_cores \
             --limitGenomeGenerateRAM ~{ram_limit} \
             --genomeFastaFiles $ref_fasta \
             --sjdbGTFfile $gtf \
@@ -71,7 +78,7 @@ task build_db {
 
 task alignment {
     input {
-        Int ncpu = 8
+        Int ncpu = 1
         Array[File] read_one_fastqs
         Array[File] read_two_fastqs
         File stardb_tar_gz
@@ -80,6 +87,7 @@ task alignment {
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
+        Boolean detect_nproc = false
     }
     
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
@@ -90,7 +98,13 @@ task alignment {
 
     command {
         set -euo pipefail
-        
+
+        n_cores=~{ncpu}
+        if [ ${true='true' false='' detect_nproc} ]
+        then
+            n_cores=`nproc`
+        fi
+
         tar -xzf ~{stardb_tar_gz};
 
         python /home/sort_star_input.py \
@@ -100,7 +114,7 @@ task alignment {
 
         STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
              --genomeDir ~{stardb_dir} \
-             --runThreadN ~{ncpu} \
+             --runThreadN $n_cores \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \
              --outSAMtype BAM Unsorted \
