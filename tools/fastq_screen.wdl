@@ -57,7 +57,7 @@ task fastq_screen {
         set -euo pipefail
         
         cp ~{db} /tmp
-        tar -xsf /tmp/~{db_name} -C /tmp/
+        tar -xzf /tmp/~{db_name} -C /tmp/
 
         format_arg=''
         if [[ "~{format}" = "illumina1.3" ]]; then
