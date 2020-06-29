@@ -42,7 +42,7 @@ task infer_strand {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/ngsderive:1.0.1'
+        docker: 'stjudecloud/ngsderive:1.0.2'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
@@ -69,7 +69,7 @@ task instrument {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/ngsderive:1.0.1'
+        docker: 'stjudecloud/ngsderive:1.0.2'
         maxRetries: max_retries
     }
 
@@ -100,7 +100,7 @@ task read_length {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/ngsderive:1.0.1'
+        docker: 'stjudecloud/ngsderive:1.0.2'
         maxRetries: max_retries
     }
 
