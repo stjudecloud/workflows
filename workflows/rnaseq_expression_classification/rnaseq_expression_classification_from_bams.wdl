@@ -36,11 +36,11 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tsne.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/tsne.wdl"
 
 workflow rnaseq_expression_classification_from_bams {
     input { 

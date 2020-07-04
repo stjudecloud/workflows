@@ -27,15 +27,15 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/md5sum.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/fastqc.wdl" as fqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/fastq_screen.wdl" as fq_screen
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.0.0/tools/multiqc.wdl" as mqc
 
 workflow quality_check {
     input {
