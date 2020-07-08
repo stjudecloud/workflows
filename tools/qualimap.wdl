@@ -63,7 +63,7 @@ task bamqc {
 task rnaseq {
     input {
         File bam
-        File? gencode_gtf
+        File gencode_gtf
         Int memory_gb = 16
         Int? disk_size_gb
         Int max_retries = 1

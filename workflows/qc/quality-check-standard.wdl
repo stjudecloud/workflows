@@ -86,8 +86,9 @@ workflow quality_check {
     call qualimap.bamqc as qualimap_bamqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
 
     if (experiment == "RNA-Seq") {
-        call ngsderive.infer_strand as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf, max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
+        File gencode_gtf_defined = select_first([gencode_gtf])
+        call ngsderive.infer_strand as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf_defined, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf_defined, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
             input:
                 sorted_bam=validate_bam.validated_bam,
