@@ -144,9 +144,8 @@ task parse_input {
         String input_fq_format
     }
 
-    Float db_size = size(input_fq_db, "GiB")
-    Int disk_size = ceil(db_size * 2)
-
+    Int disk_size = if defined(input_fq_db) then ceil(size(input_fq_db, "GiB") * 2) else 3
+    
     String no_gtf = if defined(input_gtf) then "" else "true"
 
     command {
