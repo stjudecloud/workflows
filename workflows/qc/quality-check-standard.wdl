@@ -86,7 +86,7 @@ workflow quality_check {
     call qualimap.bamqc as qualimap_bamqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
 
     if (experiment == "RNA-Seq") {
-        File gencode_gtf_defined = select_first([gencode_gtf])
+        File gencode_gtf_defined = select_first([gencode_gtf, "No GTF"])
         call ngsderive.infer_strand as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf_defined, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf_defined, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
         call mqc.multiqc as multiqc_rnaseq {
@@ -102,7 +102,7 @@ workflow quality_check {
         }
     }
     if (experiment == "WGS" || experiment == "WES") {
-        File fastq_screen_db_defined = select_first([fastq_screen_db])
+        File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
         call samtools.subsample as samtools_subsample { input: bam=validate_bam.validated_bam, max_retries=max_retries }
         call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
         call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
