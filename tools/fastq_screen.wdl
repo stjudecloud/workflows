@@ -50,7 +50,7 @@ task fastq_screen {
     Float db_size = size(db, "GiB")
     Int disk_size = ceil(db_size * 2)
 
-    String output_basename = basename(read1, "R1.fastq")
+    String sample_basename = basename(read1, "_R1.fastq")
     String db_name = basename(db)
 
     command {
@@ -58,6 +58,8 @@ task fastq_screen {
         
         cp ~{db} /tmp
         tar -xzf /tmp/~{db_name} -C /tmp/
+
+        cat ~{read1} ~{read2} > ~{sample_basename}.fastq
 
         format_arg=''
         if [[ "~{format}" = "illumina1.3" ]]; then
@@ -68,7 +70,7 @@ task fastq_screen {
             --subset ~{num_reads} \
             --conf /home/fastq_screen.conf \
             --aligner bowtie2 \
-            ~{read1} ~{read2}
+            ~{sample_basename}.fastq
     }
  
     runtime {
@@ -78,7 +80,7 @@ task fastq_screen {
     }
 
     output {
-        Array[File] out_files = glob("~{output_basename}*")
+        Array[File] out_files = glob("~{sample_basename}*")
     }
 
     meta {
