@@ -25,8 +25,8 @@ jobs:
           sed -i 's,https://raw.githubusercontent.com/stjudecloud/workflows/master,'"$(pwd)"',g' "$file"
         done
         for file in $files; do
-          echo "  [*] $file"
-          miniwdl check "$file" > /dev/null
+          echo "  [***] $file [***]"
+          miniwdl check "$file"
           EXITCODE=$(($? || EXITCODE))
         done
         exit $EXITCODE
