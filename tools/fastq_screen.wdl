@@ -48,7 +48,9 @@ task fastq_screen {
     }
 
     Float db_size = size(db, "GiB")
-    Int disk_size = ceil(db_size * 2)
+    Float read1_size = size(read1, "GiB")
+    Float read2_size = size(read2, "GiB")
+    Int disk_size = ceil((db_size * 2) + read1_size + read2_size + 5)
 
     String sample_basename = basename(read1, "_R1.fastq")
     String db_name = basename(db)
