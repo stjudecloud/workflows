@@ -80,7 +80,7 @@ task fastq_screen {
     }
 
     output {
-        Array[File] out_files = glob("~{sample_basename}*")
+        Array[File] out_files = glob("~{sample_basename}_screen*")
     }
 
     meta {
