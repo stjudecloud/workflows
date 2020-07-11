@@ -43,7 +43,7 @@ task fastq_screen {
         File read2
         File db
         String format
-        Int num_reads = 100000
+        Int num_reads = 0
         Int max_retries = 1
     }
 
