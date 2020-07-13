@@ -44,6 +44,7 @@ task fastq_screen {
         File db
         String format
         Int num_reads = 0
+        String? sample_name
         Int max_retries = 1
     }
 
@@ -52,7 +53,8 @@ task fastq_screen {
     Float read2_size = size(read2, "GiB")
     Int disk_size = ceil((db_size * 2) + read1_size + read2_size + 5)
 
-    String sample_basename = basename(read1, "_R1.fastq")
+    String inferred_basename = basename(read1, "_R1.fastq")
+    String sample_basename = select_first([sample_name, inferred_basename])
     String db_name = basename(db)
 
     command {
