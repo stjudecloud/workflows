@@ -152,7 +152,7 @@ task parse_input {
     
     String no_gtf = if defined(input_gtf) then "" else "true"
 
-    command {
+    command <<<
         EXITCODE=0
         if [ "~{input_experiment}" != "WGS" ] && [ "~{input_experiment}" != "WES" ] && [ "~{input_experiment}" != "RNA-Seq" ]; then
             >&2 echo "experiment input must be 'WGS', 'WES', or 'RNA-Seq'"
@@ -169,7 +169,7 @@ task parse_input {
             EXITCODE=1
         fi
 
-        if [ "~{input_experiment}" != "RNA-Seq" ] && [ "$(basename ~{input_fq_db})" != "fastq-screen-db.tar.gz" ]; then
+        if { [ "~{input_experiment}" = "WGS" ] || [ "~{input_experiment}" = "WES" ]; } && [ "$(basename ~{input_fq_db})" != "fastq-screen-db.tar.gz" ]; then
             >&2 echo "FastQ Screen database (input \"fastq_screen_db\") must be archived and named fastq-screen-db.tar.gz"
             EXITCODE=1
         fi
@@ -179,7 +179,7 @@ task parse_input {
             EXITCODE=1
         fi
         exit $EXITCODE
-    }
+    >>>
 
     runtime {
         disk: disk_size + " GB"
