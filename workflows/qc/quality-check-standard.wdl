@@ -85,10 +85,31 @@ workflow quality_check {
     call ngsderive.read_length as ngsderive_read_length { input: bam=validate_bam.validated_bam, bai=bam_index, max_retries=max_retries }
     call qualimap.bamqc as qualimap_bamqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
 
+    if (experiment == "WGS" || experiment == "WES") {
+        File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
+
+        call samtools.subsample as samtools_subsample { input: bam=validate_bam.validated_bam, max_retries=max_retries }
+        call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
+        call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
+        call fq_screen.fastq_screen as fastq_screen { input: read1=fqlint.validated_read1, read2=fqlint.validated_read2, db=fastq_screen_db_defined, format=fastq_format, max_retries=max_retries }
+        
+        call mqc.multiqc {
+            input:
+                sorted_bam=validate_bam.validated_bam,
+                validate_sam_file=validate_bam.out,
+                flagstat_file=samtools_flagstat.outfile,
+                fastqc_files=fastqc.out_files,
+                qualimap_bamqc=qualimap_bamqc.results,
+                fastq_screen=fastq_screen.out_files,
+                max_retries=max_retries
+        }
+    }
     if (experiment == "RNA-Seq") {
         File gencode_gtf_defined = select_first([gencode_gtf, "No GTF"])
+
         call ngsderive.infer_strand as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf_defined, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf_defined, provided_strand=provided_strand, inferred_strand=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
+        
         call mqc.multiqc as multiqc_rnaseq {
             input:
                 sorted_bam=validate_bam.validated_bam,
@@ -98,23 +119,6 @@ workflow quality_check {
                 fastqc_files=fastqc.out_files,
                 qualimap_bamqc=qualimap_bamqc.results,
                 qualimap_rnaseq=qualimap_rnaseq.results,
-                max_retries=max_retries
-        }
-    }
-    if (experiment == "WGS" || experiment == "WES") {
-        File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
-        call samtools.subsample as samtools_subsample { input: bam=validate_bam.validated_bam, max_retries=max_retries }
-        call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
-        call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
-        call fq_screen.fastq_screen as fastq_screen { input: read1=fqlint.validated_read1, read2=fqlint.validated_read2, db=fastq_screen_db_defined, format=fastq_format, max_retries=max_retries }
-        call mqc.multiqc {
-            input:
-                sorted_bam=validate_bam.validated_bam,
-                validate_sam_file=validate_bam.out,
-                flagstat_file=samtools_flagstat.outfile,
-                fastqc_files=fastqc.out_files,
-                qualimap_bamqc=qualimap_bamqc.results,
-                fastq_screen=fastq_screen.out_files,
                 max_retries=max_retries
         }
     }
