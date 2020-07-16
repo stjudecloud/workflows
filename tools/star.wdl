@@ -113,6 +113,7 @@ task alignment {
             --read_groups "~{read_groups}"
 
         STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
+             --readFilesCommand "gunzip -c"
              --genomeDir ~{stardb_dir} \
              --runThreadN $n_cores \
              --outSAMunmapped Within \
