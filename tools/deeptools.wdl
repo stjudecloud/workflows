@@ -19,7 +19,7 @@ task bamCoverage {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
  
-    command {
+    command <<<
         set -euo pipefail
         
         n_cores=~{ncpu}
@@ -34,7 +34,7 @@ task bamCoverage {
         fi
  
         bamCoverage --bam ~{bam} --outFileName ~{prefix}.bw --outFileFormat bigwig --numberOfProcessors "$n_cores"
-    }
+    >>>
 
     runtime {
         cpu: ncpu

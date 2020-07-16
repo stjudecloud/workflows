@@ -32,7 +32,7 @@ task count {
     Float gtf_size = size(gtf, "GiB")
     Int disk_size = ceil(((bam_size + gtf_size) * 4) + 10)
  
-    command {
+    command <<<
         htseq-count -f bam \
             -r pos \
             -s ~{stranded} \
@@ -43,7 +43,7 @@ task count {
             ~{bam} \
             ~{gtf} \
             > ~{outfile}
-    }
+    >>>
 
     runtime {
         memory: memory_gb + " GB"

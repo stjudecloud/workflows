@@ -96,7 +96,7 @@ task alignment {
     Float stardb_tar_gz_size = size(stardb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10)])
 
-    command {
+    command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
@@ -133,7 +133,7 @@ task alignment {
              --twopassMode Basic \
              --limitBAMsortRAM ~{(memory_gb - 2) + "000000000"} \
              --outSAMattrRGline $(cat read_groups_sorted.txt)
-    }
+    >>>
 
     runtime {
         cpu: ncpu

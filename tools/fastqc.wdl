@@ -17,7 +17,7 @@ task fastqc {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
-    command {
+    command <<<
         set -euo pipefail
         
         mkdir ~{prefix}_fastqc_results
@@ -25,7 +25,7 @@ task fastqc {
             -o ~{prefix}_fastqc_results \
             -t ~{ncpu} \
             ~{bam}
-    }
+    >>>
 
     runtime {
         memory: memory_gb + " GB"

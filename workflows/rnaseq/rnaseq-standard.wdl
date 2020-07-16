@@ -99,12 +99,12 @@ task parse_input {
         String input_strand
     }
 
-    command {
+    command <<<
         if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "Stranded-Reverse" ] && [ "~{input_strand}" != "Stranded-Forward" ] && [ "~{input_strand}" != "Unstranded" ]; then
             >&2 echo "strand must be empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
             exit 1
         fi
-    }
+    >>>
 
     runtime {
         disk: "1 GB"

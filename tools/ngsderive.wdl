@@ -19,7 +19,7 @@ task infer_strand {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(((bam_size) * 2) + 10)
  
-    command {
+    command <<<
         set -euo pipefail
 
         annotation=~{gtf}
@@ -38,7 +38,7 @@ task infer_strand {
         mv ~{bai} ~{bam}.bai || true
         ngsderive strandedness ~{bam} -g annotation.gtf.gz > ~{out_file}
         awk 'NR > 1' ~{out_file} | cut -d$'\t' -f5 > strandedness.txt
-    }
+    >>>
 
     runtime {
         disk: disk_size + " GB"
@@ -63,9 +63,9 @@ task instrument {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(((bam_size) * 1.25) + 10)
 
-    command {
+    command <<<
         ngsderive instrument ~{bam} > ~{out_file}
-    }
+    >>>
 
     runtime {
         disk: disk_size + " GB"
@@ -90,12 +90,12 @@ task read_length {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(((bam_size) * 2) + 10)
  
-    command {
+    command <<<
         set -euo pipefail
         
         mv ~{bai} ~{bam}.bai || true
         ngsderive readlen ~{bam} > ~{out_file}
-    }
+    >>>
 
     runtime {
         disk: disk_size + " GB"

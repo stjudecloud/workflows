@@ -24,7 +24,7 @@ task multiqc {
 
     String rnaseq = if defined(qualimap_rnaseq) then "true" else ""
 
-    command {
+    command <<<
         set -eo pipefail
         
         # set ENV variables for `multiqc`
@@ -63,7 +63,7 @@ task multiqc {
         multiqc --cl_config "extra_fn_clean_exts: '_qualimap_bamqc_results'" \
             --file-list file_list.txt -o multiqc_results
         tar -czf multiqc_results.tar.gz multiqc_results
-    }
+    >>>
 
     runtime {
         disk: disk_size + " GB"

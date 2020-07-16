@@ -14,9 +14,9 @@ task quickcheck {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
-    command {
+    command <<<
         samtools quickcheck ~{bam}
-    }
+    >>>
 
     runtime {
         disk: disk_size + " GB"
@@ -49,7 +49,7 @@ task split {
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
-    command {
+    command <<<
         set -euo pipefail
         
         n_cores=~{ncpu}
@@ -65,7 +65,7 @@ task split {
             else rm ~{prefix}.unaccounted_reads.bam
         fi 
         rm unaccounted_reads.bam
-    }
+    >>>
  
     runtime {
         cpu: ncpu
@@ -101,9 +101,9 @@ task flagstat {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
-    command {
+    command <<<
         samtools flagstat ~{bam} > ~{outfilename}
-    }
+    >>>
 
     runtime {
         disk: disk_size + " GB"
@@ -140,7 +140,7 @@ task index {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
-    command {
+    command <<<
         n_cores=~{ncpu}
         if [ ${true='true' false='' detect_nproc} ]
         then
@@ -148,7 +148,7 @@ task index {
         fi
 
         samtools index -@ $n_cores ~{bam} ~{outfile}
-    }
+    >>>
 
     runtime {
         cpu: ncpu

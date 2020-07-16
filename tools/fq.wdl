@@ -25,9 +25,9 @@ task fqlint {
         maxRetries: max_retries
     }
 
-    command {
+    command <<<
         fq lint ~{read1} ~{read2}
-    }
+    >>>
 
     output {
         File validated_read1 = read1
