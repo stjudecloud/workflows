@@ -2,6 +2,8 @@
 ##
 ## This WDL tool wraps the wget tool.
 
+version 1.0
+
 task download {
     input {
         String url
