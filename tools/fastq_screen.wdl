@@ -75,7 +75,7 @@ task fastq_screen {
             --conf /home/fastq_screen.conf \
             --aligner bowtie2 \
             ~{sample_basename}.fastq
-    }
+    >>>
  
     runtime {
         disk: disk_size + " GB"
