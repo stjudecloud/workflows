@@ -79,6 +79,8 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
     </li>
         </ul>
@@ -202,7 +204,7 @@
 <dt>email</dt>
 <dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs FastQ Screen on a pair of fastqs.</dd>
+<dd>This WDL tool runs FastQ Screen on a sample.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -212,10 +214,14 @@
 <li><code>read2</code> (File, <strong>required</strong>)</li>
 <li><code>read1</code> (File, <strong>required</strong>)</li>
 </ul>
+<h4 id="optional">Optional</h4>
+<ul>
+<li><code>sample_name</code> (String?)</li>
+</ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>num_reads</code> (Int, default=100000)</li>
+<li><code>num_reads</code> (Int, default=0)</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>

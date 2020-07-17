@@ -180,7 +180,6 @@ MultiQC aggregates quality control results for bioinformatics.</p>
 <h4 id="required">Required</h4>
 <ul>
 <li><code>flagstat_file</code> (File, <strong>required</strong>): A file containing the output of Samtools' flagstat command for the input STAR aligned BAM file</li>
-<li><code>fastq_screen</code> (Array[File], <strong>required</strong>)</li>
 <li><code>fastqc_files</code> (Array[File], <strong>required</strong>): An array of files output by FastQC</li>
 <li><code>qualimap_bamqc</code> (File, <strong>required</strong>): An array of files output by Qualimap's BamQC mode</li>
 <li><code>validate_sam_file</code> (File, <strong>required</strong>): A file output from Picard's ValidateSam tool</li>
@@ -189,6 +188,7 @@ MultiQC aggregates quality control results for bioinformatics.</p>
 <h4 id="optional">Optional</h4>
 <ul>
 <li><code>star_log</code> (File?)</li>
+<li><code>fastq_screen</code> (Array[File]?)</li>
 <li><code>qualimap_rnaseq</code> (File?): An array of files output by Qualimap's RNA-seq mode</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
