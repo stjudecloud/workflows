@@ -12,7 +12,7 @@ task multiqc {
         File qualimap_bamqc
         File? qualimap_rnaseq
         Array[File] fastqc_files
-        Array[File] fastq_screen
+        Array[File]? fastq_screen
         File flagstat_file
         File? star_log
         Int max_retries = 1

@@ -10,7 +10,7 @@ task infer_strand {
     input {
         File bam
         File bai
-        File? gtf
+        File gtf
         Int max_retries = 1
         Int memory_gb = 5
     }

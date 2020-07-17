@@ -43,14 +43,18 @@ task fastq_screen {
         File read2
         File db
         String format
-        Int num_reads = 100000
+        Int num_reads = 0
+        String? sample_name
         Int max_retries = 1
     }
 
     Float db_size = size(db, "GiB")
-    Int disk_size = ceil(db_size * 2)
+    Float read1_size = size(read1, "GiB")
+    Float read2_size = size(read2, "GiB")
+    Int disk_size = ceil((db_size * 2) + read1_size + read2_size + 5)
 
-    String output_basename = basename(read1, "R1.fastq")
+    String inferred_basename = basename(read1, "_R1.fastq")
+    String sample_basename = select_first([sample_name, inferred_basename])
     String db_name = basename(db)
 
     command {
@@ -58,6 +62,8 @@ task fastq_screen {
         
         cp ~{db} /tmp
         tar -xzf /tmp/~{db_name} -C /tmp/
+
+        cat ~{read1} ~{read2} > ~{sample_basename}.fastq
 
         format_arg=''
         if [[ "~{format}" = "illumina1.3" ]]; then
@@ -68,7 +74,7 @@ task fastq_screen {
             --subset ~{num_reads} \
             --conf /home/fastq_screen.conf \
             --aligner bowtie2 \
-            ~{read1} ~{read2}
+            ~{sample_basename}.fastq
     }
  
     runtime {
@@ -78,12 +84,12 @@ task fastq_screen {
     }
 
     output {
-        Array[File] out_files = glob("~{output_basename}*")
+        Array[File] out_files = glob("~{sample_basename}_screen*")
     }
 
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs FastQ Screen on a pair of fastqs."
+        description: "This WDL tool runs FastQ Screen on a sample."
     }
 }
