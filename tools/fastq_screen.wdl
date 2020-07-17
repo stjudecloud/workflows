@@ -53,7 +53,7 @@ task fastq_screen {
     Float read2_size = size(read2, "GiB")
     Int disk_size = ceil((db_size * 2) + read1_size + read2_size + 5)
 
-    String inferred_basename = basename(read1, "_R1.fastq")
+    String inferred_basename = basename(read1, "_R1.fastq.gz")
     String sample_basename = select_first([sample_name, inferred_basename])
     String db_name = basename(db)
 
@@ -63,7 +63,7 @@ task fastq_screen {
         cp ~{db} /tmp
         tar -xzf /tmp/~{db_name} -C /tmp/
 
-        cat ~{read1} ~{read2} > ~{sample_basename}.fastq
+        gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
 
         format_arg=''
         if [[ "~{format}" = "illumina1.3" ]]; then
