@@ -29,6 +29,7 @@ task count {
                                          # in this case
 
     Float bam_size = size(bam, "GiB")
+    Float mem_size = bam_size + 20
     Float gtf_size = size(gtf, "GiB")
     Int disk_size = ceil(((bam_size + gtf_size) * 4) + 10)
  
@@ -46,7 +47,7 @@ task count {
     }
 
     runtime {
-        memory: memory_gb + " GB"
+        memory: mem_size + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/htseq:1.0.0'
         maxRetries: max_retries
