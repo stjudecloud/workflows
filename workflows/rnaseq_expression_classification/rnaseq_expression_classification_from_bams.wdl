@@ -109,7 +109,8 @@ workflow rnaseq_expression_classification_from_bams {
 
     parameter_meta {
         in_bams: {
-            help: "Provide bams to run for comparison"
+            help: "Provide bams to run for comparison",
+            patterns: ["*.bam"]
         }
         tissue_type: {
             help: "Provide the tissue type to compare against",
