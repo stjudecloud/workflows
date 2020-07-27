@@ -12,13 +12,13 @@ task build_db {
 
     String tar_filename = filename + ".tar.gz"
 
-    command <<<
+    command {
         set -euo pipefail
         
         fastq_screen --get_genomes
         mv FastQ_Screen_Genomes/ ~{filename}/
         tar -czf ~{tar_filename} ~{filename}/
-    >>>
+    }
  
     runtime {
         disk: "30 GB"
@@ -57,7 +57,7 @@ task fastq_screen {
     String sample_basename = select_first([sample_name, inferred_basename])
     String db_name = basename(db)
 
-    command <<<
+    command {
         set -euo pipefail
         
         cp ~{db} /tmp
@@ -75,7 +75,7 @@ task fastq_screen {
             --conf /home/fastq_screen.conf \
             --aligner bowtie2 \
             ~{sample_basename}.fastq
-    >>>
+    }
  
     runtime {
         disk: disk_size + " GB"

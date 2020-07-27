@@ -21,7 +21,7 @@ task plot {
         Int disk_size = 15
     }
 
-    command <<<
+    command {
         mkdir counts
         tar --no-same-owner -C counts -zxf ${counts}
         count_arg=$(ls counts/*)
@@ -29,7 +29,7 @@ task plot {
         itsne-main --debug-rscript --save-data -b ${blacklist} -g ${gencode_gtf} -c ${covariates} -o ${outfile} \
             ${true='--input-sample ' false='' defined(inputs)}${sep=' --input-sample ' inputs} \
             ${'--tissue-type ' + tissue_type} $count_arg ${sep=' ' input_counts}
-    >>>
+    }
   
 
     runtime {
@@ -62,7 +62,7 @@ task append_input {
         Int memory_gb = 5
     }
 
-    command <<<
+    command {
         set -euo pipefail
         
         cat ${covariates_infile} > "covariates.combined.tsv"
@@ -70,7 +70,7 @@ task append_input {
         do
             echo -e "$sample\tinput\t$sample"
         done >> "covariates.combined.tsv"
-    >>>
+    }
 
     runtime{
         memory: memory_gb + " GB"

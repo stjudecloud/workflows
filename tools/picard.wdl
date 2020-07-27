@@ -17,7 +17,7 @@ task mark_duplicates {
     Int disk_size = ceil((bam_size * 2) + 10)
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command <<<
+    command {
         picard -Xmx~{java_heap_size}g MarkDuplicates I=~{bam} \
             O=~{prefix}.duplicates.bam \
             VALIDATION_STRINGENCY=SILENT \
@@ -25,7 +25,7 @@ task mark_duplicates {
             CREATE_MD5_FILE=false \
             COMPRESSION_LEVEL=5 \
             METRICS_FILE=~{prefix}.metrics.txt
-    >>>
+    }
 
     runtime {
         memory: memory_gb + " GB"
@@ -78,7 +78,7 @@ task validate_bam {
     Int disk_size = ceil((bam_size * 2) + 10)
     Int java_heap_size = ceil(memory_gb * 0.9)
     
-    command <<<       
+    command {       
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             I=~{bam} \
             IGNORE=INVALID_PLATFORM_VALUE \
@@ -100,7 +100,7 @@ task validate_bam {
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
             exit 1
         fi
-    >>>
+    }
 
     runtime {
         memory: memory_gb + " GB"
@@ -137,7 +137,7 @@ task bam_to_fastq {
     Int disk_size = ceil((bam_size * 4) + 10)
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command <<<
+    command {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
@@ -147,7 +147,7 @@ task bam_to_fastq {
             VALIDATION_STRINGENCY=SILENT
         
         gzip ~{prefix}_R1.fastq ~{prefix}_R2.fastq
-    >>>
+    }
 
     runtime{
         memory: memory_gb + " GB"
@@ -186,7 +186,7 @@ task sort {
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 4) + 10)])
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command <<<
+    command {
         picard -Xmx~{java_heap_size}g SortSam \
             I=~{bam} \
             O=~{output_filename} \
@@ -195,7 +195,7 @@ task sort {
             CREATE_MD5_FILE=false \
             COMPRESSION_LEVEL=5 \
             VALIDATION_STRINGENCY=SILENT
-    >>>
+    }
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"

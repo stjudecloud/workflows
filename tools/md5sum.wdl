@@ -17,9 +17,9 @@ task compute_checksum {
     Float infile_size = size(infile, "GiB")
     Int disk_size = ceil((infile_size * 2) + 10)
 
-    command <<<
+    command {
         md5sum ~{infile} > ~{outfilename}
-    >>>
+    }
 
     runtime {
         disk: disk_size + " GB"
@@ -53,9 +53,9 @@ task check_checksum {
     Float infile_size = size(infile, "GiB")
     Int disk_size = ceil((infile_size * 2) + 10)
 
-    command <<< 
+    command { 
         md5sum -c ~{infile} > stdout.txt
-    >>> 
+    } 
 
     runtime {
         disk: disk_size + " GB"

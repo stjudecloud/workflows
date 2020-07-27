@@ -18,9 +18,9 @@ task fqlint {
     Float read2_size = size(read2, "GiB")
     Int disk_size = ceil(((read1_size + read2_size) * 2) + 10)
 
-    command <<<
+    command {
         fq lint ~{read1} ~{read2}
-    >>>
+    }
 
     runtime {
         disk: disk_size + " GB"

@@ -21,7 +21,7 @@ task bamqc {
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
-    command <<<
+    command {
         set -euo pipefail
         
         qualimap bamqc -bam ~{bam} \
@@ -36,7 +36,7 @@ task bamqc {
         fi
 
         tar -czf ~{out_tar_gz_file} ~{out_directory}
-    >>>
+    }
 
     runtime {
         memory: memory_gb + " GB"
