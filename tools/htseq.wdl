@@ -29,7 +29,7 @@ task count {
                                          # in this case
 
     Float bam_size = size(bam, "GiB")
-    Float mem_size = bam_size + 20
+    Float mem_size = bam_size + memory_gb
     Float gtf_size = size(gtf, "GiB")
     Int disk_size = ceil(((bam_size + gtf_size) * 4) + 10)
  
