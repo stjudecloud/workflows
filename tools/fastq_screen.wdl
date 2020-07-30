@@ -55,13 +55,11 @@ task fastq_screen {
 
     String inferred_basename = basename(read1, "_R1.fastq.gz")
     String sample_basename = select_first([sample_name, inferred_basename])
-    String db_name = basename(db)
 
     command {
         set -euo pipefail
         
-        cp ~{db} /tmp
-        tar -xzf /tmp/~{db_name} -C /tmp/
+        tar -xzf ~{db} -C /tmp/
 
         gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
 
