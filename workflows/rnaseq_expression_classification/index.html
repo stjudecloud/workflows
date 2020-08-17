@@ -207,7 +207,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>gene_blacklist</code> (File, <strong>required</strong>)</li>
 <li><code>stardb_tar_gz</code> (File, <strong>required</strong>)</li>
 <li><code>gencode_gtf</code> (File, <strong>required</strong>)</li>
-<li><code>in_bams</code> (Array[File], <strong>required</strong>): Provide bams to run for comparison</li>
+<li><code>in_bams</code> (Array[File], <strong>required</strong>): Provide bams to run for comparison; <strong>patterns</strong>: ['*.bam']</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -235,7 +235,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>rnaseq_standard.deeptools_bamCoverage.ncpu</code> (Int, default=1)</li>
 <li><code>rnaseq_standard.deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
 <li><code>rnaseq_standard.deeptools_bamCoverage.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>rnaseq_standard.htseq_count.memory_gb</code> (Int, default=20)</li>
+<li><code>rnaseq_standard.htseq_count.added_memory_gb</code> (Int, default=20)</li>
 <li><code>rnaseq_standard.htseq_count.outfile</code> (String, default=basename(bam,".bam") + ".counts.txt")</li>
 <li><code>rnaseq_standard.ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
 <li><code>rnaseq_standard.validate_bam.memory_gb</code> (Int, default=8)</li>
@@ -265,8 +265,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>rnaseq_standard.validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
 <li><code>rnaseq_standard.validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
 <li><code>rnaseq_standard.validate_input_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_input</code> (Boolean, default=true)</li>
 <li><code>rnaseq_standard.max_retries</code> (Int, default=1)</li>
 <li><code>detect_nproc</code> (Boolean, default=false): Determine number of cores and use all for multi-core steps</li>
+<li><code>strand</code> (String, default=""): Choose strandedness for samples. If omitted, the strandedness will attempt to be inferred.; <strong>Choices</strong>: ['', 'Stranded-Forward', 'Stranded-Reverse', 'Unstranded']; <strong>default</strong>: </li>
 <li><code>output_filename</code> (String, default="output.html"): Name for the output HTML RNA-Seq Expression Classification plot</li>
 </ul>
 <h3 id="outputs">Outputs</h3>

@@ -207,7 +207,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>tissue_type</code> (String, <strong>required</strong>): Provide the tissue type to compare against; <strong>Choices</strong>: ['blood', 'brain', 'solid']</li>
 <li><code>gene_blacklist</code> (File, <strong>required</strong>)</li>
 <li><code>gencode_gtf</code> (File, <strong>required</strong>)</li>
-<li><code>in_bams</code> (Array[File], <strong>required</strong>): Provide bams to run for comparison</li>
+<li><code>in_bams</code> (Array[File], <strong>required</strong>): Provide bams to run for comparison; <strong>patterns</strong>: ['*.bam']</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -228,7 +228,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>append_input.memory_gb</code> (Int, default=5)</li>
 <li><code>file_prefix.max_retries</code> (Int, default=1)</li>
 <li><code>count.max_retries</code> (Int, default=1)</li>
-<li><code>count.memory_gb</code> (Int, default=20)</li>
+<li><code>count.added_memory_gb</code> (Int, default=20)</li>
 <li><code>count.outfile</code> (String, default=basename(bam,".bam") + ".counts.txt")</li>
 <li><code>infer.memory_gb</code> (Int, default=5)</li>
 <li><code>infer.max_retries</code> (Int, default=1)</li>

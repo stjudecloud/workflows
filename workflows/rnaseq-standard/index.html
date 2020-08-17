@@ -225,7 +225,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>deeptools_bamCoverage.ncpu</code> (Int, default=1)</li>
 <li><code>deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
 <li><code>deeptools_bamCoverage.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>htseq_count.memory_gb</code> (Int, default=20)</li>
+<li><code>htseq_count.added_memory_gb</code> (Int, default=20)</li>
 <li><code>htseq_count.outfile</code> (String, default=basename(bam,".bam") + ".counts.txt")</li>
 <li><code>ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
 <li><code>validate_bam.memory_gb</code> (Int, default=8)</li>
@@ -255,6 +255,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
 <li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
 <li><code>validate_input_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
+<li><code>validate_input</code> (Boolean, default=true)</li>
 <li><code>detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>output_prefix</code> (String, default=basename(input_bam,".bam")): Prefix for output files</li>
