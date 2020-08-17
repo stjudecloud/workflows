@@ -48,6 +48,7 @@ workflow rnaseq_standard {
         String output_prefix = basename(input_bam, ".bam")
         Int max_retries = 1
         Boolean detect_nproc = false
+        Boolean validate_input = true
     }
 
     parameter_meta {
@@ -63,10 +64,12 @@ workflow rnaseq_standard {
     String provided_strand = strand
 
     call parse_input { input: input_strand=provided_strand }
-    call picard.validate_bam as validate_input_bam { input: bam=input_bam, max_retries=max_retries }
+    if (validate_input){
+       call picard.validate_bam as validate_input_bam { input: bam=input_bam, max_retries=max_retries }
+    }
 
-    call util.get_read_groups { input: bam=validate_input_bam.validated_bam, max_retries=max_retries }
-    call b2fq.bam_to_fastqs { input: bam=validate_input_bam.validated_bam, max_retries=max_retries, detect_nproc=detect_nproc }
+    call util.get_read_groups { input: bam=input_bam, max_retries=max_retries }
+    call b2fq.bam_to_fastqs { input: bam=input_bam, max_retries=max_retries, detect_nproc=detect_nproc }
     call star.alignment {
         input:
             read_one_fastqs=bam_to_fastqs.read1s,

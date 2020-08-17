@@ -12,7 +12,7 @@ task count {
         String provided_strand
         String inferred_strand
         String outfile = basename(bam, ".bam") + ".counts.txt"
-        Int memory_gb = 20
+        Int added_memory_gb = 20
         Int max_retries = 1
     }
 
@@ -29,6 +29,7 @@ task count {
                                          # in this case
 
     Float bam_size = size(bam, "GiB")
+    Float mem_size = bam_size + added_memory_gb
     Float gtf_size = size(gtf, "GiB")
     Int disk_size = ceil(((bam_size + gtf_size) * 4) + 10)
  
@@ -46,7 +47,7 @@ task count {
     }
 
     runtime {
-        memory: memory_gb + " GB"
+        memory: mem_size + " GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/htseq:1.0.0'
         maxRetries: max_retries
@@ -65,5 +66,6 @@ task count {
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         gtf: "Input genomic features in GTF format to count reads for"
+        added_memory_gb: "Amount of additional memory to add to the bam size"
     }
 }
