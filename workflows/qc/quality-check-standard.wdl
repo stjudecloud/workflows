@@ -71,7 +71,7 @@ workflow quality_check {
             input_experiment=experiment,
             input_gtf=gencode_gtf,
             input_strand=provided_strand,
-            input_fq_db=fastq_screen_db,
+            input_fq_screen_db=fastq_screen_db,
             input_fq_format=fastq_format
     }
 
@@ -144,11 +144,11 @@ task parse_input {
         String input_experiment
         File? input_gtf
         String input_strand
-        File? input_fq_db
+        File? input_fq_screen_db
         String input_fq_format
     }
 
-    Int disk_size = if defined(input_fq_db) then ceil(size(input_fq_db, "GiB") * 2) else 3
+    Int disk_size = if defined(input_fq_screen_db) then ceil(size(input_fq_screen_db, "GiB") * 2) else 3
     
     String no_gtf = if defined(input_gtf) then "" else "true"
 
@@ -169,7 +169,7 @@ task parse_input {
             EXITCODE=1
         fi
 
-        if { [ "~{input_experiment}" = "WGS" ] || [ "~{input_experiment}" = "WES" ]; } && [ "$(basename ~{input_fq_db})" != "fastq-screen-db.tar.gz" ]; then
+        if { [ "~{input_experiment}" = "WGS" ] || [ "~{input_experiment}" = "WES" ]; } && [ "$(basename ~{input_fq_screen_db})" != "fastq-screen-db.tar.gz" ]; then
             >&2 echo "FastQ Screen database (input \"fastq_screen_db\") must be archived and named fastq-screen-db.tar.gz"
             EXITCODE=1
         fi
