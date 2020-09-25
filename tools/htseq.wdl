@@ -11,7 +11,7 @@ task count {
         File gtf
         String provided_strand
         String inferred_strand
-        String outfile = basename(bam, ".bam") + ".counts.txt"
+        String outfile = basename(bam, ".bam") + ".feature-counts.txt"
         Int added_memory_gb = 20
         Int max_retries = 1
     }
