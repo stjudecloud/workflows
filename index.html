@@ -167,16 +167,14 @@ using <a href="https://github.com/broadinstitute/cromwell">Cromwell</a>. We use 
 Cromwell server to perform various tasks. Although we do not test outside of Cromwell, we
 expect that the workflows will work just as well using other runners.</p>
 <p>The easiest way to get started is to install <a href="https://bioconda.github.io/">bioconda</a> and the run the following commands:</p>
-<pre><code class="bash">conda create -n workflows-dev -c conda-forge cromwell==47 -y
+<pre><code class="language-bash">conda create -n workflows-dev -c conda-forge cromwell==47 -y
 conda activate workflows-dev
 git clone git@github.com:stjudecloud/workflows.git
 cd workflows
 </code></pre>
-
 <p>Any of the workflows in <a href="https://github.com/stjudecloud/workflows/tree/master/workflows">the workflows</a> folder is a good place to start, e.g.</p>
-<pre><code class="bash">cromwell run workflows/reference/bootstrap-reference.wdl --inputs workflows/reference/inputs.json
+<pre><code class="language-bash">cromwell run workflows/reference/bootstrap-reference.wdl --inputs workflows/reference/inputs.json
 </code></pre>
-
 <h2 id="repository-structure">Repository Structure</h2>
 <p>The repository is laid out as follows:</p>
 <ul>
@@ -292,5 +290,5 @@ This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LI
 
 <!--
 MkDocs version : 1.1.2
-Build Date UTC : 2020-09-25 17:06:24.763916+00:00
+Build Date UTC : 2020-11-02 19:02:05.802705+00:00
 -->
