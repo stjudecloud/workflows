@@ -23,6 +23,7 @@ task multiqc {
     Int disk_size = ceil((star_size * 4) + 10)
 
     String rnaseq = if defined(qualimap_rnaseq) then "true" else ""
+    Array[String] fastq_screen_files = select_first([fastq_screen, []])
 
     command {
         set -eo pipefail
@@ -50,13 +51,13 @@ task multiqc {
             for file in $(find "$qualimap_rnaseq_dir"/raw_data_qualimapReport/); do
                 echo $file >> file_list.txt
             done
+        else
+            for file in ~{sep=' ' fastq_screen_files} ; do
+                echo $file >> file_list.txt
+            done
         fi
 
         for file in ~{sep=' ' fastqc_files} ; do
-            echo $file >> file_list.txt
-        done
-
-        for file in ~{sep=' ' fastq_screen} ; do
             echo $file >> file_list.txt
         done
 

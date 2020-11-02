@@ -59,7 +59,7 @@ task fastq_screen {
     command {
         set -euo pipefail
         
-        tar -xzf ~{db} -C /tmp/
+        tar -xzf ~{db} -C /tmp/ --no-same-owner
 
         gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
 
