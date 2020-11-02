@@ -10,7 +10,7 @@ task bamqc {
         File bam
         Int ncpu = 1
         Int max_retries = 1
-        Int memory_gb = 8
+        Int memory_gb = 32
         Int? disk_size_gb
     }
 
