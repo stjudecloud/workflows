@@ -98,9 +98,9 @@ workflow quality_check {
                 sorted_bam=validate_bam.validated_bam,
                 validate_sam_file=validate_bam.out,
                 flagstat_file=samtools_flagstat.outfile,
-                fastqc_files=fastqc.out_files,
+                fastqc=fastqc.results,
                 qualimap_bamqc=qualimap_bamqc.results,
-                fastq_screen=fastq_screen.out_files,
+                fastq_screen=fastq_screen.results,
                 max_retries=max_retries
         }
     }
@@ -116,7 +116,7 @@ workflow quality_check {
                 validate_sam_file=validate_bam.out,
                 star_log=star_log,
                 flagstat_file=samtools_flagstat.outfile,
-                fastqc_files=fastqc.out_files,
+                fastqc=fastqc.results,
                 qualimap_bamqc=qualimap_bamqc.results,
                 qualimap_rnaseq=qualimap_rnaseq.results,
                 max_retries=max_retries
@@ -127,11 +127,11 @@ workflow quality_check {
         File bam_checksum = compute_checksum.outfile
         File validate_sam_file = validate_bam.out
         File flagstat = samtools_flagstat.outfile
-        Array[File] fastqc_results = fastqc.out_files
+        File fastqc_results = fastqc.results
         File instrument_file = ngsderive_instrument.instrument_file
         File read_length_file = ngsderive_read_length.read_length_file
         File qualimap_bamqc_results = qualimap_bamqc.results
-        Array[File]? fastq_screen_results = fastq_screen.out_files
+        File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? multiqc_zip = multiqc.out

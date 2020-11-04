@@ -11,8 +11,8 @@ task multiqc {
         File validate_sam_file
         File qualimap_bamqc
         File? qualimap_rnaseq
-        Array[File] fastqc_files
-        Array[File]? fastq_screen
+        File fastqc
+        File? fastq_screen
         File flagstat_file
         File? star_log
         Int max_retries = 1
@@ -23,7 +23,7 @@ task multiqc {
     Int disk_size = ceil((star_size * 4) + 10)
 
     String rnaseq = if defined(qualimap_rnaseq) then "true" else ""
-    Array[String] fastq_screen_files = select_first([fastq_screen, []])
+    String fastq_screen_tar = select_first([fastq_screen, []])
 
     command {
         set -eo pipefail
@@ -52,12 +52,16 @@ task multiqc {
                 echo $file >> file_list.txt
             done
         else
-            for file in ~{sep=' ' fastq_screen_files} ; do
+            tar -xzf ~{fastq_screen_tar}
+            fastq_screen_dir=$(basename ~{fastq_screen_tar} ".tar.gz")
+            for file in $(find "$fastq_screen_dir"); do
                 echo $file >> file_list.txt
             done
         fi
 
-        for file in ~{sep=' ' fastqc_files} ; do
+        tar -xzf ~{fastqc}
+        fastqc_dir=$(basename ~{fastqc} ".tar.gz")
+        for file in $(find "$fastqc_dir"); do
             echo $file >> file_list.txt
         done
 
