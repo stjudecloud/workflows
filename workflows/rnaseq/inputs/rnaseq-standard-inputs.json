@@ -2,7 +2,7 @@
     "rnaseq_standard.gencode_gtf": "/cromwell/inputs/rnaseq_v2/gencode.v31.annotation.gtf",
     "rnaseq_standard.input_bam": "/cromwell/inputs/Sample.RNA-Seq.bam",
     "rnaseq_standard.stardb_tar_gz": "/cromwell/inputs/rnaseq_v2/stardb.tar.gz",
-    "rnaseq_standard.strand": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified, we will try to guess using ngsderive)",
+    "rnaseq_standard.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified, we will try to guess using ngsderive)",
     "rnaseq_standard.output_prefix": "Sample",
     "rnaseq_standard.bam_to_fastqs.samtools_sort_ncpu": "Int? (optional, default = 1)",
     "rnaseq_standard.bam_to_fastqs.bam_to_fastq_memory_gb": "Int? (optional, default = 40)",

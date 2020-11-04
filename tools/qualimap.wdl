@@ -68,21 +68,21 @@ task rnaseq {
         Int? disk_size_gb
         Int max_retries = 1
         Boolean paired_end = false
-        String provided_strand = ""
-        String inferred_strand = ""
+        String provided_strandedness = ""
+        String inferred_strandedness = ""
     }
 
     String out_directory = basename(bam, ".bam") + "_qualimap_rnaseq_results"
     String out_tar_gz_file = out_directory + ".tar.gz"
-    String stranded = if (provided_strand != "") then 
-                        if (provided_strand == "Stranded-Reverse") then "strand-specific-reverse" else
-                        if (provided_strand == "Stranded-Forward") then "strand-specific-forward" else
-                        if (provided_strand == "Unstranded") then "non-strand-specific"
+    String stranded = if (provided_strandedness != "") then 
+                        if (provided_strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
+                        if (provided_strandedness == "Stranded-Forward") then "strand-specific-forward" else
+                        if (provided_strandedness == "Unstranded") then "non-strand-specific"
                         else "unknown-strand"
                       else 
-                        if (inferred_strand == "Stranded-Reverse") then "strand-specific-reverse" else
-                        if (inferred_strand == "Stranded-Forward") then "strand-specific-forward" else 
-                        if (inferred_strand == "Unstranded") then "non-strand-specific" else
+                        if (inferred_strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
+                        if (inferred_strandedness == "Stranded-Forward") then "strand-specific-forward" else 
+                        if (inferred_strandedness == "Unstranded") then "non-strand-specific" else
                         "unknown-strand" # this will intentionally cause qualimap to error. You will need to manually specify
                                          # in this case
     String paired_end_arg = if (paired_end) then "-pe" else ""
@@ -136,6 +136,6 @@ task rnaseq {
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         gencode_gtf: "A GTF format features file containing Gencode features"
-        provided_strand: "Strand information for RNA-seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]"
+        provided_strandedness: "Strand information for RNA-seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]"
     }
 }
