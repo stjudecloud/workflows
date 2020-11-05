@@ -90,9 +90,9 @@ task multiqc {
     parameter_meta {
         sorted_bam: "A aligned, sorted BAM file"
         validate_sam_file: "A file output from Picard's ValidateSam tool"
-        qualimap_bamqc: "An array of files output by Qualimap's BamQC mode"
-        qualimap_rnaseq: "An array of files output by Qualimap's RNA-seq mode"
-        fastqc_files: "An array of files output by FastQC"
+        qualimap_bamqc: "Tarballed directory of files output by Qualimap's BamQC mode"
+        qualimap_rnaseq: "Tarballed directory of files output by Qualimap's RNA-seq mode"
+        fastqc: "Tarballed directory of files output by FastQC"
         flagstat_file: "A file containing the output of Samtools' flagstat command for the input STAR aligned BAM file"
     }
 }
