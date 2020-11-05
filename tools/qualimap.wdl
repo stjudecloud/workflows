@@ -15,7 +15,7 @@ task bamqc {
     }
 
     String out_directory = basename(bam, ".bam") + '_qualimap_bamqc_results'
-    String out_tar_gz_file = out_directory + ".tar.gz"
+    String out_tar_gz = out_directory + ".tar.gz"
 
     Int java_heap_size = ceil(memory_gb * 0.9)
     Float bam_size = size(bam, "GiB")
@@ -35,7 +35,7 @@ task bamqc {
             exit 1
         fi
 
-        tar -czf ~{out_tar_gz_file} ~{out_directory}
+        tar -czf ~{out_tar_gz} ~{out_directory}
     }
 
     runtime {
@@ -46,7 +46,7 @@ task bamqc {
     }
 
     output {
-        File results = out_tar_gz_file
+        File results = out_tar_gz
     }
 
     meta {
@@ -73,7 +73,7 @@ task rnaseq {
     }
 
     String out_directory = basename(bam, ".bam") + "_qualimap_rnaseq_results"
-    String out_tar_gz_file = out_directory + ".tar.gz"
+    String out_tar_gz = out_directory + ".tar.gz"
     String stranded = if (provided_strandedness != "") then 
                         if (provided_strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
                         if (provided_strandedness == "Stranded-Forward") then "strand-specific-forward" else
@@ -113,7 +113,7 @@ task rnaseq {
             exit 1
         fi
         
-        tar -czf ~{out_tar_gz_file} ~{out_directory}
+        tar -czf ~{out_tar_gz} ~{out_directory}
     >>>
 
     runtime {
@@ -124,7 +124,7 @@ task rnaseq {
     }
 
     output {
-        File results = out_tar_gz_file
+        File results = out_tar_gz
     }
 
     meta {

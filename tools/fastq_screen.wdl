@@ -56,7 +56,7 @@ task fastq_screen {
     String inferred_basename = basename(read1, "_R1.fastq.gz")
     String sample_basename = select_first([sample_name, inferred_basename])
     String out_directory = sample_basename + "_screen"
-    String out_tar_gz_file = out_directory + ".tar.gz"
+    String out_tar_gz = out_directory + ".tar.gz"
 
     command <<<
         set -euo pipefail
@@ -78,7 +78,7 @@ task fastq_screen {
         
         mkdir ~{out_directory}
         find . -type f -name "~{out_directory}'*'" -exec mv -t ./"~{out_directory}"/ {} \+
-        tar -czf ~{out_tar_gz_file} ~{out_directory}
+        tar -czf ~{out_tar_gz} ~{out_directory}
     >>>
  
     runtime {
@@ -88,7 +88,7 @@ task fastq_screen {
     }
 
     output {
-        File results = out_tar_gz_file
+        File results = out_tar_gz
     }
 
     meta {

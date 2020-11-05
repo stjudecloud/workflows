@@ -19,8 +19,8 @@ task multiqc {
         Int memory_gb = 5
     }
 
-    String outdir = basename(sorted_bam, ".bam")
-    String out_tar_gz = outdir + ".tar.gz"
+    String out_directory = basename(sorted_bam, ".bam")
+    String out_tar_gz = out_directory + ".tar.gz"
     Float star_size = size(sorted_bam, "GiB")
     Int disk_size = ceil((star_size * 4) + 10)
 
@@ -68,8 +68,8 @@ task multiqc {
         done
 
         multiqc --cl_config "extra_fn_clean_exts: '_qualimap_bamqc_results'" \
-            --file-list file_list.txt -o ~{outdir}
-        tar -czf ~{out_tar_gz} ~{outdir}
+            --file-list file_list.txt -o ~{out_directory}
+        tar -czf ~{out_tar_gz} ~{out_directory}
     }
 
     runtime {
