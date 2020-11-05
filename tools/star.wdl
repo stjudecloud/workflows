@@ -18,6 +18,7 @@ task build_db {
         Boolean detect_nproc = false
     }
 
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
     String stardb_out_name = stardb_dir_name + ".tar.gz"
     Float reference_fasta_size = size(reference_fasta, "GiB")
     Float gencode_gtf_size = size(gencode_gtf, "GiB")
@@ -27,9 +28,9 @@ task build_db {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ ${true='true' false='' detect_nproc} ]
+        if [ -n ~{parsed_detect_nproc} ]
         then
-            n_cores=`nproc`
+            n_cores=$(nproc)
         fi
 
         orig_gtf=~{gencode_gtf}
@@ -90,6 +91,7 @@ task alignment {
         Boolean detect_nproc = false
     }
     
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
@@ -100,9 +102,9 @@ task alignment {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ ${true='true' false='' detect_nproc} ]
+        if [ -n ~{parsed_detect_nproc} ]
         then
-            n_cores=`nproc`
+            n_cores=$(nproc)
         fi
 
         tar -xzf ~{stardb_tar_gz};
