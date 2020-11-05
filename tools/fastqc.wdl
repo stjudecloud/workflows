@@ -9,13 +9,12 @@ task fastqc {
     input {
         File bam
         Int ncpu = 1
-        String prefix = basename(bam, ".bam")
         Int memory_gb = 5
         Int max_retries = 1
     }
 
-    String out_directory = prefix + "_fastqc_results"
-    String out_tar_gz_file = out_directory + ".tar.gz"
+    String out_directory = basename(bam, ".bam") + "_fastqc_results"
+    String out_tar_gz = out_directory + ".tar.gz"
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
@@ -28,7 +27,7 @@ task fastqc {
             -t ~{ncpu} \
             ~{bam}
 
-        tar -czf ~{out_tar_gz_file} ~{out_directory}
+        tar -czf ~{out_tar_gz} ~{out_directory}
     }
 
     runtime {
@@ -39,7 +38,7 @@ task fastqc {
     }
 
     output {
-        File results = out_tar_gz_file
+        File results = out_tar_gz
     }
 
     meta {
