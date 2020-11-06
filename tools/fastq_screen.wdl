@@ -77,7 +77,7 @@ task fastq_screen {
             ~{sample_basename}.fastq
         
         mkdir ~{out_directory}
-        find . -type f -name "~{out_directory}'*'" -exec mv -t ./"~{out_directory}"/ {} \+
+        mv "~{out_directory}".* "~{out_directory}"
         tar -czf ~{out_tar_gz} ~{out_directory}
     >>>
  
