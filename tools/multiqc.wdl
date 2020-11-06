@@ -25,7 +25,7 @@ task multiqc {
     Int disk_size = ceil((star_size * 4) + 10)
 
     String rnaseq = if defined(qualimap_rnaseq) then "true" else ""
-    String fastq_screen_tar = select_first([fastq_screen, []])
+    String fastq_screen_tar = select_first([fastq_screen, ""])
 
     command {
         set -eo pipefail
