@@ -97,16 +97,16 @@ task rnaseq {
 
         orig=~{gencode_gtf}
         gtf=$(basename "${orig%.gz}")
-        gunzip -c ~{gencode_gtf} > $gtf || cp ~{gencode_gtf} $gtf
+        gunzip -c ~{gencode_gtf} > "$gtf" || cp ~{gencode_gtf} "$gtf"
         
         qualimap rnaseq -bam ~{bam} \
-                        -gtf $gtf \
+                        -gtf "$gtf" \
                         -outdir ~{out_directory} \
                         -oc qualimap_counts.txt \
                         -p ~{stranded} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
-        rm $gtf
+        rm "$gtf"
         
         # Check if qualimap succeeded
         if [ ! -d "~{out_directory}/raw_data_qualimapReport/" ]; then
