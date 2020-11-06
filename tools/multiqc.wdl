@@ -50,7 +50,8 @@ task multiqc {
             for file in $(find "$qualimap_rnaseq_dir"/raw_data_qualimapReport/); do
                 echo "$file" >> file_list.txt
             done
-        elif [ "~{if defined(fastq_screen) then "wgs_or_wes" else ""}" = "wgs_or_wes" ]; then
+        fi
+        if [ "~{if defined(fastq_screen) then "wgs_or_wes" else ""}" = "wgs_or_wes" ]; then
             tar -xzf ~{fastq_screen}
             fastq_screen_dir=$(basename ~{fastq_screen} ".tar.gz")
             for file in $(find "$fastq_screen_dir"); do
