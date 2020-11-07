@@ -19,7 +19,7 @@ task multiqc {
         Int memory_gb = 5
     }
 
-    String out_directory = basename(sorted_bam, ".bam")
+    String out_directory = basename(sorted_bam, ".bam") + "_multiqc"
     String out_tar_gz = out_directory + ".tar.gz"
     Float star_size = size(sorted_bam, "GiB")
     Int disk_size = ceil((star_size * 4) + 10)
@@ -79,7 +79,7 @@ task multiqc {
     }
 
     output {
-        File out = "multiqc_results.tar.gz"
+        File out = ~{out_tar_gz}
     }
 
     meta {
