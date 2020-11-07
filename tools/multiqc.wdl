@@ -79,7 +79,7 @@ task multiqc {
     }
 
     output {
-        File out = ~{out_tar_gz}
+        File out = out_tar_gz
     }
 
     meta {
