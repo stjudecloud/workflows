@@ -73,7 +73,7 @@ task multiqc {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/multiqc:1.1.0'
+        docker: 'stjudecloud/multiqc:1.2.0'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
