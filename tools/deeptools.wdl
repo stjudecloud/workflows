@@ -16,6 +16,7 @@ task bamCoverage {
         Boolean detect_nproc = false
     }
 
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
  
@@ -23,7 +24,7 @@ task bamCoverage {
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ ${true='true' false='' detect_nproc} ]
+        if [ -n ~{parsed_detect_nproc} ]
         then
             n_cores="max"
         fi

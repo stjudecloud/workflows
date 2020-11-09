@@ -46,6 +46,7 @@ task split {
         Boolean detect_nproc = false
     }
 
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
@@ -53,9 +54,9 @@ task split {
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ ${true='true' false='' detect_nproc} ]
+        if [ -n ~{parsed_detect_nproc} ]
         then
-            n_cores=`nproc`
+            n_cores=$(nproc)
         fi
 
         samtools split --threads $n_cores -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
@@ -137,14 +138,15 @@ task index {
         Boolean detect_nproc = false
     }
 
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
         n_cores=~{ncpu}
-        if [ ${true='true' false='' detect_nproc} ]
+        if [ -n ~{parsed_detect_nproc} ]
         then
-            n_cores=`nproc`
+            n_cores=$(nproc)
         fi
 
         samtools index -@ $n_cores ~{bam} ~{outfile}
@@ -186,14 +188,15 @@ task subsample {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ ${true='true' false='' detect_nproc} ]
+        if [ -n ~{parsed_detect_nproc} ]
         then
-            n_cores=`nproc`
+            n_cores=$(nproc)
         fi
 
         if [[ "$(samtools view --threads $n_cores ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then

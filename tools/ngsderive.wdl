@@ -6,7 +6,7 @@
 
 version 1.0
 
-task infer_strand {
+task infer_strandedness {
     input {
         File bam
         File bai

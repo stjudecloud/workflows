@@ -15,7 +15,7 @@ task bamqc {
     }
 
     String out_directory = basename(bam, ".bam") + '_qualimap_bamqc_results'
-    String out_tar_gz_file = out_directory + ".tar.gz"
+    String out_tar_gz = out_directory + ".tar.gz"
 
     Int java_heap_size = ceil(memory_gb * 0.9)
     Float bam_size = size(bam, "GiB")
@@ -35,7 +35,7 @@ task bamqc {
             exit 1
         fi
 
-        tar -czf ~{out_tar_gz_file} ~{out_directory}
+        tar -czf ~{out_tar_gz} ~{out_directory}
     }
 
     runtime {
@@ -46,7 +46,7 @@ task bamqc {
     }
 
     output {
-        File results = out_tar_gz_file
+        File results = out_tar_gz
     }
 
     meta {
@@ -68,21 +68,21 @@ task rnaseq {
         Int? disk_size_gb
         Int max_retries = 1
         Boolean paired_end = false
-        String provided_strand = ""
-        String inferred_strand = ""
+        String provided_strandedness = ""
+        String inferred_strandedness = ""
     }
 
     String out_directory = basename(bam, ".bam") + "_qualimap_rnaseq_results"
-    String out_tar_gz_file = out_directory + ".tar.gz"
-    String stranded = if (provided_strand != "") then 
-                        if (provided_strand == "Stranded-Reverse") then "strand-specific-reverse" else
-                        if (provided_strand == "Stranded-Forward") then "strand-specific-forward" else
-                        if (provided_strand == "Unstranded") then "non-strand-specific"
+    String out_tar_gz = out_directory + ".tar.gz"
+    String stranded = if (provided_strandedness != "") then 
+                        if (provided_strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
+                        if (provided_strandedness == "Stranded-Forward") then "strand-specific-forward" else
+                        if (provided_strandedness == "Unstranded") then "non-strand-specific"
                         else "unknown-strand"
                       else 
-                        if (inferred_strand == "Stranded-Reverse") then "strand-specific-reverse" else
-                        if (inferred_strand == "Stranded-Forward") then "strand-specific-forward" else 
-                        if (inferred_strand == "Unstranded") then "non-strand-specific" else
+                        if (inferred_strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
+                        if (inferred_strandedness == "Stranded-Forward") then "strand-specific-forward" else 
+                        if (inferred_strandedness == "Unstranded") then "non-strand-specific" else
                         "unknown-strand" # this will intentionally cause qualimap to error. You will need to manually specify
                                          # in this case
     String paired_end_arg = if (paired_end) then "-pe" else ""
@@ -97,23 +97,23 @@ task rnaseq {
 
         orig=~{gencode_gtf}
         gtf=$(basename "${orig%.gz}")
-        gunzip -c ~{gencode_gtf} > $gtf || cp ~{gencode_gtf} $gtf
+        gunzip -c ~{gencode_gtf} > "$gtf" || cp ~{gencode_gtf} "$gtf"
         
         qualimap rnaseq -bam ~{bam} \
-                        -gtf $gtf \
+                        -gtf "$gtf" \
                         -outdir ~{out_directory} \
                         -oc qualimap_counts.txt \
                         -p ~{stranded} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
-        rm $gtf
+        rm "$gtf"
         
         # Check if qualimap succeeded
         if [ ! -d "~{out_directory}/raw_data_qualimapReport/" ]; then
             exit 1
         fi
         
-        tar -czf ~{out_tar_gz_file} ~{out_directory}
+        tar -czf ~{out_tar_gz} ~{out_directory}
     >>>
 
     runtime {
@@ -124,7 +124,7 @@ task rnaseq {
     }
 
     output {
-        File results = out_tar_gz_file
+        File results = out_tar_gz
     }
 
     meta {
@@ -136,6 +136,6 @@ task rnaseq {
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         gencode_gtf: "A GTF format features file containing Gencode features"
-        provided_strand: "Strand information for RNA-seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]"
+        provided_strandedness: "Strand information for RNA-seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]"
     }
 }
