@@ -109,10 +109,17 @@ task alignment {
 
         tar -xzf ~{stardb_tar_gz};
 
-        python /home/sort_star_input.py \
-            --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-            --read_two_fastqs "~{sep=',' read_two_fastqs}" \
-            --read_groups "~{read_groups}"
+        if [ -n "~{if defined(read_groups) then read_groups else ""}" ]
+        then
+            python /home/sort_star_input.py \
+                --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+                --read_two_fastqs "~{sep=',' read_two_fastqs}" \
+                --read_groups "~{read_groups}"
+        else 
+            python /home/sort_star_input.py \
+                --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+                --read_two_fastqs "~{sep=',' read_two_fastqs}"
+        fi
 
         STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
              --readFilesCommand "gunzip -c" \
