@@ -180,8 +180,8 @@ task subsample {
     input {
         File bam
         String outname = basename(bam, ".bam") + ".subsampled.bam"
-        Int max_retries = 1
         Int desired_reads = 500000
+        Int max_retries = 1
         Int ncpu = 1
         Boolean detect_nproc = false
     }
