@@ -45,7 +45,7 @@ workflow rnaseq_standard {
         File stardb_tar_gz
         String strandedness = ""
         String output_prefix
-        String read_groups
+        String? read_groups
         Int max_retries = 1
         Boolean detect_nproc = false
         Boolean validate_input = true
