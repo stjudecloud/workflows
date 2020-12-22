@@ -1,6 +1,6 @@
 ## # RNA-Seq Standard from FastQ
 ##
-## This WDL workflow runs the STAR RNA-seq alignment workflow for St. Jude Cloud from fastq input..
+## This WDL workflow runs the STAR RNA-seq alignment workflow for St. Jude Cloud from fastq input.
 ## The workflow takes an paired input fastq files for each read in the pair. 
 ## The read pairs are then passed through STAR alignment to generate a BAM file. The BAM is run
 ## through several QC steps. Quantification is done using htseq-count. 
