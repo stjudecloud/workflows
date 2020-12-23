@@ -78,26 +78,19 @@ workflow rnaseq_standard {
                 desired_reads=subsample_n_reads,
                 detect_nproc=detect_nproc
         }
-
-        call util.get_read_groups as get_subsampled_read_groups { input: bam=subsample.sampled_bam, max_retries=max_retries }
-        call b2fq.bam_to_fastqs as subsampled_bam_to_fastqs { input: bam=subsample.sampled_bam, max_retries=max_retries, detect_nproc=detect_nproc }
     }
-    if (subsample_n_reads < 1) {
-        call util.get_read_groups { input: bam=input_bam, max_retries=max_retries }
-        call b2fq.bam_to_fastqs { input: bam=input_bam, max_retries=max_retries, detect_nproc=detect_nproc }
-    }
+    File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
 
-    String read_groups = select_first([get_read_groups.out, get_subsampled_read_groups.out])
-    Array[File] read_one_fastqs = select_first([bam_to_fastqs.read1s, subsampled_bam_to_fastqs.read1s])
-    Array[File] read_two_fastqs = select_first([bam_to_fastqs.read2s, subsampled_bam_to_fastqs.read2s])
+    call util.get_read_groups { input: bam=selected_input_bam, max_retries=max_retries }
+    call b2fq.bam_to_fastqs { input: bam=selected_input_bam, max_retries=max_retries, detect_nproc=detect_nproc }
 
     call star.alignment {
         input:
-            read_one_fastqs=read_one_fastqs,
-            read_two_fastqs=read_two_fastqs,
+            read_one_fastqs=bam_to_fastqs.read1s,
+            read_two_fastqs=bam_to_fastqs.read2s,
             stardb_tar_gz=stardb_tar_gz,
             output_prefix=output_prefix,
-            read_groups=read_groups,
+            read_groups=get_read_groups.out,
             max_retries=max_retries,
             detect_nproc=detect_nproc
     }
