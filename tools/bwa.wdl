@@ -37,7 +37,7 @@ task bwa_aln {
 
         bwa aln bwa/$PREFIX ~{fastq} > sai
 
-        bwa samse bwa/$PREFIX sai ~{fastq} | java.sh org.stjude.compbio.sam.TweakSam -V SILENT -G 4 -o ~{output_bam}        
+        bwa samse bwa/$PREFIX sai ~{fastq} | samtools view -b - > ~{output_bam}        
     >>>
 
     runtime {
@@ -94,7 +94,7 @@ task bwa_mem {
         tar -C bwa -xzf ~{bwadb_tar_gz}
         PREFIX=$(basename bwa/*.ann ".ann")
 
-        bwa mem -t $n_cores bwa/$PREFIX ~{fastq} > ~{output_bam}
+        bwa mem -t $n_cores bwa/$PREFIX ~{fastq} | samtools view -b - > ~{output_bam}
     >>>
 
     runtime {
