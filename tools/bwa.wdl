@@ -55,7 +55,7 @@ task bwa_aln {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool converts a SAM file to FastQ format." 
+        description: "This WDL tool maps fastq files to BAM format using bwa aln." 
     }
 
     parameter_meta {
@@ -112,7 +112,7 @@ task bwa_mem {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool converts a SAM file to FastQ format." 
+        description: "This WDL tool maps fastq files to BAM format using bwa mem." 
     }
 
     parameter_meta {
