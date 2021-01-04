@@ -55,3 +55,32 @@ END
         File out = "~{outfile}"
     }
 }
+
+task run_ESTIMATE {
+    input {
+        File gene_expression_file
+        String outfile = basename(gene_expression_file, ".TPM.txt") + ".ESTIMATE.gct"
+        Int max_retries = 1
+    }
+
+    command <<<
+        cp "~{gene_expression_file}" gene_expression.txt
+        Rscript - <<END
+library("estimate")
+outputGCT("gene_expression.txt", "gene_expression.gct")
+estimateScore("gene_expression.gct", "estimate.gct", platform = "illumina")
+END
+    mv estimate.gct "~{outfile}"
+    >>>
+
+    runtime {
+        memory: "4 GB"
+        disk: "4 GB"
+        docker: 'stjudecloud/estimate:branch-ESTIMATE-1.0.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        File out = "~{outfile}"
+    }
+}
