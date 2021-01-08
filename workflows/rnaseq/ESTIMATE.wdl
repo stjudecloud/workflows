@@ -13,6 +13,7 @@ workflow ESTIMATE {
 
     output {
         File gene_lengths=calc_tpm.out
-        File estimate_out=run_ESTIMATE.out
+        File estimate_unfiltered_out=run_ESTIMATE.unfiltered_out
+        File estimate_filtered_out=run_ESTIMATE.filtered_out
     }
 }

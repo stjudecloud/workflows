@@ -60,6 +60,7 @@ task run_ESTIMATE {
     input {
         File gene_expression_file
         String outfile = basename(gene_expression_file, ".TPM.txt") + ".ESTIMATE.gct"
+        String filtered_outfile = basename(gene_expression_file, ".TPM.txt") + ".filtered.ESTIMATE.gct"
         Int max_retries = 1
     }
 
@@ -69,8 +70,15 @@ task run_ESTIMATE {
 library("estimate")
 outputGCT("gene_expression.txt", "gene_expression.gct")
 estimateScore("gene_expression.gct", "estimate.gct", platform = "illumina")
+
+infile <- read.table(file = "gene_expression.txt", sep = '\t', header = TRUE)
+filtered <- infile[infile$"Gene.name" %in% common_genes[['GeneSymbol']], ]
+write.table(filtered, sep = "\t", file = "filtered.tsv", row.names = FALSE, quote = FALSE)
+outputGCT("filtered.tsv", "gene_expression.gct")
+estimateScore("gene_expression.gct", "common_estimate.gct", platform = "illumina")
 END
     mv estimate.gct "~{outfile}"
+    mv common_estimate.gct "~{filtered_outfile}"
     >>>
 
     runtime {
@@ -81,6 +89,7 @@ END
     }
 
     output {
-        File out = "~{outfile}"
+        File unfiltered_out = "~{outfile}"
+        File filtered_out = "~{filtered_outfile}"
     }
 }
