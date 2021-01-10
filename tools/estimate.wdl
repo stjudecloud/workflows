@@ -59,8 +59,8 @@ END
 task run_ESTIMATE {
     input {
         File gene_expression_file
-        String outfile = basename(gene_expression_file, ".TPM.txt") + ".ESTIMATE.gct"
-        String filtered_outfile = basename(gene_expression_file, ".TPM.txt") + ".filtered.ESTIMATE.gct"
+        String unfiltered_outfile = basename(gene_expression_file, ".TPM.txt") + ".unfiltered.ESTIMATE.gct"
+        String filtered_outfile = basename(gene_expression_file, ".TPM.txt") + ".ESTIMATE.gct"
         Int max_retries = 1
     }
 
@@ -77,7 +77,7 @@ write.table(filtered, sep = "\t", file = "filtered.tsv", row.names = FALSE, quot
 outputGCT("filtered.tsv", "gene_expression.gct")
 estimateScore("gene_expression.gct", "common_estimate.gct", platform = "illumina")
 END
-    mv estimate.gct "~{outfile}"
+    mv estimate.gct "~{unfiltered_outfile}"
     mv common_estimate.gct "~{filtered_outfile}"
     >>>
 
@@ -89,7 +89,7 @@ END
     }
 
     output {
-        File unfiltered_out = "~{outfile}"
+        File unfiltered_out = "~{unfiltered_outfile}"
         File filtered_out = "~{filtered_outfile}"
     }
 }
