@@ -135,7 +135,7 @@ END
     runtime {
         memory: "8 GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/gtfparse:branch-ESTIMATE-1.0.0'
+        docker: 'stjudecloud/gtfparse:1.0.0'
         maxRetries: max_retries
     }
 
