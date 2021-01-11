@@ -83,9 +83,9 @@ task calc_gene_lengths {
 
     command <<<
         GTF="~{gtf}" OUTFILE="~{outfile}" python - <<END
-import os
-import gtfparse
-import numpy as np
+import os  # lint-check: ignore
+import gtfparse  # lint-check: ignore
+import numpy as np  # lint-check: ignore
 
 gtf_name = os.environ['GTF']
 outfile = open(os.environ['OUTFILE'], 'w')

@@ -10,7 +10,7 @@ task calc_tpm {
 
     command <<<
         COUNTS="~{counts}" GENE_LENGTHS="~{gene_lengths}" OUTFILE="~{outfile}" python3 - <<END
-import os
+import os  # lint-check: ignore
 
 counts_file = open(os.environ['COUNTS'], 'r')
 counts = {}
