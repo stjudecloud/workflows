@@ -74,7 +74,7 @@ write.table(filtered, sep = "\t", file = "filtered.tsv", row.names = FALSE, quot
 outputGCT("filtered.tsv", "gene_expression.gct")
 estimateScore("gene_expression.gct", "common_estimate.gct", platform = "illumina")
 END
-    mv common_estimate.gct "~{filtered_outfile}"
+    mv common_estimate.gct "~{outfile}"
     >>>
 
     runtime {
