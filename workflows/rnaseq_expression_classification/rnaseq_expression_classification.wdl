@@ -52,6 +52,7 @@ workflow rnaseq_expression_classification {
         String tissue_type
         String output_filename = "output.html"
         String strandedness = ""
+        Int subsample_n_reads = -1
         File? blood_counts
         File? brain_counts
         File? solid_counts
@@ -63,7 +64,16 @@ workflow rnaseq_expression_classification {
 
     scatter (bam in in_bams) {
         String name = basename(bam, ".bam")
-        call rnav2.rnaseq_standard { input: gencode_gtf=gencode_gtf, input_bam=bam, stardb_tar_gz=stardb_tar_gz, output_prefix=name, detect_nproc=detect_nproc, strandedness=strandedness }
+        call rnav2.rnaseq_standard {
+            input:
+                gencode_gtf=gencode_gtf,
+                input_bam=bam,
+                stardb_tar_gz=stardb_tar_gz,
+                output_prefix=name,
+                detect_nproc=detect_nproc,
+                strandedness=strandedness, 
+                subsample_n_reads=subsample_n_reads
+        }
     }
 
     if (! defined(reference_counts)){
