@@ -264,6 +264,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>rnaseq_standard.bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
 <li><code>rnaseq_standard.bam_to_fastqs.samtools_sort_ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.subsample.ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.subsample.outname</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
 <li><code>rnaseq_standard.validate_input_bam.memory_gb</code> (Int, default=8)</li>
 <li><code>rnaseq_standard.validate_input_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt"): Name for the output HTML RNA-Seq Expression Classification plot</li>
 <li><code>rnaseq_standard.validate_input_bam.ignore_warnings</code> (Boolean, default=true)</li>
@@ -274,6 +276,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>rnaseq_standard.validate_input</code> (Boolean, default=true)</li>
 <li><code>rnaseq_standard.max_retries</code> (Int, default=1)</li>
 <li><code>detect_nproc</code> (Boolean, default=false): Determine number of cores and use all for multi-core steps</li>
+<li><code>subsample_n_reads</code> (Int, default=-1)</li>
 <li><code>strandedness</code> (String, default=""): Choose strandedness for samples. If omitted, the strandedness will attempt to be inferred.; <strong>Choices</strong>: ['', 'Stranded-Forward', 'Stranded-Reverse', 'Unstranded']; <strong>default</strong>: </li>
 <li><code>output_filename</code> (String, default="output.html"): Name for the output HTML RNA-Seq Expression Classification plot</li>
 </ul>
