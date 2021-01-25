@@ -106,7 +106,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--read_two_fastqs",
-        required=True,
+        required=False,
         help="Comma delimited (without spaces) list of read two fastq file paths",
     )
     parser.add_argument(
@@ -120,15 +120,19 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     read_one_fastqs = args.read_one_fastqs.split(",")
-    read_two_fastqs = args.read_two_fastqs.split(",")
+    if args.read_two_fastqs:
+        read_two_fastqs = args.read_two_fastqs.split(",")
 
-    if len(read_one_fastqs) != len(read_two_fastqs):
-        raise argparse.ArgumentError(
-            "Must have the same number of read one fastqs as read two fastqs"
-        )
+    if args.read_two_fastqs:
+        if len(read_one_fastqs) != len(read_two_fastqs):
+            raise argparse.ArgumentError(
+                "Must have the same number of read one fastqs as read two fastqs"
+            )
 
     sorted_read_one_fastqs = sort_fastqs(read_one_fastqs)
-    sorted_read_two_fastqs = sort_fastqs(read_two_fastqs)
+    sorted_read_two_fastqs = [""]
+    if args.read_two_fastqs:
+        sorted_read_two_fastqs = sort_fastqs(read_two_fastqs)
 
     sorted_read_groups = ["-"]  # Indicates default to STAR
     if args.read_groups:

@@ -81,7 +81,7 @@ task alignment {
     input {
         Int ncpu = 1
         Array[File] read_one_fastqs
-        Array[File] read_two_fastqs
+        Array[File]? read_two_fastqs
         File stardb_tar_gz
         String output_prefix
         String? read_groups
@@ -94,7 +94,7 @@ task alignment {
     String parsed_detect_nproc = if detect_nproc then "true" else ""
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
-    Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
+    Float read_two_fastqs_size = size(select_first([read_two_fastqs, []]), "GiB")
     Float stardb_tar_gz_size = size(stardb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10)])
 
@@ -111,14 +111,27 @@ task alignment {
 
         if [ -n "~{if defined(read_groups) then read_groups else ""}" ]
         then
-            python /home/sort_star_input.py \
-                --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                --read_two_fastqs "~{sep=',' read_two_fastqs}" \
-                --read_groups "~{read_groups}"
+            if [ -n "~{if defined(read_two_fastqs) then "read_two_fastqs" else ""}" ]
+            then
+                python /home/sort_star_input.py \
+                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+                    --read_two_fastqs "~{sep=',' read_two_fastqs}" \
+                    --read_groups "~{read_groups}"
+            else
+                python /home/sort_star_input.py \
+                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+                    --read_groups "~{read_groups}"
+            fi
         else 
-            python /home/sort_star_input.py \
-                --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                --read_two_fastqs "~{sep=',' read_two_fastqs}"
+            if [ -n "~{if defined(read_two_fastqs) then "read_two_fastqs" else ""}" ]
+            then
+                python /home/sort_star_input.py \
+                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+                    --read_two_fastqs "~{sep=',' read_two_fastqs}"
+            else
+                python /home/sort_star_input.py \
+                    --read_one_fastqs "~{sep=',' read_one_fastqs}"
+            fi
         fi
 
         STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
