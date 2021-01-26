@@ -110,3 +110,33 @@ task read_length {
     }
 
 }
+
+task encoding {
+    input {
+        Array[File] fastqs
+        String prefix
+        Int num_reads = -1
+        Int max_retries = 1
+        Int memory_gb = 5
+    }
+
+    String out_file = prefix + ".encoding.txt"
+    Float fastqs_size = size(fastqs, "GiB")
+    Int disk_size = ceil((fastqs_size) + 10)
+ 
+    command {
+        ngsderive encoding -n ~{num_reads} ~{sep=' ' fastqs} > ~{out_file}
+    }
+
+    runtime {
+        disk: disk_size + " GB"
+        memory: memory_gb + " GB"
+        docker: 'stjudecloud/ngsderive:branch-encoding-1.1.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        File encoding_file = out_file
+    }
+
+}

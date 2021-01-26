@@ -7,6 +7,6 @@ RUN apt-get update && \
 
 RUN conda create -n ngsderive python==3.8
 ENV PATH /opt/conda/envs/ngsderive/bin/:$PATH
-RUN pip install --no-cache-dir ngsderive==1.1.0
+RUN pip install --no-cache-dir ngsderive==1.2.0
 
 ENTRYPOINT [ "ngsderive" ]
