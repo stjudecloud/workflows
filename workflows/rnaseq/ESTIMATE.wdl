@@ -12,7 +12,7 @@ workflow ESTIMATE {
     call estimate.run_ESTIMATE { input: gene_expression_file=calc_tpm.out }
 
     output {
-        File gene_lengths=calc_tpm.out
+        File tpm=calc_tpm.out
         File estimate_out=run_ESTIMATE.out
     }
 }
