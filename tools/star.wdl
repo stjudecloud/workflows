@@ -84,7 +84,7 @@ task alignment {
         Array[File]? read_two_fastqs
         File stardb_tar_gz
         String output_prefix
-        String? read_groups
+        String read_groups
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
@@ -180,6 +180,6 @@ task alignment {
         read_one_fastqs: "An array of FastQ files containing read one information"
         read_two_fastqs: "An array of FastQ files containing read two information in the same order as the read one FastQ"
         stardb_tar_gz: "A gzipped TAR file containing the STAR reference files"
-        read_groups: "A string containing the read group information to output in the BAM file"
+        read_groups: "A string containing the read group information to output in the BAM file. Read group fields should be space delimited. Read groups should be comma separated. The ID for each read group must match the basename of a fastq file (up to the first period). Required fields: ID, PU, SM, PL, LB"
     }
 }
