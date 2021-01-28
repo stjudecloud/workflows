@@ -44,7 +44,7 @@ task bwa_aln {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/bwa:branch-bwa_alignment-1.0.0'
+        docker: 'stjudecloud/bwa:1.0.0'
         maxRetries: max_retries
     }
 
@@ -60,6 +60,7 @@ task bwa_aln {
 
     parameter_meta {
         fastq: "Input FastQ file to align with bwa"
+        bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 }
 
@@ -101,7 +102,7 @@ task bwa_mem {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/bwa:branch-bwa_alignment-1.0.0'
+        docker: 'stjudecloud/bwa:1.0.0'
         maxRetries: max_retries
     }
 
@@ -117,5 +118,6 @@ task bwa_mem {
 
     parameter_meta {
         fastq: "Input FastQ file to align with bwa"
+        bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 }
