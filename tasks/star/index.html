@@ -138,6 +138,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workflows/rnaseq-standard-fastq/">RNA-Seq Standard from FastQ</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/rnaseq-standard/">RNA-Seq Standard</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/rnaseq-star-db-build/">RNASeq STAR DB build</a>
@@ -237,13 +239,13 @@ STAR is an RNA-seq aligner.</p>
 <ul>
 <li><code>output_prefix</code> (String, <strong>required</strong>)</li>
 <li><code>stardb_tar_gz</code> (File, <strong>required</strong>): A gzipped TAR file containing the STAR reference files</li>
-<li><code>read_two_fastqs</code> (Array[File], <strong>required</strong>): An array of FastQ files containing read two information in the same order as the read one FastQ</li>
 <li><code>read_one_fastqs</code> (Array[File], <strong>required</strong>): An array of FastQ files containing read one information</li>
 </ul>
 <h4 id="optional_1">Optional</h4>
 <ul>
 <li><code>disk_size_gb</code> (Int?)</li>
-<li><code>read_groups</code> (String?): A string containing the read group information to output in the BAM file</li>
+<li><code>read_groups</code> (String?): A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: <code>ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1</code></li>
+<li><code>read_two_fastqs</code> (Array[File]?): An array of FastQ files containing read two information in the same order as the read one FastQ</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
