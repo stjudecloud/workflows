@@ -57,7 +57,7 @@ task build_db {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/star:1.0.0'
+        docker: 'stjudecloud/star:1.1.0'
         maxRetries: max_retries
     }
 
@@ -81,7 +81,7 @@ task alignment {
     input {
         Int ncpu = 1
         Array[File] read_one_fastqs
-        Array[File] read_two_fastqs
+        Array[File]? read_two_fastqs
         File stardb_tar_gz
         String output_prefix
         String? read_groups
@@ -94,7 +94,7 @@ task alignment {
     String parsed_detect_nproc = if detect_nproc then "true" else ""
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
-    Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
+    Float read_two_fastqs_size = size(select_first([read_two_fastqs, []]), "GiB")
     Float stardb_tar_gz_size = size(stardb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10)])
 
@@ -109,10 +109,30 @@ task alignment {
 
         tar -xzf ~{stardb_tar_gz};
 
-        python /home/sort_star_input.py \
-            --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-            --read_two_fastqs "~{sep=',' read_two_fastqs}" \
-            --read_groups "~{read_groups}"
+        if [ -n "~{if defined(read_groups) then read_groups else ""}" ]
+        then
+            if [ -n "~{if defined(read_two_fastqs) then "read_two_fastqs" else ""}" ]
+            then
+                python /home/sort_star_input.py \
+                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+                    --read_two_fastqs "~{sep=',' read_two_fastqs}" \
+                    --read_groups "~{read_groups}"
+            else
+                python /home/sort_star_input.py \
+                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+                    --read_groups "~{read_groups}"
+            fi
+        else 
+            if [ -n "~{if defined(read_two_fastqs) then "read_two_fastqs" else ""}" ]
+            then
+                python /home/sort_star_input.py \
+                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+                    --read_two_fastqs "~{sep=',' read_two_fastqs}"
+            else
+                python /home/sort_star_input.py \
+                    --read_one_fastqs "~{sep=',' read_one_fastqs}"
+            fi
+        fi
 
         STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
              --readFilesCommand "gunzip -c" \
@@ -141,7 +161,7 @@ task alignment {
         cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/star:1.0.0'
+        docker: 'stjudecloud/star:1.1.0'
         maxRetries: max_retries
     }
 
@@ -160,6 +180,6 @@ task alignment {
         read_one_fastqs: "An array of FastQ files containing read one information"
         read_two_fastqs: "An array of FastQ files containing read two information in the same order as the read one FastQ"
         stardb_tar_gz: "A gzipped TAR file containing the STAR reference files"
-        read_groups: "A string containing the read group information to output in the BAM file"
+        read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
     }
 }
