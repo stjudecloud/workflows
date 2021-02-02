@@ -6,18 +6,15 @@ version 1.0
 
 task build_db {
     input {
-        String filename = "fastq-screen-db"
+        String tar_filename = "fastq-screen-db.tar.gz"
         Int max_retries = 1
     }
-
-    String tar_filename = filename + ".tar.gz"
 
     command {
         set -euo pipefail
         
         fastq_screen --get_genomes
-        mv FastQ_Screen_Genomes/ ~{filename}/
-        tar -czf ~{tar_filename} ~{filename}/
+        tar -czf ~{tar_filename} FastQ_Screen_Genomes/
     }
  
     runtime {
