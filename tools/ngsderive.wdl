@@ -113,7 +113,7 @@ task read_length {
 
 task encoding {
     input {
-        Array[File] fastqs
+        Array[File] ngs_files
         String prefix
         Int num_reads = -1
         Int max_retries = 1
@@ -121,11 +121,11 @@ task encoding {
     }
 
     String out_file = prefix + ".encoding.txt"
-    Float fastqs_size = size(fastqs, "GiB")
-    Int disk_size = ceil((fastqs_size) + 10)
+    Float files_size = size(ngs_files, "GiB")
+    Int disk_size = ceil((files_size) + 10)
  
     command {
-        ngsderive encoding -n ~{num_reads} ~{sep=' ' fastqs} > ~{out_file}
+        ngsderive encoding -n ~{num_reads} ~{sep=' ' ngs_files} > ~{out_file}
     }
 
     runtime {
