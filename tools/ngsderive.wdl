@@ -105,7 +105,6 @@ task read_length {
     }
 
     output {
-        String computed_read_length = read_string(out_file)
         File read_length_file = out_file
     }
 
