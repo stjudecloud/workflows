@@ -65,6 +65,7 @@ workflow rnaseq_standard_fastq {
         max_retries: "Number of times to retry failed steps"
         detect_nproc: "Use all available cores for multi-core steps"
         cleanse_xenograft: "For xenograft samples, enable XenoCP cleansing of mouse contamination"
+        contaminant_stardb_tar_gz: "If using XenoCP to clean contaminant reads, provide a STAR reference for the contaminant genome"
     }
 
     String provided_strandedness = strandedness
