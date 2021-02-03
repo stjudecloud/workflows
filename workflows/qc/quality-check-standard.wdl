@@ -46,7 +46,7 @@ workflow quality_check {
         String experiment
         String strandedness = ""
         File? fastq_screen_db
-        String fastq_phred_encoding = ""
+        String phred_encoding = ""
         Boolean paired_end = true
         Int max_retries = 1
     }
@@ -59,7 +59,7 @@ workflow quality_check {
         experiment: "'WGS', 'WES', or 'RNA-Seq'"
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. Only needed for RNA-Seq data. If missing, will be inferred"
         fastq_screen_db: "Database for FastQ Screen. Only for WGS and WES data. Can be generated using `make-qc-reference.wdl`. Must untar as a directory named `FastQ_Screen_Genomes/`"
-        fastq_phred_encoding: "Encoding format used for PHRED quality scores. Must be empty, 'sanger', or 'illumina1.3'. Only needed for WGS/WES. If missing, will be inferred"
+        phred_encoding: "Encoding format used for PHRED quality scores. Must be empty, 'sanger', or 'illumina1.3'. Only needed for WGS/WES. If missing, will be inferred"
         paired_end: "Whether the data is paired end"
         max_retries: "Number of times to retry failed steps"
     }
@@ -71,7 +71,7 @@ workflow quality_check {
             input_experiment=experiment,
             input_gtf=gencode_gtf,
             input_strand=provided_strandedness,
-            input_fq_format=fastq_phred_encoding
+            input_fq_format=phred_encoding
     }
 
     call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
@@ -94,7 +94,7 @@ workflow quality_check {
         String prefix = basename(bam_to_fastq.read1, "_R1.fastq")
         Array[File] fastqs = [bam_to_fastq.read1, bam_to_fastq.read2]
         call ngsderive.encoding as ngsderive_encoding { input: ngs_files=fastqs, prefix=prefix, max_retries=max_retries }
-        call fq_screen.fastq_screen as fastq_screen { input: read1=fqlint.validated_read1, read2=fqlint.validated_read2, db=fastq_screen_db_defined, provided_encoding=fastq_phred_encoding, inferred_encoding=ngsderive_encoding.inferred_encoding, max_retries=max_retries }
+        call fq_screen.fastq_screen as fastq_screen { input: read1=fqlint.validated_read1, read2=fqlint.validated_read2, db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=ngsderive_encoding.inferred_encoding, max_retries=max_retries }
         
         call mqc.multiqc {
             input:
@@ -137,8 +137,8 @@ workflow quality_check {
         File instrument_file = ngsderive_instrument.instrument_file
         File read_length_file = ngsderive_read_length.read_length_file
         File qualimap_bamqc_results = qualimap_bamqc.results
-        File? encoding = ngsderive_encoding.encoding_file
-        File? encoding_rnaseq = ngsderive_encoding_rna.encoding_file
+        File? inferred_encoding = ngsderive_encoding.encoding_file
+        File? inferred_encoding_rnaseq = ngsderive_encoding_rna.encoding_file
         File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
@@ -175,7 +175,7 @@ task parse_input {
         fi
 
         if [ -n "~{input_fq_format}" ] && [ "~{input_fq_format}" != "sanger" ] && [ "~{input_fq_format}" != "illunima1.3" ]; then
-            >&2 echo "fastq_phred_encoding must be empty, 'sanger', or 'illumina1.3'"
+            >&2 echo "phred_encoding must be empty, 'sanger', or 'illumina1.3'"
             EXITCODE=1
         fi
         exit $EXITCODE
