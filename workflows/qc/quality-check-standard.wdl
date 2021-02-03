@@ -77,11 +77,13 @@ workflow quality_check {
     call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
 
     call picard.validate_bam { input: bam=bam, summary_mode=true, max_retries=max_retries }
+    String prefix = basename(validate_bam.validated_bam, ".bam")
 
     call samtools.flagstat as samtools_flagstat { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call fqc.fastqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=validate_bam.validated_bam, max_retries=max_retries }
     call ngsderive.read_length as ngsderive_read_length { input: bam=validate_bam.validated_bam, bai=bam_index, max_retries=max_retries }
+    call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[validate_bam.validated_bam], prefix=prefix, max_retries=max_retries }
     call qualimap.bamqc as qualimap_bamqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
 
     if (experiment == "WGS" || experiment == "WES") {
@@ -91,8 +93,6 @@ workflow quality_check {
         call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
         call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
 
-        String prefix = basename(bam_to_fastq.read1, "_R1.fastq")
-        call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[bam_to_fastq.read1, bam_to_fastq.read2], prefix=prefix, max_retries=max_retries }
         call fq_screen.fastq_screen as fastq_screen { input: read1=fqlint.validated_read1, read2=fqlint.validated_read2, db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=ngsderive_encoding.inferred_encoding, max_retries=max_retries }
         
         call mqc.multiqc {
@@ -108,10 +108,8 @@ workflow quality_check {
     }
     if (experiment == "RNA-Seq") {
         File gencode_gtf_defined = select_first([gencode_gtf, "No GTF"])
-        String prefix_rna = basename(validate_bam.validated_bam, ".bam")
 
         call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf_defined, max_retries=max_retries }
-        call ngsderive.encoding as ngsderive_encoding_rna { input: ngs_files=[validate_bam.validated_bam], prefix=prefix_rna, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
         
         call mqc.multiqc as multiqc_rnaseq {
@@ -135,8 +133,7 @@ workflow quality_check {
         File instrument_file = ngsderive_instrument.instrument_file
         File read_length_file = ngsderive_read_length.read_length_file
         File qualimap_bamqc_results = qualimap_bamqc.results
-        File? inferred_encoding = ngsderive_encoding.encoding_file
-        File? inferred_encoding_rnaseq = ngsderive_encoding_rna.encoding_file
+        File inferred_encoding = ngsderive_encoding.encoding_file
         File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
