@@ -31,7 +31,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/junction-annotation/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
@@ -111,7 +111,8 @@ workflow quality_check {
 
         call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf_defined, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
-        
+        call ngsderive.junction_annotation as junction_annotation { input: bam=validate_bam.validated_bam, gtf=gencode_gtf_defined, max_retries=max_retries }
+
         call mqc.multiqc as multiqc_rnaseq {
             input:
                 sorted_bam=validate_bam.validated_bam,
@@ -137,6 +138,8 @@ workflow quality_check {
         File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
+        File? junction_summary = junction_annotation.junction_summary
+        File? junctions = junction_annotation.junctions
         File? multiqc_zip = multiqc.out
         File? multiqc_rnaseq_zip = multiqc_rnaseq.out
     }

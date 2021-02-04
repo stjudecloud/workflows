@@ -17,7 +17,7 @@ task infer_strandedness {
 
     String out_file = basename(bam, ".bam") + ".strandedness.txt"
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil(((bam_size) * 2) + 10)
+    Int disk_size = ceil((bam_size) + 10)
  
     command {
         set -euo pipefail
@@ -42,7 +42,7 @@ task infer_strandedness {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/ngsderive:1.0.2'
+        docker: 'stjudecloud/ngsderive:1.1.0'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
@@ -61,7 +61,7 @@ task instrument {
 
     String out_file = basename(bam, ".bam") + ".instrument.txt"
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil(((bam_size) * 1.25) + 10)
+    Int disk_size = ceil((bam_size) + 10)
 
     command {
         ngsderive instrument ~{bam} > ~{out_file}
@@ -69,7 +69,7 @@ task instrument {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/ngsderive:1.0.2'
+        docker: 'stjudecloud/ngsderive:1.1.0'
         maxRetries: max_retries
     }
 
@@ -88,7 +88,7 @@ task read_length {
 
     String out_file = basename(bam, ".bam") + ".readlength.txt"
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil(((bam_size) * 2) + 10)
+    Int disk_size = ceil(bam_size + 10)
  
     command {
         set -euo pipefail
@@ -100,7 +100,7 @@ task read_length {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/ngsderive:1.0.2'
+        docker: 'stjudecloud/ngsderive:1.1.0'
         maxRetries: max_retries
     }
 
@@ -166,5 +166,48 @@ END
         String inferred_encoding = read_string("encoding.txt")
         File encoding_file = out_file
     }
+}
 
+task junction_annotation {
+    input {
+        File bam
+        File gtf
+        String prefix = basename(bam, ".bam")
+        Int min_intron = 50
+        Int min_mapq = 30
+        Int min_reads = 2
+        Int fuzzy_junction_match_range = 0
+        Int max_retries = 1
+        Int memory_gb = 35
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size) + 10)
+
+    command {
+        set -euo pipefail
+
+        ngsderive junction-annotation -v \
+            -g ~{gtf} \
+            -i ~{min_intron} \
+            -q ~{min_mapq} \
+            -m ~{min_reads} \
+            -k ~{fuzzy_junction_match_range} \
+            -o ~{prefix}.junction_summary.tsv \
+            ~{bam}
+        
+        mv ~{bam}.junctions.tsv ~{prefix}.junctions.tsv
+    }
+
+    runtime {
+        disk: disk_size + " GB"
+        memory: memory_gb + " GB"
+        docker: 'stjudecloud/ngsderive:1.1.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        File junction_summary = "~{prefix}.junction_summary.tsv"
+        File junctions = "~{prefix}.junctions.tsv"
+    }
 }
