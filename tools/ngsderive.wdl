@@ -171,6 +171,7 @@ END
 task junction_annotation {
     input {
         File bam
+        File bai
         File gtf
         String prefix = basename(bam, ".bam")
         Int min_intron = 50
@@ -187,6 +188,7 @@ task junction_annotation {
     command {
         set -euo pipefail
 
+        mv ~{bai} ~{bam}.bai || true
         ngsderive junction-annotation -v \
             -g ~{gtf} \
             -i ~{min_intron} \

@@ -111,7 +111,7 @@ workflow quality_check {
 
         call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf_defined, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
-        call ngsderive.junction_annotation as junction_annotation { input: bam=validate_bam.validated_bam, gtf=gencode_gtf_defined, max_retries=max_retries }
+        call ngsderive.junction_annotation as junction_annotation { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf_defined, max_retries=max_retries }
 
         call mqc.multiqc as multiqc_rnaseq {
             input:
