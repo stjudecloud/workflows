@@ -6,18 +6,15 @@ version 1.0
 
 task build_db {
     input {
-        String filename = "fastq-screen-db"
+        String tar_filename = "fastq-screen-db.tar.gz"
         Int max_retries = 1
     }
-
-    String tar_filename = filename + ".tar.gz"
 
     command {
         set -euo pipefail
         
         fastq_screen --get_genomes
-        mv FastQ_Screen_Genomes/ ~{filename}/
-        tar -czf ~{tar_filename} ~{filename}/
+        tar -czf ~{tar_filename} FastQ_Screen_Genomes/
     }
  
     runtime {
@@ -42,7 +39,8 @@ task fastq_screen {
         File read1
         File read2
         File db
-        String format
+        String provided_encoding
+        String inferred_encoding = ""
         Int num_reads = 0
         String? sample_name
         Int max_retries = 1
@@ -58,6 +56,13 @@ task fastq_screen {
     String out_directory = sample_basename + "_screen"
     String out_tar_gz = out_directory + ".tar.gz"
 
+    String format_arg = if (provided_encoding != "") then
+                            if (provided_encoding == "illumina1.3") then "--illumina1_3"
+                            else ""
+                        else
+                            if (inferred_encoding == "Illumina 1.3") then "--illumina1_3"
+                            else ""
+
     command <<<
         set -euo pipefail
         
@@ -65,12 +70,8 @@ task fastq_screen {
 
         gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
 
-        format_arg=''
-        if [[ "~{format}" = "illumina1.3" ]]; then
-            format_arg='--illumina1_3'
-        fi;
         fastq_screen \
-            $format_arg \
+            ~{format_arg} \
             --subset ~{num_reads} \
             --conf /home/fastq_screen.conf \
             --aligner bowtie2 \
