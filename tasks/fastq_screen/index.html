@@ -201,7 +201,7 @@
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>filename</code> (String, default="fastq-screen-db")</li>
+<li><code>tar_filename</code> (String, default="fastq-screen-db.tar.gz")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -219,7 +219,7 @@
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>format</code> (String, <strong>required</strong>)</li>
+<li><code>provided_encoding</code> (String, <strong>required</strong>)</li>
 <li><code>db</code> (File, <strong>required</strong>)</li>
 <li><code>read2</code> (File, <strong>required</strong>)</li>
 <li><code>read1</code> (File, <strong>required</strong>)</li>
@@ -232,6 +232,7 @@
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>num_reads</code> (Int, default=0)</li>
+<li><code>inferred_encoding</code> (String, default="")</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>

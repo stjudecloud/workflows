@@ -119,6 +119,20 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#encoding">encoding</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_3">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_3">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_3">Outputs</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../picard/">Picard</a>
@@ -250,8 +264,25 @@ for next-generation sequencing data.</p>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
 <ul>
-<li><code>computed_read_length</code> (String)</li>
 <li><code>read_length_file</code> (File)</li>
+</ul>
+<h2 id="encoding">encoding</h2>
+<h3 id="inputs_3">Inputs</h3>
+<h4 id="required_3">Required</h4>
+<ul>
+<li><code>prefix</code> (String, <strong>required</strong>)</li>
+<li><code>ngs_files</code> (Array[File], <strong>required</strong>)</li>
+</ul>
+<h4 id="defaults_3">Defaults</h4>
+<ul>
+<li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>num_reads</code> (Int, default=-1)</li>
+</ul>
+<h3 id="outputs_3">Outputs</h3>
+<ul>
+<li><code>inferred_encoding</code> (String)</li>
+<li><code>encoding_file</code> (File)</li>
 </ul>
               
             </div>
