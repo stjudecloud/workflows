@@ -189,7 +189,7 @@ task junction_annotation {
         set -euo pipefail
 
         mv ~{bai} ~{bam}.bai || true
-        ngsderive junction-annotation -v \
+        ngsderive junction-annotation --debug \
             -g ~{gtf} \
             -i ~{min_intron} \
             -q ~{min_mapq} \
@@ -198,7 +198,7 @@ task junction_annotation {
             -o ~{prefix}.junction_summary.tsv \
             ~{bam}
         
-        mv ~{bam}.junctions.tsv ~{prefix}.junctions.tsv
+        mv $(basename ~{bam}.junctions.tsv) ~{prefix}.junctions.tsv
     }
 
     runtime {
