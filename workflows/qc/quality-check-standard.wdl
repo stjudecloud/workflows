@@ -64,6 +64,7 @@ workflow quality_check {
         max_retries: "Number of times to retry failed steps"
     }
 
+    String prefix = basename(bam, ".bam")
     String provided_strandedness = strandedness
 
     call parse_input {
@@ -77,27 +78,26 @@ workflow quality_check {
     call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
 
     call picard.validate_bam { input: bam=bam, summary_mode=true, max_retries=max_retries }
-    String prefix = basename(validate_bam.validated_bam, ".bam")
+    call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
 
-    call samtools.flagstat as samtools_flagstat { input: bam=validate_bam.validated_bam, max_retries=max_retries }
-    call fqc.fastqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
-    call ngsderive.instrument as ngsderive_instrument { input: bam=validate_bam.validated_bam, max_retries=max_retries }
-    call ngsderive.read_length as ngsderive_read_length { input: bam=validate_bam.validated_bam, bai=bam_index, max_retries=max_retries }
-    call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[validate_bam.validated_bam], prefix=prefix, max_retries=max_retries }
-    call qualimap.bamqc as qualimap_bamqc { input: bam=validate_bam.validated_bam, max_retries=max_retries }
+    call samtools.flagstat as samtools_flagstat { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call fqc.fastqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call ngsderive.instrument as ngsderive_instrument { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
+    call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
+    call qualimap.bamqc as qualimap_bamqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
 
     if (experiment == "WGS" || experiment == "WES") {
         File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
 
-        call samtools.subsample as samtools_subsample { input: bam=validate_bam.validated_bam, max_retries=max_retries }
+        call samtools.subsample as samtools_subsample { input: bam=quickcheck.checked_bam, max_retries=max_retries }
         call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
         call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
 
-        call fq_screen.fastq_screen as fastq_screen { input: read1=fqlint.validated_read1, read2=fqlint.validated_read2, db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=ngsderive_encoding.inferred_encoding, max_retries=max_retries }
+        call fq_screen.fastq_screen { input: read1=fqlint.validated_read1, read2=fqlint.validated_read2, db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=ngsderive_encoding.inferred_encoding, max_retries=max_retries }
         
         call mqc.multiqc {
             input:
-                sorted_bam=validate_bam.validated_bam,
                 validate_sam_file=validate_bam.out,
                 flagstat_file=samtools_flagstat.outfile,
                 fastqc=fastqc.results,
@@ -109,12 +109,11 @@ workflow quality_check {
     if (experiment == "RNA-Seq") {
         File gencode_gtf_defined = select_first([gencode_gtf, "No GTF"])
 
-        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=validate_bam.validated_bam, bai=bam_index, gtf=gencode_gtf_defined, max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=validate_bam.validated_bam, gencode_gtf=gencode_gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
+        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bai=bam_index, gtf=gencode_gtf_defined, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam=quickcheck.checked_bam, gencode_gtf=gencode_gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
         
         call mqc.multiqc as multiqc_rnaseq {
             input:
-                sorted_bam=validate_bam.validated_bam,
                 validate_sam_file=validate_bam.out,
                 star_log=star_log,
                 flagstat_file=samtools_flagstat.outfile,

@@ -24,6 +24,10 @@ task quickcheck {
         maxRetries: max_retries
     }
 
+    output {
+        File checked_bam = bam
+    }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
