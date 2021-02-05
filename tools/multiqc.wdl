@@ -7,7 +7,6 @@ version 1.0
 
 task multiqc {
     input {
-        File bam
         File validate_sam_file
         File qualimap_bamqc
         File? qualimap_rnaseq
@@ -17,12 +16,11 @@ task multiqc {
         File? star_log
         Int max_retries = 1
         Int memory_gb = 5
+        Int disk_size = 20
     }
 
-    String out_directory = basename(bam, ".bam") + "_multiqc"
+    String out_directory = basename(bam, ".ValidateSamFile.txt") + "_multiqc"
     String out_tar_gz = out_directory + ".tar.gz"
-    Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
         set -eo pipefail
@@ -31,8 +29,7 @@ task multiqc {
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
         
-        echo ~{bam} > file_list.txt
-        echo ~{validate_sam_file} >> file_list.txt
+        echo ~{validate_sam_file} > file_list.txt
         echo ~{flagstat_file} >> file_list.txt
 
         qualimap_bamqc_dir=$(basename ~{qualimap_bamqc} ".tar.gz")

@@ -98,7 +98,6 @@ workflow quality_check {
         
         call mqc.multiqc {
             input:
-                bam=quickcheck.checked_bam,
                 validate_sam_file=validate_bam.out,
                 flagstat_file=samtools_flagstat.outfile,
                 fastqc=fastqc.results,
@@ -115,7 +114,6 @@ workflow quality_check {
         
         call mqc.multiqc as multiqc_rnaseq {
             input:
-                bam=quickcheck.checked_bam,
                 validate_sam_file=validate_bam.out,
                 star_log=star_log,
                 flagstat_file=samtools_flagstat.outfile,
