@@ -86,7 +86,6 @@ task multiqc {
     }
 
     parameter_meta {
-        bam: "The BAM referenced by other input reports"
         validate_sam_file: "A file output from Picard's ValidateSam tool"
         qualimap_bamqc: "Tarballed directory of files output by Qualimap's BamQC mode"
         qualimap_rnaseq: "Tarballed directory of files output by Qualimap's RNA-seq mode"
