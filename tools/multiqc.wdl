@@ -19,7 +19,7 @@ task multiqc {
         Int disk_size = 20
     }
 
-    String out_directory = basename(bam, ".ValidateSamFile.txt") + "_multiqc"
+    String out_directory = basename(validate_sam_file, ".ValidateSamFile.txt") + "_multiqc"
     String out_tar_gz = out_directory + ".tar.gz"
 
     command {
