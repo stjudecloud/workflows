@@ -7,7 +7,7 @@ version 1.0
 
 task multiqc {
     input {
-        File sorted_bam
+        File bam
         File validate_sam_file
         File qualimap_bamqc
         File? qualimap_rnaseq
@@ -19,10 +19,10 @@ task multiqc {
         Int memory_gb = 5
     }
 
-    String out_directory = basename(sorted_bam, ".bam") + "_multiqc"
+    String out_directory = basename(bam, ".bam") + "_multiqc"
     String out_tar_gz = out_directory + ".tar.gz"
-    Float star_size = size(sorted_bam, "GiB")
-    Int disk_size = ceil((star_size * 4) + 10)
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 1.2) + 10)
 
     command {
         set -eo pipefail
@@ -31,7 +31,7 @@ task multiqc {
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
         
-        echo ~{sorted_bam} > file_list.txt
+        echo ~{bam} > file_list.txt
         echo ~{validate_sam_file} >> file_list.txt
         echo ~{flagstat_file} >> file_list.txt
 
@@ -89,11 +89,13 @@ task multiqc {
     }
 
     parameter_meta {
-        sorted_bam: "A aligned, sorted BAM file"
+        bam: "The BAM referenced by other input reports"
         validate_sam_file: "A file output from Picard's ValidateSam tool"
         qualimap_bamqc: "Tarballed directory of files output by Qualimap's BamQC mode"
         qualimap_rnaseq: "Tarballed directory of files output by Qualimap's RNA-seq mode"
         fastqc: "Tarballed directory of files output by FastQC"
-        flagstat_file: "A file containing the output of Samtools' flagstat command for the input STAR aligned BAM file"
+        fastq_screen: "Tarballed directory of files output by FastQ Screen"
+        flagstat_file: "A file containing the output of Samtools' flagstat command for the input BAM file"
+        star_log: "The log file of a STAR alignment run"
     }
 }
