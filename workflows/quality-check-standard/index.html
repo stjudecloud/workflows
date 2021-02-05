@@ -237,6 +237,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <ul>
 <li><code>multiqc_rnaseq.disk_size</code> (Int, default=20)</li>
 <li><code>multiqc_rnaseq.memory_gb</code> (Int, default=5)</li>
+<li><code>junction_annotation.memory_gb</code> (Int, default=35)</li>
+<li><code>junction_annotation.fuzzy_junction_match_range</code> (Int, default=0)</li>
+<li><code>junction_annotation.min_reads</code> (Int, default=2)</li>
+<li><code>junction_annotation.min_mapq</code> (Int, default=30)</li>
+<li><code>junction_annotation.min_intron</code> (Int, default=50)</li>
+<li><code>junction_annotation.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>qualimap_rnaseq.memory_gb</code> (Int, default=16)</li>
 <li><code>ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
 <li><code>multiqc.disk_size</code> (Int, default=20)</li>
@@ -283,6 +289,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>fastq_screen_results</code> (File?)</li>
 <li><code>inferred_strandedness</code> (File?)</li>
 <li><code>qualimap_rnaseq_results</code> (File?)</li>
+<li><code>junction_summary</code> (File?)</li>
+<li><code>junctions</code> (File?)</li>
 <li><code>multiqc_zip</code> (File?)</li>
 <li><code>multiqc_rnaseq_zip</code> (File?)</li>
 </ul>

@@ -133,6 +133,20 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#junction_annotation">junction_annotation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_4">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_4">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_4">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_4">Outputs</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../picard/">Picard</a>
@@ -283,6 +297,29 @@ for next-generation sequencing data.</p>
 <ul>
 <li><code>inferred_encoding</code> (String)</li>
 <li><code>encoding_file</code> (File)</li>
+</ul>
+<h2 id="junction_annotation">junction_annotation</h2>
+<h3 id="inputs_4">Inputs</h3>
+<h4 id="required_4">Required</h4>
+<ul>
+<li><code>gtf</code> (File, <strong>required</strong>)</li>
+<li><code>bai</code> (File, <strong>required</strong>)</li>
+<li><code>bam</code> (File, <strong>required</strong>)</li>
+</ul>
+<h4 id="defaults_4">Defaults</h4>
+<ul>
+<li><code>memory_gb</code> (Int, default=35)</li>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>fuzzy_junction_match_range</code> (Int, default=0)</li>
+<li><code>min_reads</code> (Int, default=2)</li>
+<li><code>min_mapq</code> (Int, default=30)</li>
+<li><code>min_intron</code> (Int, default=50)</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
+</ul>
+<h3 id="outputs_4">Outputs</h3>
+<ul>
+<li><code>junction_summary</code> (File)</li>
+<li><code>junctions</code> (File)</li>
 </ul>
               
             </div>
