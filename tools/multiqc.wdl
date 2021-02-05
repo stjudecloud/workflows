@@ -22,7 +22,7 @@ task multiqc {
     String out_directory = basename(bam, ".bam") + "_multiqc"
     String out_tar_gz = out_directory + ".tar.gz"
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 1.2) + 10)
+    Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
         set -eo pipefail
