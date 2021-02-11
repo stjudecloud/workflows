@@ -33,7 +33,7 @@ jobs:
               EXITCODE=1
             else
               tag=branch-${GITHUB_REF##*/}-$tag_dir
-              docker build -t stjudecloud/"$tool_name":"$tag" docker/"$dir"/"$tag_dir"
+              docker build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} -t stjudecloud/"$tool_name":"$tag" docker/"$dir"/"$tag_dir"
               docker push stjudecloud/"$tool_name":"$tag"
               docker rmi stjudecloud/"$tool_name":"$tag"
             fi;
