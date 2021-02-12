@@ -6,7 +6,7 @@ task sequencerr {
     input {
         File bam
         File bai
-        String prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam") + ".sequencErr"
         Boolean output_count_file = false
         Int max_retries = 1
     }
@@ -18,18 +18,18 @@ task sequencerr {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(bam_size * 2.2)
 
-    String outfile = if output_count_file then prefix + ".sequencErr_results.tar.gz" else prefix + ".sequencErr.err"
+    String outfile = if output_count_file then prefix + "_results.tar.gz" else prefix + ".err"
 
     command {
         set -euo pipefail
         
         mv ~{bai} ~{bam}.bai || true
-        sequencerr -pe=~{prefix}.sequencErr.err ~{bam} ~{prefix}.sequencErr.count
+        sequencerr -pe=~{prefix}.err ~{bam} ~{prefix}.count
 
         if [ ~{output_count_file} == "true" ]; then
-            mkdir ~{prefix}.sequencErr_results
-            mv ~{prefix}.sequencErr.err ~{prefix}.sequencErr.count ~{prefix}.sequencErr_results
-            tar -czf ~{prefix}.sequencErr_results.tar.gz ~{prefix}.sequencErr_results/
+            mkdir ~{prefix}_results
+            mv ~{prefix}.err ~{prefix}.count ~{prefix}_results
+            tar -czf ~{prefix}_results.tar.gz ~{prefix}_results/
         fi
     }
 
