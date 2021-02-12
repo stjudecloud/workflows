@@ -12,7 +12,7 @@ task sequencerr {
     }
 
     parameter_meta {
-        output_count_file: "Whether to run output granular count file. Result file is large; uncompressed can reach over half input BAM size, compressed can be ~10% BAM size."
+        output_count_file: "Whether to output granular count file. Result file is large; uncompressed can reach over half input BAM size, compressed can be ~10% BAM size."
     }
 
     Float bam_size = size(bam, "GiB")
