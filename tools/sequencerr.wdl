@@ -18,6 +18,10 @@ task sequencerr {
         
         mv ~{bai} ~{bam}.bai || true
         sequencerr -pe=~{prefix}.sequencErr.err ~{bam} ~{prefix}.sequencErr.count
+
+        mkdir ~{prefix}.sequencErr_results
+        mv ~{prefix}.sequencErr.err ~{prefix}.sequencErr.count ~{prefix}.sequencErr_results
+        tar -czf ~{prefix}.sequencErr_results.tar.gz ~{prefix}.sequencErr_results/
     }
 
     runtime {
@@ -28,7 +32,6 @@ task sequencerr {
     }
 
     output {
-        File error = "~{prefix}.sequencErr.err"
-        File count = "~{prefix}.sequencErr.count"
+        File results = "~{prefix}.sequencErr_results.tar.gz"
     }
 }
