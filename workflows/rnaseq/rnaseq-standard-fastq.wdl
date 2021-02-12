@@ -122,6 +122,11 @@ task parse_input {
             >&2 echo "strandedness must be empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
             exit 1
         fi
+        if [ -n "~{cleanse_xenograft}" ] && [ ! -f ~{contaminant_stardb_tar_gz} ]
+        then
+            >&2 echo "contaminant_stardb_tar_gz must be supplied if cleanse_xenograft is specified"
+            exit 1
+        fi
     }
 
     runtime {
