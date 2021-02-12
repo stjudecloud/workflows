@@ -46,7 +46,6 @@ workflow quality_check {
         File? star_log
         String experiment
         String strandedness = ""
-        Boolean run_sequencErr = false
         File? fastq_screen_db
         String phred_encoding = ""
         Boolean paired_end = true
@@ -61,7 +60,6 @@ workflow quality_check {
         experiment: "'WGS', 'WES', or 'RNA-Seq'"
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. Only needed for RNA-Seq data. If missing, will be inferred"
         fastq_screen_db: "Database for FastQ Screen. Only for WGS and WES data. Can be generated using `make-qc-reference.wdl`. Must untar directly to the genome directories."
-        run_sequencErr: "Whether to run `sequencErr`. Only applies to WGS and WES data. Results files are large; uncompressed can reach over half input BAM size, compressed can be ~10% BAM size."
         phred_encoding: "Encoding format used for PHRED quality scores. Must be empty, 'sanger', or 'illumina1.3'. Only needed for WGS/WES. If missing, will be inferred"
         paired_end: "Whether the data is paired end"
         max_retries: "Number of times to retry failed steps"
@@ -93,9 +91,7 @@ workflow quality_check {
     if (experiment == "WGS" || experiment == "WES") {
         File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
 
-        if (run_sequencErr) {
-            call sequencerr.sequencerr as sequencErr { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
-        }
+        call sequencerr.sequencerr as sequencErr { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
 
         call samtools.subsample as samtools_subsample { input: bam=quickcheck.checked_bam, max_retries=max_retries }
         call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
