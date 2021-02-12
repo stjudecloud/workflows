@@ -7,11 +7,18 @@ task sequencerr {
         File bam
         File bai
         String prefix = basename(bam, ".bam")
+        Boolean output_count_file = false
         Int max_retries = 1
     }
 
+    parameter_meta {
+        output_count_file: "Whether to run output granular count file. Result file is large; uncompressed can reach over half input BAM size, compressed can be ~10% BAM size."
+    }
+
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil(bam_size + 8)
+    Int disk_size = ceil(bam_size * 2.2)
+
+    String outfile = if output_count_file then prefix + ".sequencErr_results.tar.gz" else prefix + ".sequencErr.err"
 
     command {
         set -euo pipefail
@@ -19,9 +26,11 @@ task sequencerr {
         mv ~{bai} ~{bam}.bai || true
         sequencerr -pe=~{prefix}.sequencErr.err ~{bam} ~{prefix}.sequencErr.count
 
-        mkdir ~{prefix}.sequencErr_results
-        mv ~{prefix}.sequencErr.err ~{prefix}.sequencErr.count ~{prefix}.sequencErr_results
-        tar -czf ~{prefix}.sequencErr_results.tar.gz ~{prefix}.sequencErr_results/
+        if [ ~{output_count_file} == "true" ]; then
+            mkdir ~{prefix}.sequencErr_results
+            mv ~{prefix}.sequencErr.err ~{prefix}.sequencErr.count ~{prefix}.sequencErr_results
+            tar -czf ~{prefix}.sequencErr_results.tar.gz ~{prefix}.sequencErr_results/
+        fi
     }
 
     runtime {
@@ -32,6 +41,6 @@ task sequencerr {
     }
 
     output {
-        File results = "~{prefix}.sequencErr_results.tar.gz"
+        File results = outfile
     }
 }
