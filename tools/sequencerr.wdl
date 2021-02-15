@@ -6,7 +6,7 @@ task sequencerr {
     input {
         File bam
         File bai
-        String prefix = basename(bam, ".bam") + ".sequencErr"
+        String? prefix = basename(bam, ".bam") + ".sequencErr"
         Boolean output_count_file = false
         Int max_retries = 1
     }
@@ -18,7 +18,9 @@ task sequencerr {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(bam_size * 2.2)
 
-    String outfile = if output_count_file then prefix + "_results.tar.gz" else prefix + ".err"
+    String parsed_prefix = select_first([prefix, basename(bam, ".bam") + ".sequencErr"])
+
+    String outfile = if output_count_file then parsed_prefix + "_results.tar.gz" else parsed_prefix + ".err"
 
     command {
         set -euo pipefail
