@@ -19,7 +19,6 @@ task sequencerr {
     Int disk_size = ceil(bam_size * 2.2)
 
     String parsed_prefix = select_first([prefix, basename(bam, ".bam") + ".sequencErr"])
-
     String outfile = if output_count_file then parsed_prefix + "_results.tar.gz" else parsed_prefix + ".err"
 
     command {
