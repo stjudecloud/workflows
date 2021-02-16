@@ -10,7 +10,7 @@ RUN cd sequencErr && \
     ninja -C build install && \
     ./build/sequencerr_tests
 
-FROM registry.access.redhat.com/ubi7/ubi-minimal
+FROM registry.access.redhat.com/ubi7/ubi
 
 COPY --from=builder /opt/app-root/src/bin/sequencerr /usr/local/bin/sequencerr
 
