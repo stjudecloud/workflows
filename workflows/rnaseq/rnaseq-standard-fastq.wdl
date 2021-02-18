@@ -70,7 +70,7 @@ workflow rnaseq_standard_fastq {
 
     String provided_strandedness = strandedness
 
-    call parse_input { input: input_strand=provided_strandedness }
+    call parse_input { input: input_strand=provided_strandedness, cleanse_xenograft=cleanse_xenograft, contaminant_stardb_tar_gz=contaminant_stardb_tar_gz }
     if (validate_input){
         scatter (reads in zip(read_one_fastqs, read_two_fastqs)) {
             call fq.fqlint { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
@@ -115,14 +115,18 @@ workflow rnaseq_standard_fastq {
 task parse_input {
     input {
         String input_strand
+        Boolean cleanse_xenograft
+        File? contaminant_stardb_tar_gz
     }
+
+    File db = select_first([contaminant_stardb_tar_gz, ""])
 
     command {
         if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "Stranded-Reverse" ] && [ "~{input_strand}" != "Stranded-Forward" ] && [ "~{input_strand}" != "Unstranded" ]; then
             >&2 echo "strandedness must be empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
             exit 1
         fi
-        if [ -n "~{cleanse_xenograft}" ] && [ ! -f ~{contaminant_stardb_tar_gz} ]
+        if [ "~{cleanse_xenograft}" == "true" ] && [ ! -f "~{db}" ]
         then
             >&2 echo "contaminant_stardb_tar_gz must be supplied if cleanse_xenograft is specified"
             exit 1
