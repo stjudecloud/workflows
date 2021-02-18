@@ -4,7 +4,7 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/fastq-screen-refactor/workflows/qc/make-qc-reference.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/fastq-screen-refactor/tools/fastq_screen.wdl"
 
 workflow make_qc_reference {
     call fastq_screen.build_db as fastq_screen_build_db
