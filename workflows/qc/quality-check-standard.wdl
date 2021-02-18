@@ -34,7 +34,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fas
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
+import "https://raw.githubusercontent.com/stjudecloud/workflows/fastq-screen-refactor/tools/fastq_screen.wdl" as fq_screen
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
 
 workflow quality_check {
