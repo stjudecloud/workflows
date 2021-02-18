@@ -37,7 +37,7 @@
 version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/wget.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 
 workflow rnaseq_star_db_build {
     input {
@@ -54,8 +54,8 @@ workflow rnaseq_star_db_build {
         gtf_name: "Name of output GTF file"
     }
 
-    call wget.download as reference_download { input: url=reference_fa_url, outfilename=reference_fa_name }
-    call wget.download as gtf_download { input: url=gtf_url, outfilename=gtf_name }
+    call util.download as reference_download { input: url=reference_fa_url, outfilename=reference_fa_name }
+    call util.download as gtf_download { input: url=gtf_url, outfilename=gtf_name }
     call star.build_db as star_db_build {
         input:
             reference_fasta=reference_download.outfile,
