@@ -63,7 +63,7 @@ task bamqc {
 task rnaseq {
     input {
         File bam
-        File gencode_gtf
+        File gtf
         Int memory_gb = 16
         Int? disk_size_gb
         Int max_retries = 1
@@ -89,15 +89,15 @@ task rnaseq {
 
     Int java_heap_size = ceil(memory_gb * 0.9)
     Float bam_size = size(bam, "GiB")
-    Float gencode_gtf_size = size(gencode_gtf, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 12) + 10)])
+    Float gtf_size = size(gtf, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gtf_size) * 12) + 10)])
  
     command <<<
         set -euo pipefail
 
-        orig=~{gencode_gtf}
+        orig=~{gtf}
         gtf=$(basename "${orig%.gz}")
-        gunzip -c ~{gencode_gtf} > "$gtf" || cp ~{gencode_gtf} "$gtf"
+        gunzip -c ~{gtf} > "$gtf" || cp ~{gtf} "$gtf"
         
         qualimap rnaseq -bam ~{bam} \
                         -gtf "$gtf" \
@@ -135,7 +135,7 @@ task rnaseq {
 
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
-        gencode_gtf: "A GTF format features file containing Gencode features"
+        gtf: "A GTF format features file"
         provided_strandedness: "Strand information for RNA-seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]"
     }
 }

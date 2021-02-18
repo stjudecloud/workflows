@@ -44,7 +44,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tsn
 workflow rnaseq_expression_classification {
     input { 
         Array[File] in_bams
-        File gencode_gtf
+        File gtf
         File stardb_tar_gz
         File? reference_counts
         File? covariates_file
@@ -66,7 +66,7 @@ workflow rnaseq_expression_classification {
         String name = basename(bam, ".bam")
         call rnav2.rnaseq_standard {
             input:
-                gencode_gtf=gencode_gtf,
+                gtf=gtf,
                 input_bam=bam,
                 stardb_tar_gz=stardb_tar_gz,
                 output_prefix=name,
@@ -107,7 +107,7 @@ workflow rnaseq_expression_classification {
             input_counts=rnaseq_standard.gene_counts,
             blacklist=gene_blacklist,
             covariates=append_input.covariates_outfile,
-            gencode_gtf=gencode_gtf,
+            gtf=gtf,
             outfile=output_filename,
             tissue_type=tissue_type
     }

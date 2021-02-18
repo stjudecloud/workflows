@@ -45,7 +45,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tsn
 workflow rnaseq_expression_classification_from_bams {
     input { 
         Array[File] in_bams
-        File gencode_gtf
+        File gtf
         File? reference_counts
         File? covariates_file
         File gene_blacklist
@@ -61,8 +61,8 @@ workflow rnaseq_expression_classification_from_bams {
  
     scatter (bam in in_bams) {       
         call samtools.index as index { input: bam=bam}
-        call ngsderive.infer_strandedness as infer { input: bam=bam, bai=index.bai, gtf=gencode_gtf}
-        call htseq.count as count { input: bam=bam, gtf=gencode_gtf, provided_strandedness="", inferred_strandedness=infer.strandedness}
+        call ngsderive.infer_strandedness as infer { input: bam=bam, bai=index.bai, gtf=gtf}
+        call htseq.count as count { input: bam=bam, gtf=gtf, provided_strandedness="", inferred_strandedness=infer.strandedness}
     }
 
     if (! defined(reference_counts)){
@@ -96,7 +96,7 @@ workflow rnaseq_expression_classification_from_bams {
             input_counts=count.out,
             blacklist=gene_blacklist,
             covariates=append_input.covariates_outfile,
-            gencode_gtf=gencode_gtf,
+            gtf=gtf,
             outfile=output_filename,
             tissue_type=tissue_type
     }

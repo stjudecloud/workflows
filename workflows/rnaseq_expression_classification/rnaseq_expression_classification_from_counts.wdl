@@ -40,7 +40,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tsn
 workflow rnaseq_expression_classification_from_counts {
     input { 
         Array[File] in_counts
-        File gencode_gtf
+        File gtf
         File? reference_counts
         File? covariates_file
         File gene_blacklist
@@ -84,7 +84,7 @@ workflow rnaseq_expression_classification_from_counts {
             input_counts=in_counts,
             blacklist=gene_blacklist,
             covariates=append_input.covariates_outfile,
-            gencode_gtf=gencode_gtf,
+            gtf=gtf,
             outfile=output_filename,
             tissue_type=tissue_type
     }

@@ -9,7 +9,7 @@ task build_db {
     input {
         Int ncpu = 1
         File reference_fasta
-        File gencode_gtf
+        File gtf
         String stardb_dir_name
         String ram_limit = "45000000000" # This value is too large to be an Int type, so we store it as a string
         Int memory_gb = 50
@@ -21,8 +21,8 @@ task build_db {
     String parsed_detect_nproc = if detect_nproc then "true" else ""
     String stardb_out_name = stardb_dir_name + ".tar.gz"
     Float reference_fasta_size = size(reference_fasta, "GiB")
-    Float gencode_gtf_size = size(gencode_gtf, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)])
+    Float gtf_size = size(gtf, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gtf_size) * 3) + 10)])
 
     command <<<
         set -euo pipefail
@@ -33,9 +33,9 @@ task build_db {
             n_cores=$(nproc)
         fi
 
-        orig_gtf=~{gencode_gtf}
+        orig_gtf=~{gtf}
         gtf=$(basename "${orig_gtf%.gz}")
-        gunzip -c ~{gencode_gtf} > $gtf || cp ~{gencode_gtf} $gtf
+        gunzip -c ~{gtf} > $gtf || cp ~{gtf} $gtf
 
         orig_fasta=~{reference_fasta}
         ref_fasta=$(basename "${orig_fasta%.gz}")
@@ -73,7 +73,7 @@ task build_db {
 
     parameter_meta {
         reference_fasta: "The FASTA format reference file for the genome"
-        gencode_gtf: "GTF format feature file with Gencode features"
+        gtf: "GTF format feature file"
     }
 }
 
