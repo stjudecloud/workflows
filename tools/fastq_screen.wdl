@@ -14,7 +14,7 @@ task build_db {
         set -euo pipefail
         
         fastq_screen --get_genomes
-        rm FastQ_Screen_Genomes/fastq_screen.conf
+        mv FastQ_Screen_Genomes/fastq_screen.conf FastQ_Screen_Genomes/fastq_screen.conf.template
         tar -czf ~{tar_filename} -C FastQ_Screen_Genomes/ .
     }
  
