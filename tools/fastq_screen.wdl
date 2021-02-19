@@ -71,6 +71,7 @@ task fastq_screen {
     command <<<
         set -euo pipefail
         
+        mkdir -p /tmp/FastQ_Screen_Genomes/
         tar -xzf ~{db} -C /tmp/FastQ_Screen_Genomes/ --no-same-owner
 
         gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
