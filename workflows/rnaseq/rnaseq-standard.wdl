@@ -30,14 +30,14 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 
 workflow rnaseq_standard {
     input {

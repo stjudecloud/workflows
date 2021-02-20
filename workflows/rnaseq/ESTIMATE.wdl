@@ -1,6 +1,6 @@
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/tools/estimate.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/estimate.wdl"
 
 workflow ESTIMATE {
     input {

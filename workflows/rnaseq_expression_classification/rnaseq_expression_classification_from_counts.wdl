@@ -34,8 +34,8 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/build-db-refactor/tools/tsne.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tsne.wdl"
 
 workflow rnaseq_expression_classification_from_counts {
     input { 
