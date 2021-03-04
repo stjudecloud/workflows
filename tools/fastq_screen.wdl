@@ -14,7 +14,8 @@ task build_db {
         set -euo pipefail
         
         fastq_screen --get_genomes
-        tar -czf ~{tar_filename} FastQ_Screen_Genomes/
+        mv FastQ_Screen_Genomes/fastq_screen.conf FastQ_Screen_Genomes/fastq_screen.conf.template
+        tar -czf ~{tar_filename} -C FastQ_Screen_Genomes/ .
     }
  
     runtime {
@@ -46,6 +47,10 @@ task fastq_screen {
         Int max_retries = 1
     }
 
+    parameter_meta {
+        db: "Database for FastQ Screen. Must untar directly to the genome directories."
+    }
+
     Float db_size = size(db, "GiB")
     Float read1_size = size(read1, "GiB")
     Float read2_size = size(read2, "GiB")
@@ -66,7 +71,8 @@ task fastq_screen {
     command <<<
         set -euo pipefail
         
-        tar -xzf ~{db} -C /tmp/ --no-same-owner
+        mkdir -p /tmp/FastQ_Screen_Genomes/
+        tar -xzf ~{db} -C /tmp/FastQ_Screen_Genomes/ --no-same-owner
 
         gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
 
