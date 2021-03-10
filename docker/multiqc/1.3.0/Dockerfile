@@ -1,7 +1,7 @@
 FROM stjudecloud/conda-base:1.0.0 AS builder
 
 RUN conda create -n multiqc \
-    multiqc==1.9 \
+    multiqc==1.10 \
     -y \
     && conda clean --all
 
