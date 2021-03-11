@@ -23,7 +23,7 @@ task infer_strandedness {
         set -euo pipefail
 
         mv ~{bai} ~{bam}.bai || true
-        ngsderive strandedness --debug ~{bam} -g ~{gtf} > ~{out_file}
+        ngsderive strandedness --verbose ~{bam} -g ~{gtf} > ~{out_file}
         awk 'NR > 1' ~{out_file} | cut -d$'\t' -f5 > strandedness.txt
     }
 
@@ -51,7 +51,7 @@ task instrument {
     Int disk_size = ceil((bam_size) + 10)
 
     command {
-        ngsderive instrument ~{bam} > ~{out_file}
+        ngsderive instrument --verbose ~{bam} > ~{out_file}
     }
 
     runtime {
@@ -81,7 +81,7 @@ task read_length {
         set -euo pipefail
         
         mv ~{bai} ~{bam}.bai || true
-        ngsderive readlen ~{bam} > ~{out_file}
+        ngsderive readlen --verbose ~{bam} > ~{out_file}
     }
 
     runtime {
@@ -113,7 +113,7 @@ task encoding {
     command <<<
         set -euo pipefail
 
-        ngsderive encoding -n ~{num_reads} ~{sep=' ' ngs_files} > ~{out_file}
+        ngsderive encoding --verbose -n ~{num_reads} ~{sep=' ' ngs_files} > ~{out_file}
         ENCODING_FILE="~{out_file}" python - <<END
 import os  # lint-check: ignore
 
@@ -176,7 +176,7 @@ task junction_annotation {
         set -euo pipefail
 
         mv ~{bai} ~{bam}.bai || true
-        ngsderive junction-annotation --debug \
+        ngsderive junction-annotation --verbose \
             -g ~{gtf} \
             -i ~{min_intron} \
             -q ~{min_mapq} \
