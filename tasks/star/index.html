@@ -205,9 +205,9 @@ STAR is an RNA-seq aligner.</p>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>stardb_dir_name</code> (String, <strong>required</strong>)</li>
 <li><code>gencode_gtf</code> (File, <strong>required</strong>): GTF format feature file with Gencode features</li>
 <li><code>reference_fasta</code> (File, <strong>required</strong>): The FASTA format reference file for the genome</li>
+<li><code>stardb_dir_name</code> (String, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -218,8 +218,8 @@ STAR is an RNA-seq aligner.</p>
 <li><code>detect_nproc</code> (Boolean, default=false)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=50)</li>
-<li><code>ram_limit</code> (String, default="45000000000")</li>
 <li><code>ncpu</code> (Int, default=1)</li>
+<li><code>ram_limit</code> (String, default="45000000000")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -238,8 +238,8 @@ STAR is an RNA-seq aligner.</p>
 <h4 id="required_1">Required</h4>
 <ul>
 <li><code>output_prefix</code> (String, <strong>required</strong>)</li>
-<li><code>stardb_tar_gz</code> (File, <strong>required</strong>): A gzipped TAR file containing the STAR reference files</li>
 <li><code>read_one_fastqs</code> (Array[File], <strong>required</strong>): An array of FastQ files containing read one information</li>
+<li><code>stardb_tar_gz</code> (File, <strong>required</strong>): A gzipped TAR file containing the STAR reference files</li>
 </ul>
 <h4 id="optional_1">Optional</h4>
 <ul>

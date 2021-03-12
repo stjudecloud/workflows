@@ -236,14 +236,14 @@ for next-generation sequencing data.</p>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>gtf</code> (File, <strong>required</strong>)</li>
 <li><code>bai</code> (File, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>)</li>
+<li><code>gtf</code> (File, <strong>required</strong>)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>memory_gb</code> (Int, default=5)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=5)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -273,8 +273,8 @@ for next-generation sequencing data.</p>
 </ul>
 <h4 id="defaults_2">Defaults</h4>
 <ul>
-<li><code>memory_gb</code> (Int, default=5)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=5)</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
 <ul>
@@ -284,13 +284,13 @@ for next-generation sequencing data.</p>
 <h3 id="inputs_3">Inputs</h3>
 <h4 id="required_3">Required</h4>
 <ul>
-<li><code>prefix</code> (String, <strong>required</strong>)</li>
 <li><code>ngs_files</code> (Array[File], <strong>required</strong>)</li>
+<li><code>prefix</code> (String, <strong>required</strong>)</li>
 </ul>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
-<li><code>memory_gb</code> (Int, default=5)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=5)</li>
 <li><code>num_reads</code> (Int, default=-1)</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
@@ -302,18 +302,18 @@ for next-generation sequencing data.</p>
 <h3 id="inputs_4">Inputs</h3>
 <h4 id="required_4">Required</h4>
 <ul>
-<li><code>gtf</code> (File, <strong>required</strong>)</li>
 <li><code>bai</code> (File, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>)</li>
+<li><code>gtf</code> (File, <strong>required</strong>)</li>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
-<li><code>memory_gb</code> (Int, default=35)</li>
-<li><code>max_retries</code> (Int, default=1)</li>
 <li><code>fuzzy_junction_match_range</code> (Int, default=0)</li>
-<li><code>min_reads</code> (Int, default=2)</li>
-<li><code>min_mapq</code> (Int, default=30)</li>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=35)</li>
 <li><code>min_intron</code> (Int, default=50)</li>
+<li><code>min_mapq</code> (Int, default=30)</li>
+<li><code>min_reads</code> (Int, default=2)</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>

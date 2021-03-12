@@ -213,30 +213,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>tissue_type</code> (String, <strong>required</strong>): Provide the tissue type to compare against; <strong>Choices</strong>: ['blood', 'brain', 'solid']</li>
-<li><code>gene_blacklist</code> (File, <strong>required</strong>)</li>
 <li><code>gencode_gtf</code> (File, <strong>required</strong>)</li>
+<li><code>gene_blacklist</code> (File, <strong>required</strong>)</li>
 <li><code>in_counts</code> (Array[File], <strong>required</strong>): Provide count files to run for comparison</li>
+<li><code>tissue_type</code> (String, <strong>required</strong>): Provide the tissue type to compare against; <strong>Choices</strong>: ['blood', 'brain', 'solid']</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>solid_covariates</code> (File?)</li>
-<li><code>brain_covariates</code> (File?)</li>
-<li><code>blood_covariates</code> (File?)</li>
-<li><code>solid_counts</code> (File?)</li>
-<li><code>brain_counts</code> (File?)</li>
 <li><code>blood_counts</code> (File?)</li>
+<li><code>blood_covariates</code> (File?)</li>
+<li><code>brain_counts</code> (File?)</li>
+<li><code>brain_covariates</code> (File?)</li>
 <li><code>covariates_file</code> (File?)</li>
 <li><code>reference_counts</code> (File?)</li>
+<li><code>solid_counts</code> (File?)</li>
+<li><code>solid_covariates</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>generate_plot.disk_size</code> (Int, default=15)</li>
-<li><code>generate_plot.memory_gb</code> (Int, default=15)</li>
-<li><code>generate_plot.max_retries</code> (Int, default=1)</li>
+<li><code>output_filename</code> (String, default="output.html"): Name for the output HTML RNA-Seq Expression Classification plot</li>
 <li><code>append_input.memory_gb</code> (Int, default=5)</li>
 <li><code>file_prefix.max_retries</code> (Int, default=1)</li>
-<li><code>output_filename</code> (String, default="output.html"): Name for the output HTML RNA-Seq Expression Classification plot</li>
+<li><code>generate_plot.disk_size</code> (Int, default=15)</li>
+<li><code>generate_plot.max_retries</code> (Int, default=1)</li>
+<li><code>generate_plot.memory_gb</code> (Int, default=15)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>

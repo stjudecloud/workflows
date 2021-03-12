@@ -213,8 +213,8 @@ QualiMap computes metrics to facilitate evaluation of sequencing data. </p>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>memory_gb</code> (Int, default=32)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=32)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
@@ -233,8 +233,8 @@ QualiMap computes metrics to facilitate evaluation of sequencing data. </p>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
-<li><code>gencode_gtf</code> (File, <strong>required</strong>): A GTF format features file containing Gencode features</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to generate coverage for</li>
+<li><code>gencode_gtf</code> (File, <strong>required</strong>): A GTF format features file containing Gencode features</li>
 </ul>
 <h4 id="optional_1">Optional</h4>
 <ul>
@@ -243,10 +243,10 @@ QualiMap computes metrics to facilitate evaluation of sequencing data. </p>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
 <li><code>inferred_strandedness</code> (String, default="")</li>
-<li><code>provided_strandedness</code> (String, default=""): Strand information for RNA-seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]</li>
-<li><code>paired_end</code> (Boolean, default=false)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=16)</li>
+<li><code>paired_end</code> (Boolean, default=false)</li>
+<li><code>provided_strandedness</code> (String, default=""): Strand information for RNA-seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>

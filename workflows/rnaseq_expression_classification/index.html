@@ -213,76 +213,76 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>tissue_type</code> (String, <strong>required</strong>): Provide the tissue type to compare against; <strong>Choices</strong>: ['blood', 'brain', 'solid']</li>
-<li><code>gene_blacklist</code> (File, <strong>required</strong>)</li>
-<li><code>stardb_tar_gz</code> (File, <strong>required</strong>)</li>
 <li><code>gencode_gtf</code> (File, <strong>required</strong>)</li>
+<li><code>gene_blacklist</code> (File, <strong>required</strong>)</li>
 <li><code>in_bams</code> (Array[File], <strong>required</strong>): Provide bams to run for comparison; <strong>patterns</strong>: ['*.bam']</li>
+<li><code>stardb_tar_gz</code> (File, <strong>required</strong>)</li>
+<li><code>tissue_type</code> (String, <strong>required</strong>): Provide the tissue type to compare against; <strong>Choices</strong>: ['blood', 'brain', 'solid']</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>rnaseq_standard.picard_sort.disk_size_gb</code> (Int?)</li>
-<li><code>rnaseq_standard.alignment.disk_size_gb</code> (Int?)</li>
-<li><code>rnaseq_standard.bam_to_fastqs.split.disk_size_gb</code> (Int?)</li>
-<li><code>rnaseq_standard.bam_to_fastqs.split.reject_unaccounted</code> (Boolean?)</li>
-<li><code>solid_covariates</code> (File?)</li>
-<li><code>brain_covariates</code> (File?)</li>
-<li><code>blood_covariates</code> (File?)</li>
-<li><code>solid_counts</code> (File?)</li>
-<li><code>brain_counts</code> (File?)</li>
 <li><code>blood_counts</code> (File?)</li>
+<li><code>blood_covariates</code> (File?)</li>
+<li><code>brain_counts</code> (File?)</li>
+<li><code>brain_covariates</code> (File?)</li>
 <li><code>covariates_file</code> (File?)</li>
 <li><code>reference_counts</code> (File?)</li>
+<li><code>solid_counts</code> (File?)</li>
+<li><code>solid_covariates</code> (File?)</li>
+<li><code>rnaseq_standard.alignment.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.picard_sort.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.split.disk_size_gb</code> (Int?)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.split.reject_unaccounted</code> (Boolean?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>generate_plot.disk_size</code> (Int, default=15)</li>
-<li><code>generate_plot.memory_gb</code> (Int, default=15)</li>
-<li><code>generate_plot.max_retries</code> (Int, default=1)</li>
+<li><code>detect_nproc</code> (Boolean, default=false): Determine number of cores and use all for multi-core steps</li>
+<li><code>output_filename</code> (String, default="output.html"): Name for the output HTML RNA-Seq Expression Classification plot</li>
+<li><code>strandedness</code> (String, default=""): Choose strandedness for samples. If omitted, the strandedness will attempt to be inferred.; <strong>Choices</strong>: ['', 'Stranded-Forward', 'Stranded-Reverse', 'Unstranded']; <strong>default</strong>: </li>
+<li><code>subsample_n_reads</code> (Int, default=-1)</li>
 <li><code>append_input.memory_gb</code> (Int, default=5)</li>
 <li><code>file_prefix.max_retries</code> (Int, default=1)</li>
+<li><code>generate_plot.disk_size</code> (Int, default=15)</li>
+<li><code>generate_plot.max_retries</code> (Int, default=1)</li>
+<li><code>generate_plot.memory_gb</code> (Int, default=15)</li>
+<li><code>rnaseq_standard.max_retries</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.validate_input</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.alignment.memory_gb</code> (Int, default=50)</li>
+<li><code>rnaseq_standard.alignment.ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.samtools_sort_ncpu</code> (Int, default=1)</li>
 <li><code>rnaseq_standard.deeptools_bamCoverage.detect_nproc</code> (Boolean, default=false): Determine number of cores and use all for multi-core steps</li>
-<li><code>rnaseq_standard.deeptools_bamCoverage.ncpu</code> (Int, default=1)</li>
 <li><code>rnaseq_standard.deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
+<li><code>rnaseq_standard.deeptools_bamCoverage.ncpu</code> (Int, default=1)</li>
 <li><code>rnaseq_standard.deeptools_bamCoverage.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>rnaseq_standard.htseq_count.added_memory_gb</code> (Int, default=20)</li>
 <li><code>rnaseq_standard.htseq_count.outfile</code> (String, default=basename(bam,".bam") + ".feature-counts.txt")</li>
 <li><code>rnaseq_standard.ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
-<li><code>rnaseq_standard.validate_bam.memory_gb</code> (Int, default=8)</li>
-<li><code>rnaseq_standard.validate_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt"): Name for the output HTML RNA-Seq Expression Classification plot</li>
-<li><code>rnaseq_standard.validate_bam.ignore_warnings</code> (Boolean, default=true)</li>
-<li><code>rnaseq_standard.validate_bam.ignore_mapping_quality</code> (Boolean, default=true)</li>
-<li><code>rnaseq_standard.validate_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
-<li><code>rnaseq_standard.validate_bam.summary_mode</code> (Boolean, default=false)</li>
-<li><code>rnaseq_standard.validate_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
-<li><code>rnaseq_standard.samtools_index.memory_gb</code> (Int, default=15)</li>
-<li><code>rnaseq_standard.samtools_index.outfile</code> (String, default=basename(bam) + ".bai")</li>
-<li><code>rnaseq_standard.samtools_index.ncpu</code> (Int, default=1)</li>
 <li><code>rnaseq_standard.picard_sort.memory_gb</code> (Int, default=25)</li>
 <li><code>rnaseq_standard.picard_sort.output_filename</code> (String, default=basename(bam,".bam") + ".sorted.bam"): Name for the output HTML RNA-Seq Expression Classification plot</li>
 <li><code>rnaseq_standard.picard_sort.sort_order</code> (String, default="coordinate")</li>
-<li><code>rnaseq_standard.alignment.memory_gb</code> (Int, default=50)</li>
-<li><code>rnaseq_standard.alignment.ncpu</code> (Int, default=1)</li>
-<li><code>rnaseq_standard.bam_to_fastqs.fqlint.memory_gb</code> (Int, default=8)</li>
-<li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>rnaseq_standard.bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
-<li><code>rnaseq_standard.bam_to_fastqs.samtools_sort_ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.samtools_index.memory_gb</code> (Int, default=15)</li>
+<li><code>rnaseq_standard.samtools_index.ncpu</code> (Int, default=1)</li>
+<li><code>rnaseq_standard.samtools_index.outfile</code> (String, default=basename(bam) + ".bai")</li>
 <li><code>rnaseq_standard.subsample.ncpu</code> (Int, default=1)</li>
 <li><code>rnaseq_standard.subsample.outname</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
+<li><code>rnaseq_standard.validate_bam.ignore_mapping_quality</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_bam.ignore_warnings</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>rnaseq_standard.validate_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>rnaseq_standard.validate_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt"): Name for the output HTML RNA-Seq Expression Classification plot</li>
+<li><code>rnaseq_standard.validate_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>rnaseq_standard.validate_input_bam.ignore_mapping_quality</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_input_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_input_bam.ignore_warnings</code> (Boolean, default=true)</li>
+<li><code>rnaseq_standard.validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
 <li><code>rnaseq_standard.validate_input_bam.memory_gb</code> (Int, default=8)</li>
 <li><code>rnaseq_standard.validate_input_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt"): Name for the output HTML RNA-Seq Expression Classification plot</li>
-<li><code>rnaseq_standard.validate_input_bam.ignore_warnings</code> (Boolean, default=true)</li>
-<li><code>rnaseq_standard.validate_input_bam.ignore_mapping_quality</code> (Boolean, default=true)</li>
-<li><code>rnaseq_standard.validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
 <li><code>rnaseq_standard.validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
-<li><code>rnaseq_standard.validate_input_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
-<li><code>rnaseq_standard.validate_input</code> (Boolean, default=true)</li>
-<li><code>rnaseq_standard.max_retries</code> (Int, default=1)</li>
-<li><code>detect_nproc</code> (Boolean, default=false): Determine number of cores and use all for multi-core steps</li>
-<li><code>subsample_n_reads</code> (Int, default=-1)</li>
-<li><code>strandedness</code> (String, default=""): Choose strandedness for samples. If omitted, the strandedness will attempt to be inferred.; <strong>Choices</strong>: ['', 'Stranded-Forward', 'Stranded-Reverse', 'Unstranded']; <strong>default</strong>: </li>
-<li><code>output_filename</code> (String, default="output.html"): Name for the output HTML RNA-Seq Expression Classification plot</li>
+<li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>rnaseq_standard.bam_to_fastqs.fqlint.memory_gb</code> (Int, default=8)</li>
+<li><code>rnaseq_standard.bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>

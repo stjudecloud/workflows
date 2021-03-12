@@ -187,16 +187,16 @@ HTSeq is a Python library for analyzing sequencing data.</p>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>provided_strandedness</code> (String, <strong>required</strong>)</li>
-<li><code>gtf</code> (File, <strong>required</strong>): Input genomic features in GTF format to count reads for</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to generate coverage for</li>
+<li><code>gtf</code> (File, <strong>required</strong>): Input genomic features in GTF format to count reads for</li>
+<li><code>provided_strandedness</code> (String, <strong>required</strong>)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
 <li><code>added_memory_gb</code> (Int, default=20): Amount of additional memory to add to the bam size</li>
-<li><code>outfile</code> (String, default=basename(bam,".bam") + ".feature-counts.txt")</li>
 <li><code>inferred_strandedness</code> (String, default="")</li>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>outfile</code> (String, default=basename(bam,".bam") + ".feature-counts.txt")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
