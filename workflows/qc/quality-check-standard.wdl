@@ -101,6 +101,9 @@ workflow quality_check {
                 validate_sam_file=validate_bam.out,
                 flagstat_file=samtools_flagstat.outfile,
                 fastqc=fastqc.results,
+                instrument_file=ngsderive_instrument.instrument_file,
+                read_length_file=ngsderive_read_length.read_length_file,
+                encoding_file=ngsderive_encoding.encoding_file,
                 qualimap_bamqc=qualimap_bamqc.results,
                 fastq_screen=fastq_screen.results,
                 max_retries=max_retries
@@ -119,6 +122,11 @@ workflow quality_check {
                 star_log=star_log,
                 flagstat_file=samtools_flagstat.outfile,
                 fastqc=fastqc.results,
+                instrument_file=ngsderive_instrument.instrument_file,
+                read_length_file=ngsderive_read_length.read_length_file,
+                encoding_file=ngsderive_encoding.encoding_file,
+                strandedness_file=ngsderive_strandedness.strandedness_file,
+                junction_annotation=junction_annotation.junction_summary,
                 qualimap_bamqc=qualimap_bamqc.results,
                 qualimap_rnaseq=qualimap_rnaseq.results,
                 max_retries=max_retries

@@ -8,11 +8,16 @@ version 1.0
 task multiqc {
     input {
         File validate_sam_file
+        File flagstat_file
         File qualimap_bamqc
         File? qualimap_rnaseq
         File fastqc
+        File instrument_file
+        File read_length_file
+        File encoding_file
+        File? strandedness_file
+        File? junction_annotation
         File? fastq_screen
-        File flagstat_file
         File? star_log
         Int max_retries = 1
         Int memory_gb = 5
@@ -31,6 +36,9 @@ task multiqc {
         
         echo ~{validate_sam_file} > file_list.txt
         echo ~{flagstat_file} >> file_list.txt
+        echo ~{instrument_file} >> file_list.txt
+        echo ~{read_length_file} >> file_list.txt
+        echo ~{encoding_file} >> file_list.txt
 
         qualimap_bamqc_dir=$(basename ~{qualimap_bamqc} ".tar.gz")
         tar -xzf ~{qualimap_bamqc}
@@ -41,6 +49,8 @@ task multiqc {
 
         if [ "~{if defined(qualimap_rnaseq) then "rnaseq" else ""}" = "rnaseq" ]; then
             echo ~{star_log} >> file_list.txt
+            echo ~{strandedness_file} >> file_list.txt
+            echo ~{junction_annotation} >> file_list.txt
             qualimap_rnaseq_dir=$(basename ~{qualimap_rnaseq} ".tar.gz")
             tar -xzf ~{qualimap_rnaseq}
             echo "$qualimap_rnaseq_dir"/rnaseq_qc_results.txt >> file_list.txt
