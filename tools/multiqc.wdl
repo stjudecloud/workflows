@@ -34,43 +34,49 @@ task multiqc {
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
         
-        echo ~{validate_sam_file} > file_list.txt
-        echo ~{flagstat_file} >> file_list.txt
-        echo ~{instrument_file} >> file_list.txt
-        echo ~{read_length_file} >> file_list.txt
-        echo ~{encoding_file} >> file_list.txt
+        (
+            echo ~{validate_sam_file}
+            echo ~{flagstat_file}
+            echo ~{instrument_file}
+            echo ~{read_length_file}
+            echo ~{encoding_file}
+        ) > file_list.txt
 
         qualimap_bamqc_dir=$(basename ~{qualimap_bamqc} ".tar.gz")
         tar -xzf ~{qualimap_bamqc}
         echo "$qualimap_bamqc_dir"/genome_results.txt >> file_list.txt
-        for file in $(find "$qualimap_bamqc_dir"/raw_data_qualimapReport/); do
+        for file in "$qualimap_bamqc_dir"/raw_data_qualimapReport/*; do
             echo "$file" >> file_list.txt
         done
 
+        tar -xzf ~{fastqc}
+        fastqc_dir=$(basename ~{fastqc} ".tar.gz")
+        for file in find "$fastqc_dir"/*; do
+            echo "$file" >> file_list.txt
+        done
+
+        (
+            echo ~{star_log}
+            echo ~{strandedness_file}
+            echo ~{junction_annotation}
+        ) >> file_list.txt
+        
         if [ "~{if defined(qualimap_rnaseq) then "rnaseq" else ""}" = "rnaseq" ]; then
-            echo ~{star_log} >> file_list.txt
-            echo ~{strandedness_file} >> file_list.txt
-            echo ~{junction_annotation} >> file_list.txt
             qualimap_rnaseq_dir=$(basename ~{qualimap_rnaseq} ".tar.gz")
             tar -xzf ~{qualimap_rnaseq}
             echo "$qualimap_rnaseq_dir"/rnaseq_qc_results.txt >> file_list.txt
-            for file in $(find "$qualimap_rnaseq_dir"/raw_data_qualimapReport/); do
+            echo "$qualimap_rnaseq_dir"/qualimap_counts.txt >> file_list.txt
+            for file in "$qualimap_rnaseq_dir"/raw_data_qualimapReport/*; do
                 echo "$file" >> file_list.txt
             done
         fi
         if [ "~{if defined(fastq_screen) then "wgs_or_wes" else ""}" = "wgs_or_wes" ]; then
-            tar -xzf ~{fastq_screen}
             fastq_screen_dir=$(basename ~{fastq_screen} ".tar.gz")
-            for file in $(find "$fastq_screen_dir"); do
+            tar -xzf ~{fastq_screen}
+            for file in "$fastq_screen_dir"/*; do
                 echo "$file" >> file_list.txt
             done
         fi
-
-        tar -xzf ~{fastqc}
-        fastqc_dir=$(basename ~{fastqc} ".tar.gz")
-        for file in $(find "$fastqc_dir"); do
-            echo "$file" >> file_list.txt
-        done
 
         multiqc --cl_config "extra_fn_clean_exts: '_qualimap_bamqc_results'" \
             --file-list file_list.txt -o ~{out_directory}
