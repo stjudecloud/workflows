@@ -232,7 +232,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>rnaseq_standard.alignment.disk_size_gb</code> (Int?)</li>
 <li><code>rnaseq_standard.picard_sort.disk_size_gb</code> (Int?)</li>
 <li><code>rnaseq_standard.bam_to_fastqs.split.disk_size_gb</code> (Int?)</li>
-<li><code>rnaseq_standard.bam_to_fastqs.split.reject_unaccounted</code> (Boolean?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
@@ -283,6 +282,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>rnaseq_standard.bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>rnaseq_standard.bam_to_fastqs.fqlint.memory_gb</code> (Int, default=8)</li>
 <li><code>rnaseq_standard.bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>rnaseq_standard.bam_to_fastqs.split.reject_unaccounted</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
