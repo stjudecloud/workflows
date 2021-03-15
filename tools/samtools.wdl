@@ -43,7 +43,7 @@ task split {
     input {
         File bam
         Int ncpu = 1
-        Boolean? reject_unaccounted
+        Boolean reject_unaccounted = true
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
         Int? disk_size_gb
@@ -65,7 +65,7 @@ task split {
 
         samtools split --threads $n_cores -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
         samtools view  --threads $n_cores ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
-        if ~{default='true' reject_unaccounted} && [ -s unaccounted_reads.bam ]
+        if ~{reject_unaccounted} && [ -s unaccounted_reads.bam ]
             then exit 1; 
             else rm ~{prefix}.unaccounted_reads.bam
         fi 
