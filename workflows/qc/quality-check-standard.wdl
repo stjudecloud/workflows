@@ -103,8 +103,6 @@ workflow quality_check {
                 fastqc=fastqc.results,
                 qualimap_bamqc=qualimap_bamqc.results,
                 fastq_screen=fastq_screen.results,
-                qualimap_rnaseq="",
-                star_log="",
                 max_retries=max_retries
         }
     }
@@ -123,7 +121,6 @@ workflow quality_check {
                 fastqc=fastqc.results,
                 qualimap_bamqc=qualimap_bamqc.results,
                 qualimap_rnaseq=qualimap_rnaseq.results,
-                fastq_screen="",
                 max_retries=max_retries
         }
     }
