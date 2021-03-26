@@ -22,21 +22,8 @@ task infer_strandedness {
     command {
         set -euo pipefail
 
-        annotation=~{gtf}
-        if [ $(file ~{gtf} | grep -c "gzip compressed data") -eq 1 ]
-        then
-            gzip -dc ~{gtf} > annotation.gtf
-            annotation="annotation.gtf"
-        elif [ $(file ~{gtf} | grep -c "bzip2 compressed data") -eq 1 ]
-        then
-            bzip2 -dc ~{gtf} > annotation.gtf
-            annotation="annotation.gtf"
-        fi
-        
-        sort -k1,1 -k4,4n -k5,5n $annotation | bgzip > annotation.gtf.gz
-        tabix -p gff annotation.gtf.gz
         mv ~{bai} ~{bam}.bai || true
-        ngsderive strandedness ~{bam} -g annotation.gtf.gz > ~{out_file}
+        ngsderive strandedness --verbose ~{bam} -g ~{gtf} > ~{out_file}
         awk 'NR > 1' ~{out_file} | cut -d$'\t' -f5 > strandedness.txt
     }
 
@@ -64,7 +51,7 @@ task instrument {
     Int disk_size = ceil((bam_size) + 10)
 
     command {
-        ngsderive instrument ~{bam} > ~{out_file}
+        ngsderive instrument --verbose ~{bam} > ~{out_file}
     }
 
     runtime {
@@ -94,7 +81,7 @@ task read_length {
         set -euo pipefail
         
         mv ~{bai} ~{bam}.bai || true
-        ngsderive readlen ~{bam} > ~{out_file}
+        ngsderive readlen --verbose ~{bam} > ~{out_file}
     }
 
     runtime {
@@ -126,7 +113,7 @@ task encoding {
     command <<<
         set -euo pipefail
 
-        ngsderive encoding -n ~{num_reads} ~{sep=' ' ngs_files} > ~{out_file}
+        ngsderive encoding --verbose -n ~{num_reads} ~{sep=' ' ngs_files} > ~{out_file}
         ENCODING_FILE="~{out_file}" python - <<END
 import os  # lint-check: ignore
 
@@ -189,16 +176,17 @@ task junction_annotation {
         set -euo pipefail
 
         mv ~{bai} ~{bam}.bai || true
-        ngsderive junction-annotation --debug \
+        ngsderive junction-annotation --verbose \
             -g ~{gtf} \
             -i ~{min_intron} \
             -q ~{min_mapq} \
             -m ~{min_reads} \
             -k ~{fuzzy_junction_match_range} \
-            -o ~{prefix}.junction_summary.tsv \
+            -o ~{prefix}.junction_summary.txt \
             ~{bam}
         
         mv $(basename ~{bam}.junctions.tsv) ~{prefix}.junctions.tsv
+        gzip ~{prefix}.junctions.tsv
     }
 
     runtime {
@@ -209,7 +197,7 @@ task junction_annotation {
     }
 
     output {
-        File junction_summary = "~{prefix}.junction_summary.tsv"
-        File junctions = "~{prefix}.junctions.tsv"
+        File junction_summary = "~{prefix}.junction_summary.txt"
+        File junctions = "~{prefix}.junctions.tsv.gz"
     }
 }

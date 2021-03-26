@@ -5,7 +5,7 @@
     "quality_check.experiment": "<WGS/WES/RNA-Seq>",
     "quality_check.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified, we will try to guess using ngsderive)",
     "quality_check.fastq_screen_db": "/cromwell/inputs/fastq-screen-db.tar.gz",
-    "quality_check.fastq_phred_encoding": "<sanger/illumina1.3> (optional, if not specified, we will try to guess using ngsderive. Only needed for WGS/WES)",
+    "quality_check.phred_encoding": "<sanger/illumina1.3> (optional, if not specified, we will try to guess using ngsderive. Only needed for WGS/WES)",
     "quality_check.paired_end": "<true/false> (default = false)",
     "quality_check.max_retries": "Int? (optional, default = 1)"
 }
