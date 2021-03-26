@@ -1,4 +1,7 @@
-
+## # sequencErr
+##
+## This WDL tool wraps the sequencErr software (unpublished).
+## sequencErr approximates error rates in Illumina sequencing machines down to tile level precision.
 
 version 1.0
 
@@ -18,6 +21,7 @@ task sequencerr {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(bam_size * 2.2)
 
+    # There's an odd bug in Cromwell requiring this convoluted structure
     String parsed_prefix = select_first([prefix, basename(bam, ".bam") + ".sequencErr"])
     String outfile = if output_count_file then parsed_prefix + "_results.tar.gz" else parsed_prefix + ".err"
 
@@ -25,12 +29,12 @@ task sequencerr {
         set -euo pipefail
         
         mv ~{bai} ~{bam}.bai || true
-        sequencerr -pe=~{prefix}.err ~{bam} ~{prefix}.count
+        sequencerr -pe=~{parsed_prefix}.err ~{bam} ~{parsed_prefix}.count
 
         if [ ~{output_count_file} == "true" ]; then
-            mkdir ~{prefix}_results
-            mv ~{prefix}.err ~{prefix}.count ~{prefix}_results
-            tar -czf ~{prefix}_results.tar.gz ~{prefix}_results/
+            mkdir ~{parsed_prefix}_results
+            mv ~{parsed_prefix}.err ~{parsed_prefix}.count ~{parsed_prefix}_results
+            tar -czf ~{parsed_prefix}_results.tar.gz ~{parsed_prefix}_results/
         fi
     }
 
