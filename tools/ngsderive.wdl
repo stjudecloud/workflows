@@ -182,10 +182,11 @@ task junction_annotation {
             -q ~{min_mapq} \
             -m ~{min_reads} \
             -k ~{fuzzy_junction_match_range} \
-            -o ~{prefix}.junction_summary.tsv \
+            -o ~{prefix}.junction_summary.txt \
             ~{bam}
         
         mv $(basename ~{bam}.junctions.tsv) ~{prefix}.junctions.tsv
+        gzip ~{prefix}.junctions.tsv
     }
 
     runtime {
@@ -196,7 +197,7 @@ task junction_annotation {
     }
 
     output {
-        File junction_summary = "~{prefix}.junction_summary.tsv"
-        File junctions = "~{prefix}.junctions.tsv"
+        File junction_summary = "~{prefix}.junction_summary.txt"
+        File junctions = "~{prefix}.junctions.tsv.gz"
     }
 }
