@@ -33,7 +33,7 @@ task fastqc {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/fastqc:1.0.0'
+        docker: 'stjudecloud/fastqc:1.0.1'
         maxRetries: max_retries
     }
 

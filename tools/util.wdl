@@ -135,7 +135,7 @@ END
     runtime {
         memory: "8 GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/gtfparse:1.0.0'
+        docker: 'stjudecloud/gtfparse:1.0.1'
         maxRetries: max_retries
     }
 

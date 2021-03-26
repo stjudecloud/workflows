@@ -1,8 +1,8 @@
-FROM stjudecloud/conda-base:1.0.0 AS builder
+FROM stjudecloud/conda-base:1.1.0 AS builder
 
 RUN conda create -n samtools \
-        samtools==1.9 \
-        -y \
+    samtools==1.9 \
+    -y \
     && conda clean --all
 
 FROM debian:10-slim
