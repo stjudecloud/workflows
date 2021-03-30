@@ -130,21 +130,13 @@ task build_db {
         Int memory_gb = 5
         Int? disk_size_gb
         Int max_retries = 1
-        Boolean detect_nproc = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float input_fasta_size = size(reference_fasta, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((input_fasta_size * 2))])
 
     command <<<
         set -euo pipefail
-
-        n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
-        fi
 
         orig_fasta=~{reference_fasta}
         ref_fasta=$(basename "${orig_fasta%.gz}")

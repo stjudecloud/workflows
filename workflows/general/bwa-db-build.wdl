@@ -7,7 +7,7 @@
 ## reference_fa
 ## : the reference FASTA file
 ##
-## bwa_tar_gz
+## bwadb_tar_gz
 ## : the BWA reference folder in .tar.gz format
 ##
 ## ## LICENSING
