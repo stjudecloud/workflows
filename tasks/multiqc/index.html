@@ -116,6 +116,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calc gene lengths</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
@@ -189,16 +191,21 @@ MultiQC aggregates quality control results for bioinformatics.</p>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
+<li><code>encoding_file</code> (File, <strong>required</strong>)</li>
 <li><code>fastqc</code> (File, <strong>required</strong>): Tarballed directory of files output by FastQC</li>
 <li><code>flagstat_file</code> (File, <strong>required</strong>): A file containing the output of Samtools' flagstat command for the input BAM file</li>
+<li><code>instrument_file</code> (File, <strong>required</strong>)</li>
 <li><code>qualimap_bamqc</code> (File, <strong>required</strong>): Tarballed directory of files output by Qualimap's BamQC mode</li>
+<li><code>read_length_file</code> (File, <strong>required</strong>)</li>
 <li><code>validate_sam_file</code> (File, <strong>required</strong>): A file output from Picard's ValidateSam tool</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
 <li><code>fastq_screen</code> (File?): Tarballed directory of files output by FastQ Screen</li>
+<li><code>junction_annotation</code> (File?)</li>
 <li><code>qualimap_rnaseq</code> (File?): Tarballed directory of files output by Qualimap's RNA-seq mode</li>
 <li><code>star_log</code> (File?): The log file of a STAR alignment run</li>
+<li><code>strandedness_file</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>

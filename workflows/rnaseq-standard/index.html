@@ -98,6 +98,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calc gene lengths</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
@@ -135,6 +137,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_1">Optional</a>
     </li>
         </ul>
     </li>
@@ -224,12 +228,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
+<li><code>contaminant_stardb_tar_gz</code> (File?): If using XenoCP to clean contaminant reads, provide a STAR reference for the contaminant genome</li>
 <li><code>alignment.disk_size_gb</code> (Int?)</li>
 <li><code>picard_sort.disk_size_gb</code> (Int?)</li>
 <li><code>bam_to_fastqs.split.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.bwa_aln_align.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.bwa_mem_align.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.cleanse.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.create_contam_list.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.extract_by_chrom.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.get_chroms.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.mapped_fastq.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.merge_markdup_index.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.mismatch.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.qc.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.sort.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.star_align.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.star_align.read_groups</code> (String?)</li>
+<li><code>xenocp.star_align.read_two_fastqs</code> (Array[File]?)</li>
+<li><code>xenocp.unmapped.disk_size_gb</code> (Int?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>cleanse_xenograft</code> (Boolean, default=false): For xenograft samples, enable XenoCP cleansing of mouse contamination</li>
 <li><code>detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>output_prefix</code> (String, default=basename(input_bam,".bam")): Prefix for output files</li>
@@ -269,10 +290,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>validate_input_bam.memory_gb</code> (Int, default=8)</li>
 <li><code>validate_input_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
 <li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>xenocp.n_threads</code> (Int, default=1)</li>
+<li><code>xenocp.validation_stringency</code> (String, default="SILENT")</li>
 <li><code>bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>bam_to_fastqs.fqlint.memory_gb</code> (Int, default=8)</li>
 <li><code>bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>bam_to_fastqs.split.reject_unaccounted</code> (Boolean, default=true)</li>
+<li><code>xenocp.bwa_aln_align.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
+<li><code>xenocp.bwa_aln_align.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.bwa_aln_align.memory_gb</code> (Int, default=5)</li>
+<li><code>xenocp.bwa_aln_align.output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>xenocp.bwa_mem_align.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
+<li><code>xenocp.bwa_mem_align.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.bwa_mem_align.memory_gb</code> (Int, default=5)</li>
+<li><code>xenocp.bwa_mem_align.output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>xenocp.cleanse.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.cleanse.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.cleanse.output_bam</code> (String, default=basename(input_bam,".bam") + "-xenocp.bam")</li>
+<li><code>xenocp.cleanse.sort_order</code> (String, default="coordinate")</li>
+<li><code>xenocp.create_contam_list.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.create_contam_list.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.create_contam_list.output_contam_list</code> (String, default=basename(input_bam,".bam") + "contam.txt")</li>
+<li><code>xenocp.create_contam_list.tie_bam</code> (String, default=basename(input_bam,".bam") + ".tie.bam")</li>
+<li><code>xenocp.extract_by_chrom.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.extract_by_chrom.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.get_chroms.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
+<li><code>xenocp.get_chroms.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.get_chroms.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.mapped_fastq.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.mapped_fastq.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.mapped_fastq.output_fastq</code> (String, default=basename(input_bam,".bam") + ".fastq")</li>
+<li><code>xenocp.merge_markdup_index.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.merge_markdup_index.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.mismatch.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.mismatch.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.qc.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.qc.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.qc.ncpu</code> (Int, default=1)</li>
+<li><code>xenocp.qc.status</code> (String, default="indexed")</li>
+<li><code>xenocp.sort.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.sort.memory_gb</code> (Int, default=25)</li>
+<li><code>xenocp.sort.output_filename</code> (String, default=basename(bam,".bam") + ".sorted.bam")</li>
+<li><code>xenocp.star_align.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
+<li><code>xenocp.star_align.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.star_align.memory_gb</code> (Int, default=50)</li>
+<li><code>xenocp.unmapped.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
+<li><code>xenocp.unmapped.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.unmapped.memory_gb</code> (Int, default=1)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -287,7 +351,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
+<li><code>cleanse_xenograft</code> (Boolean, <strong>required</strong>)</li>
 <li><code>input_strand</code> (String, <strong>required</strong>)</li>
+</ul>
+<h4 id="optional_1">Optional</h4>
+<ul>
+<li><code>contaminant_stardb_tar_gz</code> (File?)</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>

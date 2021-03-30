@@ -91,6 +91,22 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#build_db">build_db</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_2">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_2">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_2">Optional</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_2">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_2">Outputs</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../deeptools/">Deeptools</a>
@@ -131,6 +147,8 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/ESTIMATE/">ESTIMATE</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calc gene lengths</a>
                     </li>
@@ -254,6 +272,35 @@ BWA aligns sequencing reads to a reference genome.</p>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
 <li><code>bam</code> (File)</li>
+</ul>
+<h2 id="build_db">build_db</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Thrasher</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool creates a BWA index and returns it as a compressed tar archive.</dd>
+</dl>
+<h3 id="inputs_2">Inputs</h3>
+<h4 id="required_2">Required</h4>
+<ul>
+<li><code>bwadb_out_name</code> (String, <strong>required</strong>): Name for the output gzipped tar archive of the bwa reference files.</li>
+<li><code>reference_fasta</code> (File, <strong>required</strong>): Input reference Fasta file to index with bwa. Should be compressed with gzip.</li>
+</ul>
+<h4 id="optional_2">Optional</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int?)</li>
+</ul>
+<h4 id="defaults_2">Defaults</h4>
+<ul>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>ncpu</code> (Int, default=1)</li>
+</ul>
+<h3 id="outputs_2">Outputs</h3>
+<ul>
+<li><code>bwadb_tar_gz</code> (File)</li>
 </ul>
               
             </div>
