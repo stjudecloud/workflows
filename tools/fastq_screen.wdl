@@ -6,23 +6,21 @@ version 1.0
 
 task build_db {
     input {
-        String filename = "fastq-screen-db"
+        String tar_filename = "fastq-screen-db.tar.gz"
         Int max_retries = 1
     }
-
-    String tar_filename = filename + ".tar.gz"
 
     command {
         set -euo pipefail
         
         fastq_screen --get_genomes
-        mv FastQ_Screen_Genomes/ ~{filename}/
-        tar -czf ~{tar_filename} ~{filename}/
+        mv FastQ_Screen_Genomes/fastq_screen.conf FastQ_Screen_Genomes/fastq_screen.conf.template
+        tar -czf ~{tar_filename} -C FastQ_Screen_Genomes/ .
     }
  
     runtime {
         disk: "30 GB"
-        docker: "stjudecloud/fastq_screen:1.0.0"
+        docker: "stjudecloud/fastq_screen:1.1.0"
         maxRetries: max_retries
     }
 
@@ -42,48 +40,67 @@ task fastq_screen {
         File read1
         File read2
         File db
-        String format
-        Int num_reads = 100000
+        String provided_encoding
+        String inferred_encoding = ""
+        Int num_reads = 0
+        String? sample_name
         Int max_retries = 1
     }
 
+    parameter_meta {
+        db: "Database for FastQ Screen. Must untar directly to the genome directories."
+    }
+
     Float db_size = size(db, "GiB")
-    Int disk_size = ceil(db_size * 2)
+    Float read1_size = size(read1, "GiB")
+    Float read2_size = size(read2, "GiB")
+    Int disk_size = ceil((db_size * 2) + read1_size + read2_size + 5)
 
-    String output_basename = basename(read1, "R1.fastq")
-    String db_name = basename(db)
+    String inferred_basename = basename(read1, "_R1.fastq.gz")
+    String sample_basename = select_first([sample_name, inferred_basename])
+    String out_directory = sample_basename + "_screen"
+    String out_tar_gz = out_directory + ".tar.gz"
 
-    command {
+    String format_arg = if (provided_encoding != "") then
+                            if (provided_encoding == "illumina1.3") then "--illumina1_3"
+                            else ""
+                        else
+                            if (inferred_encoding == "Illumina 1.3") then "--illumina1_3"
+                            else ""
+
+    command <<<
         set -euo pipefail
         
-        cp ~{db} /tmp
-        tar -xzf /tmp/~{db_name} -C /tmp/
+        mkdir -p /tmp/FastQ_Screen_Genomes/
+        tar -xzf ~{db} -C /tmp/FastQ_Screen_Genomes/ --no-same-owner
 
-        format_arg=''
-        if [[ "~{format}" = "illumina1.3" ]]; then
-            format_arg='--illumina1_3'
-        fi;
+        gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
+
         fastq_screen \
-            $format_arg \
+            ~{format_arg} \
             --subset ~{num_reads} \
             --conf /home/fastq_screen.conf \
             --aligner bowtie2 \
-            ~{read1} ~{read2}
-    }
+            ~{sample_basename}.fastq
+        
+        mkdir ~{out_directory}
+        mv "~{out_directory}".* "~{out_directory}"
+        tar -czf ~{out_tar_gz} ~{out_directory}
+    >>>
  
     runtime {
         disk: disk_size + " GB"
-        docker: "stjudecloud/fastq_screen:1.0.0"
+        docker: "stjudecloud/fastq_screen:1.1.0"
         maxRetries: max_retries
     }
 
     output {
-        Array[File] out_files = glob("~{output_basename}*")
+        File results = out_tar_gz
     }
 
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs FastQ Screen on a pair of fastqs."
+        description: "This WDL tool runs FastQ Screen on a sample."
     }
 }

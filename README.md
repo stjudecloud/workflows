@@ -41,6 +41,7 @@ cromwell run workflows/reference/bootstrap-reference.wdl --inputs workflows/refe
 
 The repository is laid out as follows:
 
+* `bin` - Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations  in `conf` with Cromwell.
 * `conf` - Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
 * `docker` - Dockerfiles used in our workflows. All docker images are published to [Docker Hub](https://hub.docker.com/u/stjudecloud).
   * At the time of writing, there is only one Docker image heavily in use, which is our [bioinformatics base image](./docker/bioinformatics-base/Dockerfile).

@@ -61,8 +61,8 @@ workflow rnaseq_expression_classification_from_bams {
  
     scatter (bam in in_bams) {       
         call samtools.index as index { input: bam=bam}
-        call ngsderive.infer_strand as infer { input: bam=bam, bai=index.bai, gtf=gencode_gtf}
-        call htseq.count as count { input: bam=bam, gtf=gencode_gtf, provided_strand="", inferred_strand=infer.strandedness}
+        call ngsderive.infer_strandedness as infer { input: bam=bam, bai=index.bai, gtf=gencode_gtf}
+        call htseq.count as count { input: bam=bam, gtf=gencode_gtf, provided_strandedness="", inferred_strandedness=infer.strandedness}
     }
 
     if (! defined(reference_counts)){
@@ -109,7 +109,8 @@ workflow rnaseq_expression_classification_from_bams {
 
     parameter_meta {
         in_bams: {
-            help: "Provide bams to run for comparison"
+            help: "Provide bams to run for comparison",
+            patterns: ["*.bam"]
         }
         tissue_type: {
             help: "Provide the tissue type to compare against",

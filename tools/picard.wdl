@@ -98,6 +98,7 @@ task validate_bam {
 
         if [ "$(grep -Ec "$GREP_PATTERN" ~{output_filename})" -gt 0 ]; then
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
+            grep -E "$GREP_PATTERN" ~{output_filename} > /dev/stderr
             exit 1
         fi
     }
@@ -138,11 +139,15 @@ task bam_to_fastq {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
             FASTQ=~{prefix}_R1.fastq \
             SECOND_END_FASTQ=~{prefix}_R2.fastq \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
+        
+        gzip ~{prefix}_R1.fastq ~{prefix}_R2.fastq
     }
 
     runtime{
@@ -153,8 +158,8 @@ task bam_to_fastq {
     }
 
     output {
-        File read1 = "~{prefix}_R1.fastq"
-        File read2 = "~{prefix}_R2.fastq"
+        File read1 = "~{prefix}_R1.fastq.gz"
+        File read2 = "~{prefix}_R2.fastq.gz"
     }
 
     meta {

@@ -24,6 +24,10 @@ task quickcheck {
         maxRetries: max_retries
     }
 
+    output {
+        File checked_bam = bam
+    }
+
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
@@ -39,13 +43,14 @@ task split {
     input {
         File bam
         Int ncpu = 1
-        Boolean? reject_unaccounted
+        Boolean reject_unaccounted = true
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
         Int? disk_size_gb
         Boolean detect_nproc = false
     }
 
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
@@ -53,14 +58,14 @@ task split {
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ ${true='true' false='' detect_nproc} ]
+        if [ -n ~{parsed_detect_nproc} ]
         then
-            n_cores=`nproc`
+            n_cores=$(nproc)
         fi
 
         samtools split --threads $n_cores -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
         samtools view  --threads $n_cores ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
-        if ~{default='true' reject_unaccounted} && [ -s unaccounted_reads.bam ]
+        if ~{reject_unaccounted} && [ -s unaccounted_reads.bam ]
             then exit 1; 
             else rm ~{prefix}.unaccounted_reads.bam
         fi 
@@ -137,14 +142,15 @@ task index {
         Boolean detect_nproc = false
     }
 
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
         n_cores=~{ncpu}
-        if [ ${true='true' false='' detect_nproc} ]
+        if [ -n ~{parsed_detect_nproc} ]
         then
-            n_cores=`nproc`
+            n_cores=$(nproc)
         fi
 
         samtools index -@ $n_cores ~{bam} ~{outfile}
@@ -178,22 +184,23 @@ task subsample {
     input {
         File bam
         String outname = basename(bam, ".bam") + ".subsampled.bam"
-        Int max_retries = 1
         Int desired_reads = 500000
+        Int max_retries = 1
         Int ncpu = 1
         Boolean detect_nproc = false
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ ${true='true' false='' detect_nproc} ]
+        if [ -n ~{parsed_detect_nproc} ]
         then
-            n_cores=`nproc`
+            n_cores=$(nproc)
         fi
 
         if [[ "$(samtools view --threads $n_cores ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then

@@ -9,22 +9,25 @@ task fastqc {
     input {
         File bam
         Int ncpu = 1
-        String prefix = basename(bam, ".bam")
         Int memory_gb = 5
         Int max_retries = 1
     }
 
+    String out_directory = basename(bam, ".bam") + "_fastqc_results"
+    String out_tar_gz = out_directory + ".tar.gz"
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
         set -euo pipefail
         
-        mkdir ~{prefix}_fastqc_results
+        mkdir ~{out_directory}
         fastqc -f bam \
-            -o ~{prefix}_fastqc_results \
+            -o ~{out_directory} \
             -t ~{ncpu} \
             ~{bam}
+
+        tar -czf ~{out_tar_gz} ~{out_directory}
     }
 
     runtime {
@@ -35,7 +38,7 @@ task fastqc {
     }
 
     output {
-        Array[File] out_files = glob("~{prefix}_fastqc_results/*")
+        File results = out_tar_gz
     }
 
     meta {

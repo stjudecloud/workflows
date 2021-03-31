@@ -51,6 +51,8 @@ workflow rnaseq_expression_classification {
         File gene_blacklist
         String tissue_type
         String output_filename = "output.html"
+        String strandedness = ""
+        Int subsample_n_reads = -1
         File? blood_counts
         File? brain_counts
         File? solid_counts
@@ -62,7 +64,16 @@ workflow rnaseq_expression_classification {
 
     scatter (bam in in_bams) {
         String name = basename(bam, ".bam")
-        call rnav2.rnaseq_standard { input: gencode_gtf=gencode_gtf, input_bam=bam, stardb_tar_gz=stardb_tar_gz, output_prefix=name, strand="", detect_nproc=detect_nproc }
+        call rnav2.rnaseq_standard {
+            input:
+                gencode_gtf=gencode_gtf,
+                input_bam=bam,
+                stardb_tar_gz=stardb_tar_gz,
+                output_prefix=name,
+                detect_nproc=detect_nproc,
+                strandedness=strandedness, 
+                subsample_n_reads=subsample_n_reads
+        }
     }
 
     if (! defined(reference_counts)){
@@ -110,7 +121,8 @@ workflow rnaseq_expression_classification {
 
     parameter_meta {
         in_bams: {
-            help: "Provide bams to run for comparison"
+            help: "Provide bams to run for comparison",
+            patterns: ["*.bam"]
         }
         tissue_type: {
             help: "Provide the tissue type to compare against",
@@ -118,5 +130,10 @@ workflow rnaseq_expression_classification {
         }
         output_filename: "Name for the output HTML RNA-Seq Expression Classification plot"
         detect_nproc: "Determine number of cores and use all for multi-core steps"
+        strandedness: {
+            help: "Choose strandedness for samples. If omitted, the strandedness will attempt to be inferred.",
+            choices: ['','Stranded-Forward', 'Stranded-Reverse', 'Unstranded'],
+            default: ''
+        }
     }
 }
