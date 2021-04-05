@@ -34,7 +34,7 @@
 version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/wget.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 
 workflow bwa_db_build {
     input {
