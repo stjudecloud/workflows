@@ -44,7 +44,7 @@ task build_db {
         mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \
             --genomeDir ~{stardb_dir_name} \
-            --runThreadN $n_cores \
+            --runThreadN "$n_cores" \
             --limitGenomeGenerateRAM ~{ram_limit} \
             --genomeFastaFiles "$ref_fasta" \
             --sjdbGTFfile "$gtf_name" \
@@ -137,7 +137,7 @@ task alignment {
         STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
              --readFilesCommand "gunzip -c" \
              --genomeDir ~{stardb_dir} \
-             --runThreadN $n_cores \
+             --runThreadN "$n_cores" \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \
              --outSAMtype BAM Unsorted \
