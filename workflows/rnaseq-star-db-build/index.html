@@ -89,8 +89,6 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../tasks/util/">Utilities</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/wget/">wget</a>
-                    </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Workflows</span></p>
                 <ul class="current">
@@ -190,8 +188,8 @@
 <dl>
 <dt>reference_fa</dt>
 <dd>the reference FASTA file</dd>
-<dt>gencode_gtf</dt>
-<dd>the reference gencode GTF file</dd>
+<dt>gtf</dt>
+<dd>the reference GTF file</dd>
 <dt>stardb_tar_gz</dt>
 <dd>the STAR DB folder in .tar.gz format</dd>
 </dl>
@@ -214,8 +212,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>gencode_gtf_url</code> (String, <strong>required</strong>): URL to retrieve the reference gencode GTF file.</li>
-<li><code>reference_fa_url</code> (String, <strong>required</strong>): URL to retrieve the reference FASTA file from.</li>
+<li><code>gtf_name</code> (String, <strong>required</strong>): Name of output GTF file</li>
+<li><code>gtf_url</code> (String, <strong>required</strong>): URL to retrieve the reference GTF file from</li>
+<li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of output reference FASTA file</li>
+<li><code>reference_fa_url</code> (String, <strong>required</strong>): URL to retrieve the reference FASTA file from</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -223,8 +223,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>gencode_download.disk_size_GB</code> (Int, default=10)</li>
-<li><code>gencode_download.max_retries</code> (Int, default=1)</li>
+<li><code>gtf_download.disk_size_GB</code> (Int, default=10)</li>
+<li><code>gtf_download.max_retries</code> (Int, default=1)</li>
 <li><code>reference_download.disk_size_GB</code> (Int, default=10)</li>
 <li><code>reference_download.max_retries</code> (Int, default=1)</li>
 <li><code>star_db_build.detect_nproc</code> (Boolean, default=false)</li>
@@ -235,7 +235,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>reference_fa</code> (File)</li>
-<li><code>gencode_gtf</code> (File)</li>
+<li><code>gtf</code> (File)</li>
 <li><code>stardb_tar_gz</code> (File)</li>
 </ul>
               

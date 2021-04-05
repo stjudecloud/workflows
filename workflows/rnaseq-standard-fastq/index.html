@@ -89,8 +89,6 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../tasks/util/">Utilities</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/wget/">wget</a>
-                    </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Workflows</span></p>
                 <ul class="current">
@@ -220,7 +218,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>gencode_gtf</code> (File, <strong>required</strong>): GTF file provided by Gencode</li>
+<li><code>gtf</code> (File, <strong>required</strong>): GTF feature file</li>
 <li><code>output_prefix</code> (String, <strong>required</strong>): Prefix for output files</li>
 <li><code>read_groups</code> (String, <strong>required</strong>): A space-delimited read group record for each read group. Exactly one fastq filename must match each read group ID from <code>read_one_fastqs</code> and <code>read_two_fastqs</code>. Read group fields (Required fields: ID, LB, PL, PU, &amp; SM.) should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Expected form: <code>ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1</code></li>
 <li><code>read_one_fastqs</code> (Array[File], <strong>required</strong>): Input Fastq format file(s) with 1st read in pair to align</li>
