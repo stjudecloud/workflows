@@ -36,6 +36,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/hts
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjude/xenocp/master/wdl/workflows/xenocp.wdl"
 
 workflow rnaseq_standard_fastq {
     input {
@@ -49,6 +50,8 @@ workflow rnaseq_standard_fastq {
         Int max_retries = 1
         Boolean detect_nproc = false
         Boolean validate_input = true
+        Boolean cleanse_xenograft = false
+        File? contaminant_stardb_tar_gz
     }
 
     parameter_meta {
@@ -61,11 +64,13 @@ workflow rnaseq_standard_fastq {
         read_groups: "A space-delimited read group record for each read group. Exactly one fastq filename must match each read group ID from `read_one_fastqs` and `read_two_fastqs`. Read group fields (Required fields: ID, LB, PL, PU, & SM.) should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Expected form: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
         max_retries: "Number of times to retry failed steps"
         detect_nproc: "Use all available cores for multi-core steps"
+        cleanse_xenograft: "For xenograft samples, enable XenoCP cleansing of mouse contamination"
+        contaminant_stardb_tar_gz: "If using XenoCP to clean contaminant reads, provide a STAR reference for the contaminant genome"
     }
 
     String provided_strandedness = strandedness
 
-    call parse_input { input: input_strand=provided_strandedness }
+    call parse_input { input: input_strand=provided_strandedness, cleanse_xenograft=cleanse_xenograft, contaminant_stardb_tar_gz=contaminant_stardb_tar_gz }
     if (validate_input){
         scatter (reads in zip(read_one_fastqs, read_two_fastqs)) {
             call fq.fqlint { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
@@ -86,12 +91,20 @@ workflow rnaseq_standard_fastq {
     call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam, max_retries=max_retries, detect_nproc=detect_nproc }
     call picard.validate_bam { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gtf, max_retries=max_retries }
-    call htseq.count as htseq_count { input: bam=picard_sort.sorted_bam, gtf=gtf, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, max_retries=max_retries }
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, max_retries=max_retries }
+
+    if (cleanse_xenograft){
+        File contam_db = select_first([contaminant_stardb_tar_gz, ""])
+        call xenocp.xenocp { input: input_bam=picard_sort.sorted_bam, input_bai=samtools_index.bai, reference_tar_gz=contam_db, aligner="star", skip_duplicate_marking=true }
+    }
+    File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
+    File aligned_bai = select_first([xenocp.bam_index, samtools_index.bai])
+
+    call htseq.count as htseq_count { input: bam=aligned_bam, gtf=gtf, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, max_retries=max_retries }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=aligned_bam, bai=aligned_bai, max_retries=max_retries }
 
     output {
-        File bam = picard_sort.sorted_bam
-        File bam_index = samtools_index.bai
+        File bam = aligned_bam
+        File bam_index = aligned_bai
         File star_log = alignment.star_log
         File gene_counts = htseq_count.out
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
@@ -102,11 +115,20 @@ workflow rnaseq_standard_fastq {
 task parse_input {
     input {
         String input_strand
+        Boolean cleanse_xenograft
+        File? contaminant_stardb_tar_gz
     }
+
+    File db = select_first([contaminant_stardb_tar_gz, ""])
 
     command {
         if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "Stranded-Reverse" ] && [ "~{input_strand}" != "Stranded-Forward" ] && [ "~{input_strand}" != "Unstranded" ]; then
             >&2 echo "strandedness must be empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
+            exit 1
+        fi
+        if [ "~{cleanse_xenograft}" == "true" ] && [ ! -f "~{db}" ]
+        then
+            >&2 echo "contaminant_stardb_tar_gz must be supplied if cleanse_xenograft is specified"
             exit 1
         fi
     }
