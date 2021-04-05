@@ -34,22 +34,22 @@ task build_db {
         fi
 
         orig_gtf=~{gtf}
-        gtf=$(basename "${orig_gtf%.gz}")
-        gunzip -c ~{gtf} > $gtf || cp ~{gtf} $gtf
+        gtf_name=$(basename "${orig_gtf%.gz}")
+        gunzip -c ~{gtf} > "$gtf_name" || cp ~{gtf} "$gtf_name"
 
         orig_fasta=~{reference_fasta}
         ref_fasta=$(basename "${orig_fasta%.gz}")
-        gunzip -c ~{reference_fasta} > $ref_fasta || cp ~{reference_fasta} $ref_fasta
+        gunzip -c ~{reference_fasta} > "$ref_fasta" || cp ~{reference_fasta} "$ref_fasta"
         
         mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \
             --genomeDir ~{stardb_dir_name} \
             --runThreadN $n_cores \
             --limitGenomeGenerateRAM ~{ram_limit} \
-            --genomeFastaFiles $ref_fasta \
-            --sjdbGTFfile $gtf \
+            --genomeFastaFiles "$ref_fasta" \
+            --sjdbGTFfile "$gtf_name" \
             --sjdbOverhang 125
-        rm $gtf $ref_fasta
+        rm "$gtf_name" "$ref_fasta"
         tar -czf ~{stardb_out_name} ~{stardb_dir_name}
     >>>
 

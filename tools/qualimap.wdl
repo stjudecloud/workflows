@@ -96,17 +96,17 @@ task rnaseq {
         set -euo pipefail
 
         orig=~{gtf}
-        gtf=$(basename "${orig%.gz}")
-        gunzip -c ~{gtf} > "$gtf" || cp ~{gtf} "$gtf"
+        gtf_name=$(basename "${orig%.gz}")
+        gunzip -c ~{gtf} > "$gtf_name" || cp ~{gtf} "$gtf_name"
         
         qualimap rnaseq -bam ~{bam} \
-                        -gtf "$gtf" \
+                        -gtf "$gtf_name" \
                         -outdir ~{out_directory} \
                         -oc qualimap_counts.txt \
                         -p ~{stranded} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
-        rm "$gtf"
+        rm "$gtf_name"
         
         # Check if qualimap succeeded
         if [ ! -d "~{out_directory}/raw_data_qualimapReport/" ]; then
