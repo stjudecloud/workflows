@@ -34,9 +34,8 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/pic
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
-import "https://raw.githubusercontent.com/stjude/xenocp/master/wdl/workflows/xenocp.wdl"
+import "https://raw.githubusercontent.com/stjude/xenocp/master/wdl/workflows/xenocp.wdl" as xenocp_workflow
 
 workflow rnaseq_standard_fastq {
     input {
@@ -94,7 +93,7 @@ workflow rnaseq_standard_fastq {
 
     if (cleanse_xenograft){
         File contam_db = select_first([contaminant_stardb_tar_gz, ""])
-        call xenocp.xenocp { input: input_bam=picard_sort.sorted_bam, input_bai=samtools_index.bai, reference_tar_gz=contam_db, aligner="star", skip_duplicate_marking=true }
+        call xenocp_workflow.xenocp { input: input_bam=picard_sort.sorted_bam, input_bai=samtools_index.bai, reference_tar_gz=contam_db, aligner="star", skip_duplicate_marking=true }
     }
     File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
     File aligned_bai = select_first([xenocp.bam_index, samtools_index.bai])
@@ -119,14 +118,14 @@ task parse_input {
         File? contaminant_stardb_tar_gz
     }
 
-    File db = select_first([contaminant_stardb_tar_gz, ""])
+    Boolean db_defined = defined(contaminant_stardb_tar_gz)
 
     command {
         if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "Stranded-Reverse" ] && [ "~{input_strand}" != "Stranded-Forward" ] && [ "~{input_strand}" != "Unstranded" ]; then
             >&2 echo "strandedness must be empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
             exit 1
         fi
-        if [ "~{cleanse_xenograft}" == "true" ] && [ ! -f "~{db}" ]
+        if [ "~{cleanse_xenograft}" == "true" ] && [ "~{db_defined}" == "false" ]
         then
             >&2 echo "contaminant_stardb_tar_gz must be supplied if cleanse_xenograft is specified"
             exit 1
