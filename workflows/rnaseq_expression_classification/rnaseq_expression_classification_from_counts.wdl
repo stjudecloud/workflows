@@ -34,8 +34,8 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.1.0/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.1.0/tools/tsne.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/tsne.wdl"
 
 workflow rnaseq_expression_classification_from_counts {
     input { 

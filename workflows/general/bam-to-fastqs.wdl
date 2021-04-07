@@ -35,9 +35,9 @@
 version 1.0
 
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.1.0/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.1.0/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.1.0/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/fq.wdl"
 
 workflow bam_to_fastqs {
     input {

@@ -36,8 +36,8 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.1.0/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v2.1.0/tools/wget.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/wget.wdl"
 
 workflow rnaseq_star_db_build {
     input {
