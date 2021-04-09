@@ -1,17 +1,14 @@
-## # RNASeq STAR DB build
+## # BWA DB build
 ##
-## This WDL workflow generates a set of genome reference files usable by the STAR aligner from an input reference file in FASTA format.  
+## This WDL workflow generates a set of genome reference files usable by the BWA aligner from an input reference file in FASTA format.  
 ##
 ## ### Output
 ##
 ## reference_fa
 ## : the reference FASTA file
 ##
-## gtf
-## : the reference GTF file
-##
-## stardb_tar_gz
-## : the STAR DB folder in .tar.gz format
+## bwadb_tar_gz
+## : the BWA reference folder in .tar.gz format
 ##
 ## ## LICENSING
 ##
@@ -36,37 +33,30 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 
-workflow rnaseq_star_db_build {
+workflow bwa_db_build {
     input {
         String reference_fa_url
-        String gtf_url
         String reference_fa_name
-        String gtf_name
     }
 
     parameter_meta {
-        reference_fa_url: "URL to retrieve the reference FASTA file from"
-        gtf_url: "URL to retrieve the reference GTF file from"
+        reference_fa_url: "URL to retrieve the reference FASTA file from."
         reference_fa_name: "Name of output reference FASTA file"
-        gtf_name: "Name of output GTF file"
     }
 
     call util.download as reference_download { input: url=reference_fa_url, outfilename=reference_fa_name }
-    call util.download as gtf_download { input: url=gtf_url, outfilename=gtf_name }
-    call star.build_db as star_db_build {
+    call bwa.build_db {
         input:
             reference_fasta=reference_download.outfile,
-            gtf=gtf_download.outfile,
-            stardb_dir_name="STARDB",
-            ncpu=4,
+            bwadb_out_name="bwa.tar.gz",
+            ncpu=4
     }
 
     output {
       File reference_fa = reference_download.outfile
-      File gtf = gtf_download.outfile
-      File stardb_tar_gz = star_db_build.stardb_out
+      File bwadb_tar_gz = build_db.bwadb_tar_gz
     }
 }

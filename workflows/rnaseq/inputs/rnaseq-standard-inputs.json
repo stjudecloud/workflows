@@ -1,5 +1,5 @@
 {
-    "rnaseq_standard.gencode_gtf": "/cromwell/inputs/rnaseq_v2/gencode.v31.annotation.gtf",
+    "rnaseq_standard.gtf": "/cromwell/inputs/rnaseq_v2/gencode.v31.annotation.gtf",
     "rnaseq_standard.input_bam": "/cromwell/inputs/Sample.RNA-Seq.bam",
     "rnaseq_standard.stardb_tar_gz": "/cromwell/inputs/rnaseq_v2/stardb.tar.gz",
     "rnaseq_standard.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified, we will try to guess using ngsderive)",

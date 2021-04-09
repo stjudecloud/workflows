@@ -121,3 +121,52 @@ task bwa_mem {
         bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 }
+
+task build_db {
+    input {
+        File reference_fasta
+        String bwadb_out_name
+        Int ncpu = 1
+        Int memory_gb = 5
+        Int? disk_size_gb
+        Int max_retries = 1
+    }
+
+    Float input_fasta_size = size(reference_fasta, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil((input_fasta_size * 2))])
+
+    command <<<
+        set -euo pipefail
+
+        orig_fasta=~{reference_fasta}
+        ref_fasta=$(basename "${orig_fasta%.gz}")
+        gunzip -c ~{reference_fasta} > $ref_fasta || cp ~{reference_fasta} $ref_fasta
+
+        bwa index $ref_fasta
+
+        tar -czf ~{bwadb_out_name} ${ref_fasta}*
+    >>>
+
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        cpu: ncpu
+        docker: 'stjudecloud/bwa:1.0.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        File bwadb_tar_gz = bwadb_out_name
+    }
+
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL tool creates a BWA index and returns it as a compressed tar archive."
+    }
+
+    parameter_meta {
+        reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
+        bwadb_out_name: "Name for the output gzipped tar archive of the bwa reference files."
+    }
+}
