@@ -35,6 +35,9 @@ task sequencerr {
             mkdir ~{parsed_prefix}_results
             mv ~{parsed_prefix}.err ~{parsed_prefix}.count ~{parsed_prefix}_results
             tar -czf ~{parsed_prefix}_results.tar.gz ~{parsed_prefix}_results/
+            rm -r ~{parsed_prefix}_results/
+        else
+            rm ~{parsed_prefix}.count
         fi
     }
 
