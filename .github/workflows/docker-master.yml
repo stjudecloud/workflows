@@ -15,6 +15,9 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - uses: actions/checkout@v2
+    - uses: webfactory/ssh-agent@v0.5.2
+      with:
+        ssh-private-key: ${{ secrets.STJUDE_SEQERR_READONLY_DEPLOY_KEY }}
     - name: Build and push docker images
       run: |
         EXITCODE=0
@@ -28,7 +31,7 @@ jobs:
               >&2 echo "This container will not be built."
               EXITCODE=1
             else
-              docker build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} -t stjudecloud/"$tool_name":"$tag" "$dir"/"$tag"
+              DOCKER_BUILDKIT=1 docker build --ssh default -t stjudecloud/"$tool_name":"$tag" "$dir"/"$tag"
               docker push stjudecloud/"$tool_name":"$tag"
               docker rmi stjudecloud/"$tool_name":"$tag"
             fi

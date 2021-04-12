@@ -1,17 +1,25 @@
-FROM registry.access.redhat.com/ubi7/python-36 AS builder
+# syntax=docker/dockerfile:1.0.0-experimental
 
-ARG GITHUB_TOKEN
-RUN git clone --depth 1 --branch v2.0.7 https://${GITHUB_TOKEN}@github.com/stjude/sequencErr.git
+FROM centos:7 AS builder
 
-RUN pip3 install meson==0.56.2 ninja==1.10
+RUN yum -y install gcc-c++ git openssh-clients python3 zlib-devel \
+    && yum clean all
 
-RUN cd sequencErr && \
-    meson -Dprefix=$HOME --buildtype release build && \
-    ninja -C build install && \
-    ./build/sequencerr_tests
+RUN pip3 install meson==0.57.2 ninja==1.10.0.post2
 
-FROM registry.access.redhat.com/ubi7/ubi
+RUN --mount=type=ssh \
+    cd /opt \
+    && mkdir -p -m 0600 ~/.ssh \
+    && ssh-keyscan github.com >> ~/.ssh/known_hosts \
+    && git clone --depth 1 --branch v2.0.7 git@github.com:stjude/sequencErr.git \
+    && cd sequencErr \
+    && meson --buildtype release build \
+    && ninja -C build install
 
-COPY --from=builder /opt/app-root/src/bin/sequencerr /usr/local/bin/sequencerr
+FROM centos:7
 
-ENTRYPOINT [ "sequencerr" ]
+COPY --from=builder /opt/sequencErr/build/sequencerr /opt/sequencerr/bin/
+
+ENV PATH=/opt/sequencerr/bin:$PATH
+
+ENTRYPOINT ["/opt/sequencerr/bin/sequencerr"]
