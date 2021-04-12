@@ -41,7 +41,7 @@ task bamqc {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/qualimap:1.0.3'
+        docker: 'stjudecloud/qualimap:branch-sequencErr-1.0.3'
         maxRetries: max_retries
     }
 
@@ -119,7 +119,7 @@ task rnaseq {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/qualimap:1.0.3'
+        docker: 'stjudecloud/qualimap:branch-sequencErr-1.0.3'
         maxRetries: max_retries
     }
 

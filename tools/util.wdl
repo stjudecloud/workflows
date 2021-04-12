@@ -61,7 +61,7 @@ task get_read_groups {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/samtools:1.0.0'
+        docker: 'stjudecloud/samtools:branch-sequencErr-1.0.1'
         maxRetries: max_retries
     }
 
@@ -170,7 +170,7 @@ END
     runtime {
         memory: "8 GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/gtfparse:1.0.1'
+        docker: 'stjudecloud/gtfparse:branch-sequencErr-1.0.1'
         maxRetries: max_retries
     }
 

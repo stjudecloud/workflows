@@ -47,7 +47,7 @@ END
     runtime {
         memory: "4 GB"
         disk: "4 GB"
-        docker: 'stjudecloud/util:1.1.0'
+        docker: 'stjudecloud/util:branch-sequencErr-1.1.0'
         maxRetries: max_retries
     }
 
@@ -80,7 +80,7 @@ END
     runtime {
         memory: "4 GB"
         disk: "4 GB"
-        docker: 'stjudecloud/estimate:1.0.0'
+        docker: 'stjudecloud/estimate:branch-sequencErr-1.0.0'
         maxRetries: max_retries
     }
 

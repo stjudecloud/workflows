@@ -25,7 +25,7 @@ task fqlint {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/fqlib:1.0.1'
+        docker: 'stjudecloud/fqlib:branch-sequencErr-1.0.1'
         maxRetries: max_retries
     }
 
