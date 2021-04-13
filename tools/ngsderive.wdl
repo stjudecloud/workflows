@@ -128,11 +128,9 @@ for line in encoding_file:
         break
     if cur_encoding == "Sanger/Illumina 1.8" or permissive_encoding == "Sanger/Illumina 1.8":
         permissive_encoding = "Sanger/Illumina 1.8"
-        continue
-    if cur_encoding == "Solexa/Illumina 1.0" or permissive_encoding == "Solexa/Illumina 1.0":
+    elif cur_encoding == "Solexa/Illumina 1.0" or permissive_encoding == "Solexa/Illumina 1.0":
         permissive_encoding = "Solexa/Illumina 1.0"
-        continue
-    if cur_encoding == "Illumina 1.3":
+    elif cur_encoding == "Illumina 1.3":
         permissive_encoding = "Illumina 1.3"
 
 outfile = open("encoding.txt", "w")
