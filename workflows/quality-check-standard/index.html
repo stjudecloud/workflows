@@ -240,6 +240,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>illumina</code> (Boolean, default=true): Sequenced by an Illumina machine? <code>sequencErr</code> only supports Illumina formatted reads. Non-Illumina data may cause errors</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>paired_end</code> (Boolean, default=true): Whether the data is paired end</li>
 <li><code>phred_encoding</code> (String, default=""): Encoding format used for PHRED quality scores. Must be empty, 'sanger', or 'illumina1.3'. Only needed for WGS/WES. If missing, will be inferred</li>
