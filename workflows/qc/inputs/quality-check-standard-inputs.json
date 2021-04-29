@@ -6,7 +6,8 @@
     "quality_check.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified, we will try to guess using ngsderive)",
     "quality_check.fastq_screen_db": "/cromwell/inputs/fastq-screen-db.tar.gz",
     "quality_check.phred_encoding": "<sanger/illumina1.3> (optional, if not specified, we will try to guess using ngsderive. Only needed for WGS/WES)",
-    "quality_check.paired_end": "<true/false> (default = false)",
+    "quality_check.paired_end": "<true/false> (default = true)",
+    "quality_check.illumina": "<true/false> (default = true)",
     "quality_check.max_retries": "Int? (optional, default = 1)",
     "quality_check.sequencErr.output_count_file": "<true/false> Whether to output granular count file. Result file is large; uncompressed can reach over half input BAM size, compressed can be ~10% BAM size. (default = false)"
 }
