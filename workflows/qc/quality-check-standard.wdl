@@ -35,6 +35,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngs
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/sequencerr.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
 
 workflow quality_check {
@@ -90,6 +91,8 @@ workflow quality_check {
     if (experiment == "WGS" || experiment == "WES") {
         File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
 
+        call sequencerr.sequencerr as sequencErr { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
+
         call samtools.subsample as samtools_subsample { input: bam=quickcheck.checked_bam, max_retries=max_retries }
         call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
         call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
@@ -143,6 +146,7 @@ workflow quality_check {
         File qualimap_bamqc_results = qualimap_bamqc.results
         File inferred_encoding = ngsderive_encoding.encoding_file
         File? fastq_screen_results = fastq_screen.results
+        File? sequencerr_results = sequencErr.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary

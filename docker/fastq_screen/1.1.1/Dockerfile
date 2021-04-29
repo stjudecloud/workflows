@@ -1,8 +1,8 @@
-FROM stjudecloud/conda-base:1.0.0 AS builder
+FROM stjudecloud/conda-base:1.1.0 AS builder
 
 RUN conda create -n fastq_screen \
-        fastq-screen==0.13.0=pl526_1 \
-        -y \
+    fastq-screen==0.13.0=pl526_1 \
+    -y \
     && conda clean --all
 
 FROM debian:10-slim

@@ -1,8 +1,8 @@
-FROM stjudecloud/conda-base:1.0.0 AS builder
+FROM stjudecloud/conda-base:1.1.0 AS builder
 
 RUN conda create -n deeptools \
-        deeptools==3.3.1 \
-        -y \
+    deeptools==3.3.1 \
+    -y \
     && conda clean --all
 
 FROM debian:10-slim

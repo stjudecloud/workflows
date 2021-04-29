@@ -1,4 +1,4 @@
-FROM stjudecloud/conda-base:1.0.0 AS builder
+FROM stjudecloud/conda-base:1.1.0 AS builder
 
 RUN conda create -n multiqc \
     multiqc==1.10 \

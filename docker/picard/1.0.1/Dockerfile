@@ -1,8 +1,8 @@
-FROM stjudecloud/conda-base:1.0.0 AS builder
+FROM stjudecloud/conda-base:1.1.0 AS builder
 
 RUN conda create -n picard \
-        picard==2.20.2=0 \
-        -y \
+    picard==2.20.2=0 \
+    -y \
     && conda clean --all
 
 FROM debian:10-slim

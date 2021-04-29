@@ -41,7 +41,7 @@ task bamCoverage {
         cpu: ncpu
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/deeptools:1.0.0'
+        docker: 'stjudecloud/deeptools:1.0.1'
         maxRetries: max_retries
     }
 
