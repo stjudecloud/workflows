@@ -83,6 +83,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../tasks/samtools/">SAMtools</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/sequencerr/">sequencErr</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../tasks/star/">STAR</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../tasks/tsne/">t-SNE</a>
@@ -234,6 +236,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>multiqc_rnaseq.fastq_screen</code> (File?)</li>
 <li><code>qualimap_bamqc.disk_size_gb</code> (Int?)</li>
 <li><code>qualimap_rnaseq.disk_size_gb</code> (Int?)</li>
+<li><code>sequencErr.prefix</code> (String?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
@@ -271,6 +274,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>samtools_subsample.detect_nproc</code> (Boolean, default=false)</li>
 <li><code>samtools_subsample.ncpu</code> (Int, default=1)</li>
 <li><code>samtools_subsample.outname</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
+<li><code>sequencErr.output_count_file</code> (Boolean, default=false)</li>
 <li><code>validate_bam.ignore_mapping_quality</code> (Boolean, default=true)</li>
 <li><code>validate_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
 <li><code>validate_bam.ignore_warnings</code> (Boolean, default=true)</li>
@@ -289,6 +293,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>qualimap_bamqc_results</code> (File)</li>
 <li><code>inferred_encoding</code> (File)</li>
 <li><code>fastq_screen_results</code> (File?)</li>
+<li><code>sequencerr_results</code> (File?)</li>
 <li><code>inferred_strandedness</code> (File?)</li>
 <li><code>qualimap_rnaseq_results</code> (File?)</li>
 <li><code>junction_summary</code> (File?)</li>
