@@ -49,7 +49,7 @@ task count {
     runtime {
         memory: mem_size + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/htseq:branch-sequencErr-1.0.1'
+        docker: 'stjudecloud/htseq:1.0.1'
         maxRetries: max_retries
     }
    

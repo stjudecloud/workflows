@@ -44,7 +44,7 @@ task sequencerr {
     runtime {
         disk: disk_size + " GB"
         memory: "8 GB"
-        docker: 'stjudecloud/sequencerr:branch-sequencErr-1.0.0'
+        docker: 'stjudecloud/sequencerr:1.0.0'
         maxRetries: max_retries
     }
 

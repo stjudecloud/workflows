@@ -86,7 +86,7 @@ task multiqc {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/multiqc:branch-sequencErr-1.3.1'
+        docker: 'stjudecloud/multiqc:1.3.1'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
