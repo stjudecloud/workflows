@@ -119,9 +119,10 @@ workflow quality_check {
     if (experiment == "RNA-Seq") {
         File gtf_defined = select_first([gtf, "No GTF"])
 
+        call ngsderive.junction_annotation as junction_annotation { input: bam=quickcheck.checked_bam, bai=bam_index, gtf=gtf_defined, max_retries=max_retries }
+
         call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bai=bam_index, gtf=gtf_defined, max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=quickcheck.checked_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, paired_end=paired_end, max_retries=max_retries }
-        call ngsderive.junction_annotation as junction_annotation { input: bam=quickcheck.checked_bam, bai=bam_index, gtf=gtf_defined, max_retries=max_retries }
 
         call mqc.multiqc as multiqc_rnaseq {
             input:
