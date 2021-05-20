@@ -9,5 +9,8 @@
     "quality_check.paired_end": "<true/false> (default = true)",
     "quality_check.illumina": "<true/false> (default = true)",
     "quality_check.max_retries": "Int? (optional, default = 1)",
-    "quality_check.sequencErr.output_count_file": "<true/false> Whether to output granular count file. Result file is large; uncompressed can reach over half input BAM size, compressed can be ~10% BAM size. (default = false)"
+    "quality_check.sequencErr.output_count_file": "<true/false> Whether to output granular count file. Result file is large; uncompressed can reach over half input BAM size, compressed can be ~10% BAM size. (default = false)",
+    "quality_check.qualimap_bamqc.ncpu": "Int? (optional, default = 1)",
+    "quality_check.fastqc.ncpu": "Int? (optional, default = 1)",
+    "quality_check.samtools_subsample.ncpu": "Int? (optional, default = 1)"
 }
