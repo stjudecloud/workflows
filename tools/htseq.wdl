@@ -41,6 +41,7 @@ task count {
             -i gene_name \
             --secondary-alignments ignore \
             --supplementary-alignments ignore \
+            --max-reads-in-buffer 9223372036854776000  # arbitrarily large number
             ~{bam} \
             ~{gtf} \
             > ~{outfile}
