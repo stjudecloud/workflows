@@ -9,7 +9,7 @@ task build_db {
     input {
         Int ncpu = 1
         File reference_fasta
-        File gencode_gtf
+        File gtf
         String stardb_dir_name
         String ram_limit = "45000000000" # This value is too large to be an Int type, so we store it as a string
         Int memory_gb = 50
@@ -21,8 +21,8 @@ task build_db {
     String parsed_detect_nproc = if detect_nproc then "true" else ""
     String stardb_out_name = stardb_dir_name + ".tar.gz"
     Float reference_fasta_size = size(reference_fasta, "GiB")
-    Float gencode_gtf_size = size(gencode_gtf, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gencode_gtf_size) * 3) + 10)])
+    Float gtf_size = size(gtf, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gtf_size) * 3) + 10)])
 
     command <<<
         set -euo pipefail
@@ -33,23 +33,23 @@ task build_db {
             n_cores=$(nproc)
         fi
 
-        orig_gtf=~{gencode_gtf}
-        gtf=$(basename "${orig_gtf%.gz}")
-        gunzip -c ~{gencode_gtf} > $gtf || cp ~{gencode_gtf} $gtf
+        orig_gtf=~{gtf}
+        gtf_name=$(basename "${orig_gtf%.gz}")
+        gunzip -c ~{gtf} > "$gtf_name" || cp ~{gtf} "$gtf_name"
 
         orig_fasta=~{reference_fasta}
         ref_fasta=$(basename "${orig_fasta%.gz}")
-        gunzip -c ~{reference_fasta} > $ref_fasta || cp ~{reference_fasta} $ref_fasta
+        gunzip -c ~{reference_fasta} > "$ref_fasta" || cp ~{reference_fasta} "$ref_fasta"
         
         mkdir ~{stardb_dir_name};
         STAR --runMode genomeGenerate \
             --genomeDir ~{stardb_dir_name} \
-            --runThreadN $n_cores \
+            --runThreadN "$n_cores" \
             --limitGenomeGenerateRAM ~{ram_limit} \
-            --genomeFastaFiles $ref_fasta \
-            --sjdbGTFfile $gtf \
+            --genomeFastaFiles "$ref_fasta" \
+            --sjdbGTFfile "$gtf_name" \
             --sjdbOverhang 125
-        rm $gtf $ref_fasta
+        rm "$gtf_name" "$ref_fasta"
         tar -czf ~{stardb_out_name} ~{stardb_dir_name}
     >>>
 
@@ -57,7 +57,7 @@ task build_db {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/star:1.1.0'
+        docker: 'stjudecloud/star:1.1.1'
         maxRetries: max_retries
     }
 
@@ -73,7 +73,7 @@ task build_db {
 
     parameter_meta {
         reference_fasta: "The FASTA format reference file for the genome"
-        gencode_gtf: "GTF format feature file with Gencode features"
+        gtf: "GTF format feature file"
     }
 }
 
@@ -137,7 +137,7 @@ task alignment {
         STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
              --readFilesCommand "gunzip -c" \
              --genomeDir ~{stardb_dir} \
-             --runThreadN $n_cores \
+             --runThreadN "$n_cores" \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \
              --outSAMtype BAM Unsorted \
@@ -161,7 +161,7 @@ task alignment {
         cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/star:1.1.0'
+        docker: 'stjudecloud/star:1.1.1'
         maxRetries: max_retries
     }
 

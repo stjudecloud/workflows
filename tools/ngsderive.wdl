@@ -29,7 +29,7 @@ task infer_strandedness {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/ngsderive:1.1.1'
+        docker: 'stjudecloud/ngsderive:1.1.2'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
@@ -56,7 +56,7 @@ task instrument {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/ngsderive:1.1.1'
+        docker: 'stjudecloud/ngsderive:1.1.2'
         maxRetries: max_retries
     }
 
@@ -87,7 +87,7 @@ task read_length {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/ngsderive:1.1.1'
+        docker: 'stjudecloud/ngsderive:1.1.2'
         maxRetries: max_retries
     }
 
@@ -128,11 +128,9 @@ for line in encoding_file:
         break
     if cur_encoding == "Sanger/Illumina 1.8" or permissive_encoding == "Sanger/Illumina 1.8":
         permissive_encoding = "Sanger/Illumina 1.8"
-        continue
-    if cur_encoding == "Solexa/Illumina 1.0" or permissive_encoding == "Solexa/Illumina 1.0":
+    elif cur_encoding == "Solexa/Illumina 1.0" or permissive_encoding == "Solexa/Illumina 1.0":
         permissive_encoding = "Solexa/Illumina 1.0"
-        continue
-    if cur_encoding == "Illumina 1.3":
+    elif cur_encoding == "Illumina 1.3":
         permissive_encoding = "Illumina 1.3"
 
 outfile = open("encoding.txt", "w")
@@ -145,7 +143,7 @@ END
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/ngsderive:1.1.1'
+        docker: 'stjudecloud/ngsderive:1.1.2'
         maxRetries: max_retries
     }
 
@@ -192,7 +190,7 @@ task junction_annotation {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'stjudecloud/ngsderive:1.1.1'
+        docker: 'stjudecloud/ngsderive:1.1.2'
         maxRetries: max_retries
     }
 

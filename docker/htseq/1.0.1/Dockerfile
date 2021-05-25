@@ -1,8 +1,8 @@
-FROM stjudecloud/conda-base:1.0.0 AS builder
+FROM stjudecloud/conda-base:1.1.0 AS builder
 
 RUN conda create -n htseq \
-        htseq==0.11.2 \
-        -y \
+    htseq==0.11.2 \
+    -y \
     && conda clean --all
 
 FROM debian:10-slim

@@ -44,7 +44,7 @@ task bwa_aln {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/bwa:1.0.0'
+        docker: 'stjudecloud/bwa:1.0.1'
         maxRetries: max_retries
     }
 
@@ -102,7 +102,7 @@ task bwa_mem {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/bwa:1.0.0'
+        docker: 'stjudecloud/bwa:1.0.1'
         maxRetries: max_retries
     }
 
@@ -126,7 +126,6 @@ task build_db {
     input {
         File reference_fasta
         String bwadb_out_name
-        Int ncpu = 1
         Int memory_gb = 5
         Int? disk_size_gb
         Int max_retries = 1
@@ -150,8 +149,7 @@ task build_db {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        cpu: ncpu
-        docker: 'stjudecloud/bwa:1.0.0'
+        docker: 'stjudecloud/bwa:1.0.1'
         maxRetries: max_retries
     }
 

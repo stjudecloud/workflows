@@ -15,6 +15,9 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - uses: actions/checkout@v2
+    - uses: webfactory/ssh-agent@v0.5.2
+      with:
+        ssh-private-key: ${{ secrets.STJUDE_SEQERR_READONLY_DEPLOY_KEY }}
     - name: Build and push docker images
       run: |
         EXITCODE=0
@@ -33,7 +36,7 @@ jobs:
               EXITCODE=1
             else
               tag=branch-${GITHUB_REF##*/}-$tag_dir
-              docker build -t stjudecloud/"$tool_name":"$tag" docker/"$dir"/"$tag_dir"
+              DOCKER_BUILDKIT=1 docker build --ssh default -t stjudecloud/"$tool_name":"$tag" docker/"$dir"/"$tag_dir"
               docker push stjudecloud/"$tool_name":"$tag"
               docker rmi stjudecloud/"$tool_name":"$tag"
             fi;

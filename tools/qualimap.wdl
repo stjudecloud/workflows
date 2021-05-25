@@ -41,7 +41,7 @@ task bamqc {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/qualimap:1.0.0'
+        docker: 'stjudecloud/qualimap:1.0.3'
         maxRetries: max_retries
     }
 
@@ -63,7 +63,7 @@ task bamqc {
 task rnaseq {
     input {
         File bam
-        File gencode_gtf
+        File gtf
         Int memory_gb = 16
         Int? disk_size_gb
         Int max_retries = 1
@@ -89,24 +89,24 @@ task rnaseq {
 
     Int java_heap_size = ceil(memory_gb * 0.9)
     Float bam_size = size(bam, "GiB")
-    Float gencode_gtf_size = size(gencode_gtf, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gencode_gtf_size) * 12) + 10)])
+    Float gtf_size = size(gtf, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(((bam_size + gtf_size) * 12) + 10)])
  
     command <<<
         set -euo pipefail
 
-        orig=~{gencode_gtf}
-        gtf=$(basename "${orig%.gz}")
-        gunzip -c ~{gencode_gtf} > "$gtf" || cp ~{gencode_gtf} "$gtf"
+        orig=~{gtf}
+        gtf_name=$(basename "${orig%.gz}")
+        gunzip -c ~{gtf} > "$gtf_name" || cp ~{gtf} "$gtf_name"
         
         qualimap rnaseq -bam ~{bam} \
-                        -gtf "$gtf" \
+                        -gtf "$gtf_name" \
                         -outdir ~{out_directory} \
                         -oc qualimap_counts.txt \
                         -p ~{stranded} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
-        rm "$gtf"
+        rm "$gtf_name"
         
         # Check if qualimap succeeded
         if [ ! -d "~{out_directory}/raw_data_qualimapReport/" ]; then
@@ -119,7 +119,7 @@ task rnaseq {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/qualimap:1.0.0'
+        docker: 'stjudecloud/qualimap:1.0.3'
         maxRetries: max_retries
     }
 
@@ -135,7 +135,7 @@ task rnaseq {
 
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
-        gencode_gtf: "A GTF format features file containing Gencode features"
+        gtf: "A GTF format features file"
         provided_strandedness: "Strand information for RNA-seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]"
     }
 }
