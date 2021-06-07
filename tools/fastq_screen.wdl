@@ -71,6 +71,9 @@ task fastq_screen {
     command <<<
         set -euo pipefail
 
+        export LC_ALL=C.UTF-8
+        export LANG=C.UTF-8
+
         mkdir -p /tmp/FastQ_Screen_Genomes/
         tar -xzf ~{db} -C /tmp/FastQ_Screen_Genomes/ --no-same-owner
         find /tmp/FastQ_Screen_Genomes/
