@@ -86,7 +86,7 @@ task fastq_screen {
             --conf /home/fastq_screen.conf \
             --aligner bowtie2 \
             ~{sample_basename}.fastq 2>&1 \
-            | sed '/Skipping DATABASE/q1' 1>&2 \
+            | sed '/Skipping DATABASE/q1;/ERR/q1' 1>&2 \
             || (echo "Quitting FastQ Screen" && exit 1)
 
         mkdir ~{out_directory}
