@@ -70,9 +70,10 @@ task fastq_screen {
 
     command <<<
         set -euo pipefail
-        
+
         mkdir -p /tmp/FastQ_Screen_Genomes/
         tar -xzf ~{db} -C /tmp/FastQ_Screen_Genomes/ --no-same-owner
+        find /tmp/FastQ_Screen_Genomes/
 
         gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
 
@@ -81,8 +82,10 @@ task fastq_screen {
             --subset ~{num_reads} \
             --conf /home/fastq_screen.conf \
             --aligner bowtie2 \
-            ~{sample_basename}.fastq
-        
+            ~{sample_basename}.fastq 2>&1 \
+            | sed '/Skipping DATABASE/q1' 1>&2 \
+            || (echo "Quitting FastQ Screen" && exit 1)
+
         mkdir ~{out_directory}
         mv "~{out_directory}".* "~{out_directory}"
         tar -czf ~{out_tar_gz} ~{out_directory}
