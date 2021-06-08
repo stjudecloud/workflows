@@ -76,7 +76,6 @@ task fastq_screen {
 
         mkdir -p /tmp/FastQ_Screen_Genomes/
         tar -xzf ~{db} -C /tmp/FastQ_Screen_Genomes/ --no-same-owner
-        find /tmp/FastQ_Screen_Genomes/
 
         gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
 
@@ -87,7 +86,7 @@ task fastq_screen {
             --aligner bowtie2 \
             ~{sample_basename}.fastq 2>&1 \
             | sed '/Skipping DATABASE/q1;/ERR/q1' 1>&2 \
-            || (echo "Quitting FastQ Screen" && exit 1)
+            || exit 1
 
         mkdir ~{out_directory}
         mv "~{out_directory}".* "~{out_directory}"
