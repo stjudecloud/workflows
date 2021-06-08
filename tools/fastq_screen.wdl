@@ -86,7 +86,7 @@ task fastq_screen {
             --aligner bowtie2 \
             ~{sample_basename}.fastq 2>&1 \
             | sed '/Skipping DATABASE/q1;/ERR/q1' 1>&2 \
-            || exit 1
+            || exit 42
 
         mkdir ~{out_directory}
         mv "~{out_directory}".* "~{out_directory}"
@@ -107,6 +107,6 @@ task fastq_screen {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs FastQ Screen on a sample."
+        description: "This WDL tool runs FastQ Screen on a sample. Exit code 42 indicates a rare intermittent bug. Job should succeed upon resubmission."
     }
 }
