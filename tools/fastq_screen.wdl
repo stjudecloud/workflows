@@ -94,7 +94,7 @@ task fastq_screen {
     >>>
  
     runtime {
-        memory: "20 GB"
+        memory: "10 GB"
         disk: disk_size + " GB"
         docker: 'stjudecloud/fastq_screen:1.1.2'
         maxRetries: max_retries
