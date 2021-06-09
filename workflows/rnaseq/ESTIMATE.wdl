@@ -1,6 +1,6 @@
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/estimate.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/tools/estimate.wdl"
 
 workflow ESTIMATE {
     input {

@@ -37,9 +37,9 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/rnaseq/rnaseq-standard.wdl" as rnav2
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/tsne.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/workflows/rnaseq/rnaseq-standard.wdl" as rnav2
+import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/tools/tsne.wdl"
 
 workflow rnaseq_expression_classification {
     input { 
