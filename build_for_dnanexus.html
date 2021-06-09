@@ -5,11 +5,11 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Repository containing bioinformatics workflows used on the St. Jude Cloud project.">
+  
   <meta name="author" content="St. Jude Cloud">
   
   <link rel="shortcut icon" href="img/favicon.ico">
-  <title>St. Jude WDL workflows</title>
+  <title>Building WDL workflows for DNAnexus - St. Jude WDL workflows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Home";
-    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_name = "Building WDL workflows for DNAnexus";
+    var mkdocs_page_input_path = "build_for_dnanexus.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -46,14 +46,28 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="index.html">Home</a>
-    <ul class="current">
-    </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
                     </li>
                 </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="build_for_dnanexus.html">Building WDL workflows for DNAnexus</a>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="build_for_dnanexus.html">Building WDL workflows for DNAnexus</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#obtain-dxwdl-jar">Obtain dxWDL JAR</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#optional-workflow-parameters-for-dxwdl">Optional workflow parameters for dxWDL</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#build-interactive-t-sne-workflow-for-dnanexus">Build Interactive t-SNE workflow for DNAnexus</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#build-workflow-running-htseq-count-on-bam-input">Build workflow running htseq-count on BAM input</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-workflow-from-htseq-counts-data">Build workflow from HTSeq counts data</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-workflow-with-rna-seq-v2-remapping-of-bam-input">Build workflow with RNA-Seq V2 remapping of BAM input</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Tasks</span></p>
@@ -141,10 +155,10 @@
     
       
     
-    <li>Home</li>
+    <li>Building WDL workflows for DNAnexus</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/index.md"
+        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/build_for_dnanexus.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -156,95 +170,29 @@
           <div role="main">
             <div class="section">
               
-                <p align="center">
-  <a href="https://github.com/stjudecloud/workflows"><img src=".//workflows-banner-flowchart.jpg" width="800" title="St. Jude Cloud Workflows"></a>
-  <a href="https://actions-badge.atrox.dev/stjudecloud/workflows/goto">
-    <img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fstjudecloud%2Fworkflows%2Fbadge&style=flat" />
-  </a>
-  <a href="https://stjude.cloud/docs" target="_blank">
-    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
-  </a>
-  <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md" target="_blank">
-    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
-  </a>
-</p>
-
-<blockquote>
-<p>This repository contains all bioinformatics workflows used on the St. Jude Cloud project. Officially, the repository is in beta — the project is adding workflows as they are developed and put into production.</p>
-</blockquote>
-<h3 id="homepage">🏠 <a href="https://stjude.cloud">Homepage</a></h3>
-<h2 id="getting-started">Getting Started</h2>
-<p>At the time of writing, all workflows are written in <a href="http://openwdl.org/">WDL</a> and are tested
-using <a href="https://github.com/broadinstitute/cromwell">Cromwell</a>. We use <a href="https://github.com/stjudecloud/oliver">Oliver</a> to easily interact with the
-Cromwell server to perform various tasks. Although we do not test outside of Cromwell, we
-expect that the workflows will work just as well using other runners.</p>
-<p>The easiest way to get started is to install <a href="https://bioconda.github.io/">bioconda</a> and the run the following commands:</p>
-<pre><code class="language-bash">conda create -n workflows-dev -c conda-forge cromwell==47 -y
-conda activate workflows-dev
-git clone git@github.com:stjudecloud/workflows.git
-cd workflows
-</code></pre>
-<p>Any of the workflows in <a href="https://github.com/stjudecloud/workflows/tree/master/workflows">the workflows</a> folder is a good place to start, e.g.</p>
-<pre><code class="language-bash">cromwell run workflows/reference/bootstrap-reference.wdl --inputs workflows/reference/inputs.json
-</code></pre>
-<h2 id="repository-structure">Repository Structure</h2>
-<p>The repository is laid out as follows:</p>
+                <h1 id="building-wdl-workflows-for-dnanexus">Building WDL workflows for DNAnexus</h1>
+<h2 id="obtain-dxwdl-jar">Obtain dxWDL JAR</h2>
+<p>Retrieve the latest dxWDL JAR release from GitHub: https://github.com/dnanexus/dxWDL/releases</p>
+<h2 id="optional-workflow-parameters-for-dxwdl">Optional workflow parameters for dxWDL</h2>
 <ul>
-<li><code>bin</code> - Scripts used by Cromwell configuration settings. Add this to <code>$PATH</code> prior to using configurations  in <code>conf</code> with Cromwell.</li>
-<li><code>conf</code> - Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.</li>
-<li><code>docker</code> - Dockerfiles used in our workflows. All docker images are published to <a href="https://hub.docker.com/u/stjudecloud">Docker Hub</a>.</li>
-<li>At the time of writing, there is only one Docker image heavily in use, which is our <a href="./docker/bioinformatics-base/Dockerfile">bioinformatics base image</a>.</li>
-<li><code>tools</code> - All tools we have wrapped as individual WDL tasks.</li>
-<li><code>workflows</code> - Directory containing all end-to-end bioinformatics workflows.</li>
+<li><code>-project</code> - Specify a project to compile the workflow. This is optional and otherwise uses the currently selected project.</li>
+<li><code>-archive</code> - Archive older versions of the workflow and applets</li>
+<li><code>-defaults</code> - Set default options for certain parameters</li>
+<li><code>-verbose</code> - Detailed build information</li>
+<li><code>-locked</code> - Creates a one stage worklfow that is cleaner in the interface</li>
+<li><code>-extras</code> - JSON formatted file with options primarily for the DNAnexus platform settings</li>
 </ul>
-<h2 id="workflows-available">Workflows Available</h2>
-<p>The current workflows exist in this repo with the following statuses:</p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Version</th>
-<th>Description</th>
-<th>Specification</th>
-<th>Workflow</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Build References</td>
-<td>v2.0.0 <em>(beta)</em></td>
-<td>Build reference files used in harmonization pipelines.</td>
-<td>None</td>
-<td><a href="./workflows/reference/bootstrap-reference.wdl">Workflow</a></td>
-<td><img alt="In Development" src="https://img.shields.io/static/v1?label=Status&amp;message=Development&amp;color=orange&amp;style=flat-square" /></td>
-</tr>
-<tr>
-<td>Standard RNA-Seq</td>
-<td>v2.0.0 <em>(beta)</em></td>
-<td>Standard RNA-Seq harmonization pipeline.</td>
-<td><a href="https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.html">Specification</a></td>
-<td><a href="./workflows/rnaseq/rnaseq-standard.wdl">Workflow</a></td>
-<td><img alt="In Development" src="https://img.shields.io/static/v1?label=Status&amp;message=Development&amp;color=orange&amp;style=flat-square" /></td>
-</tr>
-</tbody>
-</table>
-<h2 id="author">Author</h2>
-<p>👤 <strong>St. Jude Cloud Team</strong></p>
-<ul>
-<li>Website: https://stjude.cloud</li>
-<li>Github: <a href="https://github.com/stjudecloud">@stjudecloud</a></li>
-<li>Twitter: <a href="https://twitter.com/StJudeResearch">@StJudeResearch</a></li>
-</ul>
-<h2 id="tests">Tests</h2>
-<p>Given that this repo is still new, there are no tests. When we add tests, we will update the README.</p>
-<h2 id="contributing">🤝 Contributing</h2>
-<p>Contributions, issues and feature requests are welcome!<br />Feel free to check <a href="https://github.com/stjudecloud/workflows/issues">issues page</a>. You can also take a look at the <a href="https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md">contributing guide</a>.</p>
-<h2 id="versioning">Versioning</h2>
-<p>When versioned, workflows will be versioned according to the <a href="http://semver.org/">SemVer</a> guidelines. For now, we do not guarantee that all workflows will have an associated version.</p>
-<h2 id="license">📝 License</h2>
-<p>Copyright © 2019 <a href="https://github.com/stjudecloud">St. Jude Cloud Team</a>.<br />
-This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md">MIT</a> licensed.</p>
+<h2 id="build-interactive-t-sne-workflow-for-dnanexus">Build Interactive t-SNE workflow for DNAnexus</h2>
+<p>Commands for building the t-SNE workflows are included below. Your version of dxWDL may differ from the version included below. Several optional parameters are included. <code>-defaults</code> specifies DNAnexus paths to reference data for the workflow. <code>-extras</code> specifies that tasks should be retried by default on failure. </p>
+<h3 id="build-workflow-running-htseq-count-on-bam-input">Build workflow running htseq-count on BAM input</h3>
+<pre><code>java -jar dxWDL-v1.46.2.jar compile workflows/interactive-tsne/interactive_tsne_from_bams.wdl -project project-FjFfvV89F80QvvxJ8131yzpB -archive -verbose -defaults workflows/interactive-tsne/inputs/defaults_bam.json -extras workflows/interactive-tsne/inputs/extras.json -locked
+</code></pre>
+<h3 id="build-workflow-from-htseq-counts-data">Build workflow from HTSeq counts data</h3>
+<pre><code>java -jar dxWDL-v1.46.2.jar compile workflows/interactive-tsne/interactive_tsne_from_counts.wdl -project project-FjFfvV89F80QvvxJ8131yzpB -archive -verbose -defaults workflows/interactive-tsne/inputs/defaults_counts.json -extras workflows/interactive-tsne/inputs/extras.json -locked
+</code></pre>
+<h3 id="build-workflow-with-rna-seq-v2-remapping-of-bam-input">Build workflow with RNA-Seq V2 remapping of BAM input</h3>
+<pre><code>java -jar dxWDL-v1.46.2.jar compile workflows/interactive-tsne/interactive-tsne.wdl -project project-FjFfvV89F80QvvxJ8131yzpB -archive -verbose -defaults workflows/interactive-tsne/inputs/defaults.json  -extras workflows/interactive-tsne/inputs/extras.json -locked
+</code></pre>
               
             </div>
           </div>
@@ -252,8 +200,10 @@ This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LI
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="build_for_dnanexus.html" class="btn btn-neutral float-right" title="Building WDL workflows for DNAnexus">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="tasks/bwa.html" class="btn btn-neutral float-right" title="BWA">Next <span class="icon icon-circle-arrow-right"></span></a>
       
+      
+        <a href="index.html" class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -285,8 +235,10 @@ This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LI
         </span>
     
     
+      <span><a href="index.html" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-      <span><a href="build_for_dnanexus.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+      <span><a href="tasks/bwa.html" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
@@ -302,8 +254,3 @@ This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LI
 
 </body>
 </html>
-
-<!--
-MkDocs version : 1.2
-Build Date UTC : 2021-06-09 16:05:48.691606+00:00
--->
