@@ -20,7 +20,7 @@ task build_db {
  
     runtime {
         disk: "30 GB"
-        docker: 'stjudecloud/fastq_screen:1.1.1'
+        docker: 'stjudecloud/fastq_screen:1.1.2'
         maxRetries: max_retries
     }
 
@@ -70,7 +70,10 @@ task fastq_screen {
 
     command <<<
         set -euo pipefail
-        
+
+        export LC_ALL=C.UTF-8
+        export LANG=C.UTF-8
+
         mkdir -p /tmp/FastQ_Screen_Genomes/
         tar -xzf ~{db} -C /tmp/FastQ_Screen_Genomes/ --no-same-owner
 
@@ -81,16 +84,19 @@ task fastq_screen {
             --subset ~{num_reads} \
             --conf /home/fastq_screen.conf \
             --aligner bowtie2 \
-            ~{sample_basename}.fastq
-        
+            ~{sample_basename}.fastq 2>&1 \
+            | sed '/Skipping DATABASE/q1;/ERR/q1' 1>&2 \
+            || exit 42
+
         mkdir ~{out_directory}
         mv "~{out_directory}".* "~{out_directory}"
         tar -czf ~{out_tar_gz} ~{out_directory}
     >>>
  
     runtime {
+        memory: "10 GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/fastq_screen:1.1.1'
+        docker: 'stjudecloud/fastq_screen:1.1.2'
         maxRetries: max_retries
     }
 
@@ -101,6 +107,6 @@ task fastq_screen {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs FastQ Screen on a sample."
+        description: "This WDL tool runs FastQ Screen on a sample. Exit code 42 indicates a rare intermittent bug. Job should succeed upon resubmission."
     }
 }
