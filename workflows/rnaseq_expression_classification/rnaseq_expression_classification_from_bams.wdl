@@ -62,7 +62,8 @@ workflow rnaseq_expression_classification_from_bams {
     scatter (bam in in_bams) {       
         call samtools.index as index { input: bam=bam}
         call ngsderive.infer_strandedness as infer { input: bam=bam, bai=index.bai, gtf=gtf}
-        call htseq.count as count { input: bam=bam, gtf=gtf, provided_strandedness="", inferred_strandedness=infer.strandedness}
+        String inferred_strandedness = read_string(infer.strandedness)
+        call htseq.count as count { input: bam=bam, gtf=gtf, provided_strandedness="", inferred_strandedness=inferred_strandedness}
     }
 
     if (! defined(reference_counts)){
@@ -87,12 +88,12 @@ workflow rnaseq_expression_classification_from_bams {
     }
 
     # generate covariates information for input samples and add to covariates file.   
-    call tsne.append_input { input: inputs=file_prefix.out, covariates_infile=covariates_input}
+    call tsne.append_input { input: inputs=file_prefix.out, covariates_infile=covariates_input}  # FIXME: type coercion from Array[File] to Array[String]
     
     call tsne.plot as generate_plot{
         input:
             counts=reference_file,
-            inputs=file_prefix.out,
+            inputs=file_prefix.out,  # FIXME: type coercion from Array[File] to Array[String]
             input_counts=count.out,
             blacklist=gene_blacklist,
             covariates=append_input.covariates_outfile,

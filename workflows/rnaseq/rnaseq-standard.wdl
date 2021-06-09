@@ -87,6 +87,7 @@ workflow rnaseq_standard {
     File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
 
     call util.get_read_groups { input: bam=selected_input_bam, max_retries=max_retries }
+    String read_groups = read_string(get_read_groups.out)
     call b2fq.bam_to_fastqs { input: bam=selected_input_bam, max_retries=max_retries, detect_nproc=detect_nproc }
 
     call star.alignment {
@@ -95,7 +96,7 @@ workflow rnaseq_standard {
             read_two_fastqs=bam_to_fastqs.read2s,
             stardb_tar_gz=stardb_tar_gz,
             output_prefix=output_prefix,
-            read_groups=get_read_groups.out,
+            read_groups=read_groups,
             max_retries=max_retries,
             detect_nproc=detect_nproc
     }
@@ -103,6 +104,7 @@ workflow rnaseq_standard {
     call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam, max_retries=max_retries, detect_nproc=detect_nproc }
     call picard.validate_bam { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gtf, max_retries=max_retries }
+    String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
 
     if (cleanse_xenograft){
         File contam_db = select_first([contaminant_stardb_tar_gz, ""])
@@ -111,7 +113,7 @@ workflow rnaseq_standard {
     File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
     File aligned_bai = select_first([xenocp.bam_index, samtools_index.bai])
 
-    call htseq.count as htseq_count { input: bam=aligned_bam, gtf=gtf, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, max_retries=max_retries }
+    call htseq.count as htseq_count { input: bam=aligned_bam, gtf=gtf, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, max_retries=max_retries }
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=aligned_bam, bai=aligned_bai, max_retries=max_retries }
 
     output {
