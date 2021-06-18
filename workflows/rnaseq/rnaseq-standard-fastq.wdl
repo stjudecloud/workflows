@@ -28,13 +28,13 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/remove_read_string/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 import "https://raw.githubusercontent.com/stjude/xenocp/master/wdl/workflows/xenocp.wdl" as xenocp_workflow
 
 workflow rnaseq_standard_fastq {
