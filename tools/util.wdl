@@ -56,7 +56,7 @@ task get_read_groups {
             | cut -f 2- \
             | sed -e 's/\t/ /g' \
             | awk '{print}' ORS=' , ' \
-            | sed 's/ , $//' >> stdout.txt
+            | sed 's/ , $//' >> read_groups.txt
     >>>
 
     runtime {
@@ -66,7 +66,7 @@ task get_read_groups {
     }
 
     output { 
-        String out = read_string("stdout.txt")
+        File out = "read_groups.txt"
     }
 
     meta {
@@ -92,7 +92,7 @@ task file_prefix {
     command <<<
         set -euo pipefail
         
-        basename ~{in_file} | awk -F '.' '{print $1}' > stdout.txt
+        basename ~{in_file} | awk -F '.' '{print $1}' > prefix.txt
     >>>
 
     runtime {
@@ -102,7 +102,7 @@ task file_prefix {
     }
 
     output { 
-        String out = read_string("stdout.txt")
+        File out = "prefix.txt"
     }
 }
 
