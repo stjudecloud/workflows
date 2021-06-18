@@ -33,8 +33,8 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/bwa.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/bwa.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/util.wdl"
 
 workflow bwa_db_build {
     input {

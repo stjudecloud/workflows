@@ -27,16 +27,16 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/sequencerr.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.1/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/md5sum.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/fastqc.wdl" as fqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/fastq_screen.wdl" as fq_screen
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/sequencerr.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/multiqc.wdl" as mqc
 
 workflow quality_check {
     input {
