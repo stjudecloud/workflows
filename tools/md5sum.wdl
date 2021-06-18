@@ -29,7 +29,6 @@ task compute_checksum {
     }
 
     output {
-        String stdout = read_string(outfilename)
         File outfile = outfilename
     }
 
@@ -50,11 +49,12 @@ task check_checksum {
         Int max_retries = 1
     }
 
+    String outfilename = basename(infile) + ".md5_check"
     Float infile_size = size(infile, "GiB")
     Int disk_size = ceil((infile_size * 2) + 10)
 
     command { 
-        md5sum -c ~{infile} > stdout.txt
+        md5sum -c ~{infile} > ~{outfilename}
     } 
 
     runtime {
@@ -64,7 +64,7 @@ task check_checksum {
     }
 
     output {
-        String out = read_string("stdout.txt")
+        File out = outfilename
     }
 
     meta {
