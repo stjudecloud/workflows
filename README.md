@@ -25,7 +25,7 @@ expect that the workflows will work just as well using other runners.
 The easiest way to get started is to install [bioconda][bioconda] and the run the following commands:
 
 ```bash
-conda create -n workflows-dev -c conda-forge cromwell miniwdl -y
+conda create -n workflows-dev -c conda-forge cromwell -y
 conda activate workflows-dev
 git clone git@github.com:stjudecloud/workflows.git
 cd workflows
