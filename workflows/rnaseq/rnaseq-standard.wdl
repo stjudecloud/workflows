@@ -30,14 +30,14 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.1.0/workflows/general/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.1.0/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.1.0/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.1.0/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.1.0/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.1.0/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.1.0/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.1.0/tools/deeptools.wdl"
 import "https://raw.githubusercontent.com/stjude/xenocp/3.1.1/wdl/workflows/xenocp.wdl" as xenocp_workflow
 
 workflow rnaseq_standard {

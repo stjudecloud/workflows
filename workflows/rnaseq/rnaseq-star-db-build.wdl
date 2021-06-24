@@ -36,8 +36,8 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.0.2/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.1.0/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/quality-check-standard/v1.1.0/tools/util.wdl"
 
 workflow rnaseq_star_db_build {
     input {
