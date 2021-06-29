@@ -52,51 +52,45 @@ task mark_duplicates {
 task validate_bam {
     input {
         File bam
-        Boolean ignore_missing_platform = true
+        Boolean pass_on_errors = false
+        Boolean pass_on_warnings = true
+        Array[String] ignore_list = ["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"]
         Boolean summary_mode = false
         Boolean index_validation_stringency_less_exhaustive = false
-        Boolean ignore_mapping_quality = true
-        Boolean ignore_warnings = true
         String output_filename = basename(bam, ".bam") + ".ValidateSamFile.txt"
         Int memory_gb = 8
         Int max_retries = 1
     }
 
-    String ignore_missing_platform_arg = if (ignore_missing_platform)
-        then "IGNORE=MISSING_PLATFORM_VALUE"
-        else ""
+    String pass_on_errors_string = if (pass_on_errors) then "true" else ""
+    String pass_on_warnings_string = if (pass_on_warnings) then "true" else ""
     String mode_arg = if (summary_mode) then "MODE=SUMMARY" else ""
     String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
         else ""
-    String mapping_quality_arg = if (ignore_mapping_quality)
-        then "IGNORE=INVALID_MAPPING_QUALITY"
-        else ""
-    String ignore_warnings_string = if (ignore_warnings) then "true" else ""
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
     Int java_heap_size = ceil(memory_gb * 0.9)
     
     command {       
+        set -eo pipefail
+
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             I=~{bam} \
-            IGNORE=INVALID_PLATFORM_VALUE \
-            ~{ignore_missing_platform_arg} \
-            ~{mapping_quality_arg} \
             ~{mode_arg} \
             ~{stringency_arg} \
+            ~{sep=' IGNORE=' ignore_list} \
             MAX_OUTPUT=100000 \
             > ~{output_filename}
 
-        set -eo pipefail
-        if [ "~{ignore_warnings_string}" == "true" ]; then
+        if [ "~{pass_on_warnings_string}" == "true" ]; then
             GREP_PATTERN="ERROR"
         else
             GREP_PATTERN="(ERROR|WARNING)"
         fi
 
-        if [ "$(grep -Ec "$GREP_PATTERN" ~{output_filename})" -gt 0 ]; then
+        if [ "~{pass_on_errors_string}" != "true" ] && [ "$(grep -Ec "$GREP_PATTERN" ~{output_filename})" -gt 0 ]; then
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
             grep -E "$GREP_PATTERN" ~{output_filename} > /dev/stderr
             exit 1
