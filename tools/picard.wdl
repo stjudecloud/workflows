@@ -75,8 +75,6 @@ task validate_bam {
     Int java_heap_size = ceil(memory_gb * 0.9)
     
     command {       
-        set -eo pipefail
-
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             I=~{bam} \
             ~{mode_arg} \
@@ -84,6 +82,8 @@ task validate_bam {
             ~{sep=' IGNORE=' ignore_list} \
             MAX_OUTPUT=~{max_errors} \
             > ~{output_filename}
+
+        set -eo pipefail
 
         if [ "~{succeed_on_warnings_string}" == "true" ]; then
             GREP_PATTERN="ERROR"
