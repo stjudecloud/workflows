@@ -57,6 +57,7 @@ task validate_bam {
         Array[String] ignore_list = ["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"]
         Boolean summary_mode = false
         Boolean index_validation_stringency_less_exhaustive = false
+        Int max_errors = 100
         String output_filename = basename(bam, ".bam") + ".ValidateSamFile.txt"
         Int memory_gb = 8
         Int max_retries = 1
@@ -81,7 +82,7 @@ task validate_bam {
             ~{mode_arg} \
             ~{stringency_arg} \
             ~{sep=' IGNORE=' ignore_list} \
-            MAX_OUTPUT=100000 \
+            MAX_OUTPUT=~{max_errors} \
             > ~{output_filename}
 
         if [ "~{pass_on_warnings_string}" == "true" ]; then

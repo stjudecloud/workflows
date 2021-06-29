@@ -80,7 +80,7 @@ workflow quality_check {
 
     call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
 
-    call picard.validate_bam { input: bam=bam, pass_on_errors=true, ignore_list=[], summary_mode=false, max_retries=max_retries }
+    call picard.validate_bam { input: bam=bam, pass_on_errors=true, ignore_list=[], max_errors=2147483647, max_retries=max_retries }
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
 
     call samtools.flagstat as samtools_flagstat { input: bam=quickcheck.checked_bam, max_retries=max_retries }
