@@ -27,16 +27,16 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/sequencerr.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/md5sum.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/fastqc.wdl" as fqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/fastq_screen.wdl" as fq_screen
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/sequencerr.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/multiqc.wdl" as mqc
 
 workflow quality_check {
     input {
