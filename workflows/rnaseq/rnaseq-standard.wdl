@@ -32,7 +32,7 @@ version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/picard-validate-refactor/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
