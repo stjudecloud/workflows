@@ -79,7 +79,7 @@ task validate_bam {
             I=~{bam} \
             ~{mode_arg} \
             ~{stringency_arg} \
-            ~{sep=' IGNORE=' ignore_list} \
+            ~{sep=' IGNORE\=' ignore_list} \
             MAX_OUTPUT=~{max_errors} \
             > ~{output_filename}
 
