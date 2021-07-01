@@ -41,6 +41,7 @@ task bamqc {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
+        cpu: ncpu
         docker: 'stjudecloud/qualimap:1.0.3'
         maxRetries: max_retries
     }
