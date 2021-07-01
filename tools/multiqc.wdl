@@ -84,7 +84,7 @@ task multiqc {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/multiqc:1.3.1'
+        docker: 'stjudecloud/multiqc:branch-picard-validate-refactor-1.3.2'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
