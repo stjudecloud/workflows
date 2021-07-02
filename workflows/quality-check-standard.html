@@ -277,12 +277,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>samtools_subsample.ncpu</code> (Int, default=1)</li>
 <li><code>samtools_subsample.outname</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
 <li><code>sequencErr.output_count_file</code> (Boolean, default=false)</li>
-<li><code>validate_bam.ignore_mapping_quality</code> (Boolean, default=true)</li>
-<li><code>validate_bam.ignore_missing_platform</code> (Boolean, default=true)</li>
-<li><code>validate_bam.ignore_warnings</code> (Boolean, default=true)</li>
 <li><code>validate_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>validate_bam.max_errors</code> (Int, default=2147483647)</li>
 <li><code>validate_bam.memory_gb</code> (Int, default=8)</li>
 <li><code>validate_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
+<li><code>validate_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
