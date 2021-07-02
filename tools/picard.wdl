@@ -84,6 +84,10 @@ task validate_bam {
             MAX_OUTPUT=~{max_errors} \
             > ~{output_filename}
 
+        rc=$?
+        if [ $rc -le -1 ] || [ $rc -ge 4 ]; then
+            exit $rc
+        fi
         set -eo pipefail
 
         if [ "~{succeed_on_warnings_string}" == "true" ]; then
