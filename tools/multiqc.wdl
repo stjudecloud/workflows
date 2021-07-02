@@ -40,6 +40,9 @@ task multiqc {
             echo ~{instrument_file}
             echo ~{read_length_file}
             echo ~{encoding_file}
+            echo ~{star_log}
+            echo ~{strandedness_file}
+            echo ~{junction_annotation}
         ) > file_list.txt
 
         qualimap_bamqc_dir=$(basename ~{qualimap_bamqc} ".tar.gz")
@@ -51,15 +54,9 @@ task multiqc {
 
         tar -xzf ~{fastqc}
         fastqc_dir=$(basename ~{fastqc} ".tar.gz")
-        for file in find "$fastqc_dir"/*; do
+        for file in "$fastqc_dir"/*; do
             echo "$file" >> file_list.txt
         done
-
-        (
-            echo ~{star_log}
-            echo ~{strandedness_file}
-            echo ~{junction_annotation}
-        ) >> file_list.txt
         
         if [ "~{if defined(qualimap_rnaseq) then "rnaseq" else ""}" = "rnaseq" ]; then
             qualimap_rnaseq_dir=$(basename ~{qualimap_rnaseq} ".tar.gz")
@@ -70,6 +67,7 @@ task multiqc {
                 echo "$file" >> file_list.txt
             done
         fi
+
         if [ "~{if defined(fastq_screen) then "wgs_or_wes" else ""}" = "wgs_or_wes" ]; then
             fastq_screen_dir=$(basename ~{fastq_screen} ".tar.gz")
             tar -xzf ~{fastq_screen}
@@ -78,7 +76,7 @@ task multiqc {
             done
         fi
 
-        multiqc --cl_config "extra_fn_clean_exts: '_qualimap_bamqc_results'" \
+        multiqc --verbose -c /home/.multiqc_config.yaml \
             --file-list file_list.txt -o ~{out_directory}
         
         tar -czf ~{out_tar_gz} ~{out_directory}
@@ -86,7 +84,7 @@ task multiqc {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/multiqc:1.3.1'
+        docker: 'stjudecloud/multiqc:1.3.2'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }

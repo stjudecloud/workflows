@@ -52,27 +52,24 @@ task mark_duplicates {
 task validate_bam {
     input {
         File bam
-        Boolean ignore_missing_platform = true
+        Boolean succeed_on_errors = false
+        Boolean succeed_on_warnings = true
+        Array[String] ignore_list = ["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"]
         Boolean summary_mode = false
         Boolean index_validation_stringency_less_exhaustive = false
-        Boolean ignore_mapping_quality = true
-        Boolean ignore_warnings = true
+        Int max_errors = 2147483647
         String output_filename = basename(bam, ".bam") + ".ValidateSamFile.txt"
         Int memory_gb = 8
         Int max_retries = 1
     }
 
-    String ignore_missing_platform_arg = if (ignore_missing_platform)
-        then "IGNORE=MISSING_PLATFORM_VALUE"
-        else ""
+    String succeed_on_errors_string = if (succeed_on_errors) then "true" else ""
+    String succeed_on_warnings_string = if (succeed_on_warnings) then "true" else ""
     String mode_arg = if (summary_mode) then "MODE=SUMMARY" else ""
     String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
         else ""
-    String mapping_quality_arg = if (ignore_mapping_quality)
-        then "IGNORE=INVALID_MAPPING_QUALITY"
-        else ""
-    String ignore_warnings_string = if (ignore_warnings) then "true" else ""
+    String ignore_prefix = if (length(ignore_list) != 0) then "IGNORE=" else ""
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
@@ -81,22 +78,25 @@ task validate_bam {
     command {       
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             I=~{bam} \
-            IGNORE=INVALID_PLATFORM_VALUE \
-            ~{ignore_missing_platform_arg} \
-            ~{mapping_quality_arg} \
             ~{mode_arg} \
             ~{stringency_arg} \
-            MAX_OUTPUT=100000 \
+            ~{ignore_prefix}~{sep=' IGNORE=' ignore_list} \
+            MAX_OUTPUT=~{max_errors} \
             > ~{output_filename}
 
+        rc=$?
+        if [ $rc -le -1 ] || [ $rc -ge 4 ]; then
+            exit $rc
+        fi
         set -eo pipefail
-        if [ "~{ignore_warnings_string}" == "true" ]; then
+
+        if [ "~{succeed_on_warnings_string}" == "true" ]; then
             GREP_PATTERN="ERROR"
         else
             GREP_PATTERN="(ERROR|WARNING)"
         fi
 
-        if [ "$(grep -Ec "$GREP_PATTERN" ~{output_filename})" -gt 0 ]; then
+        if [ "~{succeed_on_errors_string}" != "true" ] && [ "$(grep -Ec "$GREP_PATTERN" ~{output_filename})" -gt 0 ]; then
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
             grep -E "$GREP_PATTERN" ~{output_filename} > /dev/stderr
             exit 1
@@ -123,6 +123,12 @@ task validate_bam {
 
     parameter_meta {
         bam: "Input BAM format file to validate"
+        succeed_on_errors: "Succeed the task even if errors *and/or* warnings are detected"
+        succeed_on_warnings: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`"
+        ignore_list: "List of Picard errors and warnings to ignore. Possible values can be found on the [GATK website](https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile)"
+        summary_mode: "Boolean to enable SUMMARY mode of `picard ValidateSamFile`"
+        index_validation_stringency_less_exhaustive: "Boolean to set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE` for `picard ValidateSamFile`"
+        max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
     }
 }
 
