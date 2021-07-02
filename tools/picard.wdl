@@ -123,6 +123,12 @@ task validate_bam {
 
     parameter_meta {
         bam: "Input BAM format file to validate"
+        succeed_on_errors: "Succeed the task even if errors *or* warnings are detected"
+        succeed_on_warnings: "Succeed the task if warnings are detected, but not warnings. Overridden by `succeed_on_errors`"
+        ignore_list: "List of Picard errors and warnings to ignore. Possible values can be found on the [GATK website](https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile)"
+        summary_mode: "Boolean to enable SUMMARY mode of `picard ValidateSamFile`"
+        index_validation_stringency_less_exhaustive: "Boolean to set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE` for `picard ValidateSamFile`"
+        max_errors: "Set the value for MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
     }
 }
 
