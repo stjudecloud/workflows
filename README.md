@@ -78,10 +78,6 @@ Given that this repo is still new, there are no tests. When we add tests, we wil
 
 Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
 
-## Versioning
-
-When versioned, workflows and Docker images will be versioned according to the [SemVer](http://semver.org/) guidelines. For now, we do not guarantee that all workflows will have an associated version.
-
 ## 📝 License
 
 Copyright © 2019 [St. Jude Cloud Team](https://github.com/stjudecloud).<br />
