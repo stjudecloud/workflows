@@ -1,3 +1,7 @@
+## # ESTIMATE
+##
+## This WDL tool wraps the [ESTIMATE software package](https://bioinformatics.mdanderson.org/estimate/).
+
 version 1.0
 
 task calc_tpm {
