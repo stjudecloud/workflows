@@ -25,7 +25,7 @@ expect that the workflows will work just as well using other runners.
 The easiest way to get started is to install [bioconda][bioconda] and the run the following commands:
 
 ```bash
-conda create -n workflows-dev -c conda-forge cromwell==47 -y
+conda create -n workflows-dev -c conda-forge cromwell -y
 conda activate workflows-dev
 git clone git@github.com:stjudecloud/workflows.git
 cd workflows
@@ -43,8 +43,7 @@ The repository is laid out as follows:
 
 * `bin` - Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations  in `conf` with Cromwell.
 * `conf` - Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
-* `docker` - Dockerfiles used in our workflows. All docker images are published to [Docker Hub](https://hub.docker.com/u/stjudecloud).
-  * At the time of writing, there is only one Docker image heavily in use, which is our [bioinformatics base image](./docker/bioinformatics-base/Dockerfile).
+* `docker` - Dockerfiles used in our workflows. All docker images are published to [Docker Hub](https://hub.docker.com/u/stjudecloud) as a part of our CI and are versioned.
 * `tools` - All tools we have wrapped as individual WDL tasks.
 * `workflows` - Directory containing all end-to-end bioinformatics workflows.
 
@@ -52,10 +51,16 @@ The repository is laid out as follows:
 
 The current workflows exist in this repo with the following statuses:
 
-| Name             | Version         | Description                                            | Specification                                                                      | Workflow                                                    | Status                                                                                                              |
-| ---------------- | --------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Build References | v2.0.0 *(beta)* | Build reference files used in harmonization pipelines. | None                                                                               | [Workflow](./workflows/reference/bootstrap-reference.wdl)   | ![In Development](https://img.shields.io/static/v1?label=Status&message=Development&color=orange&style=flat-square) |
-| Standard RNA-Seq | v2.0.0 *(beta)* | Standard RNA-Seq harmonization pipeline.               | [Specification](https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.html) | [Workflow](./workflows/rnaseq/rnaseq-standard.wdl) | ![In Development](https://img.shields.io/static/v1?label=Status&message=Development&color=orange&style=flat-square) |
+| Name                          | Version         | Description                                                                                                                                           | Specification                                                                                         | Workflow                                                                                                                       | Status                                                                                                              |
+| ----------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| RNA-Seq Standard              | v2.0.0          | Standard RNA-Seq harmonization pipeline.                                                                                                              | [Specification](https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.html)                    | [Realign BAM Workflow](./workflows/rnaseq/rnaseq-standard.wdl), [FastQ Workflow](./workflows/rnaseq/rnaseq-standard-fastq.wdl) | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
+| Build STAR References         | N/A             | Build [STAR aligner](https://github.com/alexdobin/STAR) reference files used in RNA-Seq Standard harmonization pipelines.                             | None                                                                                                  | [Workflow](./workflows/rnaseq/rnaseq-star-db-build.wdl)                                                                        | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
+| Quality Check Standard        | v1.0.0          | Perform ~10 different QC analyses on a BAM file and compile the results using [MultiQC](https://multiqc.info/).                                       | [Specification](https://rfcs.stjude.cloud/branches/rfcs/qc-workflow/0002-quality-check-workflow.html) | [Workflow](./workflows/qc/quality-check-standard.wdl)                                                                          | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
+| Build FastQ Screen References | N/A             | Build references used in WGS/WES Quality Check pipeline for running [FastQ Screen](https://www.bioinformatics.babraham.ac.uk/projects/fastq_screen/). | None                                                                                                  | [Workflow](./workflows/qc/make-qc-reference.wdl)                                                                               | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
+| ESTIMATE                      | v1.0.0 (*beta*) | Runs the [ESTIMATE software package](https://bioinformatics.mdanderson.org/estimate/) on a feature counts file.                                       | None                                                                                                  | [Workflow](./workflows/rnaseq/ESTIMATE.wdl)                                                                                    | ![In Development](https://img.shields.io/static/v1?label=Status&message=Development&color=orange&style=flat-square) |
+| Calculate Gene Lengths        | N/A             | Produces a gene length file from a GTF.                                                                                                               | None                                                                                                  | [Workflow](./workflows/rnaseq/calc-gene-lengths.wdl)                                                                           | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
+| Build BWA References          | N/A             | Builds reference files used by the [BWA aligner](https://github.com/lh3/bwa).                                                                         | None                                                                                                  | [Workflow](./workflows/general/bwa-db-build.wdl)                                                                               | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
+| BAM to FastQs                 | v1.0.0          | Split a BAM file into read groups, then read 1 FastQs and  read 2 FastQs.                                                                             | None                                                                                                  | [Workflow](./workflows/general/bam-to-fastqs.wdl)                                                                              | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
 
 ## Author
 
@@ -72,10 +77,6 @@ Given that this repo is still new, there are no tests. When we add tests, we wil
 ## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
-
-## Versioning
-
-When versioned, workflows will be versioned according to the [SemVer](http://semver.org/) guidelines. For now, we do not guarantee that all workflows will have an associated version.
 
 ## 📝 License
 
