@@ -173,12 +173,12 @@ task alignment {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
+        description: "This WDL tool runs the STAR aligner on a set of RNA-Seq FastQ files."
     }
 
     parameter_meta {
         read_one_fastqs: "An array of FastQ files containing read one information"
-        read_two_fastqs: "An array of FastQ files containing read two information in the same order as the read one FastQ"
+        read_two_fastqs: "An array of FastQ files containing read two information"
         stardb_tar_gz: "A gzipped TAR file containing the STAR reference files"
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
     }
