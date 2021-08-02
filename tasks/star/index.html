@@ -228,7 +228,7 @@ STAR is an RNA-seq aligner.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool generates a FastQC quality control metrics report for the input BAM file.</dd>
+<dd>This WDL tool runs the STAR aligner on a set of RNA-Seq FastQ files.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
@@ -241,7 +241,7 @@ STAR is an RNA-seq aligner.</p>
 <ul>
 <li><code>disk_size_gb</code> (Int?)</li>
 <li><code>read_groups</code> (String?): A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: <code>ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1</code></li>
-<li><code>read_two_fastqs</code> (Array[File]?): An array of FastQ files containing read two information in the same order as the read one FastQ</li>
+<li><code>read_two_fastqs</code> (Array[File]?): An array of FastQ files containing read two information</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
