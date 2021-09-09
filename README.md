@@ -80,7 +80,7 @@ Contributions, issues and feature requests are welcome!<br />Feel free to check 
 
 ## 📝 License
 
-Copyright © 2019 [St. Jude Cloud Team](https://github.com/stjudecloud).<br />
+Copyright © 2020-Present [St. Jude Cloud Team](https://github.com/stjudecloud).<br />
 This project is [MIT](https://github.com/stjudecloud/workflows/blob/master/LICENSE.md) licensed.
 
 [wdl]: http://openwdl.org/
