@@ -9,7 +9,7 @@
   <meta name="author" content="St. Jude Cloud">
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>RNA-Seq Standard from FastQ - St. Jude WDL workflows</title>
+  <title>RNA-Seq Standard from FastQ - St. Jude Cloud Bioinformatics Workflows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -37,7 +37,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href="../.." class="icon icon-home"> St. Jude WDL workflows</a>
+        <a href="../.." class="icon icon-home"> St. Jude Cloud Bioinformatics Workflows</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
@@ -159,7 +159,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../..">St. Jude WDL workflows</a>
+        <a href="../..">St. Jude Cloud Bioinformatics Workflows</a>
       </nav>
 
       
@@ -229,17 +229,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>xenocp.bwa_aln_align.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.bwa_mem_align.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.cleanse.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.combine_files.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.combine_tie_bam.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.create_contam_list.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.extract_by_chrom.disk_size_gb</code> (Int?)</li>
+<li><code>xenocp.final_bam.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.get_chroms.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.mapped_fastq.disk_size_gb</code> (Int?)</li>
-<li><code>xenocp.merge_markdup_index.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.mismatch.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.qc.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.sort.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.star_align.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.star_align.read_groups</code> (String?): A space-delimited read group record for each read group. Exactly one fastq filename must match each read group ID from <code>read_one_fastqs</code> and <code>read_two_fastqs</code>. Read group fields (Required fields: ID, LB, PL, PU, &amp; SM.) should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Expected form: <code>ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1</code></li>
 <li><code>xenocp.star_align.read_two_fastqs</code> (Array[File]?): Input Fastq format file(s) with 2nd read in pair to align</li>
+<li><code>xenocp.tie_sort.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.unmapped.disk_size_gb</code> (Int?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
@@ -281,28 +284,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>xenocp.bwa_aln_align.output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
 <li><code>xenocp.bwa_mem_align.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>xenocp.bwa_mem_align.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
-<li><code>xenocp.bwa_mem_align.memory_gb</code> (Int, default=5)</li>
 <li><code>xenocp.bwa_mem_align.output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
 <li><code>xenocp.cleanse.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
-<li><code>xenocp.cleanse.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.cleanse.memory_gb</code> (Int, default=7)</li>
 <li><code>xenocp.cleanse.output_bam</code> (String, default=basename(input_bam,".bam") + "-xenocp.bam")</li>
 <li><code>xenocp.cleanse.sort_order</code> (String, default="coordinate")</li>
+<li><code>xenocp.combine_files.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.combine_files.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.combine_tie_bam.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.combine_tie_bam.memory_gb</code> (Int, default=1)</li>
 <li><code>xenocp.create_contam_list.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
-<li><code>xenocp.create_contam_list.memory_gb</code> (Int, default=1)</li>
-<li><code>xenocp.create_contam_list.output_contam_list</code> (String, default=basename(input_bam,".bam") + "contam.txt")</li>
+<li><code>xenocp.create_contam_list.memory_gb</code> (Int, default=2)</li>
+<li><code>xenocp.create_contam_list.output_contam_list</code> (String, default=basename(input_bam,".bam") + ".contam.txt")</li>
 <li><code>xenocp.create_contam_list.tie_bam</code> (String, default=basename(input_bam,".bam") + ".tie.bam")</li>
 <li><code>xenocp.extract_by_chrom.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
-<li><code>xenocp.extract_by_chrom.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.extract_by_chrom.memory_gb</code> (Int, default=8)</li>
+<li><code>xenocp.final_bam.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.final_bam.memory_gb</code> (Int, default=1)</li>
 <li><code>xenocp.get_chroms.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>xenocp.get_chroms.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.get_chroms.memory_gb</code> (Int, default=1)</li>
 <li><code>xenocp.mapped_fastq.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.mapped_fastq.memory_gb</code> (Int, default=1)</li>
 <li><code>xenocp.mapped_fastq.output_fastq</code> (String, default=basename(input_bam,".bam") + ".fastq")</li>
-<li><code>xenocp.merge_markdup_index.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
-<li><code>xenocp.merge_markdup_index.memory_gb</code> (Int, default=1)</li>
 <li><code>xenocp.mismatch.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
-<li><code>xenocp.mismatch.memory_gb</code> (Int, default=1)</li>
+<li><code>xenocp.mismatch.memory_gb</code> (Int, default=2)</li>
 <li><code>xenocp.qc.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.qc.memory_gb</code> (Int, default=1)</li>
 <li><code>xenocp.qc.ncpu</code> (Int, default=1)</li>
@@ -313,6 +319,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>xenocp.star_align.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>xenocp.star_align.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.star_align.memory_gb</code> (Int, default=50)</li>
+<li><code>xenocp.tie_sort.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>xenocp.tie_sort.memory_gb</code> (Int, default=25)</li>
+<li><code>xenocp.tie_sort.output_filename</code> (String, default=basename(bam,".bam") + ".sorted.bam")</li>
 <li><code>xenocp.unmapped.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>xenocp.unmapped.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.unmapped.memory_gb</code> (Int, default=1)</li>
@@ -361,7 +370,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>© 2020 St. Jude Children's Research Hospital</p>
+      <p>© 2020-Present St. Jude Children's Research Hospital</p>
     
   </div>
 
