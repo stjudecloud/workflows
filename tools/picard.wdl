@@ -221,3 +221,88 @@ task sort {
         bam: "Input BAM format file to sort"
     }
 }
+
+task merge_sam_files {
+    input {
+        Array[File] bam
+        String output_name = "merged.bam"
+        String sort_order = "coordinate"
+        Boolean threading = true
+        Int memory_gb = 40
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 4) + 10)
+    Int java_heap_size = ceil(memory_gb * 0.9)
+    Array[String] input_arg = prefix("INPUT=", bam)
+
+    command {
+        set -euo pipefail
+
+        picard -Xmx~{java_heap_size}g MergeSamFiles \
+            ~{sep=' ' input_arg} \
+            OUTPUT=~{output_name} \
+            SORT_ORDER=~{sort_order} \
+            USE_THREADING=~{threading}
+            VALIDATION_STRINGENCY=SILENT
+    }
+
+    runtime{
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: 'stjudecloud/picard:1.0.1'
+        maxRetries: max_retries
+    }
+
+    output {
+        File output_bam = output_name
+    }
+
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL tool merges the input BAM files into a single BAM file."
+    }
+
+    parameter_meta {
+        bam: "Input BAMs to merge"
+    }
+}
+
+task clean_sam {
+    input {
+        File bam
+        String output_filename = basename(bam, ".bam") + ".cleaned.bam"
+        Int memory_gb = 25
+        Int? disk_size_gb
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil((bam_size * 4) + 10)])
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command {
+        picard -Xmx~{java_heap_size}g CleanSam \
+            I=~{bam} \
+            O=~{output_filename} \
+    }
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: 'stjudecloud/picard:1.0.1'
+        maxRetries: max_retries
+    }
+    output {
+        File cleaned_bam = output_filename
+    }
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL tool cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads"
+    }
+    parameter_meta {
+        bam: "Input BAM format file to clean"
+    }
+}
