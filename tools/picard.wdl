@@ -256,7 +256,7 @@ task merge_sam_files {
     }
 
     output {
-        File output_bam = output_name
+        File merged_bam = output_name
     }
 
     meta {

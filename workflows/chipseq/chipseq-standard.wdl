@@ -2,7 +2,7 @@
 ##
 ## This WDL workflow runs the BWA ChIP-seq alignment workflow for St. Jude Cloud.
 ##
-## The workflow takes an input BAM file and splits it into fastq files for each read in the pair. 
+## The workflow takes an input BAM file and splits it into fastq files for each read in the pair.
 ## The read pairs are then passed through BWA alignment to generate a BAM file.
 ## File validation is performed at several steps, including immediately preceeding output.
 ##
@@ -30,14 +30,11 @@
 version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "../../tools/picard.wdl"
-#import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
-import "../../tools/bwa.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-#import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
-import "../../tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
-import "https://raw.githubusercontent.com/stjude/xenocp/master/wdl/workflows/xenocp.wdl" as xenocp_workflow
 
 workflow chipseq_standard {
     input {
@@ -83,7 +80,7 @@ workflow chipseq_standard {
     scatter(str in split_string.out){
         call bwa.format_rg_for_bwa { input: read_group=str }
     }
-    call b2fq.bam_to_fastqs { input: bam=selected_input_bam, max_retries=max_retries, detect_nproc=detect_nproc }
+    call b2fq.bam_to_fastqs { input: bam=selected_input_bam, pairing=pairing, max_retries=max_retries, detect_nproc=detect_nproc }
 
     if (pairing == "Single-End") {
         scatter (pair in zip(bam_to_fastqs.read1s, format_rg_for_bwa.formatted_rg)){
@@ -114,19 +111,21 @@ workflow chipseq_standard {
     }
 
     Array[File] aligned_bams = select_first([single_end.bam, paired_end.bam])
-    
-    call picard.merge_sam_files as picard_merge { input: bam=aligned_bams }
-    call picard.clean_sam as picard_clean { input: bam=picard_merge.output_bam, output_filename=output_prefix}
 
-    call samtools.index as samtools_index { input: bam=picard_clean.cleaned_bam, max_retries=max_retries, detect_nproc=detect_nproc }
-    call picard.validate_bam { input: bam=picard_clean.cleaned_bam, max_retries=max_retries }
+    scatter(bam in aligned_bams){
+       call picard.clean_sam as picard_clean { input: bam=bam }
+    }
 
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_clean.cleaned_bam, bai=samtools_index.bai, max_retries=max_retries }
+    call picard.merge_sam_files as picard_merge { input: bam=picard_clean.cleaned_bam, output_name=output_prefix + ".bam" }
+
+    call samtools.index as samtools_index { input: bam=picard_merge.merged_bam, max_retries=max_retries, detect_nproc=detect_nproc }
+    call picard.validate_bam { input: bam=picard_merge.merged_bam, max_retries=max_retries }
+
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_merge.merged_bam, bai=samtools_index.bai, max_retries=max_retries }
 
     output {
-        File bam = picard_clean.cleaned_bam
-        File bam_index = samtools_index.bai
-        File bigwig = deeptools_bamCoverage.bigwig
+        File bam = picard_merge.merged_bam
+        File bam_index = samtools_index.bai File bigwig = deeptools_bamCoverage.bigwig
     }
 }
 
@@ -135,12 +134,12 @@ task parse_input {
         String pairing
     }
 
-    command {
+    command <<<
         if [ "~{pairing}" != "Single-End" ] && [ "~{pairing}" != "Paired-End" ]; then
             >&2 echo "pairing must be either 'Single-End' or 'Paired-End'"
             exit 1
         fi
-    }
+    >>>
 
     runtime {
         disk: "1 GB"
