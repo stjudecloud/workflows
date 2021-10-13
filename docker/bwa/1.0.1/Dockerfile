@@ -11,4 +11,4 @@ COPY --from=builder /opt/conda/envs/bwa/bin/ /opt/conda/envs/bwa/bin/
 COPY --from=builder /opt/conda/envs/bwa/lib/ /opt/conda/envs/bwa/lib/
 ENV PATH /opt/conda/envs/bwa/bin:$PATH
 
-ENTRYPOINT [ "/opt/conda/envs/bwa/bin/bwa" ]
+ENTRYPOINT [ "bwa" ]
