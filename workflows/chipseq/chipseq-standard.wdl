@@ -121,11 +121,12 @@ workflow chipseq_standard {
     call samtools.index as samtools_index { input: bam=picard_merge.merged_bam, max_retries=max_retries, detect_nproc=detect_nproc }
     call picard.validate_bam { input: bam=picard_merge.merged_bam, max_retries=max_retries }
 
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_merge.merged_bam, bai=samtools_index.bai, max_retries=max_retries }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_merge.merged_bam, bai=samtools_index.bai, prefix=output_prefix, max_retries=max_retries }
 
     output {
         File bam = picard_merge.merged_bam
-        File bam_index = samtools_index.bai File bigwig = deeptools_bamCoverage.bigwig
+        File bam_index = samtools_index.bai
+        File bigwig = deeptools_bamCoverage.bigwig
     }
 }
 
