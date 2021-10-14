@@ -1,6 +1,6 @@
 FROM continuumio/miniconda3:4.7.12
 
-RUN apt-get update && \
+RUN apt-get --allow-releaseinfo-change update && \
     apt-get upgrade -y && \
     rm -r /var/lib/apt/lists/*
 
