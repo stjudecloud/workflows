@@ -134,7 +134,6 @@ task bwa_aln_pe {
     }
 }
 
-
 task bwa_mem {
     input {
         File fastq
@@ -200,7 +199,7 @@ task bwa_mem {
 task build_db {
     input {
         File reference_fasta
-        String bwadb_out_name
+        String bwadb_out_name = "bwadb.tar.gz"
         Int memory_gb = 5
         Int? disk_size_gb
         Int max_retries = 1
