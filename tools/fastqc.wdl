@@ -34,7 +34,7 @@ task fastqc {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/fastqc:1.0.1'
+        docker: 'stjudecloud/fastqc:1.0.2'
         maxRetries: max_retries
     }
 

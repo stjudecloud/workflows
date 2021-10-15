@@ -20,7 +20,7 @@ task quickcheck {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/samtools:1.0.1'
+        docker: 'stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
     }
 
@@ -75,7 +75,7 @@ task split {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'stjudecloud/samtools:1.0.1'
+        docker: 'stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
     }
 
@@ -112,7 +112,7 @@ task flagstat {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/samtools:1.0.1'
+        docker: 'stjudecloud/samtools:1.0.2'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
@@ -159,7 +159,7 @@ task index {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'stjudecloud/samtools:1.0.1'
+        docker: 'stjudecloud/samtools:1.0.2'
         memory: memory_gb + " GB"
         dx_instance_type: "azure:mem2_ssd1_x4"
         maxRetries: max_retries
@@ -229,7 +229,7 @@ task subsample {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'stjudecloud/samtools:1.0.1'
+        docker: 'stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
     }
 }
