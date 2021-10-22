@@ -21,7 +21,7 @@ jobs:
     - name: Build and push docker images
       run: |
         EXITCODE=0
-        for dir in docker/conda-base docker/*; do
+        for dir in docker/conda-base docker/!(conda-base); do
           dir=$(basename "$dir")
           tool_name=$(echo "$dir" | awk '{print tolower($0)}')
           for tag_dir in docker/"$dir"/*; do
