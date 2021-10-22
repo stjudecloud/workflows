@@ -42,7 +42,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq/tools/fq
 workflow bam_to_fastqs {
     input {
         File bam
-        String pairing = "Paired-End"
+        String pairing = "Paired-end"
         Int samtools_sort_ncpu = 1
         Int bam_to_fastq_memory_gb = 40
         Int max_retries = 1
@@ -62,10 +62,10 @@ workflow bam_to_fastqs {
         call picard.bam_to_fastq { input: bam=split_bam, memory_gb=bam_to_fastq_memory_gb, max_retries=max_retries }
     }
     scatter (reads in zip(bam_to_fastq.read1, bam_to_fastq.read2)) {
-        if (pairing == "Paired-End") {
+        if (pairing == "Paired-end") {
             call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
         }
-        if (pairing == "Single-End") {
+        if (pairing == "Single-end") {
             call fq.fqlint as fqlint_single { input: read1=reads.left, max_retries=max_retries }
         }
     }
