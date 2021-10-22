@@ -26,7 +26,7 @@ jobs:
       run: |
         shopt -s extglob
         EXITCODE=0
-        for dir in docker/conda-base docker/*; do
+        for dir in docker/conda-base docker/!(conda-base); do
           tool_name=$(basename "$(echo "$dir" | awk '{print tolower($0)}')")
           for tag in "$dir"/*; do
             tag=$(basename "$tag")
