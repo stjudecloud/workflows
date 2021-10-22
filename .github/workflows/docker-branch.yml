@@ -24,6 +24,7 @@ jobs:
         ssh-private-key: ${{ secrets.STJUDE_SEQERR_READONLY_DEPLOY_KEY }}
     - name: Build and push docker images
       run: |
+        shopt -s extglob
         EXITCODE=0
         for dir in docker/conda-base docker/*; do
           dir=$(basename "$dir")
