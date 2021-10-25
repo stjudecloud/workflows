@@ -36,7 +36,7 @@ jobs:
               EXITCODE=1
             else
               DOCKER_BUILDKIT=1 docker build --ssh default -t stjudecloud/"$tool_name":"$tag" "$dir"/"$tag"
-              docker push ghcr.io:stjudecloud/"$tool_name":"$tag"
+              docker push ghcr.io/stjudecloud/"$tool_name":"$tag"
               docker rmi stjudecloud/"$tool_name":"$tag"
             fi
           done
