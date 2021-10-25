@@ -20,8 +20,9 @@ jobs:
         ssh-private-key: ${{ secrets.STJUDE_SEQERR_READONLY_DEPLOY_KEY }}
     - name: Build and push docker images
       run: |
+        shopt -s extglob
         EXITCODE=0
-        for dir in docker/conda-base docker/*; do
+        for dir in docker/conda-base docker/!(conda-base); do
           tool_name=$(basename "$(echo "$dir" | awk '{print tolower($0)}')")
           for tag in "$dir"/*; do
             tag=$(basename "$tag")
