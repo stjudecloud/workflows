@@ -15,7 +15,7 @@ task download {
 
     runtime {
         disk: disk_size_GB + " GB"
-        docker: 'stjudecloud/util:1.0.0'
+        docker: 'stjudecloud/util:branch-chipseq-1.0.0'
         maxRetries: max_retries
     }
 
@@ -61,7 +61,7 @@ task get_read_groups {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/samtools:1.0.1'
+        docker: 'stjudecloud/samtools:branch-chipseq-1.0.1'
         maxRetries: max_retries
     }
 
@@ -93,7 +93,7 @@ task split_string {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/util:1.0.0'
+        docker: 'stjudecloud/util:branch-chipseq-1.0.0'
         maxRetries: max_retries
     }
 
@@ -120,7 +120,7 @@ task file_prefix {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/util:1.0.0'
+        docker: 'stjudecloud/util:branch-chipseq-1.0.0'
         maxRetries: max_retries
     }
 
