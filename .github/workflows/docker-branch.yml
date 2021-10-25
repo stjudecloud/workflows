@@ -40,9 +40,9 @@ jobs:
               EXITCODE=1
             else
               tag=branch-${GITHUB_REF##*/}-$tag_dir
-              DOCKER_BUILDKIT=1 docker build --ssh default -t ghcr.io/stjudecloud/"$tool_name":"$tag" docker/"$dir"/"$tag_dir"
-              docker push ghcr.io/stjudecloud/"$tool_name":"$tag"
-              docker rmi stjudecloud/"$tool_name":"$tag"
+              DOCKER_BUILDKIT=1 docker buildx build --push --ssh default -t ghcr.io/stjudecloud/"$tool_name":"$tag" docker/"$dir"/"$tag_dir"
+              # docker push ghcr.io/stjudecloud/"$tool_name":"$tag"
+              docker rmi ghcr.io/stjudecloud/"$tool_name":"$tag" || echo "rmi failed"
             fi;
           done
         done

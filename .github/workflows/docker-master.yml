@@ -35,9 +35,9 @@ jobs:
               >&2 echo "This container will not be built."
               EXITCODE=1
             else
-              DOCKER_BUILDKIT=1 docker build --ssh default -t ghcr.io/stjudecloud/"$tool_name":"$tag" "$dir"/"$tag"
-              docker push ghcr.io/stjudecloud/"$tool_name":"$tag"
-              docker rmi stjudecloud/"$tool_name":"$tag"
+              DOCKER_BUILDKIT=1 docker buildx build --push --ssh default -t ghcr.io/stjudecloud/"$tool_name":"$tag" "$dir"/"$tag"
+              # docker push ghcr.io/stjudecloud/"$tool_name":"$tag"
+              docker rmi ghcr.io/stjudecloud/"$tool_name":"$tag" || echo "rmi failed"
             fi
           done
         done
