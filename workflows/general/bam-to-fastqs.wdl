@@ -35,9 +35,9 @@
 version 1.0
 
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/tools/fq.wdl"
 
 workflow bam_to_fastqs {
     input {
