@@ -20,7 +20,7 @@ task build_db {
  
     runtime {
         disk: "30 GB"
-        docker: 'ghcr.io/stjudecloud/fastq_screen:1.1.3'
+        docker: 'ghcr.io/stjudecloud/fastq_screen:branch-gh-packages-1.1.3'
         maxRetries: max_retries
     }
 
@@ -96,7 +96,7 @@ task fastq_screen {
     runtime {
         memory: "10 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/fastq_screen:1.1.3'
+        docker: 'ghcr.io/stjudecloud/fastq_screen:branch-gh-packages-1.1.3'
         maxRetries: max_retries
     }
 

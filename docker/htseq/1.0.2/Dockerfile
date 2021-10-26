@@ -1,4 +1,4 @@
-FROM ghcr.io/stjudecloud/conda-base:1.1.1 AS builder
+FROM ghcr.io/stjudecloud/conda-base:branch-gh-packages-1.1.1 AS builder
 
 RUN conda create -n htseq \
     htseq==0.11.2 \
