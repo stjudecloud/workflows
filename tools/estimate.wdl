@@ -51,7 +51,7 @@ END
     runtime {
         memory: "4 GB"
         disk: "4 GB"
-        docker: 'stjudecloud/util:1.1.0'
+        docker: 'ghcr.io/stjudecloud/util:1.1.0'
         maxRetries: max_retries
     }
 
@@ -84,7 +84,7 @@ END
     runtime {
         memory: "4 GB"
         disk: "4 GB"
-        docker: 'stjudecloud/estimate:1.0.0'
+        docker: 'ghcr.io/stjudecloud/estimate:1.0.0'
         maxRetries: max_retries
     }
 
