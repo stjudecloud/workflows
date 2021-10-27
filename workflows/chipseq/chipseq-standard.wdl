@@ -29,12 +29,12 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq/tools/bwa.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 
 workflow chipseq_standard {
     input {
