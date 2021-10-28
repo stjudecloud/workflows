@@ -61,7 +61,7 @@ task get_read_groups {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.1'
+        docker: 'ghcr.io/stjudecloud/samtools:branch-gh-packages-1.0.2'
         maxRetries: max_retries
     }
 
