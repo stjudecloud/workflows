@@ -33,14 +33,14 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/workflows/general/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/gh-packages/tools/deeptools.wdl"
 import "https://raw.githubusercontent.com/stjude/xenocp/master/wdl/workflows/xenocp.wdl" as xenocp_workflow
 
 workflow rnaseq_standard {
@@ -152,7 +152,7 @@ task parse_input {
 
     runtime {
         disk: "1 GB"
-        docker: 'ghcr.io/stjudecloud/util:1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:branch-gh-packages-1.0.0'
     }
 
     output {

@@ -1,4 +1,4 @@
-FROM ghcr.io/stjudecloud/conda-base:1.1.1
+FROM ghcr.io/stjudecloud/conda-base:branch-gh-packages-1.1.1
 
 RUN apt-get update && \
     apt-get upgrade -y && \
