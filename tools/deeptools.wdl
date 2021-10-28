@@ -41,7 +41,7 @@ task bamCoverage {
         cpu: ncpu
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/deeptools:branch-gh-packages-1.0.2'
+        docker: 'ghcr.io/stjudecloud/deeptools:1.0.2'
         maxRetries: max_retries
     }
 
