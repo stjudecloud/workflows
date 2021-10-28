@@ -23,6 +23,9 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.STJUDE_SEQERR_READONLY_DEPLOY_KEY }}
     - name: Build and push docker images
+      env:
+        REGISTRY: ${{ env.REGISTRY }}
+        REPO_OWNER: ${{ github.repository_owner }}
       run: |
         shopt -s extglob
         EXITCODE=0
@@ -36,8 +39,8 @@ jobs:
               >&2 echo "This container will not be built."
               EXITCODE=1
             else
-              DOCKER_BUILDKIT=1 docker buildx build --push --ssh default -t ghcr.io/stjudecloud/"$tool_name":"$tag" "$dir"/"$tag"
-              docker rmi ghcr.io/stjudecloud/"$tool_name":"$tag"
+              DOCKER_BUILDKIT=1 docker buildx build --push --ssh default -t "$REGISTRY"/"$REPO_OWNER"/"$tool_name":"$tag" "$dir"/"$tag"
+              docker rmi "$REGISTRY"/"$REPO_OWNER"/"$tool_name":"$tag"
             fi
           done
         done
