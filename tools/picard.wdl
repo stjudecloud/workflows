@@ -244,7 +244,7 @@ task merge_sam_files {
             ~{sep=' ' input_arg} \
             OUTPUT=~{output_name} \
             SORT_ORDER=~{sort_order} \
-            USE_THREADING=~{threading}
+            USE_THREADING=~{threading} \
             VALIDATION_STRINGENCY=SILENT
     }
 
@@ -286,7 +286,7 @@ task clean_sam {
     command {
         picard -Xmx~{java_heap_size}g CleanSam \
             I=~{bam} \
-            O=~{output_filename} \
+            O=~{output_filename}
     }
     runtime {
         memory: memory_gb + " GB"
