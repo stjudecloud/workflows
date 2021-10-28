@@ -37,8 +37,7 @@ jobs:
               EXITCODE=1
             else
               DOCKER_BUILDKIT=1 docker buildx build --push --ssh default -t ghcr.io/stjudecloud/"$tool_name":"$tag" "$dir"/"$tag"
-              # docker push ghcr.io/stjudecloud/"$tool_name":"$tag"
-              docker rmi ghcr.io/stjudecloud/"$tool_name":"$tag" || echo "rmi failed"
+              docker rmi ghcr.io/stjudecloud/"$tool_name":"$tag"
             fi
           done
         done
