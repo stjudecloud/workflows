@@ -50,7 +50,7 @@ task count {
     runtime {
         memory: mem_size + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/htseq:branch-gh-packages-1.0.2'
+        docker: 'ghcr.io/stjudecloud/htseq:1.0.2'
         maxRetries: max_retries
     }
    

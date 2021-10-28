@@ -15,7 +15,7 @@ task download {
 
     runtime {
         disk: disk_size_GB + " GB"
-        docker: 'ghcr.io/stjudecloud/util:branch-gh-packages-1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:1.0.0'
         maxRetries: max_retries
     }
 
@@ -61,7 +61,7 @@ task get_read_groups {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:branch-gh-packages-1.0.2'
+        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
     }
 
@@ -97,7 +97,7 @@ task file_prefix {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/util:branch-gh-packages-1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:1.0.0'
         maxRetries: max_retries
     }
 
@@ -170,7 +170,7 @@ END
     runtime {
         memory: "8 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/gtfparse:branch-gh-packages-1.1.3'
+        docker: 'ghcr.io/stjudecloud/gtfparse:1.1.3'
         maxRetries: max_retries
     }
 
