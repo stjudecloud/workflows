@@ -233,7 +233,7 @@ task merge_sam_files {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 4) + 10)
+    Int disk_size = ceil((bam_size * 2) + 10)
     Int java_heap_size = ceil(memory_gb * 0.9)
     Array[String] input_arg = prefix("INPUT=", bam)
 
@@ -280,7 +280,7 @@ task clean_sam {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil((bam_size * 4) + 10)])
+    Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command {
