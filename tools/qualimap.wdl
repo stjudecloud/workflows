@@ -42,7 +42,7 @@ task bamqc {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/qualimap:1.0.3'
+        docker: 'ghcr.io/stjudecloud/qualimap:1.0.4'
         maxRetries: max_retries
     }
 
@@ -120,7 +120,7 @@ task rnaseq {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/qualimap:1.0.3'
+        docker: 'ghcr.io/stjudecloud/qualimap:1.0.4'
         maxRetries: max_retries
     }
 

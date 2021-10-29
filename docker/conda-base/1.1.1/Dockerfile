@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:4.7.12
+FROM continuumio/miniconda3:4.10.3
 
 RUN apt-get update && \
     apt-get upgrade -y && \

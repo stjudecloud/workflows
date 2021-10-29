@@ -5,23 +5,31 @@ on:
     branches-ignore:
     - 'master'
 
+env:
+  REGISTRY: ghcr.io
+
 jobs:
   docker_build_branch:
     runs-on: ubuntu-latest
     steps:
-    - uses: azure/docker-login@v1
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
-        login-server: https://index.docker.io/v1/
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/checkout@v2
     - uses: webfactory/ssh-agent@v0.5.2
       with:
         ssh-private-key: ${{ secrets.STJUDE_SEQERR_READONLY_DEPLOY_KEY }}
     - name: Build and push docker images
+      env:
+        REGISTRY: ${{ env.REGISTRY }}
+        REPO_OWNER: ${{ github.repository_owner }}
       run: |
+        shopt -s extglob
         EXITCODE=0
-        for dir in docker/*; do
+        for dir in docker/conda-base docker/!(conda-base); do
           dir=$(basename "$dir")
           tool_name=$(echo "$dir" | awk '{print tolower($0)}')
           for tag_dir in docker/"$dir"/*; do
@@ -36,9 +44,8 @@ jobs:
               EXITCODE=1
             else
               tag=branch-${GITHUB_REF##*/}-$tag_dir
-              DOCKER_BUILDKIT=1 docker build --ssh default -t stjudecloud/"$tool_name":"$tag" docker/"$dir"/"$tag_dir"
-              docker push stjudecloud/"$tool_name":"$tag"
-              docker rmi stjudecloud/"$tool_name":"$tag"
+              DOCKER_BUILDKIT=1 docker buildx build --push --ssh default -t "$REGISTRY"/"$REPO_OWNER"/"$tool_name":"$tag" docker/"$dir"/"$tag_dir"
+              docker rmi "$REGISTRY"/"$REPO_OWNER"/"$tool_name":"$tag"
             fi;
           done
         done

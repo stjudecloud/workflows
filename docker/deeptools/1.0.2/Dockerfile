@@ -1,4 +1,4 @@
-FROM stjudecloud/conda-base:1.1.0 AS builder
+FROM ghcr.io/stjudecloud/conda-base:1.1.1 AS builder
 
 RUN conda create -n deeptools \
     deeptools==3.3.1 \

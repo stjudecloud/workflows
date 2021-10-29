@@ -57,7 +57,7 @@ task build_db {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/star:1.1.1'
+        docker: 'ghcr.io/stjudecloud/star:1.1.2'
         maxRetries: max_retries
     }
 
@@ -161,7 +161,7 @@ task alignment {
         cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/star:1.1.1'
+        docker: 'ghcr.io/stjudecloud/star:1.1.2'
         maxRetries: max_retries
     }
 

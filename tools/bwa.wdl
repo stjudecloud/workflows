@@ -44,7 +44,7 @@ task bwa_aln {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/bwa:1.0.1'
+        docker: 'ghcr.io/stjudecloud/bwa:1.0.2'
         maxRetries: max_retries
     }
 
@@ -63,7 +63,6 @@ task bwa_aln {
         bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 }
-
 
 task bwa_mem {
     input {
@@ -102,7 +101,7 @@ task bwa_mem {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/bwa:1.0.1'
+        docker: 'ghcr.io/stjudecloud/bwa:1.0.2'
         maxRetries: max_retries
     }
 
@@ -149,7 +148,7 @@ task build_db {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'stjudecloud/bwa:1.0.1'
+        docker: 'ghcr.io/stjudecloud/bwa:1.0.2'
         maxRetries: max_retries
     }
 
