@@ -10,6 +10,7 @@ task bwa_aln {
         File fastq
         String output_bam = basename(fastq, ".fq.gz") + ".bam"
         File bwadb_tar_gz
+        String read_group = ""
         Int ncpu = 1
         Int memory_gb = 5
         Int? disk_size_gb
@@ -32,12 +33,15 @@ task bwa_aln {
         fi
 
         mkdir bwa
+
         tar -C bwa -xzf ~{bwadb_tar_gz}
         PREFIX=$(basename bwa/*.ann ".ann")
 
-        bwa aln bwa/$PREFIX ~{fastq} > sai
+        bwa aln -t ${n_cores} bwa/$PREFIX ~{fastq} > sai
 
-        bwa samse bwa/$PREFIX sai ~{fastq} | samtools view -b - > ~{output_bam}        
+        bwa samse \
+        ~{"-r '" + read_group}~{true="'" false="" defined(read_group)} \
+        bwa/$PREFIX sai ~{fastq} | samtools view -@ ${n_cores} -hb - > ~{output_bam}
     >>>
 
     runtime {
@@ -55,11 +59,77 @@ task bwa_aln {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool maps fastq files to BAM format using bwa aln." 
+        description: "This WDL tool maps single-end fastq files to BAM format using bwa aln."
     }
 
     parameter_meta {
         fastq: "Input FastQ file to align with bwa"
+        bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+    }
+}
+
+task bwa_aln_pe {
+    input {
+        File fastq1
+        File fastq2
+        String output_bam = basename(fastq1, ".fq.gz") + ".bam"
+        File bwadb_tar_gz
+        String read_group = ""
+        Int ncpu = 1
+        Int memory_gb = 5
+        Int? disk_size_gb
+        Int max_retries = 1
+        Boolean detect_nproc = false
+    }
+
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
+    Float input_fastq_size = size(fastq1, "GiB") + size(fastq2, "GiB")
+    Float reference_size = size(bwadb_tar_gz, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil((input_fastq_size * 2) + (reference_size * 2))])
+
+    command <<<
+        set -xeuo pipefail
+
+        n_cores=~{ncpu}
+        if [ -n ~{parsed_detect_nproc} ]
+        then
+            n_cores=$(nproc)
+        fi
+
+        mkdir bwa
+
+        tar -C bwa -xzf ~{bwadb_tar_gz}
+        PREFIX=$(basename bwa/*.ann ".ann")
+
+        bwa aln -t ${n_cores} bwa/$PREFIX ~{fastq1} > sai_1
+        bwa aln -t ${n_cores} bwa/$PREFIX ~{fastq2} > sai_2
+
+        bwa sampe \
+        ~{"-r '" + read_group}~{true="'" false="" defined(read_group)} \
+        bwa/$PREFIX sai_1 sai_2 ~{fastq1} ~{fastq2} | samtools view -@ ${n_cores} -hb - > ~{output_bam}
+    >>>
+
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        cpu: ncpu
+        docker: 'ghcr.io/stjudecloud/bwa:1.0.2'
+        maxRetries: max_retries
+    }
+
+    output {
+        File bam = output_bam
+    }
+
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL tool maps paired-end fastq files to BAM format using bwa aln."
+    }
+
+    parameter_meta {
+        fastq1: "Input FastQ read 1 file to align with bwa"
+        fastq2: "Input FastQ read 2 file to align with bwa"
         bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 }
@@ -69,6 +139,7 @@ task bwa_mem {
         File fastq
         String output_bam = basename(fastq, ".fq.gz") + ".bam"
         File bwadb_tar_gz
+        String read_group = ""
         Int ncpu = 1
         Int memory_gb = 5
         Int? disk_size_gb
@@ -91,10 +162,14 @@ task bwa_mem {
         fi
 
         mkdir bwa
+
         tar -C bwa -xzf ~{bwadb_tar_gz}
         PREFIX=$(basename bwa/*.ann ".ann")
 
-        bwa mem -t $n_cores bwa/$PREFIX ~{fastq} | samtools view -b - > ~{output_bam}
+        bwa mem \
+        -t $n_cores \
+        ~{"-R '" + read_group}~{true="'" false="" defined(read_group)} \
+        bwa/$PREFIX ~{fastq} | samtools view -b - > ~{output_bam}
     >>>
 
     runtime {
@@ -112,7 +187,7 @@ task bwa_mem {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool maps fastq files to BAM format using bwa mem." 
+        description: "This WDL tool maps fastq files to BAM format using bwa mem."
     }
 
     parameter_meta {
@@ -124,7 +199,7 @@ task bwa_mem {
 task build_db {
     input {
         File reference_fasta
-        String bwadb_out_name
+        String bwadb_out_name = "bwadb.tar.gz"
         Int memory_gb = 5
         Int? disk_size_gb
         Int max_retries = 1
@@ -165,5 +240,29 @@ task build_db {
     parameter_meta {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
         bwadb_out_name: "Name for the output gzipped tar archive of the bwa reference files."
+    }
+}
+
+task format_rg_for_bwa {
+    input {
+        String read_group
+    }
+
+    command <<<
+        echo "@RG\t~{read_group}" | sed 's/ /\\t/g' > output.txt
+    >>>
+
+    output {
+        String formatted_rg = read_string("output.txt")
+    }
+
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL tool converts read group records from the BAM-formatted strings to strings expected by bwa."
+    }
+
+    parameter_meta {
+        read_group: "Read group string"
     }
 }

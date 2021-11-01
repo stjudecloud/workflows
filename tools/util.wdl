@@ -80,6 +80,29 @@ task get_read_groups {
     }
 }
 
+task split_string {
+    input {
+        String input_string
+        String delimiter = " , "
+        Int max_retries = 1
+        Int disk_size = 1
+    }
+    command <<<
+        echo ~{input_string} | sed 's/~{delimiter}/\n/g' > output.txt
+    >>>
+
+    runtime {
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/util:1.0.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        File output_file = "output.txt"
+        Array[String] out = read_lines("output.txt")
+    }
+}
+
 task file_prefix {
     input {
         File in_file
