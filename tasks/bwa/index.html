@@ -74,7 +74,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bwa_mem">bwa_mem</a>
+    <li class="toctree-l2"><a class="reference internal" href="#bwa_aln_pe">bwa_aln_pe</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
         <ul>
@@ -90,7 +90,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#build_db">build_db</a>
+    <li class="toctree-l2"><a class="reference internal" href="#bwa_mem">bwa_mem</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_2">Inputs</a>
         <ul>
@@ -103,6 +103,34 @@
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#outputs_2">Outputs</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#build_db">build_db</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_3">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_3">Optional</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_3">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_3">Outputs</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#format_rg_for_bwa">format_rg_for_bwa</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_4">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_4">Required</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_4">Outputs</a>
     </li>
         </ul>
     </li>
@@ -148,6 +176,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workflows/chipseq-bwa-db-build/">BWA DB build</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workflows/chipseq-standard/">ChIP-Seq Standard</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                     </li>
@@ -210,7 +242,7 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool maps fastq files to BAM format using bwa aln.</dd>
+<dd>This WDL tool maps single-end fastq files to BAM format using bwa aln.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -229,8 +261,42 @@ BWA aligns sequencing reads to a reference genome.</p>
 <li><code>memory_gb</code> (Int, default=5)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
 <li><code>output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>read_group</code> (String, default="")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
+<ul>
+<li><code>bam</code> (File)</li>
+</ul>
+<h2 id="bwa_aln_pe">bwa_aln_pe</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Thrasher</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool maps paired-end fastq files to BAM format using bwa aln.</dd>
+</dl>
+<h3 id="inputs_1">Inputs</h3>
+<h4 id="required_1">Required</h4>
+<ul>
+<li><code>bwadb_tar_gz</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
+<li><code>fastq1</code> (File, <strong>required</strong>): Input FastQ read 1 file to align with bwa</li>
+<li><code>fastq2</code> (File, <strong>required</strong>): Input FastQ read 2 file to align with bwa</li>
+</ul>
+<h4 id="optional_1">Optional</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int?)</li>
+</ul>
+<h4 id="defaults_1">Defaults</h4>
+<ul>
+<li><code>detect_nproc</code> (Boolean, default=false)</li>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>ncpu</code> (Int, default=1)</li>
+<li><code>output_bam</code> (String, default=basename(fastq1,".fq.gz") + ".bam")</li>
+<li><code>read_group</code> (String, default="")</li>
+</ul>
+<h3 id="outputs_1">Outputs</h3>
 <ul>
 <li><code>bam</code> (File)</li>
 </ul>
@@ -243,25 +309,26 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dt>description</dt>
 <dd>This WDL tool maps fastq files to BAM format using bwa mem.</dd>
 </dl>
-<h3 id="inputs_1">Inputs</h3>
-<h4 id="required_1">Required</h4>
+<h3 id="inputs_2">Inputs</h3>
+<h4 id="required_2">Required</h4>
 <ul>
 <li><code>bwadb_tar_gz</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
 <li><code>fastq</code> (File, <strong>required</strong>): Input FastQ file to align with bwa</li>
 </ul>
-<h4 id="optional_1">Optional</h4>
+<h4 id="optional_2">Optional</h4>
 <ul>
 <li><code>disk_size_gb</code> (Int?)</li>
 </ul>
-<h4 id="defaults_1">Defaults</h4>
+<h4 id="defaults_2">Defaults</h4>
 <ul>
 <li><code>detect_nproc</code> (Boolean, default=false)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
 <li><code>output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>read_group</code> (String, default="")</li>
 </ul>
-<h3 id="outputs_1">Outputs</h3>
+<h3 id="outputs_2">Outputs</h3>
 <ul>
 <li><code>bam</code> (File)</li>
 </ul>
@@ -274,24 +341,42 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dt>description</dt>
 <dd>This WDL tool creates a BWA index and returns it as a compressed tar archive.</dd>
 </dl>
-<h3 id="inputs_2">Inputs</h3>
-<h4 id="required_2">Required</h4>
+<h3 id="inputs_3">Inputs</h3>
+<h4 id="required_3">Required</h4>
 <ul>
-<li><code>bwadb_out_name</code> (String, <strong>required</strong>): Name for the output gzipped tar archive of the bwa reference files.</li>
 <li><code>reference_fasta</code> (File, <strong>required</strong>): Input reference Fasta file to index with bwa. Should be compressed with gzip.</li>
 </ul>
-<h4 id="optional_2">Optional</h4>
+<h4 id="optional_3">Optional</h4>
 <ul>
 <li><code>disk_size_gb</code> (Int?)</li>
 </ul>
-<h4 id="defaults_2">Defaults</h4>
+<h4 id="defaults_3">Defaults</h4>
 <ul>
+<li><code>bwadb_out_name</code> (String, default="bwadb.tar.gz"): Name for the output gzipped tar archive of the bwa reference files.</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
 </ul>
-<h3 id="outputs_2">Outputs</h3>
+<h3 id="outputs_3">Outputs</h3>
 <ul>
 <li><code>bwadb_tar_gz</code> (File)</li>
+</ul>
+<h2 id="format_rg_for_bwa">format_rg_for_bwa</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Thrasher</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool converts read group records from the BAM-formatted strings to strings expected by bwa.</dd>
+</dl>
+<h3 id="inputs_4">Inputs</h3>
+<h4 id="required_4">Required</h4>
+<ul>
+<li><code>read_group</code> (String, <strong>required</strong>): Read group string</li>
+</ul>
+<h3 id="outputs_4">Outputs</h3>
+<ul>
+<li><code>formatted_rg</code> (String)</li>
 </ul>
               
             </div>

@@ -136,6 +136,36 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#merge_sam_files">merge_sam_files</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_4">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_4">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_4">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_4">Outputs</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#clean_sam">clean_sam</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_5">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_5">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_1">Optional</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_5">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_5">Outputs</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../qualimap/">QualiMap</a>
@@ -158,6 +188,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workflows/chipseq-bwa-db-build/">BWA DB build</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workflows/chipseq-standard/">ChIP-Seq Standard</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                     </li>
@@ -321,6 +355,60 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <h3 id="outputs_3">Outputs</h3>
 <ul>
 <li><code>sorted_bam</code> (File)</li>
+</ul>
+<h2 id="merge_sam_files">merge_sam_files</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Thrasher, Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool merges the input BAM files into a single BAM file.</dd>
+</dl>
+<h3 id="inputs_4">Inputs</h3>
+<h4 id="required_4">Required</h4>
+<ul>
+<li><code>bam</code> (Array[File], <strong>required</strong>): Input BAMs to merge</li>
+</ul>
+<h4 id="defaults_4">Defaults</h4>
+<ul>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=40)</li>
+<li><code>output_name</code> (String, default="merged.bam")</li>
+<li><code>sort_order</code> (String, default="coordinate")</li>
+<li><code>threading</code> (Boolean, default=true)</li>
+</ul>
+<h3 id="outputs_4">Outputs</h3>
+<ul>
+<li><code>merged_bam</code> (File)</li>
+</ul>
+<h2 id="clean_sam">clean_sam</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Thrasher</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads</dd>
+</dl>
+<h3 id="inputs_5">Inputs</h3>
+<h4 id="required_5">Required</h4>
+<ul>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to clean</li>
+</ul>
+<h4 id="optional_1">Optional</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int?)</li>
+</ul>
+<h4 id="defaults_5">Defaults</h4>
+<ul>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=25)</li>
+<li><code>output_filename</code> (String, default=basename(bam,".bam") + ".cleaned.bam")</li>
+</ul>
+<h3 id="outputs_5">Outputs</h3>
+<ul>
+<li><code>cleaned_bam</code> (File)</li>
 </ul>
               
             </div>

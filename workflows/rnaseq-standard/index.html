@@ -99,6 +99,10 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chipseq-standard/">ChIP-Seq Standard</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
@@ -225,6 +229,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>contaminant_stardb_tar_gz</code> (File?): If using XenoCP to clean contaminant reads, provide a STAR reference for the contaminant genome</li>
 <li><code>alignment.disk_size_gb</code> (Int?)</li>
 <li><code>picard_sort.disk_size_gb</code> (Int?)</li>
+<li><code>bam_to_fastqs.fqlint_single.read2</code> (File?)</li>
 <li><code>bam_to_fastqs.split.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.bwa_aln_align.disk_size_gb</code> (Int?)</li>
 <li><code>xenocp.bwa_mem_align.disk_size_gb</code> (Int?)</li>
@@ -257,6 +262,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>alignment.memory_gb</code> (Int, default=50)</li>
 <li><code>alignment.ncpu</code> (Int, default=1)</li>
 <li><code>bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
+<li><code>bam_to_fastqs.pairing</code> (String, default="Paired-end")</li>
 <li><code>bam_to_fastqs.samtools_sort_ncpu</code> (Int, default=1)</li>
 <li><code>deeptools_bamCoverage.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
@@ -292,16 +298,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>xenocp.n_threads</code> (Int, default=1)</li>
 <li><code>xenocp.validation_stringency</code> (String, default="SILENT")</li>
 <li><code>bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>bam_to_fastqs.fqlint.memory_gb</code> (Int, default=8)</li>
+<li><code>bam_to_fastqs.fqlint_pair.memory_gb</code> (Int, default=8)</li>
+<li><code>bam_to_fastqs.fqlint_single.memory_gb</code> (Int, default=8)</li>
 <li><code>bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>bam_to_fastqs.split.reject_unaccounted</code> (Boolean, default=true)</li>
 <li><code>xenocp.bwa_aln_align.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>xenocp.bwa_aln_align.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.bwa_aln_align.memory_gb</code> (Int, default=5)</li>
 <li><code>xenocp.bwa_aln_align.output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>xenocp.bwa_aln_align.read_group</code> (String, default="")</li>
 <li><code>xenocp.bwa_mem_align.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>xenocp.bwa_mem_align.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.bwa_mem_align.output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>xenocp.bwa_mem_align.read_group</code> (String, default="")</li>
 <li><code>xenocp.cleanse.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.cleanse.memory_gb</code> (Int, default=7)</li>
 <li><code>xenocp.cleanse.output_bam</code> (String, default=basename(input_bam,".bam") + "-xenocp.bam")</li>

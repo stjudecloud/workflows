@@ -99,6 +99,10 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chipseq-standard/">ChIP-Seq Standard</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
@@ -280,9 +284,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>xenocp.bwa_aln_align.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.bwa_aln_align.memory_gb</code> (Int, default=5)</li>
 <li><code>xenocp.bwa_aln_align.output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>xenocp.bwa_aln_align.read_group</code> (String, default="")</li>
 <li><code>xenocp.bwa_mem_align.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
 <li><code>xenocp.bwa_mem_align.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.bwa_mem_align.output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>xenocp.bwa_mem_align.read_group</code> (String, default="")</li>
 <li><code>xenocp.cleanse.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>xenocp.cleanse.memory_gb</code> (Int, default=7)</li>
 <li><code>xenocp.cleanse.output_bam</code> (String, default=basename(input_bam,".bam") + "-xenocp.bam")</li>

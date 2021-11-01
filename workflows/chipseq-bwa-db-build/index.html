@@ -9,7 +9,7 @@
   <meta name="author" content="St. Jude Cloud">
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>Bam to FastQs - St. Jude Cloud Bioinformatics Workflows</title>
+  <title>BWA DB build - St. Jude Cloud Bioinformatics Workflows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Bam to FastQs";
-    var mkdocs_page_input_path = "workflows/bam-to-fastqs.md";
+    var mkdocs_page_name = "BWA DB build";
+    var mkdocs_page_input_path = "workflows/chipseq-bwa-db-build.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -93,17 +93,23 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Bam to FastQs</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">BWA DB build</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#output">Output:</a>
+    <li class="toctree-l2"><a class="reference internal" href="#output">Output</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING:</a>
+    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#mit-license">MIT License</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bam_to_fastqs">bam_to_fastqs</a>
+    <li class="toctree-l2"><a class="reference internal" href="#bwa_db_build">bwa_db_build</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -120,12 +126,6 @@
         </ul>
     </li>
     </ul>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../chipseq-standard/">ChIP-Seq Standard</a>
                     </li>
@@ -165,10 +165,10 @@
         
       
     
-    <li>Bam to FastQs</li>
+    <li>BWA DB build</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/bam-to-fastqs.md"
+        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/chipseq-bwa-db-build.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -180,19 +180,18 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="bam-to-fastqs">Bam to FastQs</h1>
-<p>This WDL workflow converts an input BAM file to a set of fastq files for read 1 and read 2.
-It performs QC checks along the way to validate the input and output.</p>
-<h3 id="output">Output:</h3>
+                <h1 id="bwa-db-build">BWA DB build</h1>
+<p>This WDL workflow generates a set of genome reference files usable by the BWA aligner from an input reference file in FASTA format.  </p>
+<h3 id="output">Output</h3>
 <dl>
-<dt>read1s</dt>
-<dd>an array of files with the first read in the pair</dd>
-<dt>read2s</dt>
-<dd>an array of files with the second read in the pair</dd>
+<dt>reference_fa</dt>
+<dd>the reference FASTA file</dd>
+<dt>bwadb_tar_gz</dt>
+<dd>the BWA DB folder in .tar.gz format</dd>
 </dl>
-<h2 id="licensing">LICENSING:</h2>
+<h2 id="licensing">LICENSING</h2>
 <h4 id="mit-license">MIT License</h4>
-<p>Copyright 2020-Present St. Jude Children's Research Hospital</p>
+<p>Copyright 2021-Present St. Jude Children's Research Hospital</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
 software and associated documentation files (the "Software"), to deal in the Software
 without restriction, including without limitation the rights to use, copy, modify, merge,
@@ -205,34 +204,28 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="bam_to_fastqs">bam_to_fastqs</h2>
+<h2 id="bwa_db_build">bwa_db_build</h2>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>bam</code> (File, <strong>required</strong>): BAM file to split into fastqs.</li>
+<li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of output reference FASTA file</li>
+<li><code>reference_fa_url</code> (String, <strong>required</strong>): URL to retrieve the reference FASTA file from</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>fqlint_single.read2</code> (File?)</li>
-<li><code>split.disk_size_gb</code> (Int?)</li>
+<li><code>build_bwa_db.disk_size_gb</code> (Int?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>bam_to_fastq_memory_gb</code> (Int, default=40): How much memory to provide while converting to fastqs.</li>
-<li><code>detect_nproc</code> (Boolean, default=false)</li>
-<li><code>max_retries</code> (Int, default=1): Maximum number of times to retry on a failure.</li>
-<li><code>pairing</code> (String, default="Paired-end")</li>
-<li><code>samtools_sort_ncpu</code> (Int, default=1): Number of CPUs to use while sorting the BAM.</li>
-<li><code>bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>fqlint_pair.memory_gb</code> (Int, default=8)</li>
-<li><code>fqlint_single.memory_gb</code> (Int, default=8)</li>
-<li><code>split.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>split.reject_unaccounted</code> (Boolean, default=true)</li>
+<li><code>build_bwa_db.max_retries</code> (Int, default=1)</li>
+<li><code>build_bwa_db.memory_gb</code> (Int, default=5)</li>
+<li><code>reference_download.disk_size_GB</code> (Int, default=10)</li>
+<li><code>reference_download.max_retries</code> (Int, default=1)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>read1s</code> (Array[File])</li>
-<li><code>read2s</code> (Array[File])</li>
+<li><code>reference_fa</code> (File)</li>
+<li><code>bwadb_tar_gz</code> (File)</li>
 </ul>
               
             </div>
@@ -241,10 +234,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../bwa-db-build/" class="btn btn-neutral float-right" title="BWA DB build">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../chipseq-standard/" class="btn btn-neutral float-right" title="ChIP-Seq Standard">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../ESTIMATE/" class="btn btn-neutral" title="ESTIMATE"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../calc-gene-lengths/" class="btn btn-neutral" title="Calculate Gene Lengths"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -276,10 +269,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
         </span>
     
     
-      <span><a href="../ESTIMATE/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../calc-gene-lengths/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../bwa-db-build/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../chipseq-standard/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

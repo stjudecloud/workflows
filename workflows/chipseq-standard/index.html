@@ -9,7 +9,7 @@
   <meta name="author" content="St. Jude Cloud">
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>Bam to FastQs - St. Jude Cloud Bioinformatics Workflows</title>
+  <title>ChIP-Seq Standard - St. Jude Cloud Bioinformatics Workflows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Bam to FastQs";
-    var mkdocs_page_input_path = "workflows/bam-to-fastqs.md";
+    var mkdocs_page_name = "ChIP-Seq Standard";
+    var mkdocs_page_input_path = "workflows/chipseq-standard.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -93,17 +93,23 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Bam to FastQs</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">ChIP-Seq Standard</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#output">Output:</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING:</a>
+    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#mit-license">MIT License</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bam_to_fastqs">bam_to_fastqs</a>
+    <li class="toctree-l2"><a class="reference internal" href="#chipseq_standard">chipseq_standard</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -119,15 +125,19 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parse_input">parse_input</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_1">Outputs</a>
+    </li>
+        </ul>
+    </li>
     </ul>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../chipseq-standard/">ChIP-Seq Standard</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                     </li>
@@ -165,10 +175,10 @@
         
       
     
-    <li>Bam to FastQs</li>
+    <li>ChIP-Seq Standard</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/bam-to-fastqs.md"
+        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/chipseq-standard.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -180,19 +190,14 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="bam-to-fastqs">Bam to FastQs</h1>
-<p>This WDL workflow converts an input BAM file to a set of fastq files for read 1 and read 2.
-It performs QC checks along the way to validate the input and output.</p>
-<h3 id="output">Output:</h3>
-<dl>
-<dt>read1s</dt>
-<dd>an array of files with the first read in the pair</dd>
-<dt>read2s</dt>
-<dd>an array of files with the second read in the pair</dd>
-</dl>
-<h2 id="licensing">LICENSING:</h2>
+                <h1 id="chip-seq-standard">ChIP-Seq Standard</h1>
+<p>This WDL workflow runs the BWA ChIP-seq alignment workflow for St. Jude Cloud.</p>
+<p>The workflow takes an input BAM file and splits it into fastq files for each read in the pair.
+The read pairs are then passed through BWA alignment to generate a BAM file.
+File validation is performed at several steps, including immediately preceeding output.</p>
+<h2 id="licensing">LICENSING</h2>
 <h4 id="mit-license">MIT License</h4>
-<p>Copyright 2020-Present St. Jude Children's Research Hospital</p>
+<p>Copyright 2021-Present St. Jude Children's Research Hospital</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
 software and associated documentation files (the "Software"), to deal in the Software
 without restriction, including without limitation the rights to use, copy, modify, merge,
@@ -205,34 +210,92 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="bam_to_fastqs">bam_to_fastqs</h2>
+<h2 id="chipseq_standard">chipseq_standard</h2>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>bam</code> (File, <strong>required</strong>): BAM file to split into fastqs.</li>
+<li><code>bwadb_tar_gz</code> (File, <strong>required</strong>): Database of reference files for the BWA aligner. Can be generated by <code>chipseq-bwa-db-build.wdl</code></li>
+<li><code>input_bam</code> (File, <strong>required</strong>): Input BAM format file to realign with bwa</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>fqlint_single.read2</code> (File?)</li>
-<li><code>split.disk_size_gb</code> (Int?)</li>
+<li><code>paired_end.disk_size_gb</code> (Int?)</li>
+<li><code>picard_clean.disk_size_gb</code> (Int?)</li>
+<li><code>single_end.disk_size_gb</code> (Int?)</li>
+<li><code>bam_to_fastqs.fqlint_single.read2</code> (File?)</li>
+<li><code>bam_to_fastqs.split.disk_size_gb</code> (Int?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>bam_to_fastq_memory_gb</code> (Int, default=40): How much memory to provide while converting to fastqs.</li>
-<li><code>detect_nproc</code> (Boolean, default=false)</li>
-<li><code>max_retries</code> (Int, default=1): Maximum number of times to retry on a failure.</li>
-<li><code>pairing</code> (String, default="Paired-end")</li>
-<li><code>samtools_sort_ncpu</code> (Int, default=1): Number of CPUs to use while sorting the BAM.</li>
-<li><code>bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>fqlint_pair.memory_gb</code> (Int, default=8)</li>
-<li><code>fqlint_single.memory_gb</code> (Int, default=8)</li>
-<li><code>split.prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>split.reject_unaccounted</code> (Boolean, default=true)</li>
+<li><code>detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>output_prefix</code> (String, default=basename(input_bam,".bam")): Prefix for output files</li>
+<li><code>pairing</code> (String, default="Single-end"): Are the sequencing reads paired? [Single-end, Paired-end]</li>
+<li><code>subsample_n_reads</code> (Int, default=-1): Only process a random sampling of <code>n</code> reads. &lt;=<code>0</code> for processing entire input BAM.</li>
+<li><code>validate_input</code> (Boolean, default=true): Run Picard ValidateSamFile on the input BAM</li>
+<li><code>bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
+<li><code>bam_to_fastqs.samtools_sort_ncpu</code> (Int, default=1)</li>
+<li><code>deeptools_bamCoverage.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
+<li><code>deeptools_bamCoverage.memory_gb</code> (Int, default=5)</li>
+<li><code>deeptools_bamCoverage.ncpu</code> (Int, default=1)</li>
+<li><code>paired_end.memory_gb</code> (Int, default=5)</li>
+<li><code>paired_end.ncpu</code> (Int, default=1)</li>
+<li><code>paired_end.output_bam</code> (String, default=basename(fastq1,".fq.gz") + ".bam")</li>
+<li><code>picard_clean.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>picard_clean.memory_gb</code> (Int, default=25)</li>
+<li><code>picard_clean.output_filename</code> (String, default=basename(bam,".bam") + ".cleaned.bam")</li>
+<li><code>picard_merge.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>picard_merge.memory_gb</code> (Int, default=40)</li>
+<li><code>picard_merge.sort_order</code> (String, default="coordinate")</li>
+<li><code>picard_merge.threading</code> (Boolean, default=true)</li>
+<li><code>samtools_index.memory_gb</code> (Int, default=15)</li>
+<li><code>samtools_index.ncpu</code> (Int, default=1)</li>
+<li><code>samtools_index.outfile</code> (String, default=basename(bam) + ".bai")</li>
+<li><code>single_end.memory_gb</code> (Int, default=5)</li>
+<li><code>single_end.ncpu</code> (Int, default=1)</li>
+<li><code>single_end.output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>split_string.delimiter</code> (String, default=" , ")</li>
+<li><code>split_string.disk_size</code> (Int, default=1)</li>
+<li><code>split_string.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>subsample.ncpu</code> (Int, default=1)</li>
+<li><code>subsample.outname</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
+<li><code>validate_bam.ignore_list</code> (Array[String], default=["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"])</li>
+<li><code>validate_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>validate_bam.max_errors</code> (Int, default=2147483647)</li>
+<li><code>validate_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>validate_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
+<li><code>validate_bam.succeed_on_errors</code> (Boolean, default=false)</li>
+<li><code>validate_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
+<li><code>validate_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>validate_input_bam.ignore_list</code> (Array[String], default=["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"])</li>
+<li><code>validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>validate_input_bam.max_errors</code> (Int, default=2147483647)</li>
+<li><code>validate_input_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>validate_input_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
+<li><code>validate_input_bam.succeed_on_errors</code> (Boolean, default=false)</li>
+<li><code>validate_input_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
+<li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>bam_to_fastqs.fqlint_pair.memory_gb</code> (Int, default=8)</li>
+<li><code>bam_to_fastqs.fqlint_single.memory_gb</code> (Int, default=8)</li>
+<li><code>bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>bam_to_fastqs.split.reject_unaccounted</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>read1s</code> (Array[File])</li>
-<li><code>read2s</code> (Array[File])</li>
+<li><code>bam</code> (File)</li>
+<li><code>bam_index</code> (File)</li>
+<li><code>bigwig</code> (File)</li>
+</ul>
+<h2 id="parse_input">parse_input</h2>
+<h3 id="inputs_1">Inputs</h3>
+<h4 id="required_1">Required</h4>
+<ul>
+<li><code>pairing</code> (String, <strong>required</strong>)</li>
+</ul>
+<h3 id="outputs_1">Outputs</h3>
+<ul>
+<li><code>input_check</code> (String)</li>
 </ul>
               
             </div>
@@ -241,10 +304,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../bwa-db-build/" class="btn btn-neutral float-right" title="BWA DB build">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../make-qc-reference/" class="btn btn-neutral float-right" title="Make QC Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../ESTIMATE/" class="btn btn-neutral" title="ESTIMATE"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../chipseq-bwa-db-build/" class="btn btn-neutral" title="BWA DB build"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -276,10 +339,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
         </span>
     
     
-      <span><a href="../ESTIMATE/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../chipseq-bwa-db-build/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../bwa-db-build/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../make-qc-reference/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
