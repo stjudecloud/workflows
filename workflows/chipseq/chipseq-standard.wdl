@@ -146,7 +146,7 @@ task parse_input {
 
     runtime {
         disk: "1 GB"
-        docker: 'stjudecloud/util:1.1.0'
+        docker: 'ghcr.io/stjudecloud/util:1.1.0'
     }
 
     output {
