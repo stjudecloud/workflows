@@ -1,4 +1,4 @@
-FROM stjudecloud/conda-base:1.1.1 AS builder
+FROM ghcr.io/stjudecloud/conda-base:1.1.1 AS builder
 
 RUN conda create -n picard \
     picard==2.20.2=0 \

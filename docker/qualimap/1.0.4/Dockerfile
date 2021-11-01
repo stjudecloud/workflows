@@ -1,4 +1,4 @@
-FROM stjudecloud/conda-base:1.1.1 AS builder
+FROM ghcr.io/stjudecloud/conda-base:1.1.1 AS builder
 
 RUN conda create -n qualimap \
     qualimap==2.2.2c=1 \
