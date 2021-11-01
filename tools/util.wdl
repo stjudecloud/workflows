@@ -93,7 +93,7 @@ task split_string {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'stjudecloud/util:1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:1.0.0'
         maxRetries: max_retries
     }
 

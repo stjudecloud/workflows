@@ -113,7 +113,7 @@ task bwa_aln_pe {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'stjudecloud/bwa:1.0.2'
+        docker: 'ghcr.io/stjudecloud/bwa:1.0.2'
         maxRetries: max_retries
     }
 
