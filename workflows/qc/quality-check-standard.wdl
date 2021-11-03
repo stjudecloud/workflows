@@ -37,6 +37,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/sequencerr.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/qc-summary/tools/util.wdl"
 
 workflow quality_check {
     input {
@@ -154,6 +155,11 @@ workflow quality_check {
                 max_retries=max_retries
         }
     }
+    call util.qc_summary {
+        input:
+            multiqc_tar_gz=select_first([multiqc_wgs.out, multiqc_rnaseq.out, multiqc_chipseq.out]),
+            max_retries=max_retries
+    }
 
     output {
         File bam_checksum = compute_checksum.outfile
@@ -164,6 +170,7 @@ workflow quality_check {
         File read_length_file = ngsderive_read_length.read_length_file
         File qualimap_bamqc_results = qualimap_bamqc.results
         File inferred_encoding = ngsderive_encoding.encoding_file
+        File qc_summary_file = qc_summary.out
         File? fastq_screen_results = fastq_screen.results
         File? sequencerr_results = sequencErr.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
