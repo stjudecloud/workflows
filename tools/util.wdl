@@ -242,8 +242,8 @@ task qc_summary {
                     mean_coverage: $MEAN_COVERAGE,
                     median_insert_size: $INSERT_SIZE,
                     mean_percent_GC: $MEAN_GC_CONTENT,
-                    derived_read_length: $READ_LENGTH,
-                    derived_sequencing_platform: $PLATFORM
+                    inferred_read_length: $READ_LENGTH,
+                    inferred_sequencing_platform: $PLATFORM
                 }
             }' > ~{outfile}
     >>>
