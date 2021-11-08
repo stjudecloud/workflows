@@ -257,4 +257,10 @@ task qc_summary {
     output {
         File out = "~{outfile}"
     }
+
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report" 
+    }
 }
