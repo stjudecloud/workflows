@@ -218,16 +218,15 @@ task qc_summary {
         tar -xzf "~{multiqc_tar_gz}"
         gen_stats_file=~{sample_name}_multiqc/multiqc_data/multiqc_general_stats.txt
 
-        TOTAL_READS=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-total_reads $gen_stats_file | tail -n 1)
-        PERCENT_ALIGNED=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-percentage_aligned $gen_stats_file | tail -n 1)
-        MEAN_COVERAGE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-mean_coverage $gen_stats_file | tail -n 1)
+        TOTAL_READS=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-total_reads $gen_stats_file | tail -n 1 | awk '{ printf("%.0f", $1) }')
+        PERCENT_ALIGNED=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-percentage_aligned $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
+        MEAN_COVERAGE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-mean_coverage $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
         INSERT_SIZE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-median_insert_size $gen_stats_file | tail -n 1)
-        MEAN_GC_CONTENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-avg_gc $gen_stats_file | tail -n 1)
+        MEAN_GC_CONTENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-avg_gc $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
         READ_LENGTH=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-consensusreadlength $gen_stats_file | tail -n 1)
         PLATFORM=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-instrument $gen_stats_file | tail -n 1)
 
         jq -n \
-            --arg sample "~{sample_name}" \
             --arg TOTAL_READS "$TOTAL_READS" \
             --arg PERCENT_ALIGNED "$PERCENT_ALIGNED" \
             --arg MEAN_COVERAGE "$MEAN_COVERAGE" \
@@ -235,16 +234,14 @@ task qc_summary {
             --arg MEAN_GC_CONTENT "$MEAN_GC_CONTENT" \
             --arg READ_LENGTH "$READ_LENGTH" \
             --arg PLATFORM "$PLATFORM" \
-            '{ ($sample):
-                {
-                    total_reads: $TOTAL_READS,
-                    percent_aligned: $PERCENT_ALIGNED,
-                    mean_coverage: $MEAN_COVERAGE,
-                    median_insert_size: $INSERT_SIZE,
-                    mean_percent_GC: $MEAN_GC_CONTENT,
-                    inferred_read_length: $READ_LENGTH,
-                    inferred_sequencing_platform: $PLATFORM
-                }
+            '{
+                total_reads: ($TOTAL_READS | tonumber),
+                percent_aligned: ($PERCENT_ALIGNED | tonumber),
+                mean_coverage: ($MEAN_COVERAGE | tonumber),
+                median_insert_size: ($INSERT_SIZE | tonumber),
+                mean_percent_GC: ($MEAN_GC_CONTENT | tonumber),
+                inferred_read_length: ($READ_LENGTH | tonumber),
+                inferred_sequencing_platform: $PLATFORM
             }' > ~{outfile}
     >>>
 
