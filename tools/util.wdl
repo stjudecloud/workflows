@@ -261,6 +261,6 @@ task qc_summary {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report" 
+        description: "This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
     }
 }
