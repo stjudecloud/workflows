@@ -158,6 +158,20 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#qc_summary">qc_summary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_5">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_5">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_5">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_5">Outputs</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                     </li>
                 </ul>
@@ -318,6 +332,30 @@ task output as part of a workflow as well as generic tasks.</p>
 <li><code>outfile</code> (String, default=basename(gtf,".gtf.gz") + ".genelengths.txt")</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
+<ul>
+<li><code>out</code> (File)</li>
+</ul>
+<h2 id="qc_summary">qc_summary</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive.</dd>
+</dl>
+<h3 id="inputs_5">Inputs</h3>
+<h4 id="required_5">Required</h4>
+<ul>
+<li><code>multiqc_tar_gz</code> (File, <strong>required</strong>)</li>
+</ul>
+<h4 id="defaults_5">Defaults</h4>
+<ul>
+<li><code>disk_size</code> (Int, default=1)</li>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>outfile</code> (String, default=basename(multiqc_tar_gz,"_multiqc.tar.gz") + ".qc_summary.json")</li>
+</ul>
+<h3 id="outputs_5">Outputs</h3>
 <ul>
 <li><code>out</code> (File)</li>
 </ul>
