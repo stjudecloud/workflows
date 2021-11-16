@@ -1,8 +1,8 @@
-FROM rust:1.50.0 as fqlib-builder
+FROM rust:1.56.0 as fqlib-builder
 
 RUN cargo install \
-      --git https://github.com/stjude/fqlib.git \
-      --tag v0.6.0 \
+      --git https://github.com/stjude-rust-labs/fq.git \
+      --tag v0.8.0 \
       --root /opt/fqlib/
 
 FROM ubuntu:18.04 as builder
