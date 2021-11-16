@@ -37,6 +37,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/sequencerr.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 
 workflow quality_check {
     input {
@@ -102,19 +103,6 @@ workflow quality_check {
         call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
         call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
         call fq_screen.fastq_screen { input: read1=fqlint.validated_read1, read2=select_first([fqlint.validated_read2, ""]), db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=parsed_encoding, max_retries=max_retries }
-        
-        call mqc.multiqc as multiqc_wgs {
-            input:
-                validate_sam_file=validate_bam.out,
-                flagstat_file=samtools_flagstat.outfile,
-                fastqc=fastqc.results,
-                instrument_file=ngsderive_instrument.instrument_file,
-                read_length_file=ngsderive_read_length.read_length_file,
-                encoding_file=ngsderive_encoding.encoding_file,
-                qualimap_bamqc=qualimap_bamqc.results,
-                fastq_screen=fastq_screen.results,
-                max_retries=max_retries
-        }
     }
     if (experiment == "RNA-Seq") {
         File gtf_defined = select_first([gtf, "No GTF"])
@@ -124,35 +112,27 @@ workflow quality_check {
         call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bai=bam_index, gtf=gtf_defined, max_retries=max_retries }
         String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=quickcheck.checked_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, paired_end=paired_end, max_retries=max_retries }
-
-        call mqc.multiqc as multiqc_rnaseq {
-            input:
-                validate_sam_file=validate_bam.out,
-                star_log=star_log,
-                flagstat_file=samtools_flagstat.outfile,
-                fastqc=fastqc.results,
-                instrument_file=ngsderive_instrument.instrument_file,
-                read_length_file=ngsderive_read_length.read_length_file,
-                encoding_file=ngsderive_encoding.encoding_file,
-                strandedness_file=ngsderive_strandedness.strandedness_file,
-                junction_annotation=junction_annotation.junction_summary,
-                qualimap_bamqc=qualimap_bamqc.results,
-                qualimap_rnaseq=qualimap_rnaseq.results,
-                max_retries=max_retries
-        }
     }
-    if (experiment == "ChIP-Seq") {
-        call mqc.multiqc as multiqc_chipseq {
-            input:
-                validate_sam_file=validate_bam.out,
-                flagstat_file=samtools_flagstat.outfile,
-                fastqc=fastqc.results,
-                instrument_file=ngsderive_instrument.instrument_file,
-                read_length_file=ngsderive_read_length.read_length_file,
-                encoding_file=ngsderive_encoding.encoding_file,
-                qualimap_bamqc=qualimap_bamqc.results,
-                max_retries=max_retries
-        }
+    call mqc.multiqc {
+        input:
+            validate_sam_file=validate_bam.out,
+            flagstat_file=samtools_flagstat.outfile,
+            fastqc=fastqc.results,
+            instrument_file=ngsderive_instrument.instrument_file,
+            read_length_file=ngsderive_read_length.read_length_file,
+            encoding_file=ngsderive_encoding.encoding_file,
+            qualimap_bamqc=qualimap_bamqc.results,
+            fastq_screen=fastq_screen.results,
+            star_log=star_log,
+            qualimap_rnaseq=qualimap_rnaseq.results,
+            strandedness_file=ngsderive_strandedness.strandedness_file,
+            junction_annotation=junction_annotation.junction_summary,
+            max_retries=max_retries
+    }
+    call util.qc_summary {
+        input:
+            multiqc_tar_gz=multiqc.out,
+            max_retries=max_retries
     }
 
     output {
@@ -164,15 +144,14 @@ workflow quality_check {
         File read_length_file = ngsderive_read_length.read_length_file
         File qualimap_bamqc_results = qualimap_bamqc.results
         File inferred_encoding = ngsderive_encoding.encoding_file
+        File multiqc_zip = multiqc.out
+        File qc_summary_file = qc_summary.out
         File? fastq_screen_results = fastq_screen.results
         File? sequencerr_results = sequencErr.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
         File? junctions = junction_annotation.junctions
-        File? multiqc_wgs_zip = multiqc_wgs.out
-        File? multiqc_rnaseq_zip = multiqc_rnaseq.out
-        File? multiqc_chipseq_zip = multiqc_chipseq.out
     }
 }
 
