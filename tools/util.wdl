@@ -247,7 +247,7 @@ task qc_summary {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/util:branch-qc-summary-1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
 
