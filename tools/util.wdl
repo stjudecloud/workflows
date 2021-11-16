@@ -205,7 +205,7 @@ END
 task qc_summary {
     input {
         File multiqc_tar_gz
-        String outfile = basename(multiqc_tar_gz, "_multiqc.tar.gz") + ".qc_summary.txt"
+        String outfile = basename(multiqc_tar_gz, "_multiqc.tar.gz") + ".qc_summary.json"
         Int disk_size = 1
         Int max_retries = 1
     }
