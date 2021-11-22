@@ -37,7 +37,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/sequencerr.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/bgzip-check/tools/util.wdl"
 
 workflow quality_check {
     input {
@@ -83,6 +83,7 @@ workflow quality_check {
 
     call picard.validate_bam { input: bam=bam, succeed_on_errors=true, ignore_list=[], summary_mode=true, max_retries=max_retries }
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
+    call util.compression_integrity { input: bam=bam, max_retries=max_retries }
 
     call samtools.flagstat as samtools_flagstat { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call fqc.fastqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }

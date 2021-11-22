@@ -261,3 +261,23 @@ task qc_summary {
         description: "This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
     }
 }
+
+task compression_integrity {
+    input {
+        File bam
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil(bam_size + 10)
+
+    command {
+        bgzip -t ~{bam}
+    }
+
+    runtime {
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/util:branch-bgzip-check-1.3.0'
+        maxRetries: max_retries
+    }
+}
