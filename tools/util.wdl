@@ -277,7 +277,7 @@ task compression_integrity {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/util:branch-bgzip-check-1.3.0'
+        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
     }
 }
