@@ -58,7 +58,7 @@ task fastq_screen {
 
     String inferred_basename = basename(read1, "_R1.fastq.gz")
     String sample_basename = select_first([sample_name, inferred_basename])
-    String out_directory = sample_basename + "_screen"
+    String out_directory = sample_basename + ".screen"
     String out_tar_gz = out_directory + ".tar.gz"
 
     String format_arg = if (provided_encoding != "") then

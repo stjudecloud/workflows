@@ -14,7 +14,7 @@ task bamqc {
         Int? disk_size_gb
     }
 
-    String out_directory = basename(bam, ".bam") + '_qualimap_bamqc_results'
+    String out_directory = basename(bam, ".bam") + '.qualimap_bamqc_results'
     String out_tar_gz = out_directory + ".tar.gz"
 
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -73,7 +73,7 @@ task rnaseq {
         String inferred_strandedness = ""
     }
 
-    String out_directory = basename(bam, ".bam") + "_qualimap_rnaseq_results"
+    String out_directory = basename(bam, ".bam") + ".qualimap_rnaseq_results"
     String out_tar_gz = out_directory + ".tar.gz"
     String stranded = if (provided_strandedness != "") then 
                         if (provided_strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
