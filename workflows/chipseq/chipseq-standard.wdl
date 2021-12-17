@@ -35,10 +35,10 @@ import "https://raw.githubusercontent.com/adthrasher/seaseq/refactor/workflows/t
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
-#import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "../../tools/samtools.wdl"
-#import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
-import "../../tools/util.wdl"
+import "https://raw.githubusercontent.com/adthrasher/workflows/chipseq_seaseq/tools/samtools.wdl"
+#import "../../tools/samtools.wdl"
+import "https://raw.githubusercontent.com/adthrasher/workflows/chipseq_seaseq/tools/util.wdl"
+#import "../../tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 
 workflow chipseq_standard {
