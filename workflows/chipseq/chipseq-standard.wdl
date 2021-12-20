@@ -97,7 +97,7 @@ workflow chipseq_standard {
             call seaseq_map.mapping as bowtie_single_end_mapping { input: fastqfile=pair.left, index_files=bowtie_indexes, metricsfile=basic_stats.metrics_out, blacklist=blacklist, read_length=read_tsv(read_length.read_length_file)[0][3] }
             File chosen_bam = select_first([bowtie_single_end_mapping.bklist_bam, bowtie_single_end_mapping.mkdup_bam, bowtie_single_end_mapping.sorted_bam])
             call util.add_to_bam_header { input: input_bam=chosen_bam, additional_header=pair.right }
-            call samtools.addreplacerg as single_end { input: bam=chosen_bam, read_group_id=sub(read_tsv(pair.right)[1], "ID:", "") }
+            call samtools.addreplacerg as single_end { input: bam=add_to_bam_header.output_bam, read_group_id=sub(read_tsv(pair.right)[1], "ID:", "") }
         }
     }
 
