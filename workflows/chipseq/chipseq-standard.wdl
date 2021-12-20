@@ -116,7 +116,7 @@ workflow chipseq_standard {
     #     }
     # }
 
-    Array[File] aligned_bams = select_first([single_end.merged_bam, ""])#paired_end.bam])
+    Array[File] aligned_bams = select_first([single_end.tagged_bam, ""])#paired_end.bam])
 
     scatter(bam in aligned_bams){
        call picard.clean_sam as picard_clean { input: bam=bam }

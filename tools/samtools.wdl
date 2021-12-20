@@ -279,7 +279,7 @@ task merge {
 task addreplacerg {
     input {
         File bam
-        String outname = basename(bam[0], ".bam") + ".merged.bam"
+        String outname = basename(bam, ".bam") + ".read_group.bam"
         String read_group_id
         Int max_retries = 1
         Int ncpu = 1
