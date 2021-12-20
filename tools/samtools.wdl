@@ -260,7 +260,7 @@ task merge {
             n_cores=$(nproc)
         fi
 
-        samtools merge --threads $n_cores ~{header_arg} ~{rg_arg} -o ~{outname} ~{sep=' ' bam}
+        samtools merge --threads $n_cores ~{header_arg} ~{rg_arg} ~{outname} ~{sep=' ' bam}
 
     >>>
 
