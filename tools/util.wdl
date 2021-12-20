@@ -291,6 +291,7 @@ task add_to_bam_header {
     input {
         File input_bam
         String additional_header
+        String output_bam_name = basename(input_bam, ".bam") + ".reheader.bam"
         Int max_retries = 1
     }
 
@@ -298,8 +299,9 @@ task add_to_bam_header {
     Int disk_size = ceil(bam_size + 1)
 
     command <<<
-        samtools view -H ~{input_bam} > header.txt
-        echo "~{additional_header}" >> header.txt
+        samtools view -H ~{input_bam} > header.sam
+        echo "~{additional_header}" >> header.sam
+        samtools reheader -P header.sam ~{input_bam} > ~{output_bam_name}
     >>>
 
     runtime {
@@ -309,7 +311,8 @@ task add_to_bam_header {
     }
 
     output {
-        File output_file = "header.txt"
-        Array[String] out = read_lines("header.txt")
+        File output_file = "header.sam"
+        Array[String] out = read_lines("header.sam")
+        File output_bam = output_bam_name
     }
 }
