@@ -295,7 +295,7 @@ task add_to_bam_header {
     }
 
     Float bam_size = size(input_bam, "GiB")
-    Int disk_size = bam_size + 1
+    Int disk_size = ceil(bam_size + 1)
 
     command <<<
         samtools view -H ~{input_bam} > header.txt
