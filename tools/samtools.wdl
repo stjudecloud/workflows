@@ -236,7 +236,7 @@ task subsample {
 
 task merge {
     input {
-        Array[File] bam
+        Array[File] bams
         String outname = basename(bam[0], ".bam") + ".merged.bam"
         File? new_header
         Boolean attach_rg = true
@@ -247,7 +247,6 @@ task merge {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
-    String header_arg = if defined(new_header) then "-h " + new_header else ""
     String rg_arg = if attach_rg then "-r" else ""
     String parsed_detect_nproc = if detect_nproc then "true" else ""
 
@@ -260,7 +259,13 @@ task merge {
             n_cores=$(nproc)
         fi
 
-        samtools merge --threads $n_cores ~{header_arg} ~{rg_arg} ~{outname} ~{sep=' ' bam}
+        header_arg=""
+        if [ -e ~{new_header} ]
+        then
+            header_arg="-h ~{new_header}"
+        fi
+
+        samtools merge --threads $n_cores ~{header_arg} ~{rg_arg} ~{outname} ~{sep=' ' bams}
 
     >>>
 

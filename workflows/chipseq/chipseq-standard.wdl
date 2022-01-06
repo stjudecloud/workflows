@@ -36,16 +36,15 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngs
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
 import "https://raw.githubusercontent.com/adthrasher/workflows/chipseq_seaseq/tools/samtools.wdl"
-#import "../../tools/samtools.wdl"
+import "https://raw.githubusercontent.com/adthrasher/seaseq/refactor/workflows/tasks/samtools.wdl" as seaseq_samtools
 import "https://raw.githubusercontent.com/adthrasher/workflows/chipseq_seaseq/tools/util.wdl"
-#import "../../tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 
 workflow chipseq_standard {
     input {
         File input_bam
         Array[File] bowtie_indexes
-        File? blacklist
+        File? excludelist
         String output_prefix = basename(input_bam, ".bam")
         String pairing = "Single-end"
         Int subsample_n_reads = -1
@@ -94,7 +93,7 @@ workflow chipseq_standard {
     if (pairing == "Single-end") {
         scatter (pair in zip(bam_to_fastqs.read1s, read_groups)){
             call seaseq_util.basicfastqstats as basic_stats { input: fastqfile=pair.left }
-            call seaseq_map.mapping as bowtie_single_end_mapping { input: fastqfile=pair.left, index_files=bowtie_indexes, metricsfile=basic_stats.metrics_out, blacklist=blacklist, read_length=read_tsv(read_length.read_length_file)[1][3] }
+            call seaseq_map.mapping as bowtie_single_end_mapping { input: fastqfile=pair.left, index_files=bowtie_indexes, metricsfile=basic_stats.metrics_out, blacklist=excludelist, read_length=read_tsv(read_length.read_length_file)[1][3] }
             File chosen_bam = select_first([bowtie_single_end_mapping.bklist_bam, bowtie_single_end_mapping.mkdup_bam, bowtie_single_end_mapping.sorted_bam])
             call util.add_to_bam_header { input: input_bam=chosen_bam, additional_header=pair.right }
             String rg_id_field = sub(sub(pair.right, ".*ID:", "ID:"), "\t.*", "") 
@@ -124,15 +123,16 @@ workflow chipseq_standard {
        call picard.clean_sam as picard_clean { input: bam=bam }
     }
 
-    call picard.merge_sam_files as picard_merge { input: bam=picard_clean.cleaned_bam, output_name=output_prefix + ".bam" }
+    call picard.merge_sam_files as picard_merge { input: bams=picard_clean.cleaned_bam, output_name=output_prefix + ".bam" }
 
     call samtools.index as samtools_index { input: bam=picard_merge.merged_bam, max_retries=max_retries, detect_nproc=detect_nproc }
-    call picard.validate_bam { input: bam=picard_merge.merged_bam, max_retries=max_retries }
+    call seaseq_samtools.markdup { input: bamfile=picard_merge.merged_bam }
+    call picard.validate_bam { input: bam=markdup.mkdupbam, max_retries=max_retries }
 
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=picard_merge.merged_bam, bai=samtools_index.bai, prefix=output_prefix, max_retries=max_retries }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=markdup.mkdupbam, bai=samtools_index.bai, prefix=output_prefix, max_retries=max_retries }
 
     output {
-        File bam = picard_merge.merged_bam
+        File bam = markdup.mkdupbam
         File bam_index = samtools_index.bai
         File bigwig = deeptools_bamCoverage.bigwig
     }
