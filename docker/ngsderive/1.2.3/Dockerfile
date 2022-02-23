@@ -2,6 +2,7 @@ FROM ghcr.io/stjudecloud/conda-base:1.1.1 AS builder
 
 RUN conda create -n ngsderive \
     ngsderive==2.2.0 \
+    tabix==1.11 \
     -y \
     && conda clean --all
 

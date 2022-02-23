@@ -1,6 +1,7 @@
 FROM ghcr.io/stjudecloud/conda-base:1.1.1 AS builder
 
 RUN conda create -n multiqc \
+    python==3.7 \
     multiqc==1.10.1 \
     -y \
     && conda clean --all

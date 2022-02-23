@@ -18,10 +18,9 @@ task fqlint {
     Float read2_size = if defined(read2) then size(read2, "GiB") else "0"
     Int disk_size = ceil(((read1_size + read2_size) * 2) + 10)
     String args = if defined(read2) then "" else "--disable-validator P001" 
-    String r2_arg = select_first([read2, ""]) 
 
     command {
-        fq lint ~{args} ~{read1} ~{r2_arg}
+        fq lint ~{args} ~{read1} ~{read2}
     }
 
     runtime {
