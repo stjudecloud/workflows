@@ -265,7 +265,7 @@ task merge {
             header_arg="-h ~{new_header}"
         fi
 
-        samtools merge --threads $n_cores ${header_arg} ~{rg_arg} ~{outname} ~{sep=' ' bams}
+        samtools merge --threads $n_cores $header_arg ~{rg_arg} ~{outname} ~{sep=' ' bams}
 
     >>>
 
