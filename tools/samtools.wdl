@@ -245,7 +245,7 @@ task merge {
         Boolean detect_nproc = false
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bams, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
     String rg_arg = if attach_rg then "-r" else ""
     String parsed_detect_nproc = if detect_nproc then "true" else ""
