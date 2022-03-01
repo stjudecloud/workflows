@@ -123,7 +123,7 @@ workflow chipseq_standard {
        call picard.clean_sam as picard_clean { input: bam=bam }
     }
 
-    call picard.merge_sam_files as picard_merge { input: bams=picard_clean.cleaned_bam, output_name=output_prefix + ".bam" }
+    call picard.merge_sam_files as picard_merge { input: bam=picard_clean.cleaned_bam, output_name=output_prefix + ".bam" }
 
     call samtools.index as samtools_index { input: bam=picard_merge.merged_bam, max_retries=max_retries, detect_nproc=detect_nproc }
     call seaseq_samtools.markdup { input: bamfile=picard_merge.merged_bam }
