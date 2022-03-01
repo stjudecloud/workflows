@@ -237,7 +237,7 @@ task subsample {
 task merge {
     input {
         Array[File] bams
-        String outname = basename(bam[0], ".bam") + ".merged.bam"
+        String outname = basename(bams[0], ".bam") + ".merged.bam"
         File? new_header
         Boolean attach_rg = true
         Int max_retries = 1
