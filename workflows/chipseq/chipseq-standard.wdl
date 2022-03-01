@@ -30,14 +30,14 @@
 version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/adthrasher/seaseq/refactor/workflows/workflows/mapping.wdl" as seaseq_map
-import "https://raw.githubusercontent.com/adthrasher/seaseq/refactor/workflows/tasks/util.wdl" as seaseq_util
+import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/workflows/mapping.wdl" as seaseq_map
+import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/tasks/util.wdl" as seaseq_util
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
-import "https://raw.githubusercontent.com/adthrasher/workflows/chipseq_seaseq/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/adthrasher/seaseq/refactor/workflows/tasks/samtools.wdl" as seaseq_samtools
-import "https://raw.githubusercontent.com/adthrasher/workflows/chipseq_seaseq/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq_seaseq/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/tasks/samtools.wdl" as seaseq_samtools
+import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq_seaseq/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 
 workflow chipseq_standard {
