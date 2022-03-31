@@ -35,9 +35,9 @@ import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/tasks/u
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq_seaseq/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/tasks/samtools.wdl" as seaseq_samtools
-import "https://raw.githubusercontent.com/stjudecloud/workflows/chipseq_seaseq/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 
 workflow chipseq_standard {
