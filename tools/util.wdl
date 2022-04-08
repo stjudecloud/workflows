@@ -264,15 +264,15 @@ task qc_summary {
 
 task compression_integrity {
     input {
-        File bam
+        File file
         Int max_retries = 1
     }
 
-    Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil(bam_size + 10)
+    Float file_size = size(file, "GiB")
+    Int disk_size = ceil(file_size + 10)
 
     command {
-        bgzip -t ~{bam}
+        bgzip -t ~{file}
     }
 
     runtime {
