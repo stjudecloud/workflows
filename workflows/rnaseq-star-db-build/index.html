@@ -1,117 +1,109 @@
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <meta name="author" content="St. Jude Cloud">
-  
-  <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>RNASeq STAR DB build - St. Jude Cloud Bioinformatics Workflows</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
-
-  <link rel="stylesheet" href="../../css/theme.css" />
-  <link rel="stylesheet" href="../../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
-  
-  <script>
-    // Current page data
-    var mkdocs_page_name = "RNASeq STAR DB build";
-    var mkdocs_page_input_path = "workflows/rnaseq-star-db-build.md";
-    var mkdocs_page_url = null;
-  </script>
-  
-  <script src="../../js/jquery-2.1.1.min.js" defer></script>
-  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>RNASeq STAR DB build - St. Jude Cloud Bioinformatics Workflows</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "RNASeq STAR DB build";
+        var mkdocs_page_input_path = "workflows/rnaseq-star-db-build.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href="../.." class="icon icon-home"> St. Jude Cloud Bioinformatics Workflows</a>
-        <div role="search">
+          <a href="../.." class="icon icon-home"> St. Jude Cloud Bioinformatics Workflows
+        </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../build_for_dnanexus/">Building WDL workflows for DNAnexus</a>
-                    </li>
-                </ul>
-                <p class="caption"><span class="caption-text">Tasks</span></p>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/bwa/">BWA</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/deeptools/">Deeptools</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/estimate/">ESTIMATE</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastq_screen/">FastQ Screen</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastqc/">FastQC</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/fq/">FQ</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/htseq/">HTSeq</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/md5sum/">Md5sum</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/multiqc/">MultiQC</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/ngsderive/">ngsderive</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/picard/">Picard</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/qualimap/">QualiMap</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/samtools/">SAMtools</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/sequencerr/">sequencErr</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/star/">STAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../tasks/util/">Utilities</a>
-                    </li>
-                </ul>
-                <p class="caption"><span class="caption-text">Workflows</span></p>
-                <ul class="current">
-                    <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../chipseq-standard/">ChIP-Seq Standard</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard-fastq/">RNA-Seq Standard from FastQ</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
-                    </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">RNASeq STAR DB build</a>
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../build_for_dnanexus/">Building WDL workflows for DNAnexus</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tasks</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/bwa/">BWA</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/deeptools/">Deeptools</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/estimate/">ESTIMATE</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastq_screen/">FastQ Screen</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastqc/">FastQC</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/fq/">FQ</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/htseq/">HTSeq</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/md5sum/">Md5sum</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/multiqc/">MultiQC</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/ngsderive/">ngsderive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/picard/">Picard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/qualimap/">QualiMap</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/samtools/">SAMtools</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/sequencerr/">sequencErr</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/star/">STAR</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/util/">Utilities</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Workflows</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard-fastq/">RNA-Seq Standard from FastQ</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">RNASeq STAR DB build</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#output">Output</a>
     </li>
@@ -138,47 +130,33 @@
         </ul>
     </li>
     </ul>
-                    </li>
-                </ul>
+                  </li>
+              </ul>
       </div>
     </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../..">St. Jude Cloud Bioinformatics Workflows</a>
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">St. Jude Cloud Bioinformatics Workflows</a>
+        
       </nav>
-
-      
       <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../..">Docs</a> &raquo;</li>
-    
-      
-        
-          <li>Workflows &raquo;</li>
-        
-      
-    
-    <li>RNASeq STAR DB build</li>
+    <li><a href="../.." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Workflows &raquo;</li><li>RNASeq STAR DB build</li>
     <li class="wy-breadcrumbs-aside">
-      
         <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/rnaseq-star-db-build.md"
           class="icon icon-github"> Edit on GitHub</a>
-      
     </li>
   </ul>
-  
   <hr/>
 </div>
 
-          <div role="main">
-            <div class="section">
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
               
                 <h1 id="rnaseq-star-db-build">RNASeq STAR DB build</h1>
 <p>This WDL workflow generates a set of genome reference files usable by the STAR aligner from an input reference file in FASTA format.  </p>
@@ -238,29 +216,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
               
             </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="../rnaseq-standard/" class="btn btn-neutral" title="RNA-Seq Standard"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../rnaseq-standard/" class="btn btn-neutral float-left" title="RNA-Seq Standard"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
       <p>© 2020-Present St. Jude Children's Research Hospital</p>
-    
   </div>
 
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+          
         </div>
       </div>
 
@@ -268,11 +238,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
   </div>
 
-  <div class="rst-versions" role="note" aria-label="versions">
+  <div class="rst-versions" role="note" aria-label="Versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
     
         <span>
-          <a href="https://github.com/stjudecloud/workflows/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/stjudecloud/workflows" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
     
