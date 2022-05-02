@@ -39,11 +39,11 @@ task download {
     }
 }
 
-
 task get_read_groups {
     input {
         File bam
         Int max_retries = 1
+        Boolean format_for_star = true
     }
 
     Float bam_size = size(bam, "GiB")
@@ -51,12 +51,17 @@ task get_read_groups {
 
     command <<<
         set -euo pipefail
-        
-        samtools view -H ~{bam} | grep "@RG" \
-            | cut -f 2- \
-            | sed -e 's/\t/ /g' \
-            | awk '{print}' ORS=' , ' \
-            | sed 's/ , $//' >> read_groups.txt
+
+        if [ "~{format_for_star}" == "true" ]
+        then        
+            samtools view -H ~{bam} | grep "@RG" \
+                | cut -f 2- \
+                | sed -e 's/\t/ /g' \
+                | awk '{print}' ORS=' , ' \
+                | sed 's/ , $//' >> read_groups.txt
+        else
+            samtools view -H ~{bam} | grep "@RG" >> read_groups.txt
+        fi
     >>>
 
     runtime {
@@ -279,5 +284,35 @@ task compression_integrity {
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
+    }
+}
+
+task add_to_bam_header {
+    input {
+        File input_bam
+        String additional_header
+        String output_bam_name = basename(input_bam, ".bam") + ".reheader.bam"
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(input_bam, "GiB")
+    Int disk_size = ceil(bam_size + 1)
+
+    command <<<
+        samtools view -H ~{input_bam} > header.sam
+        echo "~{additional_header}" >> header.sam
+        samtools reheader -P header.sam ~{input_bam} > ~{output_bam_name}
+    >>>
+
+    runtime {
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        maxRetries: max_retries
+    }
+
+    output {
+        File output_file = "header.sam"
+        Array[String] out = read_lines("header.sam")
+        File output_bam = output_bam_name
     }
 }

@@ -233,3 +233,100 @@ task subsample {
         maxRetries: max_retries
     }
 }
+
+task merge {
+    input {
+        Array[File] bams
+        String outname = basename(bams[0], ".bam") + ".merged.bam"
+        File? new_header
+        Boolean attach_rg = true
+        Int max_retries = 1
+        Int ncpu = 1
+        Boolean detect_nproc = false
+    }
+
+    Float bam_size = size(bams, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+    String rg_arg = if attach_rg then "-r" else ""
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ -n ~{parsed_detect_nproc} ]
+        then
+            n_cores=$(nproc)
+        fi
+
+        header_arg=""
+        if [ -e ~{new_header} ]
+        then
+            header_arg="-h ~{new_header}"
+        fi
+
+        samtools merge --threads $n_cores $header_arg ~{rg_arg} ~{outname} ~{sep=' ' bams}
+
+    >>>
+
+    output {
+        File merged_bam = outname
+    }
+
+    runtime {
+        cpu: ncpu
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        maxRetries: max_retries
+    }
+}
+
+task addreplacerg {
+    input {
+        File bam
+        String outname = basename(bam, ".bam") + ".read_group.bam"
+        String read_group_id
+        Int max_retries = 1
+        Int ncpu = 1
+        Boolean detect_nproc = false
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = ceil((bam_size * 2) + 10)
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ -n ~{parsed_detect_nproc} ]
+        then
+            n_cores=$(nproc)
+        fi
+
+        samtools addreplacerg --threads $n_cores -R ~{read_group_id} -o ~{outname} ~{bam}
+    >>>
+
+    output {
+        File tagged_bam = outname
+    }
+
+    runtime {
+        cpu: ncpu
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        maxRetries: max_retries
+    }
+
+
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL tool runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to add read group information"
+        read_group_id: "Existing read group ID in BAM to add to reads"
+    }
+}
