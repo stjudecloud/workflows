@@ -56,7 +56,7 @@ workflow rnaseq_star_db_build {
 
     call util.download as reference_download { input: url=reference_fa_url, outfilename=reference_fa_name }
     call util.download as gtf_download { input: url=gtf_url, outfilename=gtf_name }
-    call star.build_db as star_db_build {
+    call star.build_star_db as star_db_build {
         input:
             reference_fasta=reference_download.outfile,
             gtf=gtf_download.outfile,
