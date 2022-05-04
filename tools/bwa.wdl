@@ -196,7 +196,7 @@ task bwa_mem {
     }
 }
 
-task build_db {
+task build_bwa_db {
     input {
         File reference_fasta
         String bwadb_out_name = "bwadb.tar.gz"

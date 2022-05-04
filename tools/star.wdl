@@ -5,7 +5,7 @@
 
 version 1.0
 
-task build_db {
+task build_star_db {
     input {
         Int ncpu = 1
         File reference_fasta
@@ -97,6 +97,7 @@ task alignment {
     Float read_two_fastqs_size = size(select_first([read_two_fastqs, []]), "GiB")
     Float stardb_tar_gz_size = size(stardb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10)])
+    Array[File] r2_fastqs = select_first([read_two_fastqs, []])
 
     command {
         set -euo pipefail
@@ -115,7 +116,7 @@ task alignment {
             then
                 python /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                    --read_two_fastqs "~{sep=',' read_two_fastqs}" \
+                    --read_two_fastqs "~{sep=',' r2_fastqs}" \
                     --read_groups "~{read_groups}"
             else
                 python /home/sort_star_input.py \
@@ -127,7 +128,7 @@ task alignment {
             then
                 python /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                    --read_two_fastqs "~{sep=',' read_two_fastqs}"
+                    --read_two_fastqs "~{sep=',' r2_fastqs}"
             else
                 python /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}"
