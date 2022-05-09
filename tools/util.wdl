@@ -226,6 +226,11 @@ task qc_summary {
         READ_LENGTH=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-consensusreadlength $gen_stats_file | tail -n 1)
         PLATFORM=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-instrument $gen_stats_file | tail -n 1)
 
+        THIRTYX_PERCENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-30_x_pc $gen_stats_file | tail -n 1)
+        DUP_PERCENT=$(csvcut -t -c FastQC_mqc-generalstats-fastqc-percent_duplicates | tail -n 1)
+
+        STRANDEDNESS=$({ csvcut -t -c ngsderive_mqc-generalstats-ngsderive-predicted || echo "Not Applicable" ; } | tail -n 1)
+
         jq -n \
             --arg TOTAL_READS "$TOTAL_READS" \
             --arg PERCENT_ALIGNED "$PERCENT_ALIGNED" \
@@ -234,6 +239,9 @@ task qc_summary {
             --arg MEAN_GC_CONTENT "$MEAN_GC_CONTENT" \
             --arg READ_LENGTH "$READ_LENGTH" \
             --arg PLATFORM "$PLATFORM" \
+            --arg THIRTYX_PERCENT "$THIRTYX_PERCENT" \
+            --arg DUP_PERCENT "$DUP_PERCENT" \
+            --arg STRANDEDNESS "$STRANDEDNESS" \
             '{
                 total_reads: ($TOTAL_READS | tonumber),
                 percent_aligned: ($PERCENT_ALIGNED | tonumber),
@@ -241,7 +249,10 @@ task qc_summary {
                 median_insert_size: ($INSERT_SIZE | tonumber),
                 mean_percent_GC: ($MEAN_GC_CONTENT | tonumber),
                 inferred_read_length: ($READ_LENGTH | tonumber),
-                inferred_sequencing_platform: $PLATFORM
+                inferred_sequencing_platform: $PLATFORM,
+                percent_thirtyX_coverage: ($THIRTYX_PERCENT | tonumber),
+                percent_duplicate: ($DUP_PERCENT | tonumber),
+                inferred_strandedness: $STRANDEDNESS 
             }' > ~{outfile}
     >>>
 
