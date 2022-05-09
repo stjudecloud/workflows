@@ -58,6 +58,7 @@ task fastq_screen {
 
     String inferred_basename = basename(read1, "_R1.fastq.gz")
     String sample_basename = select_first([sample_name, inferred_basename])
+    String out_file_prefix = sample_basename + "_screen."
     String out_directory = sample_basename + ".screen"
     String out_tar_gz = out_directory + ".tar.gz"
 
@@ -89,7 +90,7 @@ task fastq_screen {
             || exit 42
 
         mkdir ~{out_directory}
-        mv "~{out_directory}".* "~{out_directory}"
+        mv "~{out_file_prefix}"* "~{out_directory}"
         tar -czf ~{out_tar_gz} ~{out_directory}
     >>>
  
