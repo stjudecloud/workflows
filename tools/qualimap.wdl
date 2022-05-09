@@ -57,7 +57,7 @@ task bamqc {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to run qualimap bamqc on"
     }
 }
 
@@ -135,7 +135,7 @@ task rnaseq {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to run qualimap rnaseq on"
         gtf: "A GTF format features file"
         provided_strandedness: "Strand information for RNA-seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]"
     }
