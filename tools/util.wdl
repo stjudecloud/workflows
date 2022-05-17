@@ -210,18 +210,18 @@ END
 task qc_summary {
     input {
         File multiqc_tar_gz
-        String outfile = basename(multiqc_tar_gz, "_multiqc.tar.gz") + ".qc_summary.json"
+        String outfile = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
         Int disk_size = 1
         Int max_retries = 1
     }
 
-    String sample_name = basename(multiqc_tar_gz, "_multiqc.tar.gz")
+    String sample_name = basename(multiqc_tar_gz, ".multiqc.tar.gz")
 
     command <<<
         set -euo pipefail
 
         tar -xzf "~{multiqc_tar_gz}"
-        gen_stats_file=~{sample_name}_multiqc/multiqc_data/multiqc_general_stats.txt
+        gen_stats_file=~{sample_name}.multiqc/multiqc_data/multiqc_general_stats.txt
 
         TOTAL_READS=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-total_reads $gen_stats_file | tail -n 1 | awk '{ printf("%.0f", $1) }')
         PERCENT_ALIGNED=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-percentage_aligned $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')

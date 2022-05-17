@@ -24,7 +24,7 @@ task multiqc {
         Int disk_size = 20
     }
 
-    String out_directory = basename(validate_sam_file, ".ValidateSamFile.txt") + "_multiqc"
+    String out_directory = basename(validate_sam_file, ".ValidateSamFile.txt") + ".multiqc"
     String out_tar_gz = out_directory + ".tar.gz"
 
     command {
@@ -84,7 +84,7 @@ task multiqc {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/multiqc:1.3.4'
+        docker: 'ghcr.io/stjudecloud/multiqc:1.3.5'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
