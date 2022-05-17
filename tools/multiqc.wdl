@@ -84,7 +84,7 @@ task multiqc {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/multiqc:branch-underscores_to_dots-1.3.5'
+        docker: 'ghcr.io/stjudecloud/multiqc:1.3.5'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
