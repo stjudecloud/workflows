@@ -27,17 +27,17 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/sequencerr.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/multiqc.wdl" as mqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/underscores_to_dots/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/sequencerr.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 
 workflow quality_check {
     input {
