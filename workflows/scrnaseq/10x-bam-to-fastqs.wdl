@@ -11,6 +11,12 @@
 ## read2s
 ## : an array of files with the second read in the pair
 ##
+## fastqs
+## : an array of files sufficient for localizing in Cell Ranger's expected format
+##
+## fastqs_archive
+## : a compressed archive comtaining the array of fastq files
+##
 ## ## LICENSING:
 ## 
 ## #### MIT License

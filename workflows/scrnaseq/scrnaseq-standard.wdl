@@ -30,8 +30,6 @@
 
 version 1.0
 
-#import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
-#import "../general/bam-to-fastqs.wdl" as b2fq
 import "10x-bam-to-fastqs.wdl" as b2fq
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
@@ -81,10 +79,6 @@ workflow scrnaseq_standard {
     }
     File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
 
-    #call util.get_read_groups { input: bam=selected_input_bam, max_retries=max_retries }
-    #String read_groups = read_string(get_read_groups.out)
-
-    # Cell Ranger maps the reads in as separate read groups, so treat the data as Single-End 
     call b2fq.cell_ranger_bam_to_fastqs { input: bam=selected_input_bam, max_retries=max_retries, detect_nproc=detect_nproc }
 
     call cellranger.count {
