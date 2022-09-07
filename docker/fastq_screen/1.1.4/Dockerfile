@@ -2,8 +2,9 @@ FROM ghcr.io/stjudecloud/conda-base:1.1.1 AS builder
 
 RUN conda create -n fastq_screen \
     fastq-screen==0.13.0=pl526_1 \
+    tree==2.0.0 \
     -y \
-    && conda clean --all
+    && conda clean --all -y
 
 FROM debian:10-slim
 COPY --from=builder /opt/conda/envs/fastq_screen/bin /opt/conda/envs/fastq_screen/bin
