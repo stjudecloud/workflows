@@ -20,7 +20,7 @@ task build_db {
  
     runtime {
         disk: "30 GB"
-        docker: 'ghcr.io/stjudecloud/fastq_screen:1.1.3'
+        docker: 'ghcr.io/stjudecloud/fastq_screen:1.1.4'
         maxRetries: max_retries
     }
 
@@ -101,7 +101,7 @@ task fastq_screen {
     runtime {
         memory: "10 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/fastq_screen:1.1.3'
+        docker: 'ghcr.io/stjudecloud/fastq_screen:1.1.4'
         maxRetries: max_retries
     }
 
@@ -110,8 +110,8 @@ task fastq_screen {
     }
 
     meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
+        author: "Andrew Frantz, Clay McLeod"
+        email: "andrew.frantz@stjude.org, clay.mcleod@stjude.org"
         description: "This WDL tool runs FastQ Screen on a sample. Exit code 42 indicates a rare intermittent bug. Job should succeed upon resubmission."
     }
 }
