@@ -80,6 +80,7 @@ task fastq_screen {
         
         tree -h /tmp
         ls -lah /tmp
+        df
 
         gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
 
