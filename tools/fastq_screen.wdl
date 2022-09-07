@@ -77,6 +77,9 @@ task fastq_screen {
 
         mkdir -p /tmp/FastQ_Screen_Genomes/
         tar -xzf ~{db} -C /tmp/FastQ_Screen_Genomes/ --no-same-owner
+        
+        tree -h /tmp
+        ls -lah /tmp
 
         gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
 
