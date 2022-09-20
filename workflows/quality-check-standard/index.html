@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>BWA DB build - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Quality Check Standard - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "BWA DB build";
-        var mkdocs_page_input_path = "workflows/bwa-db-build.md";
+        var mkdocs_page_name = "Quality Check Standard";
+        var mkdocs_page_input_path = "workflows/quality-check-standard.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -89,17 +89,23 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">BWA DB build</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Quality Check Standard</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#output">Output</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#mit-license">MIT License</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bwa_db_build">bwa_db_build</a>
+    <li class="toctree-l2"><a class="reference internal" href="#quality_check">quality_check</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -115,15 +121,21 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parse_input">parse_input</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_1">Optional</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_1">Outputs</a>
+    </li>
+        </ul>
+    </li>
     </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard-fastq/">RNA-Seq Standard from FastQ</a>
                   </li>
@@ -147,9 +159,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" alt="Docs"></a> &raquo;</li>
           <li>Workflows &raquo;</li>
-      <li>BWA DB build</li>
+      <li>Quality Check Standard</li>
     <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/bwa-db-build.md"
+        <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/quality-check-standard.md"
           class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
@@ -158,15 +170,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="bwa-db-build">BWA DB build</h1>
-<p>This WDL workflow generates a set of genome reference files usable by the BWA aligner from an input reference file in FASTA format.  </p>
-<h3 id="output">Output</h3>
-<dl>
-<dt>reference_fa</dt>
-<dd>the reference FASTA file</dd>
-<dt>bwadb_tar_gz</dt>
-<dd>the BWA reference folder in .tar.gz format</dd>
-</dl>
+                <h1 id="quality-check-standard">Quality Check Standard</h1>
+<p>This workflow runs a variety of quality checking software on any BAM file.
+It can be WGS, WES, or Transcriptome data. The results are aggregated and
+run through <a href="https://multiqc.info/">MultiQC</a>.</p>
 <h2 id="licensing">LICENSING</h2>
 <h4 id="mit-license">MIT License</h4>
 <p>Copyright 2020-Present St. Jude Children's Research Hospital</p>
@@ -182,35 +189,110 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="bwa_db_build">bwa_db_build</h2>
+<h2 id="quality_check">quality_check</h2>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of output reference FASTA file</li>
-<li><code>reference_fa_url</code> (String, <strong>required</strong>): URL to retrieve the reference FASTA file from.</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to quality check</li>
+<li><code>bam_index</code> (File, <strong>required</strong>): BAM index file corresponding to the input BAM</li>
+<li><code>experiment</code> (String, <strong>required</strong>): 'WGS', 'WES', 'RNA-Seq', or 'ChIP-Seq'</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>build_bwa_db.disk_size_gb</code> (Int?)</li>
+<li><code>fastq_screen_db</code> (File?): Database for FastQ Screen. <strong>Required</strong> for WGS and WES data. Can be generated using <code>make-qc-reference.wdl</code>. Must untar directly to genome directories.</li>
+<li><code>gtf</code> (File?): GTF features file. <strong>Required</strong> for RNA-Seq data</li>
+<li><code>star_log</code> (File?): Log file generated by the RNA-Seq aligner STAR</li>
+<li><code>fastq_screen.sample_name</code> (String?)</li>
+<li><code>qualimap_bamqc.disk_size_gb</code> (Int?)</li>
+<li><code>qualimap_rnaseq.disk_size_gb</code> (Int?)</li>
+<li><code>sequencErr.prefix</code> (String?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>build_bwa_db.max_retries</code> (Int, default=1)</li>
-<li><code>build_bwa_db.memory_gb</code> (Int, default=5)</li>
-<li><code>reference_download.disk_size_GB</code> (Int, default=10)</li>
-<li><code>reference_download.max_retries</code> (Int, default=1)</li>
+<li><code>illumina</code> (Boolean, default=true): Sequenced by an Illumina machine? <code>sequencErr</code> only supports Illumina formatted reads. Non-Illumina data may cause errors. Only used for WGS/WES</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>paired_end</code> (Boolean, default=true): Whether the data is paired end</li>
+<li><code>phred_encoding</code> (String, default=""): Encoding format used for PHRED quality scores. Must be empty, 'sanger', or 'illumina1.3'. Only needed for WGS/WES. If missing, will be inferred</li>
+<li><code>strandedness</code> (String, default=""): empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. Only needed for RNA-Seq data. If missing, will be inferred</li>
+<li><code>use_bamqc</code> (Boolean, default=true): Whether or not to run <code>qualimap bamqc</code>. Useful for disabling problematic files.</li>
+<li><code>bam_to_fastq.memory_gb</code> (Int, default=40)</li>
+<li><code>bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>compute_checksum.memory_gb</code> (Int, default=5)</li>
+<li><code>fastq_screen.num_reads</code> (Int, default=0)</li>
+<li><code>fastqc.memory_gb</code> (Int, default=5)</li>
+<li><code>fastqc.ncpu</code> (Int, default=1)</li>
+<li><code>fqlint.memory_gb</code> (Int, default=8)</li>
+<li><code>junction_annotation.fuzzy_junction_match_range</code> (Int, default=0)</li>
+<li><code>junction_annotation.memory_gb</code> (Int, default=35)</li>
+<li><code>junction_annotation.min_intron</code> (Int, default=50)</li>
+<li><code>junction_annotation.min_mapq</code> (Int, default=30)</li>
+<li><code>junction_annotation.min_reads</code> (Int, default=2)</li>
+<li><code>junction_annotation.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>multiqc.disk_size</code> (Int, default=20)</li>
+<li><code>multiqc.memory_gb</code> (Int, default=5)</li>
+<li><code>ngsderive_encoding.memory_gb</code> (Int, default=5)</li>
+<li><code>ngsderive_encoding.num_reads</code> (Int, default=-1)</li>
+<li><code>ngsderive_read_length.memory_gb</code> (Int, default=5)</li>
+<li><code>ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
+<li><code>qc_summary.disk_size</code> (Int, default=1)</li>
+<li><code>qc_summary.outfile</code> (String, default=basename(multiqc_tar_gz,".multiqc.tar.gz") + ".qc_summary.json")</li>
+<li><code>qualimap_bamqc.memory_gb</code> (Int, default=32)</li>
+<li><code>qualimap_bamqc.ncpu</code> (Int, default=1)</li>
+<li><code>qualimap_rnaseq.memory_gb</code> (Int, default=16)</li>
+<li><code>samtools_flagstat.memory_gb</code> (Int, default=5)</li>
+<li><code>samtools_flagstat.outfilename</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
+<li><code>samtools_subsample.desired_reads</code> (Int, default=500000)</li>
+<li><code>samtools_subsample.detect_nproc</code> (Boolean, default=false)</li>
+<li><code>samtools_subsample.ncpu</code> (Int, default=1)</li>
+<li><code>samtools_subsample.outname</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
+<li><code>sequencErr.output_count_file</code> (Boolean, default=false)</li>
+<li><code>validate_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>validate_bam.max_errors</code> (Int, default=2147483647)</li>
+<li><code>validate_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>validate_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
+<li><code>validate_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>reference_fa</code> (File)</li>
-<li><code>bwadb_tar_gz</code> (File)</li>
+<li><code>bam_checksum</code> (File)</li>
+<li><code>validate_sam_file</code> (File)</li>
+<li><code>flagstat</code> (File)</li>
+<li><code>fastqc_results</code> (File)</li>
+<li><code>instrument_file</code> (File)</li>
+<li><code>read_length_file</code> (File)</li>
+<li><code>inferred_encoding</code> (File)</li>
+<li><code>multiqc_zip</code> (File)</li>
+<li><code>qc_summary_file</code> (File)</li>
+<li><code>qualimap_bamqc_results</code> (File?)</li>
+<li><code>fastq_screen_results</code> (File?)</li>
+<li><code>sequencerr_results</code> (File?)</li>
+<li><code>inferred_strandedness</code> (File?)</li>
+<li><code>qualimap_rnaseq_results</code> (File?)</li>
+<li><code>junction_summary</code> (File?)</li>
+<li><code>junctions</code> (File?)</li>
+</ul>
+<h2 id="parse_input">parse_input</h2>
+<h3 id="inputs_1">Inputs</h3>
+<h4 id="required_1">Required</h4>
+<ul>
+<li><code>input_experiment</code> (String, <strong>required</strong>)</li>
+<li><code>input_fq_format</code> (String, <strong>required</strong>)</li>
+<li><code>input_strand</code> (String, <strong>required</strong>)</li>
+</ul>
+<h4 id="optional_1">Optional</h4>
+<ul>
+<li><code>input_gtf</code> (File?)</li>
+</ul>
+<h3 id="outputs_1">Outputs</h3>
+<ul>
+<li><code>input_check</code> (String)</li>
 </ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../bam-to-fastqs/" class="btn btn-neutral float-left" title="Bam to FastQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../calc-gene-lengths/" class="btn btn-neutral float-right" title="Calculate Gene Lengths">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../make-qc-reference/" class="btn btn-neutral float-left" title="Make QC Reference"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../rnaseq-standard-fastq/" class="btn btn-neutral float-right" title="RNA-Seq Standard from FastQ">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -238,10 +320,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
         </span>
     
     
-      <span><a href="../bam-to-fastqs/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../make-qc-reference/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../calc-gene-lengths/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../rnaseq-standard-fastq/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
