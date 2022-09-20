@@ -51,6 +51,7 @@ workflow quality_check {
         String phred_encoding = ""
         Boolean paired_end = true
         Boolean illumina = true
+        Boolean use_bamqc = true
         Int max_retries = 1
     }
 
@@ -65,6 +66,7 @@ workflow quality_check {
         phred_encoding: "Encoding format used for PHRED quality scores. Must be empty, 'sanger', or 'illumina1.3'. Only needed for WGS/WES. If missing, will be inferred"
         paired_end: "Whether the data is paired end"
         illumina: "Sequenced by an Illumina machine? `sequencErr` only supports Illumina formatted reads. Non-Illumina data may cause errors. Only used for WGS/WES"
+        use_bamqc: "Whether or not to run `qualimap bamqc`. Useful for disabling problematic files."
         max_retries: "Number of times to retry failed steps"
     }
 
@@ -91,7 +93,10 @@ workflow quality_check {
     call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
     String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
-    call qualimap.bamqc as qualimap_bamqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+
+    if (use_bamqc) { 
+        call qualimap.bamqc as qualimap_bamqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    }
 
     if (experiment == "WGS" || experiment == "WES") {
         File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
@@ -105,6 +110,7 @@ workflow quality_check {
         call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
         call fq_screen.fastq_screen { input: read1=fqlint.validated_read1, read2=select_first([fqlint.validated_read2, ""]), db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=parsed_encoding, max_retries=max_retries }
     }
+
     if (experiment == "RNA-Seq") {
         File gtf_defined = select_first([gtf, "No GTF"])
 
@@ -114,6 +120,7 @@ workflow quality_check {
         String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=quickcheck.checked_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, paired_end=paired_end, max_retries=max_retries }
     }
+
     call mqc.multiqc {
         input:
             validate_sam_file=validate_bam.out,
@@ -130,10 +137,14 @@ workflow quality_check {
             junction_annotation=junction_annotation.junction_summary,
             max_retries=max_retries
     }
-    call util.qc_summary {
-        input:
-            multiqc_tar_gz=multiqc.out,
-            max_retries=max_retries
+
+    # `qualimap bamqc` is required for a qc summary to be generated.
+    if (use_bamqc) {
+        call util.qc_summary {
+            input:
+                multiqc_tar_gz=multiqc.out,
+                max_retries=max_retries
+        }
     }
 
     output {
@@ -143,16 +154,16 @@ workflow quality_check {
         File fastqc_results = fastqc.results
         File instrument_file = ngsderive_instrument.instrument_file
         File read_length_file = ngsderive_read_length.read_length_file
-        File qualimap_bamqc_results = qualimap_bamqc.results
         File inferred_encoding = ngsderive_encoding.encoding_file
         File multiqc_zip = multiqc.out
-        File qc_summary_file = qc_summary.out
+        File? qualimap_bamqc_results = qualimap_bamqc.results
         File? fastq_screen_results = fastq_screen.results
         File? sequencerr_results = sequencErr.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
         File? junctions = junction_annotation.junctions
+        File? qc_summary_file = qc_summary.out
     }
 }
 
