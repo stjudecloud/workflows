@@ -102,22 +102,19 @@ workflow chipseq_standard {
         }
     }
 
-    # if (pairing == "Paired-end"){
-    #     Array[Pair[File, File]] fastqs = zip(bam_to_fastqs.read1s, bam_to_fastqs.read2s)
-    #     scatter(pair in zip(fastqs, format_rg_for_bwa.formatted_rg)){
-    #         call bwa.bwa_aln_pe as paired_end {
-    #             input:
-    #                 fastq1=pair.left.left,
-    #                 fastq2=pair.left.right,
-    #                 bwadb_tar_gz=bwadb_tar_gz,
-    #                 read_group=pair.right,
-    #                 max_retries=max_retries,
-    #                 detect_nproc=detect_nproc
-    #         }
-    #     }
-    # }
+    if (pairing == "Paired-end"){
+        scatter (pair in zip(zip(bam_to_fastqs.read1s, bam_to_fastqs.read2s), read_groups)){
+            call seaseq_util.basicfastqstats as pe_basic_stats { input: fastqfile=pair.left.left }
+            call seaseq_map.mapping as bowtie_paired_end_mapping { input: paired_end=true, fastqfile=pair.left.left, fastqfile_R2=pair.left.right, index_files=bowtie_indexes, metricsfile=pe_basic_stats.metrics_out, blacklist=excludelist, read_length=read_tsv(read_length.read_length_file)[1][3] }
+            File pe_chosen_bam = select_first([bowtie_paired_end_mapping.bklist_bam, bowtie_paired_end_mapping.mkdup_bam, bowtie_paired_end_mapping.sorted_bam])
+            call util.add_to_bam_header as pe_add_header { input: input_bam=pe_chosen_bam, additional_header=pair.right }
+            String pe_rg_id_field = sub(sub(pair.right, ".*ID:", "ID:"), "\t.*", "") 
+            String pe_rg_id = sub(pe_rg_id_field, "ID:", "")
+            call samtools.addreplacerg as paired_end { input: bam=pe_add_header.output_bam, read_group_id=pe_rg_id }
+        }
+    }
 
-    Array[File] aligned_bams = select_first([single_end.tagged_bam, []])#paired_end.bam])
+    Array[File] aligned_bams = select_first([single_end.tagged_bam, paired_end.tagged_bam])
 
     scatter(bam in aligned_bams){
        call picard.clean_sam as picard_clean { input: bam=bam }
