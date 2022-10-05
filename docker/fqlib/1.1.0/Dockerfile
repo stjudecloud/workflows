@@ -1,4 +1,4 @@
-FROM rust:1.56.0 as fqlib-builder
+FROM rust:1.59.0 as fqlib-builder
 
 RUN cargo install \
       --git https://github.com/stjude-rust-labs/fq.git \
