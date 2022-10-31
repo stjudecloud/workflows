@@ -41,9 +41,8 @@
 version 1.0
 
 
-#import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "../../tools/samtools.wdl"
-import "../../tools/cellranger.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/cellranger.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
 
