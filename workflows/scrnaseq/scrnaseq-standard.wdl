@@ -93,8 +93,11 @@ workflow scrnaseq_standard {
     call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=count.bam, bai=count.bam_index, gtf=gtf, max_retries=max_retries }
     String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
 
+    call md5sum.compute_checksum { input: infile=count.bam, max_retries=max_retries }
+
     output {
         File bam = count.bam
+        File bam_checksum = compute_checksum.outfile
         File bam_index = count.bam_index
         File qc = count.qc
         File barcodes = count.barcodes
