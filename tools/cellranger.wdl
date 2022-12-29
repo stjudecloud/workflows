@@ -58,7 +58,7 @@ task count {
         disk: disk_size + " GB"
         docker: "ghcr.io/stjudecloud/cellranger:1.0.0"
         maxRetries: max_retries
-        cpu: cpu
+        cpu: ncpu
     }
 
     output {
