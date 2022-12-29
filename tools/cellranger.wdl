@@ -11,7 +11,7 @@ task count {
         File transcriptome_tar_gz
         File fastqs_tar_gz
         String? sample_id
-        Int cpu = 8
+        Int ncpu = 8
         Int memory_gb = 16
         String jobmode = "local"
         Int max_retries = 1
