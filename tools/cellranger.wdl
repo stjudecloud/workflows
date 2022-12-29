@@ -10,7 +10,7 @@ task count {
         String id
         File transcriptome_tar_gz
         File fastqs_tar_gz
-        String sample_id
+        String? sample_id
         Int cpu = 8
         Int memory_gb = 16
         String jobmode = "local"
@@ -20,8 +20,17 @@ task count {
 
     Float fastq_size = size(fastqs_tar_gz, "GiB")
     Int disk_size = ceil((fastq_size * 2) + 10)
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ -n ~{parsed_detect_nproc} ]
+        then
+            n_cores=$(nproc)
+        fi
+
         mkdir transcriptome_dir
         tar zxf ~{transcriptome_tar_gz} -C transcriptome_dir --strip-components 1
    
@@ -29,13 +38,13 @@ task count {
         tar zxf ~{fastqs_tar_gz} -C fastqs
 
         files=(fastqs/*.fastq.gz)
-        sample_id=$(basename ${files[0]} "_S1_L001_R1_001.fastq.gz")
+        sample_id="$(basename ${files[0]} '_S1_L001_R1_001.fastq.gz')"
 
         cellranger count \
             --id ~{id} \
             --transcriptome transcriptome_dir \
             --fastqs fastqs \
-            --sample ${sample_id} \
+            --sample "${sample_id}" \
             --jobmode ~{jobmode} \
             --localcores ~{cpu} \
             --localmem ~{memory_gb} \
@@ -103,9 +112,11 @@ task bamtofastq {
                         else ""
 
     command <<<
+        set -euo pipefail   
+        
         bamtofastq --nthreads ~{ncpu} ~{data_arg} ~{bam} fastqs
         cd fastqs/*/
-        tar -zcf archive.tar.gz *.fastq.gz
+        tar -zcf archive.tar.gz ./*.fastq.gz
     >>>
 
     runtime {

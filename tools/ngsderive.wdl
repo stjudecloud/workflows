@@ -183,7 +183,7 @@ task junction_annotation {
             -o ~{prefix}.junction_summary.txt \
             ~{bam}
         
-        mv $(basename ~{bam}.junctions.tsv) ~{prefix}.junctions.tsv
+        mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"
         gzip ~{prefix}.junctions.tsv
     }
 
