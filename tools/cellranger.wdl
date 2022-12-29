@@ -46,7 +46,7 @@ task count {
             --fastqs fastqs \
             --sample "${sample_id}" \
             --jobmode ~{jobmode} \
-            --localcores ~{cpu} \
+            --localcores "$n_cores" \
             --localmem ~{memory_gb} \
             --disable-ui
 
