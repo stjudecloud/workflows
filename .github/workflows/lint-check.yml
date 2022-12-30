@@ -38,7 +38,7 @@ jobs:
         EXITCODE=0
         files=$(find docker/ -name Dockerfile)
         for file in $files; do
-          echo "$file" | awk -F '/' '{print $2 ":" $3}' >> valid_dockerimages.txt
+          echo "$file" | awk -F '/' '{print tolower($2) ":" $3}' >> valid_dockerimages.txt
         done
         files=$(find . -name '*.wdl')
         for file in $files; do
