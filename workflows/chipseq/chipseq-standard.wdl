@@ -30,13 +30,13 @@
 version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/workflows/mapping.wdl" as seaseq_map
-import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/tasks/seaseq_util.wdl" as seaseq_util
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/workflows/mapping.wdl" as seaseq_map
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/tasks/samtools.wdl" as seaseq_samtools
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 
