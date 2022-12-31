@@ -18,9 +18,8 @@ jobs:
         EXITCODE=0
         for file in $(find . -name '*.wdl'); do
           >&2 echo "Checking file $file..."
-          import_lines=$(awk '/import/' "$file" | grep -v '# lint-check: ignore')
-          bad_lines=$(echo "$import_lines" | awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/ && !/https:\/\/raw.githubusercontent.com\/stjude\/xenocp\/master/ && !/https:\/\/raw.githubusercontent.com\/stjude\/seaseq\/master/') || true
-          bad_lines=$(echo "$import_lines" | awk '!/https:/') || true
+          import_lines=$(awk '/import/' "$file" | grep -v '# lint-check: ignore') || true
+          bad_lines=$(echo "$import_lines" | awk '!/https:/')
           if [ -n "$bad_lines" ]; then
             >&2 echo "Must import files from a URL!"
             >&2 echo "The following lines are bad:"
