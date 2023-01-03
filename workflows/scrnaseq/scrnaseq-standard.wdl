@@ -34,7 +34,6 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/cellranger.wdl"
 
 workflow scrnaseq_standard {
@@ -91,7 +90,6 @@ workflow scrnaseq_standard {
     }
     call picard.validate_bam { input: bam=count.bam, max_retries=max_retries }
     call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=count.bam, bai=count.bam_index, gtf=gtf, max_retries=max_retries }
-    String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
 
     output {
         File bam = count.bam
