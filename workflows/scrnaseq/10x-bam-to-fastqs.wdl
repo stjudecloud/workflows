@@ -41,9 +41,9 @@
 version 1.0
 
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/cellranger.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/ci/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/ci/tools/cellranger.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/ci/tools/fq.wdl"
 
 workflow cell_ranger_bam_to_fastqs {
     input {
