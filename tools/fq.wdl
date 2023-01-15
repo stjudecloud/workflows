@@ -26,7 +26,7 @@ task fqlint {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'quay.io/biocontainers/fq:0.9.1'
+        docker: 'ghcr.io/stjudecloud/fqlib:branch-ci-1.2.0'
         maxRetries: max_retries
     }
 
