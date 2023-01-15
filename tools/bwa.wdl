@@ -40,8 +40,8 @@ task bwa_aln {
         bwa aln -t "${n_cores}" bwa/"$PREFIX" ~{fastq} > sai
 
         bwa samse \
-        ~{"-r '" + read_group}~{true="'" false="" defined(read_group)} \
-        bwa/"$PREFIX" sai ~{fastq} | samtools view -@ "${n_cores}" -hb - > ~{output_bam}
+            ~{if read_group != "" then "-r '" else ""}~{read_group}~{if read_group != "" then "'" else ""} \
+            bwa/"$PREFIX" sai ~{fastq} | samtools view -@ "${n_cores}" -hb - > ~{output_bam}
     >>>
 
     runtime {
@@ -105,8 +105,8 @@ task bwa_aln_pe {
         bwa aln -t "${n_cores}" bwa/"$PREFIX" ~{fastq2} > sai_2
 
         bwa sampe \
-        ~{"-r '" + read_group}~{true="'" false="" defined(read_group)} \
-        bwa/"$PREFIX" sai_1 sai_2 ~{fastq1} ~{fastq2} | samtools view -@ "${n_cores}" -hb - > ~{output_bam}
+             ~{if read_group != "" then "-r '" else ""}~{read_group}~{if read_group != "" then "'" else ""} \
+            bwa/"$PREFIX" sai_1 sai_2 ~{fastq1} ~{fastq2} | samtools view -@ "${n_cores}" -hb - > ~{output_bam}
     >>>
 
     runtime {
@@ -167,9 +167,9 @@ task bwa_mem {
         PREFIX=$(basename bwa/*.ann ".ann")
 
         bwa mem \
-        -t "$n_cores" \
-        ~{"-R '" + read_group}~{true="'" false="" defined(read_group)} \
-        bwa/"$PREFIX" ~{fastq} | samtools view -b - > ~{output_bam}
+            -t "$n_cores" \
+            ~{if read_group != "" then "-r '" else ""}~{read_group}~{if read_group != "" then "'" else ""} \
+            bwa/"$PREFIX" ~{fastq} | samtools view -b - > ~{output_bam}
     >>>
 
     runtime {
