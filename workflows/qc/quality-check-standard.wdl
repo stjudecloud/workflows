@@ -151,7 +151,6 @@ workflow quality_check {
         File multiqc_zip = multiqc.out
         File? qualimap_bamqc_results = qualimap_bamqc.results
         File? fastq_screen_results = fastq_screen.results
-        File? sequencerr_results = sequencErr.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
