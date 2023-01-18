@@ -35,7 +35,6 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngs
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/sequencerr.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 
@@ -50,7 +49,6 @@ workflow quality_check {
         File? fastq_screen_db
         String phred_encoding = ""
         Boolean paired_end = true
-        Boolean illumina = true
         Boolean use_bamqc = true
         Int max_retries = 1
     }
@@ -65,7 +63,6 @@ workflow quality_check {
         fastq_screen_db: "Database for FastQ Screen. **Required** for WGS and WES data. Can be generated using `make-qc-reference.wdl`. Must untar directly to genome directories."
         phred_encoding: "Encoding format used for PHRED quality scores. Must be empty, 'sanger', or 'illumina1.3'. Only needed for WGS/WES. If missing, will be inferred"
         paired_end: "Whether the data is paired end"
-        illumina: "Sequenced by an Illumina machine? `sequencErr` only supports Illumina formatted reads. Non-Illumina data may cause errors. Only used for WGS/WES"
         use_bamqc: "Whether or not to run `qualimap bamqc`. Useful for disabling problematic files."
         max_retries: "Number of times to retry failed steps"
     }
@@ -100,10 +97,6 @@ workflow quality_check {
 
     if (experiment == "WGS" || experiment == "WES") {
         File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
-
-        if (illumina) {
-            call sequencerr.sequencerr as sequencErr { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
-        }
 
         call samtools.subsample as samtools_subsample { input: bam=quickcheck.checked_bam, max_retries=max_retries }
         call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
