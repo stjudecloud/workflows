@@ -118,7 +118,9 @@ workflow quality_check {
 
         call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bai=bam_index, gtf=gtf_defined, max_retries=max_retries }
         String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=quickcheck.checked_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, paired_end=paired_end, max_retries=max_retries }
+
+        call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, name_sorted=true, paired_end=paired_end, max_retries=max_retries }
     }
 
     call mqc.multiqc {
