@@ -91,10 +91,6 @@ workflow quality_check {
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
     String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
 
-    if (use_bamqc) { 
-        call qualimap.bamqc as qualimap_bamqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    }
-
     if (experiment == "WGS" || experiment == "WES") {
         File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
 
@@ -124,7 +120,6 @@ workflow quality_check {
             instrument_file=ngsderive_instrument.instrument_file,
             read_length_file=ngsderive_read_length.read_length_file,
             encoding_file=ngsderive_encoding.encoding_file,
-            qualimap_bamqc=qualimap_bamqc.results,
             fastq_screen=fastq_screen.results,
             star_log=star_log,
             qualimap_rnaseq=qualimap_rnaseq.results,
@@ -133,13 +128,10 @@ workflow quality_check {
             max_retries=max_retries
     }
 
-    # `qualimap bamqc` is required for a qc summary to be generated.
-    if (use_bamqc) {
-        call util.qc_summary {
-            input:
-                multiqc_tar_gz=multiqc.out,
-                max_retries=max_retries
-        }
+    call util.qc_summary {
+        input:
+            multiqc_tar_gz=multiqc.out,
+            max_retries=max_retries
     }
 
     output {
@@ -151,7 +143,6 @@ workflow quality_check {
         File read_length_file = ngsderive_read_length.read_length_file
         File inferred_encoding = ngsderive_encoding.encoding_file
         File multiqc_zip = multiqc.out
-        File? qualimap_bamqc_results = qualimap_bamqc.results
         File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
