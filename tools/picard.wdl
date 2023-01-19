@@ -451,7 +451,7 @@ task collect_gc_bias_metrics {
         maxRetries: max_retries
     }
     output {
-        File qc_bias_metrics = basename(bam, ".bam") + ".CollectGcBiasMetrics.txt"
+        File gc_bias_metrics = basename(bam, ".bam") + ".CollectGcBiasMetrics.txt"
         File gc_bias_metrics_pdf = basename(bam, ".bam") + ".CollectGcBiasMetrics.pdf"
     }
     meta {
