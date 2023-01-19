@@ -527,7 +527,7 @@ task quality_score_distribution {
         maxRetries: max_retries
     }
     output {
-        File quality_score_distribution = basename(bam, ".bam") + ".QualityScoreDistribution.txt"
+        File quality_score_distribution_txt = basename(bam, ".bam") + ".QualityScoreDistribution.txt"
         File quality_score_distribution_pdf = basename(bam, ".bam") + ".QualityScoreDistribution.pdf"
     }
     meta {

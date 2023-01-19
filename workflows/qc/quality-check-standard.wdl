@@ -162,7 +162,7 @@ workflow quality_check {
         File gc_bias_metrics_pdf = collect_gc_bias_metrics.gc_bias_metrics_pdf
         File insert_size_metrics = collect_insert_size_metrics.insert_size_metrics
         File insert_size_metrics_pdf = collect_insert_size_metrics.insert_size_metrics_pdf
-        File quality_score_distribution_txt = quality_score_distribution.quality_score_distribution
+        File quality_score_distribution_txt = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf = quality_score_distribution.quality_score_distribution_pdf
         File mosdepth_global_dist = coverage.global_dist
         File mosdepth_summary = coverage.summary
