@@ -105,7 +105,6 @@ task multiqc {
 
     parameter_meta {
         validate_sam_file: "A file output from Picard's ValidateSam tool"
-        qualimap_bamqc: "Tarballed directory of files output by Qualimap's BamQC mode"
         qualimap_rnaseq: "Tarballed directory of files output by Qualimap's RNA-seq mode"
         fastqc: "Tarballed directory of files output by FastQC"
         fastq_screen: "Tarballed directory of files output by FastQ Screen"
