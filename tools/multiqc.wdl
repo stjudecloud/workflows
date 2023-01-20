@@ -56,15 +56,6 @@ task multiqc {
             echo ~{junction_annotation}
         ) > file_list.txt
 
-        if [ "~{if defined(qualimap_bamqc) then "bamqc" else ""}" = "bamqc" ]; then
-            qualimap_bamqc_dir=$(basename ~{qualimap_bamqc} ".tar.gz")
-            tar -xzf ~{qualimap_bamqc}
-            echo "$qualimap_bamqc_dir"/genome_results.txt >> file_list.txt
-            for file in "$qualimap_bamqc_dir"/raw_data_qualimapReport/*; do
-                echo "$file" >> file_list.txt
-            done
-        fi
-
         tar -xzf ~{fastqc}
         fastqc_dir=$(basename ~{fastqc} ".tar.gz")
         for file in "$fastqc_dir"/*; do
