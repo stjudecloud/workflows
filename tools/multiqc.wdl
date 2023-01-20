@@ -9,15 +9,20 @@ task multiqc {
     input {
         File validate_sam_file
         File flagstat_file
-        File? qualimap_bamqc
-        File? qualimap_rnaseq
         File fastqc
         File instrument_file
         File read_length_file
         File encoding_file
+        File alignment_metrics
+        File gc_bias_metrics
+        File insert_size_metrics
+        File quality_score_distribution_txt
+        File mosdepth_summary
+        File wgs_metrics
+        File? fastq_screen
         File? strandedness_file
         File? junction_annotation
-        File? fastq_screen
+        File? qualimap_rnaseq
         File? star_log
         Int max_retries = 1
         Int memory_gb = 5
@@ -40,6 +45,12 @@ task multiqc {
             echo ~{instrument_file}
             echo ~{read_length_file}
             echo ~{encoding_file}
+            echo ~{alignment_metrics}
+            echo ~{gc_bias_metrics}
+            echo ~{insert_size_metrics}
+            echo ~{quality_score_distribution_txt}
+            echo ~{mosdepth_summary}
+            echo ~{wgs_metrics}
             echo ~{star_log}
             echo ~{strandedness_file}
             echo ~{junction_annotation}

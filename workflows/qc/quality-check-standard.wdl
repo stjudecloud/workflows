@@ -36,7 +36,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngs
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/replace_qualimap/tools/multiqc.wdl" as mqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 
 workflow quality_check {
@@ -134,6 +134,12 @@ workflow quality_check {
             instrument_file=ngsderive_instrument.instrument_file,
             read_length_file=ngsderive_read_length.read_length_file,
             encoding_file=ngsderive_encoding.encoding_file,
+            alignment_metrics = collect_alignment_summary_metrics.alignment_metrics
+            gc_bias_metrics = collect_gc_bias_metrics.gc_bias_metrics
+            insert_size_metrics = collect_insert_size_metrics.insert_size_metrics
+            quality_score_distribution_txt = quality_score_distribution.quality_score_distribution_txt
+            mosdepth_summary = coverage.summary
+            wgs_metrics = select_first([collect_wgs_metrics.wgs_metrics, collect_wgs_metrics_with_nonzero_coverage.wgs_metrics])
             fastq_screen=fastq_screen.results,
             star_log=star_log,
             qualimap_rnaseq=qualimap_rnaseq.results,
