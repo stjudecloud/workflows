@@ -86,7 +86,7 @@ workflow quality_check {
     call util.compression_integrity { input: bam=bam, max_retries=max_retries }
 
     call picard.collect_alignment_summary_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    call picard.collect_gc_bias_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call picard.collect_gc_bias_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
     call picard.collect_insert_size_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call picard.quality_score_distribution { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call mosdepth.coverage { input: bam=quickcheck.checked_bam, max_retries=max_retries }

@@ -428,6 +428,7 @@ task collect_alignment_summary_metrics {
 task collect_gc_bias_metrics {
     input {
         File bam
+        File reference_fasta
         Int memory_gb = 8
         Int? disk_size_gb
         Int max_retries = 1
@@ -440,6 +441,7 @@ task collect_gc_bias_metrics {
     command {
         picard -Xmx~{java_heap_size}g CollectGcBiasMetrics \
             -I ~{bam} \
+            -R ~{reference_fasta} \
             -O "$(basename ~{bam} '.bam').CollectGcBiasMetrics.txt" \
             -S "$(basename ~{bam} '.bam').CollectGcBiasMetrics.summary.txt" \
             -CHART "$(basename ~{bam} '.bam').CollectGcBiasMetrics.pdf"
