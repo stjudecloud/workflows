@@ -7,6 +7,7 @@ version 1.0
 task coverage {
     input {
         File bam
+        File bai
         Int memory_gb = 8 
         Int max_retries = 1
     }
@@ -15,6 +16,9 @@ task coverage {
     Int disk_size = ceil(bam_size + 5)
 
     command {
+        set -euo pipefail
+        
+        mv ~{bai} ~{bam}.bai || true
         mosdepth -n -x "$(basename ~{bam} '.bam')" ~{bam}
     }
 

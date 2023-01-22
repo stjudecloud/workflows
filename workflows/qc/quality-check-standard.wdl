@@ -89,7 +89,7 @@ workflow quality_check {
     call picard.collect_gc_bias_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
     call picard.collect_insert_size_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call picard.quality_score_distribution { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    call mosdepth.coverage { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call mosdepth.coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
     call samtools.flagstat as samtools_flagstat { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call fqc.fastqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=quickcheck.checked_bam, max_retries=max_retries }
