@@ -85,6 +85,7 @@ workflow quality_check {
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call util.compression_integrity { input: bam=bam, max_retries=max_retries }
 
+    call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
     call picard.collect_alignment_summary_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call picard.collect_gc_bias_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
     call picard.collect_insert_size_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
@@ -98,9 +99,6 @@ workflow quality_check {
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
     String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
 
-    if (experiment == "WGS") {
-        call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
-    }
     if (experiment == "WES" || experiment == "RNA-Seq") {
         call picard.collect_wgs_metrics_with_nonzero_coverage { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta }
     }
@@ -139,7 +137,7 @@ workflow quality_check {
             insert_size_metrics=collect_insert_size_metrics.insert_size_metrics,
             quality_score_distribution_txt=quality_score_distribution.quality_score_distribution_txt,
             mosdepth_summary=coverage.summary,
-            wgs_metrics=select_first([collect_wgs_metrics.wgs_metrics, collect_wgs_metrics_with_nonzero_coverage.wgs_metrics]),
+            wgs_metrics=collect_wgs_metrics.wgs_metrics,
             fastq_screen=fastq_screen.results,
             star_log=star_log,
             qualimap_rnaseq=qualimap_rnaseq.results,
@@ -170,11 +168,12 @@ workflow quality_check {
         File insert_size_metrics_pdf = collect_insert_size_metrics.insert_size_metrics_pdf
         File quality_score_distribution_txt = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf = quality_score_distribution.quality_score_distribution_pdf
-        File wgs_metrics = select_first([collect_wgs_metrics.wgs_metrics, collect_wgs_metrics_with_nonzero_coverage.wgs_metrics])
+        File wgs_metrics = collect_wgs_metrics.wgs_metrics
         File mosdepth_global_dist = coverage.global_dist
         File mosdepth_summary = coverage.summary
         File multiqc_zip = multiqc.out
         # File qc_summary_file = qc_summary.out
+        File? wgs_metrics_with_nonzero_coverage = collect_wgs_metrics_with_nonzero_coverage.wgs_metrics
         File? wgs_metrics_with_nonzero_coverage_pdf = collect_wgs_metrics_with_nonzero_coverage.wgs_metrics_pdf
         File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file

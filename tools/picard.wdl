@@ -362,8 +362,8 @@ task collect_wgs_metrics_with_nonzero_coverage {
     command {
         picard -Xmx~{java_heap_size}g CollectWgsMetricsWithNonZeroCoverage \
             -I ~{bam} \
-            -O "$(basename ~{bam} '.bam').CollectWgsMetrics.txt" \
-            -CHART "$(basename ~{bam} '.bam').CollectWgsMetrics.pdf" \
+            -O "$(basename ~{bam} '.bam').CollectWgsMetricsWithNonZeroCoverage.txt" \
+            -CHART "$(basename ~{bam} '.bam').CollectWgsMetricsWithNonZeroCoverage.pdf" \
             -R ~{reference_fasta} \
             --INCLUDE_BQ_HISTOGRAM true
     }
@@ -374,8 +374,8 @@ task collect_wgs_metrics_with_nonzero_coverage {
         maxRetries: max_retries
     }
     output {
-        File wgs_metrics = basename(bam, ".bam") + ".CollectWgsMetrics.txt"
-        File wgs_metrics_pdf = basename(bam, ".bam") + ".CollectWgsMetrics.pdf"
+        File wgs_metrics = basename(bam, ".bam") + ".CollectWgsMetricsWithNonZeroCoverage.txt"
+        File wgs_metrics_pdf = basename(bam, ".bam") + ".CollectWgsMetricsWithNonZeroCoverage.pdf"
     }
     meta {
         author: "Andrew Frantz"
