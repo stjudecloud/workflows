@@ -17,7 +17,7 @@ task coverage {
 
     command {
         set -euo pipefail
-        
+
         mv ~{bai} ~{bam}.bai || true
         mosdepth -n -x "$(basename ~{bam} '.bam')" ~{bam}
     }
@@ -25,7 +25,7 @@ task coverage {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'brentp/mosdepth:v0.3.3'
+        docker: 'ghcr.io/stjudecloud/mosdepth:branch-replace_qualimap-1.0.0'
         maxRetries: max_retries
     }
 
