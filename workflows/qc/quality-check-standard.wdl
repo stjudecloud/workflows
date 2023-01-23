@@ -32,7 +32,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/pic
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/name_sort/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/sequencerr.wdl"
