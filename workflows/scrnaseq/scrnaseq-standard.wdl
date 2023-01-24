@@ -31,11 +31,11 @@
 version 1.0
 
 import "10x-bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/cellranger.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/cellranger.wdl"
 
 workflow scrnaseq_standard {
     input {

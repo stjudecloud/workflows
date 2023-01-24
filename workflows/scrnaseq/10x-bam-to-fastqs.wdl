@@ -41,10 +41,10 @@
 version 1.0
 
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/cellranger.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/cellranger.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/fq.wdl"
 
 workflow cell_ranger_bam_to_fastqs {
     input {

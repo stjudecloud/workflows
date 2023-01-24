@@ -28,13 +28,13 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/deeptools.wdl"
 import "https://raw.githubusercontent.com/stjude/xenocp/master/wdl/workflows/xenocp.wdl" as xenocp_workflow
 
 workflow rnaseq_standard_fastq {
