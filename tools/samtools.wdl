@@ -20,7 +20,7 @@ task quickcheck {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 
@@ -75,7 +75,7 @@ task split {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 
@@ -112,7 +112,7 @@ task flagstat {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
@@ -159,7 +159,7 @@ task index {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         memory: memory_gb + " GB"
         dx_instance_type: "azure:mem2_ssd1_x4"
         maxRetries: max_retries
@@ -229,7 +229,7 @@ task subsample {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 }
@@ -276,7 +276,7 @@ task merge {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 }
@@ -314,7 +314,7 @@ task addreplacerg {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 

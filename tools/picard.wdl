@@ -30,7 +30,7 @@ task mark_duplicates {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -106,7 +106,7 @@ task validate_bam {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -159,7 +159,7 @@ task bam_to_fastq {
     runtime{
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -206,7 +206,7 @@ task sort {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
     output {
@@ -251,7 +251,7 @@ task merge_sam_files {
     runtime{
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -291,7 +291,7 @@ task clean_sam {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
     output {

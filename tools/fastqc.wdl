@@ -34,7 +34,7 @@ task fastqc {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/fastqc:1.0.2'
+        docker: 'quay.io/biocontainers/fastqc:0.11.9--hdfd78af_1'
         maxRetries: max_retries
     }
 

@@ -50,7 +50,7 @@ task count {
     runtime {
         memory: mem_size + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/htseq:1.0.2'
+        docker: 'quay.io/biocontainers/htseq:2.0.2--py310ha14a713_0'
         maxRetries: max_retries
     }
    

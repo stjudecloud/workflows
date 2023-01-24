@@ -41,7 +41,7 @@ task bamCoverage {
         cpu: ncpu
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/deeptools:1.0.2'
+        docker: 'quay.io/biocontainers/deeptools:3.5.1--pyhdfd78af_1'
         maxRetries: max_retries
     }
 

@@ -66,7 +66,7 @@ task get_read_groups {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 
@@ -293,7 +293,7 @@ task compression_integrity {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 }
@@ -317,7 +317,7 @@ task add_to_bam_header {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 
