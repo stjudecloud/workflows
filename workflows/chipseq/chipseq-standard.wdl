@@ -129,10 +129,13 @@ workflow chipseq_standard {
     call samtools.index as samtools_index { input: bam=markdup.mkdupbam, max_retries=max_retries, detect_nproc=detect_nproc }
     call picard.validate_bam { input: bam=markdup.mkdupbam, max_retries=max_retries }
 
+    call md5sum.compute_checksum { input: infile=markdup.mkdupbam, max_retries=max_retries }
+
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=markdup.mkdupbam, bai=samtools_index.bai, prefix=output_prefix, max_retries=max_retries }
 
     output {
         File bam = markdup.mkdupbam
+        File bam_checksum = compute_checksum.outfile
         File bam_index = samtools_index.bai
         File bigwig = deeptools_bamCoverage.bigwig
     }
