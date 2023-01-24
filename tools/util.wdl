@@ -15,7 +15,7 @@ task download {
 
     runtime {
         disk: disk_size_GB + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
 
@@ -98,7 +98,7 @@ task split_string {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
 
@@ -125,7 +125,7 @@ task file_prefix {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
 
