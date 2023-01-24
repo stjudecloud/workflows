@@ -2,15 +2,15 @@
 
 FROM ubuntu:20.04
 
+ARG cellranger_url
+ARG cellranger_md5
+
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install curl -y && \
     rm -r /var/lib/apt/lists/*
 
 WORKDIR /opt
-
-ARG cellranger_url
-ARG cellranger_md5
 
 RUN curl -o cellranger.tar.gz \
     ${cellranger_url} \
@@ -20,3 +20,5 @@ RUN curl -o cellranger.tar.gz \
     && mv cellranger-* cellranger
 
 ENV PATH "/opt/cellranger:$PATH"
+
+ENTRYPOINT [ "cellranger" ]
