@@ -28,13 +28,13 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/ci/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/ci/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/ci/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/ci/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/ci/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/ci/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/ci/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 import "https://raw.githubusercontent.com/stjude/XenoCP/3.1.4/wdl/workflows/xenocp.wdl" as xenocp_workflow
 
 workflow rnaseq_standard_fastq {
