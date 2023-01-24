@@ -60,7 +60,7 @@ task count {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: "ghcr.io/stjudecloud/cellranger:1.0.0"
+        docker: "ghcr.io/stjudecloud/cellranger:1.1.0"
         maxRetries: max_retries
         cpu: ncpu
     }
@@ -134,7 +134,7 @@ task bamtofastq {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: "ghcr.io/stjudecloud/cellranger:1.0.0"
+        docker: "ghcr.io/stjudecloud/cellranger:1.1.0"
         maxRetries: max_retries
         cpu: ncpu
     }
