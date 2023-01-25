@@ -88,7 +88,7 @@ task multiqc {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/multiqc:1.3.5'
+        docker: 'ghcr.io/stjudecloud/multiqc:branch-replace_qualimap-1.4.0'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
