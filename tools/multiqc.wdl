@@ -80,7 +80,7 @@ task multiqc {
             done
         fi
 
-        multiqc --verbose -c /home/.multiqc_config.yaml \
+        multiqc -vvv -c /home/.multiqc_config.yaml \
             --file-list file_list.txt -o ~{out_directory}
         
         tar -czf ~{out_tar_gz} ~{out_directory}
