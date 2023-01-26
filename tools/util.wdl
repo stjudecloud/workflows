@@ -327,3 +327,31 @@ task add_to_bam_header {
         File output_bam = output_bam_name
     }
 }
+
+task unpack_tarball {
+    input {
+        File tarball
+        Int extra_disk_GB = 0
+        Int max_retries = 1
+    }
+
+    Float tarball_size = size(tarball, "GiB")
+    Int disk_size = ceil(tarball_size * 8) + extra_disk_GB
+
+    command <<<
+        tar -tf ~{tarball} > tar_list.txt
+        tar -xzf ~{tarball}
+
+        find "$(head -n 1 tar_list.txt)" -type f > file_list.txt
+    >>>
+
+    runtime {
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        Array[File] tarball_contents = read_lines("file_list.txt")
+    }
+}
