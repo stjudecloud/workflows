@@ -108,32 +108,6 @@ task split_string {
     }
 }
 
-task file_prefix {
-    input {
-        File in_file
-        Int max_retries = 1
-    }
-
-    Float infile_size = size(in_file, "GiB")
-    Int disk_size = ceil(infile_size * 2)
-
-    command <<<
-        set -euo pipefail
-        
-        basename ~{in_file} | awk -F '.' '{print $1}' > prefix.txt
-    >>>
-
-    runtime {
-        disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.0.0'
-        maxRetries: max_retries
-    }
-
-    output { 
-        File out = "prefix.txt"
-    }
-}
-
 task calc_gene_lengths {
     input {
         File gtf
