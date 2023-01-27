@@ -91,14 +91,6 @@ workflow quality_check {
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
     String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
 
-    Array[File] multiqc_inputs = [
-        validate_bam.out,
-        samtools_flagstat.outfile,
-        ngsderive_instrument.instrument_file,
-        ngsderive_read_length.read_length_file,
-        ngsderive_encoding.encoding_file
-    ]
-
     if (use_bamqc) { 
         call qualimap.bamqc as qualimap_bamqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     }
@@ -112,7 +104,8 @@ workflow quality_check {
         call fq_screen.fastq_screen { input: read1=fqlint.validated_read1, read2=select_first([fqlint.validated_read2, ""]), db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=parsed_encoding, max_retries=max_retries }
 
         call util.unpack_tarball as unpack_fastq_screen { input: tarball=fastq_screen.results, max_retries=max_retries }
-        Array[File] multiqc_inputs = multiqc_inputs + unpack_fastq_screen.tarball_contents
+        Array[Array[File]] nested_wgs_wes_multiqc_inputs = [unpack_fastq_screen.tarball_contents]
+        Array[File] wgs_wes_multiqc_inputs = flatten(nested_wgs_wes_multiqc_inputs)
     }
 
     if (experiment == "RNA-Seq") {
@@ -127,12 +120,30 @@ workflow quality_check {
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, name_sorted=true, paired_end=paired_end, max_retries=max_retries }
         
         call util.unpack_tarball as unpack_qualimap_rnaseq { input: tarball=qualimap_rnaseq.results, max_retries=max_retries }
-        Array[File] multiqc_inputs = multiqc_inputs + unpack_qualimap_rnaseq.tarball_contents
-        Array[File] multiqc_inputs = multiqc_inputs + [star_log, ngsderive_strandedness.strandedness_file, junction_annotation.junction_summary]
+        Array[Array[File]] nested_rna_multiqc_inputs = [unpack_qualimap_rnaseq.tarball_contents, [
+            select_first([star_log, ""]),
+            ngsderive_strandedness.strandedness_file,
+            junction_annotation.junction_summary
+        ]]
+        Array[File] rna_multiqc_inputs = flatten(nested_rna_multiqc_inputs)
     }
 
     call util.unpack_tarball as unpack_fastqc { input: tarball=fastqc.results, max_retries=max_retries }
-    Array[File] multiqc_inputs = multiqc_inputs + unpack_fastqc.tarball_contents
+    Array[Array[File]] nested_common_multiqc_inputs = [unpack_fastqc.tarball_contents, [
+        validate_bam.out,
+        samtools_flagstat.outfile,
+        ngsderive_instrument.instrument_file,
+        ngsderive_read_length.read_length_file,
+        ngsderive_encoding.encoding_file
+    ]]
+    Array[File] common_multiqc_inputs = flatten(nested_common_multiqc_inputs)
+
+    Array[Array[File]] nested_multiqc_inputs = [
+        common_multiqc_inputs,
+        select_first([wgs_wes_multiqc_inputs, []]),
+        select_first([rna_multiqc_inputs, []])
+    ]
+    Array[File] multiqc_inputs = flatten(nested_multiqc_inputs)
 
     call mqc.multiqc { input: input_files=multiqc_inputs, max_retries=max_retries }
 
