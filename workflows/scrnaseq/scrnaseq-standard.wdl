@@ -35,6 +35,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/pic
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/cellranger.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
 
 workflow scrnaseq_standard {
     input {
