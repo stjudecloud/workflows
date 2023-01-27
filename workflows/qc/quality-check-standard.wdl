@@ -30,11 +30,11 @@ version 1.0
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
+import "https://raw.githubusercontent.com/stjudecloud/workflows/multiqc-refactor/tools/fastqc.wdl" as fqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/multiqc-refactor/tools/qualimap.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
+import "https://raw.githubusercontent.com/stjudecloud/workflows/multiqc-refactor/tools/fastq_screen.wdl" as fq_screen
 import "https://raw.githubusercontent.com/stjudecloud/workflows/multiqc-refactor/tools/multiqc.wdl" as mqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/multiqc-refactor/tools/util.wdl"
 
@@ -102,9 +102,6 @@ workflow quality_check {
         call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
         call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
         call fq_screen.fastq_screen { input: read1=fqlint.validated_read1, read2=select_first([fqlint.validated_read2, ""]), db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=parsed_encoding, max_retries=max_retries }
-
-        call util.unpack_tarball as unpack_fastq_screen { input: tarball=fastq_screen.results, max_retries=max_retries }
-        Array[File] wgs_wes_multiqc_inputs = unpack_fastq_screen.tarball_contents
     }
 
     if (experiment == "RNA-Seq") {
@@ -117,31 +114,25 @@ workflow quality_check {
 
         call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, name_sorted=true, paired_end=paired_end, max_retries=max_retries }
-        
-        call util.unpack_tarball as unpack_qualimap_rnaseq { input: tarball=qualimap_rnaseq.results, max_retries=max_retries }
-        Array[File] rna_multiqc_inputs = flatten([unpack_qualimap_rnaseq.tarball_contents, [
-            select_first([star_log, ""]),
-            ngsderive_strandedness.strandedness_file,
-            junction_annotation.junction_summary
-        ]])
     }
 
-    call util.unpack_tarball as unpack_fastqc { input: tarball=fastqc.results, max_retries=max_retries }
-    Array[File] common_multiqc_inputs = flatten([unpack_fastqc.tarball_contents, [
-        validate_bam.out,
-        samtools_flagstat.outfile,
-        ngsderive_instrument.instrument_file,
-        ngsderive_read_length.read_length_file,
-        ngsderive_encoding.encoding_file
-    ]])
-
-    Array[File] multiqc_inputs = flatten([
-        common_multiqc_inputs,
-        select_first([wgs_wes_multiqc_inputs, []]),
-        select_first([rna_multiqc_inputs, []])
-    ])
-
-    call mqc.multiqc { input: input_files=multiqc_inputs, max_retries=max_retries }
+    call mqc.multiqc { input:
+        input_files=[
+            validate_bam.out,
+            samtools_flagstat.outfile,
+            ngsderive_instrument.instrument_file,
+            ngsderive_read_length.read_length_file,
+            ngsderive_encoding.encoding_file,
+            fastqc.raw_data,
+            select_first([fastq_screen.raw_data, ""]),
+            select_first([star_log, ""]),
+            select_first([ngsderive_strandedness.strandedness_file, ""]),
+            select_first([junction_annotation.junction_summary, ""]),
+            select_first([qualimap_rnaseq.raw_summary, ""]),
+            select_first([qualimap_rnaseq.raw_coverage, ""])
+        ],
+        max_retries=max_retries
+    }
 
     # `qualimap bamqc` is required for a qc summary to be generated.
     if (use_bamqc) {
