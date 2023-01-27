@@ -9,7 +9,7 @@ task sequencerr {
     input {
         File bam
         File bai
-        String? prefix = basename(bam, ".bam") + ".sequencErr"
+        String prefix = basename(bam, ".bam") + ".sequencErr"
         Boolean output_count_file = false
         Int max_retries = 1
     }

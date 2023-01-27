@@ -18,10 +18,29 @@ jobs:
         EXITCODE=0
         for file in $(find . -name '*.wdl'); do
           >&2 echo "Checking file $file..."
-          import_lines=$(awk '/import/' "$file")
-          bad_lines=$(echo "$import_lines" | awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows\/master/ && !/https:\/\/raw.githubusercontent.com\/stjude\/xenocp\/master/ && !/https:\/\/raw.githubusercontent.com\/stjude\/seaseq\/master/' | grep -v '# lint-check: ignore') || true
+          import_lines=$(awk '/import/' "$file" | grep -v '# lint-check: ignore') || true
+
+          bad_lines=$(echo "$import_lines" | awk '!/https:/')
           if [ -n "$bad_lines" ]; then
-            >&2 echo "Must import files from the master branch on Github."
+            >&2 echo "Must import files from a URL!"
+            >&2 echo "The following lines are bad:"
+            >&2 echo "$bad_lines"
+            >&2 echo ""
+            EXITCODE=1
+          fi
+
+          bad_lines=$(echo "$import_lines" | awk '/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows/ && !/master/') || true
+          if [ -n "$bad_lines" ]; then
+            >&2 echo "Imports from this repo must use the master branch!"
+            >&2 echo "The following lines are bad:"
+            >&2 echo "$bad_lines"
+            >&2 echo ""
+            EXITCODE=1
+          fi
+          
+          bad_lines=$(echo "$import_lines" | awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows/ && /master/') || true
+          if [ -n "$bad_lines" ]; then
+            >&2 echo "Imports from external repos must use a tagged release!"
             >&2 echo "The following lines are bad:"
             >&2 echo "$bad_lines"
             >&2 echo ""
@@ -33,9 +52,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Ensure SemVer'd docker images are being pulled
+    - name: Ensure current SemVer'd docker images are being pulled
       run: |
         EXITCODE=0
+        files=$(find docker/ -name Dockerfile)
+        for file in $files; do
+          echo "$file" | awk -F '/' '{print tolower($2) ":" $3}' >> valid_dockerimages.txt
+        done
         files=$(find . -name '*.wdl')
         for file in $files; do
           while IFS= read -r line; do
@@ -46,6 +69,23 @@ jobs:
               >&2 echo "In file: $file"
               EXITCODE=1
             fi
+
+            tool=$(echo "$line" | awk -F ':' '{print substr($2, 23, length($2)) ":" substr($3, 1, length($3)-1)}')
+            case `grep -Fx "$tool" valid_dockerimages.txt >/dev/null; echo $?` in
+              0)
+                # valid docker image
+                ;;
+              1)
+                >&2 echo "Must use a current Docker image"
+                >&2 echo "Offending line: $line"
+                >&2 echo "In file: $file"
+                EXITCODE=1
+                ;;
+              *)
+                >&2 echo "Something went wrong while checking for current Docker images!"
+                EXITCODE=2
+                ;;
+            esac
           done < <(awk '/docker: .*stjudecloud/' < "$file")
         done
         exit $EXITCODE

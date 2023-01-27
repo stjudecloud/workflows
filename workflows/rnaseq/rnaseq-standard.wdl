@@ -41,7 +41,8 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/hts
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
-import "https://raw.githubusercontent.com/stjude/xenocp/master/wdl/workflows/xenocp.wdl" as xenocp_workflow
+import "https://raw.githubusercontent.com/stjude/XenoCP/3.1.4/wdl/workflows/xenocp.wdl" as xenocp_workflow
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
 
 workflow rnaseq_standard {
     input {
@@ -155,7 +156,7 @@ task parse_input {
 
     runtime {
         disk: "1 GB"
-        docker: 'ghcr.io/stjudecloud/util:1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
     }
 
     output {
