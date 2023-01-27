@@ -91,8 +91,11 @@ workflow scrnaseq_standard {
     call picard.validate_bam { input: bam=count.bam, max_retries=max_retries }
     call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=count.bam, bai=count.bam_index, gtf=gtf, max_retries=max_retries }
 
+    call md5sum.compute_checksum { input: infile=count.bam, max_retries=max_retries }
+
     output {
         File bam = count.bam
+        File bam_checksum = compute_checksum.outfile
         File bam_index = count.bam_index
         File qc = count.qc
         File barcodes = count.barcodes

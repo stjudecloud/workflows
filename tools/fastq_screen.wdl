@@ -96,6 +96,8 @@ task fastq_screen {
         mkdir ~{out_directory}
         mv "~{out_file_prefix}"* "~{out_directory}"
         tar -czf ~{out_tar_gz} ~{out_directory}
+
+        rm -r /tmp/FastQ_Screen_Genomes/
     >>>
  
     runtime {

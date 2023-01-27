@@ -116,11 +116,14 @@ workflow rnaseq_standard {
     File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
     File aligned_bai = select_first([xenocp.bam_index, samtools_index.bai])
 
+    call md5sum.compute_checksum { input: infile=aligned_bam, max_retries=max_retries }
+
     call htseq.count as htseq_count { input: bam=aligned_bam, gtf=gtf, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, max_retries=max_retries }
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=aligned_bam, bai=aligned_bai, max_retries=max_retries }
 
     output {
         File bam = aligned_bam
+        File bam_checksum = compute_checksum.outfile
         File bam_index = aligned_bai
         File star_log = alignment.star_log
         File gene_counts = htseq_count.out

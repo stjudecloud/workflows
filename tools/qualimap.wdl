@@ -65,12 +65,13 @@ task rnaseq {
     input {
         File bam
         File gtf
-        Int memory_gb = 16
-        Int? disk_size_gb
-        Int max_retries = 1
+        Boolean name_sorted = false
         Boolean paired_end = false
         String provided_strandedness = ""
         String inferred_strandedness = ""
+        Int memory_gb = 16
+        Int? disk_size_gb
+        Int max_retries = 1
     }
 
     String out_directory = basename(bam, ".bam") + ".qualimap_rnaseq_results"
@@ -86,6 +87,7 @@ task rnaseq {
                         if (inferred_strandedness == "Unstranded") then "non-strand-specific" else
                         "unknown-strand" # this will intentionally cause qualimap to error. You will need to manually specify
                                          # in this case
+    String name_sorted_arg = if (name_sorted) then "-s" else ""
     String paired_end_arg = if (paired_end) then "-pe" else ""
 
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -105,6 +107,7 @@ task rnaseq {
                         -outdir ~{out_directory} \
                         -oc qualimap_counts.txt \
                         -p ~{stranded} \
+                        ~{name_sorted_arg} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
         rm "$gtf_name"
