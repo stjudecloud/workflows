@@ -339,10 +339,11 @@ task unpack_tarball {
     Int disk_size = ceil(tarball_size * 8) + extra_disk_GB
 
     command <<<
-        tar -tf ~{tarball} > tar_list.txt
-        tar -xzf ~{tarball}
+        set -euo pipefail
 
-        find "$(head -n 1 tar_list.txt)" -type f > file_list.txt
+        mkdir unpacked_tarball
+        tar -C unpacked_tarball -xzf ~{tarball}
+        find unpacked_tarball/ -type f > file_list.txt
     >>>
 
     runtime {
