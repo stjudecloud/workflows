@@ -63,8 +63,8 @@ task split {
             n_cores=$(nproc)
         fi
 
-        samtools split --threads $n_cores -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
-        samtools view  --threads $n_cores ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
+        samtools split --threads "$n_cores" -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
+        samtools view  --threads "$n_cores" ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
         if ~{reject_unaccounted} && [ -s unaccounted_reads.bam ]
             then exit 1; 
             else rm ~{prefix}.unaccounted_reads.bam
@@ -153,7 +153,7 @@ task index {
             n_cores=$(nproc)
         fi
 
-        samtools index -@ $n_cores ~{bam} ~{outfile}
+        samtools index -@ "$n_cores" ~{bam} ~{outfile}
     }
 
     runtime {
@@ -203,18 +203,18 @@ task subsample {
             n_cores=$(nproc)
         fi
 
-        if [[ "$(samtools view --threads $n_cores ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
+        if [[ "$(samtools view --threads "$n_cores" ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
             # subsample it.
             initial_frac=0.00001
-            initial_reads=$(samtools view --threads $n_cores -s $initial_frac ~{bam} | wc -l)
+            initial_reads=$(samtools view --threads "$n_cores" -s "$initial_frac" ~{bam} | wc -l)
             frac=$( \
                 awk -v desired_reads=~{desired_reads} \
                     -v initial_reads="$initial_reads" \
-                    -v initial_frac=$initial_frac \
+                    -v initial_frac="$initial_frac" \
                         'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
                 )
-            samtools view --threads $n_cores -h -b -s "$frac" ~{bam} > ~{outname}
+            samtools view --threads "$n_cores" -h -b -s "$frac" ~{bam} > ~{outname}
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
@@ -265,7 +265,7 @@ task merge {
             header_arg="-h ~{new_header}"
         fi
 
-        samtools merge --threads $n_cores $header_arg ~{rg_arg} ~{outname} ~{sep=' ' bams}
+        samtools merge --threads "$n_cores" $header_arg ~{rg_arg} ~{outname} ~{sep=' ' bams}
 
     >>>
 
@@ -304,7 +304,7 @@ task addreplacerg {
             n_cores=$(nproc)
         fi
 
-        samtools addreplacerg --threads $n_cores -R ~{read_group_id} -o ~{outname} ~{bam}
+        samtools addreplacerg --threads "$n_cores" -R ~{read_group_id} -o ~{outname} ~{bam}
     >>>
 
     output {

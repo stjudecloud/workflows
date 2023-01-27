@@ -10,8 +10,8 @@ task count {
         String id
         File transcriptome_tar_gz
         File fastqs_tar_gz
-        String sample_id
-        Int cpu = 8
+        String? sample_id
+        Int ncpu = 8
         Int memory_gb = 16
         String jobmode = "local"
         Int max_retries = 1
@@ -20,24 +20,37 @@ task count {
 
     Float fastq_size = size(fastqs_tar_gz, "GiB")
     Int disk_size = ceil((fastq_size * 2) + 10)
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ -n ~{parsed_detect_nproc} ]
+        then
+            n_cores=$(nproc)
+        fi
+
         mkdir transcriptome_dir
         tar zxf ~{transcriptome_tar_gz} -C transcriptome_dir --strip-components 1
    
         mkdir fastqs
         tar zxf ~{fastqs_tar_gz} -C fastqs
 
-        files=(fastqs/*.fastq.gz)
-        sample_id=$(basename ${files[0]} "_S1_L001_R1_001.fastq.gz")
+        if [ -z ~{sample_id} ]; then
+            files=(fastqs/*.fastq.gz)
+            # expected sample name extension comes from:
+            # https://support.illumina.com/content/dam/illumina-support/documents/documentation/software_documentation/bcl2fastq/bcl2fastq2-v2-20-software-guide-15051736-03.pdf
+            sample_id="$(basename "${files[0]}" '_S1_L001_R1_001.fastq.gz')"
+        fi
 
         cellranger count \
             --id ~{id} \
             --transcriptome transcriptome_dir \
             --fastqs fastqs \
-            --sample ${sample_id} \
+            --sample "${sample_id}" \
             --jobmode ~{jobmode} \
-            --localcores ~{cpu} \
+            --localcores "$n_cores" \
             --localmem ~{memory_gb} \
             --disable-ui
 
@@ -47,9 +60,9 @@ task count {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: "ghcr.io/stjudecloud/cellranger:1.0.0"
+        docker: "ghcr.io/stjudecloud/cellranger:1.1.0"
         maxRetries: max_retries
-        cpu: cpu
+        cpu: ncpu
     }
 
     output {
@@ -88,10 +101,11 @@ task bamtofastq {
         File bam
         Int ncpu = 4
         Int memory_gb = 8
-        Int max_retries = 1
         Boolean cellranger11 = false
         Boolean longranger20 = false
         Boolean gemcode = false
+        Boolean detect_nproc = false
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -101,17 +115,26 @@ task bamtofastq {
                         else if (longranger20) then "--lr10"
                         else if (gemcode) then "--gemcode"
                         else ""
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
-        bamtofastq --nthreads ~{ncpu} ~{data_arg} ~{bam} fastqs
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ -n ~{parsed_detect_nproc} ]
+        then
+            n_cores=$(nproc)
+        fi
+        
+        bamtofastq --nthreads "$n_cores" ~{data_arg} ~{bam} fastqs
         cd fastqs/*/
-        tar -zcf archive.tar.gz *.fastq.gz
+        tar -zcf archive.tar.gz ./*.fastq.gz
     >>>
 
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: "ghcr.io/stjudecloud/cellranger:1.0.0"
+        docker: "ghcr.io/stjudecloud/cellranger:1.1.0"
         maxRetries: max_retries
         cpu: ncpu
     }
