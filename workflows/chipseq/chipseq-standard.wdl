@@ -30,15 +30,15 @@
 version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/workflows/mapping.wdl" as seaseq_map
-import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/tasks/seaseq_util.wdl" as seaseq_util
+import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl" as seaseq_map
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/bwa.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/tasks/samtools.wdl" as seaseq_samtools
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/md5sum.wdl"
 
 workflow chipseq_standard {
     input {
@@ -155,7 +155,7 @@ task parse_input {
 
     runtime {
         disk: "1 GB"
-        docker: 'ghcr.io/stjudecloud/util:1.1.0'
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
     }
 
     output {

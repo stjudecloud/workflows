@@ -43,29 +43,25 @@ version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/cellranger.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/picard.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/fq.wdl"
 
 workflow cell_ranger_bam_to_fastqs {
     input {
         File bam
         String pairing = "Paired-end"
-        String split_output_format = "%*_%!.%."
-        Int samtools_sort_ncpu = 1
         Int bam_to_fastq_memory_gb = 40
-        Int max_retries = 1
         Boolean detect_nproc = false
+        Int max_retries = 1
     }
 
     parameter_meta {
         bam: "BAM file to split into fastqs."
-        samtools_sort_ncpu: "Number of CPUs to use while sorting the BAM."
         bam_to_fastq_memory_gb: "How much memory to provide while converting to fastqs."
         max_retries: "Maximum number of times to retry on a failure."
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call cellranger.bamtofastq { input: bam=bam } 
+    call cellranger.bamtofastq { input: bam=bam, memory_gb=bam_to_fastq_memory_gb, max_retries=max_retries } 
     scatter (reads in zip(bamtofastq.read1, bamtofastq.read2)) {
         if (pairing == "Paired-end") {
             call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }

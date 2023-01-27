@@ -37,11 +37,11 @@ task bwa_aln {
         tar -C bwa -xzf ~{bwadb_tar_gz}
         PREFIX=$(basename bwa/*.ann ".ann")
 
-        bwa aln -t ${n_cores} bwa/$PREFIX ~{fastq} > sai
+        bwa aln -t "${n_cores}" bwa/"$PREFIX" ~{fastq} > sai
 
         bwa samse \
-        ~{"-r '" + read_group}~{true="'" false="" defined(read_group)} \
-        bwa/$PREFIX sai ~{fastq} | samtools view -@ ${n_cores} -hb - > ~{output_bam}
+            ~{if read_group != "" then "-r '" else ""}~{read_group}~{if read_group != "" then "'" else ""} \
+            bwa/"$PREFIX" sai ~{fastq} | samtools view -@ "${n_cores}" -hb - > ~{output_bam}
     >>>
 
     runtime {
@@ -101,12 +101,12 @@ task bwa_aln_pe {
         tar -C bwa -xzf ~{bwadb_tar_gz}
         PREFIX=$(basename bwa/*.ann ".ann")
 
-        bwa aln -t ${n_cores} bwa/$PREFIX ~{fastq1} > sai_1
-        bwa aln -t ${n_cores} bwa/$PREFIX ~{fastq2} > sai_2
+        bwa aln -t "${n_cores}" bwa/"$PREFIX" ~{fastq1} > sai_1
+        bwa aln -t "${n_cores}" bwa/"$PREFIX" ~{fastq2} > sai_2
 
         bwa sampe \
-        ~{"-r '" + read_group}~{true="'" false="" defined(read_group)} \
-        bwa/$PREFIX sai_1 sai_2 ~{fastq1} ~{fastq2} | samtools view -@ ${n_cores} -hb - > ~{output_bam}
+             ~{if read_group != "" then "-r '" else ""}~{read_group}~{if read_group != "" then "'" else ""} \
+            bwa/"$PREFIX" sai_1 sai_2 ~{fastq1} ~{fastq2} | samtools view -@ "${n_cores}" -hb - > ~{output_bam}
     >>>
 
     runtime {
@@ -167,9 +167,9 @@ task bwa_mem {
         PREFIX=$(basename bwa/*.ann ".ann")
 
         bwa mem \
-        -t $n_cores \
-        ~{"-R '" + read_group}~{true="'" false="" defined(read_group)} \
-        bwa/$PREFIX ~{fastq} | samtools view -b - > ~{output_bam}
+            -t "$n_cores" \
+            ~{if read_group != "" then "-r '" else ""}~{read_group}~{if read_group != "" then "'" else ""} \
+            bwa/"$PREFIX" ~{fastq} | samtools view -b - > ~{output_bam}
     >>>
 
     runtime {
@@ -213,11 +213,11 @@ task build_bwa_db {
 
         orig_fasta=~{reference_fasta}
         ref_fasta=$(basename "${orig_fasta%.gz}")
-        gunzip -c ~{reference_fasta} > $ref_fasta || cp ~{reference_fasta} $ref_fasta
+        gunzip -c ~{reference_fasta} > "$ref_fasta" || cp ~{reference_fasta} "$ref_fasta"
 
-        bwa index $ref_fasta
+        bwa index "$ref_fasta"
 
-        tar -czf ~{bwadb_out_name} ${ref_fasta}*
+        tar -czf ~{bwadb_out_name} "${ref_fasta}*"
     >>>
 
     runtime {
