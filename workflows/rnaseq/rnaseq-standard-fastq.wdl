@@ -36,6 +36,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/hts
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
 import "https://raw.githubusercontent.com/stjude/XenoCP/3.1.4/wdl/workflows/xenocp.wdl" as xenocp_workflow
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
 
 workflow rnaseq_standard_fastq {
     input {

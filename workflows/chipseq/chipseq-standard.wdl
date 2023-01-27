@@ -38,6 +38,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/sam
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
 
 workflow chipseq_standard {
     input {
