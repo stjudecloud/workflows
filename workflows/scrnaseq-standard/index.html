@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>BWA DB build - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Scrnaseq standard - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "BWA DB build";
-        var mkdocs_page_input_path = "workflows/bwa-db-build.md";
+        var mkdocs_page_name = "Scrnaseq standard";
+        var mkdocs_page_input_path = "workflows/scrnaseq-standard.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -93,33 +93,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">BWA DB build</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#output">Output</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#mit-license">MIT License</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bwa_db_build">bwa_db_build</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
@@ -131,7 +105,11 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../scrnaseq-standard/">Scrnaseq standard</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Scrnaseq standard</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#mit-license">MIT License</a>
+    </li>
+    </ul>
                   </li>
               </ul>
       </div>
@@ -149,9 +127,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" alt="Docs"></a> &raquo;</li>
           <li>Workflows &raquo;</li>
-      <li>BWA DB build</li>
+      <li>Scrnaseq standard</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/bwa-db-build.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/scrnaseq-standard.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -159,18 +137,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="bwa-db-build">BWA DB build</h1>
-<p>This WDL workflow generates a set of genome reference files usable by the BWA aligner from an input reference file in FASTA format.  </p>
-<h3 id="output">Output</h3>
-<dl>
-<dt>reference_fa</dt>
-<dd>the reference FASTA file</dd>
-<dt>bwadb_tar_gz</dt>
-<dd>the BWA reference folder in .tar.gz format</dd>
-</dl>
+                <p>scRNA-Seq Standard</p>
+<p>This WDL workflow runs the Cell Ranger scRNA-seq alignment workflow for St. Jude Cloud.</p>
+<p>The workflow takes an input BAM file and splits it into fastq files for each read in the pair. 
+The read pairs are then passed through Cell Ranger to generate a BAM file and perform
+quantification. Strandedness is inferred using ngsderive.
+File validation is performed at several steps, including immediately preceeding output.</p>
 <h2 id="licensing">LICENSING</h2>
 <h4 id="mit-license">MIT License</h4>
-<p>Copyright 2020-Present St. Jude Children's Research Hospital</p>
+<p>Copyright 2022-Present St. Jude Children's Research Hospital</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
 software and associated documentation files (the "Software"), to deal in the Software
 without restriction, including without limitation the rights to use, copy, modify, merge,
@@ -183,35 +158,92 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="bwa_db_build">bwa_db_build</h2>
+<h2 id="scrnaseq_standard">scrnaseq_standard</h2>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of output reference FASTA file</li>
-<li><code>reference_fa_url</code> (String, <strong>required</strong>): URL to retrieve the reference FASTA file from.</li>
+<li><code>gtf</code> (File, <strong>required</strong>)</li>
+<li><code>input_bam</code> (File, <strong>required</strong>): Input BAM format file to quality check</li>
+<li><code>transcriptome_tar_gz</code> (File, <strong>required</strong>): Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>build_bwa_db.disk_size_gb</code> (Int?)</li>
+<li><code>cell_ranger_bam_to_fastqs.fqlint_single.read2</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>build_bwa_db.max_retries</code> (Int, default=1)</li>
-<li><code>build_bwa_db.memory_gb</code> (Int, default=5)</li>
-<li><code>reference_download.disk_size_GB</code> (Int, default=10)</li>
-<li><code>reference_download.max_retries</code> (Int, default=1)</li>
+<li><code>detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
+<li><code>output_prefix</code> (String, default=basename(input_bam,".bam")): Prefix for output files</li>
+<li><code>strandedness</code> (String, default=""): empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred</li>
+<li><code>subsample_n_reads</code> (Int, default=-1): Only process a random sampling of <code>n</code> reads. &lt;=<code>0</code> for processing entire input BAM.</li>
+<li><code>validate_input</code> (Boolean, default=true)</li>
+<li><code>cell_ranger_bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
+<li><code>cell_ranger_bam_to_fastqs.pairing</code> (String, default="Paired-end")</li>
+<li><code>compute_checksum.memory_gb</code> (Int, default=5)</li>
+<li><code>count.jobmode</code> (String, default="local")</li>
+<li><code>count.memory_gb</code> (Int, default=16)</li>
+<li><code>count.ncpu</code> (Int, default=8)</li>
+<li><code>ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
+<li><code>subsample.ncpu</code> (Int, default=1)</li>
+<li><code>subsample.outname</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
+<li><code>validate_bam.ignore_list</code> (Array[String], default=["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"])</li>
+<li><code>validate_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>validate_bam.max_errors</code> (Int, default=2147483647)</li>
+<li><code>validate_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>validate_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
+<li><code>validate_bam.succeed_on_errors</code> (Boolean, default=false)</li>
+<li><code>validate_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
+<li><code>validate_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>validate_input_bam.ignore_list</code> (Array[String], default=["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"])</li>
+<li><code>validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>validate_input_bam.max_errors</code> (Int, default=2147483647)</li>
+<li><code>validate_input_bam.memory_gb</code> (Int, default=8)</li>
+<li><code>validate_input_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
+<li><code>validate_input_bam.succeed_on_errors</code> (Boolean, default=false)</li>
+<li><code>validate_input_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
+<li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>cell_ranger_bam_to_fastqs.bamtofastq.cellranger11</code> (Boolean, default=false)</li>
+<li><code>cell_ranger_bam_to_fastqs.bamtofastq.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
+<li><code>cell_ranger_bam_to_fastqs.bamtofastq.gemcode</code> (Boolean, default=false)</li>
+<li><code>cell_ranger_bam_to_fastqs.bamtofastq.longranger20</code> (Boolean, default=false)</li>
+<li><code>cell_ranger_bam_to_fastqs.bamtofastq.ncpu</code> (Int, default=4)</li>
+<li><code>cell_ranger_bam_to_fastqs.fqlint_pair.memory_gb</code> (Int, default=8)</li>
+<li><code>cell_ranger_bam_to_fastqs.fqlint_single.memory_gb</code> (Int, default=8)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>reference_fa</code> (File)</li>
-<li><code>bwadb_tar_gz</code> (File)</li>
+<li><code>bam</code> (File)</li>
+<li><code>bam_checksum</code> (File)</li>
+<li><code>bam_index</code> (File)</li>
+<li><code>qc</code> (File)</li>
+<li><code>barcodes</code> (File)</li>
+<li><code>features</code> (File)</li>
+<li><code>matrix</code> (File)</li>
+<li><code>filtered_gene_h5</code> (File)</li>
+<li><code>raw_gene_h5</code> (File)</li>
+<li><code>raw_barcodes</code> (File)</li>
+<li><code>raw_features</code> (File)</li>
+<li><code>raw_matrix</code> (File)</li>
+<li><code>mol_info_h5</code> (File)</li>
+<li><code>web_summary</code> (File)</li>
+<li><code>inferred_strandedness</code> (File)</li>
+</ul>
+<h2 id="parse_input">parse_input</h2>
+<h3 id="inputs_1">Inputs</h3>
+<h4 id="required_1">Required</h4>
+<ul>
+<li><code>input_strand</code> (String, <strong>required</strong>)</li>
+</ul>
+<h3 id="outputs_1">Outputs</h3>
+<ul>
+<li><code>input_check</code> (String)</li>
 </ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../bam-to-fastqs/" class="btn btn-neutral float-left" title="Bam to FastQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../calc-gene-lengths/" class="btn btn-neutral float-right" title="Calculate Gene Lengths">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../rnaseq-star-db-build/" class="btn btn-neutral float-left" title="RNASeq STAR DB build"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -239,10 +271,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
         </span>
     
     
-      <span><a href="../bam-to-fastqs/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../rnaseq-star-db-build/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-    
-      <span><a href="../calc-gene-lengths/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
