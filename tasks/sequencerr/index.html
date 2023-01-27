@@ -86,8 +86,6 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
-    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -159,14 +157,11 @@ sequencErr approximates error rates in Illumina sequencing machines down to tile
 <li><code>bai</code> (File, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>)</li>
 </ul>
-<h4 id="optional">Optional</h4>
-<ul>
-<li><code>prefix</code> (String?)</li>
-</ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>output_count_file</code> (Boolean, default=false): Whether to output granular count file. Result file is large; uncompressed can reach over half input BAM size, compressed can be ~10% BAM size.</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam") + ".sequencErr")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
