@@ -41,7 +41,8 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/hts
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
-import "https://raw.githubusercontent.com/stjude/xenocp/master/wdl/workflows/xenocp.wdl" as xenocp_workflow
+import "https://raw.githubusercontent.com/stjude/XenoCP/3.1.4/wdl/workflows/xenocp.wdl" as xenocp_workflow
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
 
 workflow rnaseq_standard {
     input {
@@ -116,11 +117,14 @@ workflow rnaseq_standard {
     File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
     File aligned_bai = select_first([xenocp.bam_index, samtools_index.bai])
 
+    call md5sum.compute_checksum { input: infile=aligned_bam, max_retries=max_retries }
+
     call htseq.count as htseq_count { input: bam=aligned_bam, gtf=gtf, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, max_retries=max_retries }
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=aligned_bam, bai=aligned_bai, max_retries=max_retries }
 
     output {
         File bam = aligned_bam
+        File bam_checksum = compute_checksum.outfile
         File bam_index = aligned_bai
         File star_log = alignment.star_log
         File gene_counts = htseq_count.out
@@ -152,7 +156,7 @@ task parse_input {
 
     runtime {
         disk: "1 GB"
-        docker: 'ghcr.io/stjudecloud/util:1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
     }
 
     output {

@@ -2,10 +2,10 @@ FROM rust:1.59.0 as fqlib-builder
 
 RUN cargo install \
       --git https://github.com/stjude-rust-labs/fq.git \
-      --tag v0.8.0 \
+      --tag v0.9.1 \
       --root /opt/fqlib/
 
-FROM ubuntu:18.04 as builder
+FROM ubuntu:20.04 as builder
 
 COPY --from=fqlib-builder /opt/fqlib/bin/fq /usr/local/bin/
 

@@ -30,15 +30,15 @@
 version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/workflows/mapping.wdl" as seaseq_map
-import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/tasks/seaseq_util.wdl" as seaseq_util
+import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl" as seaseq_map
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/bwa.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjude/seaseq/master/workflows/tasks/samtools.wdl" as seaseq_samtools
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
 
 workflow chipseq_standard {
     input {
@@ -129,10 +129,13 @@ workflow chipseq_standard {
     call samtools.index as samtools_index { input: bam=markdup.mkdupbam, max_retries=max_retries, detect_nproc=detect_nproc }
     call picard.validate_bam { input: bam=markdup.mkdupbam, max_retries=max_retries }
 
+    call md5sum.compute_checksum { input: infile=markdup.mkdupbam, max_retries=max_retries }
+
     call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=markdup.mkdupbam, bai=samtools_index.bai, prefix=output_prefix, max_retries=max_retries }
 
     output {
         File bam = markdup.mkdupbam
+        File bam_checksum = compute_checksum.outfile
         File bam_index = samtools_index.bai
         File bigwig = deeptools_bamCoverage.bigwig
     }
@@ -152,7 +155,7 @@ task parse_input {
 
     runtime {
         disk: "1 GB"
-        docker: 'ghcr.io/stjudecloud/util:1.1.0'
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
     }
 
     output {

@@ -15,7 +15,7 @@ task download {
 
     runtime {
         disk: disk_size_GB + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
 
@@ -98,39 +98,13 @@ task split_string {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.0.0'
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
 
     output {
         File output_file = "output.txt"
         Array[String] out = read_lines("output.txt")
-    }
-}
-
-task file_prefix {
-    input {
-        File in_file
-        Int max_retries = 1
-    }
-
-    Float infile_size = size(in_file, "GiB")
-    Int disk_size = ceil(infile_size * 2)
-
-    command <<<
-        set -euo pipefail
-        
-        basename ~{in_file} | awk -F '.' '{print $1}' > prefix.txt
-    >>>
-
-    runtime {
-        disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.0.0'
-        maxRetries: max_retries
-    }
-
-    output { 
-        File out = "prefix.txt"
     }
 }
 
@@ -198,7 +172,7 @@ END
     runtime {
         memory: "8 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/gtfparse:1.1.3'
+        docker: 'ghcr.io/stjudecloud/gtfparse:1.0.2'
         maxRetries: max_retries
     }
 
