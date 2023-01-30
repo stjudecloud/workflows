@@ -172,7 +172,7 @@ END
     runtime {
         memory: "8 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/gtfparse:1.0.2'
+        docker: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
         maxRetries: max_retries
     }
 
