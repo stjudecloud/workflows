@@ -9,6 +9,7 @@ task multiqc {
     input {
         Array[File]+ input_files
         String output_prefix
+        Array[String] extra_fn_clean_exts = []
         Int max_retries = 1
         Int memory_gb = 5
         Int disk_size = 20
@@ -26,7 +27,14 @@ task multiqc {
         
         echo ~{sep="\n" input_files} > file_list.txt
 
-        multiqc --verbose -c /home/.multiqc_config.yaml \
+        echo ~{sep="\n" extra_fn_clean_exts} > extensions.txt
+
+        echo "extra_fn_clean_exts:" > multiqc_config.yaml
+        while read -r ext; do
+            echo "    - \'$ext\'" >> multiqc_config.yaml
+        done < extensions.txt
+
+        multiqc -vvv -c multiqc_config.yaml \
             --file-list file_list.txt -o ~{out_directory}
         
         if [ ! -d ~{out_directory} ]; then
@@ -39,7 +47,7 @@ task multiqc {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/multiqc:1.3.5'
+        docker: 'quay.io/biocontainers/multiqc:1.14--pyhdfd78af_0'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
