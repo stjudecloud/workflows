@@ -136,13 +136,13 @@ workflow quality_check {
     }
 
     # `qualimap bamqc` is required for a qc summary to be generated.
-    if (use_bamqc) {
-        call util.qc_summary {
-            input:
-                multiqc_tar_gz=multiqc.out,
-                max_retries=max_retries
-        }
-    }
+    # if (use_bamqc) {
+    #     call util.qc_summary {
+    #         input:
+    #             multiqc_tar_gz=multiqc.out,
+    #             max_retries=max_retries
+    #     }
+    # }
 
     output {
         File bam_checksum = compute_checksum.outfile
@@ -159,7 +159,7 @@ workflow quality_check {
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
         File? junctions = junction_annotation.junctions
-        File? qc_summary_file = qc_summary.out
+        # File? qc_summary_file = qc_summary.out
     }
 }
 
