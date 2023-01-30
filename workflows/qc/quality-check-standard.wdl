@@ -131,6 +131,7 @@ workflow quality_check {
             select_first([qualimap_rnaseq.raw_summary, ""]),
             select_first([qualimap_rnaseq.raw_coverage, ""])
         ],
+        output_prefix=basename(bam, '.bam'),
         max_retries=max_retries
     }
 
@@ -151,7 +152,7 @@ workflow quality_check {
         File instrument_file = ngsderive_instrument.instrument_file
         File read_length_file = ngsderive_read_length.read_length_file
         File inferred_encoding = ngsderive_encoding.encoding_file
-        File multiqc_zip = multiqc.out
+        File multiqc_results = multiqc.out
         File? qualimap_bamqc_results = qualimap_bamqc.results
         File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
