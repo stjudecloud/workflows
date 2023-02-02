@@ -311,7 +311,7 @@ task collect_wgs_metrics {
     input {
         File bam
         File reference_fasta
-        Int memory_gb = 8
+        Int memory_gb = 12
         Int? disk_size_gb
         Int max_retries = 1
     }
@@ -350,7 +350,7 @@ task collect_wgs_metrics_with_nonzero_coverage {
     input {
         File bam
         File reference_fasta
-        Int memory_gb = 8
+        Int memory_gb = 12
         Int? disk_size_gb
         Int max_retries = 1
     }
