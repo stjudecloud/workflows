@@ -124,12 +124,12 @@ workflow quality_check {
             ngsderive_read_length.read_length_file,
             ngsderive_encoding.encoding_file,
             fastqc.raw_data,
-            select_first([fastq_screen.raw_data, ""]),
-            select_first([star_log, ""]),
-            select_first([ngsderive_strandedness.strandedness_file, ""]),
-            select_first([junction_annotation.junction_summary, ""]),
-            select_first([qualimap_rnaseq.raw_summary, ""]),
-            select_first([qualimap_rnaseq.raw_coverage, ""])
+            fastq_screen.raw_data,
+            star_log,
+            ngsderive_strandedness.strandedness_file,
+            junction_annotation.junction_summary,
+            qualimap_rnaseq.raw_summary,
+            qualimap_rnaseq.raw_coverage
         ],
         output_prefix=basename(bam, '.bam'),
         extra_fn_clean_exts=[".qualimap_bamqc_results", ".subsampled", ".ValidateSamFile"],
