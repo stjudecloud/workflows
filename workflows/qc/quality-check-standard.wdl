@@ -85,12 +85,10 @@ workflow quality_check {
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call util.compression_integrity { input: bam=bam, max_retries=max_retries }
 
-    call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
     call picard.collect_alignment_summary_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call picard.collect_gc_bias_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
     call picard.collect_insert_size_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call picard.quality_score_distribution { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    call mosdepth.coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
     call samtools.flagstat as samtools_flagstat { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call fqc.fastqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=quickcheck.checked_bam, max_retries=max_retries }
@@ -99,6 +97,10 @@ workflow quality_check {
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
     String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
 
+    if (experiment == "WGS") {
+        call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
+        call mosdepth.coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
+    }
     if (experiment == "WES" || experiment == "RNA-Seq") {
         call picard.collect_wgs_metrics_with_nonzero_coverage { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta }
     }
