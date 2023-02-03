@@ -25,9 +25,9 @@ task multiqc {
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
         
-        echo ~{sep="\n" input_files} > file_list.txt
+        echo "~{sep="\n" input_files}" > file_list.txt
 
-        echo ~{sep="\n" extra_fn_clean_exts} > extensions.txt
+        echo "~{sep="\n" extra_fn_clean_exts}" > extensions.txt
 
         echo "extra_fn_clean_exts:" > multiqc_config.yaml
         while read -r ext; do
