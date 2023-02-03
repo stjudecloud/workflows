@@ -7,7 +7,7 @@ version 1.0
 
 task multiqc {
     input {
-        Array[File?]+ input_files
+        Array[File]+ input_files
         String output_prefix
         Array[String] extra_fn_clean_exts = []
         Int max_retries = 1
