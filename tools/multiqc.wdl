@@ -31,7 +31,7 @@ task multiqc {
 
         echo "extra_fn_clean_exts:" > multiqc_config.yaml
         while read -r ext; do
-            echo "    - \'$ext\'" >> multiqc_config.yaml
+            echo "    - $ext" >> multiqc_config.yaml
         done < extensions.txt
 
         multiqc -vvv -c multiqc_config.yaml \
