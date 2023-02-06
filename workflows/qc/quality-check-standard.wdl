@@ -132,7 +132,7 @@ workflow quality_check {
             qualimap_rnaseq.raw_coverage
         ]),
         output_prefix=basename(bam, '.bam'),
-        extra_fn_clean_exts=[".qualimap_bamqc_results", ".subsampled", ".ValidateSamFile"],
+        extra_fn_clean_exts=[".ValidateSamFile"],
         max_retries=max_retries
     }
 
