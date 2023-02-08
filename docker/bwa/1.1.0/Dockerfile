@@ -1,6 +1,8 @@
-FROM ghcr.io/stjudecloud/conda-base:1.1.1 AS builder
+FROM continuumio/miniconda3:4.10.3
 
-RUN conda create -n bwa \
+RUN echo 'channels:\n  - conda-forge\n  - bioconda\n' > /root/.condarc \
+    && conda config --set channel_priority strict \
+    && conda create -n bwa \
     bwa==0.7.17 \
     samtools==1.11 \
     -y \

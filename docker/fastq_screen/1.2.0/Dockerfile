@@ -1,6 +1,8 @@
-FROM ghcr.io/stjudecloud/conda-base:1.1.1 AS builder
+FROM continuumio/miniconda3:4.10.3
 
-RUN conda create -n fastq_screen \
+RUN echo 'channels:\n  - conda-forge\n  - bioconda\n' > /root/.condarc \
+    && conda config --set channel_priority strict \
+    && conda create -n fastq_screen \
     fastq-screen==0.13.0=pl526_1 \
     tree==2.0.0 \
     -y \
