@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:4.10.3
+FROM continuumio/miniconda3:4.10.3 AS builder
 
 RUN echo 'channels:\n  - conda-forge\n  - bioconda\n' > /root/.condarc \
     && conda config --set channel_priority strict \
