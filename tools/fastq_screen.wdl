@@ -108,6 +108,7 @@ task fastq_screen {
     }
 
     output {
+        File raw_data = "~{out_directory}/~{sample_basename}_screen.txt"
         File results = out_tar_gz
     }
 

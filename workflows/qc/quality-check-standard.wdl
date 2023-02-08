@@ -125,34 +125,32 @@ workflow quality_check {
         call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, name_sorted=true, paired_end=paired_end, max_retries=max_retries }
     }
-
-    call mqc.multiqc {
-        input:
-            validate_sam_file=validate_bam.out,
-            flagstat_file=samtools_flagstat.outfile,
-            fastqc=fastqc.results,
-            instrument_file=ngsderive_instrument.instrument_file,
-            read_length_file=ngsderive_read_length.read_length_file,
-            encoding_file=ngsderive_encoding.encoding_file,
-            alignment_metrics=collect_alignment_summary_metrics.alignment_metrics,
-            gc_bias_metrics=collect_gc_bias_metrics.gc_bias_metrics,
-            insert_size_metrics=collect_insert_size_metrics.insert_size_metrics,
-            quality_score_distribution_txt=quality_score_distribution.quality_score_distribution_txt,
-            mosdepth_summary=coverage.summary,
-            wgs_metrics=collect_wgs_metrics.wgs_metrics,
-            fastq_screen=fastq_screen.results,
-            star_log=star_log,
-            qualimap_rnaseq=qualimap_rnaseq.results,
-            strandedness_file=ngsderive_strandedness.strandedness_file,
-            junction_annotation=junction_annotation.junction_summary,
-            max_retries=max_retries
+    
+    call mqc.multiqc { input:
+        input_files=select_all([
+            validate_bam.out,
+            samtools_flagstat.outfile,
+            ngsderive_instrument.instrument_file,
+            ngsderive_read_length.read_length_file,
+            ngsderive_encoding.encoding_file,
+            fastqc.raw_data,
+            collect_alignment_summary_metrics.alignment_metrics,
+            collect_gc_bias_metrics.gc_bias_metrics,
+            collect_insert_size_metrics.insert_size_metrics,
+            quality_score_distribution.quality_score_distribution_txt,
+            coverage.summary,
+            collect_wgs_metrics.wgs_metrics,
+            fastq_screen.raw_data,
+            star_log,
+            ngsderive_strandedness.strandedness_file,
+            junction_annotation.junction_summary,
+            qualimap_rnaseq.raw_summary,
+            qualimap_rnaseq.raw_coverage
+        ]),
+        output_prefix=basename(bam, '.bam'),
+        extra_fn_clean_exts=[".ValidateSamFile"],
+        max_retries=max_retries
     }
-
-    # call util.qc_summary {
-    #     input:
-    #         multiqc_tar_gz=multiqc.out,
-    #         max_retries=max_retries
-    # }
 
     output {
         File bam_checksum = compute_checksum.outfile
@@ -171,7 +169,6 @@ workflow quality_check {
         File quality_score_distribution_txt = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf = quality_score_distribution.quality_score_distribution_pdf
         File multiqc_zip = multiqc.out
-        # File qc_summary_file = qc_summary.out
         File? wgs_metrics = collect_wgs_metrics.wgs_metrics
         File? mosdepth_global_dist = coverage.global_dist
         File? mosdepth_summary = coverage.summary
