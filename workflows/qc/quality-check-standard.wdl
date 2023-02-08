@@ -116,30 +116,24 @@ workflow quality_check {
         call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, name_sorted=true, paired_end=paired_end, max_retries=max_retries }
     }
 
-    call mqc.multiqc {
-        input:
-            validate_sam_file=validate_bam.out,
-            flagstat_file=samtools_flagstat.outfile,
-            fastqc=fastqc.results,
-            instrument_file=ngsderive_instrument.instrument_file,
-            read_length_file=ngsderive_read_length.read_length_file,
-            encoding_file=ngsderive_encoding.encoding_file,
-            qualimap_bamqc=qualimap_bamqc.results,
-            fastq_screen=fastq_screen.results,
-            star_log=star_log,
-            qualimap_rnaseq=qualimap_rnaseq.results,
-            strandedness_file=ngsderive_strandedness.strandedness_file,
-            junction_annotation=junction_annotation.junction_summary,
-            max_retries=max_retries
-    }
-
-    # `qualimap bamqc` is required for a qc summary to be generated.
-    if (use_bamqc) {
-        call util.qc_summary {
-            input:
-                multiqc_tar_gz=multiqc.out,
-                max_retries=max_retries
-        }
+    call mqc.multiqc { input:
+        input_files=select_all([
+            validate_bam.out,
+            samtools_flagstat.outfile,
+            ngsderive_instrument.instrument_file,
+            ngsderive_read_length.read_length_file,
+            ngsderive_encoding.encoding_file,
+            fastqc.raw_data,
+            fastq_screen.raw_data,
+            star_log,
+            ngsderive_strandedness.strandedness_file,
+            junction_annotation.junction_summary,
+            qualimap_rnaseq.raw_summary,
+            qualimap_rnaseq.raw_coverage
+        ]),
+        output_prefix=basename(bam, '.bam'),
+        extra_fn_clean_exts=[".ValidateSamFile"],
+        max_retries=max_retries
     }
 
     output {
@@ -150,14 +144,13 @@ workflow quality_check {
         File instrument_file = ngsderive_instrument.instrument_file
         File read_length_file = ngsderive_read_length.read_length_file
         File inferred_encoding = ngsderive_encoding.encoding_file
-        File multiqc_zip = multiqc.out
+        File multiqc_results = multiqc.out
         File? qualimap_bamqc_results = qualimap_bamqc.results
         File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
         File? junctions = junction_annotation.junctions
-        File? qc_summary_file = qc_summary.out
     }
 }
 

@@ -1,4 +1,0 @@
-extra_fn_clean_exts:
-    - '.qualimap_bamqc_results'
-    - '.subsampled'
-    - '.ValidateSamFile'
