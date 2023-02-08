@@ -238,8 +238,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
 <li><code>picard_sort.memory_gb</code> (Int, default=25)</li>
 <li><code>picard_sort.output_filename</code> (String, default=basename(bam,".bam") + ".sorted.bam")</li>
-<li><code>qc_summary.disk_size</code> (Int, default=1)</li>
-<li><code>qc_summary.outfile</code> (String, default=basename(multiqc_tar_gz,".multiqc.tar.gz") + ".qc_summary.json")</li>
 <li><code>qualimap_bamqc.memory_gb</code> (Int, default=32)</li>
 <li><code>qualimap_bamqc.ncpu</code> (Int, default=1)</li>
 <li><code>qualimap_rnaseq.memory_gb</code> (Int, default=16)</li>
@@ -264,14 +262,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>instrument_file</code> (File)</li>
 <li><code>read_length_file</code> (File)</li>
 <li><code>inferred_encoding</code> (File)</li>
-<li><code>multiqc_zip</code> (File)</li>
+<li><code>multiqc_results</code> (File)</li>
 <li><code>qualimap_bamqc_results</code> (File?)</li>
 <li><code>fastq_screen_results</code> (File?)</li>
 <li><code>inferred_strandedness</code> (File?)</li>
 <li><code>qualimap_rnaseq_results</code> (File?)</li>
 <li><code>junction_summary</code> (File?)</li>
 <li><code>junctions</code> (File?)</li>
-<li><code>qc_summary_file</code> (File?)</li>
 </ul>
 <h2 id="parse_input">parse_input</h2>
 <h3 id="inputs_1">Inputs</h3>
