@@ -20,10 +20,10 @@ task build_db {
  
     runtime {
         disk: "30 GB"
-        docker: 'ghcr.io/stjudecloud/fastq_screen:1.1.4'
+        docker: 'ghcr.io/stjudecloud/fastq_screen:branch-docker-refactor-1.2.0'
         maxRetries: max_retries
     }
-
+    
     output {
         File db = tar_filename
     }
@@ -103,7 +103,7 @@ task fastq_screen {
     runtime {
         memory: "10 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/fastq_screen:1.1.4'
+        docker: 'ghcr.io/stjudecloud/fastq_screen:branch-docker-refactor-1.2.0'
         maxRetries: max_retries
     }
 
