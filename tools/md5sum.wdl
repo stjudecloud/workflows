@@ -58,6 +58,7 @@ task check_checksum {
     } 
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries

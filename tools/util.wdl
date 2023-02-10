@@ -14,6 +14,7 @@ task download {
     }
 
     runtime {
+        memory: "4 GB"
         disk: disk_size_GB + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
@@ -65,6 +66,7 @@ task get_read_groups {
     >>>
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
@@ -97,6 +99,7 @@ task split_string {
     >>>
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
@@ -236,6 +239,7 @@ task qc_summary {
     >>>
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
@@ -266,6 +270,7 @@ task compression_integrity {
     }
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
@@ -290,6 +295,7 @@ task add_to_bam_header {
     >>>
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
@@ -321,6 +327,7 @@ task unpack_tarball {
     >>>
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries

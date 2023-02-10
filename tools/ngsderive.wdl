@@ -55,6 +55,7 @@ task instrument {
     }
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
         maxRetries: max_retries
