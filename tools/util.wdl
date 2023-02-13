@@ -9,13 +9,13 @@ task download {
     input {
         String url
         String outfilename
-        Int disk_size_GB = 10
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 
     runtime {
         memory: "4 GB"
-        disk: disk_size_GB + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
@@ -311,12 +311,12 @@ task add_to_bam_header {
 task unpack_tarball {
     input {
         File tarball
-        Int extra_disk_GB = 0
+        Int extra_disk_gb = 0
         Int max_retries = 1
     }
 
     Float tarball_size = size(tarball, "GiB")
-    Int disk_size = ceil(tarball_size * 8) + extra_disk_GB
+    Int disk_size = ceil(tarball_size * 8) + extra_disk_gb
 
     command <<<
         set -euo pipefail
