@@ -34,7 +34,7 @@ cd workflows
 Any of the workflows in [the workflows](https://github.com/stjudecloud/workflows/tree/master/workflows) folder is a good place to start, e.g.
 
 ```bash
-cromwell run workflows/reference/bootstrap-reference.wdl --inputs workflows/reference/inputs.json
+cromwell run workflows/qc/make-qc-reference.wdl
 ```
 
 ## Repository Structure
