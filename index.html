@@ -152,6 +152,7 @@
 <blockquote>
 <p>This repository contains all bioinformatics workflows used on the St. Jude Cloud project. Officially, the repository is in beta — the project is adding workflows as they are developed and put into production.</p>
 </blockquote>
+<p>Resources requirements have been optimized to minimize failures in our computing environment, but they may not reflect the best settings for your use case. Please ensure that you tailor these parameters to fit your needs.</p>
 <h3 id="homepage">🏠 <a href="https://stjude.cloud">Homepage</a></h3>
 <h2 id="getting-started">Getting Started</h2>
 <p>At the time of writing, all workflows are written in <a href="http://openwdl.org/">WDL</a> and are tested
@@ -165,14 +166,14 @@ git clone git@github.com:stjudecloud/workflows.git
 cd workflows
 </code></pre>
 <p>Any of the workflows in <a href="https://github.com/stjudecloud/workflows/tree/master/workflows">the workflows</a> folder is a good place to start, e.g.</p>
-<pre><code class="language-bash">cromwell run workflows/reference/bootstrap-reference.wdl --inputs workflows/reference/inputs.json
+<pre><code class="language-bash">cromwell run workflows/qc/make-qc-reference.wdl
 </code></pre>
 <h2 id="repository-structure">Repository Structure</h2>
 <p>The repository is laid out as follows:</p>
 <ul>
 <li><code>bin</code> - Scripts used by Cromwell configuration settings. Add this to <code>$PATH</code> prior to using configurations  in <code>conf</code> with Cromwell.</li>
 <li><code>conf</code> - Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.</li>
-<li><code>docker</code> - Dockerfiles used in our workflows. All docker images are published to <a href="https://hub.docker.com/u/stjudecloud">Docker Hub</a> as a part of our CI and are versioned.</li>
+<li><code>docker</code> - Dockerfiles used in our workflows. All docker images are published to the <a href="https://github.com/orgs/stjudecloud/packages?repo_name=workflows">GitHub Container Registy</a> as a part of our CI and are versioned.</li>
 <li><code>tools</code> - All tools we have wrapped as individual WDL tasks.</li>
 <li><code>workflows</code> - Directory containing all end-to-end bioinformatics workflows.</li>
 </ul>
@@ -322,5 +323,5 @@ This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LI
 
 <!--
 MkDocs version : 1.4.2
-Build Date UTC : 2023-02-13 16:12:03.889671+00:00
+Build Date UTC : 2023-02-13 21:03:44.240316+00:00
 -->
