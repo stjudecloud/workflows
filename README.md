@@ -43,7 +43,7 @@ The repository is laid out as follows:
 
 * `bin` - Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations  in `conf` with Cromwell.
 * `conf` - Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
-* `docker` - Dockerfiles used in our workflows. All docker images are published to [Docker Hub](https://hub.docker.com/u/stjudecloud) as a part of our CI and are versioned.
+* `docker` - Dockerfiles used in our workflows. All docker images are published to the [GitHub Container Registy](https://github.com/orgs/stjudecloud/packages?repo_name=workflows) as a part of our CI and are versioned.
 * `tools` - All tools we have wrapped as individual WDL tasks.
 * `workflows` - Directory containing all end-to-end bioinformatics workflows.
 
