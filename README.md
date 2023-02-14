@@ -13,6 +13,8 @@
 
 > This repository contains all bioinformatics workflows used on the St. Jude Cloud project. Officially, the repository is in beta — the project is adding workflows as they are developed and put into production.
 
+Resources requirements have been optimized to minimize failures in our computing environment, but they may not reflect the best settings for your use case. Please ensure that you tailor these parameters to fit your needs.
+
 ### 🏠 [Homepage](https://stjude.cloud)
 
 ## Getting Started
@@ -34,7 +36,7 @@ cd workflows
 Any of the workflows in [the workflows](https://github.com/stjudecloud/workflows/tree/master/workflows) folder is a good place to start, e.g.
 
 ```bash
-cromwell run workflows/reference/bootstrap-reference.wdl --inputs workflows/reference/inputs.json
+cromwell run workflows/qc/make-qc-reference.wdl
 ```
 
 ## Repository Structure
@@ -43,7 +45,7 @@ The repository is laid out as follows:
 
 * `bin` - Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations  in `conf` with Cromwell.
 * `conf` - Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
-* `docker` - Dockerfiles used in our workflows. All docker images are published to [Docker Hub](https://hub.docker.com/u/stjudecloud) as a part of our CI and are versioned.
+* `docker` - Dockerfiles used in our workflows. All docker images are published to the [GitHub Container Registy](https://github.com/orgs/stjudecloud/packages?repo_name=workflows) as a part of our CI and are versioned.
 * `tools` - All tools we have wrapped as individual WDL tasks.
 * `workflows` - Directory containing all end-to-end bioinformatics workflows.
 

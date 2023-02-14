@@ -19,6 +19,7 @@ task quickcheck {
     }
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
@@ -74,6 +75,7 @@ task split {
  
     runtime {
         cpu: ncpu
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
@@ -228,6 +230,7 @@ task subsample {
 
     runtime {
         cpu: ncpu
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
@@ -275,6 +278,7 @@ task merge {
 
     runtime {
         cpu: ncpu
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
@@ -313,6 +317,7 @@ task addreplacerg {
 
     runtime {
         cpu: ncpu
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries

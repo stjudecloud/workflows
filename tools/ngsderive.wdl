@@ -55,6 +55,7 @@ task instrument {
     }
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/ngsderive:2.2.0--pyhdfd78af_2'
         maxRetries: max_retries

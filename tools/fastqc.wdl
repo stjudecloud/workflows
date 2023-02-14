@@ -39,6 +39,7 @@ task fastqc {
     }
 
     output {
+        File raw_data = "~{out_directory}/~{basename(bam, '.bam')}_fastqc.zip"
         File results = out_tar_gz
     }
 

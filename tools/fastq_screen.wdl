@@ -19,6 +19,7 @@ task build_db {
     }
  
     runtime {
+        memory: "4 GB"
         disk: "30 GB"
         docker: 'ghcr.io/stjudecloud/fastq_screen:branch-docker-refactor-1.2.0'
         maxRetries: max_retries
@@ -108,6 +109,7 @@ task fastq_screen {
     }
 
     output {
+        File raw_data = "~{out_directory}/~{sample_basename}_screen.txt"
         File results = out_tar_gz
     }
 

@@ -7,24 +7,15 @@ version 1.0
 
 task multiqc {
     input {
-        File validate_sam_file
-        File flagstat_file
-        File? qualimap_bamqc
-        File? qualimap_rnaseq
-        File fastqc
-        File instrument_file
-        File read_length_file
-        File encoding_file
-        File? strandedness_file
-        File? junction_annotation
-        File? fastq_screen
-        File? star_log
+        Array[File]+ input_files
+        String output_prefix
+        Array[String] extra_fn_clean_exts = []
         Int max_retries = 1
         Int memory_gb = 5
         Int disk_size = 20
     }
 
-    String out_directory = basename(validate_sam_file, ".ValidateSamFile.txt") + ".multiqc"
+    String out_directory = output_prefix + ".multiqc"
     String out_tar_gz = out_directory + ".tar.gz"
 
     command {
@@ -34,59 +25,29 @@ task multiqc {
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
         
-        (
-            echo ~{validate_sam_file}
-            echo ~{flagstat_file}
-            echo ~{instrument_file}
-            echo ~{read_length_file}
-            echo ~{encoding_file}
-            echo ~{star_log}
-            echo ~{strandedness_file}
-            echo ~{junction_annotation}
-        ) > file_list.txt
+        echo "~{sep="\n" input_files}" > file_list.txt
 
-        if [ "~{if defined(qualimap_bamqc) then "bamqc" else ""}" = "bamqc" ]; then
-            qualimap_bamqc_dir=$(basename ~{qualimap_bamqc} ".tar.gz")
-            tar -xzf ~{qualimap_bamqc}
-            echo "$qualimap_bamqc_dir"/genome_results.txt >> file_list.txt
-            for file in "$qualimap_bamqc_dir"/raw_data_qualimapReport/*; do
-                echo "$file" >> file_list.txt
-            done
-        fi
+        echo "~{sep="\n" extra_fn_clean_exts}" > extensions.txt
 
-        tar -xzf ~{fastqc}
-        fastqc_dir=$(basename ~{fastqc} ".tar.gz")
-        for file in "$fastqc_dir"/*; do
-            echo "$file" >> file_list.txt
-        done
-        
-        if [ "~{if defined(qualimap_rnaseq) then "rnaseq" else ""}" = "rnaseq" ]; then
-            qualimap_rnaseq_dir=$(basename ~{qualimap_rnaseq} ".tar.gz")
-            tar -xzf ~{qualimap_rnaseq}
-            echo "$qualimap_rnaseq_dir"/rnaseq_qc_results.txt >> file_list.txt
-            echo "$qualimap_rnaseq_dir"/qualimap_counts.txt >> file_list.txt
-            for file in "$qualimap_rnaseq_dir"/raw_data_qualimapReport/*; do
-                echo "$file" >> file_list.txt
-            done
-        fi
+        echo "extra_fn_clean_exts:" > multiqc_config.yaml
+        while read -r ext; do
+            echo "    - $ext" >> multiqc_config.yaml
+        done < extensions.txt
 
-        if [ "~{if defined(fastq_screen) then "wgs_or_wes" else ""}" = "wgs_or_wes" ]; then
-            fastq_screen_dir=$(basename ~{fastq_screen} ".tar.gz")
-            tar -xzf ~{fastq_screen}
-            for file in "$fastq_screen_dir"/*; do
-                echo "$file" >> file_list.txt
-            done
-        fi
-
-        multiqc --verbose -c /home/.multiqc_config.yaml \
+        multiqc -vvv -c multiqc_config.yaml \
             --file-list file_list.txt -o ~{out_directory}
         
+        if [ ! -d ~{out_directory} ]; then
+            >&2 echo "MultiQC didn't find any valid files!"
+            exit 1
+        fi
+
         tar -czf ~{out_tar_gz} ~{out_directory}
     }
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/multiqc:1.3.5'
+        docker: 'quay.io/biocontainers/multiqc:1.14--pyhdfd78af_0'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
@@ -102,12 +63,7 @@ task multiqc {
     }
 
     parameter_meta {
-        validate_sam_file: "A file output from Picard's ValidateSam tool"
-        qualimap_bamqc: "Tarballed directory of files output by Qualimap's BamQC mode"
-        qualimap_rnaseq: "Tarballed directory of files output by Qualimap's RNA-seq mode"
-        fastqc: "Tarballed directory of files output by FastQC"
-        fastq_screen: "Tarballed directory of files output by FastQ Screen"
-        flagstat_file: "A file containing the output of Samtools' flagstat command for the input BAM file"
-        star_log: "The log file of a STAR alignment run"
+        input_files: "A non-empty array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
+        output_prefix: "A string for the MultiQC output directory: <prefix>.multiqc/ and <prefix>.multiqc.tar.gz"
     }
 }

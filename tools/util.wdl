@@ -9,12 +9,13 @@ task download {
     input {
         String url
         String outfilename
-        Int disk_size_GB = 10
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 
     runtime {
-        disk: disk_size_GB + " GB"
+        memory: "4 GB"
+        disk: disk_size_gb + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
@@ -65,6 +66,7 @@ task get_read_groups {
     >>>
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
@@ -97,6 +99,7 @@ task split_string {
     >>>
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
@@ -236,6 +239,7 @@ task qc_summary {
     >>>
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
@@ -266,6 +270,7 @@ task compression_integrity {
     }
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
@@ -290,6 +295,7 @@ task add_to_bam_header {
     >>>
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
@@ -299,5 +305,35 @@ task add_to_bam_header {
         File output_file = "header.sam"
         Array[String] out = read_lines("header.sam")
         File output_bam = output_bam_name
+    }
+}
+
+task unpack_tarball {
+    input {
+        File tarball
+        Int extra_disk_gb = 0
+        Int max_retries = 1
+    }
+
+    Float tarball_size = size(tarball, "GiB")
+    Int disk_size = ceil(tarball_size * 8) + extra_disk_gb
+
+    command <<<
+        set -euo pipefail
+
+        mkdir unpacked_tarball
+        tar -C unpacked_tarball -xzf ~{tarball}
+        find unpacked_tarball/ -type f > file_list.txt
+    >>>
+
+    runtime {
+        memory: "4 GB"
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        Array[File] tarball_contents = read_lines("file_list.txt")
     }
 }
