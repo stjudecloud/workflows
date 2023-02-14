@@ -19,6 +19,7 @@ task quickcheck {
     }
 
     runtime {
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
@@ -74,6 +75,7 @@ task split {
  
     runtime {
         cpu: ncpu
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
@@ -228,6 +230,7 @@ task subsample {
 
     runtime {
         cpu: ncpu
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
@@ -275,6 +278,7 @@ task merge {
 
     runtime {
         cpu: ncpu
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
@@ -313,6 +317,7 @@ task addreplacerg {
 
     runtime {
         cpu: ncpu
+        memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries

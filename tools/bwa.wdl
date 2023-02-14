@@ -246,6 +246,7 @@ task build_bwa_db {
 task format_rg_for_bwa {
     input {
         String read_group
+        Int max_retries = 1
     }
 
     command <<<
@@ -254,6 +255,13 @@ task format_rg_for_bwa {
 
     output {
         String formatted_rg = read_string("output.txt")
+    }
+
+    runtime {
+        memory: "1 GB"
+        disk: "1 GB"
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        maxRetries: max_retries
     }
 
     meta {

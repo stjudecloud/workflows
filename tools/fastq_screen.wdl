@@ -19,6 +19,7 @@ task build_db {
     }
  
     runtime {
+        memory: "4 GB"
         disk: "30 GB"
         docker: 'ghcr.io/stjudecloud/fastq_screen:1.1.4'
         maxRetries: max_retries
