@@ -138,7 +138,7 @@ workflow quality_check {
             collect_gc_bias_metrics.gc_bias_metrics,
             collect_insert_size_metrics.insert_size_metrics,
             quality_score_distribution.quality_score_distribution_txt,
-            coverage.summary,
+            coverage.global_dist,
             collect_wgs_metrics.wgs_metrics,
             fastq_screen.raw_data,
             star_log,
