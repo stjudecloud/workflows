@@ -8,6 +8,8 @@ task coverage {
     input {
         File bam
         File bai
+        Int min_mapping_quality = 20
+        Boolean use_fast_mode = true
         Int memory_gb = 8 
         Int max_retries = 1
     }
@@ -19,7 +21,12 @@ task coverage {
         set -euo pipefail
 
         mv ~{bai} ~{bam}.bai || true
-        mosdepth -n -x "$(basename ~{bam} '.bam')" ~{bam}
+        mosdepth \
+            -n \
+            -Q ~{min_mapping_quality} \
+            ~{if (use_fast_mode) then "-x" else ""} \
+            "$(basename ~{bam} '.bam')" \
+            ~{bam}
     }
 
     runtime {
