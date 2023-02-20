@@ -30,7 +30,7 @@ task mark_duplicates {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
 
@@ -106,7 +106,7 @@ task validate_bam {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
 
@@ -159,7 +159,7 @@ task bam_to_fastq {
     runtime{
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
 
@@ -206,7 +206,7 @@ task sort {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
     output {
@@ -251,7 +251,7 @@ task merge_sam_files {
     runtime{
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
 
@@ -291,7 +291,7 @@ task clean_sam {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.0.2'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
     output {
@@ -304,5 +304,240 @@ task clean_sam {
     }
     parameter_meta {
         bam: "Input BAM format file to clean"
+    }
+}
+
+task collect_wgs_metrics {
+    input {
+        File bam
+        File reference_fasta
+        Int memory_gb = 12
+        Int? disk_size_gb
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command {
+        picard -Xmx~{java_heap_size}g CollectWgsMetrics \
+            -I ~{bam} \
+            -O "$(basename ~{bam} '.bam').CollectWgsMetrics.txt" \
+            -R ~{reference_fasta} \
+            --INCLUDE_BQ_HISTOGRAM true
+    }
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        maxRetries: max_retries
+    }
+    output {
+        File wgs_metrics = basename(bam, ".bam") + ".CollectWgsMetrics.txt"
+    }
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs the `picard CollectWgsMetrics` command."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to calculate WGS metrics for"
+    }
+}
+
+task collect_wgs_metrics_with_nonzero_coverage {
+    input {
+        File bam
+        File reference_fasta
+        Int memory_gb = 12
+        Int? disk_size_gb
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command {
+        picard -Xmx~{java_heap_size}g CollectWgsMetricsWithNonZeroCoverage \
+            -I ~{bam} \
+            -O "$(basename ~{bam} '.bam').CollectWgsMetricsWithNonZeroCoverage.txt" \
+            -CHART "$(basename ~{bam} '.bam').CollectWgsMetricsWithNonZeroCoverage.pdf" \
+            -R ~{reference_fasta} \
+            --INCLUDE_BQ_HISTOGRAM true
+    }
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        maxRetries: max_retries
+    }
+    output {
+        File wgs_metrics = basename(bam, ".bam") + ".CollectWgsMetricsWithNonZeroCoverage.txt"
+        File wgs_metrics_pdf = basename(bam, ".bam") + ".CollectWgsMetricsWithNonZeroCoverage.pdf"
+    }
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs the `picard CollectWgsMetricsWithNonZeroCoverage` command."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to calculate WGS metrics for"
+    }
+}
+
+task collect_alignment_summary_metrics {
+    input {
+        File bam
+        Int memory_gb = 8
+        Int? disk_size_gb
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command {
+        picard -Xmx~{java_heap_size}g CollectAlignmentSummaryMetrics \
+            -I ~{bam} \
+            -O "$(basename ~{bam} '.bam').CollectAlignmentSummaryMetrics.txt" \
+            -H "$(basename ~{bam} '.bam').CollectAlignmentSummaryMetrics.pdf"
+    }
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        maxRetries: max_retries
+    }
+    output {
+        File alignment_metrics = basename(bam, ".bam") + ".CollectAlignmentSummaryMetrics.txt"
+        File alignment_metrics_pdf = basename(bam, ".bam") + ".CollectAlignmentSummaryMetrics.pdf"
+    }
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs the `picard CollectAlignmentSummaryMetrics` command."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to calculate alignment metrics for"
+    }
+}
+
+task collect_gc_bias_metrics {
+    input {
+        File bam
+        File reference_fasta
+        Int memory_gb = 8
+        Int? disk_size_gb
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command {
+        picard -Xmx~{java_heap_size}g CollectGcBiasMetrics \
+            -I ~{bam} \
+            -R ~{reference_fasta} \
+            -O "$(basename ~{bam} '.bam').CollectGcBiasMetrics.txt" \
+            -S "$(basename ~{bam} '.bam').CollectGcBiasMetrics.summary.txt" \
+            -CHART "$(basename ~{bam} '.bam').CollectGcBiasMetrics.pdf"
+    }
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        maxRetries: max_retries
+    }
+    output {
+        File gc_bias_metrics = basename(bam, ".bam") + ".CollectGcBiasMetrics.txt"
+        File gc_bias_metrics_pdf = basename(bam, ".bam") + ".CollectGcBiasMetrics.pdf"
+    }
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs the `picard CollectGcBiasMetrics` command."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to calculate GC bias metrics for"
+    }
+}
+
+task collect_insert_size_metrics {
+    input {
+        File bam
+        Int memory_gb = 8
+        Int? disk_size_gb
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command {
+        picard -Xmx~{java_heap_size}g CollectInsertSizeMetrics \
+            -I ~{bam} \
+            -O "$(basename ~{bam} '.bam').CollectInsertSizeMetrics.txt" \
+            -H "$(basename ~{bam} '.bam').CollectInsertSizeMetrics.pdf"
+    }
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        maxRetries: max_retries
+    }
+    output {
+        File insert_size_metrics = basename(bam, ".bam") + ".CollectInsertSizeMetrics.txt"
+        File insert_size_metrics_pdf = basename(bam, ".bam") + ".CollectInsertSizeMetrics.pdf"
+    }
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs the `picard CollectInsertSizeMetrics` command."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to calculate insert size metrics for"
+    }
+}
+
+task quality_score_distribution {
+    input {
+        File bam
+        Int memory_gb = 8
+        Int? disk_size_gb
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command {
+        picard -Xmx~{java_heap_size}g QualityScoreDistribution \
+            -I ~{bam} \
+            -O "$(basename ~{bam} '.bam').QualityScoreDistribution.txt" \
+            -CHART "$(basename ~{bam} '.bam').QualityScoreDistribution.pdf"
+    }
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        maxRetries: max_retries
+    }
+    output {
+        File quality_score_distribution_txt = basename(bam, ".bam") + ".QualityScoreDistribution.txt"
+        File quality_score_distribution_pdf = basename(bam, ".bam") + ".QualityScoreDistribution.pdf"
+    }
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs the `picard QualityScoreDistribution` command."
+    }
+    parameter_meta {
+        bam: "Input BAM format file to calculate quality score distribution for"
     }
 }

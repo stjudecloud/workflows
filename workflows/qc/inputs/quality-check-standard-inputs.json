@@ -1,15 +1,14 @@
 {
-  "quality_check.bam": "/cromwell/inputs/sample.bam",
-  "quality_check.bam_index": "/cromwell/inputs/sample.bam.bai",
-  "quality_check.gtf": "/cromwell/inputs/gencode.v31.annotation.gtf (only required for RNA-Seq data)",
-  "quality_check.experiment": "<WGS/WES/RNA-Seq/ChIP-Seq>",
+  "quality_check.bam": "/inputs/sample.bam",
+  "quality_check.bam_index": "/inputs/sample.bam.bai",
+  "quality_check.reference_fasta": "/inputs/GRCh38.no_alt.fa",
+  "quality_check.gtf": "/inputs/gencode.v31.annotation.gtf (only required for RNA-Seq data)",
+  "quality_check.experiment": "<WGS/WES/RNA-Seq>",
   "quality_check.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified, we will try to guess using ngsderive)",
-  "quality_check.fastq_screen_db": "/cromwell/inputs/fastq-screen-db.tar.gz",
+  "quality_check.fastq_screen_db": "/inputs/fastq-screen-db.tar.gz",
   "quality_check.phred_encoding": "<sanger/illumina1.3> (optional, if not specified, we will try to guess using ngsderive. Only needed for WGS/WES)",
   "quality_check.paired_end": "<true/false> (default = true)",
-  "quality_check.use_bamqc": "<true/false> (default = true)",
   "quality_check.max_retries": "Int? (optional, default = 1)",
-  "quality_check.qualimap_bamqc.ncpu": "Int? (optional, default = 1)",
   "quality_check.fastqc.ncpu": "Int? (optional, default = 1)",
   "quality_check.samtools_subsample.ncpu": "Int? (optional, default = 1)"
 }
