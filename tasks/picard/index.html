@@ -68,6 +68,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../md5sum/">Md5sum</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../mosdepth/">Mosdepth</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../multiqc/">MultiQC</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ngsderive/">ngsderive</a>
@@ -159,6 +161,102 @@
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#outputs_5">Outputs</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#collect_wgs_metrics">collect_wgs_metrics</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_6">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_6">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_2">Optional</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_6">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_6">Outputs</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#collect_wgs_metrics_with_nonzero_coverage">collect_wgs_metrics_with_nonzero_coverage</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_7">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_7">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_3">Optional</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_7">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_7">Outputs</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#collect_alignment_summary_metrics">collect_alignment_summary_metrics</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_8">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_8">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_4">Optional</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_8">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_8">Outputs</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#collect_gc_bias_metrics">collect_gc_bias_metrics</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_9">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_9">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_5">Optional</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_9">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_9">Outputs</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#collect_insert_size_metrics">collect_insert_size_metrics</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_10">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_10">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_6">Optional</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_10">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_10">Outputs</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quality_score_distribution">quality_score_distribution</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_11">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_11">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_7">Optional</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_11">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_11">Outputs</a>
     </li>
         </ul>
     </li>
@@ -390,6 +488,176 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <h3 id="outputs_5">Outputs</h3>
 <ul>
 <li><code>cleaned_bam</code> (File)</li>
+</ul>
+<h2 id="collect_wgs_metrics">collect_wgs_metrics</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool runs the <code>picard CollectWgsMetrics</code> command.</dd>
+</dl>
+<h3 id="inputs_6">Inputs</h3>
+<h4 id="required_6">Required</h4>
+<ul>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to calculate WGS metrics for</li>
+<li><code>reference_fasta</code> (File, <strong>required</strong>)</li>
+</ul>
+<h4 id="optional_2">Optional</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int?)</li>
+</ul>
+<h4 id="defaults_6">Defaults</h4>
+<ul>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=12)</li>
+</ul>
+<h3 id="outputs_6">Outputs</h3>
+<ul>
+<li><code>wgs_metrics</code> (File)</li>
+</ul>
+<h2 id="collect_wgs_metrics_with_nonzero_coverage">collect_wgs_metrics_with_nonzero_coverage</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool runs the <code>picard CollectWgsMetricsWithNonZeroCoverage</code> command.</dd>
+</dl>
+<h3 id="inputs_7">Inputs</h3>
+<h4 id="required_7">Required</h4>
+<ul>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to calculate WGS metrics for</li>
+<li><code>reference_fasta</code> (File, <strong>required</strong>)</li>
+</ul>
+<h4 id="optional_3">Optional</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int?)</li>
+</ul>
+<h4 id="defaults_7">Defaults</h4>
+<ul>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=12)</li>
+</ul>
+<h3 id="outputs_7">Outputs</h3>
+<ul>
+<li><code>wgs_metrics</code> (File)</li>
+<li><code>wgs_metrics_pdf</code> (File)</li>
+</ul>
+<h2 id="collect_alignment_summary_metrics">collect_alignment_summary_metrics</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool runs the <code>picard CollectAlignmentSummaryMetrics</code> command.</dd>
+</dl>
+<h3 id="inputs_8">Inputs</h3>
+<h4 id="required_8">Required</h4>
+<ul>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to calculate alignment metrics for</li>
+</ul>
+<h4 id="optional_4">Optional</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int?)</li>
+</ul>
+<h4 id="defaults_8">Defaults</h4>
+<ul>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=8)</li>
+</ul>
+<h3 id="outputs_8">Outputs</h3>
+<ul>
+<li><code>alignment_metrics</code> (File)</li>
+<li><code>alignment_metrics_pdf</code> (File)</li>
+</ul>
+<h2 id="collect_gc_bias_metrics">collect_gc_bias_metrics</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool runs the <code>picard CollectGcBiasMetrics</code> command.</dd>
+</dl>
+<h3 id="inputs_9">Inputs</h3>
+<h4 id="required_9">Required</h4>
+<ul>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to calculate GC bias metrics for</li>
+<li><code>reference_fasta</code> (File, <strong>required</strong>)</li>
+</ul>
+<h4 id="optional_5">Optional</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int?)</li>
+</ul>
+<h4 id="defaults_9">Defaults</h4>
+<ul>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=8)</li>
+</ul>
+<h3 id="outputs_9">Outputs</h3>
+<ul>
+<li><code>gc_bias_metrics</code> (File)</li>
+<li><code>gc_bias_metrics_pdf</code> (File)</li>
+</ul>
+<h2 id="collect_insert_size_metrics">collect_insert_size_metrics</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool runs the <code>picard CollectInsertSizeMetrics</code> command.</dd>
+</dl>
+<h3 id="inputs_10">Inputs</h3>
+<h4 id="required_10">Required</h4>
+<ul>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to calculate insert size metrics for</li>
+</ul>
+<h4 id="optional_6">Optional</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int?)</li>
+</ul>
+<h4 id="defaults_10">Defaults</h4>
+<ul>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=8)</li>
+</ul>
+<h3 id="outputs_10">Outputs</h3>
+<ul>
+<li><code>insert_size_metrics</code> (File)</li>
+<li><code>insert_size_metrics_pdf</code> (File)</li>
+</ul>
+<h2 id="quality_score_distribution">quality_score_distribution</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool runs the <code>picard QualityScoreDistribution</code> command.</dd>
+</dl>
+<h3 id="inputs_11">Inputs</h3>
+<h4 id="required_11">Required</h4>
+<ul>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to calculate quality score distribution for</li>
+</ul>
+<h4 id="optional_7">Optional</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int?)</li>
+</ul>
+<h4 id="defaults_11">Defaults</h4>
+<ul>
+<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=8)</li>
+</ul>
+<h3 id="outputs_11">Outputs</h3>
+<ul>
+<li><code>quality_score_distribution_txt</code> (File)</li>
+<li><code>quality_score_distribution_pdf</code> (File)</li>
 </ul>
               
             </div>

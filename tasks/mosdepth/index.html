@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Deeptools - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Mosdepth - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Deeptools";
-        var mkdocs_page_input_path = "tasks/deeptools.md";
+        var mkdocs_page_name = "Mosdepth";
+        var mkdocs_page_input_path = "tasks/mosdepth.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -54,9 +54,23 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../cellranger/">Cellranger</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Deeptools</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../deeptools/">Deeptools</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../estimate/">ESTIMATE</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fastq_screen/">FastQ Screen</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fastqc/">FastQC</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fq/">FQ</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../htseq/">HTSeq</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../md5sum/">Md5sum</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Mosdepth</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#bamcoverage">bamCoverage</a>
+    <li class="toctree-l2"><a class="reference internal" href="#coverage">coverage</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -71,20 +85,6 @@
         </ul>
     </li>
     </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../estimate/">ESTIMATE</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fastq_screen/">FastQ Screen</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fastqc/">FastQC</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fq/">FQ</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../htseq/">HTSeq</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../md5sum/">Md5sum</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../mosdepth/">Mosdepth</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../multiqc/">MultiQC</a>
                   </li>
@@ -143,9 +143,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" alt="Docs"></a> &raquo;</li>
           <li>Tasks &raquo;</li>
-      <li>Deeptools</li>
+      <li>Mosdepth</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/deeptools.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/mosdepth.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -153,42 +153,41 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="deeptools">Deeptools</h1>
-<p>This WDL tool wraps the <a href="https://deeptools.readthedocs.io/en/develop/index.html">DeepTools</a> tool.
-DeepTools is a suite of Python tools for analysis of high throughput sequencing analysis.</p>
-<h2 id="bamcoverage">bamCoverage</h2>
+                <h1 id="mosdepth">Mosdepth</h1>
+<p>This WDL tool wraps the <a href="https://github.com/brentp/mosdepth">mosdepth tool</a>.</p>
+<h2 id="coverage">coverage</h2>
 <dl>
 <dt>author</dt>
-<dd>Andrew Thrasher</dd>
+<dd>Andrew Frantz</dd>
 <dt>email</dt>
-<dd>andrew.thrasher@stjude.org</dd>
+<dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html).</dd>
+<dd>This WDL tool wraps the Mosdepth tool for calculating coverage</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>bai</code> (File, <strong>required</strong>): BAM index file corresponding to the input BAM</li>
-<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to generate coverage for</li>
+<li><code>bai</code> (File, <strong>required</strong>)</li>
+<li><code>bam</code> (File, <strong>required</strong>)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>detect_nproc</code> (Boolean, default=false)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>memory_gb</code> (Int, default=8)</li>
+<li><code>min_mapping_quality</code> (Int, default=20)</li>
+<li><code>use_fast_mode</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>bigwig</code> (File)</li>
+<li><code>global_dist</code> (File)</li>
+<li><code>summary</code> (File)</li>
 </ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../cellranger/" class="btn btn-neutral float-left" title="Cellranger"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../estimate/" class="btn btn-neutral float-right" title="ESTIMATE">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../md5sum/" class="btn btn-neutral float-left" title="Md5sum"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../multiqc/" class="btn btn-neutral float-right" title="MultiQC">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -216,10 +215,10 @@ DeepTools is a suite of Python tools for analysis of high throughput sequencing 
         </span>
     
     
-      <span><a href="../cellranger/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../md5sum/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../estimate/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../multiqc/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
