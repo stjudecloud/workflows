@@ -30,7 +30,7 @@ task mark_duplicates {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
 
@@ -106,7 +106,7 @@ task validate_bam {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
 
@@ -159,7 +159,7 @@ task bam_to_fastq {
     runtime{
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
 
@@ -206,7 +206,7 @@ task sort {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
     output {
@@ -251,7 +251,7 @@ task merge_sam_files {
     runtime{
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
 
@@ -291,7 +291,7 @@ task clean_sam {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
     output {
@@ -330,7 +330,7 @@ task collect_wgs_metrics {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
     output {
@@ -370,7 +370,7 @@ task collect_wgs_metrics_with_nonzero_coverage {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
     output {
@@ -408,7 +408,7 @@ task collect_alignment_summary_metrics {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
     output {
@@ -449,7 +449,7 @@ task collect_gc_bias_metrics {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
     output {
@@ -487,7 +487,7 @@ task collect_insert_size_metrics {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
     output {
@@ -525,7 +525,7 @@ task quality_score_distribution {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:branch-replace_qualimap-1.1.0'
+        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
         maxRetries: max_retries
     }
     output {
