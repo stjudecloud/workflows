@@ -218,6 +218,7 @@ task parse_input {
     >>>
 
     runtime {
+        memory: "4 GB"
         disk: "5 GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
     }
