@@ -217,7 +217,7 @@ task build_bwa_db {
 
         bwa index "$ref_fasta"
 
-        tar -czf ~{bwadb_out_name} "${ref_fasta}*"
+        tar -czf ~{bwadb_out_name} "${ref_fasta}"*
     >>>
 
     runtime {
