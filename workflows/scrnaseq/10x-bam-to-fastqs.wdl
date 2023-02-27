@@ -48,9 +48,6 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/
 workflow cell_ranger_bam_to_fastqs {
     input {
         File bam
-        String pairing = "Paired-end"
-        Int bam_to_fastq_memory_gb = 40
-        Boolean detect_nproc = false
         Int max_retries = 1
     }
 
@@ -61,14 +58,9 @@ workflow cell_ranger_bam_to_fastqs {
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call cellranger.bamtofastq { input: bam=bam, memory_gb=bam_to_fastq_memory_gb, max_retries=max_retries } 
+    call cellranger.bamtofastq { input: bam=bam, max_retries=max_retries } 
     scatter (reads in zip(bamtofastq.read1, bamtofastq.read2)) {
-        if (pairing == "Paired-end") {
-            call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
-        }
-        if (pairing == "Single-end") {
-            call fq.fqlint as fqlint_single { input: read1=reads.left, max_retries=max_retries }
-        }
+        call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
     }
 
     output {
