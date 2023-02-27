@@ -43,23 +43,18 @@ workflow bam_to_fastqs {
     input {
         File bam
         String pairing = "Paired-end"
-        Int samtools_sort_ncpu = 1
-        Int bam_to_fastq_memory_gb = 40
         Int max_retries = 1
-        Boolean detect_nproc = false
     }
 
     parameter_meta {
         bam: "BAM file to split into fastqs."
-        samtools_sort_ncpu: "Number of CPUs to use while sorting the BAM."
-        bam_to_fastq_memory_gb: "How much memory to provide while converting to fastqs."
         max_retries: "Maximum number of times to retry on a failure."
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call samtools.split { input: ncpu=samtools_sort_ncpu, bam=bam, max_retries=max_retries, detect_nproc=detect_nproc }
+    call samtools.split { input: bam=bam, max_retries=max_retries }
     scatter (split_bam in split.split_bams) {
-        call picard.bam_to_fastq { input: bam=split_bam, memory_gb=bam_to_fastq_memory_gb, max_retries=max_retries }
+        call picard.bam_to_fastq { input: bam=split_bam, max_retries=max_retries }
     }
     scatter (reads in zip(bam_to_fastq.read1, bam_to_fastq.read2)) {
         if (pairing == "Paired-end") {
