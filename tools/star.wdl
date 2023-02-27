@@ -10,7 +10,6 @@ task build_star_db {
         Int ncpu = 1
         File reference_fasta
         File gtf
-        String ram_limit = "45000000000" # This value is too large to be an Int type, so we store it as a string
         String stardb_dir_name = "stardb"
         Int memory_gb = 50
         Int? disk_size_gb
@@ -45,7 +44,7 @@ task build_star_db {
         STAR --runMode genomeGenerate \
             --genomeDir ~{stardb_dir_name} \
             --runThreadN "$n_cores" \
-            --limitGenomeGenerateRAM ~{ram_limit} \
+            --limitGenomeGenerateRAM ~{(memory_gb - 2) + "000000000"} \
             --genomeFastaFiles "$ref_fasta" \
             --sjdbGTFfile "$gtf_name" \
             --sjdbOverhang 125
