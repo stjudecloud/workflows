@@ -51,7 +51,6 @@ workflow bwa_db_build {
     call bwa.build_bwa_db {
         input:
             reference_fasta=reference_download.outfile,
-            bwadb_out_name="bwa.tar.gz"
     }
 
     output {

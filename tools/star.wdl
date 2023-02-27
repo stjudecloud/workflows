@@ -10,8 +10,8 @@ task build_star_db {
         Int ncpu = 1
         File reference_fasta
         File gtf
-        String stardb_dir_name
         String ram_limit = "45000000000" # This value is too large to be an Int type, so we store it as a string
+        String stardb_dir_name = "stardb"
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
