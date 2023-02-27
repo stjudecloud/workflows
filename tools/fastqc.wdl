@@ -11,20 +11,30 @@ task fastqc {
         Int ncpu = 1
         Int memory_gb = 5
         Int max_retries = 1
+        Boolean detect_nproc = false
     }
 
     String out_directory = basename(bam, ".bam") + ".fastqc_results"
     String out_tar_gz = out_directory + ".tar.gz"
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
+
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command {
         set -euo pipefail
         
+        n_cores=~{ncpu}
+        if [ -n ~{parsed_detect_nproc} ]
+        then
+            n_cores=$(nproc)
+        fi
+        
         mkdir ~{out_directory}
         fastqc -f bam \
             -o ~{out_directory} \
-            -t ~{ncpu} \
+            -t "$n_cores" \
             ~{bam}
 
         tar -czf ~{out_tar_gz} ~{out_directory}

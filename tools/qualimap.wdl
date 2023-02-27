@@ -12,21 +12,31 @@ task bamqc {
         Int max_retries = 1
         Int memory_gb = 32
         Int? disk_size_gb
+        Boolean detect_nproc = false
     }
 
     String out_directory = basename(bam, ".bam") + '.qualimap_bamqc_results'
     String out_tar_gz = out_directory + ".tar.gz"
 
     Int java_heap_size = ceil(memory_gb * 0.9)
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
+
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command {
         set -euo pipefail
         
+        n_cores=~{ncpu}
+        if [ -n ~{parsed_detect_nproc} ]
+        then
+            n_cores=$(nproc)
+        fi
+        
         qualimap bamqc -bam ~{bam} \
             -outdir ~{out_directory} \
-            -nt ~{ncpu} \
+            -nt "$n_cores" \
             -nw 400 \
             --java-mem-size=~{java_heap_size}g
         
