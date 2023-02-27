@@ -1,4 +1,4 @@
-## # RNASeq STAR DB build
+## # STAR DB build
 ##
 ## This WDL workflow generates a set of genome reference files usable by the STAR aligner from an input reference file in FASTA format.  
 ##
