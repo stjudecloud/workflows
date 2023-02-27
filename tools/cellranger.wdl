@@ -11,7 +11,7 @@ task count {
         File transcriptome_tar_gz
         File fastqs_tar_gz
         String? sample_id
-        Int ncpu = 8
+        Int ncpu = 1
         Int memory_gb = 16
         String jobmode = "local"
         Int max_retries = 1
@@ -99,7 +99,7 @@ task count {
 task bamtofastq {
     input {
         File bam
-        Int ncpu = 4
+        Int ncpu = 1
         Int memory_gb = 8
         Boolean cellranger11 = false
         Boolean longranger20 = false
