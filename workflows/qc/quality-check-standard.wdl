@@ -29,6 +29,7 @@ version 1.0
 
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/md5sum.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/mosdepth.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/fastqc.wdl" as fqc
 import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/ngsderive.wdl"
