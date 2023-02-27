@@ -60,8 +60,6 @@ workflow rnaseq_star_db_build {
         input:
             reference_fasta=reference_download.outfile,
             gtf=gtf_download.outfile,
-            stardb_dir_name="STARDB",
-            ncpu=4,
     }
 
     output {
