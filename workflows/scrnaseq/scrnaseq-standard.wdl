@@ -79,7 +79,7 @@ workflow scrnaseq_standard {
     }
     File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
 
-    call b2fq.cell_ranger_bam_to_fastqs { input: bam=selected_input_bam, max_retries=max_retries, detect_nproc=detect_nproc }
+    call b2fq.cell_ranger_bam_to_fastqs { input: bam=selected_input_bam, detect_nproc=detect_nproc, max_retries=max_retries }
 
     call cellranger.count {
         input:

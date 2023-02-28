@@ -48,6 +48,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/
 workflow cell_ranger_bam_to_fastqs {
     input {
         File bam
+        Boolean detect_nproc = false
         Int max_retries = 1
     }
 
@@ -57,7 +58,7 @@ workflow cell_ranger_bam_to_fastqs {
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call cellranger.bamtofastq { input: bam=bam, max_retries=max_retries } 
+    call cellranger.bamtofastq { input: bam=bam, detect_nproc=detect_nproc, max_retries=max_retries } 
     scatter (reads in zip(bamtofastq.read1, bamtofastq.read2)) {
         call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
     }
