@@ -53,7 +53,6 @@ workflow cell_ranger_bam_to_fastqs {
 
     parameter_meta {
         bam: "BAM file to split into fastqs."
-        bam_to_fastq_memory_gb: "How much memory to provide while converting to fastqs."
         max_retries: "Maximum number of times to retry on a failure."
     }
 
