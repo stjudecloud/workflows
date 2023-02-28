@@ -126,7 +126,7 @@ task bamtofastq {
             n_cores=$(nproc)
         fi
         
-        bamtofastq --nthreads "$n_cores" ~{data_arg} ~{bam} fastqs
+        cellranger bamtofastq --nthreads "$n_cores" ~{data_arg} ~{bam} fastqs
         cd fastqs/*/
         tar -zcf archive.tar.gz ./*.fastq.gz
     >>>
