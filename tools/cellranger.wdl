@@ -37,7 +37,8 @@ task count {
         mkdir fastqs
         tar zxf ~{fastqs_tar_gz} -C fastqs
 
-        if [ -z ~{sample_id} ]; then
+        sample_id="~{sample_id}"
+        if [ -z ${sample_id} ]; then
             files=(fastqs/*.fastq.gz)
             # expected sample name extension comes from:
             # https://support.illumina.com/content/dam/illumina-support/documents/documentation/software_documentation/bcl2fastq/bcl2fastq2-v2-20-software-guide-15051736-03.pdf
