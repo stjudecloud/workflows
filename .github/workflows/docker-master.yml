@@ -1,4 +1,4 @@
-name: docker-master
+name: Workflows Docker Master
 
 on:
   push:

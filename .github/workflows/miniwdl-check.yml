@@ -1,4 +1,4 @@
-name: miniwdl-check
+name: Workflows Miniwdl Check
 
 on: [push]
 
