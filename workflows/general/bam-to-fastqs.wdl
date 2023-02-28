@@ -35,9 +35,9 @@
 version 1.0
 
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/fq.wdl"
+import "../../tools/samtools.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/fq.wdl"
 
 workflow bam_to_fastqs {
     input {

@@ -28,15 +28,15 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/deeptools.wdl"
+import "../../tools/fq.wdl"
+import "../../tools/star.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/ngsderive.wdl"
+import "../../tools/htseq.wdl"
+import "../../tools/samtools.wdl"
+import "../../tools/deeptools.wdl"
 import "https://raw.githubusercontent.com/stjude/XenoCP/3.1.4/wdl/workflows/xenocp.wdl" as xenocp_workflow
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/md5sum.wdl"
+import "../../tools/md5sum.wdl"
 
 workflow rnaseq_standard_fastq {
     input {

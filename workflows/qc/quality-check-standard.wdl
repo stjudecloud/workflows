@@ -27,17 +27,17 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/mosdepth.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/multiqc.wdl" as mqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/docker-refactor/tools/util.wdl"
+import "../../tools/md5sum.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/mosdepth.wdl"
+import "../../tools/samtools.wdl"
+import "../../tools/fastqc.wdl" as fqc
+import "../../tools/ngsderive.wdl"
+import "../../tools/qualimap.wdl"
+import "../../tools/fq.wdl"
+import "../../tools/fastq_screen.wdl" as fq_screen
+import "../../tools/multiqc.wdl" as mqc
+import "../../tools/util.wdl"
 
 workflow quality_check {
     input {
