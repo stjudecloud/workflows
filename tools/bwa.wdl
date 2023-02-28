@@ -207,7 +207,7 @@ task build_bwa_db {
 
     Float input_fasta_size = size(reference_fasta, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((input_fasta_size * 2))])
-    String dwadb_out_name = bwadb_dir_name + ".tar.gz"
+    String bwadb_out_name = bwadb_dir_name + ".tar.gz"
 
     command <<<
         set -euo pipefail
