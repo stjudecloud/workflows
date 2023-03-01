@@ -54,7 +54,7 @@ jobs:
         with:
           context: ${{ matrix.image }}
           push: true
-          ssh: true
+          ssh: default
           tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:branch-${{ env.GH_REF }}-${{ env.SEMVER }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
