@@ -27,11 +27,8 @@ task download {
         wget ~{url} -O ~{outfilename}
 
         if [ ! -z "~{md5sum}" ]; then
-            new_md5=$(md5sum "~{outfilename}" | cut -d ' ' -f 1)
-            if [ $new_md5 -ne "~{md5sum}" ]; then
-                >&2 echo "md5s don't match!"
-                exit 1
-            fi
+            echo "~{md5sum}  ~{outfilename}" > ~{outfilename}.md5
+            md5sum -c ~{outfilename}.md5
         fi
     >>>
 
