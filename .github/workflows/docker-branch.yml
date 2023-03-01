@@ -34,7 +34,7 @@ jobs:
         run: |
           echo "TOOL=$(basename `dirname "${{ matrix.image }}"` | awk '{print tolower($0)}')" >> $GITHUB_ENV
           echo "SEMVER=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
-          echo "TAG=$(branch-${GITHUB_REF##*/}-`basename "${{ matrix.image }}"`)" >> $GITHUB_ENV
+          echo "TAG=$(branch-${GITHUB_REF##*/}-$SEMVER)" >> $GITHUB_ENV
       - name: Debug Env
         run: printenv
       - name: Verify SemVer
