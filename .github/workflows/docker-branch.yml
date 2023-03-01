@@ -35,6 +35,7 @@ jobs:
           echo "TOOL=$(basename `dirname "${{ matrix.image }}"` | awk '{print tolower($0)}')" >> $GITHUB_ENV
           echo "SEMVER=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
           echo "TAG=$(branch-${GITHUB_REF##*/}-`basename "${{ matrix.image }}"`)" >> $GITHUB_ENV
+          echo ${{ env.TAG }}
       - name: Verify SemVer
         run: |
           if ! [[ $SEMVER =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
