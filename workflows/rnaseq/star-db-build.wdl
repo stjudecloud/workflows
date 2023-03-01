@@ -39,7 +39,7 @@ version 1.0
 import "../../tools/star.wdl"
 import "../../tools/util.wdl"
 
-workflow rnaseq_star_db_build {
+workflow star_db_build {
     input {
         String reference_fa_url
         String gtf_url
