@@ -33,29 +33,26 @@ jobs:
       - name: Set Env
         run: |
           echo "TOOL=$(basename `dirname "${{ matrix.image }}"` | awk '{print tolower($0)}')" >> $GITHUB_ENV
-          echo "TAG=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
+          echo "SEMVER=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
+          echo "TAG=$(branch-${GITHUB_REF##*/}-$SEMVER)" >> $GITHUB_ENV
       - name: Verify SemVer
         run: |
-          if ! [[ $TAG =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
-            >&2 echo "Tag subdirectory $TAG for tool $TOOL is not SemVer compliant."
+          if ! [[ $SEMVER =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
+            >&2 echo "Tag subdirectory $SEMVER for tool $TOOL is not SemVer compliant."
             >&2 echo "This container will not be built."
             exit 1
           fi
+      - uses: actions/checkout@v3
       - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v2
-      - uses: webfactory/ssh-agent@v0.5.2
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
+      - uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.STJUDE_SEQERR_READONLY_DEPLOY_KEY }}
-      - name: Build and push docker images
-        env:
-          REGISTRY: ${{ env.REGISTRY }}
-          REPO_OWNER: ${{ github.repository_owner }}
-        run: |
-          tag=branch-${GITHUB_REF##*/}-$TAG
-          DOCKER_BUILDKIT=1 docker buildx build --push --ssh default -t "$REGISTRY"/"$REPO_OWNER"/"$TOOL":"$tag" ${{ matrix.image }}
-          docker rmi "$REGISTRY"/"$REPO_OWNER"/"$TOOL":"$tag"
+      - uses: docker/build-push-action@v4
+        with:
+          context: ${{ matrix.image }}
+          push: true
+          ssh: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
