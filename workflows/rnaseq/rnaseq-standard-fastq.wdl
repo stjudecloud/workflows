@@ -89,7 +89,6 @@ workflow rnaseq_standard_fastq {
     }
     call picard.sort as picard_sort { input: bam=alignment.star_bam, max_retries=max_retries }
     call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam, max_retries=max_retries, detect_nproc=detect_nproc }
-    call picard.validate_bam { input: bam=picard_sort.sorted_bam, max_retries=max_retries }
     call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gtf, max_retries=max_retries }
     String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
 
@@ -99,6 +98,8 @@ workflow rnaseq_standard_fastq {
     }
     File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
     File aligned_bai = select_first([xenocp.bam_index, samtools_index.bai])
+
+    call picard.validate_bam { input: bam=aligned_bam, max_retries=max_retries }
 
     call md5sum.compute_checksum { input: infile=aligned_bam, max_retries=max_retries }
 
