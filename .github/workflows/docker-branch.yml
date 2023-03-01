@@ -9,7 +9,7 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build-matrix:
+  list-images:
     runs-on: ubuntu-latest
     outputs:
       images: ${{ steps.set-matrix.outputs.images }}
@@ -24,11 +24,11 @@ jobs:
         run: echo "images=$(find docker -maxdepth 2 -mindepth 2 -not -path "*/cellranger/*"| jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
   build-images:
-    needs: build-matrix
+    needs: list-images
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ${{ fromJson(needs.build-matrix.outputs.images) }}
+        image: ${{ fromJson(needs.list-images.outputs.images) }}
     steps:
       - name: Set Env
         run: |
