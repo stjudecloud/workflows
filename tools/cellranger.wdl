@@ -37,6 +37,8 @@ task count {
         tar zxf ~{fastqs_tar_gz} -C fastqs
 
         files=(fastqs/*.fastq.gz)
+        # sample parameter to cellranger count must match the sample prefix contained in the fastq file.
+        # So we infer it here by manipulating the file name.
         # expected sample name extension comes from:
         # https://support.illumina.com/content/dam/illumina-support/documents/documentation/software_documentation/bcl2fastq/bcl2fastq2-v2-20-software-guide-15051736-03.pdf
         sample_id="$(basename "${files[0]}" | sed -E 's/_S[1-9]_L[0-9]{3}_[I,R][1,2]_001.fastq.gz$//')"
