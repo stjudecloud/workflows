@@ -34,6 +34,7 @@ jobs:
         run: |
           echo "TOOL=$(basename `dirname "${{ matrix.image }}"` | awk '{print tolower($0)}')" >> $GITHUB_ENV
           echo "SEMVER=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
+          echo "TAG=$(branch-${GITHUB_REF##*/}-`basename "${{ matrix.image }}"`)" >> $GITHUB_ENV
       - name: Verify SemVer
         run: |
           if ! [[ $SEMVER =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
@@ -54,6 +55,6 @@ jobs:
           context: ${{ matrix.image }}
           push: true
           ssh: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:branch-${GITHUB_REF##*/}-${{ env.SEMVER }}
+          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
