@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Set Env
         run: |
-          echo "TOOL=$(basename `dirname "${{ matrix.image }}"`)" >> $GITHUB_ENV
+          echo "TOOL=$(basename `dirname "${{ matrix.image }}"` | awk '{print tolower($0)}')" >> $GITHUB_ENV
           echo "TAG=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
       - name: Verify SemVer
         run: |
