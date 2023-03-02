@@ -42,16 +42,20 @@ import "../../tools/util.wdl"
 workflow star_db_build {
     input {
         String reference_fa_url
-        String gtf_url
         String reference_fa_name
+        String? reference_fa_md5
+        String gtf_url
         String gtf_name
+        String? gtf_md5
     }
 
     parameter_meta {
         reference_fa_url: "URL to retrieve the reference FASTA file from"
-        gtf_url: "URL to retrieve the reference GTF file from"
         reference_fa_name: "Name of output reference FASTA file"
+        reference_fa_md5: "Expected md5sum of reference FASTA file"
+        gtf_url: "URL to retrieve the reference GTF file from"
         gtf_name: "Name of output GTF file"
+        gtf_md5: "Expected md5sum of GTF file"
     }
 
     call util.download as reference_download { input: url=reference_fa_url, outfilename=reference_fa_name }
