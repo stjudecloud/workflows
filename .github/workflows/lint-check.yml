@@ -29,7 +29,7 @@ jobs:
             EXITCODE=1
           fi
 
-          bad_lines=$(echo "$import_lines" | awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows/ && (/main/ || /master/)') || true
+          bad_lines=$(echo "$import_lines" | awk '/http/ && (/main/ || /master/)') || true
           if [ -n "$bad_lines" ]; then
             >&2 echo "Imports from external repos must use a tagged release!"
             >&2 echo "The following lines are bad:"
