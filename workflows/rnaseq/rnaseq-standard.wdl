@@ -75,7 +75,13 @@ workflow rnaseq_standard {
 
     String provided_strandedness = strandedness
 
-    call parse_input { input: input_strand=provided_strandedness, cleanse_xenograft=cleanse_xenograft, contaminant_stardb_tar_gz=contaminant_stardb_tar_gz }
+    call parse_input {
+        input:
+            input_strand=provided_strandedness,
+            cleanse_xenograft=cleanse_xenograft,
+            contaminant_stardb_tar_gz=contaminant_stardb_tar_gz
+    }
+
     if (validate_input) {
        call picard.validate_bam as validate_input_bam { input: bam=input_bam, max_retries=max_retries }
     }
@@ -93,7 +99,12 @@ workflow rnaseq_standard {
 
     call util.get_read_groups { input: bam=selected_input_bam, max_retries=max_retries }
     String read_groups = read_string(get_read_groups.out)
-    call b2fq.bam_to_fastqs { input: bam=selected_input_bam, max_retries=max_retries, detect_nproc=detect_nproc }
+    call b2fq.bam_to_fastqs {
+        input:
+            bam=selected_input_bam,
+            max_retries=max_retries,
+            detect_nproc=detect_nproc
+    }
 
     call star.alignment {
         input:
@@ -105,14 +116,35 @@ workflow rnaseq_standard {
             max_retries=max_retries,
             detect_nproc=detect_nproc
     }
+    
     call picard.sort as picard_sort { input: bam=alignment.star_bam, max_retries=max_retries }
-    call samtools.index as samtools_index { input: bam=picard_sort.sorted_bam, max_retries=max_retries, detect_nproc=detect_nproc }
-    call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=picard_sort.sorted_bam, bai=samtools_index.bai, gtf=gtf, max_retries=max_retries }
+    
+    call samtools.index as samtools_index {
+        input:
+            bam=picard_sort.sorted_bam,
+            max_retries=max_retries,
+            detect_nproc=detect_nproc
+    }
+    
+    call ngsderive.infer_strandedness as ngsderive_strandedness {
+        input:
+            bam=picard_sort.sorted_bam,
+            bai=samtools_index.bai,
+            gtf=gtf,
+            max_retries=max_retries
+    }
     String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
 
     if (cleanse_xenograft){
         File contam_db = select_first([contaminant_stardb_tar_gz, ""])
-        call xenocp_workflow.xenocp { input: input_bam=picard_sort.sorted_bam, input_bai=samtools_index.bai, reference_tar_gz=contam_db, aligner="star", skip_duplicate_marking=true }
+        call xenocp_workflow.xenocp {
+            input:
+                input_bam=picard_sort.sorted_bam,
+                input_bai=samtools_index.bai,
+                reference_tar_gz=contam_db,
+                aligner="star",
+                skip_duplicate_marking=true
+        }
     }
     File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
     File aligned_bai = select_first([xenocp.bam_index, samtools_index.bai])
@@ -121,8 +153,21 @@ workflow rnaseq_standard {
 
     call md5sum.compute_checksum { input: infile=aligned_bam, max_retries=max_retries }
 
-    call htseq.count as htseq_count { input: bam=aligned_bam, gtf=gtf, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, max_retries=max_retries }
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=aligned_bam, bai=aligned_bai, max_retries=max_retries }
+    call htseq.count as htseq_count {
+        input:
+            bam=aligned_bam,
+            gtf=gtf,
+            provided_strandedness=provided_strandedness,
+            inferred_strandedness=parsed_strandedness,
+            max_retries=max_retries
+    }
+    
+    call deeptools.bamCoverage as deeptools_bamCoverage {
+        input:
+            bam=aligned_bam,
+            bai=aligned_bai,
+            max_retries=max_retries
+    }
 
     output {
         File bam = aligned_bam

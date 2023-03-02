@@ -83,49 +83,158 @@ workflow quality_check {
 
     call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
 
-    call picard.validate_bam { input: bam=bam, succeed_on_errors=true, ignore_list=[], summary_mode=true, max_retries=max_retries }
+    call picard.validate_bam {
+        input:
+            bam=bam,
+            succeed_on_errors=true,
+            ignore_list=[],
+            summary_mode=true,
+            max_retries=max_retries
+    }
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call util.compression_integrity { input: bam=bam, max_retries=max_retries }
 
-    call picard.collect_alignment_summary_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    call picard.collect_gc_bias_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
-    call picard.collect_insert_size_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    call picard.quality_score_distribution { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    call samtools.flagstat as samtools_flagstat { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    call fqc.fastqc { input: bam=quickcheck.checked_bam, detect_nproc=detect_nproc, max_retries=max_retries }
-    call ngsderive.instrument as ngsderive_instrument { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
+    call picard.collect_alignment_summary_metrics {
+        input:
+            bam=quickcheck.checked_bam,
+            max_retries=max_retries
+    }
+    call picard.collect_gc_bias_metrics {
+        input:
+            bam=quickcheck.checked_bam,
+            reference_fasta=reference_fasta,
+            max_retries=max_retries
+    }
+    call picard.collect_insert_size_metrics {
+        input:
+            bam=quickcheck.checked_bam,
+            max_retries=max_retries
+    }
+    call picard.quality_score_distribution {
+        input:
+            bam=quickcheck.checked_bam,
+            max_retries=max_retries
+    }
+    call samtools.flagstat as samtools_flagstat {
+        input:
+            bam=quickcheck.checked_bam,
+            max_retries=max_retries
+    }
+    call fqc.fastqc {
+        input:
+            bam=quickcheck.checked_bam,
+            detect_nproc=detect_nproc,
+            max_retries=max_retries
+    }
+    call ngsderive.instrument as ngsderive_instrument {
+        input:
+            bam=quickcheck.checked_bam,
+            max_retries=max_retries
+    }
+    call ngsderive.read_length as ngsderive_read_length {
+        input:
+            bam=quickcheck.checked_bam,
+            bai=bam_index,
+            max_retries=max_retries
+    }
     
-    call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
+    call ngsderive.encoding as ngsderive_encoding {
+        input:
+            ngs_files=[quickcheck.checked_bam],
+            prefix=prefix,
+            max_retries=max_retries
+    }
     String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
 
     if (experiment == "WGS") {
-        call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
-        call mosdepth.coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
+        call picard.collect_wgs_metrics {
+            input:
+                bam=quickcheck.checked_bam,
+                reference_fasta=reference_fasta,
+                max_retries=max_retries
+        }
+        call mosdepth.coverage {
+            input:
+                bam=quickcheck.checked_bam,
+                bai=bam_index,
+                max_retries=max_retries
+        }
     }
     if (experiment == "WES" || experiment == "RNA-Seq") {
-        call picard.collect_wgs_metrics_with_nonzero_coverage { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta }
+        call picard.collect_wgs_metrics_with_nonzero_coverage {
+            input:
+                bam=quickcheck.checked_bam,
+                reference_fasta=reference_fasta
+        }
     }
 
     if (experiment == "WGS" || experiment == "WES") {
         File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
 
-        call samtools.subsample as samtools_subsample { input: bam=quickcheck.checked_bam, detect_nproc=detect_nproc, max_retries=max_retries }
-        call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
-        call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
-        call fq_screen.fastq_screen { input: read1=fqlint.validated_read1, read2=select_first([fqlint.validated_read2, ""]), db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=parsed_encoding, max_retries=max_retries }
+        call samtools.subsample as samtools_subsample {
+            input:
+                bam=quickcheck.checked_bam,
+                detect_nproc=detect_nproc,
+                max_retries=max_retries
+        }
+        call picard.bam_to_fastq {
+            input:
+                bam=samtools_subsample.sampled_bam,
+                max_retries=max_retries
+        }
+        call fq.fqlint {
+            input:
+                read1=bam_to_fastq.read1,
+                read2=bam_to_fastq.read2,
+                max_retries=max_retries
+        }
+        call fq_screen.fastq_screen {
+            input:
+                read1=fqlint.validated_read1,
+                read2=select_first([fqlint.validated_read2, ""]),
+                db=fastq_screen_db_defined,
+                provided_encoding=phred_encoding,
+                inferred_encoding=parsed_encoding,
+                max_retries=max_retries
+        }
     }
 
     if (experiment == "RNA-Seq") {
         File gtf_defined = select_first([gtf, "No GTF"])
 
-        call ngsderive.junction_annotation as junction_annotation { input: bam=quickcheck.checked_bam, bai=bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.junction_annotation as junction_annotation {
+            input:
+                bam=quickcheck.checked_bam,
+                bai=bam_index,
+                gtf=gtf_defined,
+                max_retries=max_retries
+        }
 
-        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bai=bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.infer_strandedness as ngsderive_strandedness {
+            input:
+                bam=quickcheck.checked_bam,
+                bai=bam_index,
+                gtf=gtf_defined,
+                max_retries=max_retries
+        }
         String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
 
-        call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, name_sorted=true, paired_end=paired_end, max_retries=max_retries }
+        call picard.sort as picard_sort {
+            input:
+                bam=quickcheck.checked_bam,
+                sort_order="queryname",
+                max_retries=max_retries
+        }
+        call qualimap.rnaseq as qualimap_rnaseq {
+            input:
+                bam=picard_sort.sorted_bam,
+                gtf=gtf_defined,
+                provided_strandedness=provided_strandedness,
+                inferred_strandedness=parsed_strandedness,
+                name_sorted=true,
+                paired_end=paired_end,
+                max_retries=max_retries
+        }
     }
     
     call mqc.multiqc { input:

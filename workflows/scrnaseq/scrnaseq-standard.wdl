@@ -40,25 +40,26 @@ import "../../tools/md5sum.wdl"
 
 workflow scrnaseq_standard {
     input {
-        File gtf
         File input_bam
+        String output_prefix = basename(input_bam, ".bam")
+        File gtf
         File transcriptome_tar_gz
         String strandedness = ""
-        String output_prefix = basename(input_bam, ".bam")
         Int subsample_n_reads = -1
-        Int max_retries = 1
-        Boolean detect_nproc = false
         Boolean validate_input = true
+        Boolean detect_nproc = false
+        Int max_retries = 1
     }
 
     parameter_meta {
         input_bam: "Input BAM format file to quality check"
+        output_prefix: "Prefix for output files"
+        gtf: "GTF feature file"
         transcriptome_tar_gz: "Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics"
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
-        output_prefix: "Prefix for output files"
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
-        max_retries: "Number of times to retry failed steps"
         detect_nproc: "Use all available cores for multi-core steps"
+        max_retries: "Number of times to retry failed steps"
     }
 
     String provided_strandedness = strandedness
@@ -79,7 +80,12 @@ workflow scrnaseq_standard {
     }
     File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
 
-    call b2fq.cell_ranger_bam_to_fastqs { input: bam=selected_input_bam, detect_nproc=detect_nproc, max_retries=max_retries }
+    call b2fq.cell_ranger_bam_to_fastqs {
+        input:
+            bam=selected_input_bam,
+            detect_nproc=detect_nproc,
+            max_retries=max_retries
+    }
 
     call cellranger.count {
         input:
@@ -91,7 +97,13 @@ workflow scrnaseq_standard {
             detect_nproc=detect_nproc
     }
     call picard.validate_bam { input: bam=count.bam, max_retries=max_retries }
-    call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=count.bam, bai=count.bam_index, gtf=gtf, max_retries=max_retries }
+    call ngsderive.infer_strandedness as ngsderive_strandedness {
+        input:
+            bam=count.bam,
+            bai=count.bam_index,
+            gtf=gtf,
+            max_retries=max_retries
+    }
 
     call md5sum.compute_checksum { input: infile=count.bam, max_retries=max_retries }
 
