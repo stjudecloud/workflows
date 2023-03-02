@@ -40,18 +40,18 @@ import "../../tools/md5sum.wdl"
 
 workflow rnaseq_standard_fastq {
     input {
-        File gtf
         Array[File] read_one_fastqs
         Array[File] read_two_fastqs
-        File stardb_tar_gz
-        String strandedness = ""
-        String output_prefix
         String read_groups
-        Int max_retries = 1
-        Boolean detect_nproc = false
-        Boolean validate_input = true
-        Boolean cleanse_xenograft = false
+        String output_prefix
+        String strandedness = ""
+        File gtf
+        File stardb_tar_gz
         File? contaminant_stardb_tar_gz
+        Boolean cleanse_xenograft = false
+        Boolean validate_input = true
+        Boolean detect_nproc = false
+        Int max_retries = 1
     }
 
     parameter_meta {
