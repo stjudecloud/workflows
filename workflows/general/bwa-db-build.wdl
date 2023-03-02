@@ -49,7 +49,12 @@ workflow bwa_db_build {
         reference_fa_md5: "Expected md5sum of reference FASTA file"
     }
 
-    call util.download as reference_download { input: url=reference_fa_url, outfilename=reference_fa_name }
+    call util.download as reference_download {
+        input:
+            url=reference_fa_url,
+            outfilename=reference_fa_name,
+            md5sum=reference_fa_md5
+    }
     call bwa.build_bwa_db {
         input:
             reference_fasta=reference_download.outfile,

@@ -58,8 +58,18 @@ workflow star_db_build {
         gtf_md5: "Expected md5sum of GTF file"
     }
 
-    call util.download as reference_download { input: url=reference_fa_url, outfilename=reference_fa_name }
-    call util.download as gtf_download { input: url=gtf_url, outfilename=gtf_name }
+    call util.download as reference_download {
+        input:
+            url=reference_fa_url,
+            outfilename=reference_fa_name,
+            md5sum=reference_fa_md5
+    }
+    call util.download as gtf_download {
+        input:
+            url=gtf_url,
+            outfilename=gtf_name,
+            md5sum=gtf_md5
+    }
     call star.build_star_db {
         input:
             reference_fasta=reference_download.outfile,
