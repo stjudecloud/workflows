@@ -29,16 +29,16 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/workflows/general/bam-to-fastqs.wdl" as b2fq
+import "../general/bam-to-fastqs.wdl" as b2fq
 import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl" as seaseq_map
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
+import "../../tools/ngsderive.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/deeptools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
+import "../../tools/util.wdl"
+import "../../tools/deeptools.wdl"
+import "../../tools/md5sum.wdl"
 
 workflow chipseq_standard {
     input {
