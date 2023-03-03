@@ -25,7 +25,7 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/estimate.wdl"
+import "../../tools/estimate.wdl"
 
 workflow ESTIMATE {
     input {
