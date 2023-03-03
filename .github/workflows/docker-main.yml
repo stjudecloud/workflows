@@ -1,15 +1,15 @@
-name: docker-master
+name: Workflows Docker Main
 
 on:
   push:
     branches:
-    - 'master'
+    - 'main'
 
 env:
   REGISTRY: ghcr.io
 
 jobs:
-  docker_build_master:
+  docker_build_main:
     runs-on: ubuntu-latest
     steps:
     - name: Log in to the Container registry

@@ -1,9 +1,9 @@
-name: docker-branch
+name: Workflows Docker Branch
 
 on:
   push:
     branches-ignore:
-    - 'master'
+    - 'main'
 
 env:
   REGISTRY: ghcr.io
