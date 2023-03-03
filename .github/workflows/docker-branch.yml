@@ -51,7 +51,10 @@ jobs:
       - uses: docker/setup-buildx-action@v2
       - name: Set Branch Tag
         if: github.ref != 'refs.head/main'
-        run: echo "IMAGE_TAG=branch-${GITHUB_REF##*/}-${{ env.SEMVER }}" >> $GITHUB_ENV
+        run: |
+          IMAGE_TAG=branch-${GITHUB_REF##*/}-${{ env.SEMVER }}
+          echo $IMAGE_TAG
+          echo "IMAGE_TAG=branch-${GITHUB_REF##*/}-${{ env.SEMVER }}" >> $GITHUB_ENV
       - uses: docker/build-push-action@v4
         with:
           context: ${{ matrix.image }}
