@@ -54,6 +54,6 @@ jobs:
           context: ${{ matrix.image }}
           push: true
           ssh: default
-          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:branch-${{ env.GH_REF }}-${{ env.SEMVER }}
+          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.SEMVER }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache,mode=max
