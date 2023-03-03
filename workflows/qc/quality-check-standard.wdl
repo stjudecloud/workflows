@@ -27,17 +27,17 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/mosdepth.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
+import "../../tools/md5sum.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/mosdepth.wdl"
+import "../../tools/samtools.wdl"
+import "../../tools/fastqc.wdl" as fqc
+import "../../tools/ngsderive.wdl"
+import "../../tools/qualimap.wdl"
+import "../../tools/fq.wdl"
+import "../../tools/fastq_screen.wdl" as fq_screen
+import "../../tools/multiqc.wdl" as mqc
+import "../../tools/util.wdl"
 
 workflow quality_check {
     input {

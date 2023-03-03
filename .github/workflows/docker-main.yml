@@ -1,9 +1,9 @@
-name: Workflows Docker Master
+name: Workflows Docker Main
 
 on:
   push:
     branches:
-    - 'master'
+    - 'main'
 
 env:
   REGISTRY: ghcr.io
