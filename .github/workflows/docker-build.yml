@@ -34,7 +34,7 @@ jobs:
           echo "IMAGE_TAG=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
           echo "GH_REF=${GITHUB_REF##*/}" >> $GITHUB_ENV
       - name: Set Branch Tag
-        if: github.ref != 'refs.head/main'
+        if: github.ref != 'refs/heads/main'
         run: echo "IMAGE_TAG=branch-${GITHUB_REF##*/}-${{ env.SEMVER }}" >> $GITHUB_ENV
       - name: Verify SemVer
         run: |
