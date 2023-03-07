@@ -101,9 +101,6 @@ workflow quality_check {
         call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
         call mosdepth.coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
     }
-    if (experiment == "WES" || experiment == "RNA-Seq") {
-        call picard.collect_wgs_metrics_with_nonzero_coverage { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta }
-    }
 
     if (experiment == "WGS" || experiment == "WES") {
         File kraken_db_defined = select_first([kraken_db, "No DB"])
@@ -178,8 +175,6 @@ workflow quality_check {
         File? wgs_metrics = collect_wgs_metrics.wgs_metrics
         File? mosdepth_global_dist = coverage.global_dist
         File? mosdepth_summary = coverage.summary
-        File? wgs_metrics_with_nonzero_coverage = collect_wgs_metrics_with_nonzero_coverage.wgs_metrics
-        File? wgs_metrics_with_nonzero_coverage_pdf = collect_wgs_metrics_with_nonzero_coverage.wgs_metrics_pdf
         File? kraken_report = run_kraken.report
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
