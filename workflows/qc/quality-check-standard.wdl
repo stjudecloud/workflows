@@ -44,11 +44,11 @@ workflow quality_check {
         File bam
         File bam_index
         File reference_fasta
+        File kraken_db
         File? gtf
         File? star_log
         String experiment
         String strandedness = ""
-        File? kraken_db
         Boolean paired_end = true
         Int max_retries = 1
     }
@@ -91,26 +91,21 @@ workflow quality_check {
     call fqc.fastqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
-    
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
+
+    call picard.bam_to_fastq { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
+    call kraken.kraken as run_kraken { 
+        input:
+            read1=fqlint.validated_read1,
+            read2=select_first([fqlint.validated_read2, ""]),
+            db=kraken_db,
+            max_retries=max_retries
+    }
 
     if (experiment == "WGS") {
         call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
         call mosdepth.coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
-    }
-
-    if (experiment == "WGS" || experiment == "WES") {
-        File kraken_db_defined = select_first([kraken_db, "No DB"])
-
-        call picard.bam_to_fastq { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-        call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
-        call kraken.kraken as run_kraken { 
-            input:
-                read1=fqlint.validated_read1,
-                read2=select_first([fqlint.validated_read2, ""]),
-                db=kraken_db_defined,
-                max_retries=max_retries
-        }
     }
 
     if (experiment == "RNA-Seq") {
@@ -168,11 +163,11 @@ workflow quality_check {
         File insert_size_metrics_pdf = collect_insert_size_metrics.insert_size_metrics_pdf
         File quality_score_distribution_txt = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf = quality_score_distribution.quality_score_distribution_pdf
+        File kraken_report = run_kraken.report
         File multiqc_zip = multiqc.out
         File? wgs_metrics = collect_wgs_metrics.wgs_metrics
         File? mosdepth_global_dist = coverage.global_dist
         File? mosdepth_summary = coverage.summary
-        File? kraken_report = run_kraken.report
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
