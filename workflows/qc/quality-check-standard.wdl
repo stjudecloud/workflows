@@ -49,7 +49,6 @@ workflow quality_check {
         String experiment
         String strandedness = ""
         File? kraken_db
-        String phred_encoding = ""
         Boolean paired_end = true
         Int max_retries = 1
     }
@@ -63,7 +62,6 @@ workflow quality_check {
         experiment: "'WGS', 'WES', or 'RNA-Seq'"
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. Only needed for RNA-Seq data. If missing, will be inferred"
         fastq_screen_db: "Database for FastQ Screen. **Required** for WGS and WES data. Can be generated using `make-qc-reference.wdl`. Must untar directly to genome directories."
-        phred_encoding: "Encoding format used for PHRED quality scores. Must be empty, 'sanger', or 'illumina1.3'. Only needed for WGS/WES. If missing, will be inferred"
         paired_end: "Whether the data is paired end"
         max_retries: "Number of times to retry failed steps"
     }
@@ -95,7 +93,6 @@ workflow quality_check {
     call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
     
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
-    String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
 
     if (experiment == "WGS") {
         call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
