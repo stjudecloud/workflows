@@ -35,7 +35,7 @@ import "../../tools/fastqc.wdl" as fqc
 import "../../tools/ngsderive.wdl"
 import "../../tools/qualimap.wdl"
 import "../../tools/fq.wdl"
-import "../../tools/fastq_screen.wdl" as fq_screen
+import "../../tools/kraken.wdl"
 import "../../tools/multiqc.wdl" as mqc
 import "../../tools/util.wdl"
 
@@ -48,7 +48,7 @@ workflow quality_check {
         File? star_log
         String experiment
         String strandedness = ""
-        File? fastq_screen_db
+        File? kraken_db
         String phred_encoding = ""
         Boolean paired_end = true
         Int max_retries = 1
@@ -106,12 +106,17 @@ workflow quality_check {
     }
 
     if (experiment == "WGS" || experiment == "WES") {
-        File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
+        File kraken_db_defined = select_first([kraken_db, "No DB"])
 
-        call samtools.subsample as samtools_subsample { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-        call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
+        call picard.bam_to_fastq { input: bam=quickcheck.checked_bam, max_retries=max_retries }
         call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
-        call fq_screen.fastq_screen { input: read1=fqlint.validated_read1, read2=select_first([fqlint.validated_read2, ""]), db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=parsed_encoding, max_retries=max_retries }
+        call kraken.kraken as run_kraken { 
+            input:
+                read1=fqlint.validated_read1,
+                read2=select_first([fqlint.validated_read2, ""]),
+                db=kraken_db_defined,
+                max_retries=max_retries
+        }
     }
 
     if (experiment == "RNA-Seq") {
@@ -141,7 +146,7 @@ workflow quality_check {
             coverage.summary,
             coverage.global_dist,
             collect_wgs_metrics.wgs_metrics,
-            fastq_screen.raw_data,
+            run_kraken.report,
             star_log,
             ngsderive_strandedness.strandedness_file,
             junction_annotation.junction_summary,
@@ -175,7 +180,7 @@ workflow quality_check {
         File? mosdepth_summary = coverage.summary
         File? wgs_metrics_with_nonzero_coverage = collect_wgs_metrics_with_nonzero_coverage.wgs_metrics
         File? wgs_metrics_with_nonzero_coverage_pdf = collect_wgs_metrics_with_nonzero_coverage.wgs_metrics_pdf
-        File? fastq_screen_results = fastq_screen.results
+        File? kraken_report = run_kraken.report
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary

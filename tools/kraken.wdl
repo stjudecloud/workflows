@@ -69,7 +69,7 @@ task kraken {
     }
 
     output {
-        File results = out_file
+        File report = out_file
     }
 
     meta {
