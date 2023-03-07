@@ -73,8 +73,7 @@ workflow quality_check {
         input:
             input_experiment=experiment,
             input_gtf=gtf,
-            input_strand=provided_strandedness,
-            input_fq_format=phred_encoding
+            input_strand=provided_strandedness
     }
 
     call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
@@ -185,7 +184,6 @@ task parse_input {
         String input_experiment
         File? input_gtf
         String input_strand
-        String input_fq_format
     }
 
     String no_gtf = if defined(input_gtf) then "" else "true"
@@ -207,10 +205,6 @@ task parse_input {
             EXITCODE=1
         fi
 
-        if [ -n "~{input_fq_format}" ] && [ "~{input_fq_format}" != "sanger" ] && [ "~{input_fq_format}" != "illunima1.3" ]; then
-            >&2 echo "phred_encoding must be empty, 'sanger', or 'illumina1.3'"
-            EXITCODE=1
-        fi
         exit $EXITCODE
     >>>
 
