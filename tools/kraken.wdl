@@ -29,7 +29,7 @@ task kraken {
     Float read2_size = size(read2, "GiB")
     Int disk_size = ceil((db_size * 2) + read1_size + read2_size + 5)
 
-    Int ram_gb = select_first([memory_gb, ceil(db_size * 2)])
+    Int ram_gb = select_first([memory_gb, ceil(db_size * 1.5)])
 
     String inferred_basename = basename(read1, "_R1.fastq.gz")
     String sample_basename = select_first([sample_name, inferred_basename])
