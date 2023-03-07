@@ -68,11 +68,12 @@ workflow quality_check {
 
     String prefix = basename(bam, ".bam")
     String provided_strandedness = strandedness
+    Boolean gtf_provided = defined(gtf)
 
     call parse_input {
         input:
             input_experiment=experiment,
-            input_gtf=gtf,
+            gtf_provided=gtf_provided,
             input_strand=provided_strandedness
     }
 
@@ -182,11 +183,11 @@ workflow quality_check {
 task parse_input {
     input {
         String input_experiment
-        File? input_gtf
+        Boolean gtf_provided
         String input_strand
     }
 
-    String no_gtf = if defined(input_gtf) then "" else "true"
+    String no_gtf = if gtf_provided then "" else "true"
 
     command <<<
         EXITCODE=0
@@ -209,8 +210,8 @@ task parse_input {
     >>>
 
     runtime {
-        memory: "4 GB"
-        disk: "5 GB"
+        memory: "1 GB"
+        disk: "1 GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
     }
 
