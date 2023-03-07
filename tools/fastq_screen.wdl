@@ -17,14 +17,14 @@ task build_db {
         mv FastQ_Screen_Genomes/fastq_screen.conf FastQ_Screen_Genomes/fastq_screen.conf.template
         tar -czf ~{tar_filename} -C FastQ_Screen_Genomes/ .
     }
- 
+
     runtime {
         memory: "4 GB"
         disk: "30 GB"
         docker: 'ghcr.io/stjudecloud/fastq_screen:branch-docker-refactor-1.2.0'
         maxRetries: max_retries
     }
-    
+
     output {
         File db = tar_filename
     }
@@ -78,7 +78,7 @@ task fastq_screen {
 
         mkdir -p /tmp/FastQ_Screen_Genomes/
         tar -xzf ~{db} -C /tmp/FastQ_Screen_Genomes/ --no-same-owner
-        
+
         tree -h /tmp
         ls -lah /tmp
         df
