@@ -212,7 +212,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>collect_gc_bias_metrics.disk_size_gb</code> (Int?)</li>
 <li><code>collect_insert_size_metrics.disk_size_gb</code> (Int?)</li>
 <li><code>collect_wgs_metrics.disk_size_gb</code> (Int?)</li>
-<li><code>collect_wgs_metrics_with_nonzero_coverage.disk_size_gb</code> (Int?)</li>
 <li><code>fastq_screen.sample_name</code> (String?)</li>
 <li><code>picard_sort.disk_size_gb</code> (Int?)</li>
 <li><code>qualimap_rnaseq.disk_size_gb</code> (Int?)</li>
@@ -230,8 +229,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>collect_gc_bias_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>collect_insert_size_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>collect_wgs_metrics.memory_gb</code> (Int, default=12)</li>
-<li><code>collect_wgs_metrics_with_nonzero_coverage.max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
-<li><code>collect_wgs_metrics_with_nonzero_coverage.memory_gb</code> (Int, default=12)</li>
 <li><code>compute_checksum.memory_gb</code> (Int, default=5)</li>
 <li><code>coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>coverage.min_mapping_quality</code> (Int, default=20)</li>
@@ -289,8 +286,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>wgs_metrics</code> (File?)</li>
 <li><code>mosdepth_global_dist</code> (File?)</li>
 <li><code>mosdepth_summary</code> (File?)</li>
-<li><code>wgs_metrics_with_nonzero_coverage</code> (File?)</li>
-<li><code>wgs_metrics_with_nonzero_coverage_pdf</code> (File?)</li>
 <li><code>fastq_screen_results</code> (File?)</li>
 <li><code>inferred_strandedness</code> (File?)</li>
 <li><code>qualimap_rnaseq_results</code> (File?)</li>
