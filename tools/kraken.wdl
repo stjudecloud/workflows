@@ -10,8 +10,7 @@ task kraken {
         File read2
         File db
         String? sample_name
-        Int min_base_quality = 0
-        Float confidence_threshold = 0.0
+        Int min_base_quality = 30
         Int? memory_gb
         Int ncpu = 1
         Boolean detect_nproc = false
@@ -52,8 +51,8 @@ task kraken {
             --output - \
             --threads "$n_cores" \
             --minimum-base-quality ~{min_base_quality} \
-            --confidence ~{confidence_threshold} \
             --report ~{out_file} \
+            --report-zero-counts \
             ~{read1} \
             ~{read2}
 
