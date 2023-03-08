@@ -3,7 +3,7 @@
   <a href="https://actions-badge.atrox.dev/stjudecloud/workflows/goto">
     <img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fstjudecloud%2Fworkflows%2Fbadge&style=flat" />
   </a>
-  <a href="https://stjude.cloud/docs" target="_blank">
+  <a href="https://stjudecloud.github.io/workflows/" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
   </a>
   <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md" target="_blank">
