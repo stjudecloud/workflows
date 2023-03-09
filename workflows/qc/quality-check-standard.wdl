@@ -44,8 +44,8 @@ workflow quality_check {
         File bam
         File bam_index
         File reference_fasta
-        Array[File]? coverage_beds
-        Array[String]? coverage_labels
+        Array[File] coverage_beds = []
+        Array[String] coverage_labels = []
         File? gtf
         File? star_log
         String experiment
@@ -78,7 +78,9 @@ workflow quality_check {
             input_experiment=experiment,
             input_gtf=gtf,
             input_strand=provided_strandedness,
-            input_fq_format=phred_encoding
+            input_fq_format=phred_encoding,
+            coverage_beds_len=length(coverage_beds),
+            coverage_labels=coverage_labels
     }
 
     call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
@@ -99,7 +101,22 @@ workflow quality_check {
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
     String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
 
-    call mosdepth.coverage as wg_coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
+    call mosdepth.coverage as wg_coverage {
+        input:
+            bam=quickcheck.checked_bam,
+            bai=bam_index,
+            max_retries=max_retries
+    }
+    scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
+        call mosdepth.coverage as regions_coverage {
+            input:
+                bam=quickcheck.checked_bam,
+                bai=bam_index,
+                coverage_bed=coverage_pair.left,
+                prefix=basename(quickcheck.checked_bam, 'bam')+coverage_pair.right,
+                max_retries=max_retries
+        }
+    }
 
     if (experiment == "WGS" || experiment == "WES") {
         File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
@@ -166,7 +183,9 @@ workflow quality_check {
         File quality_score_distribution_pdf = quality_score_distribution.quality_score_distribution_pdf
         File multiqc_zip = multiqc.out
         File mosdepth_global_dist = wg_coverage.global_dist
-        File mosdepth_summary = wg_coverage.summary
+        File mosdepth_global_summary = wg_coverage.summary
+        Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
+        Array[File] mosdepth_region_summary = regions_coverage.summary
         File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
@@ -181,12 +200,17 @@ task parse_input {
         File? input_gtf
         String input_strand
         String input_fq_format
+        Int coverage_beds_len
+        Array[String] coverage_labels
     }
 
     String no_gtf = if defined(input_gtf) then "" else "true"
 
+    Int coverage_labels_len = length(coverage_labels)
+
     command <<<
         EXITCODE=0
+
         if [ "~{input_experiment}" != "WGS" ] && [ "~{input_experiment}" != "WES" ] && [ "~{input_experiment}" != "RNA-Seq" ]; then
             >&2 echo "experiment input must be 'WGS', 'WES', or 'RNA-Seq'"
             EXITCODE=1
@@ -206,6 +230,20 @@ task parse_input {
             >&2 echo "phred_encoding must be empty, 'sanger', or 'illumina1.3'"
             EXITCODE=1
         fi
+
+        touch labels.txt
+        if [ "~{coverage_labels_len}" = 0 ]; then
+            for (( i=1; i<=~{coverage_beds_len}; i++ )); do
+                echo regions$i >> labels.txt
+            done
+        elif [ "~{coverage_labels_len}" != "~{coverage_beds_len}" ]; then
+            >&2 echo "Unequal amount of coverage BEDs and coverage labels."
+            >&2 echo "If no labels are provided, generic labels will be created."
+            >&2 echo "Otherwise the exact same amount must be supplied."
+        else
+            echo "~{sep="\n" coverage_labels}" >> labels.txt
+        fi
+
         exit $EXITCODE
     >>>
 
@@ -217,5 +255,6 @@ task parse_input {
 
     output {
         String input_check = "passed"
+        Array[String] labels = read_lines("labels.txt")
     }
 }

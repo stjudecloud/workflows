@@ -9,6 +9,7 @@ task coverage {
         File bam
         File bai
         File? coverage_bed
+        String prefix = basename(bam, '.bam')
         Int min_mapping_quality = 20
         Boolean use_fast_mode = true
         Int memory_gb = 8 
@@ -27,7 +28,7 @@ task coverage {
             ~{if defined(coverage_bed) then "-b" else ""} ~{coverage_bed} \
             -Q ~{min_mapping_quality} \
             ~{if (use_fast_mode) then "-x" else ""} \
-            "$(basename ~{bam} '.bam')" \
+            ~{prefix} \
             ~{bam}
     }
 
@@ -39,9 +40,9 @@ task coverage {
     }
 
     output {
-        File summary = basename(bam, '.bam') + ".mosdepth.summary.txt"
-        File global_dist = basename(bam, '.bam') + ".mosdepth.global.dist.txt"
-        File? region_dist = basename(bam, '.bam') + ".mosdepth.region.dist.txt"
+        File summary = prefix + ".mosdepth.summary.txt"
+        File global_dist = prefix + ".mosdepth.global.dist.txt"
+        File? region_dist = prefix + ".mosdepth.region.dist.txt"
     }
 
     meta {
