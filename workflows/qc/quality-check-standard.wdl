@@ -44,6 +44,8 @@ workflow quality_check {
         File bam
         File bam_index
         File reference_fasta
+        Array[File]? coverage_beds
+        Array[String]? coverage_labels
         File? gtf
         File? star_log
         String experiment
@@ -97,10 +99,7 @@ workflow quality_check {
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
     String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
 
-    if (experiment == "WGS") {
-        call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
-        call mosdepth.coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
-    }
+    call mosdepth.coverage as wg_coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
 
     if (experiment == "WGS" || experiment == "WES") {
         File fastq_screen_db_defined = select_first([fastq_screen_db, "No DB"])
@@ -135,9 +134,8 @@ workflow quality_check {
             collect_gc_bias_metrics.gc_bias_metrics,
             collect_insert_size_metrics.insert_size_metrics,
             quality_score_distribution.quality_score_distribution_txt,
-            coverage.summary,
-            coverage.global_dist,
-            collect_wgs_metrics.wgs_metrics,
+            wg_coverage.summary,
+            wg_coverage.global_dist,
             fastq_screen.raw_data,
             star_log,
             ngsderive_strandedness.strandedness_file,
@@ -167,9 +165,8 @@ workflow quality_check {
         File quality_score_distribution_txt = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf = quality_score_distribution.quality_score_distribution_pdf
         File multiqc_zip = multiqc.out
-        File? wgs_metrics = collect_wgs_metrics.wgs_metrics
-        File? mosdepth_global_dist = coverage.global_dist
-        File? mosdepth_summary = coverage.summary
+        File mosdepth_global_dist = wg_coverage.global_dist
+        File mosdepth_summary = wg_coverage.summary
         File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
