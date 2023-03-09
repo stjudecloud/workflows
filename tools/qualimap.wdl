@@ -80,13 +80,15 @@ task rnaseq {
                         if (provided_strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
                         if (provided_strandedness == "Stranded-Forward") then "strand-specific-forward" else
                         if (provided_strandedness == "Unstranded") then "non-strand-specific"
-                        else "unknown-strand"
+                        else "unknown-strand" # this will intentionally cause qualimap to error. You will need to manually specify
+                                              # in this case
                       else 
                         if (inferred_strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
                         if (inferred_strandedness == "Stranded-Forward") then "strand-specific-forward" else 
                         if (inferred_strandedness == "Unstranded") then "non-strand-specific" else
-                        "unknown-strand" # this will intentionally cause qualimap to error. You will need to manually specify
-                                         # in this case
+                        if (inferred_strandedness == "Inconclusive") then "non-strand-specific"
+                        else "unknown-strand" # this will intentionally cause qualimap to error. You will need to manually specify
+                                              # in this case
     String name_sorted_arg = if (name_sorted) then "-s" else ""
     String paired_end_arg = if (paired_end) then "-pe" else ""
 
