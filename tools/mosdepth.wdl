@@ -22,7 +22,7 @@ task make_coverage_regions_beds {
         EXON=$(basename ~{gtf} '.gz').exon.bed
         awk '/\texon\t/ {print $1 "\t" $2 "\t" $3}' "$BED" > "$EXON"
 
-        CDS=$(basename ~{gtf}).CDS.bed
+        CDS=$(basename ~{gtf} '.gz').CDS.bed
         awk '/\tCDS\t/ {print $1 "\t" $2 "\t" $3}' "$BED" > "$CDS"
     >>>
 
