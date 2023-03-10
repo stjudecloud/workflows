@@ -16,10 +16,10 @@ task make_coverage_regions_beds {
     command <<<
         set -euo pipefail
 
-        BED=$(basename ~{gtf}).bed
+        BED=$(basename ~{gtf} '.gz').bed
         gunzip -c ~{gtf} | gtf2bed > "$BED"
 
-        EXON=$(basename ~{gtf}).exon.bed
+        EXON=$(basename ~{gtf} '.gz').exon.bed
         awk '/\texon\t/ {print $1 "\t" $2 "\t" $3}' "$BED" > "$EXON"
 
         CDS=$(basename ~{gtf}).CDS.bed
@@ -34,8 +34,8 @@ task make_coverage_regions_beds {
     }
 
     output {
-        File exon_bed = basename(gtf) + ".exon.bed"
-        File CDS_bed = basename(gtf) + ".CDS.bed"
+        File exon_bed = basename(gtf, '.gz') + ".exon.bed"
+        File CDS_bed = basename(gtf, '.gz') + ".CDS.bed"
     }
 
     meta {
