@@ -242,6 +242,7 @@ task parse_input {
             >&2 echo "Unequal amount of coverage BEDs and coverage labels."
             >&2 echo "If no labels are provided, generic labels will be created."
             >&2 echo "Otherwise the exact same amount must be supplied."
+            EXITCODE=1
         else
             echo "~{sep="\n" coverage_labels}" >> labels.txt
         fi
