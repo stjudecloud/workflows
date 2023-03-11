@@ -1,6 +1,8 @@
 ## # Make QC Reference
 ##
-## Create the reference DB needed by FastQ Screen in the `quality-check-standard` workflow when analyzing WGS and WES BAMs.
+## Download/create all the reference files needed for `quality-check-standard.wdl`.
+## This includes: a reference FASTA, a GTF, the database used by FastQ Screen, and exonic/coding regions BEDs
+## for use in restricting mosdepth coverage analysis to selected regions.
 ##
 ## ## LICENSING:
 ## 
