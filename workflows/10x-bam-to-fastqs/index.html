@@ -113,6 +113,18 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parse_input">parse_input</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_1">Outputs</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
@@ -205,13 +217,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>bam_to_fastq_memory_gb</code> (Int, default=40): How much memory to provide while converting to fastqs.</li>
+<li><code>cellranger11</code> (Boolean, default=false)</li>
 <li><code>detect_nproc</code> (Boolean, default=false)</li>
+<li><code>gemcode</code> (Boolean, default=false)</li>
+<li><code>longranger20</code> (Boolean, default=false)</li>
 <li><code>max_retries</code> (Int, default=1): Maximum number of times to retry on a failure.</li>
 <li><code>pairing</code> (String, default="Paired-end")</li>
-<li><code>bamtofastq.cellranger11</code> (Boolean, default=false)</li>
 <li><code>bamtofastq.detect_nproc</code> (Boolean, default=false)</li>
-<li><code>bamtofastq.gemcode</code> (Boolean, default=false)</li>
-<li><code>bamtofastq.longranger20</code> (Boolean, default=false)</li>
 <li><code>bamtofastq.ncpu</code> (Int, default=4)</li>
 <li><code>fqlint_pair.memory_gb</code> (Int, default=8)</li>
 <li><code>fqlint_single.memory_gb</code> (Int, default=8)</li>
@@ -222,6 +234,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>fastqs_archive</code> (File)</li>
 <li><code>read1s</code> (Array[File])</li>
 <li><code>read2s</code> (Array[File])</li>
+</ul>
+<h2 id="parse_input">parse_input</h2>
+<h3 id="inputs_1">Inputs</h3>
+<h4 id="required_1">Required</h4>
+<ul>
+<li><code>cellranger11</code> (Boolean, <strong>required</strong>)</li>
+<li><code>gemcode</code> (Boolean, <strong>required</strong>)</li>
+<li><code>longranger20</code> (Boolean, <strong>required</strong>)</li>
+</ul>
+<h3 id="outputs_1">Outputs</h3>
+<ul>
+<li><code>input_check</code> (String)</li>
 </ul>
               
             </div>

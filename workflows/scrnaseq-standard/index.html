@@ -183,6 +183,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>subsample_n_reads</code> (Int, default=-1): Only process a random sampling of <code>n</code> reads. &lt;=<code>0</code> for processing entire input BAM.</li>
 <li><code>validate_input</code> (Boolean, default=true)</li>
 <li><code>cell_ranger_bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
+<li><code>cell_ranger_bam_to_fastqs.cellranger11</code> (Boolean, default=false)</li>
+<li><code>cell_ranger_bam_to_fastqs.gemcode</code> (Boolean, default=false)</li>
+<li><code>cell_ranger_bam_to_fastqs.longranger20</code> (Boolean, default=false)</li>
 <li><code>cell_ranger_bam_to_fastqs.pairing</code> (String, default="Paired-end")</li>
 <li><code>compute_checksum.memory_gb</code> (Int, default=5)</li>
 <li><code>count.jobmode</code> (String, default="local")</li>
@@ -207,10 +210,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>validate_input_bam.succeed_on_errors</code> (Boolean, default=false)</li>
 <li><code>validate_input_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
 <li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
-<li><code>cell_ranger_bam_to_fastqs.bamtofastq.cellranger11</code> (Boolean, default=false)</li>
 <li><code>cell_ranger_bam_to_fastqs.bamtofastq.detect_nproc</code> (Boolean, default=false): Use all available cores for multi-core steps</li>
-<li><code>cell_ranger_bam_to_fastqs.bamtofastq.gemcode</code> (Boolean, default=false)</li>
-<li><code>cell_ranger_bam_to_fastqs.bamtofastq.longranger20</code> (Boolean, default=false)</li>
 <li><code>cell_ranger_bam_to_fastqs.bamtofastq.ncpu</code> (Int, default=4)</li>
 <li><code>cell_ranger_bam_to_fastqs.fqlint_pair.memory_gb</code> (Int, default=8)</li>
 <li><code>cell_ranger_bam_to_fastqs.fqlint_single.memory_gb</code> (Int, default=8)</li>
