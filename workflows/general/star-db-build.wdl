@@ -45,6 +45,7 @@ workflow star_db_build {
         String gtf_url
         String reference_fa_name
         String gtf_name
+        Int max_retries = 1
     }
 
     parameter_meta {
@@ -52,14 +53,28 @@ workflow star_db_build {
         gtf_url: "URL to retrieve the reference GTF file from"
         reference_fa_name: "Name of output reference FASTA file"
         gtf_name: "Name of output GTF file"
+        max_retries: "Number of times to retry failed steps"
     }
 
-    call util.download as reference_download { input: url=reference_fa_url, outfilename=reference_fa_name }
-    call util.download as gtf_download { input: url=gtf_url, outfilename=gtf_name }
+    call util.download as reference_download {
+        input:
+            url=reference_fa_url,
+            outfilename=reference_fa_name,
+            md5sum=reference_fa_md5,
+            max_retries=max_retries
+    }
+    call util.download as gtf_download {
+        input:
+            url=gtf_url,
+            outfilename=gtf_name,
+            md5sum=gtf_md5,
+            max_retries=max_retries
+    }
     call star.build_star_db {
         input:
             reference_fasta=reference_download.outfile,
             gtf=gtf_download.outfile,
+            max_retries=max_retries
     }
 
     output {

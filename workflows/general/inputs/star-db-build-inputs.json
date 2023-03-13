@@ -6,5 +6,6 @@
     "star_db_build.gtf_name": "gencode.v31.gtf.gz",
     "star_db_build.gt5_md5": "0aac86e8a6c9e5fa5afe2a286325da81",
     "star_db_build.build_star_db.ncpu": "Int (default = 1)",
-    "star_db_build.build_star_db.detect_nproc": "Boolean (default = false)"
+    "star_db_build.build_star_db.detect_nproc": "Boolean (default = false)",
+    "star_db_build.max_retries": "Int (default = 1)"
 }
