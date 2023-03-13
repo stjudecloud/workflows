@@ -27,17 +27,17 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/mosdepth.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastqc.wdl" as fqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/qualimap.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/fastq_screen.wdl" as fq_screen
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/multiqc.wdl" as mqc
-import "https://raw.githubusercontent.com/stjudecloud/workflows/master/tools/util.wdl"
+import "../../tools/md5sum.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/mosdepth.wdl"
+import "../../tools/samtools.wdl"
+import "../../tools/fastqc.wdl" as fqc
+import "../../tools/ngsderive.wdl"
+import "../../tools/qualimap.wdl"
+import "../../tools/fq.wdl"
+import "../../tools/fastq_screen.wdl" as fq_screen
+import "../../tools/multiqc.wdl" as mqc
+import "../../tools/util.wdl"
 
 workflow quality_check {
     input {
@@ -100,9 +100,6 @@ workflow quality_check {
     if (experiment == "WGS") {
         call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
         call mosdepth.coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
-    }
-    if (experiment == "WES" || experiment == "RNA-Seq") {
-        call picard.collect_wgs_metrics_with_nonzero_coverage { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta }
     }
 
     if (experiment == "WGS" || experiment == "WES") {
@@ -173,8 +170,6 @@ workflow quality_check {
         File? wgs_metrics = collect_wgs_metrics.wgs_metrics
         File? mosdepth_global_dist = coverage.global_dist
         File? mosdepth_summary = coverage.summary
-        File? wgs_metrics_with_nonzero_coverage = collect_wgs_metrics_with_nonzero_coverage.wgs_metrics
-        File? wgs_metrics_with_nonzero_coverage_pdf = collect_wgs_metrics_with_nonzero_coverage.wgs_metrics_pdf
         File? fastq_screen_results = fastq_screen.results
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results

@@ -1,0 +1,61 @@
+name: Workflows Docker Build
+
+on:
+  push:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  list-images:
+    runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.set-matrix.outputs.images }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: set matrix
+        id: set-matrix
+        run: echo "images=$(find docker -maxdepth 2 -mindepth 2 -not -path "*/cellranger/*" | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+
+  build-images:
+    needs: list-images
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ${{ fromJson(needs.list-images.outputs.images) }}
+    steps:
+      - name: Set Env
+        run: |
+          echo "TOOL=$(basename `dirname "${{ matrix.image }}"` | awk '{print tolower($0)}')" >> $GITHUB_ENV
+          echo "SEMVER=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
+          echo "GH_REF=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      - name: Set Branch Tag
+        if: github.ref != 'refs/heads/main'
+        run: echo "IMAGE_TAG=branch-${GITHUB_REF##*/}-${{ env.SEMVER }}" >> $GITHUB_ENV
+      - name: Verify SemVer
+        run: |
+          if ! [[ $SEMVER =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
+            >&2 echo "Tag subdirectory $SEMVER for tool $TOOL is not SemVer compliant."
+            >&2 echo "This container will not be built."
+            exit 1
+          fi
+      - uses: actions/checkout@v3
+      - name: Log in to the Container registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.STJUDE_SEQERR_READONLY_DEPLOY_KEY }}
+      - uses: docker/setup-qemu-action@v2
+      - uses: docker/setup-buildx-action@v2
+      - uses: docker/build-push-action@v4
+        with:
+          context: ${{ matrix.image }}
+          push: true
+          ssh: default
+          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache,mode=max

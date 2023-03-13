@@ -1,4 +1,4 @@
-name: miniwdl-check
+name: Workflows Miniwdl Check
 
 on: [push]
 
@@ -20,10 +20,6 @@ jobs:
         EXITCODE=0
         echo "Checking WDL files using \`miniwdl check\`."
         files=$(find . -name '*.wdl')
-        for file in $files; do
-          sed -i 's,https://raw.githubusercontent.com/stjudecloud/workflows/'"$(echo ${GITHUB_REF#refs/heads/})"','"$(pwd)"',g' "$file"
-          sed -i 's,https://raw.githubusercontent.com/stjudecloud/workflows/master,'"$(pwd)"',g' "$file"
-        done
         for file in $files; do
           echo "  [***] $file [***]"
           miniwdl check "$file"

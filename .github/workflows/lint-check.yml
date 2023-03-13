@@ -1,12 +1,12 @@
-name: lint-check
+name: Workflows Lint Check
 
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   import_syntax_check:
@@ -20,25 +20,16 @@ jobs:
           >&2 echo "Checking file $file..."
           import_lines=$(awk '/import/' "$file" | grep -v '# lint-check: ignore') || true
 
-          bad_lines=$(echo "$import_lines" | awk '!/https:/')
+          bad_lines=$(echo "$import_lines" | awk '/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows/') || true
           if [ -n "$bad_lines" ]; then
-            >&2 echo "Must import files from a URL!"
+            >&2 echo "Imports from this repo must use relative paths!"
             >&2 echo "The following lines are bad:"
             >&2 echo "$bad_lines"
             >&2 echo ""
             EXITCODE=1
           fi
 
-          bad_lines=$(echo "$import_lines" | awk '/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows/ && !/master/') || true
-          if [ -n "$bad_lines" ]; then
-            >&2 echo "Imports from this repo must use the master branch!"
-            >&2 echo "The following lines are bad:"
-            >&2 echo "$bad_lines"
-            >&2 echo ""
-            EXITCODE=1
-          fi
-          
-          bad_lines=$(echo "$import_lines" | awk '!/https:\/\/raw.githubusercontent.com\/stjudecloud\/workflows/ && /master/') || true
+          bad_lines=$(echo "$import_lines" | awk '/http/ && (/main/ || /master/)') || true
           if [ -n "$bad_lines" ]; then
             >&2 echo "Imports from external repos must use a tagged release!"
             >&2 echo "The following lines are bad:"
