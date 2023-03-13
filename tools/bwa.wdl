@@ -48,7 +48,7 @@ task bwa_aln {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/bwa:branch-docker-refactor-1.1.0'
+        docker: 'ghcr.io/stjudecloud/bwa:branch-code-cleanup-1.1.0'
         maxRetries: max_retries
     }
 
@@ -113,7 +113,7 @@ task bwa_aln_pe {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/bwa:branch-docker-refactor-1.1.0'
+        docker: 'ghcr.io/stjudecloud/bwa:branch-code-cleanup-1.1.0'
         maxRetries: max_retries
     }
 
@@ -176,7 +176,7 @@ task bwa_mem {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/bwa:branch-docker-refactor-1.1.0'
+        docker: 'ghcr.io/stjudecloud/bwa:branch-code-cleanup-1.1.0'
         maxRetries: max_retries
     }
 
@@ -224,7 +224,7 @@ task build_bwa_db {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/bwa:branch-docker-refactor-1.1.0'
+        docker: 'ghcr.io/stjudecloud/bwa:branch-code-cleanup-1.1.0'
         maxRetries: max_retries
     }
 
