@@ -1,6 +1,6 @@
 ## Cell Ranger
 ##
-## This WDL tool wrap the [10x Genomics Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) tool.
+## This WDL file wrap the [10x Genomics Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) tool.
 ## Cell Ranger is a tool for handling scRNA-Seq data.
 
 version 1.0
@@ -85,7 +85,7 @@ task count {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data."
+        description: "This WDL task runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data."
     }
 
     parameter_meta {
@@ -149,7 +149,7 @@ task bamtofastq {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to fastq files"
+        description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to fastq files"
 
     }
 

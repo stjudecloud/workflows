@@ -1,6 +1,6 @@
 ## # SAMtools
 ##
-## This WDL tool wraps the [SAMtools package](http://samtools.sourceforge.net/).
+## This WDL file wraps the [SAMtools package](http://samtools.sourceforge.net/).
 ## SAMtools provides utlities for manipulating SAM format sequence alignments.
 
 version 1.0
@@ -32,7 +32,7 @@ task quickcheck {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
+        description: "This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
     }
 
     parameter_meta {
@@ -88,7 +88,7 @@ task split {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
+        description: "This WDL task runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
     }
 
     parameter_meta {
@@ -126,7 +126,7 @@ task flagstat {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
+        description: "This WDL task generates a FastQC quality control metrics report for the input BAM file."
     }
 
     parameter_meta {
@@ -174,7 +174,7 @@ task index {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM."
+        description: "This WDL task runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM."
     }
 
     parameter_meta {
@@ -327,7 +327,7 @@ task addreplacerg {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags."
+        description: "This WDL task runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags."
     }
 
     parameter_meta {

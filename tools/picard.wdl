@@ -1,6 +1,6 @@
 ## # Picard
 ##
-## This WDL tool wraps the [PicardTools library](https://broadinstitute.github.io/picard/).
+## This WDL file wraps the [PicardTools library](https://broadinstitute.github.io/picard/).
 ## PicardTools is a set of Java tools for manipulating sequencing data.
 
 version 1.0
@@ -41,7 +41,7 @@ task mark_duplicates {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool marks duplicate reads in the input BAM file using Picard."
+        description: "This WDL task marks duplicate reads in the input BAM file using Picard."
     }
 
     parameter_meta {
@@ -118,7 +118,7 @@ task validate_bam {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool validates the input BAM file for correct formatting using Picard."
+        description: "This WDL task validates the input BAM file for correct formatting using Picard."
     }
 
     parameter_meta {
@@ -171,7 +171,7 @@ task bam_to_fastq {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool converts the input BAM file into paired FastQ format files."
+        description: "This WDL task converts the input BAM file into paired FastQ format files."
     }
 
     parameter_meta {
@@ -215,7 +215,7 @@ task sort {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool sorts the input BAM file."
+        description: "This WDL task sorts the input BAM file."
     }
     parameter_meta {
         bam: "Input BAM format file to sort"
@@ -262,7 +262,7 @@ task merge_sam_files {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool merges the input BAM files into a single BAM file."
+        description: "This WDL task merges the input BAM files into a single BAM file."
     }
 
     parameter_meta {
@@ -300,7 +300,7 @@ task clean_sam {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads"
+        description: "This WDL task cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads"
     }
     parameter_meta {
         bam: "Input BAM format file to clean"
@@ -339,7 +339,7 @@ task collect_wgs_metrics {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard CollectWgsMetrics` command."
+        description: "This WDL task runs the `picard CollectWgsMetrics` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate WGS metrics for"
@@ -380,7 +380,7 @@ task collect_wgs_metrics_with_nonzero_coverage {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard CollectWgsMetricsWithNonZeroCoverage` command."
+        description: "This WDL task runs the `picard CollectWgsMetricsWithNonZeroCoverage` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate WGS metrics for"
@@ -418,7 +418,7 @@ task collect_alignment_summary_metrics {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard CollectAlignmentSummaryMetrics` command."
+        description: "This WDL task runs the `picard CollectAlignmentSummaryMetrics` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate alignment metrics for"
@@ -459,7 +459,7 @@ task collect_gc_bias_metrics {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard CollectGcBiasMetrics` command."
+        description: "This WDL task runs the `picard CollectGcBiasMetrics` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate GC bias metrics for"
@@ -497,7 +497,7 @@ task collect_insert_size_metrics {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard CollectInsertSizeMetrics` command."
+        description: "This WDL task runs the `picard CollectInsertSizeMetrics` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate insert size metrics for"
@@ -535,7 +535,7 @@ task quality_score_distribution {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard QualityScoreDistribution` command."
+        description: "This WDL task runs the `picard QualityScoreDistribution` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate quality score distribution for"

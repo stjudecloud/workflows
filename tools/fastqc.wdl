@@ -1,6 +1,6 @@
 ## # FastQC
 ##
-## This WDL tool wraps the [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) tool.
+## This WDL file wraps the [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) tool.
 ## FastQC generates quality control metrics for sequencing pipelines. 
 
 version 1.0
@@ -56,7 +56,7 @@ task fastqc {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
+        description: "This WDL task generates a FastQC quality control metrics report for the input BAM file."
     }
 
     parameter_meta {

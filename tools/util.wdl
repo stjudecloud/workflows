@@ -1,6 +1,6 @@
 ## # Utilities
 ##
-## This WDL tool includes custom scripts to parse and reformat 
+## This WDL file includes custom scripts to parse and reformat 
 ## task output as part of a workflow as well as generic tasks.
 
 version 1.0
@@ -39,7 +39,7 @@ task download {
     meta {
         author: "Clay McLeod"
         email: "clay.mcleod@stjude.org"
-        description: "This WDL tool uses wget to download a file from a remote URL to the local filesystem" 
+        description: "This WDL task uses wget to download a file from a remote URL to the local filesystem" 
     }
 
     parameter_meta {
@@ -87,7 +87,7 @@ task get_read_groups {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool is a utility to get read group information from a BAM file and write it out to as a string" 
+        description: "This WDL task is a utility to get read group information from a BAM file and write it out to as a string" 
     }
 
     parameter_meta {

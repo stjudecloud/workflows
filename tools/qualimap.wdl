@@ -1,6 +1,6 @@
 ## # QualiMap
 ##
-## This WDL tool wraps the [QualiMap](http://qualimap.bioinfo.cipf.es/) tool.
+## This WDL file wraps the [QualiMap](http://qualimap.bioinfo.cipf.es/) tool.
 ## QualiMap computes metrics to facilitate evaluation of sequencing data. 
 
 version 1.0
@@ -63,7 +63,7 @@ task bamqc {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs QualiMap's bamqc tool on the input BAM file. It has been deprecated in our pipeline due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
+        description: "This WDL task runs QualiMap's bamqc tool on the input BAM file. It has been deprecated in our pipeline due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
     }
 
     parameter_meta {
@@ -148,7 +148,7 @@ task rnaseq {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool generates runs QualiMap's rnaseq tool on the input BAM file."
+        description: "This WDL task generates runs QualiMap's rnaseq tool on the input BAM file."
     }
 
     parameter_meta {

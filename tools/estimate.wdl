@@ -1,6 +1,6 @@
 ## # ESTIMATE
 ##
-## This WDL tool wraps the [ESTIMATE software package](https://bioinformatics.mdanderson.org/estimate/).
+## This WDL file wraps the [ESTIMATE software package](https://bioinformatics.mdanderson.org/estimate/).
 
 version 1.0
 

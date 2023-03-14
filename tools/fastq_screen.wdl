@@ -32,7 +32,7 @@ task build_db {
     meta {
         author: "Clay McLeod, Andrew Frantz"
         email: "clay.mcleod@STJUDE.org, andrew.frantz@stjude.org"
-        description: "This WDL tool downloads the FastQ Screen database and archives it."
+        description: "This WDL task downloads the FastQ Screen database and archives it."
     }
 } 
 
@@ -116,6 +116,6 @@ task fastq_screen {
     meta {
         author: "Andrew Frantz, Clay McLeod"
         email: "andrew.frantz@stjude.org, clay.mcleod@stjude.org"
-        description: "This WDL tool runs FastQ Screen on a sample. Exit code 42 indicates a rare intermittent bug. Job should succeed upon resubmission."
+        description: "This WDL task runs FastQ Screen on a sample. Exit code 42 indicates a rare intermittent bug. Job should succeed upon resubmission."
     }
 }

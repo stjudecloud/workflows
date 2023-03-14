@@ -1,6 +1,6 @@
 ## # HTSeq
 ##
-## This WDL tool wraps the [htseq](https://github.com/htseq/htseq) tool.
+## This WDL file wraps the [htseq](https://github.com/htseq/htseq) tool.
 ## HTSeq is a Python library for analyzing sequencing data.
 
 version 1.0
@@ -61,7 +61,7 @@ task count {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool performs read counting for a set of features in the input BAM file."
+        description: "This WDL task performs read counting for a set of features in the input BAM file."
     }
 
     parameter_meta {

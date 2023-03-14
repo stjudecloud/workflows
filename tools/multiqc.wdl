@@ -1,6 +1,6 @@
 ## # MultiQC
 ##
-## This WDL tool wraps the [MultiQC](https://multiqc.info/) tool.
+## This WDL file wraps the [MultiQC](https://multiqc.info/) tool.
 ## MultiQC aggregates quality control results for bioinformatics.
 
 version 1.0
@@ -59,7 +59,7 @@ task multiqc {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool generates a MultiQC quality control metrics report summary from input QC result files."
+        description: "This WDL task generates a MultiQC quality control metrics report summary from input QC result files."
     }
 
     parameter_meta {

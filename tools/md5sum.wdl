@@ -1,6 +1,6 @@
 ## Description:
 ##
-## This WDL tool wraps the md5sum tool from the [GNU core utilities](https://github.com/coreutils/coreutils).
+## This WDL file wraps the md5sum tool from the [GNU core utilities](https://github.com/coreutils/coreutils).
 ## md5sum is a utility for generating and verifying MD5
 ## hashes.  
 
@@ -35,7 +35,7 @@ task compute_checksum {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool generates an MD5 checksum for the input file."
+        description: "This WDL task generates an MD5 checksum for the input file."
     }
 
     parameter_meta {

@@ -1,6 +1,6 @@
 ## # STAR
 ##
-## This WDL tool wraps the [STAR aligner](https://github.com/alexdobin/STAR).
+## This WDL file wraps the [STAR aligner](https://github.com/alexdobin/STAR).
 ## STAR is an RNA-seq aligner.
 
 version 1.0
@@ -67,7 +67,7 @@ task build_star_db {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs STAR's build command to generate a STAR format reference for alignment." 
+        description: "This WDL task runs STAR's build command to generate a STAR format reference for alignment." 
     }
 
     parameter_meta {
@@ -173,7 +173,7 @@ task alignment {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs the STAR aligner on a set of RNA-Seq FastQ files."
+        description: "This WDL task runs the STAR aligner on a set of RNA-Seq FastQ files."
     }
 
     parameter_meta {

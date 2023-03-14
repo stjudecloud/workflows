@@ -1,6 +1,6 @@
 ## # Mosdepth
 ##
-## This WDL tool wraps the [mosdepth tool](https://github.com/brentp/mosdepth).
+## This WDL file wraps the [mosdepth tool](https://github.com/brentp/mosdepth).
 
 version 1.0
 
@@ -44,6 +44,6 @@ task coverage {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool wraps the Mosdepth tool for calculating coverage"
+        description: "This WDL task wraps the Mosdepth tool for calculating coverage"
     }
 }

@@ -1,6 +1,6 @@
 ## # Deeptools
 ##
-## This WDL tool wraps the [DeepTools](https://deeptools.readthedocs.io/en/develop/index.html) tool.
+## This WDL file wraps the [DeepTools](https://deeptools.readthedocs.io/en/develop/index.html) tool.
 ## DeepTools is a suite of Python tools for analysis of high throughput sequencing analysis.
 
 version 1.0
@@ -52,7 +52,7 @@ task bamCoverage {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html)."
+        description: "This WDL task generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html)."
     }
 
     parameter_meta {

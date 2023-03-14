@@ -1,6 +1,6 @@
 ## # ngsderive
 ##
-## This WDL tool wraps the [ngsderive package](https://github.com/stjudecloud/ngsderive)
+## This WDL file wraps the [ngsderive package](https://github.com/stjudecloud/ngsderive)
 
 version 1.0
 

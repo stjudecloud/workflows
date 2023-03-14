@@ -1,6 +1,6 @@
 ## # BWA
 ##
-## This WDL tool wraps [BWA](https://github.com/lh3/bwa).
+## This WDL file wraps [BWA](https://github.com/lh3/bwa).
 ## BWA aligns sequencing reads to a reference genome.
 
 version 1.0
@@ -59,7 +59,7 @@ task bwa_aln {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool maps single-end fastq files to BAM format using bwa aln."
+        description: "This WDL task maps single-end fastq files to BAM format using bwa aln."
     }
 
     parameter_meta {
@@ -124,7 +124,7 @@ task bwa_aln_pe {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool maps paired-end fastq files to BAM format using bwa aln."
+        description: "This WDL task maps paired-end fastq files to BAM format using bwa aln."
     }
 
     parameter_meta {
@@ -187,7 +187,7 @@ task bwa_mem {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool maps fastq files to BAM format using bwa mem."
+        description: "This WDL task maps fastq files to BAM format using bwa mem."
     }
 
     parameter_meta {
@@ -235,7 +235,7 @@ task build_bwa_db {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool creates a BWA index and returns it as a compressed tar archive."
+        description: "This WDL task creates a BWA index and returns it as a compressed tar archive."
     }
 
     parameter_meta {
@@ -268,7 +268,7 @@ task format_rg_for_bwa {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool converts read group records from the BAM-formatted strings to strings expected by bwa."
+        description: "This WDL task converts read group records from the BAM-formatted strings to strings expected by bwa."
     }
 
     parameter_meta {
