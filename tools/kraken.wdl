@@ -11,6 +11,7 @@ task kraken {
         File db
         String? sample_name
         Boolean store_sequences = false
+        Boolean use_names = true
         Int min_base_quality = 30
         Int? memory_gb
         Int ncpu = 1
@@ -55,6 +56,7 @@ task kraken {
             --minimum-base-quality ~{min_base_quality} \
             --report ~{out_report} \
             --report-zero-counts \
+            ~{if use_names then "--use-names" else ""} \
             ~{read1} \
             ~{read2}
 
