@@ -48,6 +48,9 @@ import "../../tools/fq.wdl"
 workflow cell_ranger_bam_to_fastqs {
     input {
         File bam
+        Boolean cellranger11 = false
+        Boolean longranger20 = false
+        Boolean gemcode = false
         Boolean detect_nproc = false
         Int max_retries = 1
     }
@@ -58,9 +61,21 @@ workflow cell_ranger_bam_to_fastqs {
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call cellranger.bamtofastq { input: bam=bam, detect_nproc=detect_nproc, max_retries=max_retries } 
+    call cellranger.bamtofastq {
+        input:
+            bam=bam,
+            cellranger11=cellranger11,
+            longranger20=longranger20,
+            gemcode=gemcode,
+            max_retries=max_retries
+    }
     scatter (reads in zip(bamtofastq.read1, bamtofastq.read2)) {
-        call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
+        call fq.fqlint as fqlint_pair {
+            input:
+                read1=reads.left,
+                read2=reads.right,
+                max_retries=max_retries
+        }
     }
 
     output {
@@ -68,5 +83,32 @@ workflow cell_ranger_bam_to_fastqs {
         File fastqs_archive = bamtofastq.fastqs_archive
         Array[File] read1s = bamtofastq.read1
         Array[File] read2s = bamtofastq.read2
+    }
+}
+
+task parse_input {
+    input {
+        Boolean cellranger11
+        Boolean longranger20
+        Boolean gemcode
+    }
+
+    Int exclusive_arg = (if cellranger11 then 1 else 0) + (if longranger20 then 1 else 0) + (if gemcode then 1 else 0)
+
+    command <<<
+        if [ "~{exclusive_arg}" -gt 1 ]; then
+            >&2 echo "Only one of cellranger11, longranger20, or gemcode can be set"
+            exit 1
+        fi
+    >>>
+
+    runtime {
+        memory: "4 GB"
+        disk: "1 GB"
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+    }
+
+    output {
+        String input_check = "passed"
     }
 }

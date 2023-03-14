@@ -92,7 +92,6 @@ workflow scrnaseq_standard {
             fastqs_tar_gz=cell_ranger_bam_to_fastqs.fastqs_archive,
             transcriptome_tar_gz=transcriptome_tar_gz,
             id=output_prefix,
-            sample_id=output_prefix,
             max_retries=max_retries,
             detect_nproc=detect_nproc
     }
