@@ -34,7 +34,7 @@ task kraken {
     String inferred_basename = basename(read1, "_R1.fastq.gz")
     String sample_basename = select_first([sample_name, inferred_basename])
     String out_report = sample_basename + ".kraken2.txt"
-    String out_sequences = sample_basename + ".kraken2.seqeunces.txt"
+    String out_sequences = sample_basename + ".kraken2.sequences.txt"
 
     command <<<
         set -euo pipefail
