@@ -10,6 +10,7 @@ task kraken {
         File read2
         File db
         String? sample_name
+        Boolean store_sequences = false
         Int min_base_quality = 30
         Int? memory_gb
         Int ncpu = 1
@@ -32,7 +33,8 @@ task kraken {
 
     String inferred_basename = basename(read1, "_R1.fastq.gz")
     String sample_basename = select_first([sample_name, inferred_basename])
-    String out_file = sample_basename + ".kraken2.txt"
+    String out_report = sample_basename + ".kraken2.txt"
+    String out_sequences = sample_basename + ".kraken2.seqeunces.txt"
 
     command <<<
         set -euo pipefail
@@ -48,10 +50,10 @@ task kraken {
 
         kraken2 --db /tmp/kraken2_db/ \
             --paired \
-            --output - \
+            --output ~{if store_sequences then out_sequences else "-"} \
             --threads "$n_cores" \
             --minimum-base-quality ~{min_base_quality} \
-            --report ~{out_file} \
+            --report ~{out_report} \
             --report-zero-counts \
             ~{read1} \
             ~{read2}
@@ -68,7 +70,8 @@ task kraken {
     }
 
     output {
-        File report = out_file
+        File report = out_report
+        File? sequences = out_sequences
     }
 
     meta {

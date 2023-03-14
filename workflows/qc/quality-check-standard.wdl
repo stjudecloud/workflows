@@ -172,6 +172,7 @@ workflow quality_check {
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
         File? junctions = junction_annotation.junctions
+        File? kraken_sequences = run_kraken.sequences
     }
 }
 
