@@ -102,7 +102,7 @@ task encoding {
     input {
         Array[File] ngs_files
         String prefix
-        Int num_reads = -1
+        Int num_samples = 1000000
         Int max_retries = 1
         Int memory_gb = 5
     }
@@ -114,7 +114,7 @@ task encoding {
     command <<<
         set -euo pipefail
 
-        ngsderive encoding --verbose -n ~{num_reads} ~{sep=' ' ngs_files} > ~{out_file}
+        ngsderive encoding --verbose -n ~{num_samples} ~{sep=' ' ngs_files} > ~{out_file}
         ENCODING_FILE="~{out_file}" python - <<END
 import os  # lint-check: ignore
 
