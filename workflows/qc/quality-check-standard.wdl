@@ -195,7 +195,7 @@ workflow quality_check {
     if (experiment == "RNA-Seq") {
         File gtf_defined = select_first([gtf, "No GTF"])
 
-        call ngsderive.junction_annotation as junction_annotation {
+        call ngsderive.junction_annotation {
             input:
                 bam=quickcheck.checked_bam,
                 bai=bam_index,
