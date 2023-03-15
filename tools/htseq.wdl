@@ -9,7 +9,7 @@ task count {
     input {
         File bam
         File gtf
-        String provided_strandedness
+        String provided_strandedness = ""
         String inferred_strandedness = ""
         String outfile = basename(bam, ".bam") + ".feature-counts.txt"
         Int added_memory_gb = 20
