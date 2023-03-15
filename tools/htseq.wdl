@@ -9,9 +9,17 @@ task count {
     input {
         File bam
         File gtf
+        String outfile = basename(bam, ".bam") + ".feature-counts.txt"
         String provided_strandedness = ""
         String inferred_strandedness = ""
-        String outfile = basename(bam, ".bam") + ".feature-counts.txt"
+        Boolean pos_sorted = true
+        Int minaqual = 10
+        String feature_type = "exon"
+        String idattr = "gene_name"
+        String mode = "union"
+        String nonunique = "none"
+        Boolean secondary_alignments = false
+        Boolean supplementary_alignments = false
         Int added_memory_gb = 20
         Int max_retries = 1
     }
@@ -37,12 +45,15 @@ task count {
  
     command {
         htseq-count -f bam \
-            -r pos \
+            -r ~{if pos_sorted then "pos" else "name"} \
             -s ~{stranded} \
-            -m union \
-            -i gene_name \
-            --secondary-alignments ignore \
-            --supplementary-alignments ignore \
+            -a ~{minaqual} \
+            -t ~{feature_type} \
+            -m ~{mode} \
+            -i ~{idattr} \
+            --nonunique ~{nonunique} \
+            --secondary-alignments ~{if secondary_alignments then "score" else "ignore"} \
+            --supplementary-alignments ~{if supplementary_alignments then "score" else "ignore"} \
             --max-reads-in-buffer 9223372036854776000 \
             ~{bam} \
             ~{gtf} \
