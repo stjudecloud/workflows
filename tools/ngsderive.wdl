@@ -109,7 +109,7 @@ task encoding {
 
     String out_file = prefix + ".encoding.txt"
     Float files_size = size(ngs_files, "GiB")
-    Int disk_size = ceil((files_size) + 10)
+    Int disk_size = ceil((files_size) + 5)
  
     command <<<
         set -euo pipefail
