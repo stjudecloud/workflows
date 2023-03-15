@@ -11,6 +11,16 @@
   "quality_check.paired_end": "Boolean (default = true)",
   "quality_check.detect_nproc": "Boolean (default = false)",
   "quality_check.max_retries": "Int (default = 1)",
+  "quality_check.ngsderive_instrument.num_samples": "Int (default = 10000)",
+  "quality_check.ngsderive_read_length.majority_vote_cutoff": "Float (default = 0.7)",
+  "quality_check.ngsderive_read_length.num_samples": "Int (default = 10000)",
+  "quality_check.junction_annotation.min_intron": "Int (default = 50)",
+  "quality_check.junction_annotation.min_mapq": "Int (default = 30)",
+  "quality_check.junction_annotation.min_reads": "Int (default = 2)",
+  "quality_check.junction_annotation.fuzzy_junction_match_range": "Int (default = 0)",
+  "quality_check.ngsderive_strandedness.min_reads_per_gene": "Int (default = 10)",
+  "quality_check.ngsderive_strandedness.num_genes": "Int (default = 1000)",
+  "quality_check.ngsderive_strandedness.min_mapq": "Int (default = 30)",
   "quality_check.fastqc.ncpu": "Int (default = 1)",
   "quality_check.samtools_subsample.ncpu": "Int (default = 1)"
 }
