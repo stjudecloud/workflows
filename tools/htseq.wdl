@@ -19,13 +19,15 @@ task count {
     String stranded = if (provided_strandedness != "") then 
                         if (provided_strandedness == "Stranded-Reverse") then "reverse" else
                         if (provided_strandedness == "Stranded-Forward") then "yes" else
-                        if (provided_strandedness == "Unstranded") then "no"
-                        else "unknown-strand"
+                        if (provided_strandedness == "Unstranded") then "no" else
+                        "unknown-strand" # this will intentionally cause htseq to error. You will need to manually specify
+                                         # in this case
                       else 
                         if (inferred_strandedness == "Stranded-Reverse") then "reverse" else
                         if (inferred_strandedness == "Stranded-Forward") then "yes" else 
                         if (inferred_strandedness == "Unstranded") then "no" else
-                        "unknown-strand" # this will intentionally cause htseq to error. You will need to manually specify
+                        if (inferred_strandedness == "Inconclusive") then "no"
+                        else "unknown-strand" # this will intentionally cause htseq to error. You will need to manually specify
                                          # in this case
 
     Float bam_size = size(bam, "GiB")
