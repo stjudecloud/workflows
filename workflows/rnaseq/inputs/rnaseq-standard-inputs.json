@@ -10,11 +10,13 @@
     "rnaseq_standard.validate_input": "Boolean (default = true)",
     "rnaseq_standard.detect_nproc": "Boolean (default = false)",
     "rnaseq_standard.max_retries": "Int (default = 1)",
+    "rnaseq_standard.htseq_count.minaqual": "Int (default = 10)",
+    "rnaseq_standard.htseq_count.feature_type": "String (default = 'exon')",
+    "rnaseq_standard.htseq_count.idattr": "String (default = 'gene_name')",
+    "rnaseq_standard.htseq_count.mode": "String (default = 'union')",
+    "rnaseq_standard.htseq_count.nonunique": "String (default = 'none')",
+    "rnaseq_standard.htseq_count.secondary_alignments": "Boolean (default = false)",
+    "rnaseq_standard.htseq_count.supplementary_alignments": "Boolean (default = false)",
     "rnaseq_standard.bam_to_fastqs.split.npcu": "Int (default = 1)",
-    "rnaseq_standard.bam_to_fastqs.bam_to_fastq.memory_gb": "Int (default = 40)",
-    "rnaseq_standard.alignment.ncpu": "Int (default = 1)",
-    "rnaseq_standard.alignment.disk_size_gb": "Int (default is dynamic)",
-    "rnaseq_standard.alignment.memory_gb": "Int (default = 50)",
-    "rnaseq_standard.picard_sort.memory_gb": "Int (default = 25)",
-    "rnaseq_standard.htseq_count.memory_gb": "Int (default = 20)"
+    "rnaseq_standard.alignment.ncpu": "Int (default = 1)"
 }
