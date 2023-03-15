@@ -29,7 +29,7 @@ task infer_strandedness {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
@@ -57,7 +57,7 @@ task instrument {
     runtime {
         memory: "4 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -88,7 +88,7 @@ task read_length {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -144,7 +144,7 @@ END
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -191,7 +191,7 @@ task junction_annotation {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
 
