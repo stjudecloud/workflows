@@ -20,7 +20,7 @@ task count {
         String nonunique = "none"
         Boolean secondary_alignments = false
         Boolean supplementary_alignments = false
-        Int added_memory_gb = 20
+        Int added_memory_gb = 5
         Int max_retries = 1
     }
 
