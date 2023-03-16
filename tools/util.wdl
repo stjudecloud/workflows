@@ -9,6 +9,7 @@ task download {
     input {
         String url
         String outfilename
+        String? md5sum
         Int disk_size_gb = 10
         Int max_retries = 1
     }
@@ -21,7 +22,14 @@ task download {
     }
 
     command <<<
+        set -euo pipefail
+
         wget ~{url} -O ~{outfilename}
+
+        if [ ! -z "~{md5sum}" ]; then
+            echo "~{md5sum}  ~{outfilename}" > ~{outfilename}.md5
+            md5sum -c ~{outfilename}.md5
+        fi
     >>>
 
     output {
@@ -95,6 +103,8 @@ task split_string {
         Int disk_size = 1
     }
     command <<<
+        set -euo pipefail
+
         echo ~{input_string} | sed 's/~{delimiter}/\n/g' > output.txt
     >>>
 
@@ -122,6 +132,8 @@ task calc_gene_lengths {
     Int disk_size = ceil(gtf_size * 2 + 10)
 
     command <<<
+        set -euo pipefail
+
         GTF="~{gtf}" OUTFILE="~{outfile}" python - <<END
 import os  # lint-check: ignore
 import gtfparse  # lint-check: ignore
