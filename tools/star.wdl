@@ -113,23 +113,23 @@ task alignment {
         then
             if [ -n "~{if defined(read_two_fastqs) then "read_two_fastqs" else ""}" ]
             then
-                python /home/sort_star_input.py \
+                python3 /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                    --read_two_fastqs "~{sep=',' r2_fastqs}" \
+                    --read_two_fastqs "~{sep=',' read_two_fastqs}" \
                     --read_groups "~{read_groups}"
             else
-                python /home/sort_star_input.py \
+                python3 /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}" \
                     --read_groups "~{read_groups}"
             fi
         else 
             if [ -n "~{if defined(read_two_fastqs) then "read_two_fastqs" else ""}" ]
             then
-                python /home/sort_star_input.py \
+                python3 /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                    --read_two_fastqs "~{sep=',' r2_fastqs}"
+                    --read_two_fastqs "~{sep=',' read_two_fastqs}"
             else
-                python /home/sort_star_input.py \
+                python3 /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}"
             fi
         fi
