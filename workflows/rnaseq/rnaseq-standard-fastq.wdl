@@ -137,8 +137,13 @@ workflow rnaseq_standard_fastq {
             inferred_strandedness=parsed_strandedness,
             max_retries=max_retries
     }
-
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=aligned_bam, bai=aligned_bai, max_retries=max_retries }
+    
+    call deeptools.bamCoverage as deeptools_bamCoverage {
+        input:
+            bam=aligned_bam,
+            bai=aligned_bai,
+            max_retries=max_retries
+    }
 
     output {
         File bam = aligned_bam
