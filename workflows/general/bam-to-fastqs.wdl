@@ -43,6 +43,7 @@ workflow bam_to_fastqs {
     input {
         File bam
         String pairing = "Paired-end"
+        Boolean detect_nproc = false
         Int max_retries = 1
     }
 
@@ -52,7 +53,7 @@ workflow bam_to_fastqs {
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call samtools.split { input: bam=bam, max_retries=max_retries }
+    call samtools.split { input: bam=bam, detect_nproc=detect_nproc, max_retries=max_retries }
     scatter (split_bam in split.split_bams) {
         call picard.bam_to_fastq { input: bam=split_bam, max_retries=max_retries }
     }
