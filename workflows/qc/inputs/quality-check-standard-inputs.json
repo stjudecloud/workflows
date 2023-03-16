@@ -1,16 +1,14 @@
 {
   "quality_check.bam": "/inputs/sample.bam",
   "quality_check.bam_index": "/inputs/sample.bam.bai",
-  "quality_check.reference_fasta": "/inputs/GRCh38.no_alt.fa.gz",
-  "quality_check.fastq_screen_db": "/inputs/fastq-screen-db.tar.gz (only required for WGS/WES)",
-  "quality_check.gtf": "/inputs/gencode.v31.annotation.gtf.gz (only required for RNA-Seq)",
-  "quality_check.star_log": "/inputs/sample.Log.final.out (optional)",
+  "quality_check.reference_fasta": "/inputs/GRCh38.no_alt.fa",
+  "quality_check.gtf": "/inputs/gencode.v31.annotation.gtf (only required for RNA-Seq data)",
   "quality_check.experiment": "<WGS/WES/RNA-Seq>",
-  "quality_check.phred_encoding": "<sanger/illumina1.3> (optional, if not specified we will try to guess using ngsderive. Only used for WGS/WES)",
-  "quality_check.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified we will try to guess using ngsderive. Only used for RNA-Seq)",
-  "quality_check.paired_end": "Boolean (default = true)",
-  "quality_check.detect_nproc": "Boolean (default = false)",
-  "quality_check.max_retries": "Int (default = 1)",
-  "quality_check.fastqc.ncpu": "Int (default = 1)",
-  "quality_check.samtools_subsample.ncpu": "Int (default = 1)"
+  "quality_check.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified, we will try to guess using ngsderive)",
+  "quality_check.fastq_screen_db": "/inputs/fastq-screen-db.tar.gz",
+  "quality_check.phred_encoding": "<sanger/illumina1.3> (optional, if not specified, we will try to guess using ngsderive. Only needed for WGS/WES)",
+  "quality_check.paired_end": "<true/false> (default = true)",
+  "quality_check.max_retries": "Int? (optional, default = 1)",
+  "quality_check.fastqc.ncpu": "Int? (optional, default = 1)",
+  "quality_check.samtools_subsample.ncpu": "Int? (optional, default = 1)"
 }

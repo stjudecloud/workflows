@@ -50,7 +50,6 @@ task infer_strandedness {
 task instrument {
     input {
         File bam
-        Int num_samples = 10000
         Int max_retries = 1
     }
 
@@ -59,10 +58,7 @@ task instrument {
     Int disk_size = ceil((bam_size) + 10)
 
     command {
-        ngsderive instrument --verbose \
-            -n ~{num_samples} \
-            ~{bam} \
-            > ~{out_file}
+        ngsderive instrument --verbose ~{bam} > ~{out_file}
     }
 
     runtime {
@@ -81,26 +77,19 @@ task read_length {
     input {
         File bam
         File bai
-        Float majority_vote_cutoff = 0.7
-        Int num_samples = 10000
-        Int memory_gb = 5
         Int max_retries = 1
+        Int memory_gb = 5
     }
 
     String out_file = basename(bam, ".bam") + ".readlength.txt"
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(bam_size + 10)
-
+ 
     command {
         set -euo pipefail
-
+        
         mv ~{bai} ~{bam}.bai || true
-
-        ngsderive readlen --verbose \
-            -c ~{majority_vote_cutoff} \
-            -n ~{num_samples} \
-            ~{bam} \
-            > ~{out_file}
+        ngsderive readlen --verbose ~{bam} > ~{out_file}
     }
 
     runtime {
@@ -132,11 +121,7 @@ task encoding {
     command <<<
         set -euo pipefail
 
-        ngsderive encoding --verbose \
-            -n ~{num_reads} \
-            ~{sep=' ' ngs_files} \
-            > ~{out_file}
-        
+        ngsderive encoding --verbose -n ~{num_reads} ~{sep=' ' ngs_files} > ~{out_file}
         ENCODING_FILE="~{out_file}" python - <<END
 import os  # lint-check: ignore
 

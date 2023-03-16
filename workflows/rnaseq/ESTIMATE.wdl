@@ -31,20 +31,10 @@ workflow ESTIMATE {
     input {
         File counts_file
         File gene_lengths_file
-        Int max_retries = 1
     }
 
-    call estimate.calc_tpm {
-        input:
-            counts=counts_file,
-            gene_lengths=gene_lengths_file,
-            max_retries=max_retries
-    }
-    call estimate.run_ESTIMATE {
-        input:
-            gene_expression_file=calc_tpm.out,
-            max_retries=max_retries
-    }
+    call estimate.calc_tpm { input: counts=counts_file, gene_lengths=gene_lengths_file }
+    call estimate.run_ESTIMATE { input: gene_expression_file=calc_tpm.out }
 
     output {
         File tpm=calc_tpm.out

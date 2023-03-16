@@ -199,7 +199,7 @@ task bwa_mem {
 task build_bwa_db {
     input {
         File reference_fasta
-        String bwadb_dir_name = "bwadb"
+        String bwadb_out_name = "bwadb.tar.gz"
         Int memory_gb = 5
         Int? disk_size_gb
         Int max_retries = 1
@@ -207,7 +207,6 @@ task build_bwa_db {
 
     Float input_fasta_size = size(reference_fasta, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((input_fasta_size * 2))])
-    String bwadb_out_name = bwadb_dir_name + ".tar.gz"
 
     command <<<
         set -euo pipefail
