@@ -80,7 +80,7 @@ task alignment {
     input {
         Int ncpu = 1
         Array[File] read_one_fastqs
-        Array[File]? read_two_fastqs
+        Array[File] read_two_fastqs = []
         File stardb_tar_gz
         String output_prefix
         String? read_groups
@@ -96,7 +96,6 @@ task alignment {
     Float read_two_fastqs_size = size(select_first([read_two_fastqs, []]), "GiB")
     Float stardb_tar_gz_size = size(stardb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10)])
-    Array[File] r2_fastqs = select_first([read_two_fastqs, []])
 
     command {
         set -euo pipefail
