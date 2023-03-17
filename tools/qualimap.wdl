@@ -142,6 +142,6 @@ task rnaseq {
     parameter_meta {
         bam: "Input BAM format file to run qualimap rnaseq on"
         gtf: "A GTF format features file"
-        provided_strandedness: "Strand information for RNA-seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]"
+        provided_strandedness: "Strand information for RNA-Seq experiments. Options: [Stranded-Reverse, Stranded-Forward, Unstranded]"
     }
 }

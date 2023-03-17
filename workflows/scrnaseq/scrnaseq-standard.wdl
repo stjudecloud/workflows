@@ -1,6 +1,6 @@
 ## scRNA-Seq Standard
 ##
-## This WDL workflow runs the Cell Ranger scRNA-seq alignment workflow for St. Jude Cloud.
+## This WDL workflow runs the Cell Ranger scRNA-Seq alignment workflow for St. Jude Cloud.
 ##
 ## The workflow takes an input BAM file and splits it into fastq files for each read in the pair. 
 ## The read pairs are then passed through Cell Ranger to generate a BAM file and perform
