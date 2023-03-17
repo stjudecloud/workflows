@@ -29,7 +29,6 @@ version 1.0
 
 import "../../tools/util.wdl"
 import "../../tools/fastq_screen.wdl"
-import "../../tools/mosdepth.wdl"
 
 workflow make_qc_reference {
     input {
@@ -61,7 +60,7 @@ workflow make_qc_reference {
     }
 
     call fastq_screen.build_db as fastq_screen_build_db
-    call mosdepth.make_coverage_regions_beds {
+    call util.make_coverage_regions_beds {
         input:
             gtf=gtf_download.outfile,
             max_retries=max_retries
