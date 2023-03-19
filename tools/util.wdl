@@ -26,7 +26,7 @@ task download {
 
         wget ~{url} -O ~{outfilename}
 
-        if [ ! -z "~{md5sum}" ]; then
+        if [ -n "~{md5sum}" ]; then
             echo "~{md5sum}  ~{outfilename}" > ~{outfilename}.md5
             md5sum -c ~{outfilename}.md5
         fi
