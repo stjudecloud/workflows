@@ -65,7 +65,7 @@ workflow rnaseq_standard_fastq {
         input:
             input_strand=strandedness,
             cleanse_xenograft=cleanse_xenograft,
-            contaminant_stardb=contaminant_stardb
+            contaminant_stardb=defined(contaminant_stardb)
     }
 
     if (validate_input){
@@ -103,17 +103,15 @@ task parse_input {
     input {
         String input_strand
         Boolean cleanse_xenograft
-        File? contaminant_stardb
+        Boolean contaminant_stardb
     }
-
-    Boolean db_defined = defined(contaminant_stardb)
 
     command {
         if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "Stranded-Reverse" ] && [ "~{input_strand}" != "Stranded-Forward" ] && [ "~{input_strand}" != "Unstranded" ]; then
             >&2 echo "strandedness must be empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
             exit 1
         fi
-        if [ "~{cleanse_xenograft}" == "true" ] && [ "~{db_defined}" == "false" ]
+        if [ "~{cleanse_xenograft}" == "true" ] && [ "~{contaminant_stardb}" == "false" ]
         then
             >&2 echo "contaminant_stardb must be supplied if cleanse_xenograft is specified"
             exit 1
