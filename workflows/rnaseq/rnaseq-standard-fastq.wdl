@@ -29,25 +29,18 @@
 version 1.0
 
 import "../../tools/fq.wdl"
-import "../../tools/star.wdl"
-import "../../tools/picard.wdl"
-import "../../tools/ngsderive.wdl"
-import "../../tools/htseq.wdl"
-import "../../tools/samtools.wdl"
-import "../../tools/deeptools.wdl"
-import "https://raw.githubusercontent.com/stjude/XenoCP/3.1.4/wdl/workflows/xenocp.wdl" as xenocp_workflow
-import "../../tools/md5sum.wdl"
+import "./rnaseq-core.wdl" as rna_core
 
 workflow rnaseq_standard_fastq {
     input {
         Array[File] read_one_fastqs
         Array[File] read_two_fastqs
-        String output_prefix
         String read_groups
-        String strandedness = ""
+        String output_prefix
         File gtf
-        File stardb_tar_gz
-        File? contaminant_stardb_tar_gz
+        File stardb
+        File? contaminant_stardb
+        String strandedness = ""
         Boolean cleanse_xenograft = false
         Boolean validate_input = true
         Boolean detect_nproc = false
@@ -68,13 +61,11 @@ workflow rnaseq_standard_fastq {
         max_retries: "Number of times to retry failed steps"
     }
 
-    String provided_strandedness = strandedness
-
     call parse_input {
         input:
-            input_strand=provided_strandedness,
+            input_strand=strandedness,
             cleanse_xenograft=cleanse_xenograft,
-            contaminant_stardb_tar_gz=contaminant_stardb_tar_gz
+            contaminant_stardb=contaminant_stardb
     }
 
     if (validate_input){
@@ -83,76 +74,28 @@ workflow rnaseq_standard_fastq {
         }
     }
 
-    call star.alignment {
-        input:
-            read_one_fastqs=read_one_fastqs,
-            read_two_fastqs=read_two_fastqs,
-            stardb_tar_gz=stardb_tar_gz,
-            output_prefix=output_prefix,
-            read_groups=read_groups,
-            max_retries=max_retries,
-            detect_nproc=detect_nproc
-    }
-    call picard.sort as picard_sort { input: bam=alignment.star_bam, max_retries=max_retries }
-    
-    call samtools.index as samtools_index {
-        input:
-            bam=picard_sort.sorted_bam,
-            max_retries=max_retries,
-            detect_nproc=detect_nproc
-    }
-
-    call ngsderive.infer_strandedness as ngsderive_strandedness {
-        input:
-            bam=picard_sort.sorted_bam,
-            bai=samtools_index.bai,
-            gtf=gtf,
-            max_retries=max_retries
-    }
-    String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
-
-    if (cleanse_xenograft){
-        File contam_db = select_first([contaminant_stardb_tar_gz, ""])
-        call xenocp_workflow.xenocp {
-            input:
-                input_bam=picard_sort.sorted_bam,
-                input_bai=samtools_index.bai,
-                reference_tar_gz=contam_db,
-                aligner="star",
-                skip_duplicate_marking=true
-        }
-    }
-    File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
-    File aligned_bai = select_first([xenocp.bam_index, samtools_index.bai])
-
-    call picard.validate_bam { input: bam=aligned_bam, max_retries=max_retries }
-
-    call md5sum.compute_checksum { input: infile=aligned_bam, max_retries=max_retries }
-
-    call htseq.count as htseq_count {
-        input:
-            bam=aligned_bam,
-            gtf=gtf,
-            provided_strandedness=provided_strandedness,
-            inferred_strandedness=parsed_strandedness,
-            max_retries=max_retries
-    }
-    
-    call deeptools.bamCoverage as deeptools_bamCoverage {
-        input:
-            bam=aligned_bam,
-            bai=aligned_bai,
-            max_retries=max_retries
+    call rna_core.rnaseq_core { input:
+        read_one_fastqs=read_one_fastqs,
+        read_two_fastqs=read_two_fastqs,
+        read_groups=read_groups,
+        output_prefix=output_prefix,
+        gtf=gtf,
+        stardb=stardb,
+        contaminant_stardb=contaminant_stardb,
+        strandedness=strandedness,
+        cleanse_xenograft=cleanse_xenograft,
+        detect_nproc=detect_nproc,
+        max_retries=max_retries
     }
 
     output {
-        File bam = aligned_bam
-        File bam_checksum = compute_checksum.outfile
-        File bam_index = aligned_bai
-        File star_log = alignment.star_log
-        File gene_counts = htseq_count.out
-        File inferred_strandedness = ngsderive_strandedness.strandedness_file
-        File bigwig = deeptools_bamCoverage.bigwig
+        File bam = rnaseq_core.bam
+        File bam_index = rnaseq_core.bam_index
+        File bam_checksum = rnaseq_core.bam_checksum
+        File star_log = rnaseq_core.star_log
+        File gene_counts = rnaseq_core.gene_counts
+        File inferred_strandedness = rnaseq_core.inferred_strandedness
+        File bigwig = rnaseq_core.bigwig
     }
 }
 
@@ -160,10 +103,10 @@ task parse_input {
     input {
         String input_strand
         Boolean cleanse_xenograft
-        File? contaminant_stardb_tar_gz
+        File? contaminant_stardb
     }
 
-    Boolean db_defined = defined(contaminant_stardb_tar_gz)
+    Boolean db_defined = defined(contaminant_stardb)
 
     command {
         if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "Stranded-Reverse" ] && [ "~{input_strand}" != "Stranded-Forward" ] && [ "~{input_strand}" != "Unstranded" ]; then
