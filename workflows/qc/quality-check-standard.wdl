@@ -95,7 +95,6 @@ workflow quality_check {
     call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bam_index=bam_index, max_retries=max_retries }
     
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
-    String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
 
     if (experiment == "WGS") {
         call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
@@ -108,7 +107,7 @@ workflow quality_check {
         call samtools.subsample as samtools_subsample { input: bam=quickcheck.checked_bam, max_retries=max_retries }
         call picard.bam_to_fastq { input: bam=samtools_subsample.sampled_bam, max_retries=max_retries }
         call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
-        call fq_screen.fastq_screen { input: read1=fqlint.validated_read1, read2=select_first([fqlint.validated_read2, ""]), db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=parsed_encoding, max_retries=max_retries }
+        call fq_screen.fastq_screen { input: read1=fqlint.validated_read1, read2=select_first([fqlint.validated_read2, ""]), db=fastq_screen_db_defined, provided_encoding=phred_encoding, inferred_encoding=ngsderive_encoding.inferred_encoding, max_retries=max_retries }
     }
 
     if (experiment == "RNA-Seq") {
@@ -117,10 +116,9 @@ workflow quality_check {
         call ngsderive.junction_annotation as junction_annotation { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
 
         call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
-        String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
 
         call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=parsed_strandedness, name_sorted=true, paired_end=paired_end, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, name_sorted=true, paired_end=paired_end, max_retries=max_retries }
     }
     
     call mqc.multiqc { input:

@@ -55,13 +55,12 @@ workflow rnaseq_core {
         gtf=gtf,
         max_retries=max_retries
     }
-    String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
 
     call htseq.count as htseq_count { input:
         bam=alignment_post.out_bam,
         gtf=gtf,
         provided_strandedness=strandedness,
-        inferred_strandedness=parsed_strandedness,
+        inferred_strandedness=ngsderive_strandedness.strandedness,
         max_retries=max_retries
     }
 

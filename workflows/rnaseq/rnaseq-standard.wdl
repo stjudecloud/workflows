@@ -68,10 +68,8 @@ workflow rnaseq_standard {
         max_retries: "Number of times to retry failed steps"
     }
 
-    String provided_strandedness = strandedness
-
     call parse_input { input:
-        input_strand=provided_strandedness,
+        input_strand=strandedness,
         cleanse_xenograft=cleanse_xenograft,
         contaminant_stardb=defined(contaminant_stardb)
     }

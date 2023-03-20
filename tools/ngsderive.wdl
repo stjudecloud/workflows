@@ -42,7 +42,7 @@ task infer_strandedness {
     }
 
     output {
-        File strandedness = "strandedness.txt"
+        String strandedness = read_string("strandedness.txt")
         File strandedness_file = out_file
     }
 }
@@ -156,7 +156,7 @@ END
     }
 
     output {
-        File inferred_encoding = "encoding.txt"
+        String inferred_encoding = read_string("encoding.txt")
         File encoding_file = out_file
     }
 }
