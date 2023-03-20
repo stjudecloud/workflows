@@ -61,11 +61,10 @@ workflow rnaseq_standard_fastq {
         max_retries: "Number of times to retry failed steps"
     }
 
-    call parse_input {
-        input:
-            input_strand=strandedness,
-            cleanse_xenograft=cleanse_xenograft,
-            contaminant_stardb=defined(contaminant_stardb)
+    call parse_input { input:
+        input_strand=strandedness,
+        cleanse_xenograft=cleanse_xenograft,
+        contaminant_stardb=defined(contaminant_stardb)
     }
 
     if (validate_input){

@@ -59,7 +59,11 @@ workflow bam_to_fastqs {
     }
     scatter (reads in zip(bam_to_fastq.read1, bam_to_fastq.read2)) {
         if (pairing == "Paired-end") {
-            call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
+            call fq.fqlint as fqlint_pair { input:
+                read1=reads.left,
+                read2=reads.right,
+                max_retries=max_retries
+            }
         }
         if (pairing == "Single-end") {
             call fq.fqlint as fqlint_single { input: read1=reads.left, max_retries=max_retries }

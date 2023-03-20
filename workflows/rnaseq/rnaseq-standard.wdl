@@ -70,11 +70,10 @@ workflow rnaseq_standard {
 
     String provided_strandedness = strandedness
 
-    call parse_input {
-        input:
-            input_strand=provided_strandedness,
-            cleanse_xenograft=cleanse_xenograft,
-            contaminant_stardb=defined(contaminant_stardb)
+    call parse_input { input:
+        input_strand=provided_strandedness,
+        cleanse_xenograft=cleanse_xenograft,
+        contaminant_stardb=defined(contaminant_stardb)
     }
 
     if (validate_input) {
@@ -82,23 +81,21 @@ workflow rnaseq_standard {
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample {
-            input:
-                bam=input_bam,
-                max_retries=max_retries,
-                desired_reads=subsample_n_reads,
-                detect_nproc=detect_nproc
+        call samtools.subsample { input:
+            bam=input_bam,
+            max_retries=max_retries,
+            desired_reads=subsample_n_reads,
+            detect_nproc=detect_nproc
         }
     }
     File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
 
     call util.get_read_groups { input: bam=selected_input_bam, max_retries=max_retries }
     String read_groups = read_string(get_read_groups.out)
-    call b2fq.bam_to_fastqs {
-        input:
-            bam=selected_input_bam,
-            max_retries=max_retries,
-            detect_nproc=detect_nproc
+    call b2fq.bam_to_fastqs { input:
+        bam=selected_input_bam,
+        max_retries=max_retries,
+        detect_nproc=detect_nproc
     }
 
     call rna_core.rnaseq_core { input:

@@ -31,13 +31,12 @@ workflow alignment_post {
 
     if (cleanse_xenograft){
         File contam_db = select_first([contaminant_db, ""])
-        call xenocp_workflow.xenocp {
-            input:
-                input_bam=picard_sort.sorted_bam,
-                input_bai=samtools_index.bai,
-                reference_tar_gz=contam_db,
-                aligner=xenocp_aligner,
-                skip_duplicate_marking=true
+        call xenocp_workflow.xenocp { input:
+            input_bam=picard_sort.sorted_bam,
+            input_bai=samtools_index.bai,
+            reference_tar_gz=contam_db,
+            aligner=xenocp_aligner,
+            skip_duplicate_marking=true
         }
     }
     File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
