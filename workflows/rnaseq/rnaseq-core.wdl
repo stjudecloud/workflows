@@ -2,7 +2,8 @@ version 1.0
 
 import "../../tools/star.wdl"
 import "../general/alignment-post.wdl" as align_post
-import "./rnaseq-post.wdl" as rna_post
+import "../../tools/htseq.wdl"
+import "../../tools/ngsderive.wdl"
 
 workflow rnaseq_core {
     input {
@@ -48,11 +49,19 @@ workflow rnaseq_core {
         max_retries=max_retries
     }
 
-    call rna_post.rnaseq_post { input:
+    call ngsderive.infer_strandedness as ngsderive_strandedness { input:
         bam=alignment_post.out_bam,
-        bam_index=alignment_post.bam_index,
+        bai=alignment_post.bam_index,
         gtf=gtf,
-        strandedness=strandedness,
+        max_retries=max_retries
+    }
+    String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
+
+    call htseq.count as htseq_count { input:
+        bam=alignment_post.out_bam,
+        gtf=gtf,
+        provided_strandedness=strandedness,
+        inferred_strandedness=parsed_strandedness,
         max_retries=max_retries
     }
 
@@ -61,8 +70,8 @@ workflow rnaseq_core {
         File bam_index = alignment_post.bam_index
         File bam_checksum = alignment_post.bam_checksum
         File star_log = alignment.star_log
-        File gene_counts = rnaseq_post.gene_counts
-        File inferred_strandedness = rnaseq_post.inferred_strandedness
+        File gene_counts = htseq_count.out
+        File inferred_strandedness = ngsderive_strandedness.strandedness_file
         File bigwig = alignment_post.bigwig
     }
 }
