@@ -225,7 +225,7 @@ task sort {
 task merge_sam_files {
     input {
         Array[File] bam
-        String output_name = "merged.bam"
+        String outfile_name = "merged.bam"
         String sort_order = "coordinate"
         Boolean threading = true
         Int memory_gb = 40
@@ -242,7 +242,7 @@ task merge_sam_files {
 
         picard -Xmx~{java_heap_size}g MergeSamFiles \
             ~{sep=' ' input_arg} \
-            OUTPUT=~{output_name} \
+            OUTPUT=~{outfile_name} \
             SORT_ORDER=~{sort_order} \
             USE_THREADING=~{threading} \
             VALIDATION_STRINGENCY=SILENT
@@ -256,7 +256,7 @@ task merge_sam_files {
     }
 
     output {
-        File merged_bam = output_name
+        File merged_bam = outfile_name
     }
 
     meta {
