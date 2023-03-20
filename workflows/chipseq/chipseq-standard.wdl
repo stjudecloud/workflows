@@ -82,7 +82,7 @@ workflow chipseq_standard {
     File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
 
     call util.get_read_groups { input: bam=selected_input_bam, max_retries=max_retries, format_for_star=false }
-    Array[String] read_groups = read_lines(get_read_groups.out)
+    Array[String] read_groups = read_lines(get_read_groups.read_groups_file)
 
     call b2fq.bam_to_fastqs { input: bam=selected_input_bam, pairing=pairing, max_retries=max_retries, detect_nproc=detect_nproc }
 
@@ -98,7 +98,7 @@ workflow chipseq_standard {
             call util.add_to_bam_header { input: input_bam=chosen_bam, additional_header=pair.right }
             String rg_id_field = sub(sub(pair.right, ".*ID:", "ID:"), "\t.*", "") 
             String rg_id = sub(rg_id_field, "ID:", "")
-            call samtools.addreplacerg as single_end { input: bam=add_to_bam_header.output_bam, read_group_id=rg_id }
+            call samtools.addreplacerg as single_end { input: bam=add_to_bam_header.reheadered_bam, read_group_id=rg_id }
         }
     }
 
@@ -123,9 +123,9 @@ workflow chipseq_standard {
        call picard.clean_sam as picard_clean { input: bam=bam }
     }
 
-    call picard.merge_sam_files as picard_merge { input: bam=picard_clean.cleaned_bam, output_name=output_prefix + ".bam" }
+    call picard.merge_sam_files as picard_merge { input: bam=picard_clean.cleaned_bam, outfile_name=output_prefix + ".bam" }
 
-    call seaseq_samtools.markdup { input: bamfile=picard_merge.merged_bam, outputfile=output_prefix + ".bam" }
+    call seaseq_samtools.markdup { input: bamfile=picard_merge.merged_bam, outfile_name=output_prefix + ".bam" }
     call samtools.index as samtools_index { input: bam=markdup.mkdupbam, max_retries=max_retries, detect_nproc=detect_nproc }
     call picard.validate_bam { input: bam=markdup.mkdupbam, max_retries=max_retries }
 
@@ -135,7 +135,7 @@ workflow chipseq_standard {
 
     output {
         File bam = markdup.mkdupbam
-        File bam_checksum = compute_checksum.outfile
+        File bam_checksum = compute_checksum.md5sum
         File bam_index = samtools_index.bam_index
         File bigwig = deeptools_bamCoverage.bigwig
     }

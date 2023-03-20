@@ -55,7 +55,7 @@ workflow alignment_post {
     output {
         File out_bam = aligned_bam
         File bam_index = aligned_bam_index
-        File bam_checksum = compute_checksum.outfile
+        File bam_checksum = compute_checksum.md5sum
         File bigwig = deeptools_bamCoverage.bigwig
     }
 }

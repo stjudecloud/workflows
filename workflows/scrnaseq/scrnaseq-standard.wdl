@@ -95,7 +95,7 @@ workflow scrnaseq_standard {
 
     output {
         File bam = count.bam
-        File bam_checksum = compute_checksum.outfile
+        File bam_checksum = compute_checksum.md5sum
         File bam_index = count.bam_index
         File qc = count.qc
         File barcodes = count.barcodes

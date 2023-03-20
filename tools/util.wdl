@@ -8,7 +8,7 @@ version 1.0
 task download {
     input {
         String url
-        String outfilename
+        String outfile_name
         String? md5sum
         Int disk_size_gb = 10
         Int max_retries = 1
@@ -24,16 +24,16 @@ task download {
     command <<<
         set -euo pipefail
 
-        wget ~{url} -O ~{outfilename}
+        wget ~{url} -O ~{outfile_name}
 
         if [ -n "~{md5sum}" ]; then
-            echo "~{md5sum}  ~{outfilename}" > ~{outfilename}.md5
-            md5sum -c ~{outfilename}.md5
+            echo "~{md5sum}  ~{outfile_name}" > ~{outfile_name}.md5
+            md5sum -c ~{outfile_name}.md5
         fi
     >>>
 
     output {
-        File outfile = outfilename
+        File outfile = outfile_name
     }
 
     meta {
@@ -44,7 +44,7 @@ task download {
 
     parameter_meta {
         url: "URL of the file to download"
-        outfilename: "Name to use for the output file"
+        outfile_name: "Name to use for the output file"
     }
 }
 
@@ -81,7 +81,7 @@ task get_read_groups {
     }
 
     output { 
-        File out = "read_groups.txt"
+        File read_groups_file = "read_groups.txt"
     }
 
     meta {
@@ -116,15 +116,15 @@ task split_string {
     }
 
     output {
-        File output_file = "output.txt"
-        Array[String] out = read_lines("output.txt")
+        File split_strings_file = "output.txt"
+        Array[String] split_strings = read_lines("output.txt")
     }
 }
 
 task calc_gene_lengths {
     input {
         File gtf
-        String outfile = basename(gtf, ".gtf.gz") + ".genelengths.txt"
+        String outfile_name = basename(gtf, ".gtf.gz") + ".genelengths.txt"
         Int max_retries = 1
     }
 
@@ -134,7 +134,7 @@ task calc_gene_lengths {
     command <<<
         set -euo pipefail
 
-        GTF="~{gtf}" OUTFILE="~{outfile}" python - <<END
+        GTF="~{gtf}" OUTFILE="~{outfile_name}" python - <<END
 import os  # lint-check: ignore
 import gtfparse  # lint-check: ignore
 import numpy as np  # lint-check: ignore
@@ -192,14 +192,14 @@ END
     }
 
     output {
-        File out = "~{outfile}"
+        File gene_lengths = "~{outfile_name}"
     }
 }
 
 task qc_summary {
     input {
         File multiqc_tar_gz
-        String outfile = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
+        String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
         Int disk_size = 1
         Int max_retries = 1
     }
@@ -247,7 +247,7 @@ task qc_summary {
                 percent_thirtyX_coverage: ($THIRTYX_PERCENT | tonumber),
                 percent_duplicate: ($DUP_PERCENT | tonumber),
                 inferred_strandedness: $STRANDEDNESS 
-            }' > ~{outfile}
+            }' > ~{outfile_name}
     >>>
 
     runtime {
@@ -258,7 +258,7 @@ task qc_summary {
     }
 
     output {
-        File out = "~{outfile}"
+        File summary = "~{outfile_name}"
     }
 
     meta {
@@ -314,9 +314,9 @@ task add_to_bam_header {
     }
 
     output {
-        File output_file = "header.sam"
-        Array[String] out = read_lines("header.sam")
-        File output_bam = output_bam_name
+        File updated_header = "header.sam"
+        Array[String] header_lines = read_lines("header.sam")
+        File reheadered_bam = output_bam_name
     }
 }
 

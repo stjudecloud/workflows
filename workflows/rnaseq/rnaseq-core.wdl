@@ -70,7 +70,7 @@ workflow rnaseq_core {
         File bam_index = alignment_post.bam_index
         File bam_checksum = alignment_post.bam_checksum
         File star_log = alignment.star_log
-        File gene_counts = htseq_count.out
+        File gene_counts = htseq_count.gene_counts
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
         File bigwig = alignment_post.bigwig
     }

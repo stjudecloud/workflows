@@ -9,7 +9,7 @@ task count {
     input {
         File bam
         File gtf
-        String outfile = basename(bam, ".bam") + ".feature-counts.txt"
+        String outfile_name = basename(bam, ".bam") + ".feature-counts.txt"
         String provided_strandedness = ""
         String inferred_strandedness = ""
         Boolean pos_sorted = true
@@ -57,7 +57,7 @@ task count {
             --max-reads-in-buffer 9223372036854776000 \
             ~{bam} \
             ~{gtf} \
-            > ~{outfile}
+            > ~{outfile_name}
     }
 
     runtime {
@@ -68,7 +68,7 @@ task count {
     }
    
     output {
-        File out = "~{outfile}"
+        File gene_counts = "~{outfile_name}"
     }
 
     meta {

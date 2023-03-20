@@ -9,16 +9,16 @@ version 1.0
 task compute_checksum {
     input {
         File infile
-        Int max_retries = 1
+        String outfile_name = basename(infile) + ".md5"
         Int memory_gb = 5
+        Int max_retries = 1
     }
 
-    String outfilename = basename(infile) + ".md5"
     Float infile_size = size(infile, "GiB")
     Int disk_size = ceil((infile_size * 2) + 10)
 
     command {
-        md5sum ~{infile} > ~{outfilename}
+        md5sum ~{infile} > ~{outfile_name}
     }
 
     runtime {
@@ -29,7 +29,7 @@ task compute_checksum {
     }
 
     output {
-        File outfile = outfilename
+        File md5sum = outfile_name
     }
 
     meta {

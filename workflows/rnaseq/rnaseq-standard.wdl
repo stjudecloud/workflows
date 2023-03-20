@@ -91,7 +91,7 @@ workflow rnaseq_standard {
     File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
 
     call util.get_read_groups { input: bam=selected_input_bam, max_retries=max_retries }
-    String read_groups = read_string(get_read_groups.out)
+    String read_groups = read_string(get_read_groups.read_groups_file)
     call b2fq.bam_to_fastqs { input:
         bam=selected_input_bam,
         max_retries=max_retries,

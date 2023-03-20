@@ -35,6 +35,6 @@ workflow calc_gene_lengths {
     call util.calc_gene_lengths as calc { input: gtf=gtf }
 
     output {
-        File gene_lengths=calc.out
+        File gene_lengths=calc.gene_lengths
     }
 }

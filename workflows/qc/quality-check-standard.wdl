@@ -125,8 +125,8 @@ workflow quality_check {
     
     call mqc.multiqc { input:
         input_files=select_all([
-            validate_bam.out,
-            samtools_flagstat.outfile,
+            validate_bam.validate_report,
+            samtools_flagstat.flagstat,
             ngsderive_instrument.instrument_file,
             ngsderive_read_length.read_length_file,
             ngsderive_encoding.encoding_file,
@@ -151,9 +151,9 @@ workflow quality_check {
     }
 
     output {
-        File bam_checksum = compute_checksum.outfile
-        File validate_sam_file = validate_bam.out
-        File flagstat = samtools_flagstat.outfile
+        File bam_checksum = compute_checksum.md5sum
+        File validate_sam_file = validate_bam.validate_report
+        File flagstat = samtools_flagstat.flagstat
         File fastqc_results = fastqc.results
         File instrument_file = ngsderive_instrument.instrument_file
         File read_length_file = ngsderive_read_length.read_length_file
@@ -166,7 +166,7 @@ workflow quality_check {
         File insert_size_metrics_pdf = collect_insert_size_metrics.insert_size_metrics_pdf
         File quality_score_distribution_txt = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf = quality_score_distribution.quality_score_distribution_pdf
-        File multiqc_zip = multiqc.out
+        File multiqc_zip = multiqc.multiqc_out
         File? wgs_metrics = collect_wgs_metrics.wgs_metrics
         File? mosdepth_global_dist = coverage.global_dist
         File? mosdepth_summary = coverage.summary

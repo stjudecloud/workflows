@@ -62,13 +62,13 @@ workflow star_db_build {
 
     call util.download as reference_download { input:
         url=reference_fa_url,
-        outfilename=reference_fa_name,
+        outfile_name=reference_fa_name,
         md5sum=reference_fa_md5,
         max_retries=max_retries
     }
     call util.download as gtf_download { input:
         url=gtf_url,
-        outfilename=gtf_name,
+        outfile_name=gtf_name,
         md5sum=gtf_md5,
         max_retries=max_retries
     }
