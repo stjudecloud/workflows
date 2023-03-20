@@ -33,14 +33,14 @@ workflow alignment_post {
         File contam_db = select_first([contaminant_db, ""])
         call xenocp_workflow.xenocp { input:
             input_bam=picard_sort.sorted_bam,
-            input_bai=samtools_index.bai,
+            input_bai=samtools_index.bam_index,
             reference_tar_gz=contam_db,
             aligner=xenocp_aligner,
             skip_duplicate_marking=true
         }
     }
     File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
-    File aligned_bai = select_first([xenocp.bam_index, samtools_index.bai])
+    File aligned_bam_index = select_first([xenocp.bam_index, samtools_index.bam_index])
 
     call picard.validate_bam { input: bam=aligned_bam, max_retries=max_retries }
 
@@ -48,13 +48,13 @@ workflow alignment_post {
     
     call deeptools.bamCoverage as deeptools_bamCoverage { input:
         bam=aligned_bam,
-        bai=aligned_bai,
+        bam_index=aligned_bam_index,
         max_retries=max_retries
     }
 
     output {
         File out_bam = aligned_bam
-        File bam_index = aligned_bai
+        File bam_index = aligned_bam_index
         File bam_checksum = compute_checksum.outfile
         File bigwig = deeptools_bamCoverage.bigwig
     }

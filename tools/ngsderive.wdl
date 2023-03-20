@@ -7,7 +7,7 @@ version 1.0
 task infer_strandedness {
     input {
         File bam
-        File bai
+        File bam_index
         File gtf
         Int min_reads_per_gene = 10
         Int num_genes = 1000
@@ -23,7 +23,7 @@ task infer_strandedness {
     command {
         set -euo pipefail
 
-        mv ~{bai} ~{bam}.bai || true
+        mv ~{bam_index} ~{bam}.bai || true
         ngsderive strandedness --verbose \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
@@ -76,7 +76,7 @@ task instrument {
 task read_length {
     input {
         File bam
-        File bai
+        File bam_index
         Int max_retries = 1
         Int memory_gb = 5
     }
@@ -88,7 +88,7 @@ task read_length {
     command {
         set -euo pipefail
         
-        mv ~{bai} ~{bam}.bai || true
+        mv ~{bam_index} ~{bam}.bai || true
         ngsderive readlen --verbose ~{bam} > ~{out_file}
     }
 
@@ -164,7 +164,7 @@ END
 task junction_annotation {
     input {
         File bam
-        File bai
+        File bam_index
         File gtf
         String prefix = basename(bam, ".bam")
         Int min_intron = 50
@@ -181,7 +181,7 @@ task junction_annotation {
     command {
         set -euo pipefail
 
-        mv ~{bai} ~{bam}.bai || true
+        mv ~{bam_index} ~{bam}.bai || true
         ngsderive junction-annotation --verbose \
             -g ~{gtf} \
             -i ~{min_intron} \

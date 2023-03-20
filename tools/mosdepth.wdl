@@ -7,7 +7,7 @@ version 1.0
 task coverage {
     input {
         File bam
-        File bai
+        File bam_index
         Int min_mapping_quality = 20
         Boolean use_fast_mode = true
         Int memory_gb = 8 
@@ -20,7 +20,7 @@ task coverage {
     command {
         set -euo pipefail
 
-        mv ~{bai} ~{bam}.bai || true
+        mv ~{bam_index} ~{bam}.bai || true
         mosdepth \
             -n \
             -Q ~{min_mapping_quality} \

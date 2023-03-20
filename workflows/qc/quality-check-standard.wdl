@@ -92,14 +92,14 @@ workflow quality_check {
     call samtools.flagstat as samtools_flagstat { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call fqc.fastqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
+    call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bam_index=bam_index, max_retries=max_retries }
     
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
     String parsed_encoding = read_string(ngsderive_encoding.inferred_encoding)
 
     if (experiment == "WGS") {
         call picard.collect_wgs_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
-        call mosdepth.coverage { input: bam=quickcheck.checked_bam, bai=bam_index, max_retries=max_retries }
+        call mosdepth.coverage { input: bam=quickcheck.checked_bam, bam_index=bam_index, max_retries=max_retries }
     }
 
     if (experiment == "WGS" || experiment == "WES") {
@@ -114,9 +114,9 @@ workflow quality_check {
     if (experiment == "RNA-Seq") {
         File gtf_defined = select_first([gtf, "No GTF"])
 
-        call ngsderive.junction_annotation as junction_annotation { input: bam=quickcheck.checked_bam, bai=bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.junction_annotation as junction_annotation { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
 
-        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bai=bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
         String parsed_strandedness = read_string(ngsderive_strandedness.strandedness)
 
         call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }

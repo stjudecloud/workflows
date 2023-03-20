@@ -88,7 +88,7 @@ workflow chipseq_standard {
 
     call samtools.index as samtools_index_input { input: bam=selected_input_bam }
 
-    call ngsderive.read_length { input: bam=selected_input_bam, bai=samtools_index_input.bai }
+    call ngsderive.read_length { input: bam=selected_input_bam, bam_index=samtools_index_input.bam_index }
 
     if (pairing == "Single-end") {
         scatter (pair in zip(bam_to_fastqs.read1s, read_groups)){
@@ -131,12 +131,12 @@ workflow chipseq_standard {
 
     call md5sum.compute_checksum { input: infile=markdup.mkdupbam, max_retries=max_retries }
 
-    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=markdup.mkdupbam, bai=samtools_index.bai, prefix=output_prefix, max_retries=max_retries }
+    call deeptools.bamCoverage as deeptools_bamCoverage { input: bam=markdup.mkdupbam, bam_index=samtools_index.bam_index, prefix=output_prefix, max_retries=max_retries }
 
     output {
         File bam = markdup.mkdupbam
         File bam_checksum = compute_checksum.outfile
-        File bam_index = samtools_index.bai
+        File bam_index = samtools_index.bam_index
         File bigwig = deeptools_bamCoverage.bigwig
     }
 }

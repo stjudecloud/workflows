@@ -89,7 +89,7 @@ workflow scrnaseq_standard {
             detect_nproc=detect_nproc
     }
     call picard.validate_bam { input: bam=count.bam, max_retries=max_retries }
-    call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=count.bam, bai=count.bam_index, gtf=gtf, max_retries=max_retries }
+    call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=count.bam, bam_index=count.bam_index, gtf=gtf, max_retries=max_retries }
 
     call md5sum.compute_checksum { input: infile=count.bam, max_retries=max_retries }
 

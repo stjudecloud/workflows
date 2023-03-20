@@ -8,7 +8,7 @@ version 1.0
 task bamCoverage {
     input {
         File bam
-        File bai
+        File bam_index
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
         Int memory_gb = 5
@@ -31,7 +31,7 @@ task bamCoverage {
 
         if [ ! -e ~{bam}.bai ]
         then 
-            ln -s ~{bai} ~{bam}.bai
+            ln -s ~{bam_index} ~{bam}.bai
         fi
  
         bamCoverage --bam ~{bam} --outFileName ~{prefix}.bw --outFileFormat bigwig --numberOfProcessors "$n_cores"
