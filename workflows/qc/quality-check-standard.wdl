@@ -107,7 +107,7 @@ workflow quality_check {
         input:
             bam=quickcheck.checked_bam,
             bai=bam_index,
-            prefix=basename(quickcheck.checked_bam, 'bam')+"whole_genome"
+            prefix=basename(quickcheck.checked_bam, 'bam')+"whole_genome",
             max_retries=max_retries
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
