@@ -13,7 +13,8 @@ workflow rnaseq_core {
         String output_prefix
         File gtf
         File stardb
-        File? contaminant_stardb
+        File? contaminant_db
+        String xenocp_aligner = "star"
         String strandedness = ""
         Boolean cleanse_xenograft = false
         Boolean detect_nproc = false
@@ -42,8 +43,8 @@ workflow rnaseq_core {
 
     call align_post.alignment_post { input:
         bam=alignment.star_bam,
-        contaminant_db=contaminant_stardb,
-        xenocp_aligner="star",
+        contaminant_db=contaminant_db,
+        xenocp_aligner=xenocp_aligner,
         cleanse_xenograft=cleanse_xenograft,
         detect_nproc=detect_nproc,
         max_retries=max_retries
