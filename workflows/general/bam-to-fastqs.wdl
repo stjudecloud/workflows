@@ -42,15 +42,14 @@ import "../../tools/fq.wdl"
 workflow bam_to_fastqs {
     input {
         File bam
-        String pairing = "Paired-end"
         Boolean detect_nproc = false
         Int max_retries = 1
     }
 
     parameter_meta {
-        bam: "BAM file to split into fastqs."
+        bam: "BAM file to split into fastqs"
         detect_nproc: "Use all available cores for multi-core steps"
-        max_retries: "Maximum number of times to retry on a failure."
+        max_retries: "Number of times to retry failed steps"
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
@@ -59,15 +58,10 @@ workflow bam_to_fastqs {
         call picard.bam_to_fastq { input: bam=split_bam, max_retries=max_retries }
     }
     scatter (reads in zip(bam_to_fastq.read1, bam_to_fastq.read2)) {
-        if (pairing == "Paired-end") {
-            call fq.fqlint as fqlint_pair { input:
-                read1=reads.left,
-                read2=reads.right,
-                max_retries=max_retries
-            }
-        }
-        if (pairing == "Single-end") {
-            call fq.fqlint as fqlint_single { input: read1=reads.left, max_retries=max_retries }
+        call fq.fqlint as fqlint_pair { input:
+            read1=reads.left,
+            read2=reads.right,
+            max_retries=max_retries
         }
     }
 
