@@ -10,16 +10,22 @@ task multiqc {
         Array[File] input_files
         String output_prefix
         Array[String] extra_fn_clean_exts = []
-        Int max_retries = 1
-        Int memory_gb = 5
+        Array[String] mosdepth_labels = []
         Int disk_size = 20
+        Int memory_gb = 5
+        Int max_retries = 1
+    }
+
+    parameter_meta {
+        input_files: "An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
+        output_prefix: "A string for the MultiQC output directory: <prefix>.multiqc/ and <prefix>.multiqc.tar.gz"
     }
 
     String out_directory = output_prefix + ".multiqc"
     String out_tar_gz = out_directory + ".tar.gz"
 
     command {
-        set -eo pipefail
+        set -euo pipefail
         
         # set ENV variables for `multiqc`
         export LC_ALL=C.UTF-8
@@ -29,10 +35,27 @@ task multiqc {
 
         echo "~{sep="\n" extra_fn_clean_exts}" > extensions.txt
 
+        echo "~{sep="\n" mosdepth_labels}" > labels.txt
+
         echo "extra_fn_clean_exts:" > multiqc_config.yaml
         while read -r ext; do
-            echo "    - $ext" >> multiqc_config.yaml
+            echo "  - $ext" >> multiqc_config.yaml
         done < extensions.txt
+        while read -r label; do
+            echo "  - .$label" >> multiqc_config.yaml
+        done < labels.txt
+
+        echo "top_modules:" >> multiqc_config.yaml
+        while read -r label; do
+            echo "  - mosdepth:" >> multiqc_config.yaml
+            echo "    name: \"mosdepth ($label)\"" >> multiqc_config.yaml
+            echo "    path_filters:" >> multiqc_config.yaml
+            echo "      - \"*.$label.mosdepth.*\"" >> multiqc_config.yaml
+        done < labels.txt
+
+        echo "*** Generated Config ***"
+        cat multiqc_config.yaml
+        echo "*** End ***"
 
         multiqc -vvv -c multiqc_config.yaml \
             --file-list file_list.txt -o ~{out_directory}
@@ -60,10 +83,5 @@ task multiqc {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates a MultiQC quality control metrics report summary from input QC result files."
-    }
-
-    parameter_meta {
-        input_files: "A non-empty array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
-        output_prefix: "A string for the MultiQC output directory: <prefix>.multiqc/ and <prefix>.multiqc.tar.gz"
     }
 }
