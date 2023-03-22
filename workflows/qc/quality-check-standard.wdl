@@ -156,6 +156,8 @@ workflow quality_check {
             quality_score_distribution.quality_score_distribution_txt,
             wg_coverage.summary,
             wg_coverage.global_dist,
+            regions_coverage.summary,
+            regions_coverage.region_dist,
             fastq_screen.raw_data,
             star_log,
             ngsderive_strandedness.strandedness_file,
