@@ -49,6 +49,7 @@ workflow bam_to_fastqs {
 
     parameter_meta {
         bam: "BAM file to split into fastqs."
+        detect_nproc: "Use all available cores for multi-core steps"
         max_retries: "Maximum number of times to retry on a failure."
     }
 
