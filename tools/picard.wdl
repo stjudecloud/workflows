@@ -136,8 +136,15 @@ task bam_to_fastq {
     input {
         File bam
         String prefix = basename(bam, ".bam")
+        Boolean paired = true
         Int memory_gb = 40
         Int max_retries = 1
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to convert to FastQ"
+        paired: "Is the data paired-end (true) or single-end (false)?"
+        max_retries: "Number of times to retry failed steps"
     }
 
     Float bam_size = size(bam, "GiB")
@@ -149,11 +156,12 @@ task bam_to_fastq {
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
             FASTQ=~{prefix}_R1.fastq \
-            SECOND_END_FASTQ=~{prefix}_R2.fastq \
+            ~{if paired then "SECOND_END_FASTQ="+prefix+"_R2.fastq" else ""} \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
         
-        gzip ~{prefix}_R1.fastq ~{prefix}_R2.fastq
+        gzip ~{prefix}_R1.fastq \
+            ~{if paired then prefix+"_R2.fastq" else ""}
     }
 
     runtime{
@@ -165,17 +173,13 @@ task bam_to_fastq {
 
     output {
         File read1 = "~{prefix}_R1.fastq.gz"
-        File read2 = "~{prefix}_R2.fastq.gz"
+        File? read2 = "~{prefix}_R2.fastq.gz"
     }
 
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool converts the input BAM file into paired FastQ format files."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to convert to FastQ"
     }
 }
 

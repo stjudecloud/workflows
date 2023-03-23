@@ -98,7 +98,7 @@ workflow rnaseq_standard {
 
     call rna_core.rnaseq_core { input:
         read_one_fastqs=bam_to_fastqs.read1s,
-        read_two_fastqs=bam_to_fastqs.read2s,
+        read_two_fastqs=select_all(bam_to_fastqs.read2s),
         read_groups=read_groups,
         output_prefix=output_prefix,
         gtf=gtf,

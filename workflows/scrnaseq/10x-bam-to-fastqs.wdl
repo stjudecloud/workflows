@@ -48,7 +48,7 @@ import "../../tools/fq.wdl"
 workflow cell_ranger_bam_to_fastqs {
     input {
         File bam
-        String pairing = "Paired-end"
+        Boolean paired = true
         Boolean cellranger11 = false
         Boolean longranger20 = false
         Boolean gemcode = false
@@ -66,10 +66,10 @@ workflow cell_ranger_bam_to_fastqs {
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call cellranger.bamtofastq { input: bam=bam, cellranger11=cellranger11, longranger20=longranger20, gemcode=gemcode, memory_gb=bam_to_fastq_memory_gb, max_retries=max_retries }
     scatter (reads in zip(bamtofastq.read1, bamtofastq.read2)) {
-        if (pairing == "Paired-end") {
+        if (paired) {
             call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
         }
-        if (pairing == "Single-end") {
+        if (! paired) {
             call fq.fqlint as fqlint_single { input: read1=reads.left, max_retries=max_retries }
         }
     }

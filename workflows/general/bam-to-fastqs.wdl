@@ -42,12 +42,14 @@ import "../../tools/fq.wdl"
 workflow bam_to_fastqs {
     input {
         File bam
+        Boolean paired = true
         Boolean detect_nproc = false
         Int max_retries = 1
     }
 
     parameter_meta {
         bam: "BAM file to split into fastqs"
+        paired: "Is the data paired-end (true) or single-end (false)?"
         detect_nproc: "Use all available cores for multi-core steps"
         max_retries: "Number of times to retry failed steps"
     }
@@ -55,18 +57,29 @@ workflow bam_to_fastqs {
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call samtools.split { input: bam=bam, detect_nproc=detect_nproc, max_retries=max_retries }
     scatter (split_bam in split.split_bams) {
-        call picard.bam_to_fastq { input: bam=split_bam, max_retries=max_retries }
+        call picard.bam_to_fastq { input: bam=split_bam, paired=paired, max_retries=max_retries }
     }
-    scatter (reads in zip(bam_to_fastq.read1, bam_to_fastq.read2)) {
-        call fq.fqlint as fqlint_pair { input:
-            read1=reads.left,
-            read2=reads.right,
-            max_retries=max_retries
+
+    if (paired) {
+        scatter (reads in zip(bam_to_fastq.read1, bam_to_fastq.read2)) {
+            call fq.fqlint as fqlint_pair { input:
+                read1=reads.left,
+                read2=reads.right,
+                max_retries=max_retries
+            }
+        }
+    }
+    if (! paired) {
+        scatter (reads in bam_to_fastq.read1) {
+            call fq.fqlint as fqlint_single { input:
+                read1=reads,
+                max_retries=max_retries
+            }
         }
     }
 
     output {
         Array[File] read1s = bam_to_fastq.read1
-        Array[File] read2s = bam_to_fastq.read2
+        Array[File?] read2s = bam_to_fastq.read2
     }
 }
