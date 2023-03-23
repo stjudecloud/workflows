@@ -59,7 +59,12 @@ workflow cell_ranger_bam_to_fastqs {
 
     parameter_meta {
         bam: "BAM file to split into fastqs."
+        paired: "Is the data paired-end (true) or single-end (false)?"
+        cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
+        longranger20: "Convert a BAM produced by Longranger 2.0"
+        gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
         bam_to_fastq_memory_gb: "How much memory to provide while converting to fastqs."
+        detect_nproc: "Use all available cores for multi-core steps"
         max_retries: "Maximum number of times to retry on a failure."
     }
 
