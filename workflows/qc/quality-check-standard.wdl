@@ -169,6 +169,7 @@ workflow quality_check {
         ])),
         output_prefix=basename(bam, '.bam'),
         extra_fn_clean_exts=[".ValidateSamFile"],
+        mosdepth_labels=parse_input.labels,
         max_retries=max_retries
     }
 
