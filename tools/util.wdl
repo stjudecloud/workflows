@@ -275,6 +275,10 @@ task compression_integrity {
         docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
         maxRetries: max_retries
     }
+
+    output {
+        String check = "passed"
+    }
 }
 
 task add_to_bam_header {

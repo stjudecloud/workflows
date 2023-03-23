@@ -262,7 +262,7 @@ task parse_input {
     }
 
     output {
-        String input_check = "passed"
+        String check = "passed"
         Array[String] labels = read_lines("labels.txt")
     }
 }
