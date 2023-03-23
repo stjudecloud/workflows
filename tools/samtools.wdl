@@ -120,7 +120,7 @@ task flagstat {
     }
 
     output { 
-       File flagstat = outfile_name
+       File flagstat_report = outfile_name
     }
 
     meta {

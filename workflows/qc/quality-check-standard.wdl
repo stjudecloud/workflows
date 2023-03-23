@@ -122,7 +122,7 @@ workflow quality_check {
     call mqc.multiqc { input:
         input_files=select_all([
             validate_bam.validate_report,
-            samtools_flagstat.flagstat,
+            samtools_flagstat.flagstat_report,
             ngsderive_instrument.instrument_file,
             ngsderive_read_length.read_length_file,
             ngsderive_encoding.encoding_file,
@@ -149,7 +149,7 @@ workflow quality_check {
     output {
         File bam_checksum = compute_checksum.md5sum
         File validate_sam_file = validate_bam.validate_report
-        File flagstat = samtools_flagstat.flagstat
+        File flagstat = samtools_flagstat.flagstat_report
         File fastqc_results = fastqc.results
         File instrument_file = ngsderive_instrument.instrument_file
         File read_length_file = ngsderive_read_length.read_length_file
