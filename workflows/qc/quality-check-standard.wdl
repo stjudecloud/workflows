@@ -143,28 +143,30 @@ workflow quality_check {
     }
     
     call mqc.multiqc { input:
-        input_files=select_all([
-            validate_bam.out,
-            samtools_flagstat.outfile,
-            ngsderive_instrument.instrument_file,
-            ngsderive_read_length.read_length_file,
-            ngsderive_encoding.encoding_file,
-            fastqc.raw_data,
-            collect_alignment_summary_metrics.alignment_metrics,
-            collect_gc_bias_metrics.gc_bias_metrics,
-            collect_insert_size_metrics.insert_size_metrics,
-            quality_score_distribution.quality_score_distribution_txt,
-            wg_coverage.summary,
-            wg_coverage.global_dist,
+        input_files=select_all(flatten([
+            [
+                validate_bam.out,
+                samtools_flagstat.outfile,
+                ngsderive_instrument.instrument_file,
+                ngsderive_read_length.read_length_file,
+                ngsderive_encoding.encoding_file,
+                fastqc.raw_data,
+                collect_alignment_summary_metrics.alignment_metrics,
+                collect_gc_bias_metrics.gc_bias_metrics,
+                collect_insert_size_metrics.insert_size_metrics,
+                quality_score_distribution.quality_score_distribution_txt,
+                wg_coverage.summary,
+                wg_coverage.global_dist,
+                fastq_screen.raw_data,
+                star_log,
+                ngsderive_strandedness.strandedness_file,
+                junction_annotation.junction_summary,
+                qualimap_rnaseq.raw_summary,
+                qualimap_rnaseq.raw_coverage
+            ],
             regions_coverage.summary,
-            regions_coverage.region_dist,
-            fastq_screen.raw_data,
-            star_log,
-            ngsderive_strandedness.strandedness_file,
-            junction_annotation.junction_summary,
-            qualimap_rnaseq.raw_summary,
-            qualimap_rnaseq.raw_coverage
-        ]),
+            regions_coverage.region_dist
+        ])),
         output_prefix=basename(bam, '.bam'),
         extra_fn_clean_exts=[".ValidateSamFile"],
         max_retries=max_retries
