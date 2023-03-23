@@ -50,7 +50,6 @@ workflow quality_check {
         String strandedness = ""
         File? fastq_screen_db
         String phred_encoding = ""
-        Boolean paired_end = true
         Int max_retries = 1
     }
 
@@ -64,7 +63,6 @@ workflow quality_check {
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. Only needed for RNA-Seq data. If missing, will be inferred"
         fastq_screen_db: "Database for FastQ Screen. **Required** for WGS and WES data. Can be generated using `make-qc-reference.wdl`. Must untar directly to genome directories."
         phred_encoding: "Encoding format used for PHRED quality scores. Must be empty, 'sanger', or 'illumina1.3'. Only needed for WGS/WES. If missing, will be inferred"
-        paired_end: "Whether the data is paired end"
         max_retries: "Number of times to retry failed steps"
     }
 
@@ -118,7 +116,7 @@ workflow quality_check {
         call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
 
         call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, name_sorted=true, paired_end=paired_end, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, name_sorted=true, max_retries=max_retries }
     }
     
     call mqc.multiqc { input:

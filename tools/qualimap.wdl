@@ -66,7 +66,7 @@ task rnaseq {
         File bam
         File gtf
         Boolean name_sorted = false
-        Boolean paired_end = false
+        Boolean paired_end = true
         String provided_strandedness = ""
         String inferred_strandedness = ""
         Int memory_gb = 16
