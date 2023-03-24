@@ -67,10 +67,6 @@ task multiqc {
             done < labels.txt >> multiqc_config.yaml
         fi
 
-        echo "*** Generated Config ***"
-        cat multiqc_config.yaml
-        echo "*** End ***"
-
         multiqc -vvv -c multiqc_config.yaml \
             --file-list file_list.txt -o ~{out_directory}
         
