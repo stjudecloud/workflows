@@ -169,7 +169,7 @@ workflow quality_check {
         ])),
         output_prefix=basename(bam, '.bam'),
         extra_fn_clean_exts=[".ValidateSamFile"],
-        mosdepth_labels=parse_input.labels,
+        mosdepth_labels=flatten([["whole_genome"], parse_input.labels]),
         max_retries=max_retries
     }
 

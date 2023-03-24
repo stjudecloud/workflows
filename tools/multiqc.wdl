@@ -19,6 +19,8 @@ task multiqc {
     parameter_meta {
         input_files: "An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
         output_prefix: "A string for the MultiQC output directory: <prefix>.multiqc/ and <prefix>.multiqc.tar.gz"
+        extra_fn_clean_exts: "An array of strings that should be cleaned from sample names by MultiQC"
+        mosdepth_labels: "If passing in multiple runs of `mosdepth`, an array of strings for labelling the different runs (must match part of the filenames)"
     }
 
     String out_directory = output_prefix + ".multiqc"
@@ -44,13 +46,9 @@ task multiqc {
             done < extensions.txt >> multiqc_config.yaml
         fi
 
-        # if mosdepth labels are provided, add them to `extra_fn_clean_exts`
         if [ "~{if (length(mosdepth_labels) > 0) then "true" else ""}" = "true" ]; then
-            # add default mosdepth label ("whole_genome") to 'labels.txt'
-            echo "whole_genome" > labels.txt
-
-            # add the rest of the provided mosdepth labels to 'labels.txt'
-            echo "~{sep="\n" mosdepth_labels}" >> labels.txt
+            # if mosdepth labels are provided, add them to `extra_fn_clean_exts`
+            echo "~{sep="\n" mosdepth_labels}" > labels.txt
             while read -r label; do
                 echo "  - .$label"
             done < labels.txt >> multiqc_config.yaml
@@ -63,7 +61,7 @@ task multiqc {
                 echo "  - mosdepth:"
                 echo "      name: \"mosdepth ($label)\""
                 echo "      path_filters:"
-                echo "        - \"*.$label.mosdepth.*\""
+                echo "        - \"*.$label.*\""
             done < labels.txt >> multiqc_config.yaml
         fi
 
