@@ -26,11 +26,14 @@
 version 1.0
 
 import "../../tools/fastq_screen.wdl"
+import "../../tools/kraken.wdl"
 
 workflow make_qc_reference {
     call fastq_screen.build_db as fastq_screen_build_db
+    call kraken.build_db as kraken_build_db
 
     output {
         File fastq_screen_db = fastq_screen_build_db.db
+        File kraken_db = kraken_build_db.db
     }
 }

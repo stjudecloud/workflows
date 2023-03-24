@@ -4,6 +4,78 @@
 
 version 1.0
 
+task build_db {
+    input {
+        String db_name = "kraken2_db"
+        Int kmer_len = 35
+        Int minimizer_len = 31
+        Int minimizer_spaces = 7
+        Float load_factor = 0.7
+        Int memory_gb = 8
+        Int disk_size_gb = 80
+        Int ncpu = 8
+        Boolean detect_nproc = false
+        Int max_retries = 1
+    }
+
+    String parsed_detect_nproc = if detect_nproc then "true" else ""
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ -n ~{parsed_detect_nproc} ]
+        then
+            n_cores=$(nproc)
+        fi
+
+        kraken2-build --download-taxonomy --db ~{db_name}
+
+        kraken2-build --download-library archaea --threads "$n_cores" --db ~{db_name}
+        kraken2-build --download-library bacteria --threads "$n_cores" --db ~{db_name}
+        kraken2-build --download-library plasmid --threads "$n_cores" --db ~{db_name}
+        kraken2-build --download-library viral --threads "$n_cores" --db ~{db_name}
+        kraken2-build --download-library human --threads "$n_cores" --db ~{db_name}
+        kraken2-build --download-library fungi --threads "$n_cores" --db ~{db_name}
+        # kraken2-build --download-library plant --threads "$n_cores" --db ~{db_name}
+        kraken2-build --download-library protozoa --threads "$n_cores" --db ~{db_name}
+        # kraken2-build --download-library nr --threads "$n_cores" --db ~{db_name}
+        kraken2-build --download-library nt --threads "$n_cores" --db ~{db_name}
+        # kraken2-build --download-library UniVec --threads "$n_cores" --db ~{db_name}
+        kraken2-build --download-library UniVec_Core --threads "$n_cores" --db ~{db_name}
+
+        kraken2-build --build \
+            --kmer-len ~{kmer_len} \
+            --minimizer-len ~{minimizer_len} \
+            --minimizer-spaces ~{minimizer_spaces} \
+            --load-factor ~{load_factor} \
+            --threads "$n_cores" \
+            --db ~{db_name}
+
+        kraken2-build --clean --threads "$n_cores" --db ~{db_name}
+
+        tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+    >>>
+ 
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        cpu: ncpu
+        docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
+        maxRetries: max_retries
+    }
+
+    output {
+        File db = db_name + ".tar.gz"
+    }
+
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task builds a custom Kraken2 database."
+    }
+}
+
 task kraken {
     input {
         File read1
