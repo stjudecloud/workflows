@@ -29,7 +29,7 @@ task build_db {
             n_cores=$(nproc)
         fi
 
-        kraken2-build --download-taxonomy --db ~{db_name}
+        kraken2-build --download-taxonomy --threads "$n_cores" --db ~{db_name}
 
         kraken2-build --download-library archaea --threads "$n_cores" --db ~{db_name}
         kraken2-build --download-library bacteria --threads "$n_cores" --db ~{db_name}
@@ -40,7 +40,7 @@ task build_db {
         # kraken2-build --download-library plant --threads "$n_cores" --db ~{db_name}
         kraken2-build --download-library protozoa --threads "$n_cores" --db ~{db_name}
         # kraken2-build --download-library nr --threads "$n_cores" --db ~{db_name}
-        kraken2-build --download-library nt --threads "$n_cores" --db ~{db_name}
+        # kraken2-build --download-library nt --threads "$n_cores" --db ~{db_name}
         # kraken2-build --download-library UniVec --threads "$n_cores" --db ~{db_name}
         kraken2-build --download-library UniVec_Core --threads "$n_cores" --db ~{db_name}
 
