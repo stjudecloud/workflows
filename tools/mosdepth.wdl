@@ -1,7 +1,6 @@
 ## # Mosdepth
 ##
 ## This WDL file wraps the [mosdepth tool](https://github.com/brentp/mosdepth).
-## It also creates reference BEDs for restricting mosdepth coverage analysis to only exonic or coding regions.
 
 version 1.0
 
