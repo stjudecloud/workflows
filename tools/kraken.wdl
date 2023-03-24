@@ -10,6 +10,7 @@ task build_db {
         Int kmer_len = 35
         Int minimizer_len = 31
         Int minimizer_spaces = 7
+        Int max_db_size_gb = -1
         Float load_factor = 0.7
         Int memory_gb = 8
         Int disk_size_gb = 80
@@ -48,6 +49,7 @@ task build_db {
             --kmer-len ~{kmer_len} \
             --minimizer-len ~{minimizer_len} \
             --minimizer-spaces ~{minimizer_spaces} \
+            ~{if (max_db_size_gb > 0) then "--max-db-size" else ""} ~{if (max_db_size_gb > 0) then max_db_size_gb + "000000000" else ""} \
             --load-factor ~{load_factor} \
             --threads "$n_cores" \
             --db ~{db_name}
