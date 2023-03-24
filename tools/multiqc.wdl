@@ -46,7 +46,11 @@ task multiqc {
 
         # if mosdepth labels are provided, add them to `extra_fn_clean_exts`
         if [ "~{if (length(mosdepth_labels) > 0) then "true" else ""}" = "true" ]; then
-            echo "~{sep="\n" mosdepth_labels}" > labels.txt
+            # add default mosdepth label ("whole_genome") to 'labels.txt'
+            echo "whole_genome" > labels.txt
+
+            # add the rest of the provided mosdepth labels to 'labels.txt'
+            echo "~{sep="\n" mosdepth_labels}" >> labels.txt
             while read -r label; do
                 echo "  - .$label"
             done < labels.txt >> multiqc_config.yaml
