@@ -30,7 +30,7 @@ task build_db {
             n_cores=$(nproc)
         fi
 
-        kraken2-build --download-taxonomy --threads "$n_cores" --db ~{db_name}
+        kraken2-build --download-taxonomy --use-ftp --threads "$n_cores" --db ~{db_name}
 
         kraken2-build --download-library archaea --use-ftp --threads "$n_cores" --db ~{db_name}
         kraken2-build --download-library bacteria --use-ftp --threads "$n_cores" --db ~{db_name}
