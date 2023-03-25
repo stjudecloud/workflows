@@ -16,7 +16,7 @@ task build_db {
         Int disk_size_gb = 80
         Int ncpu = 8
         Boolean detect_nproc = false
-        Int max_retries = 1
+        Int max_retries = 0
     }
 
     String parsed_detect_nproc = if detect_nproc then "true" else ""
