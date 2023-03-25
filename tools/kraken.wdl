@@ -63,7 +63,7 @@ task build_db {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
         cpu: ncpu
-        docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
+        docker: 'ghcr.io/stjudecloud/kraken2:branch-kraken2-1.0.0'
         maxRetries: max_retries
     }
 
