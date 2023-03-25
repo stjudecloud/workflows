@@ -7,6 +7,7 @@ version 1.0
 task build_db {
     input {
         String db_name = "kraken2_db"
+        Array[File] fastas = []
         Int kmer_len = 35
         Int minimizer_len = 31
         Int minimizer_spaces = 7
@@ -31,6 +32,15 @@ task build_db {
         fi
 
         kraken2-build --download-taxonomy --use-ftp --threads "$n_cores" --db ~{db_name}
+
+        if [ "~{if (length(fastas) > 0) then "true" else ""}" = "true" ]; then
+            echo "~{sep="\n" fastas}" > fastas.txt
+            while read -r fasta; do
+                gunzip -c "$fasta" > tmp.fa
+                kraken2-build --add-to-library tmp.fa --use-ftp --threads "$n_cores" --db ~{db_name}
+            done < fastas.txt
+            rm tmp.fa
+        fi
 
         kraken2-build --download-library archaea --use-ftp --threads "$n_cores" --db ~{db_name}
         kraken2-build --download-library bacteria --use-ftp --threads "$n_cores" --db ~{db_name}

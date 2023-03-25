@@ -26,11 +26,21 @@
 version 1.0
 
 import "../../tools/fastq_screen.wdl"
+import "../../tools/util.wdl"
 import "../../tools/kraken.wdl"
 
 workflow make_qc_reference {
+    input {
+        Array[String] fasta_urls = []
+        Array[File] fastas = []
+    }
+
     call fastq_screen.build_db as fastq_screen_build_db
-    call kraken.build_db as kraken_build_db
+    
+    scatter (url in fasta_urls) {
+        call util.download as fastas_download { input: url=url, outfilename="tmp.fa.gz" }
+    }
+    call kraken.build_db as kraken_build_db { input: fastas=flatten([fastas, fastas_download.outfile]) }
 
     output {
         File fastq_screen_db = fastq_screen_build_db.db
