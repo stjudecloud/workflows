@@ -30,6 +30,8 @@ task build_db {
             n_cores=$(nproc)
         fi
 
+        sed -i 's;$full_path =~ s#^ftp://${qm_server}${qm_server_path}/##;$full_path =~ s#^https://${qm_server}${qm_server_path}/##;g' /usr/local/libexec/rsync_from_ncbi.pl
+
         kraken2-build --download-taxonomy --use-ftp --threads "$n_cores" --db ~{db_name}
 
         kraken2-build --download-library archaea --use-ftp --threads "$n_cores" --db ~{db_name}
