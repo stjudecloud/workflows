@@ -14,7 +14,7 @@ task build_db {
         Int max_db_size_gb = -1
         Float load_factor = 0.7
         Int memory_gb = 8
-        Int added_disk_size_gb = 80
+        Int added_disk_size_gb = 200
         Int ncpu = 1
         Boolean detect_nproc = false
         Int max_retries = 1
@@ -22,7 +22,7 @@ task build_db {
 
     String parsed_detect_nproc = if detect_nproc then "true" else ""
     Int fastas_size = ceil(size(fastas, "GiB"))
-    Int disk_size_gb = fastas_size + added_disk_size_gb
+    Int disk_size_gb = fastas_size * 2 + added_disk_size_gb
 
     command <<<
         set -euo pipefail
