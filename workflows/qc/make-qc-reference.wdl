@@ -33,14 +33,22 @@ workflow make_qc_reference {
     input {
         Array[String] fasta_urls = []
         Array[File] fastas = []
+        Int max_retries = 1
     }
 
-    call fastq_screen.build_db as fastq_screen_build_db
+    call fastq_screen.build_db as fastq_screen_build_db { input: max_retries=max_retries }
     
     scatter (url in fasta_urls) {
-        call util.download as fastas_download { input: url=url, outfilename="tmp.fa.gz" }
+        call util.download as fastas_download { input:
+            url=url,
+            outfilename="tmp.fa.gz",
+            max_retries=max_retries
+        }
     }
-    call kraken.build_db as kraken_build_db { input: fastas=flatten([fastas, fastas_download.outfile]) }
+    call kraken.build_db as kraken_build_db { input:
+        fastas=flatten([fastas, fastas_download.outfile]),
+        max_retries=max_retries
+    }
 
     output {
         File fastq_screen_db = fastq_screen_build_db.db
