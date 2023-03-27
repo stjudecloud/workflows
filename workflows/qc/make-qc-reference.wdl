@@ -33,6 +33,7 @@ workflow make_qc_reference {
     input {
         Array[String] fasta_urls = []
         Array[File] fastas = []
+        File? kraken2_base_db
         Int max_retries = 1
     }
 
@@ -46,6 +47,7 @@ workflow make_qc_reference {
         }
     }
     call kraken.build_db as kraken_build_db { input:
+        base_db=kraken2_base_db,
         fastas=flatten([fastas, fastas_download.outfile]),
         max_retries=max_retries
     }
