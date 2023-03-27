@@ -39,30 +39,30 @@ task build_db {
             tar -xzf ~{base_db} -C ~{db_name} --no-same-owner
         fi
 
-        kraken2-build --download-taxonomy --threads "$n_cores" --db ~{db_name}
+        kraken2-build --download-taxonomy --use-ftp --threads "$n_cores" --db ~{db_name}
 
         if [ "~{length(fastas) > 0}" = "true" ]; then
             echo "~{sep="\n" fastas}" > fastas.txt
             while read -r fasta; do
                 gunzip -c "$fasta" > tmp.fa
-                kraken2-build --add-to-library tmp.fa --threads "$n_cores" --db ~{db_name}
+                kraken2-build --add-to-library tmp.fa --use-ftp --threads "$n_cores" --db ~{db_name}
             done < fastas.txt
             rm tmp.fa
         fi
 
         if [ ~{defined(base_db)} = "false" ]; then
-            kraken2-build --download-library archaea --threads "$n_cores" --db ~{db_name}
-            kraken2-build --download-library bacteria --threads "$n_cores" --db ~{db_name}
-            kraken2-build --download-library plasmid --threads "$n_cores" --db ~{db_name}
-            kraken2-build --download-library viral --threads "$n_cores" --db ~{db_name}
-            kraken2-build --download-library human --threads "$n_cores" --db ~{db_name}
-            kraken2-build --download-library fungi --threads "$n_cores" --db ~{db_name}
-            # kraken2-build --download-library plant --threads "$n_cores" --db ~{db_name}
-            kraken2-build --download-library protozoa --threads "$n_cores" --db ~{db_name}
-            # kraken2-build --download-library nr --threads "$n_cores" --db ~{db_name}
-            # kraken2-build --download-library nt --threads "$n_cores" --db ~{db_name}
-            # kraken2-build --download-library UniVec --threads "$n_cores" --db ~{db_name}
-            kraken2-build --download-library UniVec_Core --threads "$n_cores" --db ~{db_name}
+            kraken2-build --download-library archaea --use-ftp --threads "$n_cores" --db ~{db_name}
+            kraken2-build --download-library bacteria --use-ftp --threads "$n_cores" --db ~{db_name}
+            kraken2-build --download-library plasmid --use-ftp --threads "$n_cores" --db ~{db_name}
+            kraken2-build --download-library viral --use-ftp --threads "$n_cores" --db ~{db_name}
+            kraken2-build --download-library human --use-ftp --threads "$n_cores" --db ~{db_name}
+            kraken2-build --download-library fungi --use-ftp --threads "$n_cores" --db ~{db_name}
+            # kraken2-build --download-library plant --use-ftp --threads "$n_cores" --db ~{db_name}
+            kraken2-build --download-library protozoa --use-ftp --threads "$n_cores" --db ~{db_name}
+            # kraken2-build --download-library nr --use-ftp --threads "$n_cores" --db ~{db_name}
+            # kraken2-build --download-library nt --use-ftp --threads "$n_cores" --db ~{db_name}
+            # kraken2-build --download-library UniVec --use-ftp --threads "$n_cores" --db ~{db_name}
+            kraken2-build --download-library UniVec_Core --use-ftp --threads "$n_cores" --db ~{db_name}
         fi
 
         kraken2-build --build \
