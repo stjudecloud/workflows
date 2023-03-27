@@ -39,32 +39,45 @@ task build_db {
             tar -xzf ~{base_db} -C ~{db_name} --no-same-owner
         fi
 
+        >&2 echo "*** start downloading taxonomy ***"
         kraken2-build --download-taxonomy --use-ftp --threads "$n_cores" --db ~{db_name}
+        >&2 echo "*** done downloading taxonomy ***"
 
         if [ "~{length(fastas) > 0}" = "true" ]; then
+            >&2 echo "*** start adding custom FASTAs ***"
             echo "~{sep="\n" fastas}" > fastas.txt
             while read -r fasta; do
                 gunzip -c "$fasta" > tmp.fa
                 kraken2-build --add-to-library tmp.fa --use-ftp --threads "$n_cores" --db ~{db_name}
             done < fastas.txt
             rm tmp.fa
+            >&2 echo "*** done adding custom FASTAs ***"
         fi
 
         if [ ~{defined(base_db)} = "false" ]; then
+            >&2 echo "*** start downloading archaea ***"
             kraken2-build --download-library archaea --use-ftp --threads "$n_cores" --db ~{db_name}
+            >&2 echo "*** start downloading bacteria ***"
             kraken2-build --download-library bacteria --use-ftp --threads "$n_cores" --db ~{db_name}
+            >&2 echo "*** start downloading plasmid ***"
             kraken2-build --download-library plasmid --use-ftp --threads "$n_cores" --db ~{db_name}
+            >&2 echo "*** start downloading viral ***"
             kraken2-build --download-library viral --use-ftp --threads "$n_cores" --db ~{db_name}
+            >&2 echo "*** start downloading human ***"
             kraken2-build --download-library human --use-ftp --threads "$n_cores" --db ~{db_name}
+            >&2 echo "*** start downloading fungi ***"
             kraken2-build --download-library fungi --use-ftp --threads "$n_cores" --db ~{db_name}
             # kraken2-build --download-library plant --use-ftp --threads "$n_cores" --db ~{db_name}
+            >&2 echo "*** start downloading protozoa ***"
             kraken2-build --download-library protozoa --use-ftp --threads "$n_cores" --db ~{db_name}
             # kraken2-build --download-library nr --use-ftp --threads "$n_cores" --db ~{db_name}
             # kraken2-build --download-library nt --use-ftp --threads "$n_cores" --db ~{db_name}
             # kraken2-build --download-library UniVec --use-ftp --threads "$n_cores" --db ~{db_name}
+            >&2 echo "*** start downloading UniVec_Core ***"
             kraken2-build --download-library UniVec_Core --use-ftp --threads "$n_cores" --db ~{db_name}
         fi
 
+        >&2 echo "*** start DB build ***"
         kraken2-build --build \
             --kmer-len ~{kmer_len} \
             --minimizer-len ~{minimizer_len} \
@@ -74,8 +87,11 @@ task build_db {
             --threads "$n_cores" \
             --db ~{db_name}
 
+        >&2 echo "*** start DB clean ***"
         kraken2-build --clean --threads "$n_cores" --db ~{db_name}
+        >&2 echo "*** done ***"
 
+        >&2 echo "*** tarballing DB ***"
         tar -czf "~{db_name}.tar.gz" ~{db_name}/*
     >>>
  
