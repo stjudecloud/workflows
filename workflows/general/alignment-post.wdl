@@ -53,6 +53,7 @@ workflow alignment_post {
     call deeptools.bamCoverage as deeptools_bamCoverage { input:
         bam=aligned_bam,
         bam_index=aligned_bam_index,
+        detect_nproc=detect_nproc,
         max_retries=max_retries
     }
 
