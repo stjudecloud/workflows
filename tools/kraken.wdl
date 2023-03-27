@@ -35,8 +35,10 @@ task build_db {
         fi
 
         if [ ~{defined(base_db)} = "true" ]; then
+            >&2 echo "*** start unpacking base DB"
             mkdir ~{db_name}
             tar -xzf ~{base_db} -C ~{db_name} --no-same-owner
+            >&2 echo "*** done unpacking base DB"
         fi
 
         >&2 echo "*** start downloading taxonomy ***"
