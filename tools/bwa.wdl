@@ -18,7 +18,6 @@ task bwa_aln {
         Boolean detect_nproc = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float input_fastq_size = size(fastq, "GiB")
     Float reference_size = size(bwadb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((input_fastq_size * 2) + (reference_size * 2))])
@@ -27,8 +26,7 @@ task bwa_aln {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -82,7 +80,6 @@ task bwa_aln_pe {
         Boolean detect_nproc = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float input_fastq_size = size(fastq1, "GiB") + size(fastq2, "GiB")
     Float reference_size = size(bwadb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((input_fastq_size * 2) + (reference_size * 2))])
@@ -91,8 +88,7 @@ task bwa_aln_pe {
         set -xeuo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -147,7 +143,6 @@ task bwa_mem {
         Boolean detect_nproc = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float input_fastq_size = size(fastq, "GiB")
     Float reference_size = size(bwadb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((input_fastq_size * 2) + reference_size)])
@@ -156,8 +151,7 @@ task bwa_mem {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 

@@ -51,7 +51,6 @@ task split {
         Boolean detect_nproc = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
@@ -59,8 +58,7 @@ task split {
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -144,14 +142,12 @@ task index {
         Boolean detect_nproc = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -194,14 +190,12 @@ task subsample {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -251,14 +245,12 @@ task merge {
     Float bam_size = size(bams, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
     String rg_arg = if attach_rg then "-r" else ""
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -297,14 +289,12 @@ task addreplacerg {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 

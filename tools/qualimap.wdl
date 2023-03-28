@@ -23,14 +23,12 @@ task bamqc {
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command {
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
         

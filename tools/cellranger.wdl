@@ -19,14 +19,12 @@ task count {
 
     Float fastq_size = size(fastqs_tar_gz, "GiB")
     Int disk_size = ceil((fastq_size * 2) + 10)
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -114,14 +112,12 @@ task bamtofastq {
                         else if (longranger20) then "--lr10"
                         else if (gemcode) then "--gemcode"
                         else ""
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
         
