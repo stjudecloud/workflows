@@ -21,7 +21,6 @@ task build_db {
         Int max_retries = 1
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Int fastas_size = ceil(size(fastas, "GiB"))
     Int disk_size_gb = fastas_size * 2 + added_disk_size_gb
 
@@ -29,8 +28,7 @@ task build_db {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -135,8 +133,6 @@ task kraken {
         db: "Database for Kraken2"
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
-
     Float db_size = size(db, "GiB")
     Float read1_size = size(read1, "GiB")
     Float read2_size = size(read2, "GiB")
@@ -153,8 +149,7 @@ task kraken {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{detect_nproc}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
