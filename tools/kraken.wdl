@@ -124,7 +124,7 @@ task kraken {
         String? sample_name
         Boolean store_sequences = false
         Boolean use_names = true
-        Int min_base_quality = 30
+        Int min_base_quality = 0
         Int? memory_gb
         Int ncpu = 1
         Boolean detect_nproc = false
