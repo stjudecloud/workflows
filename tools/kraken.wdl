@@ -14,7 +14,7 @@ task build_db {
         Int minimizer_spaces = 7
         Int max_db_size_gb = -1
         Float load_factor = 0.7
-        Int memory_gb = 8
+        Int memory_gb = 96
         Int added_disk_size_gb = 200
         Int ncpu = 1
         Boolean detect_nproc = false
