@@ -154,9 +154,11 @@ task download_library {
         String library
         String db_name = "kraken2_db"
         Int memory_gb = 4
-        Int disk_size_gb = 60
+        Int added_disk_size_gb = 0
         Int max_retries = 1
     }
+
+    Int disk_size_gb = (if library=="bacteria" then 168 else 10) + added_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -190,9 +192,12 @@ task add_custom_fastas_to_db {
         Array[File] fastas
         String db_name = "kraken2_db"
         Int memory_gb = 4
-        Int disk_size_gb = 60
+        Int added_disk_size_gb = 0
         Int max_retries = 1
     }
+
+    Int fastas_size = ceil(size(fastas, "GiB"))
+    Int disk_size_gb = fastas_size * 5 + added_disk_size_gb
 
     command <<<
         set -euo pipefail
