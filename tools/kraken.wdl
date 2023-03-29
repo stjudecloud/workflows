@@ -4,7 +4,7 @@
 
 version 1.0
 
-task build_db {
+task build_db_full {
     input {
         String db_name = "kraken2_db"
         File? base_db
@@ -33,10 +33,10 @@ task build_db {
         fi
 
         if [ ~{defined(base_db)} = "true" ]; then
-            >&2 echo "*** start unpacking base DB"
+            >&2 echo "*** start unpacking base DB ***"
             mkdir ~{db_name}
             tar -xzf ~{base_db} -C ~{db_name} --no-same-owner
-            >&2 echo "*** done unpacking base DB"
+            >&2 echo "*** done unpacking base DB ***"
         fi
 
         >&2 echo "*** start downloading taxonomy ***"
@@ -105,6 +105,205 @@ task build_db {
 
     output {
         File db = db_name + ".tar.gz"
+    }
+
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task builds a custom Kraken2 database."
+    }
+}
+
+task download_taxonomy {
+    input {
+        String db_name = "kraken2_db"
+        Int memory_gb = 4
+        Int disk_size_gb = 60
+        Int max_retries = 1
+    }
+
+    command <<<
+        set -euo pipefail
+
+        kraken2-build --download-taxonomy --use-ftp --db ~{db_name}
+
+        tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+    >>>
+ 
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        cpu: 1
+        docker: 'ghcr.io/stjudecloud/kraken2:branch-kraken2-1.0.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        File taxonomy = db_name + ".tar.gz"
+    }
+
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task downloads the Kraken2 taxonomy."
+    }
+}
+
+task download_library {
+    input {
+        String library
+        String db_name = "kraken2_db"
+        File? base_db
+        Int memory_gb = 4
+        Int disk_size_gb = 60
+        Int max_retries = 1
+    }
+
+    command <<<
+        set -euo pipefail
+
+        if [ ~{defined(base_db)} = "true" ]; then
+            >&2 echo "*** start unpacking base DB ***"
+            mkdir ~{db_name}
+            tar -xzf ~{base_db} -C ~{db_name} --no-same-owner
+            >&2 echo "*** done unpacking base DB ***"
+        fi
+
+        kraken2-build --download-library ~{library} --use-ftp --db ~{db_name}
+
+        tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+    >>>
+ 
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        cpu: 1
+        docker: 'ghcr.io/stjudecloud/kraken2:branch-kraken2-1.0.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        File db = db_name + ".tar.gz"
+    }
+
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task downloads a Kraken2 library."
+    }
+}
+
+task add_custom_fastas_to_db {
+    input {
+        Array[File] fastas
+        String db_name = "kraken2_db"
+        File? base_db
+        Int memory_gb = 4
+        Int disk_size_gb = 60
+        Int max_retries = 1
+    }
+
+    command <<<
+        set -euo pipefail
+
+        if [ ~{defined(base_db)} = "true" ]; then
+            >&2 echo "*** start unpacking base DB ***"
+            mkdir ~{db_name}
+            tar -xzf ~{base_db} -C ~{db_name} --no-same-owner
+            >&2 echo "*** done unpacking base DB ***"
+        fi
+
+        >&2 echo "*** start adding custom FASTAs ***"
+        echo "~{sep="\n" fastas}" > fastas.txt
+        while read -r fasta; do
+            gunzip -c "$fasta" > tmp.fa
+            kraken2-build --add-to-library tmp.fa --use-ftp --db ~{db_name}
+        done < fastas.txt
+        rm tmp.fa
+        >&2 echo "*** done adding custom FASTAs ***"
+
+        tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+    >>>
+ 
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        cpu: 1
+        docker: 'ghcr.io/stjudecloud/kraken2:branch-kraken2-1.0.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        File db = db_name + ".tar.gz"
+    }
+
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task adds custom FASTAs to a Kraken2 DB."
+    }
+}
+
+task build_db {
+    input {
+        Array[File] tarballs
+        String db_name = "kraken2_db"
+        Int kmer_len = 35
+        Int minimizer_len = 31
+        Int minimizer_spaces = 7
+        Int max_db_size_gb = -1
+        Float load_factor = 0.7
+        Int memory_gb = 96
+        Int disk_size_gb = 200
+        Int ncpu = 1
+        Boolean detect_nproc = false
+        Int max_retries = 1
+    }
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ "~{detect_nproc}" = "true" ]; then
+            n_cores=$(nproc)
+        fi
+
+        >&2 echo "*** start unpacking tarballs ***"
+        echo "~{sep="\n" tarballs}" > tarballs.txt
+        while read -r tarball; do
+            mkdir ~{db_name}
+            tar -xzf "$tarball" -C ~{db_name} --no-same-owner
+        done < tarballs.txt
+        >&2 echo "*** done unpacking tarballs ***"
+
+        >&2 echo "*** start DB build ***"
+        kraken2-build --build \
+            --kmer-len ~{kmer_len} \
+            --minimizer-len ~{minimizer_len} \
+            --minimizer-spaces ~{minimizer_spaces} \
+            ~{if (max_db_size_gb > 0) then "--max-db-size" else ""} ~{if (max_db_size_gb > 0) then max_db_size_gb + "000000000" else ""} \
+            --load-factor ~{load_factor} \
+            --threads "$n_cores" \
+            --db ~{db_name}
+
+        >&2 echo "*** start DB clean ***"
+        kraken2-build --clean --threads "$n_cores" --db ~{db_name}
+        >&2 echo "*** done ***"
+
+        >&2 echo "*** tarballing DB ***"
+        tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+    >>>
+ 
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        cpu: ncpu
+        docker: 'ghcr.io/stjudecloud/kraken2:branch-kraken2-1.0.0'
+        maxRetries: max_retries
+    }
+
+    output {
+        File built_db = db_name + ".tar.gz"
     }
 
     meta {

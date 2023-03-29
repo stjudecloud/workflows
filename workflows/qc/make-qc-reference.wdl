@@ -31,9 +31,9 @@ import "../../tools/kraken.wdl"
 
 workflow make_qc_reference {
     input {
+        Array[String] kraken_libraries = ["archaea", "bacteria", "plasmid", "viral", "human", "fungi", "protozoa", "UniVec_Core"]
         Array[String] fasta_urls = []
         Array[File] fastas = []
-        File? kraken2_base_db
         Int max_retries = 1
     }
 
@@ -46,14 +46,29 @@ workflow make_qc_reference {
             max_retries=max_retries
         }
     }
-    call kraken.build_db as kraken_build_db { input:
-        base_db=kraken2_base_db,
+
+    call kraken.download_taxonomy
+
+    scatter (lib in kraken_libraries) {
+        call kraken.download_library { input: library=lib, max_retries=max_retries }
+    }
+
+    call kraken.add_custom_fastas_to_db { input:
         fastas=flatten([fastas, fastas_download.outfile]),
+        max_retries=max_retries
+    }
+
+    call kraken.build_db as kraken_build_db { input:
+        tarballs=flatten([
+            [download_taxonomy.taxonomy],
+            download_library.db,
+            [add_custom_fastas_to_db.db]
+        ]),
         max_retries=max_retries
     }
 
     output {
         File fastq_screen_db = fastq_screen_build_db.db
-        File kraken_db = kraken_build_db.db
+        File kraken_db = kraken_build_db.built_db
     }
 }
