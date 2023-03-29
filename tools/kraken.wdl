@@ -153,7 +153,6 @@ task download_library {
     input {
         String library
         String db_name = "kraken2_db"
-        File? base_db
         Int memory_gb = 4
         Int disk_size_gb = 60
         Int max_retries = 1
@@ -161,13 +160,6 @@ task download_library {
 
     command <<<
         set -euo pipefail
-
-        if [ ~{defined(base_db)} = "true" ]; then
-            >&2 echo "*** start unpacking base DB ***"
-            mkdir ~{db_name}
-            tar -xzf ~{base_db} -C ~{db_name} --no-same-owner
-            >&2 echo "*** done unpacking base DB ***"
-        fi
 
         kraken2-build --download-library ~{library} --use-ftp --db ~{db_name}
 
@@ -197,7 +189,6 @@ task add_custom_fastas_to_db {
     input {
         Array[File] fastas
         String db_name = "kraken2_db"
-        File? base_db
         Int memory_gb = 4
         Int disk_size_gb = 60
         Int max_retries = 1
@@ -205,13 +196,6 @@ task add_custom_fastas_to_db {
 
     command <<<
         set -euo pipefail
-
-        if [ ~{defined(base_db)} = "true" ]; then
-            >&2 echo "*** start unpacking base DB ***"
-            mkdir ~{db_name}
-            tar -xzf ~{base_db} -C ~{db_name} --no-same-owner
-            >&2 echo "*** done unpacking base DB ***"
-        fi
 
         >&2 echo "*** start adding custom FASTAs ***"
         echo "~{sep="\n" fastas}" > fastas.txt
