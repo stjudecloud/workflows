@@ -31,7 +31,16 @@ import "../../tools/kraken.wdl"
 
 workflow make_qc_reference {
     input {
-        Array[String] kraken_libraries = ["archaea", "bacteria", "plasmid", "viral", "human", "fungi", "protozoa", "UniVec_Core"]
+        Array[String] kraken_libraries = [
+            "archaea",
+            "bacteria",
+            "plasmid",
+            "viral",
+            "human",
+            "fungi",
+            "protozoa",
+            "UniVec_Core"
+        ]
         Array[String] fasta_urls = []
         Array[File] fastas = []
         Int max_retries = 1
