@@ -56,7 +56,7 @@ workflow make_qc_reference {
         }
     }
 
-    call kraken.download_taxonomy
+    call kraken.download_taxonomy { input: max_retries=max_retries }
 
     scatter (lib in kraken_libraries) {
         call kraken.download_library { input: library=lib, max_retries=max_retries }
