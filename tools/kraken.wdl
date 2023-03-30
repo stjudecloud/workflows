@@ -152,7 +152,7 @@ task download_taxonomy {
 task download_library {
     input {
         String library
-        String db_name = "kraken2_library"
+        String db_name = "kraken2_"+library+"_library"
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 1
@@ -190,7 +190,7 @@ task download_library {
 task add_custom_fastas_to_db {
     input {
         Array[File] fastas
-        String db_name = "kraken2_custom_fastas"
+        String db_name = "kraken2_custom_library"
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 1
