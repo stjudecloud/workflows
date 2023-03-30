@@ -117,6 +117,7 @@ task build_db_full {
 task download_taxonomy {
     input {
         String db_name = "kraken2_taxonomy"
+        Boolean clean_up = true
         Int memory_gb = 4
         Int disk_size_gb = 60
         Int max_retries = 1
@@ -128,6 +129,10 @@ task download_taxonomy {
         kraken2-build --download-taxonomy --use-ftp --db ~{db_name}
 
         tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+
+        if [ "~{clean_up}" = "true" ]; then
+            rm -r ~{db_name}
+        fi
     >>>
  
     runtime {
@@ -153,6 +158,7 @@ task download_library {
     input {
         String library
         String db_name = "kraken2_"+library+"_library"
+        Boolean clean_up = true
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 1
@@ -166,6 +172,10 @@ task download_library {
         kraken2-build --download-library ~{library} --use-ftp --db ~{db_name}
 
         tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+
+        if [ "~{clean_up}" = "true" ]; then
+            rm -r ~{db_name}
+        fi
     >>>
  
     runtime {
@@ -191,6 +201,7 @@ task add_custom_fastas_to_db {
     input {
         Array[File] fastas
         String db_name = "kraken2_custom_library"
+        Boolean clean_up = true
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 1
@@ -212,6 +223,10 @@ task add_custom_fastas_to_db {
         >&2 echo "*** done adding custom FASTAs ***"
 
         tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+
+        if [ "~{clean_up}" = "true" ]; then
+            rm -r ~{db_name}
+        fi
     >>>
  
     runtime {
@@ -242,6 +257,7 @@ task build_db {
         Int minimizer_spaces = 7
         Int max_db_size_gb = -1
         Float load_factor = 0.7
+        Boolean clean_up = true
         Int memory_gb = 96
         Int disk_size_gb = 200
         Int ncpu = 1
@@ -281,6 +297,10 @@ task build_db {
 
         >&2 echo "*** tarballing DB ***"
         tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+
+        if [ "~{clean_up}" = "true" ]; then
+            rm -r ~{db_name}
+        fi
     >>>
  
     runtime {
