@@ -217,7 +217,7 @@ task add_custom_fastas_to_db {
         echo "~{sep="\n" fastas}" > fastas.txt
         while read -r fasta; do
             gunzip -c "$fasta" > tmp.fa
-            kraken2-build --add-to-library tmp.fa --use-ftp --db ~{db_name}
+            kraken2-build --add-to-library tmp.fa --db ~{db_name}
         done < fastas.txt
         rm tmp.fa
         >&2 echo "*** done adding custom FASTAs ***"
