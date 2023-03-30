@@ -233,7 +233,7 @@ task add_custom_fastas_to_db {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
         cpu: 1
-        docker: 'ghcr.io/stjudecloud/kraken2:branch-kraken2-1.0.0'
+        docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
     }
 
@@ -310,7 +310,7 @@ task build_db {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/kraken2:branch-kraken2-1.0.0'
+        docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
     }
 
