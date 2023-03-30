@@ -259,11 +259,14 @@ task build_db {
         Float load_factor = 0.7
         Boolean clean_up = true
         Int memory_gb = 96
-        Int disk_size_gb = 200
+        Int added_disk_size_gb = 0
         Int ncpu = 1
         Boolean detect_nproc = false
         Int max_retries = 1
     }
+
+    Int tarballs_size = ceil(size(tarballs, "GiB"))
+    Int disk_size_gb = tarballs_size * 5 + added_disk_size_gb
 
     command <<<
         set -euo pipefail
