@@ -120,7 +120,7 @@ task download_taxonomy {
         Boolean clean_up = true
         Int memory_gb = 4
         Int disk_size_gb = 60
-        Int max_retries = 1
+        Int max_retries = 3
     }
 
     command <<<
@@ -161,7 +161,7 @@ task download_library {
         Boolean clean_up = true
         Int memory_gb = 4
         Int added_disk_size_gb = 0
-        Int max_retries = 1
+        Int max_retries = 3
     }
 
     Int disk_size_gb = (if library_name=="bacteria" then 168 else 10) + added_disk_size_gb

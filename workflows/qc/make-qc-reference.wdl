@@ -42,7 +42,7 @@ workflow make_qc_reference {
         ]
         Array[String] fasta_urls = []
         Array[File] fastas = []
-        Int max_retries = 1
+        Int? max_retries
     }
 
     scatter (url in fasta_urls) {
