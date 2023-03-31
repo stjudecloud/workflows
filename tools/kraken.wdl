@@ -156,20 +156,20 @@ task download_taxonomy {
 
 task download_library {
     input {
-        String library
-        String db_name = "kraken2_"+library+"_library"
+        String library_name
+        String db_name = "kraken2_"+library_name+"_library"
         Boolean clean_up = true
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 1
     }
 
-    Int disk_size_gb = (if library=="bacteria" then 168 else 10) + added_disk_size_gb
+    Int disk_size_gb = (if library_name=="bacteria" then 168 else 10) + added_disk_size_gb
 
     command <<<
         set -euo pipefail
 
-        kraken2-build --download-library ~{library} --use-ftp --db ~{db_name}
+        kraken2-build --download-library ~{library_name} --use-ftp --db ~{db_name}
 
         tar -czf "~{db_name}.tar.gz" ~{db_name}/*
 
@@ -187,7 +187,7 @@ task download_library {
     }
 
     output {
-        File db = db_name + ".tar.gz"
+        File library = db_name + ".tar.gz"
     }
 
     meta {
@@ -197,7 +197,7 @@ task download_library {
     }
 }
 
-task add_custom_fastas_to_db {
+task create_library_from_fastas {
     input {
         Array[File] fastas
         String db_name = "kraken2_custom_library"
@@ -238,7 +238,7 @@ task add_custom_fastas_to_db {
     }
 
     output {
-        File db = db_name + ".tar.gz"
+        File custom_library = db_name + ".tar.gz"
     }
 
     meta {

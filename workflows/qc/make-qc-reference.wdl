@@ -59,10 +59,10 @@ workflow make_qc_reference {
     call kraken.download_taxonomy { input: max_retries=max_retries }
 
     scatter (lib in kraken_libraries) {
-        call kraken.download_library { input: library=lib, max_retries=max_retries }
+        call kraken.download_library { input: library_name=lib, max_retries=max_retries }
     }
 
-    call kraken.add_custom_fastas_to_db { input:
+    call kraken.create_library_from_fastas { input:
         fastas=flatten([fastas, fastas_download.outfile]),
         max_retries=max_retries
     }
@@ -70,8 +70,8 @@ workflow make_qc_reference {
     call kraken.build_db as kraken_build_db { input:
         tarballs=flatten([
             [download_taxonomy.taxonomy],
-            download_library.db,
-            [add_custom_fastas_to_db.db]
+            download_library.library,
+            [create_library_from_fastas.custom_library]
         ]),
         max_retries=max_retries
     }
