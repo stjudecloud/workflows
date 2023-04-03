@@ -128,7 +128,7 @@ task download_taxonomy {
 
         kraken2-build --download-taxonomy --use-ftp --db ~{db_name}
 
-        tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+        tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
         if [ "~{clean_up}" = "true" ]; then
             rm -r ~{db_name}
@@ -171,7 +171,7 @@ task download_library {
 
         kraken2-build --download-library ~{library_name} --use-ftp --db ~{db_name}
 
-        tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+        tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
         if [ "~{clean_up}" = "true" ]; then
             rm -r ~{db_name}
@@ -222,7 +222,7 @@ task create_library_from_fastas {
         rm tmp.fa
         >&2 echo "*** done adding custom FASTAs ***"
 
-        tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+        tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
         if [ "~{clean_up}" = "true" ]; then
             rm -r ~{db_name}
@@ -299,7 +299,7 @@ task build_db {
         >&2 echo "*** done ***"
 
         >&2 echo "*** tarballing DB ***"
-        tar -czf "~{db_name}.tar.gz" ~{db_name}/*
+        tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
         if [ "~{clean_up}" = "true" ]; then
             rm -r ~{db_name}
