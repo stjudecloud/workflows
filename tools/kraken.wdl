@@ -126,7 +126,11 @@ task download_taxonomy {
     command <<<
         set -euo pipefail
 
-        kraken2-build --download-taxonomy --use-ftp --db ~{db_name}
+        kraken2-build --download-taxonomy \
+            --use-ftp \
+            --db ~{db_name} 2>&1 \
+            | sed '/gunzip:/q1' 1>&2 \
+            || exit 42
 
         tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
@@ -169,7 +173,12 @@ task download_library {
     command <<<
         set -euo pipefail
 
-        kraken2-build --download-library ~{library_name} --use-ftp --db ~{db_name}
+        kraken2-build --download-library \
+            ~{library_name} \
+            --use-ftp \
+            --db ~{db_name} 2>&1 \
+            | sed '/gunzip:/q1' 1>&2 \
+            || exit 42
 
         tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
