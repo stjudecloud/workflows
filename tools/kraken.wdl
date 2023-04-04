@@ -287,8 +287,8 @@ task build_db {
 
         >&2 echo "*** start unpacking tarballs ***"
         echo "~{sep="\n" tarballs}" > tarballs.txt
+        mkdir ~{db_name}
         while read -r tarball; do
-            mkdir ~{db_name}
             tar -xzf "$tarball" -C ~{db_name} --no-same-owner
         done < tarballs.txt
         >&2 echo "*** done unpacking tarballs ***"
