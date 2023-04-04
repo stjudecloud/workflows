@@ -164,7 +164,7 @@ task download_library {
         Int max_retries = 3
     }
 
-    Int disk_size_gb = (if library_name=="bacteria" then 168 else 10) + added_disk_size_gb
+    Int disk_size_gb = (if library_name=="bacteria" then 200 else 20) + added_disk_size_gb
 
     command <<<
         set -euo pipefail
