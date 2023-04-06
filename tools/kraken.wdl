@@ -168,7 +168,7 @@ task download_library {
         Int max_retries = 3
     }
 
-    Int disk_size_gb = (if library_name=="bacteria" then 200 else 20) + added_disk_size_gb
+    Int disk_size_gb = (if library_name=="bacteria" then 300 else 20) + added_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -275,7 +275,7 @@ task build_db {
     }
 
     Int tarballs_size = ceil(size(tarballs, "GiB"))
-    Int disk_size_gb = tarballs_size * 5 + added_disk_size_gb
+    Int disk_size_gb = tarballs_size * 6 + added_disk_size_gb
 
     command <<<
         set -euo pipefail
