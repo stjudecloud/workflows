@@ -124,7 +124,7 @@ if ($use_ftp) {
     }
     die "$PROG: unable to download ftp://${SERVER}${SERVER_PATH}/$_\n" if $try == $ntries;
     $ftp->quit;
-    system("grep '" . basename($_) . "' md5checksums.txt > md5.txt && md5sum --quiet -c md5.txt") == 0
+    system("grep '" . basename($_) . "' md5checksums.txt > md5.txt && md5sum -s -c md5.txt") == 0
       or die "$PROG: corrupted file ftp://${SERVER}${SERVER_PATH}/$_\n";
   }
   close MANIFEST;
