@@ -129,8 +129,7 @@ task download_taxonomy {
         kraken2-build --download-taxonomy \
             --use-ftp \
             --db ~{db_name} 2>&1 \
-            | awk '/gunzip:/ { print; exit 1 } !/gunzip:/ { print }' 1>&2 \
-            || exit 42
+            | awk '/gunzip:/ { print; exit 42 } !/gunzip:/ { print }' 1>&2
 
         tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
@@ -177,8 +176,7 @@ task download_library {
             ~{library_name} \
             --use-ftp \
             --db ~{db_name} 2>&1 \
-            | awk '/gunzip:/ { print; exit 1 } !/gunzip:/ { print }' 1>&2 \
-            || exit 42
+            | awk '/gunzip:/ { print; exit 42 } !/gunzip:/ { print }' 1>&2
 
         tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
