@@ -265,7 +265,7 @@ task build_db {
         Int max_db_size_gb = -1
         Float load_factor = 0.7
         Boolean clean_up = true
-        Int memory_gb = 96
+        Int added_memory_gb = 0
         Int added_disk_size_gb = 0
         Int ncpu = 1
         Boolean detect_nproc = false
@@ -274,6 +274,7 @@ task build_db {
 
     Int tarballs_size = ceil(size(tarballs, "GiB"))
     Int disk_size_gb = tarballs_size * 6 + added_disk_size_gb
+    Int memory_gb = (if (max_db_size_gb > 0) then (ceil(max_db_size_gb * 1.2)) else (tarballs_size * 2)) + added_memory_gb
 
     command <<<
         set -euo pipefail
