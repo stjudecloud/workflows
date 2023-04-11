@@ -64,7 +64,7 @@ task download_library {
         library_name: "One of `archaea`, `bacteria`, `plasmid`, `viral`, `human`, `fungi`, `plant`, `protozoa`, `nt`, `UniVec`, or `UniVec_Core`"
         db_name: "Name for output tarball. The suffix `.tar.gz` will be added."
         memory_gb: "RAM to allocate for task"
-        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is allocated dynamically based on `library_name`."
+        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `library_name`."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -116,7 +116,7 @@ task create_library_from_fastas {
         fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         db_name: "Name for output tarball. The suffix `.tar.gz` will be added."
         memory_gb: "RAM to allocate for task"
-        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is allocated dynamically based on `fastas` size."
+        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `fastas` size."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -184,7 +184,7 @@ task build_db {
         max_db_size_gb: "Maximum number of GBs for Kraken 2 hash table; if the estimator determines more would normally be needed, the reference library will be downsampled to fit."
         load_factor: "Proportion of the hash table to be populated (must be between 0 and 1)"
         added_memory_gb: "Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size."
-        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is allocated dynamically based on `tarballs` size."
+        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `tarballs` size."
         ncpu: "Number of cores to allocate for task"
         detect_nproc: "Use all available cores"
         max_retries: "Number of times to retry in case of failure"
