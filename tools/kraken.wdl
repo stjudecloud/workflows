@@ -7,7 +7,6 @@ version 1.0
 task download_taxonomy {
     input {
         String db_name = "kraken2_taxonomy"
-        Boolean clean_up = true
         Int memory_gb = 4
         Int disk_size_gb = 60
         Int max_retries = 3
@@ -23,9 +22,7 @@ task download_taxonomy {
 
         tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
-        if [ "~{clean_up}" = "true" ]; then
-            rm -r ~{db_name}
-        fi
+        rm -r ~{db_name}
     >>>
  
     runtime {
@@ -51,7 +48,6 @@ task download_library {
     input {
         String library_name
         String db_name = "kraken2_"+library_name+"_library"
-        Boolean clean_up = true
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 3
@@ -70,9 +66,7 @@ task download_library {
 
         tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
-        if [ "~{clean_up}" = "true" ]; then
-            rm -r ~{db_name}
-        fi
+        rm -r ~{db_name}
     >>>
  
     runtime {
@@ -98,7 +92,6 @@ task create_library_from_fastas {
     input {
         Array[File] fastas
         String db_name = "kraken2_custom_library"
-        Boolean clean_up = true
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 1
@@ -121,9 +114,7 @@ task create_library_from_fastas {
 
         tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
-        if [ "~{clean_up}" = "true" ]; then
-            rm -r ~{db_name}
-        fi
+        rm -r ~{db_name}
     >>>
  
     runtime {
@@ -154,7 +145,6 @@ task build_db {
         Int minimizer_spaces = 7
         Int max_db_size_gb = -1
         Float load_factor = 0.7
-        Boolean clean_up = true
         Int added_memory_gb = 0
         Int added_disk_size_gb = 0
         Int ncpu = 1
@@ -199,9 +189,7 @@ task build_db {
         >&2 echo "*** tarballing DB ***"
         tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
 
-        if [ "~{clean_up}" = "true" ]; then
-            rm -r ~{db_name}
-        fi
+        rm -r ~{db_name}
     >>>
  
     runtime {
