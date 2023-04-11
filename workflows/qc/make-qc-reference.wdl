@@ -1,6 +1,6 @@
 ## # Make QC Reference
 ##
-## Create the reference DB needed by FastQ Screen in the `quality-check-standard` workflow when analyzing WGS and WES BAMs.
+## Create the reference DB needed by Kraken2 for `quality-check-standard.wdl`
 ##
 ## ## LICENSING:
 ## 
@@ -43,6 +43,13 @@ workflow make_qc_reference {
         Array[String] fasta_urls = []
         Array[File] fastas = []
         Int? max_retries
+    }
+
+    parameter_meta {
+        kraken_libraries: "List of kraken libraries to download. Valid options: `archaea`, `bacteria`, `plasmid`, `viral`, `human`, `fungi`, `plant`, `protozoa`, `nt`, `UniVec`, `UniVec_Core`"
+        fasta_urls: "URLs for NCBI formatted FASTAs to download"
+        fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     scatter (url in fasta_urls) {

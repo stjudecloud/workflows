@@ -12,6 +12,13 @@ task download_taxonomy {
         Int max_retries = 3
     }
 
+    parameter_meta {
+        db_name: "Name for output tarball. The suffix `.tar.gz` will be added."
+        memory_gb: "RAM to allocate for task"
+        disk_size_gb: "Disk space to allocate for task"
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     command <<<
         set -euo pipefail
 
@@ -51,6 +58,14 @@ task download_library {
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 3
+    }
+
+    parameter_meta {
+        library_name: "One of `archaea`, `bacteria`, `plasmid`, `viral`, `human`, `fungi`, `plant`, `protozoa`, `nt`, `UniVec`, or `UniVec_Core`"
+        db_name: "Name for output tarball. The suffix `.tar.gz` will be added."
+        memory_gb: "RAM to allocate for task"
+        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is allocated dynamically based on `library_name`."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     Int disk_size_gb = (if library_name=="bacteria" then 300 else 20) + added_disk_size_gb
@@ -95,6 +110,14 @@ task create_library_from_fastas {
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 1
+    }
+
+    parameter_meta {
+        fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
+        db_name: "Name for output tarball. The suffix `.tar.gz` will be added."
+        memory_gb: "RAM to allocate for task"
+        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is allocated dynamically based on `fastas` size."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     Int fastas_size = ceil(size(fastas, "GiB"))
@@ -150,6 +173,21 @@ task build_db {
         Int ncpu = 1
         Boolean detect_nproc = false
         Int max_retries = 1
+    }
+
+    parameter_meta {
+        tarballs: "Tarballs containing the kraken taxonomy and at least one library. Tarballs must not have a root directory."
+        db_name: "Name for output tarball. The suffix `.tar.gz` will be added."
+        kmer_len: "K-mer length in bp"
+        minimizer_len: "Minimizer length in bp"
+        minimizer_spaces: "Number of characters in minimizer that are ignored in comparisons"
+        max_db_size_gb: "Maximum number of GBs for Kraken 2 hash table; if the estimator determines more would normally be needed, the reference library will be downsampled to fit."
+        load_factor: "Proportion of the hash table to be populated (must be between 0 and 1)"
+        added_memory_gb: "Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size."
+        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is allocated dynamically based on `tarballs` size."
+        ncpu: "Number of cores to allocate for task"
+        detect_nproc: "Use all available cores"
+        max_retries: "Number of times to retry in case of failure"
     }
 
     Int tarballs_size = ceil(size(tarballs, "GiB"))
@@ -227,7 +265,16 @@ task kraken {
     }
 
     parameter_meta {
-        db: "Database for Kraken2"
+        read1: "Gzipped FastQ file with 1st reads in pair"
+        db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a flat tarball without a root directory."
+        sample_name: "Name for sample. If missing will be inferred by removing the suffix '_R1.fastq.gz' from the `read1` filename."
+        store_sequences: "Store and output main Kraken2 output instead of just the summary report"
+        use_names: "Print scientific names instead of just taxids"
+        min_base_quality: "Minimum base quality used in classification"
+        memory_gb: "RAM to allocate for task. If missing will be dynamically allocated based on database size."
+        ncpu: "Number of cores to allocate for task"
+        detect_nproc: "Use all available cores"
+        max_retries: "Number of times to retry in case of failure"
     }
 
     Float db_size = size(db, "GiB")

@@ -50,7 +50,7 @@ workflow quality_check {
         String experiment
         String strandedness = ""
         Boolean paired_end = true
-        Int max_retries = 1
+        Int? max_retries
     }
 
     parameter_meta {
@@ -63,7 +63,7 @@ workflow quality_check {
         experiment: "'WGS', 'WES', or 'RNA-Seq'"
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. Only needed for RNA-Seq data. If missing, will be inferred"
         paired_end: "Whether the data is paired end"
-        max_retries: "Number of times to retry failed steps"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     String prefix = basename(bam, ".bam")
