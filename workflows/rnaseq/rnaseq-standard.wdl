@@ -51,7 +51,7 @@ workflow rnaseq_standard {
         String strandedness = ""
         Boolean validate_input = true
         Boolean detect_nproc = false
-        Int max_retries = 1
+        Int? max_retries
     }
 
     parameter_meta {
@@ -65,7 +65,7 @@ workflow rnaseq_standard {
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
         validate_input: "Ensure input BAM is well-formed before beginning harmonization"
         detect_nproc: "Use all available cores for multi-core steps"
-        max_retries: "Number of times to retry failed steps"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     call parse_input { input:

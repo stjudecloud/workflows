@@ -54,7 +54,7 @@ workflow cell_ranger_bam_to_fastqs {
         Boolean gemcode = false
         Int bam_to_fastq_memory_gb = 40
         Boolean detect_nproc = false
-        Int max_retries = 1
+        Int? max_retries
     }
 
     parameter_meta {
@@ -65,7 +65,7 @@ workflow cell_ranger_bam_to_fastqs {
         gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
         bam_to_fastq_memory_gb: "How much memory to provide while converting to fastqs."
         detect_nproc: "Use all available cores for multi-core steps"
-        max_retries: "Maximum number of times to retry on a failure."
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }

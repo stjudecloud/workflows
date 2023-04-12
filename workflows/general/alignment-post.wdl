@@ -13,7 +13,7 @@ workflow alignment_post {
         String xenocp_aligner = ""
         Boolean cleanse_xenograft = false
         Boolean detect_nproc = false
-        Int max_retries = 1
+        Int? max_retries
     }
     
     parameter_meta {
@@ -22,7 +22,7 @@ workflow alignment_post {
         xenocp_aligner: "Aligner to use to map reads to the host genome to detect contamination: [bwa aln, bwa mem, star]"
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
         detect_nproc: "Use all available cores for multi-core steps"
-        max_retries: "Number of times to retry failed steps"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
     
     call picard.sort as picard_sort { input: bam=bam, max_retries=max_retries }

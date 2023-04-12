@@ -44,14 +44,14 @@ workflow bam_to_fastqs {
         File bam
         Boolean paired = true
         Boolean detect_nproc = false
-        Int max_retries = 1
+        Int? max_retries
     }
 
     parameter_meta {
         bam: "BAM file to split into fastqs"
         paired: "Is the data paired-end (true) or single-end (false)?"
         detect_nproc: "Use all available cores for multi-core steps"
-        max_retries: "Number of times to retry failed steps"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }

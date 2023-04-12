@@ -18,7 +18,7 @@ workflow rnaseq_core {
         String xenocp_aligner = "star"
         String strandedness = ""
         Boolean detect_nproc = false
-        Int max_retries = 1
+        Int? max_retries
     }
     
     parameter_meta {
@@ -33,7 +33,7 @@ workflow rnaseq_core {
         xenocp_aligner: "Aligner to use to map reads to the host genome to detect contamination: [bwa aln, bwa mem, star]"
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
         detect_nproc: "Use all available cores for multi-core steps"
-        max_retries: "Number of times to retry failed steps"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     call star.alignment { input:

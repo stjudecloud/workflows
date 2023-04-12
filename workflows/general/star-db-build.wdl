@@ -47,7 +47,7 @@ workflow star_db_build {
         String gtf_url
         String gtf_name
         String? gtf_md5
-        Int max_retries = 1
+        Int? max_retries
     }
 
     parameter_meta {
@@ -57,7 +57,7 @@ workflow star_db_build {
         gtf_url: "URL to retrieve the reference GTF file from"
         gtf_name: "Name of output GTF file"
         gtf_md5: "Expected md5sum of GTF file"
-        max_retries: "Number of times to retry failed steps"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     call util.download as reference_download { input:
