@@ -30,7 +30,7 @@
 
 version 1.0
 
-import "10x-bam-to-fastqs.wdl" as b2fq
+import "./10x-bam-to-fastqs.wdl" as b2fq
 import "../../tools/picard.wdl"
 import "../../tools/ngsderive.wdl"
 import "../../tools/samtools.wdl"
@@ -39,44 +39,45 @@ import "../../tools/md5sum.wdl"
 
 workflow scrnaseq_standard {
     input {
+        File bam
         File gtf
-        File input_bam
         File transcriptome_tar_gz
         String strandedness = ""
-        String output_prefix = basename(input_bam, ".bam")
+        String output_prefix = basename(bam, ".bam")
         Int subsample_n_reads = -1
-        Int max_retries = 1
-        Boolean detect_nproc = false
         Boolean validate_input = true
+        Boolean detect_nproc = false
+        Int? max_retries
     }
 
     parameter_meta {
-        input_bam: "Input BAM format file to quality check"
-        transcriptome_tar_gz: "Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics"
+        bam: "Input BAM format file to quality check"
+        gtf: "GTF feature file"
+        transcriptome_tar_gz: "Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics."
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
         output_prefix: "Prefix for output files"
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
-        max_retries: "Number of times to retry failed steps"
         detect_nproc: "Use all available cores for multi-core steps"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     String provided_strandedness = strandedness
 
     call parse_input { input: input_strand=provided_strandedness }
     if (validate_input) {
-       call picard.validate_bam as validate_input_bam { input: bam=input_bam, max_retries=max_retries }
+       call picard.validate_bam as validate_input_bam { input: bam=bam, max_retries=max_retries }
     }
 
     if (subsample_n_reads > 0) {
         call samtools.subsample {
             input:
-                bam=input_bam,
+                bam=bam,
                 max_retries=max_retries,
                 desired_reads=subsample_n_reads,
                 detect_nproc=detect_nproc
         }
     }
-    File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
+    File selected_input_bam = select_first([subsample.sampled_bam, bam])
 
     call b2fq.cell_ranger_bam_to_fastqs { input: bam=selected_input_bam, max_retries=max_retries, detect_nproc=detect_nproc }
 
@@ -94,7 +95,7 @@ workflow scrnaseq_standard {
     call md5sum.compute_checksum { input: infile=count.bam, max_retries=max_retries }
 
     output {
-        File bam = count.bam
+        File harmonized_bam = count.bam
         File bam_checksum = compute_checksum.md5sum
         File bam_index = count.bam_index
         File qc = count.qc
