@@ -17,7 +17,7 @@ task count {
         String feature_type = "exon"
         String idattr = "gene_name"
         String mode = "union"
-        String nonunique = "none"
+        Boolean nonunique = false
         Boolean secondary_alignments = false
         Boolean supplementary_alignments = false
         Int added_memory_gb = 0
@@ -51,7 +51,7 @@ task count {
             -t ~{feature_type} \
             -m ~{mode} \
             -i ~{idattr} \
-            --nonunique ~{nonunique} \
+            --nonunique ~{if nonunique then "all" else "none"} \
             --secondary-alignments ~{if secondary_alignments then "score" else "ignore"} \
             --supplementary-alignments ~{if supplementary_alignments then "score" else "ignore"} \
             --max-reads-in-buffer 9223372036854776000 \
