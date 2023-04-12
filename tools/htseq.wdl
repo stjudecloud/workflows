@@ -24,6 +24,24 @@ task count {
         Int max_retries = 1
     }
 
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+        gtf: "Input genomic features in GTF format to count reads for"
+        outfile_name: "Name for feature count file"
+        provided_strandedness: "<Stranded-Reverse/Stranded-Forward/Unstranded> User provided strandedness."
+        inferred_strandedness: "<Stranded-Reverse/Stranded-Forward/Unstranded> `ngsderive` derived strandedness."
+        pos_sorted: "Is the BAM position sorted?"
+        minaqual: "Skip all reads with alignment quality lower than the given minimum value"
+        feature_type: "Feature type (3rd column in GFF file) to be used, all features of other type are ignored"
+        idattr: "GFF attribute to be used as feature ID"
+        mode: "<union/intersection-strict/intersection-nonempty> Mode to handle reads overlapping more than one feature"
+        nonunique: "Score reads that align to or are assigned to more than one feature?"
+        secondary_alignments: "Score secondary alignments (SAM flag 0x100)?"
+        supplementary_alignments: "Score supplementary/chimeric alignments (SAM flag 0x800)?"
+        added_memory_gb: "Additional RAM to allocate for task. Default RAM is allocated dynamically based on the BAM size."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     String stranded = if (provided_strandedness != "") then 
                         if (provided_strandedness == "Stranded-Reverse") then "reverse" else
                         if (provided_strandedness == "Stranded-Forward") then "yes" else
@@ -75,11 +93,5 @@ task count {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool performs read counting for a set of features in the input BAM file."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
-        gtf: "Input genomic features in GTF format to count reads for"
-        added_memory_gb: "Amount of additional memory to add to the bam size"
     }
 }
