@@ -187,7 +187,7 @@ task build_db {
         max_db_size_gb: "Maximum number of GBs for Kraken 2 hash table; if the estimator determines more would normally be needed, the reference library will be downsampled to fit."
         load_factor: "Proportion of the hash table to be populated (must be between 0 and 1)"
         added_memory_gb: "Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size."
-        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `tarballs` size."
+        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on size of the input `tarballs`."
         ncpu: "Number of cores to allocate for task"
         detect_nproc: "Use all available cores"
         max_retries: "Number of times to retry in case of failure"
