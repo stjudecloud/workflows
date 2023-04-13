@@ -6,18 +6,18 @@ version 1.0
 
 task download_taxonomy {
     input {
-        String db_name = "kraken2_taxonomy"
         Int memory_gb = 4
         Int disk_size_gb = 60
         Int max_retries = 3
     }
 
     parameter_meta {
-        db_name: "Name for output tarball. The suffix `.tar.gz` will be added."
         memory_gb: "RAM to allocate for task"
         disk_size_gb: "Disk space to allocate for task"
         max_retries: "Number of times to retry in case of failure"
     }
+
+    String db_name = "kraken2_taxonomy"
 
     command <<<
         set -euo pipefail
@@ -54,15 +54,15 @@ task download_taxonomy {
 task download_library {
     input {
         String library_name
-        String db_name = "kraken2_"+library_name+"_library"
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 3
     }
 
+    String db_name = "kraken2_"+library_name+"_library"
+
     parameter_meta {
         library_name: "One of `archaea`, `bacteria`, `plasmid`, `viral`, `human`, `fungi`, `plant`, `protozoa`, `nt`, `UniVec`, or `UniVec_Core`"
-        db_name: "Name for output tarball. The suffix `.tar.gz` will be added."
         memory_gb: "RAM to allocate for task"
         added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `library_name`."
         max_retries: "Number of times to retry in case of failure"
@@ -106,15 +106,15 @@ task download_library {
 task create_library_from_fastas {
     input {
         Array[File] fastas
-        String db_name = "kraken2_custom_library"
         Int memory_gb = 4
         Int added_disk_size_gb = 0
         Int max_retries = 1
     }
 
+    String db_name = "kraken2_custom_library"
+
     parameter_meta {
         fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
-        db_name: "Name for output tarball. The suffix `.tar.gz` will be added."
         memory_gb: "RAM to allocate for task"
         added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `fastas` size."
         max_retries: "Number of times to retry in case of failure"
