@@ -185,7 +185,6 @@ task build_db {
         minimizer_len: "Minimizer length in bp"
         minimizer_spaces: "Number of characters in minimizer that are ignored in comparisons"
         max_db_size_gb: "Maximum number of GBs for Kraken 2 hash table; if the Kraken 2 estimator determines more would normally be needed, the reference library will be downsampled to fit."
-        load_factor: "Proportion of the hash table to be populated (must be between 0 and 1)"
         added_memory_gb: "Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size."
         added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on size of the input `tarballs`."
         ncpu: "Number of cores to allocate for task"
@@ -219,7 +218,6 @@ task build_db {
             --minimizer-len ~{minimizer_len} \
             --minimizer-spaces ~{minimizer_spaces} \
             ~{if (max_db_size_gb > 0) then "--max-db-size" else ""} ~{if (max_db_size_gb > 0) then max_db_size_gb + "000000000" else ""} \
-            --load-factor ~{load_factor} \
             --threads "$n_cores" \
             --db ~{db_name}
 
