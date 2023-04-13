@@ -62,6 +62,7 @@ workflow quality_check {
         experiment: {
             help: "Experiment type"
             choices: ['WGS', 'WES', 'RNA-Seq']
+        }
         strandedness: {
             help: "Only used for RNA-Seq data. If unspecified, strandedness will be inferred by `ngsderive`. If specified, user supplied strandedness will be used by `qualimap rnaseq`."
             choices: ['', 'Stranded-Reverse', 'Stranded-Forward', 'Unstranded']
