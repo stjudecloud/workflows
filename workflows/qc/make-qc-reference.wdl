@@ -46,7 +46,10 @@ workflow make_qc_reference {
     }
 
     parameter_meta {
-        kraken_libraries: "List of kraken libraries to download. Valid options: `archaea`, `bacteria`, `plasmid`, `viral`, `human`, `fungi`, `plant`, `protozoa`, `nt`, `UniVec`, `UniVec_Core`"
+        kraken_libraries: {
+            help: "List of kraken libraries to download"
+            choices: ['archaea', 'bacteria', 'plasmid', 'viral', 'human', 'fungi', 'plant', 'protozoa', 'nt', 'UniVec', 'UniVec_Core']
+        }
         fasta_urls: "URLs for any additional FASTA files in NCBI format to download and include in the database. This allows the addition of individual genomes (or other sequences) of interest."
         fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
