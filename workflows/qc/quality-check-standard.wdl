@@ -115,8 +115,27 @@ workflow quality_check {
 
         call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
 
+        String qualimap_strandedness = if (provided_strandedness != "") then 
+                if (provided_strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
+                if (provided_strandedness == "Stranded-Forward") then "strand-specific-forward" else
+                if (provided_strandedness == "Unstranded") then "non-strand-specific"
+                else "unknown-strand"  # this will intentionally cause qualimap to error. You will need to manually specify
+                                       # in this case
+            else 
+                if (ngsderive_strandedness.strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
+                if (ngsderive_strandedness.strandedness == "Stranded-Forward") then "strand-specific-forward" else 
+                if (ngsderive_strandedness.strandedness == "Unstranded" || ngsderive_strandedness.strandedness == "Inconclusive") then "non-strand-specific"
+                else "unknown-strand"  # this will intentionally cause qualimap to error. You will need to manually specify
+                                       # in this case
+
         call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }
-        call qualimap.rnaseq as qualimap_rnaseq { input: bam=picard_sort.sorted_bam, gtf=gtf_defined, provided_strandedness=provided_strandedness, inferred_strandedness=ngsderive_strandedness.strandedness, name_sorted=true, max_retries=max_retries }
+        call qualimap.rnaseq as qualimap_rnaseq { input:
+            bam=picard_sort.sorted_bam,
+            gtf=gtf_defined,
+            strandedness=qualimap_strandedness,
+            name_sorted=true,
+            max_retries=max_retries
+        }
     }
     
     call mqc.multiqc { input:
