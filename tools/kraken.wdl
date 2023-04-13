@@ -117,7 +117,7 @@ task create_library_from_fastas {
     String db_name = "kraken2_custom_library"
 
     parameter_meta {
-        fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
+        fastas: "Array of gzipped FASTA files. Each FASTA sequence ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         memory_gb: "RAM to allocate for task"
         added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `fastas` size."
         max_retries: "Number of times to retry in case of failure"
