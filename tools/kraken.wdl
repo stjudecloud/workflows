@@ -47,7 +47,7 @@ task download_taxonomy {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL task downloads the Kraken2 taxonomy."
+        description: "This WDL task downloads the NCBI taxonomy which Kraken2 uses to create a tree and taxon map during the database build."
     }
 }
 
