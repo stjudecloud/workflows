@@ -158,7 +158,7 @@ task create_library_from_fastas {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL task adds custom FASTAs to a Kraken2 DB."
+        description: "This WDL task adds custom entries from FASTA files to a Kraken2 DB."
     }
 }
 
