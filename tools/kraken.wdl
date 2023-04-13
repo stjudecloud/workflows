@@ -184,7 +184,7 @@ task build_db {
         kmer_len: "K-mer length in bp that will be used to build the database."
         minimizer_len: "Minimizer length in bp"
         minimizer_spaces: "Number of characters in minimizer that are ignored in comparisons"
-        max_db_size_gb: "Maximum number of GBs for Kraken 2 hash table; if the estimator determines more would normally be needed, the reference library will be downsampled to fit."
+        max_db_size_gb: "Maximum number of GBs for Kraken 2 hash table; if the Kraken 2 estimator determines more would normally be needed, the reference library will be downsampled to fit."
         load_factor: "Proportion of the hash table to be populated (must be between 0 and 1)"
         added_memory_gb: "Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size."
         added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on size of the input `tarballs`."
