@@ -181,7 +181,7 @@ task build_db {
     parameter_meta {
         tarballs: "Tarballs containing the kraken taxonomy and at least one library. Tarballs must not have a root directory."
         db_name: "Name for output in compressed, archived format. The suffix `.tar.gz` will be added."
-        kmer_len: "K-mer length in bp"
+        kmer_len: "K-mer length in bp that will be used to build the database."
         minimizer_len: "Minimizer length in bp"
         minimizer_spaces: "Number of characters in minimizer that are ignored in comparisons"
         max_db_size_gb: "Maximum number of GBs for Kraken 2 hash table; if the estimator determines more would normally be needed, the reference library will be downsampled to fit."
