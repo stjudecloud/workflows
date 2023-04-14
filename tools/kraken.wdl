@@ -63,7 +63,7 @@ task download_library {
 
     parameter_meta {
         library_name: {
-            help: "Library to download. Note that due to the large size of the `nt` library, the `added_disk_size_gb` parameter might have to be used, depending on your backend. This option was not tested, but we estimate the size required to be around 2TB."
+            description: "Library to download. Note that due to the large size of the `nt` library, the `added_disk_size_gb` parameter might have to be used, depending on your backend. This option was not tested, but we estimate the size required to be around 2TB."
             choices: ['archaea', 'bacteria', 'plasmid', 'viral', 'human', 'fungi', 'plant', 'protozoa', 'nt', 'UniVec', 'UniVec_Core']
         }
         memory_gb: "RAM to allocate for task"
