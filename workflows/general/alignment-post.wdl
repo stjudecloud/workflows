@@ -9,47 +9,74 @@ import "https://raw.githubusercontent.com/stjude/XenoCP/3.1.4/wdl/workflows/xeno
 workflow alignment_post {
     input {
         File bam
+        Boolean mark_duplicates
         File? contaminant_db
         String xenocp_aligner = ""
         Boolean cleanse_xenograft = false
         Boolean detect_nproc = false
         Int? max_retries
     }
-    
+
     parameter_meta {
         bam: "Input BAM format file to process"
+        mark_duplicates: "Mark duplicates?"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         xenocp_aligner: "Aligner to use to map reads to the host genome to detect contamination: [bwa aln, bwa mem, star]"
-        cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
+        cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
         detect_nproc: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
-    
-    call picard.sort as picard_sort { input: bam=bam, max_retries=max_retries }
-    
-    call samtools.index as samtools_index { input:
-        bam=picard_sort.sorted_bam,
-        max_retries=max_retries,
-        detect_nproc=detect_nproc
-    }
 
-    if (cleanse_xenograft){
+    call picard.sort as picard_sort { input: bam=bam, max_retries=max_retries }
+
+    if (cleanse_xenograft) {
+        call samtools.index as pre_xenocp_index { input:
+            bam=picard_sort.sorted_bam,
+            detect_nproc=detect_nproc,
+            max_retries=max_retries
+        }
+
         File contam_db = select_first([contaminant_db, ""])
         call xenocp_workflow.xenocp { input:
             input_bam=picard_sort.sorted_bam,
-            input_bai=samtools_index.bam_index,
+            input_bai=pre_xenocp_index.bam_index,
             reference_tar_gz=contam_db,
             aligner=xenocp_aligner,
             skip_duplicate_marking=true
         }
     }
-    File aligned_bam = select_first([xenocp.bam, picard_sort.sorted_bam])
-    File aligned_bam_index = select_first([xenocp.bam_index, samtools_index.bam_index])
+    if (mark_duplicates) {
+        call picard.mark_duplicates as picard_markdup { input:
+            bam=select_first([xenocp.bam, picard_sort.sorted_bam])
+        }
+        
+        call samtools.index as post_markdup_index { input:
+            bam=picard_markdup.duplicates_bam,
+            detect_nproc=detect_nproc,
+            max_retries=max_retries
+        }
+    }
+    if (!mark_duplicates) {
+        call samtools.index as samtools_index { input:
+            bam=select_first([xenocp.bam, picard_sort.sorted_bam]),
+            detect_nproc=detect_nproc,
+            max_retries=max_retries
+        }
+    }
+    
+    File aligned_bam = select_first([
+        picard_markdup.duplicates_bam,
+        picard_sort.sorted_bam
+    ])
+    File aligned_bam_index = select_first([
+        post_markdup_index.bam_index,
+        samtools_index.bam_index
+    ])
 
     call picard.validate_bam { input: bam=aligned_bam, max_retries=max_retries }
 
     call md5sum.compute_checksum { input: infile=aligned_bam, max_retries=max_retries }
-    
+
     call deeptools.bamCoverage as deeptools_bamCoverage { input:
         bam=aligned_bam,
         bam_index=aligned_bam_index,
