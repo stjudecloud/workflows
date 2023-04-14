@@ -57,7 +57,7 @@ workflow scrnaseq_standard {
         transcriptome_tar_gz: "Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics."
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
-        detect_nproc: "Use all available cores for multi-core steps"
+        detect_nproc: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 

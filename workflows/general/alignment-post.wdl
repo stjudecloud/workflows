@@ -21,7 +21,7 @@ workflow alignment_post {
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         xenocp_aligner: "Aligner to use to map reads to the host genome to detect contamination: [bwa aln, bwa mem, star]"
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
-        detect_nproc: "Use all available cores for multi-core steps"
+        detect_nproc: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
     

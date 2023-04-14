@@ -64,7 +64,7 @@ workflow cell_ranger_bam_to_fastqs {
         longranger20: "Convert a BAM produced by Longranger 2.0"
         gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
         bam_to_fastq_memory_gb: "How much memory to provide while converting to fastqs."
-        detect_nproc: "Use all available cores for multi-core steps"
+        detect_nproc: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 

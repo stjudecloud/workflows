@@ -57,7 +57,7 @@ workflow rnaseq_standard_fastq {
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `rnaseq_standard_fastq.rnaseq_core.xenocp_aligner` for the contaminant genome (default aligner is STAR)"
         cleanse_xenograft: "For xenograft samples, enable XenoCP cleansing of mouse contamination"
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
-        detect_nproc: "Use all available cores for multi-core steps"
+        detect_nproc: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 

@@ -64,7 +64,7 @@ workflow rnaseq_standard {
         cleanse_xenograft: "For xenograft samples, enable XenoCP cleansing of xenograft host contamination"
         strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
         validate_input: "Ensure input BAM is well-formed before beginning harmonization"
-        detect_nproc: "Use all available cores for multi-core steps"
+        detect_nproc: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
