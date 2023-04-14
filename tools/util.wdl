@@ -44,7 +44,7 @@ task download {
 
     parameter_meta {
         url: "URL of the file to download"
-        outfile_name: "Name to use for the output file"
+        outfile_name: "Name for the output file"
     }
 }
 
@@ -126,6 +126,12 @@ task calc_gene_lengths {
         File gtf
         String outfile_name = basename(gtf, ".gtf.gz") + ".genelengths.txt"
         Int max_retries = 1
+    }
+
+    parameter_meta {
+        gtf: "GTF feature file"
+        outfile_name: "Name for the gene lengths file"
+        max_retries: "Number of times to retry in case of failure"
     }
 
     Float gtf_size = size(gtf, "GiB")

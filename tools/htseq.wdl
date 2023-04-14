@@ -27,7 +27,7 @@ task count {
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         gtf: "Input genomic features in GTF format to count reads for"
-        outfile_name: "Name for feature count file"
+        outfile_name: "Name for the feature count file"
         provided_strandedness: "<Stranded-Reverse/Stranded-Forward/Unstranded> User provided strandedness."
         inferred_strandedness: "<Stranded-Reverse/Stranded-Forward/Unstranded> `ngsderive` derived strandedness."
         pos_sorted: "Is the BAM position sorted?"

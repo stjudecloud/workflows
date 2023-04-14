@@ -34,6 +34,12 @@ workflow ESTIMATE {
         Int? max_retries
     }
 
+    parameter_meta {
+        counts: "A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with `htseq.wdl`."
+        gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with `calc-gene-lengths.wdl`."
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
     call estimate.calc_tpm { input:
         counts=counts_file,
         gene_lengths=gene_lengths_file,
