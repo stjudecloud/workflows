@@ -1,0 +1,28 @@
+{
+    "make_qc_reference.kraken_libraries": [
+        "archaea",
+        "bacteria",
+        "plasmid",
+        "viral",
+        "human",
+        "fungi",
+        "protozoa",
+        "UniVec_Core"
+    ],
+    "make_qc_reference.fasta_urls": [
+        "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Mus_musculus/reference/GCF_000001635.27_GRCm39/GCF_000001635.27_GRCm39_genomic.fna.gz",
+        "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Arabidopsis_thaliana/reference/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.fna.gz",
+        "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_melanogaster/reference/GCF_000001215.4_Release_6_plus_ISO1_MT/GCF_000001215.4_Release_6_plus_ISO1_MT_genomic.fna.gz",
+        "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/reference/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_genomic.fna.gz",
+        "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_other/Danio_rerio/reference/GCF_000002035.6_GRCz11/GCF_000002035.6_GRCz11_genomic.fna.gz"
+    ],
+    "make_qc_reference.fastas": [],
+    "make_qc_reference.max_retries": "Int?",
+    "make_qc_reference.kraken_build_db.db_name": "kraken2_db",
+    "make_qc_reference.kraken_build_db.kmer_len": "Int (default = 35)",
+    "make_qc_reference.kraken_build_db.minimizer_len": "Int (default = 31)",
+    "make_qc_reference.kraken_build_db.minimizer_spaces": "Int (default = 7)",
+    "make_qc_reference.kraken_build_db.max_db_size_gb": "Int (default = -1)",
+    "make_qc_reference.kraken_build_db.detect_nproc": "Boolean (default = false)",
+    "make_qc_reference.kraken_build_db.ncpu": "Int (default = 1)"
+}
