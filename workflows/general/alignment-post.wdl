@@ -19,7 +19,7 @@ workflow alignment_post {
 
     parameter_meta {
         bam: "Input BAM format file to process"
-        mark_duplicates: "Mark duplicates?"
+        mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         xenocp_aligner: "Aligner to use to map reads to the host genome to detect contamination: [bwa aln, bwa mem, star]"
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
