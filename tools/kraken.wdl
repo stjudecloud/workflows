@@ -188,7 +188,7 @@ task build_db {
         added_memory_gb: "Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size."
         added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on size of the input `tarballs`."
         ncpu: "Number of cores to allocate for task"
-        detect_nproc: "Use all available cores"
+        detect_nproc: "Use all available cores. Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
