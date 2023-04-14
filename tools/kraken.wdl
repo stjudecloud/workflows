@@ -170,7 +170,6 @@ task build_db {
         Int minimizer_len = 31
         Int minimizer_spaces = 7
         Int max_db_size_gb = -1
-        Float load_factor = 0.7
         Int added_memory_gb = 0
         Int added_disk_size_gb = 0
         Int ncpu = 1
