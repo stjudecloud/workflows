@@ -82,7 +82,7 @@ task detect_nproc_task {
         memory_gb: "RAM to allocate for task"
         disk_size_gb: "Disk space to allocate for task"
         ncpu: "Number of cores to allocate for task"
-        detect_nproc: "Use all available cores. Recommended for cloud environments. Not recommended for cluster environments."
+        detect_nproc: "Use all available cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -194,7 +194,11 @@ task string_choices_task {
     parameter_meta {
         <choice_input>: {
             description: "Description of the parameter"
-            choices: ['foo', 'bar', 'baz']
+            choices: [
+                'foo',
+                'bar',
+                'baz'
+            ]
         }
         memory_gb: "RAM to allocate for task"
         disk_size_gb: "Disk space to allocate for task"
