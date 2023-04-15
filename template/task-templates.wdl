@@ -185,3 +185,40 @@ task prefix_task {
         maxRetries: max_retries
     }
 }
+
+task string_choices_task {
+    meta {
+        description: "This template is appropriate for tasks that have a string parameter for which only >2 choices are valid. If there are 2 possible choices, consider constructing a Boolean instead. Task should fail quickly if an invalid choice is input." 
+    }
+
+    parameter_meta {
+        <choice_input>: {
+            description: "Description of the parameter"
+            choices: ['foo', 'bar', 'baz']
+        }
+        memory_gb: "RAM to allocate for task"
+        disk_size_gb: "Disk space to allocate for task"
+        max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        Int memory_gb = <>
+        Int disk_size_gb = <>
+        Int max_retries = 1
+    }
+
+    command <<<
+
+    >>>
+
+    output {
+
+    }
+
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: ""
+        maxRetries: max_retries
+    }
+}
