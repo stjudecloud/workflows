@@ -107,3 +107,46 @@ task dynamic_disk_and_ram_task {
         maxRetries: max_retries
     }
 }
+
+task detect_nproc_task {
+    meta {
+        description: "This template is appropriate for tasks with static disk space and RAM requirements. Appropriately update the default disk and RAM allocations." 
+    }
+
+    parameter_meta {
+        memory_gb: "RAM to allocate for task"
+        disk_size_gb: "Disk space to allocate for task"
+        ncpu: "Number of cores to allocate for task"
+        detect_nproc: "Use all available cores. Recommended for cloud environments. Not recommended for cluster environments."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        Int memory_gb = 10
+        Int disk_size_gb = 10
+        Int ncpu = 1
+        Boolean detect_nproc = false
+        Int max_retries = 1
+    }
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ "~{detect_nproc}" = "true" ]; then
+            n_cores=$(nproc)
+        fi
+    >>>
+
+    output {
+
+    }
+
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        cpu: ncpu
+        docker: ""
+        maxRetries: max_retries
+    }
+}
