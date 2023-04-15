@@ -110,7 +110,7 @@ task dynamic_disk_and_ram_task {
 
 task detect_nproc_task {
     meta {
-        description: "This template is appropriate for tasks with static disk space and RAM requirements. Appropriately update the default disk and RAM allocations." 
+        description: "This template is appropriate for tasks which can be run on multiple cores. Appropriately update the default disk and RAM allocations." 
     }
 
     parameter_meta {
