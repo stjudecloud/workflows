@@ -1,6 +1,8 @@
 ## # Make QC Reference
 ##
-## Create the reference DB needed by Kraken2 for `quality-check-standard.wdl`
+## Download/create all the reference files needed for `quality-check-standard.wdl`.
+## This includes: a reference FASTA, a GTF, the database used by Kraken2, and exonic/coding regions BEDs
+## for use in restricting mosdepth coverage analysis to selected regions.
 ##
 ## ## LICENSING:
 ## 
@@ -30,6 +32,10 @@ import "../../tools/kraken.wdl"
 
 workflow make_qc_reference {
     input {
+        String reference_fa_url
+        String reference_fa_name
+        String gtf_url
+        String gtf_name
         Array[String] kraken_libraries = [
             "archaea",
             "bacteria",
@@ -40,22 +46,57 @@ workflow make_qc_reference {
             "protozoa",
             "UniVec_Core"
         ]
-        Array[String] fasta_urls = []
-        Array[File] fastas = []
+        Array[String] kraken_fasta_urls = []
+        Array[File] kraken_fastas = []
         Int? max_retries
     }
 
     parameter_meta {
+        reference_fa_url: "URL to retrieve the reference FASTA file from"
+        reference_fa_name: "Name of output reference FASTA file"
+        gtf_url: "URL to retrieve the reference GTF file from"
+        gtf_name: "Name of output GTF file"
         kraken_libraries: {
             description: "List of kraken libraries to download"
-            choices: ['archaea', 'bacteria', 'plasmid', 'viral', 'human', 'fungi', 'plant', 'protozoa', 'nt', 'UniVec', 'UniVec_Core']
+            choices: [
+                'archaea',
+                'bacteria',
+                'plasmid',
+                'viral',
+                'human',
+                'fungi',
+                'plant',
+                'protozoa',
+                'nt',
+                'UniVec',
+                'UniVec_Core'
+            ]
         }
-        fasta_urls: "URLs for any additional FASTA files in NCBI format to download and include in the database. This allows the addition of individual genomes (or other sequences) of interest."
-        fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
+        kraken_fasta_urls: "URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database. This allows the addition of individual genomes (or other sequences) of interest."
+        kraken_fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
-    scatter (url in fasta_urls) {
+    call util.download as reference_download {
+        input:
+            url=reference_fa_url,
+            outfilename=reference_fa_name,
+            max_retries=max_retries
+    }
+    call util.download as gtf_download {
+        input:
+            url=gtf_url,
+            outfilename=gtf_name,
+            max_retries=max_retries
+    }
+
+    call util.make_coverage_regions_beds {
+        input:
+            gtf=gtf_download.outfile,
+            max_retries=max_retries
+    }
+
+    scatter (url in kraken_fasta_urls) {
         call util.download as fastas_download { input:
             url=url,
             outfilename="tmp.fa.gz",
@@ -70,7 +111,7 @@ workflow make_qc_reference {
     }
 
     call kraken.create_library_from_fastas { input:
-        fastas=flatten([fastas, fastas_download.outfile]),
+        fastas=flatten([kraken_fastas, fastas_download.outfile]),
         max_retries=max_retries
     }
 
@@ -84,6 +125,11 @@ workflow make_qc_reference {
     }
 
     output {
+        File reference_fa = reference_download.outfile
+        File gtf = gtf_download.outfile
+        File fastq_screen_db = fastq_screen_build_db.db
+        File exon_bed = make_coverage_regions_beds.exon_bed
+        File CDS_bed = make_coverage_regions_beds.CDS_bed
         File kraken_db = kraken_build_db.built_db
     }
 }
