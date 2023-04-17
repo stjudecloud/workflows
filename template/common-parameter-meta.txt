@@ -10,6 +10,7 @@
         prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
         gtf: "GTF features file"
         bam: "Input BAM format file to <brief description of task>"
+        input_bam: "NOT ALLOWED. Drop `in_`/`input_` prefixes. Use `bam` instead."
         bam_index: "BAM index file corresponding to the input BAM"
         bai: "NOT ALLOWED. Use `bam_index`."
         reference_fasta: "Reference genome in FASTA format"
