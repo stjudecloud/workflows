@@ -110,16 +110,20 @@ workflow make_qc_reference {
         call kraken.download_library { input: library_name=lib, max_retries=max_retries }
     }
 
-    call kraken.create_library_from_fastas { input:
-        fastas=flatten([kraken_fastas, fastas_download.outfile]),
-        max_retries=max_retries
+    Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.outfile])
+    Array[File] empty_array = []  # this structure is required by the WDL v1 spec
+    if (custom_fastas != empty_array) {
+        call kraken.create_library_from_fastas { input:
+            fastas=custom_fastas,
+            max_retries=max_retries
+        }
     }
 
     call kraken.build_db as kraken_build_db { input:
         tarballs=flatten([
             [download_taxonomy.taxonomy],
             download_library.library,
-            [create_library_from_fastas.custom_library]
+            select_all([create_library_from_fastas.custom_library])
         ]),
         max_retries=max_retries
     }
