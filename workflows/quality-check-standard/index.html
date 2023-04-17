@@ -200,7 +200,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <ul>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to quality check</li>
 <li><code>bam_index</code> (File, <strong>required</strong>): BAM index file corresponding to the input BAM</li>
-<li><code>experiment</code> (String, <strong>required</strong>): 'WGS', 'WES', or 'RNA-Seq'</li>
+<li><code>molecule</code> (String, <strong>required</strong>): 'DNA' or 'RNA'</li>
 <li><code>reference_fasta</code> (File, <strong>required</strong>): Reference genome in FASTA format</li>
 </ul>
 <h4 id="optional">Optional</h4>
@@ -211,14 +211,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>collect_alignment_summary_metrics.disk_size_gb</code> (Int?)</li>
 <li><code>collect_gc_bias_metrics.disk_size_gb</code> (Int?)</li>
 <li><code>collect_insert_size_metrics.disk_size_gb</code> (Int?)</li>
-<li><code>collect_wgs_metrics.disk_size_gb</code> (Int?)</li>
 <li><code>fastq_screen.sample_name</code> (String?)</li>
 <li><code>picard_sort.disk_size_gb</code> (Int?)</li>
 <li><code>qualimap_rnaseq.disk_size_gb</code> (Int?)</li>
 <li><code>quality_score_distribution.disk_size_gb</code> (Int?)</li>
+<li><code>wg_coverage.coverage_bed</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>coverage_beds</code> (Array[File], default=[]): An array of 3 column BEDs which are passed to the <code>-b</code> flag of mosdepth, in order to restrict coverage analysis to select regions</li>
+<li><code>coverage_labels</code> (Array[String], default=[]): An array of equal length to <code>coverage_beds</code> which determines the prefix label applied to the output files. If omitted, defaults of <code>regions1</code>, <code>regions2</code>, etc. will be used.</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
 <li><code>paired_end</code> (Boolean, default=true): Whether the data is paired end</li>
 <li><code>phred_encoding</code> (String, default=""): Encoding format used for PHRED quality scores. Must be empty, 'sanger', or 'illumina1.3'. Only needed for WGS/WES. If missing, will be inferred</li>
@@ -228,11 +230,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>collect_alignment_summary_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>collect_gc_bias_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>collect_insert_size_metrics.memory_gb</code> (Int, default=8)</li>
-<li><code>collect_wgs_metrics.memory_gb</code> (Int, default=12)</li>
 <li><code>compute_checksum.memory_gb</code> (Int, default=5)</li>
-<li><code>coverage.memory_gb</code> (Int, default=8)</li>
-<li><code>coverage.min_mapping_quality</code> (Int, default=20)</li>
-<li><code>coverage.use_fast_mode</code> (Boolean, default=true)</li>
 <li><code>fastq_screen.num_reads</code> (Int, default=0)</li>
 <li><code>fastqc.memory_gb</code> (Int, default=5)</li>
 <li><code>fastqc.ncpu</code> (Int, default=1)</li>
@@ -253,6 +251,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>picard_sort.output_filename</code> (String, default=basename(bam,".bam") + ".sorted.bam")</li>
 <li><code>qualimap_rnaseq.memory_gb</code> (Int, default=16)</li>
 <li><code>quality_score_distribution.memory_gb</code> (Int, default=8)</li>
+<li><code>regions_coverage.memory_gb</code> (Int, default=8)</li>
+<li><code>regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
+<li><code>regions_coverage.use_fast_mode</code> (Boolean, default=true)</li>
 <li><code>samtools_flagstat.memory_gb</code> (Int, default=5)</li>
 <li><code>samtools_flagstat.outfilename</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
 <li><code>samtools_subsample.desired_reads</code> (Int, default=500000)</li>
@@ -264,6 +265,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>validate_bam.memory_gb</code> (Int, default=8)</li>
 <li><code>validate_bam.output_filename</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
 <li><code>validate_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
+<li><code>wg_coverage.memory_gb</code> (Int, default=8)</li>
+<li><code>wg_coverage.min_mapping_quality</code> (Int, default=20)</li>
+<li><code>wg_coverage.use_fast_mode</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -283,9 +287,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>quality_score_distribution_txt</code> (File)</li>
 <li><code>quality_score_distribution_pdf</code> (File)</li>
 <li><code>multiqc_zip</code> (File)</li>
-<li><code>wgs_metrics</code> (File?)</li>
-<li><code>mosdepth_global_dist</code> (File?)</li>
-<li><code>mosdepth_summary</code> (File?)</li>
+<li><code>mosdepth_global_dist</code> (File)</li>
+<li><code>mosdepth_global_summary</code> (File)</li>
+<li><code>mosdepth_region_dist</code> (Array[File])</li>
+<li><code>mosdepth_region_summary</code> (Array[File])</li>
 <li><code>fastq_screen_results</code> (File?)</li>
 <li><code>inferred_strandedness</code> (File?)</li>
 <li><code>qualimap_rnaseq_results</code> (File?)</li>
@@ -296,8 +301,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
-<li><code>input_experiment</code> (String, <strong>required</strong>)</li>
+<li><code>coverage_beds_len</code> (Int, <strong>required</strong>)</li>
+<li><code>coverage_labels</code> (Array[String], <strong>required</strong>)</li>
 <li><code>input_fq_format</code> (String, <strong>required</strong>)</li>
+<li><code>input_molecule</code> (String, <strong>required</strong>)</li>
 <li><code>input_strand</code> (String, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional_1">Optional</h4>
@@ -306,7 +313,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
-<li><code>input_check</code> (String)</li>
+<li><code>check</code> (String)</li>
+<li><code>labels</code> (Array[String])</li>
 </ul>
               
             </div>

@@ -168,15 +168,16 @@ MultiQC aggregates quality control results for bioinformatics.</p>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>input_files</code> (Array[File]+, <strong>required</strong>): A non-empty array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC.</li>
+<li><code>input_files</code> (Array[File], <strong>required</strong>): An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC.</li>
 <li><code>output_prefix</code> (String, <strong>required</strong>): A string for the MultiQC output directory: <prefix>.multiqc/ and <prefix>.multiqc.tar.gz</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>disk_size</code> (Int, default=20)</li>
-<li><code>extra_fn_clean_exts</code> (Array[String], default=[])</li>
+<li><code>extra_fn_clean_exts</code> (Array[String], default=[]): An array of strings that should be cleaned from sample names by MultiQC</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>mosdepth_labels</code> (Array[String], default=[]): If passing in multiple runs of <code>mosdepth</code>, an array of strings for labelling the different runs (must match part of the filenames)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>

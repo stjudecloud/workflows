@@ -76,6 +76,8 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -154,7 +156,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="mosdepth">Mosdepth</h1>
-<p>This WDL tool wraps the <a href="https://github.com/brentp/mosdepth">mosdepth tool</a>.</p>
+<p>This WDL file wraps the <a href="https://github.com/brentp/mosdepth">mosdepth tool</a>.</p>
 <h2 id="coverage">coverage</h2>
 <dl>
 <dt>author</dt>
@@ -170,17 +172,23 @@
 <li><code>bai</code> (File, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>)</li>
 </ul>
+<h4 id="optional">Optional</h4>
+<ul>
+<li><code>coverage_bed</code> (File?)</li>
+</ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=8)</li>
 <li><code>min_mapping_quality</code> (Int, default=20)</li>
+<li><code>prefix</code> (String, default=basename(bam,'.bam'))</li>
 <li><code>use_fast_mode</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>global_dist</code> (File)</li>
 <li><code>summary</code> (File)</li>
+<li><code>global_dist</code> (File)</li>
+<li><code>region_dist</code> (File?)</li>
 </ul>
               
             </div>
