@@ -82,7 +82,7 @@ workflow quality_check {
         input:
             gtf_provided=gtf_provided,
             input_molecule=molecule,
-            input_strand=provided_strandedness
+            input_strand=provided_strandedness,
             coverage_beds_len=length(coverage_beds),
             coverage_labels=coverage_labels
     }
