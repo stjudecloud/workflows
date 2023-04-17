@@ -16,7 +16,8 @@ jobs:
     - name: Check import syntax
       run: |
         EXITCODE=0
-        for file in $(find . -name '*.wdl'); do
+        shopt -s extglob
+        for file in $(find ./!(template) -name '*.wdl'); do
           >&2 echo "Checking file $file..."
           import_lines=$(awk '/import/' "$file" | grep -v '# lint-check: ignore') || true
 

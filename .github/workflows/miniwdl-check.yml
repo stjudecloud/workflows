@@ -19,7 +19,8 @@ jobs:
       run: |
         EXITCODE=0
         echo "Checking WDL files using \`miniwdl check\`."
-        files=$(find . -name '*.wdl')
+        shopt -s extglob
+        files=$(find ./!(template) -name '*.wdl')
         for file in $files; do
           echo "  [***] $file [***]"
           miniwdl check "$file"
