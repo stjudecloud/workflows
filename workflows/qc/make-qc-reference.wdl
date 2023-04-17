@@ -127,7 +127,6 @@ workflow make_qc_reference {
     output {
         File reference_fa = reference_download.outfile
         File gtf = gtf_download.outfile
-        File fastq_screen_db = fastq_screen_build_db.db
         File exon_bed = make_coverage_regions_beds.exon_bed
         File CDS_bed = make_coverage_regions_beds.CDS_bed
         File kraken_db = kraken_build_db.built_db
