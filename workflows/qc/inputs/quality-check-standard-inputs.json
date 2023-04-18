@@ -3,7 +3,7 @@
   "quality_check.bam_index": "/inputs/sample.bam.bai",
   "quality_check.reference_fasta": "/inputs/GRCh38.no_alt.fa",
   "quality_check.gtf": "/inputs/gencode.v31.annotation.gtf (only required for RNA-Seq data)",
-  "quality_check.experiment": "<WGS/WES/RNA-Seq>",
+  "quality_check.molecule": "<DNA/RNA>",
   "quality_check.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified, we will try to guess using ngsderive)",
   "quality_check.fastq_screen_db": "/inputs/fastq-screen-db.tar.gz",
   "quality_check.phred_encoding": "<sanger/illumina1.3> (optional, if not specified, we will try to guess using ngsderive. Only needed for WGS/WES)",

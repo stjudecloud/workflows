@@ -1,6 +1,8 @@
 ## # Make QC Reference
 ##
-## Create the reference DB needed by FastQ Screen in the `quality-check-standard` workflow when analyzing WGS and WES BAMs.
+## Download/create all the reference files needed for `quality-check-standard.wdl`.
+## This includes: a reference FASTA, a GTF, the database used by FastQ Screen, and exonic/coding regions BEDs
+## for use in restricting mosdepth coverage analysis to selected regions.
 ##
 ## ## LICENSING:
 ## 
@@ -25,12 +27,50 @@
 
 version 1.0
 
+import "../../tools/util.wdl"
 import "../../tools/fastq_screen.wdl"
 
 workflow make_qc_reference {
+    input {
+        String reference_fa_url
+        String gtf_url
+        String reference_fa_name
+        String gtf_name
+        Int max_retries = 1
+    }
+
+    parameter_meta {
+        reference_fa_url: "URL to retrieve the reference FASTA file from"
+        gtf_url: "URL to retrieve the reference GTF file from"
+        reference_fa_name: "Name of output reference FASTA file"
+        gtf_name: "Name of output GTF file"
+    }
+
+    call util.download as reference_download {
+        input:
+            url=reference_fa_url,
+            outfilename=reference_fa_name,
+            max_retries=max_retries
+    }
+    call util.download as gtf_download {
+        input:
+            url=gtf_url,
+            outfilename=gtf_name,
+            max_retries=max_retries
+    }
+
     call fastq_screen.build_db as fastq_screen_build_db
+    call util.make_coverage_regions_beds {
+        input:
+            gtf=gtf_download.outfile,
+            max_retries=max_retries
+    }
 
     output {
+        File reference_fa = reference_download.outfile
+        File gtf = gtf_download.outfile
         File fastq_screen_db = fastq_screen_build_db.db
+        File exon_bed = make_coverage_regions_beds.exon_bed
+        File CDS_bed = make_coverage_regions_beds.CDS_bed
     }
 }
