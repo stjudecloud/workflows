@@ -103,7 +103,7 @@ workflow quality_check {
     call mosdepth.coverage as wg_coverage {
         input:
             bam=quickcheck.checked_bam,
-            bai=bam_index,
+            bam_index=bam_index,
             prefix=basename(quickcheck.checked_bam, 'bam')+"whole_genome",
             max_retries=max_retries
     }
@@ -111,7 +111,7 @@ workflow quality_check {
         call mosdepth.coverage as regions_coverage {
             input:
                 bam=quickcheck.checked_bam,
-                bai=bam_index,
+                bam_index=bam_index,
                 coverage_bed=coverage_pair.left,
                 prefix=basename(quickcheck.checked_bam, 'bam')+coverage_pair.right,
                 max_retries=max_retries
