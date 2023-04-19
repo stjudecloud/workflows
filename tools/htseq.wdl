@@ -86,7 +86,7 @@ task count {
     }
    
     output {
-        File gene_counts = "~{outfile_name}"
+        File feature_counts = "~{outfile_name}"
     }
 
     meta {
