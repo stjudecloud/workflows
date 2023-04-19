@@ -30,7 +30,7 @@ task count {
         outfile_name: "Name for the feature count file"
         provided_strandedness: "<Stranded-Reverse/Stranded-Forward/Unstranded> User provided strandedness."
         inferred_strandedness: "<Stranded-Reverse/Stranded-Forward/Unstranded> `ngsderive` derived strandedness."
-        pos_sorted: "Is the BAM position sorted?"
+        pos_sorted: "Is the BAM position sorted (true) or name sorted (false)?"
         minaqual: "Skip all reads with alignment quality lower than the given minimum value"
         feature_type: "Feature type (3rd column in GFF file) to be used, all features of other type are ignored"
         idattr: "GFF attribute to be used as feature ID"
