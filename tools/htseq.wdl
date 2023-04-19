@@ -32,7 +32,7 @@ task count {
         inferred_strandedness: "<Stranded-Reverse/Stranded-Forward/Unstranded> `ngsderive` derived strandedness."
         pos_sorted: "Is the BAM position sorted (true) or name sorted (false)?"
         minaqual: "Skip all reads with alignment quality lower than the given minimum value"
-        feature_type: "Feature type (3rd column in GFF file) to be used, all features of other type are ignored"
+        feature_type: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored"
         idattr: "GFF attribute to be used as feature ID"
         mode: "<union/intersection-strict/intersection-nonempty> Mode to handle reads overlapping more than one feature"
         nonunique: "Score reads that align to or are assigned to more than one feature?"
