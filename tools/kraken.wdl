@@ -67,7 +67,7 @@ task download_library {
             choices: ['archaea', 'bacteria', 'plasmid', 'viral', 'human', 'fungi', 'plant', 'protozoa', 'nt', 'UniVec', 'UniVec_Core']
         }
         memory_gb: "RAM to allocate for task"
-        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `library_name`. Note that the default sizes are adequate as of April 2023, but new genomes are constantly being added to the NCBI database, and more disk space may be required depending on when in the future this task is run."
+        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `library_name`. Note that the default sizes are adequate as of April 2023, but new genomes are constantly being added to the NCBI database. More disk space may be required depending on when in the future this task is run."
         max_retries: "Number of times to retry in case of failure"
     }
 
