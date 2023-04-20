@@ -20,6 +20,9 @@ All rules below should be followed by contributers to this repo. Pull Requests w
 - All tasks must have configurable memory and disk space allocations
   - see the various tasks in the template directory for possible ways to allocate resources
     - Contributors can mix and match the available templates, copy and pasting subsections as appropriate
+    - It is allowed to have one resource allocated dynamically, and another allocated statically in the same task.
+    - It is not allowed to have a resource which can be allocated *either* statically or dynamically.
+      - This is technically feasible, but is too complicated for maintenance and end-users.
 - All tasks should have a `max_retries` input.
   - This should be defaulted to `1` for nearly all tasks
   - Some tasks are particularly error prone and can have a higher default `max_retries`
@@ -34,6 +37,7 @@ All rules below should be followed by contributers to this repo. Pull Requests w
   - TODO: address tasks with multiple outputs
 - output variable names should be short but descriptive
 - All tasks should run in a Docker container
+  - TODO: provide a default Docker image to use
 - no whitespace on empty lines
 - WDL lines should be less than 100 characters wide whenever possible
   - Exceptions would be long strings that WDL doesn't allow to be broken up

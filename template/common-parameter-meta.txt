@@ -1,3 +1,4 @@
+PERMITTED META DESCRIPTIONS:
         memory_gb: "RAM to allocate for task"
         disk_size_gb: "Disk space to allocate for task"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs."
@@ -9,12 +10,10 @@
         outfile_name: "Name for the <type of file> file"
         prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
         gtf: "GTF features file. Either gzipped or uncompressed."
-        gtf: "Gzipped GTF features file"
+        gtf_gz: "Gzipped GTF features file"
         bam: "Input BAM format file to <brief description of task>"
-        input_bam: "NOT ALLOWED. Drop `in_`/`input_` prefixes. Use `bam` instead."
         bam_index: "BAM index file corresponding to the input BAM"
-        bai: "NOT ALLOWED. Use `bam_index`."
-        reference_fasta: "Reference genome in FASTA format"
+        reference_fasta_gz: "Gzipped reference genome in FASTA format"
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`."
             choices: [
@@ -24,14 +23,18 @@
                 'Unstranded'
             ]
         },
-        read_one_fastq: "Gzipped FastQ file with 1st reads in pair"
-        read_two_fastq: "Gzipped FastQ file with 2nd reads in pair"
+        read_one_fastq_gz: "Gzipped FastQ file with 1st reads in pair"
+        read_two_fastq_gz: "Gzipped FastQ file with 2nd reads in pair"
+        read_one_fastqs_gz: "Array of gzipped FastQ files with 1st reads in pair"
+        read_two_fastqs_gz: "Array of gzipped FastQ files with 2nd reads in pair"
+        paired_end: "Is the data paired-end?"
+        subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
+
+BANNED META DESCRIPTIONS:
+        input_bam: "NOT ALLOWED. Drop `in_`/`input_` prefixes. Use `bam` instead."
+        bai: "NOT ALLOWED. Use `bam_index`."
         read1: "NOT ALLOWED. Use `read_one_fastq`."
         read2: "NOT ALLOWED. Use `read_two_fastq`."
-        read_one_fastqs: "Array of gzipped FastQ files with 1st reads in pair"
-        read_two_fastqs: "Array of gzipped FastQ files with 2nd reads in pair"
         r1_fastqs: "NOT ALLOWED. Use `read_one_fastqs`."
         r2_fastqs: "NOT ALLOWED. Use `read_two_fastqs`."
-        paired_end: "Is the data paired-end?"
         paired: "NOT ALLOWED. Use `paired_end`."
-        subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
