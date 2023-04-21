@@ -14,6 +14,13 @@ All rules below should be followed by contributers to this repo. Pull Requests w
   - Inputs and parameter meta must be in the same order
   - That order should be logical
     - No hard and fast rules, but look to similar tasks/workflows for an example of proper ordering
+    - Generally speaking:
+      - Required inputs at the top
+      - "sample" files before reference files
+      - Resource configuration at the bottom
+      - `max_retries` should be last
+      - If applicable, `detect_nproc` immediately before `max_retries`
+      - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
 - Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-templates.wdl`)
   - they should also fail quickly with an informative error message if an invalid input is provided
     - In most cases, just passing the parameter to the underlying tool should produce a satisfactory error, but this must be checked for each task
