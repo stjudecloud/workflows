@@ -1,8 +1,8 @@
 PERMITTED META DESCRIPTIONS:
         memory_gb: "RAM to allocate for task, specified in GB"
         disk_size_gb: "Disk space to allocate for task, specified in GB"
-        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB"
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB"
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
         detect_nproc: "Use all available cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "<for a task> Number of times to retry in case of failure"
@@ -33,8 +33,8 @@ PERMITTED META DESCRIPTIONS:
 BANNED META DESCRIPTIONS:
         input_bam: "NOT ALLOWED. Drop `in_`/`input_` prefixes. Use `bam` instead."
         bai: "NOT ALLOWED. Use `bam_index`."
-        read1: "NOT ALLOWED. Use `read_one_fastq`."
-        read2: "NOT ALLOWED. Use `read_two_fastq`."
-        r1_fastqs: "NOT ALLOWED. Use `read_one_fastqs`."
-        r2_fastqs: "NOT ALLOWED. Use `read_two_fastqs`."
+        read1: "NOT ALLOWED. Use `read_one_fastq_gz`."
+        read2: "NOT ALLOWED. Use `read_two_fastq_gz`."
+        r1_fastqs: "NOT ALLOWED. Use `read_one_fastqs_gz`."
+        r2_fastqs: "NOT ALLOWED. Use `read_two_fastqs_gz`."
         paired: "NOT ALLOWED. Use `paired_end`."

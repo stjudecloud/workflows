@@ -13,11 +13,12 @@ All rules below should be followed by contributers to this repo. Pull Requests w
     - see `template/common-parameter-meta.txt` for common description strings.
   - Inputs and parameter meta must be in the same order
   - That order should be logical
-    - No hard and fast rules, but look to similar tasks/workflows for an example of proper ordering
+    - look to similar tasks/workflows for an example of proper ordering
     - Generally speaking:
       - Required inputs at the top
       - "sample" files before reference files
       - Resource configuration at the bottom
+        - memory allocations come before disk space allocations
       - `max_retries` should be last
       - If applicable, `detect_nproc` immediately before `max_retries`
       - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
@@ -28,8 +29,9 @@ All rules below should be followed by contributers to this repo. Pull Requests w
   - see the various tasks in the template directory for possible ways to allocate resources
     - Contributors can mix and match the available templates, copy and pasting subsections as appropriate
     - It is allowed to have one resource allocated dynamically, and another allocated statically in the same task.
-    - It is not allowed to have a resource which can be allocated *either* statically or dynamically.
+    - It is *not* allowed to have a resource which can be allocated *either* statically or dynamically.
       - This is technically feasible, but is too complicated for maintenance and end-users.
+      - e.g. `memory_gb` and `modify_memory_gb` cannot be present in the same task.
 - All tasks and workflows should have a `max_retries` input.
   - This should be defaulted to `1` for nearly all tasks
   - Some tasks are particularly error prone and can have a higher default `max_retries`
@@ -37,7 +39,8 @@ All rules below should be followed by contributers to this repo. Pull Requests w
     - This allows each task to have it's own specific default `max_retries`
       - If a user does not supply `max_retries`, those task level defaults will get used
       - If a user does supply `max_retries`, it should override the default for *every* task called
-- multi-core tasks should always follow the conventions laid out in the `detect_nproc_task` example (see `template/task-templates.wdl`)
+- multi-core tasks should *always* follow the conventions laid out in the `detect_nproc_task` example (see `template/task-templates.wdl`)
+  - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter
 - `command` blocks should be wrapped with arrows (`<<< >>>`) instead of brackets (`{ }`)
   - Certain Bash constructions cause problems with the bracket notation
 - output file names should *always* be determined with either the `outfile_name` parameter or the `prefix` parameter.
@@ -45,8 +48,9 @@ All rules below should be followed by contributers to this repo. Pull Requests w
   - tasks with multiple outputs should always use the `prefix` convention
 - output variable names should be short but descriptive
 - All tasks should run in a Docker container
-  - TODO: provide a default Docker image to use
+  - whenever possible, prefer an image maintained by an external source (such as BioContainers) rather than creating your own image
+  - general purpose tasks can use the `util` image maintained in this repo
 - no whitespace on empty lines
 - WDL lines should be less than 100 characters wide whenever possible
   - Exceptions would be long strings that WDL doesn't allow to be broken up
-  - TODO: Do we enforce this within the `command` block? Or do we allow Bash to exceed 100 characters?
+  - This restriction applies to embedded code in the `command` block as well.
