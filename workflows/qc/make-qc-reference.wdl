@@ -46,6 +46,7 @@ workflow make_qc_reference {
             "protozoa",
             "UniVec_Core"
         ]
+        Boolean protein = false
         Array[String] kraken_fasta_urls = []
         Array[File] kraken_fastas = []
         Int? max_retries
@@ -72,6 +73,7 @@ workflow make_qc_reference {
                 'UniVec_Core'
             ]
         }
+        protein: "Construct a protein database?"
         kraken_fasta_urls: "URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database. This allows the addition of individual genomes (or other sequences) of interest."
         kraken_fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
@@ -104,10 +106,14 @@ workflow make_qc_reference {
         }
     }
 
-    call kraken.download_taxonomy { input: max_retries=max_retries }
+    call kraken.download_taxonomy { input: protein=protein, max_retries=max_retries }
 
     scatter (lib in kraken_libraries) {
-        call kraken.download_library { input: library_name=lib, max_retries=max_retries }
+        call kraken.download_library { input:
+            library_name=lib,
+            protein=protein,
+            max_retries=max_retries
+        }
     }
 
     Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.outfile])
@@ -115,6 +121,7 @@ workflow make_qc_reference {
     if (custom_fastas != empty_array) {
         call kraken.create_library_from_fastas { input:
             fastas=custom_fastas,
+            protein=protein,
             max_retries=max_retries
         }
     }
@@ -125,6 +132,7 @@ workflow make_qc_reference {
             download_library.library,
             select_all([create_library_from_fastas.custom_library])
         ]),
+            protein=protein,
         max_retries=max_retries
     }
 
