@@ -54,8 +54,8 @@ task dynamic_disk_and_ram_task {
 
     Int input_size_gb = ceil(size(<input files>, "GiB"))
 
-    Int disk_size_gb = ceil(input_size_gb * 1.5) + modify_disk_size_gb
-    Int memory_gb = ceil(input_size_gb * 1.2) + modify_memory_gb
+    Int disk_size_gb = ceil(input_size_gb * X) + modify_disk_size_gb
+    Int memory_gb = ceil(input_size_gb * Y) + modify_memory_gb
 
     command <<<
 
@@ -164,7 +164,7 @@ task prefix_task {
     }
 
     input {
-        String prefix = basename(<input file>, ".<extension>") + ".<new extension>"
+        String prefix = basename(<input file>, ".<extension>")
         Int memory_gb = 10
         Int disk_size_gb = 10
         Int max_retries = 1
