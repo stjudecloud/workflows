@@ -1,8 +1,8 @@
 PERMITTED META DESCRIPTIONS:
-        memory_gb: "RAM to allocate for task"
-        disk_size_gb: "Disk space to allocate for task"
-        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs."
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        disk_size_gb: "Disk space to allocate for task, specified in GB"
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB"
         ncpu: "Number of cores to allocate for task"
         detect_nproc: "Use all available cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "<for a task> Number of times to retry in case of failure"
