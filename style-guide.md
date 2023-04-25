@@ -30,7 +30,7 @@ All rules below should be followed by contributers to this repo. Pull Requests w
     - It is allowed to have one resource allocated dynamically, and another allocated statically in the same task.
     - It is not allowed to have a resource which can be allocated *either* statically or dynamically.
       - This is technically feasible, but is too complicated for maintenance and end-users.
-- All tasks should have a `max_retries` input.
+- All tasks and workflows should have a `max_retries` input.
   - This should be defaulted to `1` for nearly all tasks
   - Some tasks are particularly error prone and can have a higher default `max_retries`
   - **rule specific to workflows:** `max_retries` should be an optional `Int?`
@@ -41,7 +41,8 @@ All rules below should be followed by contributers to this repo. Pull Requests w
 - `command` blocks should be wrapped with arrows (`<<< >>>`) instead of brackets (`{ }`)
   - Certain Bash constructions cause problems with the bracket notation
 - output file names should *always* be determined with either the `outfile_name` parameter or the `prefix` parameter.
-  - TODO: address tasks with multiple outputs
+  - `outfile_name` should be preferred if no downstream tasks/tools rely on the file name/extension
+  - tasks with multiple outputs should always use the `prefix` convention
 - output variable names should be short but descriptive
 - All tasks should run in a Docker container
   - TODO: provide a default Docker image to use
