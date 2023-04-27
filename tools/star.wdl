@@ -91,11 +91,17 @@ task alignment {
     }
     
     String parsed_detect_nproc = if detect_nproc then "true" else ""
+
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
+
+    String memory_limit_bytes = (memory_gb - 2) + "000000000"
+
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
-    Float read_two_fastqs_size = size(select_first([read_two_fastqs, []]), "GiB")
+    Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
     Float stardb_tar_gz_size = size(stardb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10)])
+
+    Array[File] empty_comparison_array = []  # odd construction forced by WDL v1.0 spec
 
     command {
         set -euo pipefail
@@ -108,9 +114,10 @@ task alignment {
 
         tar -xzf ~{stardb_tar_gz};
 
+        # TODO rework `sort_star_input.py` to avoid this spaghetti logic
         if [ -n "~{if defined(read_groups) then read_groups else ""}" ]
         then
-            if [ -n "~{if defined(read_two_fastqs) then "read_two_fastqs" else ""}" ]
+            if [ -n "~{if read_two_fastqs != empty_comparison_array then "read_two_fastqs" else ""}" ]
             then
                 python3 /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}" \
@@ -122,7 +129,7 @@ task alignment {
                     --read_groups "~{read_groups}"
             fi
         else 
-            if [ -n "~{if defined(read_two_fastqs) then "read_two_fastqs" else ""}" ]
+            if [ -n "~{if read_two_fastqs != empty_comparison_array then "read_two_fastqs" else ""}" ]
             then
                 python3 /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}" \
@@ -152,7 +159,7 @@ task alignment {
              --outFilterScoreMinOverLread 0.66 \
              --outFileNamePrefix ~{output_prefix + "."} \
              --twopassMode Basic \
-             --limitBAMsortRAM ~{(memory_gb - 2) + "000000000"} \
+             --limitBAMsortRAM ~{memory_limit_bytes} \
              --outSAMattrRGline $(cat read_groups_sorted.txt)
     }
 

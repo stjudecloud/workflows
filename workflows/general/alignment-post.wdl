@@ -11,8 +11,8 @@ workflow alignment_post {
         File bam
         Boolean mark_duplicates
         File? contaminant_db
-        String xenocp_aligner = ""
         Boolean cleanse_xenograft = false
+        String xenocp_aligner = ""
         Boolean detect_nproc = false
         Int? max_retries
     }
@@ -21,8 +21,15 @@ workflow alignment_post {
         bam: "Input BAM format file to process"
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
-        xenocp_aligner: "Aligner to use to map reads to the host genome to detect contamination: [bwa aln, bwa mem, star]"
-        cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
+        cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
+        xenocp_aligner: {
+            description: "Aligner to use to map reads to the host genome for detecting contamination"
+            choices: [
+                'bwa aln',
+                'bwa mem',
+                'star'
+            ]
+        },
         detect_nproc: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
@@ -51,7 +58,7 @@ workflow alignment_post {
         }
         
         call samtools.index as post_markdup_index { input:
-            bam=picard_markdup.duplicates_bam,
+            bam=picard_markdup.duplicate_marked_bam,
             detect_nproc=detect_nproc,
             max_retries=max_retries
         }
@@ -65,7 +72,7 @@ workflow alignment_post {
     }
     
     File aligned_bam = select_first([
-        picard_markdup.duplicates_bam,
+        picard_markdup.duplicate_marked_bam,
         picard_sort.sorted_bam
     ])
     File aligned_bam_index = select_first([

@@ -105,7 +105,7 @@ task split_string {
     command <<<
         set -euo pipefail
 
-        echo ~{input_string} | sed 's/~{delimiter}/\n/g' > output.txt
+        echo ~{input_string} | sed 's/~{delimiter}/\n/g' > split_strings.txt
     >>>
 
     runtime {
@@ -116,8 +116,8 @@ task split_string {
     }
 
     output {
-        File split_strings_file = "output.txt"
-        Array[String] split_strings = read_lines("output.txt")
+        File split_strings_file = "split_strings.txt"
+        Array[String] split_strings = read_lines("split_strings.txt")
     }
 }
 

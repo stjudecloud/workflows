@@ -19,7 +19,7 @@ task mark_duplicates {
 
     command {
         picard -Xmx~{java_heap_size}g MarkDuplicates I=~{bam} \
-            O=~{prefix}.duplicates.bam \
+            O=~{prefix}.MarkDuplicates.bam \
             VALIDATION_STRINGENCY=SILENT \
             CREATE_INDEX=false \
             CREATE_MD5_FILE=false \
@@ -35,7 +35,7 @@ task mark_duplicates {
     }
 
     output {
-        File duplicates_bam = "~{prefix}.duplicates.bam"
+        File duplicate_marked_bam = "~{prefix}.MarkDuplicates.bam"
     }
 
     meta {

@@ -32,8 +32,23 @@ workflow rnaseq_core {
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
-        xenocp_aligner: "Aligner to use to map reads to the host genome to detect contamination: [bwa aln, bwa mem, star]"
-        strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
+        xenocp_aligner: {
+            description: "Aligner to use to map reads to the host genome for detecting contamination"
+            choices: [
+                'bwa aln',
+                'bwa mem',
+                'star'
+            ]
+        },
+        strandedness: {
+            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`."
+            choices: [
+                '',
+                'Stranded-Reverse',
+                'Stranded-Forward',
+                'Unstranded'
+            ]
+        },
         detect_nproc: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
@@ -52,8 +67,8 @@ workflow rnaseq_core {
         bam=alignment.star_bam,
         mark_duplicates=mark_duplicates,
         contaminant_db=contaminant_db,
-        xenocp_aligner=xenocp_aligner,
         cleanse_xenograft=cleanse_xenograft,
+        xenocp_aligner=xenocp_aligner,
         detect_nproc=detect_nproc,
         max_retries=max_retries
     }
@@ -78,7 +93,7 @@ workflow rnaseq_core {
         File bam_index = alignment_post.bam_index
         File bam_checksum = alignment_post.bam_checksum
         File star_log = alignment.star_log
-        File gene_counts = htseq_count.gene_counts
+        File feature_counts = htseq_count.feature_counts
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
         File bigwig = alignment_post.bigwig
     }
