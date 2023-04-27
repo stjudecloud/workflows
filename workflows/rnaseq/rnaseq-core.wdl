@@ -53,6 +53,16 @@ workflow rnaseq_core {
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
+    Map[String, String] htseq_strandedness_map = {
+        "Stranded-Reverse": "reverse",
+        "Stranded-Forward": "yes",
+        "Unstranded": "no",
+        "Inconclusive": "undefined",
+        "": "undefined"
+    }
+
+    String provided_strandedness = strandedness
+
     call star.alignment { input:
         read_one_fastqs=read_one_fastqs,
         read_two_fastqs=read_two_fastqs,
@@ -80,11 +90,14 @@ workflow rnaseq_core {
         max_retries=max_retries
     }
 
+    String htseq_strandedness = if (provided_strandedness != "")
+        then htseq_strandedness_map[provided_strandedness]
+        else htseq_strandedness_map[ngsderive_strandedness.strandedness]
+
     call htseq.count as htseq_count { input:
         bam=alignment_post.out_bam,
         gtf=gtf,
-        provided_strandedness=strandedness,
-        inferred_strandedness=ngsderive_strandedness.strandedness,
+        strandedness=htseq_strandedness,
         max_retries=max_retries
     }
 

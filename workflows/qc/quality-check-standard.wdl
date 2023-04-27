@@ -81,6 +81,14 @@ workflow quality_check {
     String prefix = basename(bam, ".bam")
     String provided_strandedness = strandedness
 
+    Map[String, String] qualimap_strandedness_map = {
+        "Stranded-Reverse": "strand-specific-reverse",
+        "Stranded-Forward": "strand-specific-forward",
+        "Unstranded": "non-strand-specific",
+        "Inconclusive": "non-strand-specific",
+        "": "undefined"
+    }
+
     call parse_input {
         input:
             input_molecule=molecule,
@@ -142,18 +150,9 @@ workflow quality_check {
 
         call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
 
-        String qualimap_strandedness = if (provided_strandedness != "") then 
-                if (provided_strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
-                if (provided_strandedness == "Stranded-Forward") then "strand-specific-forward" else
-                if (provided_strandedness == "Unstranded") then "non-strand-specific"
-                else "unknown-strand"  # this will intentionally cause qualimap to error. You will need to manually specify
-                                       # in this case
-            else 
-                if (ngsderive_strandedness.strandedness == "Stranded-Reverse") then "strand-specific-reverse" else
-                if (ngsderive_strandedness.strandedness == "Stranded-Forward") then "strand-specific-forward" else 
-                if (ngsderive_strandedness.strandedness == "Unstranded" || ngsderive_strandedness.strandedness == "Inconclusive") then "non-strand-specific"
-                else "unknown-strand"  # this will intentionally cause qualimap to error. You will need to manually specify
-                                       # in this case
+        String qualimap_strandedness = if (provided_strandedness != "")
+            then qualimap_strandedness_map[provided_strandedness]
+            else qualimap_strandedness_map[ngsderive_strandedness.strandedness]
 
         call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input:

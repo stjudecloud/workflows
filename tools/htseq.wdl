@@ -9,9 +9,8 @@ task count {
     input {
         File bam
         File gtf
+        String strandedness
         String outfile_name = basename(bam, ".bam") + ".feature-counts.txt"
-        String provided_strandedness = ""
-        String inferred_strandedness = ""
         Boolean pos_sorted = true
         Int minaqual = 10
         String feature_type = "exon"
@@ -27,9 +26,15 @@ task count {
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         gtf: "Input genomic features in GTF format to count reads for"
+        strandedness: {
+            description: ""
+            choices: [
+                "yes",
+                "reverse",
+                "no"
+            ]
+        }
         outfile_name: "Name for the feature count file"
-        provided_strandedness: "<Stranded-Reverse/Stranded-Forward/Unstranded> User provided strandedness."
-        inferred_strandedness: "<Stranded-Reverse/Stranded-Forward/Unstranded> `ngsderive` derived strandedness."
         pos_sorted: "Is the BAM position sorted (true) or name sorted (false)?"
         minaqual: "Skip all reads with alignment quality lower than the given minimum value"
         feature_type: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored"
@@ -42,20 +47,6 @@ task count {
         max_retries: "Number of times to retry in case of failure"
     }
 
-    String stranded = if (provided_strandedness != "") then 
-                        if (provided_strandedness == "Stranded-Reverse") then "reverse" else
-                        if (provided_strandedness == "Stranded-Forward") then "yes" else
-                        if (provided_strandedness == "Unstranded") then "no"
-                         else "unknown-strand" # this will intentionally cause htseq to error.
-                                               # You will need to manually specify in this case
-                      else 
-                        if (inferred_strandedness == "Stranded-Reverse") then "reverse" else
-                        if (inferred_strandedness == "Stranded-Forward") then "yes" else 
-                        if (inferred_strandedness == "Unstranded") then "no" else
-                        if (inferred_strandedness == "Inconclusive") then "no"
-                        else "unknown-strand" # this will intentionally cause htseq to error.
-                                              # You will need to manually specify in this case
-
     Float bam_size = size(bam, "GiB")
     Float mem_size = bam_size + added_memory_gb
     Float gtf_size = size(gtf, "GiB")
@@ -64,7 +55,7 @@ task count {
     command {
         htseq-count -f bam \
             -r ~{if pos_sorted then "pos" else "name"} \
-            -s ~{stranded} \
+            -s ~{strandedness} \
             -a ~{minaqual} \
             -t ~{feature_type} \
             -m ~{mode} \
