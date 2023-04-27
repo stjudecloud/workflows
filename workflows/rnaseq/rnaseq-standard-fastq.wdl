@@ -115,6 +115,7 @@ workflow rnaseq_standard_fastq {
         File star_log = rnaseq_core.star_log
         File feature_counts = rnaseq_core.feature_counts
         File inferred_strandedness = rnaseq_core.inferred_strandedness
+        String inferred_strandedness_string = rnaseq_core.inferred_strandedness_string
         File bigwig = rnaseq_core.bigwig
     }
 }

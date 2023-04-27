@@ -108,6 +108,7 @@ workflow rnaseq_core {
         File star_log = alignment.star_log
         File feature_counts = htseq_count.feature_counts
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
+        String inferred_strandedness_string = ngsderive_strandedness.strandedness
         File bigwig = alignment_post.bigwig
     }
 }
