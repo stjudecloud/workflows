@@ -43,11 +43,10 @@ workflow alignment_post {
             max_retries=max_retries
         }
 
-        File contam_db = select_first([contaminant_db, ""])
         call xenocp_workflow.xenocp { input:
             input_bam=picard_sort.sorted_bam,
             input_bai=pre_xenocp_index.bam_index,
-            reference_tar_gz=contam_db,
+            reference_tar_gz=select_first([contaminant_db, ""]),
             aligner=xenocp_aligner,
             skip_duplicate_marking=true
         }
@@ -56,29 +55,20 @@ workflow alignment_post {
         call picard.mark_duplicates as picard_markdup { input:
             bam=select_first([xenocp.bam, picard_sort.sorted_bam])
         }
-        
-        call samtools.index as post_markdup_index { input:
-            bam=picard_markdup.duplicate_marked_bam,
-            detect_nproc=detect_nproc,
-            max_retries=max_retries
-        }
-    }
-    if (!mark_duplicates) {
-        call samtools.index as samtools_index { input:
-            bam=select_first([xenocp.bam, picard_sort.sorted_bam]),
-            detect_nproc=detect_nproc,
-            max_retries=max_retries
-        }
     }
     
     File aligned_bam = select_first([
         picard_markdup.duplicate_marked_bam,
+        xenocp.bam,
         picard_sort.sorted_bam
     ])
-    File aligned_bam_index = select_first([
-        post_markdup_index.bam_index,
-        samtools_index.bam_index
-    ])
+
+    call samtools.index as samtools_index { input:
+        bam=aligned_bam,
+        detect_nproc=detect_nproc,
+        max_retries=max_retries
+    }
+    File aligned_bam_index = samtools_index.bam_index
 
     call picard.validate_bam { input: bam=aligned_bam, max_retries=max_retries }
 
