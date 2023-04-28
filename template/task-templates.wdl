@@ -206,6 +206,7 @@ task string_choices_task {
     }
 
     input {
+        String <choice_input>
         Int memory_gb = <>
         Int disk_size_gb = <>
         Int max_retries = 1
