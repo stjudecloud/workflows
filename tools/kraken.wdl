@@ -217,6 +217,8 @@ task build_db {
         else (tarballs_size * 2)
     ) + added_memory_gb
 
+    String max_db_size_bytes = max_db_size_gb + "000000000"
+
     command <<<
         set -euo pipefail
 
@@ -239,7 +241,7 @@ task build_db {
             --kmer-len ~{kmer_len} \
             --minimizer-len ~{minimizer_len} \
             --minimizer-spaces ~{minimizer_spaces} \
-            ~{if (max_db_size_gb > 0) then "--max-db-size" else ""} ~{if (max_db_size_gb > 0) then max_db_size_gb + "000000000" else ""} \
+            ~{if (max_db_size_gb > 0) then "--max-db-size" else ""} ~{if (max_db_size_gb > 0) then max_db_size_bytes else ""} \
             --threads "$n_cores" \
             --db ~{db_name}
 
