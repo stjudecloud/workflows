@@ -51,6 +51,7 @@ All rules below should be followed by contributers to this repo. Pull Requests w
   - whenever possible, prefer an image maintained by an external source (such as BioContainers) rather than creating your own image
   - general purpose tasks can use the `util` image maintained in this repo
 - no whitespace on empty lines
+- no whitespace at the end of lines
 - WDL lines should be less than 100 characters wide whenever possible
   - Exceptions would be long strings that WDL doesn't allow to be broken up
   - This restriction applies to embedded code in the `command` block as well.
