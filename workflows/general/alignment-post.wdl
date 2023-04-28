@@ -53,7 +53,7 @@ workflow alignment_post {
     }
     if (mark_duplicates) {
         call picard.mark_duplicates as picard_markdup { input:
-            bam=select_first([xenocp.bam, picard_sort.sorted_bam])
+            bam=select_first([xenocp.bam, picard_sort.sorted_bam]),
             max_retries=max_retries
         }
     }
