@@ -211,7 +211,11 @@ task build_db {
 
     Int tarballs_size = ceil(size(tarballs, "GiB"))
     Int disk_size_gb = tarballs_size * 6 + added_disk_size_gb
-    Int memory_gb = (if (max_db_size_gb > 0) then (ceil(max_db_size_gb * 1.2)) else (tarballs_size * 2)) + added_memory_gb
+    Int memory_gb = (
+        if (max_db_size_gb > 0)
+        then (ceil(max_db_size_gb * 1.2))
+        else (tarballs_size * 2)
+    ) + added_memory_gb
 
     command <<<
         set -euo pipefail
