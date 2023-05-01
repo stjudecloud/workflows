@@ -39,6 +39,11 @@ These rules might also be enforced by a yet-to-be-written linter.
   - linter will have an option to disable this error
 - no whitespace on empty lines
 - no whitespace at the end of lines
+- indentation should be 4 spaces and never tab literals
+- At most one empty line in a row
+- End the file with a newline
+- Comments on the same line as code should have 2 spaces before the `#` and one space before the comment
+- Files should not mix `\n` and `\r\n` line breaks
 - WDL lines should be less than 100 characters wide whenever possible
   - Exceptions would be long strings that WDL doesn't allow to be broken up
   - This restriction applies to embedded code in the `command` block as well.
