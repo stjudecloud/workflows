@@ -5,6 +5,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
 ## Rules
 
 - All WDL should be written in v1.0
+- Variables should be in "snake_case"
 - See `template/common-parameter-meta.txt` for common description strings.
   - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
 - Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-templates.wdl`)
