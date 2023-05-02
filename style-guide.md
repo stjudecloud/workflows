@@ -30,11 +30,11 @@ These rules might also be enforced by a yet-to-be-written linter.
     - `Int`
   - for ordering of the same compound type, drop the outermost type and recursively apply above sorting
   - once the above ordering is satisfied, it is up to the developer for final order of inputs of the same type.
+  - Disallowed input names: `/^[iI]n[A-Z_]/`, `/^input/i`
 - `command` blocks should be wrapped with arrows (`<<< >>>`) instead of brackets (`{ }`)
   - Certain Bash constructions cause problems with the bracket notation
 - output variable names should be short but descriptive
-  - Disallowed output names: `out*`, any name less than 3 characters
-    - TODO: is this sufficient?
+  - Disallowed output names: `/^[oO]ut[A-Z_]/`, `/^output/i`, `/^..?$/`
 - All tasks should run in a Docker container
   - linter will have an option to disable this error
 - no whitespace on empty lines
@@ -44,7 +44,6 @@ These rules might also be enforced by a yet-to-be-written linter.
 - End the file with a newline
 - Comments on the same line as code should have 2 spaces before the `#` and one space before the comment
 - Files should not mix `\n` and `\r\n` line breaks
-- WDL lines should be less than 100 characters wide whenever possible
+- WDL lines should be less than 90 characters wide whenever possible
   - Exceptions would be long strings that WDL doesn't allow to be broken up
   - This restriction applies to embedded code in the `command` block as well.
-    - TODO: I'm still not sure about this decision. I have reservations applying this rule to the command block. I've found a small handful of cases where I think the most readable formatting extends over 100 characters. They are rare, but exist frequently enough I'm not sure I like this rule.

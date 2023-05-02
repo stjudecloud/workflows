@@ -1,13 +1,11 @@
 # WDL Best Practices
 
-All rules below should be followed by contributors to this repo. Contributors should also follow the rules outlined in `style-guide.md` Pull Requests which do not conform to these specifications will be asked to change.
+All rules below should be followed by contributors to this repo. Contributors should also follow the rules outlined in `style-guide.md`. Pull Requests which do not conform to these specifications will be asked to change.
 
 ## Rules
 
 - All WDL should be written in v1.0
-- All inputs must have a corresponding `parameter_meta` entry
-  - These texts should be copy and pasted from other tasks with the same input when possible
-    - see `template/common-parameter-meta.txt` for common description strings.
+- See `template/common-parameter-meta.txt` for common description strings.
   - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
 - Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-templates.wdl`)
   - they should also fail quickly with an informative error message if an invalid input is provided
@@ -33,8 +31,16 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - tasks with multiple outputs should always use the `prefix` convention
 - After the input sorting rules in `style-guide.md` have been applied, follow the below rules for further sorting.
   - "sample" files come before "reference" files
-  - inputs that allocate memory come before inputs that allocate disk space, which come before `ncpu`, which comes before `max_retries`
+  - If present, `detect_nproc` should be the last `Boolean` in its block
+  - the `ncpu` parameter comes before inputs that allocate memory, which come before inputs that allocate disk space, which come before `max_retries`
     - This block of 3-4 inputs should come after all other inputs.
-- All tasks should run in a Docker container
-  - whenever possible, prefer an image maintained by an external source (such as BioContainers) rather than creating your own image
-  - general purpose tasks can use the `util` image maintained in this repo
+- Whenever possible, prefer a Docker image maintained by an external source (such as BioContainers) rather than creating your own image
+- When adding a Dockerfile to this repository, follow the below conventions
+  - The `Dockerfile` should be nested under the `docker/` directory, a folder with a name for the image (in most cases the name of the primary tool), and finally a folder named after the version being built.
+  - Docker images should be versioned according to the following convention
+    - Start with the version of whatever tool is named in the path to the `Dockerfile`
+      - If no specific tool is named (e.g. the `util` image), default to SemVer. Ignore the next 3 bullet points.
+    - Followed by a dash-zero (`-0`)
+      - If the Docker image gets updated, *without* updating the base tool's version, increment the number after the dash (`-`) by one
+      - If the Docker image gets updated, *including* updating the base tool's version, revert back to a dash-zero (`-0`)
+- general purpose tasks can use the `util` image maintained in this repo
