@@ -6,6 +6,14 @@ These rules might also be enforced by a yet-to-be-written linter.
 
 ## Rules
 
+- The first line of each file should be `## # <title of file>`
+  - This ensures that if using WDLdoc for your documentation, it will have a proper Markdown title at the top
+  - If missing, the linter would autogenerate a title based on the filename
+    - This behavior could be disabled
+- Files should have an [SPDX formatted](https://spdx.github.io/spdx-spec/v2.3/using-SPDX-short-identifiers-in-source-files/) Copyright and License information
+  - The linter would autogenerate these fields for the user to fill in
+    - or they could be filled in automatically if specified in the configuration/parameters
+    - This behavior could be disabled
 - The following sections must be present and in this order: `meta`, `parameter_meta`, `input`, `command`, `output`, `runtime`
 - The `meta` section should have a `description` of the task
   - `meta` should *not* include `author` or `email` keys
@@ -37,6 +45,9 @@ These rules might also be enforced by a yet-to-be-written linter.
   - Disallowed output names: `/^[oO]ut[A-Z_]/`, `/^output/i`, `/^..?$/`
 - All tasks should run in a Docker container
   - linter will have an option to disable this error
+- Files with workflows in them should document the outputs in a WDLdoc header
+  - The linter will create a template to be filled in
+    - This behavior could be disabled
 - no whitespace on empty lines
 - no whitespace at the end of lines
 - indentation should be 4 spaces and never tab literals
