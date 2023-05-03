@@ -43,6 +43,9 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - If present, `detect_nproc` should be the last `Boolean` in its block
   - the `ncpu` parameter comes before inputs that allocate memory, which come before inputs that allocate disk space, which come before `max_retries`
     - This block of 3-4 inputs should come after all other inputs.
+- All tasks should have an output
+  - This may be a hardcoded "dummy" output such as `String check = "passed"`
+  - This ensures the task can be cached by runners. Tasks without outputs may be required to rerun on the same input due to a cache miss.
 - Whenever possible, prefer a Docker image maintained by an external source (such as BioContainers) rather than creating your own image
 - When adding a Dockerfile to this repository, follow the below conventions
   - The `Dockerfile` should be nested under the `docker/` directory, a folder with a name for the image (in most cases the name of the primary tool), and finally a folder named after the version being built.
