@@ -10,9 +10,15 @@ All rules below should be followed by contributors to this repo. Contributors sh
 - Variables should be in "snake_case"
 - See `template/common-parameter-meta.txt` for common description strings.
   - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
+- Check all assumptions made about inputs before beginning long running executions that will fail if assumptions don't hold
+  - Common examples of assumptions that should be checked: valid `String` choice, mutually exclusive parameters, missing optional file for selected parameters, filename extensions
+  - This can commonly be handled by a `parse_input` task (defined in the same file as the workflow in question)
+    - When possible, avoid passing in entire files to the `parse_input` task. Coerce files to `Boolean`s or `String`s to avoid unnecessary disk space usage
 - Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-templates.wdl`)
   - they should also fail quickly with an informative error message if an invalid input is provided
     - In most cases, just passing the parameter to the underlying tool should produce a satisfactory error, but this must be checked for each task
+  - While redundant, it is still best practice to validate these strings in the `parse_input` task of any workflow which calls the task
+    - This ensures the workflow will fail as fast as possible to save users time and resources
 - All tasks must have configurable memory and disk space allocations
   - see the various tasks in the template directory for possible ways to allocate resources
     - Contributors can mix and match the available templates, copy and pasting subsections as appropriate
