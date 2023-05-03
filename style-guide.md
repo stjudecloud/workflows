@@ -53,9 +53,6 @@ These rules might also be enforced by a yet-to-be-written linter.
   - Disallowed output names: `/^[oO]ut[A-Z_]/`, `/^output/i`, `/^..?$/`
 - All tasks should run in a Docker container
   - linter will have an option to disable this error
-- Files with workflows in them should document the outputs in a WDLdoc header
-  - The linter will create a template to be filled in
-    - This behavior could be disabled
 - no whitespace on empty lines
 - no whitespace at the end of lines
 - indentation should be 4 spaces and never tab literals
