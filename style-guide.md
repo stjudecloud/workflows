@@ -53,6 +53,7 @@ These rules might also be enforced by a yet-to-be-written linter.
 - no whitespace at the end of lines
 - indentation should be 4 spaces and never tab literals
 - At most one empty line in a row
+- There should be an empty line between workflow/task sections and any intermediate declarations
 - End the file with a newline
 - Comments on the same line as code should have 2 spaces before the `#` and one space before the comment
 - Files should not mix `\n` and `\r\n` line breaks
