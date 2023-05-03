@@ -14,8 +14,9 @@ These rules might also be enforced by a yet-to-be-written linter.
   - The linter would autogenerate these fields for the user to fill in
     - or they could be filled in automatically if specified in the configuration/parameters
     - This behavior could be disabled
-- The following sections must be present and in this order: `meta`, `parameter_meta`, `input`, `command`, `output`, `runtime`
-- The `meta` section should have a `description` of the task
+- The following sections must be present and in this order for all workflows: `meta`, `parameter_meta`, `input`, `output`
+- The following sections must be present and in this order for all tasks: `meta`, `parameter_meta`, `input`, `command`, `output`, `runtime`
+- The `meta` section should have a `description` of the task or workflow
   - `meta` should *not* include `author` or `email` keys
 - All inputs must have a corresponding `parameter_meta` entry
   - These texts should be copy and pasted from other tasks with the same input when possible
