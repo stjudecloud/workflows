@@ -15,9 +15,16 @@ These rules might also be enforced by a yet-to-be-written linter.
     - or they could be filled in automatically if specified in the configuration/parameters
     - This behavior could be disabled
 - The following sections must be present and in this order for all workflows: `meta`, `parameter_meta`, `input`, `output`
+  - `input`, `parameter_meta`, and `output` are technically optional in the WDL spec, though it is discouraged to write workflows in this manner.
+    - The linter will not enforce the presence of these sections
+      - If `input` is present, the linter will enforce the presence of `parameter_meta`
 - The following sections must be present and in this order for all tasks: `meta`, `parameter_meta`, `input`, `command`, `output`, `runtime`
+  - `input`, `parameter_meta`, and `output` are technically optional in the WDL spec, though it is discouraged to write tasks in this manner.
+    - The linter will not enforce the presence of these sections
+      - If `input` is present, the linter will enforce the presence of `parameter_meta`
 - The `meta` section should have a `description` of the task or workflow
-  - `meta` should *not* include `author` or `email` keys
+- The `meta` section should have an `outputs` key and keys with descriptions for each output of the task/workflow
+- Additional `meta` entries are allowed (such as `author` or `email` keys)
 - All inputs must have a corresponding `parameter_meta` entry
   - These texts should be copy and pasted from other tasks with the same input when possible
   - Inputs and parameter meta must be in the same order
