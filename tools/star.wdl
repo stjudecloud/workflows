@@ -17,7 +17,6 @@ task build_star_db {
         Boolean detect_nproc = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     String stardb_out_name = stardb_dir_name + ".tar.gz"
     Float reference_fasta_size = size(reference_fasta, "GiB")
     Float gtf_size = size(gtf, "GiB")
@@ -27,7 +26,7 @@ task build_star_db {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
+        if [ "~{detect_nproc}" = "true" ]; then
         then
             n_cores=$(nproc)
         fi
