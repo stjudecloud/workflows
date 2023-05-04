@@ -90,8 +90,6 @@ task alignment {
         Boolean detect_nproc = false
     }
     
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
-
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
 
     String memory_limit_bytes = (memory_gb - 2) + "000000000"
@@ -107,7 +105,7 @@ task alignment {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
+        if [ "~{detect_nproc}" = "true" ]; then
         then
             n_cores=$(nproc)
         fi
