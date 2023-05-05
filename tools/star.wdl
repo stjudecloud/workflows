@@ -112,7 +112,7 @@ task alignment {
             n_cores=$(nproc)
         fi
 
-        tar -xzf ~{stardb_tar_gz};
+        tar -xf ~{stardb_tar_gz};
 
         # TODO rework `sort_star_input.py` to avoid this spaghetti logic
         if [ -n "~{if defined(read_groups) then read_groups else ""}" ]
