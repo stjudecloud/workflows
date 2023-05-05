@@ -15,10 +15,9 @@ task bwa_aln {
         Int memory_gb = 5
         Int? disk_size_gb
         Int max_retries = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float input_fastq_size = size(fastq, "GiB")
     Float reference_size = size(bwadb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((input_fastq_size * 2) + (reference_size * 2))])
@@ -27,9 +26,8 @@ task bwa_aln {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         mkdir bwa
@@ -79,10 +77,9 @@ task bwa_aln_pe {
         Int memory_gb = 5
         Int? disk_size_gb
         Int max_retries = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float input_fastq_size = size(fastq1, "GiB") + size(fastq2, "GiB")
     Float reference_size = size(bwadb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((input_fastq_size * 2) + (reference_size * 2))])
@@ -91,9 +88,8 @@ task bwa_aln_pe {
         set -xeuo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         mkdir bwa
@@ -144,10 +140,9 @@ task bwa_mem {
         Int memory_gb = 5
         Int? disk_size_gb
         Int max_retries = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float input_fastq_size = size(fastq, "GiB")
     Float reference_size = size(bwadb_tar_gz, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((input_fastq_size * 2) + reference_size)])
@@ -156,9 +151,8 @@ task bwa_mem {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         mkdir bwa

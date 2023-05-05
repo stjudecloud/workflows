@@ -13,10 +13,9 @@ task bamCoverage {
         Int max_retries = 1
         Int memory_gb = 5
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
  
@@ -24,8 +23,7 @@ task bamCoverage {
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores="max"
         fi
 

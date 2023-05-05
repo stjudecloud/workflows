@@ -48,20 +48,18 @@ task split {
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
         Int? disk_size_gb
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
     command {
         set -euo pipefail
-        
+
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         samtools split --threads "$n_cores" -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
@@ -141,18 +139,18 @@ task index {
         String outfile_name = basename(bam)+".bai"
         Int max_retries = 1
         Int memory_gb = 15
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
+        set -euo pipefail
+
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         samtools index -@ "$n_cores" ~{bam} ~{outfile_name}
@@ -189,20 +187,18 @@ task subsample {
         Int desired_reads = 500000
         Int max_retries = 1
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         if [[ "$(samtools view --threads "$n_cores" ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
@@ -245,21 +241,19 @@ task merge {
         Boolean attach_rg = true
         Int max_retries = 1
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float bam_size = size(bams, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
     String rg_arg = if attach_rg then "-r" else ""
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         header_arg=""
@@ -292,20 +286,18 @@ task addreplacerg {
         String read_group_id
         Int max_retries = 1
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         samtools addreplacerg --threads "$n_cores" -R ~{read_group_id} -o ~{outfile_name} ~{bam}

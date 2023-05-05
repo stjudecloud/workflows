@@ -18,7 +18,7 @@ workflow rnaseq_core {
         Boolean cleanse_xenograft = false
         String xenocp_aligner = "star"
         String strandedness = ""
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int? max_retries
     }
     
@@ -49,7 +49,7 @@ workflow rnaseq_core {
                 'Unstranded'
             ]
         },
-        detect_nproc: "Use all available cores for multi-core steps?"
+        use_all_cores: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
@@ -69,7 +69,7 @@ workflow rnaseq_core {
         stardb_tar_gz=stardb,
         output_prefix=output_prefix,
         read_groups=read_groups,
-        detect_nproc=detect_nproc,
+        use_all_cores=use_all_cores,
         max_retries=max_retries
     }
 
@@ -79,7 +79,7 @@ workflow rnaseq_core {
         contaminant_db=contaminant_db,
         cleanse_xenograft=cleanse_xenograft,
         xenocp_aligner=xenocp_aligner,
-        detect_nproc=detect_nproc,
+        use_all_cores=use_all_cores,
         max_retries=max_retries
     }
 

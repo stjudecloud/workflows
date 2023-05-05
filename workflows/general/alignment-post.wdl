@@ -13,7 +13,7 @@ workflow alignment_post {
         File? contaminant_db
         Boolean cleanse_xenograft = false
         String xenocp_aligner = ""
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int? max_retries
     }
 
@@ -30,7 +30,7 @@ workflow alignment_post {
                 'star'
             ]
         },
-        detect_nproc: "Use all available cores for multi-core steps?"
+        use_all_cores: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
@@ -39,7 +39,7 @@ workflow alignment_post {
     if (cleanse_xenograft) {
         call samtools.index as pre_xenocp_index { input:
             bam=picard_sort.sorted_bam,
-            detect_nproc=detect_nproc,
+            use_all_cores=use_all_cores,
             max_retries=max_retries
         }
 
@@ -66,7 +66,7 @@ workflow alignment_post {
 
     call samtools.index as samtools_index { input:
         bam=aligned_bam,
-        detect_nproc=detect_nproc,
+        use_all_cores=use_all_cores,
         max_retries=max_retries
     }
     File aligned_bam_index = samtools_index.bam_index
@@ -78,7 +78,7 @@ workflow alignment_post {
     call deeptools.bamCoverage as deeptools_bamCoverage { input:
         bam=aligned_bam,
         bam_index=aligned_bam_index,
-        detect_nproc=detect_nproc,
+        use_all_cores=use_all_cores,
         max_retries=max_retries
     }
 

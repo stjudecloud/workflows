@@ -8,7 +8,7 @@
     "rnaseq_standard.cleanse_xenograft": "Boolean (default = false)",
     "rnaseq_standard.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified we will try to guess using ngsderive)",
     "rnaseq_standard.validate_input": "Boolean (default = true)",
-    "rnaseq_standard.detect_nproc": "Boolean (default = false)",
+    "rnaseq_standard.use_all_cores": "Boolean (default = false)",
     "rnaseq_standard.max_retries": "Int?",
     "rnaseq_standard.rnaseq_core.xenocp_aligner": "<bwa aln/bwa mem/star> (default = star)",
     "rnaseq_standard.rnaseq_core.alignment.ncpu": "Int (default = 1)",

@@ -49,7 +49,7 @@ workflow chipseq_standard {
         Boolean paired = false
         Int subsample_n_reads = -1
         Boolean validate_input = true
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
@@ -61,7 +61,7 @@ workflow chipseq_standard {
         paired: "Is the data paired-end (true) or single-end (false)?"
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
         validate_input: "Run Picard ValidateSamFile on the input BAM"
-        detect_nproc: "Use all available cores for multi-core steps?"
+        use_all_cores: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps"
     }
 
@@ -75,7 +75,7 @@ workflow chipseq_standard {
                 bam=input_bam,
                 max_retries=max_retries,
                 desired_reads=subsample_n_reads,
-                detect_nproc=detect_nproc
+                use_all_cores=use_all_cores
         }
     }
     File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
@@ -83,7 +83,7 @@ workflow chipseq_standard {
     call util.get_read_groups { input: bam=selected_input_bam, max_retries=max_retries, format_for_star=false }
     Array[String] read_groups = read_lines(get_read_groups.read_groups_file)
 
-    call b2fq.bam_to_fastqs { input: bam=selected_input_bam, paired=paired, max_retries=max_retries, detect_nproc=detect_nproc }
+    call b2fq.bam_to_fastqs { input: bam=selected_input_bam, paired=paired, max_retries=max_retries, use_all_cores=use_all_cores }
 
     call samtools.index as samtools_index_input { input: bam=selected_input_bam }
 
@@ -111,7 +111,7 @@ workflow chipseq_standard {
     #                 bwadb_tar_gz=bwadb_tar_gz,
     #                 read_group=pair.right,
     #                 max_retries=max_retries,
-    #                 detect_nproc=detect_nproc
+    #                 use_all_cores=use_all_cores
     #         }
     #     }
     # }
@@ -125,7 +125,7 @@ workflow chipseq_standard {
     call picard.merge_sam_files as picard_merge { input: bam=picard_clean.cleaned_bam, outfile_name=output_prefix + ".bam" }
 
     call seaseq_samtools.markdup { input: bamfile=picard_merge.merged_bam, outputfile=output_prefix + ".bam" }
-    call samtools.index as samtools_index { input: bam=markdup.mkdupbam, max_retries=max_retries, detect_nproc=detect_nproc }
+    call samtools.index as samtools_index { input: bam=markdup.mkdupbam, max_retries=max_retries, use_all_cores=use_all_cores }
     call picard.validate_bam { input: bam=markdup.mkdupbam, max_retries=max_retries }
 
     call md5sum.compute_checksum { input: infile=markdup.mkdupbam, max_retries=max_retries }

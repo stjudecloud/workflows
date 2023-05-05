@@ -43,19 +43,19 @@ workflow bam_to_fastqs {
     input {
         File bam
         Boolean paired = true
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int? max_retries
     }
 
     parameter_meta {
         bam: "BAM file to split into fastqs"
         paired: "Is the data paired-end (true) or single-end (false)?"
-        detect_nproc: "Use all available cores for multi-core steps?"
+        use_all_cores: "Use all available cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call samtools.split { input: bam=bam, detect_nproc=detect_nproc, max_retries=max_retries }
+    call samtools.split { input: bam=bam, use_all_cores=use_all_cores, max_retries=max_retries }
     scatter (split_bam in split.split_bams) {
         call picard.bam_to_fastq { input: bam=split_bam, paired=paired, max_retries=max_retries }
     }

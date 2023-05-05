@@ -14,20 +14,18 @@ task count {
         Int memory_gb = 16
         String jobmode = "local"
         Int max_retries = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float fastq_size = size(fastqs_tar_gz, "GiB")
     Int disk_size = ceil((fastq_size * 2) + 10)
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         mkdir transcriptome_dir
@@ -103,7 +101,7 @@ task bamtofastq {
         Boolean cellranger11 = false
         Boolean longranger20 = false
         Boolean gemcode = false
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
@@ -114,15 +112,13 @@ task bamtofastq {
                         else if (longranger20) then "--lr10"
                         else if (gemcode) then "--gemcode"
                         else ""
-    String parsed_detect_nproc = if detect_nproc then "true" else ""
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ -n ~{parsed_detect_nproc} ]
-        then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
         
         cellranger bamtofastq --nthreads "$n_cores" ~{data_arg} ~{bam} fastqs
