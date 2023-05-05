@@ -112,7 +112,10 @@ task alignment {
             n_cores=$(nproc)
         fi
 
-        tar -xf ~{stardb_tar_gz};
+        # This STAR image (base is BusyBox v1.22.1 ) does not support the `tar -z` command
+        # So tar and gzip must be called separately
+        gunzip -c ~{stardb_tar_gz} > tmp.tar
+        tar -xf tmp.tar
 
         # TODO rework `sort_star_input.py` to avoid this spaghetti logic
         if [ -n "~{if defined(read_groups) then read_groups else ""}" ]
