@@ -183,9 +183,9 @@ task build_db {
         Array[File] tarballs
         String db_name = "kraken2_db"
         Boolean protein = false
-        Int kmer_len = 35
-        Int minimizer_len = 31
-        Int minimizer_spaces = 7
+        Int kmer_len = if protein then 15 else 35
+        Int minimizer_len = if protein then 12 else 31
+        Int minimizer_spaces = if protein then 0 else 7
         Int max_db_size_gb = -1
         Int added_memory_gb = 0
         Int added_disk_size_gb = 0
