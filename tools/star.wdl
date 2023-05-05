@@ -27,7 +27,6 @@ task build_star_db {
 
         n_cores=~{ncpu}
         if [ "~{detect_nproc}" = "true" ]; then
-        then
             n_cores=$(nproc)
         fi
 
@@ -105,7 +104,6 @@ task alignment {
 
         n_cores=~{ncpu}
         if [ "~{detect_nproc}" = "true" ]; then
-        then
             n_cores=$(nproc)
         fi
 
