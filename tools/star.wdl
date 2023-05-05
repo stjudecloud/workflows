@@ -49,6 +49,8 @@ task build_star_db {
 
         rm "$gtf_name" "$ref_fasta"
 
+        # This STAR image (base is BusyBox v1.22.1 ) does not support the `tar -z` command
+        # So tar and gzip must be called separately
         tar -cf ~{stardb_dir_name}.tar ~{stardb_dir_name}
         gzip ~{stardb_dir_name}.tar
     >>>
