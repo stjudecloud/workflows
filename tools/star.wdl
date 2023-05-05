@@ -14,7 +14,7 @@ task build_star_db {
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     String stardb_out_name = stardb_dir_name + ".tar.gz"
@@ -26,8 +26,8 @@ task build_star_db {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         orig_gtf=~{gtf}
@@ -90,7 +90,7 @@ task alignment {
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
     
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
@@ -108,8 +108,8 @@ task alignment {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
-            n_cores=$(nproc)
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(grep -c ^processor /proc/cpuinfo)
         fi
 
         # This STAR image (base is BusyBox v1.22.1 ) does not support the `tar -z` command
