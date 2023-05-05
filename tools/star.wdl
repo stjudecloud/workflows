@@ -46,8 +46,11 @@ task build_star_db {
             --genomeFastaFiles "$ref_fasta" \
             --sjdbGTFfile "$gtf_name" \
             --sjdbOverhang 125
+
         rm "$gtf_name" "$ref_fasta"
-        tar -czf ~{stardb_out_name} ~{stardb_dir_name}
+
+        tar -cf ~{stardb_dir_name}.tar ~{stardb_dir_name}
+        gzip ~{stardb_dir_name}.tar
     >>>
 
     runtime {
