@@ -1,7 +1,7 @@
 {
     "rnaseq_standard.bam": "/inputs/Sample.RNA-Seq.bam",
     "rnaseq_standard.output_prefix": "Sample",
-    "rnaseq_standard.gtf": "/inputs/gencode.v31.annotation.gtf",
+    "rnaseq_standard.gtf": "/inputs/gencode.v31.annotation.gtf.gz",
     "rnaseq_standard.stardb": "/inputs/stardb.tar.gz",
     "rnaseq_standard.contaminant_db": "/inputs/contaminant_stardb.tar.gz",
     "rnaseq_standard.subsample_n_reads": "Int (default = -1)",

@@ -53,7 +53,7 @@ workflow scrnaseq_standard {
     parameter_meta {
         bam: "Input BAM format file to quality check"
         output_prefix: "Prefix for output files"
-        gtf: "GTF feature file"
+        gtf: "Gzipped GTF feature file"
         transcriptome_tar_gz: "Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics."
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`."

@@ -25,7 +25,7 @@ task count {
 
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
-        gtf: "Input genomic features in GTF format to count reads for"
+        gtf: "Input genomic features in gzipped GTF format to count reads for"
         strandedness: {
             description: ""
             choices: [
