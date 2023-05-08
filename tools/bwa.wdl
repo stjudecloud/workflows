@@ -233,7 +233,7 @@ task build_bwa_db {
 
     parameter_meta {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
-        bwadb_out_name: "Name for the output gzipped tar archive of the bwa reference files."
+        bwadb_out_name: "Name of the output gzipped tar archive of the bwa reference files."
     }
 }
 

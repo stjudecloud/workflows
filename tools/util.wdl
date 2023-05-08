@@ -44,7 +44,7 @@ task download {
 
     parameter_meta {
         url: "URL of the file to download"
-        outfile_name: "Name for the output file"
+        outfile_name: "Name of the output file"
     }
 }
 
@@ -130,7 +130,7 @@ task calc_gene_lengths {
 
     parameter_meta {
         gtf: "GTF feature file"
-        outfile_name: "Name for the gene lengths file"
+        outfile_name: "Name of the gene lengths file"
         max_retries: "Number of times to retry in case of failure"
     }
 

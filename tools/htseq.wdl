@@ -34,7 +34,7 @@ task count {
                 "no"
             ]
         }
-        outfile_name: "Name for the feature count file"
+        outfile_name: "Name of the feature count file"
         pos_sorted: "Is the BAM position sorted (true) or name sorted (false)?"
         minaqual: "Skip all reads with alignment quality lower than the given minimum value"
         feature_type: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored"
