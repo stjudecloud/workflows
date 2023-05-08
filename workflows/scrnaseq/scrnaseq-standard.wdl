@@ -55,9 +55,17 @@ workflow scrnaseq_standard {
         output_prefix: "Prefix for output files"
         gtf: "GTF feature file"
         transcriptome_tar_gz: "Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics."
-        strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
+        strandedness: {
+            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`."
+            choices: [
+                '',
+                'Stranded-Reverse',
+                'Stranded-Forward',
+                'Unstranded'
+            ]
+        },
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
-        use_all_cores: "Use all available cores for multi-core steps?"
+        use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 

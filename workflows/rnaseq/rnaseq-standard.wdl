@@ -83,7 +83,7 @@ workflow rnaseq_standard {
             ]
         },
         validate_input: "Ensure input BAM is well-formed before beginning harmonization"
-        use_all_cores: "Use all available cores for multi-core steps?"
+        use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
