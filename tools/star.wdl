@@ -27,7 +27,7 @@ task build_star_db {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         orig_gtf=~{gtf}
@@ -106,7 +106,7 @@ task alignment {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         # This STAR image (base is BusyBox v1.22.1 ) does not support the `tar -z` command

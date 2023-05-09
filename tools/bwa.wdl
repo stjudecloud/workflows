@@ -27,7 +27,7 @@ task bwa_aln {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         mkdir bwa
@@ -89,7 +89,7 @@ task bwa_aln_pe {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         mkdir bwa
@@ -152,7 +152,7 @@ task bwa_mem {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         mkdir bwa

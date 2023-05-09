@@ -25,7 +25,7 @@ task count {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         mkdir transcriptome_dir
@@ -118,7 +118,7 @@ task bamtofastq {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
         
         cellranger bamtofastq --nthreads "$n_cores" ~{data_arg} ~{bam} fastqs

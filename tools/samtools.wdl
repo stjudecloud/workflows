@@ -59,7 +59,7 @@ task split {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         samtools split --threads "$n_cores" -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
@@ -150,7 +150,7 @@ task index {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         samtools index -@ "$n_cores" ~{bam} ~{outfile_name}
@@ -198,7 +198,7 @@ task subsample {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         if [[ "$(samtools view --threads "$n_cores" ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
@@ -253,7 +253,7 @@ task merge {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         header_arg=""
@@ -297,7 +297,7 @@ task addreplacerg {
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
-            n_cores=$(grep -c ^processor /proc/cpuinfo)
+            n_cores=$(nproc)
         fi
 
         samtools addreplacerg --threads "$n_cores" -R ~{read_group_id} -o ~{outfile_name} ~{bam}
