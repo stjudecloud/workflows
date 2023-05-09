@@ -4,7 +4,7 @@ RUN apt-get update \
     && apt-get --yes install --no-install-recommends python3 \
     && rm -rf /var/lib/apt/lists/*
 
-FROM quay.io/biocontainers/star:2.7.1a--0
+FROM quay.io/biocontainers/star:2.7.10a--h9ee0642_0
 
 COPY --from=python /lib/x86_64-linux-gnu/libexpat.so.1 /lib/x86_64-linux-gnu/
 COPY --from=python /lib/x86_64-linux-gnu/libz.so.1 /lib/x86_64-linux-gnu/
