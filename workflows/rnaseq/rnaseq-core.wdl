@@ -2,8 +2,9 @@ version 1.0
 
 import "../../tools/star.wdl"
 import "../general/alignment-post.wdl" as align_post
-import "../../tools/htseq.wdl"
+import "../../tools/deeptools.wdl"
 import "../../tools/ngsderive.wdl"
+import "../../tools/htseq.wdl"
 
 workflow rnaseq_core {
     input {
@@ -83,6 +84,13 @@ workflow rnaseq_core {
         max_retries=max_retries
     }
 
+    call deeptools.bamCoverage as deeptools_bamCoverage { input:
+        bam=alignment_post.out_bam,
+        bam_index=alignment_post.bam_index,
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
+    }
+
     call ngsderive.infer_strandedness as ngsderive_strandedness { input:
         bam=alignment_post.out_bam,
         bam_index=alignment_post.bam_index,
@@ -106,9 +114,9 @@ workflow rnaseq_core {
         File bam_index = alignment_post.bam_index
         File bam_checksum = alignment_post.bam_checksum
         File star_log = alignment.star_log
+        File bigwig = deeptools_bamCoverage.bigwig
         File feature_counts = htseq_count.feature_counts
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
         String inferred_strandedness_string = ngsderive_strandedness.strandedness
-        File bigwig = alignment_post.bigwig
     }
 }

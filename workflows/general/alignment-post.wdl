@@ -1,6 +1,5 @@
 version 1.0
 
-import "../../tools/deeptools.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/md5sum.wdl"
@@ -75,17 +74,9 @@ workflow alignment_post {
 
     call md5sum.compute_checksum { input: infile=aligned_bam, max_retries=max_retries }
 
-    call deeptools.bamCoverage as deeptools_bamCoverage { input:
-        bam=aligned_bam,
-        bam_index=aligned_bam_index,
-        use_all_cores=use_all_cores,
-        max_retries=max_retries
-    }
-
     output {
         File out_bam = aligned_bam
         File bam_index = aligned_bam_index
         File bam_checksum = compute_checksum.md5sum
-        File bigwig = deeptools_bamCoverage.bigwig
     }
 }
