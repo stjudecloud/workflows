@@ -124,7 +124,7 @@ task flagstat {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool generates a FastQC quality control metrics report for the input BAM file."
+        description: "This WDL tool generates a `samtools flagstat` report for the input BAM file."
     }
 
     parameter_meta {

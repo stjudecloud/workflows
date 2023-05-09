@@ -1,6 +1,6 @@
 ## # Cell Ranger Bam to FastQs
 ##
-## This WDL workflow converts an input BAM file to a set of fastq files.
+## This WDL workflow converts an input BAM file to a set of FastQ files.
 ## It performs QC checks along the way to validate the input and output.
 ##
 ## ### Output:
@@ -15,7 +15,7 @@
 ## : an array of files sufficient for localizing in Cell Ranger's expected format
 ##
 ## fastqs_archive
-## : a compressed archive comtaining the array of fastq files
+## : a compressed archive comtaining the array of FastQ files
 ##
 ## ## LICENSING:
 ## 
@@ -58,12 +58,12 @@ workflow cell_ranger_bam_to_fastqs {
     }
 
     parameter_meta {
-        bam: "BAM file to split into fastqs."
+        bam: "BAM file to split into FastQs."
         paired: "Is the data paired-end (true) or single-end (false)?"
         cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
         longranger20: "Convert a BAM produced by Longranger 2.0"
         gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
-        bam_to_fastq_memory_gb: "How much memory to provide while converting to fastqs."
+        bam_to_fastq_memory_gb: "How much memory to provide while converting to FastQs."
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }

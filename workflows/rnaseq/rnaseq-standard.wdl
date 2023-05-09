@@ -2,7 +2,7 @@
 ##
 ## This WDL workflow runs the STAR RNA-Seq alignment workflow for St. Jude Cloud.
 ##
-## The workflow takes an input BAM file and splits it into fastq files for each read in the pair. 
+## The workflow takes an input BAM file and splits it into FastQ files for each read in the pair. 
 ## The read pairs are then passed through STAR alignment to generate a BAM file.
 ## In the case of xenograft samples, the resulting BAM can be optionally cleansed
 ## with our XenoCP workflow.
