@@ -66,6 +66,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/htseq/">HTSeq</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/kraken/">Kraken2</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/md5sum/">Md5sum</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/mosdepth/">Mosdepth</a>
@@ -113,6 +115,8 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -124,10 +128,6 @@
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard-fastq/">RNA-Seq Standard from FastQ</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../rnaseq-standard/">RNA-Seq Standard</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
                   </li>
@@ -161,7 +161,7 @@
               
                 <h1 id="make-qc-reference">Make QC Reference</h1>
 <p>Download/create all the reference files needed for <code>quality-check-standard.wdl</code>.
-This includes: a reference FASTA, a GTF, the database used by FastQ Screen, and exonic/coding regions BEDs
+This includes: a reference FASTA, a GTF, the database used by Kraken2, and exonic/coding regions BEDs
 for use in restricting mosdepth coverage analysis to selected regions.</p>
 <h2 id="licensing">LICENSING:</h2>
 <h4 id="mit-license">MIT License</h4>
@@ -187,21 +187,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of output reference FASTA file</li>
 <li><code>reference_fa_url</code> (String, <strong>required</strong>): URL to retrieve the reference FASTA file from</li>
 </ul>
+<h4 id="optional">Optional</h4>
+<ul>
+<li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
+</ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>fastq_screen_build_db.max_retries</code> (Int, default=1)</li>
-<li><code>fastq_screen_build_db.tar_filename</code> (String, default="fastq-screen-db.tar.gz")</li>
+<li><code>kraken_fasta_urls</code> (Array[String], default=[]): URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database. This allows the addition of individual genomes (or other sequences) of interest.</li>
+<li><code>kraken_fastas</code> (Array[File], default=[]): Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using <code>kraken:taxid</code></li>
+<li><code>kraken_libraries</code> (Array[String], default=["archaea", "bacteria", "plasmid", "viral", "human", "fungi", "protozoa", "UniVec_Core"]); <strong>description</strong>: List of kraken libraries to download; <strong>choices</strong>: ['archaea', 'bacteria', 'plasmid', 'viral', 'human', 'fungi', 'plant', 'protozoa', 'nt', 'UniVec', 'UniVec_Core']</li>
+<li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
+<li><code>create_library_from_fastas.added_disk_size_gb</code> (Int, default=0)</li>
+<li><code>create_library_from_fastas.memory_gb</code> (Int, default=4)</li>
+<li><code>download_library.added_disk_size_gb</code> (Int, default=0)</li>
+<li><code>download_library.memory_gb</code> (Int, default=4)</li>
+<li><code>download_taxonomy.disk_size_gb</code> (Int, default=60)</li>
+<li><code>download_taxonomy.memory_gb</code> (Int, default=4)</li>
+<li><code>fastas_download.disk_size_gb</code> (Int, default=10)</li>
 <li><code>gtf_download.disk_size_gb</code> (Int, default=10)</li>
+<li><code>kraken_build_db.added_disk_size_gb</code> (Int, default=0)</li>
+<li><code>kraken_build_db.added_memory_gb</code> (Int, default=0)</li>
+<li><code>kraken_build_db.db_name</code> (String, default="kraken2_db")</li>
+<li><code>kraken_build_db.detect_nproc</code> (Boolean, default=false)</li>
+<li><code>kraken_build_db.kmer_len</code> (Int, default=if protein then 15 else 35)</li>
+<li><code>kraken_build_db.max_db_size_gb</code> (Int, default=-1)</li>
+<li><code>kraken_build_db.minimizer_len</code> (Int, default=if protein then 12 else 31)</li>
+<li><code>kraken_build_db.minimizer_spaces</code> (Int, default=if protein then 0 else 7)</li>
+<li><code>kraken_build_db.ncpu</code> (Int, default=1)</li>
 <li><code>reference_download.disk_size_gb</code> (Int, default=10)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>reference_fa</code> (File)</li>
 <li><code>gtf</code> (File)</li>
-<li><code>fastq_screen_db</code> (File)</li>
 <li><code>exon_bed</code> (File)</li>
 <li><code>CDS_bed</code> (File)</li>
+<li><code>kraken_db</code> (File)</li>
 </ul>
               
             </div>

@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>ngsderive - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Kraken2 - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "ngsderive";
-        var mkdocs_page_input_path = "tasks/ngsderive.md";
+        var mkdocs_page_name = "Kraken2";
+        var mkdocs_page_input_path = "tasks/kraken.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -66,22 +66,12 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../htseq/">HTSeq</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../kraken/">Kraken2</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../md5sum/">Md5sum</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../mosdepth/">Mosdepth</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../multiqc/">MultiQC</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">ngsderive</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Kraken2</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#infer_strandedness">infer_strandedness</a>
+    <li class="toctree-l2"><a class="reference internal" href="#download_taxonomy">download_taxonomy</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
-    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -90,11 +80,11 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#instrument">instrument</a>
+    <li class="toctree-l2"><a class="reference internal" href="#download_library">download_library</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
+    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
     </li>
@@ -104,11 +94,11 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#read_length">read_length</a>
+    <li class="toctree-l2"><a class="reference internal" href="#create_library_from_fastas">create_library_from_fastas</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_2">Inputs</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_2">Required</a>
+    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_2">Defaults</a>
     </li>
@@ -118,11 +108,11 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#encoding">encoding</a>
+    <li class="toctree-l2"><a class="reference internal" href="#build_db">build_db</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_3">Inputs</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
+    <li class="toctree-l4"><a class="reference internal" href="#required_2">Required</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_3">Defaults</a>
     </li>
@@ -132,11 +122,13 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#junction_annotation">junction_annotation</a>
+    <li class="toctree-l2"><a class="reference internal" href="#kraken">kraken</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_4">Inputs</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_4">Required</a>
+    <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_4">Defaults</a>
     </li>
@@ -147,6 +139,14 @@
         </ul>
     </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../md5sum/">Md5sum</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../mosdepth/">Mosdepth</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../multiqc/">MultiQC</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ngsderive/">ngsderive</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../picard/">Picard</a>
                   </li>
@@ -197,9 +197,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
           <li>Tasks &raquo;</li>
-      <li>ngsderive</li>
+      <li>Kraken2</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/ngsderive.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/kraken.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -207,105 +207,152 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="ngsderive">ngsderive</h1>
-<p>This WDL tool wraps the <a href="https://github.com/stjudecloud/ngsderive">ngsderive package</a>.
-ngsderive is a utility tool to backwards compute strandedness, readlength, instrument
-for next-generation sequencing data.</p>
-<h2 id="infer_strandedness">infer_strandedness</h2>
+                <h1 id="kraken2">Kraken2</h1>
+<p>Methods for bootstrapping and running <a href="https://github.com/DerrickWood/kraken2">Kraken2</a></p>
+<h2 id="download_taxonomy">download_taxonomy</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL task downloads the NCBI taxonomy which Kraken2 uses to create a tree and taxon map during the database build.</dd>
+</dl>
 <h3 id="inputs">Inputs</h3>
-<h4 id="required">Required</h4>
-<ul>
-<li><code>bai</code> (File, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>)</li>
-<li><code>gtf</code> (File, <strong>required</strong>)</li>
-</ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>disk_size_gb</code> (Int, default=60): Disk space to allocate for task</li>
+<li><code>max_retries</code> (Int, default=3): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task</li>
+<li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>strandedness</code> (File)</li>
-<li><code>strandedness_file</code> (File)</li>
+<li><code>taxonomy</code> (File)</li>
 </ul>
-<h2 id="instrument">instrument</h2>
+<h2 id="download_library">download_library</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL task downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available at: https://ftp.ncbi.nlm.nih.gov/genomes/refseq/.</dd>
+</dl>
 <h3 id="inputs_1">Inputs</h3>
-<h4 id="required_1">Required</h4>
+<h4 id="required">Required</h4>
 <ul>
-<li><code>bam</code> (File, <strong>required</strong>)</li>
+<li><code>library_name</code> (String, <strong>required</strong>); <strong>description</strong>: Library to download. Note that <code>protein</code> must equal <code>true</code> if downloading the <code>nr</code> library, and <code>protein</code> must equal <code>false</code> if downloading the <code>UniVec</code> or <code>UniVec_Core</code> library.; <strong>choices</strong>: ['archaea', 'bacteria', 'plasmid', 'viral', 'human', 'fungi', 'plant', 'protozoa', 'nt', 'nr', 'UniVec', 'UniVec_Core']</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>added_disk_size_gb</code> (Int, default=0): Additional disk space to allocate for task. Default disk size is determined dynamically based on <code>library_name</code>. Note that the default sizes are adequate as of April 2023, but new genomes are constantly being added to the NCBI database. More disk space may be required depending on when in the future this task is run.</li>
+<li><code>max_retries</code> (Int, default=3): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task</li>
+<li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
-<li><code>instrument_file</code> (File)</li>
+<li><code>library</code> (File)</li>
 </ul>
-<h2 id="read_length">read_length</h2>
+<h2 id="create_library_from_fastas">create_library_from_fastas</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL task adds custom entries from FASTA files to a Kraken2 DB.</dd>
+</dl>
 <h3 id="inputs_2">Inputs</h3>
-<h4 id="required_2">Required</h4>
+<h4 id="required_1">Required</h4>
 <ul>
-<li><code>bai</code> (File, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>)</li>
+<li><code>fastas</code> (Array[File], <strong>required</strong>): Array of gzipped FASTA files. Each FASTA sequence ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using <code>kraken:taxid</code></li>
 </ul>
 <h4 id="defaults_2">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>added_disk_size_gb</code> (Int, default=0): Additional disk space to allocate for task. Default disk size is determined dynamically based on <code>fastas</code> size.</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task</li>
+<li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
 <ul>
-<li><code>read_length_file</code> (File)</li>
+<li><code>custom_library</code> (File)</li>
 </ul>
-<h2 id="encoding">encoding</h2>
+<h2 id="build_db">build_db</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL task builds a custom Kraken2 database.</dd>
+</dl>
 <h3 id="inputs_3">Inputs</h3>
-<h4 id="required_3">Required</h4>
+<h4 id="required_2">Required</h4>
 <ul>
-<li><code>ngs_files</code> (Array[File], <strong>required</strong>)</li>
-<li><code>prefix</code> (String, <strong>required</strong>)</li>
+<li><code>tarballs</code> (Array[File], <strong>required</strong>): Tarballs containing the NCBI taxonomy (generated by the <code>download_taxonomy</code> task) and at least one library (generated by the <code>download_library</code> task). Tarballs must not have a root directory.</li>
 </ul>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>num_samples</code> (Int, default=1000000)</li>
+<li><code>added_disk_size_gb</code> (Int, default=0): Additional disk space to allocate for task. Default disk size is determined dynamically based on size of the input <code>tarballs</code>.</li>
+<li><code>added_memory_gb</code> (Int, default=0): Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size.</li>
+<li><code>db_name</code> (String, default="kraken2_db"): Name for output in compressed, archived format. The suffix <code>.tar.gz</code> will be added.</li>
+<li><code>detect_nproc</code> (Boolean, default=false): Use all available cores. Recommended for cloud environments. Not recommended for cluster environments.</li>
+<li><code>kmer_len</code> (Int, default=if protein then 15 else 35): K-mer length in bp that will be used to build the database</li>
+<li><code>max_db_size_gb</code> (Int, default=-1): Maximum number of GBs for Kraken 2 hash table; if the Kraken 2 estimator determines more would normally be needed, the reference library will be downsampled to fit.</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>minimizer_len</code> (Int, default=if protein then 12 else 31): Minimizer length in bp that will be used to build the database</li>
+<li><code>minimizer_spaces</code> (Int, default=if protein then 0 else 7): Number of characters in minimizer that are ignored in comparisons</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
 <ul>
-<li><code>inferred_encoding</code> (File)</li>
-<li><code>encoding_file</code> (File)</li>
+<li><code>built_db</code> (File)</li>
 </ul>
-<h2 id="junction_annotation">junction_annotation</h2>
+<h2 id="kraken">kraken</h2>
+<dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
+<dt>description</dt>
+<dd>This WDL tool runs Kraken2 on a pair of fastq files.</dd>
+</dl>
 <h3 id="inputs_4">Inputs</h3>
-<h4 id="required_4">Required</h4>
+<h4 id="required_3">Required</h4>
 <ul>
-<li><code>bai</code> (File, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>)</li>
-<li><code>gtf</code> (File, <strong>required</strong>)</li>
+<li><code>db</code> (File, <strong>required</strong>): Kraken2 database. Can be generated with <code>make-qc-reference.wdl</code>. Must be a flat tarball without a root directory.</li>
+<li><code>read1</code> (File, <strong>required</strong>): Gzipped FastQ file with 1st reads in pair</li>
+<li><code>read2</code> (File, <strong>required</strong>): Gzipped FastQ file with 2nd reads in pair</li>
+</ul>
+<h4 id="optional">Optional</h4>
+<ul>
+<li><code>memory_gb</code> (Int?): RAM to allocate for task. If missing will be dynamically allocated based on database size.</li>
+<li><code>sample_name</code> (String?): Name for sample. If missing will be inferred by removing the suffix '_R1.fastq.gz' from the <code>read1</code> filename.</li>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
-<li><code>fuzzy_junction_match_range</code> (Int, default=0)</li>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=35)</li>
-<li><code>min_intron</code> (Int, default=50)</li>
-<li><code>min_mapq</code> (Int, default=30)</li>
-<li><code>min_reads</code> (Int, default=2)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>detect_nproc</code> (Boolean, default=false): Use all available cores</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>min_base_quality</code> (Int, default=0): Minimum base quality used in classification</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>store_sequences</code> (Boolean, default=false): Store and output main Kraken2 output in addition to the summary report</li>
+<li><code>use_names</code> (Boolean, default=true): Print scientific names instead of just taxids</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
 <ul>
-<li><code>junction_summary</code> (File)</li>
-<li><code>junctions</code> (File)</li>
+<li><code>report</code> (File)</li>
+<li><code>sequences</code> (File?)</li>
 </ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../multiqc/" class="btn btn-neutral float-left" title="MultiQC"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../picard/" class="btn btn-neutral float-right" title="Picard">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../htseq/" class="btn btn-neutral float-left" title="HTSeq"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../md5sum/" class="btn btn-neutral float-right" title="Md5sum">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -333,10 +380,10 @@ for next-generation sequencing data.</p>
         </span>
     
     
-      <span><a href="../multiqc/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../htseq/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../picard/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../md5sum/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
