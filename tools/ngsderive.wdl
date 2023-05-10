@@ -29,7 +29,7 @@ task infer_strandedness {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
@@ -57,7 +57,7 @@ task instrument {
     runtime {
         memory: "4 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -88,7 +88,7 @@ task read_length {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -102,19 +102,19 @@ task encoding {
     input {
         Array[File] ngs_files
         String prefix
-        Int num_reads = -1
+        Int num_samples = 1000000
         Int max_retries = 1
         Int memory_gb = 5
     }
 
     String out_file = prefix + ".encoding.txt"
     Float files_size = size(ngs_files, "GiB")
-    Int disk_size = ceil((files_size) + 10)
+    Int disk_size = ceil((files_size) + 5)
  
     command <<<
         set -euo pipefail
 
-        ngsderive encoding --verbose -n ~{num_reads} ~{sep=' ' ngs_files} > ~{out_file}
+        ngsderive encoding --verbose -n ~{num_samples} ~{sep=' ' ngs_files} > ~{out_file}
         ENCODING_FILE="~{out_file}" python - <<END
 import os  # lint-check: ignore
 
@@ -144,7 +144,7 @@ END
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -191,7 +191,7 @@ task junction_annotation {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/ngsderive:1.2.3'
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
 
