@@ -129,15 +129,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/chipseq-bwa-db-build/">BWA DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/rnaseq-star-db-build/">RNASeq STAR DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -171,32 +169,32 @@
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>counts</code> (File, <strong>required</strong>)</li>
-<li><code>gene_lengths</code> (File, <strong>required</strong>)</li>
+<li><code>counts</code> (File, <strong>required</strong>): A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with <code>htseq.wdl</code>.</li>
+<li><code>gene_lengths</code> (File, <strong>required</strong>): A two column headered TSV file with gene names (matching those in the <code>counts</code> file) in the first column and feature lengths (as integers) in the second column. Can be generated with <code>calc-gene-lengths.wdl</code>.</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>outfile</code> (String, default=basename(counts,".feature-counts.txt") + ".TPM.txt")</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>outfile_name</code> (String, default=basename(counts,".feature-counts.txt") + ".TPM.txt"): Name of the TPM file</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>out</code> (File)</li>
+<li><code>tpm_file</code> (File)</li>
 </ul>
 <h2 id="run_estimate">run_ESTIMATE</h2>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
-<li><code>gene_expression_file</code> (File, <strong>required</strong>)</li>
+<li><code>gene_expression_file</code> (File, <strong>required</strong>): A 2 column headered TSV file with 'Gene name' in the first column and gene expression values (as floats) in the second column. Can be generated with the <code>calc_tpm</code> task.</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>outfile</code> (String, default=basename(gene_expression_file,".TPM.txt") + ".ESTIMATE.gct")</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>outfile_name</code> (String, default=basename(gene_expression_file,".TPM.txt") + ".ESTIMATE.gct"): Name of the ESTIMATE output file</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
-<li><code>out</code> (File)</li>
+<li><code>estimate_file</code> (File)</li>
 </ul>
               
             </div>

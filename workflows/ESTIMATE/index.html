@@ -105,6 +105,8 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -121,15 +123,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -181,12 +181,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>counts_file</code> (File, <strong>required</strong>)</li>
 <li><code>gene_lengths_file</code> (File, <strong>required</strong>)</li>
 </ul>
+<h4 id="optional">Optional</h4>
+<ul>
+<li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
+</ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>calc_tpm.max_retries</code> (Int, default=1)</li>
-<li><code>calc_tpm.outfile</code> (String, default=basename(counts,".feature-counts.txt") + ".TPM.txt")</li>
-<li><code>run_ESTIMATE.max_retries</code> (Int, default=1)</li>
-<li><code>run_ESTIMATE.outfile</code> (String, default=basename(gene_expression_file,".TPM.txt") + ".ESTIMATE.gct")</li>
+<li><code>calc_tpm.outfile_name</code> (String, default=basename(counts,".feature-counts.txt") + ".TPM.txt")</li>
+<li><code>run_ESTIMATE.outfile_name</code> (String, default=basename(gene_expression_file,".TPM.txt") + ".ESTIMATE.gct")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>

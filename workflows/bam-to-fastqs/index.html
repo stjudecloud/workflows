@@ -125,15 +125,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -162,7 +160,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="bam-to-fastqs">Bam to FastQs</h1>
-<p>This WDL workflow converts an input BAM file to a set of fastq files for read 1 and read 2.
+<p>This WDL workflow converts an input BAM file to a set of FastQ files for read 1 and read 2.
 It performs QC checks along the way to validate the input and output.</p>
 <h3 id="output">Output:</h3>
 <dl>
@@ -190,30 +188,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>bam</code> (File, <strong>required</strong>): BAM file to split into fastqs.</li>
+<li><code>bam</code> (File, <strong>required</strong>): BAM file to split into FastQs</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
+<li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
 <li><code>fqlint_single.read2</code> (File?)</li>
 <li><code>split.disk_size_gb</code> (Int?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>bam_to_fastq_memory_gb</code> (Int, default=40): How much memory to provide while converting to fastqs.</li>
-<li><code>detect_nproc</code> (Boolean, default=false)</li>
-<li><code>max_retries</code> (Int, default=1): Maximum number of times to retry on a failure.</li>
-<li><code>pairing</code> (String, default="Paired-end")</li>
-<li><code>samtools_sort_ncpu</code> (Int, default=1): Number of CPUs to use while sorting the BAM.</li>
+<li><code>paired</code> (Boolean, default=true): Is the data paired-end (true) or single-end (false)?</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores for multi-core steps?</li>
+<li><code>bam_to_fastq.memory_gb</code> (Int, default=48)</li>
 <li><code>bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>fqlint_pair.memory_gb</code> (Int, default=8)</li>
 <li><code>fqlint_single.memory_gb</code> (Int, default=8)</li>
+<li><code>split.ncpu</code> (Int, default=1)</li>
 <li><code>split.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>split.reject_unaccounted</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>read1s</code> (Array[File])</li>
-<li><code>read2s</code> (Array[File])</li>
+<li><code>read2s</code> (Array[File?])</li>
 </ul>
               
             </div>

@@ -111,6 +111,8 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -121,15 +123,13 @@
     </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -178,12 +178,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>gtf</code> (File, <strong>required</strong>)</li>
+<li><code>gtf</code> (File, <strong>required</strong>): GTF feature file</li>
+</ul>
+<h4 id="optional">Optional</h4>
+<ul>
+<li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>calc.max_retries</code> (Int, default=1)</li>
-<li><code>calc.outfile</code> (String, default=basename(gtf,".gtf.gz") + ".genelengths.txt")</li>
+<li><code>calc.outfile_name</code> (String, default=basename(gtf,".gtf.gz") + ".genelengths.txt")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -194,7 +197,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../bwa-db-build/" class="btn btn-neutral float-left" title="BWA DB build"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../chipseq-bwa-db-build/" class="btn btn-neutral float-right" title="BWA DB build">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../make-qc-reference/" class="btn btn-neutral float-right" title="Make QC Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -225,7 +228,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
       <span><a href="../bwa-db-build/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../chipseq-bwa-db-build/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../make-qc-reference/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

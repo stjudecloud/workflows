@@ -111,15 +111,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/chipseq-bwa-db-build/">BWA DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/rnaseq-star-db-build/">RNASeq STAR DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -162,17 +160,17 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>fastqs_tar_gz</code> (File, <strong>required</strong>): Path to the fastq folder archive in .tar.gz format</li>
+<li><code>fastqs_tar_gz</code> (File, <strong>required</strong>): Path to the FastQ folder archive in .tar.gz format</li>
 <li><code>id</code> (String, <strong>required</strong>): A unique run ID</li>
 <li><code>transcriptome_tar_gz</code> (File, <strong>required</strong>): Path to Cell Ranger-compatible transcriptome reference in .tar.gz format</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>detect_nproc</code> (Boolean, default=false)</li>
 <li><code>jobmode</code> (String, default="local")</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=16)</li>
 <li><code>ncpu</code> (Int, default=8)</li>
+<li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -198,7 +196,7 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to fastq files</dd>
+<dd>This WDL tool runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
@@ -208,12 +206,12 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
 <li><code>cellranger11</code> (Boolean, default=false): Convert a BAM produced by Cell Ranger 1.0-1.1</li>
-<li><code>detect_nproc</code> (Boolean, default=false)</li>
 <li><code>gemcode</code> (Boolean, default=false): Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)</li>
 <li><code>longranger20</code> (Boolean, default=false): Convert a BAM produced by Longranger 2.0</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=8)</li>
 <li><code>ncpu</code> (Int, default=4)</li>
+<li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>

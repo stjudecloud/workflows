@@ -99,8 +99,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../chipseq-bwa-db-build/">BWA DB build</a>
-                  </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Make QC Reference</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING:</a>
@@ -129,9 +127,9 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../rnaseq-star-db-build/">RNASeq STAR DB build</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -190,6 +188,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h4 id="optional">Optional</h4>
 <ul>
 <li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
+<li><code>fastas_download.md5sum</code> (String?)</li>
+<li><code>gtf_download.md5sum</code> (String?)</li>
+<li><code>reference_download.md5sum</code> (String?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
@@ -228,7 +229,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../chipseq-bwa-db-build/" class="btn btn-neutral float-left" title="BWA DB build"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../calc-gene-lengths/" class="btn btn-neutral float-left" title="Calculate Gene Lengths"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../quality-check-standard/" class="btn btn-neutral float-right" title="Quality Check Standard">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -257,7 +258,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
         </span>
     
     
-      <span><a href="../chipseq-bwa-db-build/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../calc-gene-lengths/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../quality-check-standard/" style="color: #fcfcfc">Next &raquo;</a></span>
