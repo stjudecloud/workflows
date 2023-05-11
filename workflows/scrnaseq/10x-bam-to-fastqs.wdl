@@ -1,6 +1,6 @@
 ## # Cell Ranger Bam to FastQs
 ##
-## This WDL workflow converts an input BAM file to a set of fastq files.
+## This WDL workflow converts an input BAM file to a set of FastQ files.
 ## It performs QC checks along the way to validate the input and output.
 ##
 ## ### Output:
@@ -15,7 +15,7 @@
 ## : an array of files sufficient for localizing in Cell Ranger's expected format
 ##
 ## fastqs_archive
-## : a compressed archive comtaining the array of fastq files
+## : a compressed archive comtaining the array of FastQ files
 ##
 ## ## LICENSING:
 ## 
@@ -48,28 +48,33 @@ import "../../tools/fq.wdl"
 workflow cell_ranger_bam_to_fastqs {
     input {
         File bam
-        String pairing = "Paired-end"
+        Boolean paired = true
         Boolean cellranger11 = false
         Boolean longranger20 = false
         Boolean gemcode = false
         Int bam_to_fastq_memory_gb = 40
-        Boolean detect_nproc = false
-        Int max_retries = 1
+        Boolean use_all_cores = false
+        Int? max_retries
     }
 
     parameter_meta {
-        bam: "BAM file to split into fastqs."
-        bam_to_fastq_memory_gb: "How much memory to provide while converting to fastqs."
-        max_retries: "Maximum number of times to retry on a failure."
+        bam: "BAM file to split into FastQs."
+        paired: "Is the data paired-end (true) or single-end (false)?"
+        cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
+        longranger20: "Convert a BAM produced by Longranger 2.0"
+        gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
+        bam_to_fastq_memory_gb: "How much memory to provide while converting to FastQs."
+        use_all_cores: "Use all cores for multi-core steps?"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call cellranger.bamtofastq { input: bam=bam, cellranger11=cellranger11, longranger20=longranger20, gemcode=gemcode, memory_gb=bam_to_fastq_memory_gb, max_retries=max_retries }
     scatter (reads in zip(bamtofastq.read1, bamtofastq.read2)) {
-        if (pairing == "Paired-end") {
+        if (paired) {
             call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
         }
-        if (pairing == "Single-end") {
+        if (! paired) {
             call fq.fqlint as fqlint_single { input: read1=reads.left, max_retries=max_retries }
         }
     }

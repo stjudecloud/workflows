@@ -1,4 +1,4 @@
-## # RNASeq STAR DB build
+## # STAR DB build
 ##
 ## This WDL workflow generates a set of genome reference files usable by the STAR aligner from an input reference file in FASTA format.  
 ##
@@ -39,29 +39,43 @@ version 1.0
 import "../../tools/star.wdl"
 import "../../tools/util.wdl"
 
-workflow rnaseq_star_db_build {
+workflow star_db_build {
     input {
         String reference_fa_url
-        String gtf_url
         String reference_fa_name
+        String? reference_fa_md5
+        String gtf_url
         String gtf_name
+        String? gtf_md5
+        Int? max_retries
     }
 
     parameter_meta {
         reference_fa_url: "URL to retrieve the reference FASTA file from"
-        gtf_url: "URL to retrieve the reference GTF file from"
         reference_fa_name: "Name of output reference FASTA file"
+        reference_fa_md5: "Expected md5sum of reference FASTA file"
+        gtf_url: "URL to retrieve the reference GTF file from"
         gtf_name: "Name of output GTF file"
+        gtf_md5: "Expected md5sum of GTF file"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
-    call util.download as reference_download { input: url=reference_fa_url, outfilename=reference_fa_name }
-    call util.download as gtf_download { input: url=gtf_url, outfilename=gtf_name }
-    call star.build_star_db {
-        input:
-            reference_fasta=reference_download.outfile,
-            gtf=gtf_download.outfile,
-            stardb_dir_name="STARDB",
-            ncpu=4,
+    call util.download as reference_download { input:
+        url=reference_fa_url,
+        outfile_name=reference_fa_name,
+        md5sum=reference_fa_md5,
+        max_retries=max_retries
+    }
+    call util.download as gtf_download { input:
+        url=gtf_url,
+        outfile_name=gtf_name,
+        md5sum=gtf_md5,
+        max_retries=max_retries
+    }
+    call star.build_star_db { input:
+        reference_fasta=reference_download.outfile,
+        gtf=gtf_download.outfile,
+        max_retries=max_retries
     }
 
     output {

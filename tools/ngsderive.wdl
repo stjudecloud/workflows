@@ -1,16 +1,17 @@
 ## # ngsderive
 ##
-## This WDL tool wraps the [ngsderive package](https://github.com/stjudecloud/ngsderive).
-## ngsderive is a utility tool to backwards compute strandedness, readlength, instrument
-## for next-generation sequencing data.
+## This WDL tool wraps the [ngsderive package](https://github.com/stjudecloud/ngsderive)
 
 version 1.0
 
 task infer_strandedness {
     input {
         File bam
-        File bai
+        File bam_index
         File gtf
+        Int min_reads_per_gene = 10
+        Int num_genes = 1000
+        Int min_mapq = 30
         Int max_retries = 1
         Int memory_gb = 5
     }
@@ -22,8 +23,14 @@ task infer_strandedness {
     command {
         set -euo pipefail
 
-        mv ~{bai} ~{bam}.bai || true
-        ngsderive strandedness --verbose ~{bam} -g ~{gtf} > ~{out_file}
+        mv ~{bam_index} ~{bam}.bai || true
+        ngsderive strandedness --verbose \
+            -m ~{min_reads_per_gene} \
+            -n ~{num_genes} \
+            -q ~{min_mapq} \
+            ~{bam} \
+            -g ~{gtf} \
+            > ~{out_file}
         awk 'NR > 1' ~{out_file} | cut -d$'\t' -f5 > strandedness.txt
     }
 
@@ -35,7 +42,7 @@ task infer_strandedness {
     }
 
     output {
-        File strandedness = "strandedness.txt"
+        String strandedness = read_string("strandedness.txt")
         File strandedness_file = out_file
     }
 }
@@ -69,7 +76,7 @@ task instrument {
 task read_length {
     input {
         File bam
-        File bai
+        File bam_index
         Int max_retries = 1
         Int memory_gb = 5
     }
@@ -81,7 +88,7 @@ task read_length {
     command {
         set -euo pipefail
         
-        mv ~{bai} ~{bam}.bai || true
+        mv ~{bam_index} ~{bam}.bai || true
         ngsderive readlen --verbose ~{bam} > ~{out_file}
     }
 
@@ -149,7 +156,7 @@ END
     }
 
     output {
-        File inferred_encoding = "encoding.txt"
+        String inferred_encoding = read_string("encoding.txt")
         File encoding_file = out_file
     }
 }
@@ -157,7 +164,7 @@ END
 task junction_annotation {
     input {
         File bam
-        File bai
+        File bam_index
         File gtf
         String prefix = basename(bam, ".bam")
         Int min_intron = 50
@@ -174,7 +181,7 @@ task junction_annotation {
     command {
         set -euo pipefail
 
-        mv ~{bai} ~{bam}.bai || true
+        mv ~{bam_index} ~{bam}.bai || true
         ngsderive junction-annotation --verbose \
             -g ~{gtf} \
             -i ~{min_intron} \

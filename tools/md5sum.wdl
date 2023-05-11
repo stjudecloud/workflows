@@ -9,16 +9,16 @@ version 1.0
 task compute_checksum {
     input {
         File infile
-        Int max_retries = 1
+        String outfile_name = basename(infile) + ".md5"
         Int memory_gb = 5
+        Int max_retries = 1
     }
 
-    String outfilename = basename(infile) + ".md5"
     Float infile_size = size(infile, "GiB")
     Int disk_size = ceil((infile_size * 2) + 10)
 
     command {
-        md5sum ~{infile} > ~{outfilename}
+        md5sum ~{infile} > ~{outfile_name}
     }
 
     runtime {
@@ -29,7 +29,7 @@ task compute_checksum {
     }
 
     output {
-        File outfile = outfilename
+        File md5sum = outfile_name
     }
 
     meta {
@@ -40,41 +40,5 @@ task compute_checksum {
 
     parameter_meta {
         infile: "Input file to generate MD5 checksum"
-    }
-}
-
-task check_checksum {
-    input {
-        File infile
-        Int max_retries = 1
-    }
-
-    String outfilename = basename(infile) + ".md5_check"
-    Float infile_size = size(infile, "GiB")
-    Int disk_size = ceil((infile_size * 2) + 10)
-
-    command { 
-        md5sum -c ~{infile} > ~{outfilename}
-    } 
-
-    runtime {
-        memory: "4 GB"
-        disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
-        maxRetries: max_retries
-    }
-
-    output {
-        File out = outfilename
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool checks a list of MD5 checksums against the corresponding files to verify integrity" 
-    }
-
-    parameter_meta {
-        infile: "Input file containing checksums to check" 
     }
 }

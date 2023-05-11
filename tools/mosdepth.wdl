@@ -7,7 +7,7 @@ version 1.0
 task coverage {
     input {
         File bam
-        File bai
+        File bam_index
         File? coverage_bed
         String prefix = basename(bam, '.bam')
         Int min_mapping_quality = 20
@@ -22,7 +22,7 @@ task coverage {
     command {
         set -euo pipefail
 
-        mv ~{bai} ~{bam}.bai || true
+        mv ~{bam_index} ~{bam}.bai || true
         mosdepth \
             -n \
             ~{if defined(coverage_bed) then "-b" else ""} ~{coverage_bed} \

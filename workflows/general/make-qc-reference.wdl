@@ -82,13 +82,13 @@ workflow make_qc_reference {
     call util.download as reference_download {
         input:
             url=reference_fa_url,
-            outfilename=reference_fa_name,
+            outfile_name=reference_fa_name,
             max_retries=max_retries
     }
     call util.download as gtf_download {
         input:
             url=gtf_url,
-            outfilename=gtf_name,
+            outfile_name=gtf_name,
             max_retries=max_retries
     }
 
@@ -101,7 +101,7 @@ workflow make_qc_reference {
     scatter (url in kraken_fasta_urls) {
         call util.download as fastas_download { input:
             url=url,
-            outfilename="tmp.fa.gz",
+            outfile_name="tmp.fa.gz",
             max_retries=max_retries
         }
     }

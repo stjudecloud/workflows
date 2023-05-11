@@ -1,8 +1,8 @@
-"""Sort fastq pairs and read group information prior to being passed to STAR.
+"""Sort FastQ pairs and read group information prior to being passed to STAR.
 
-We discovered that when providing STAR with read group split fastqs and also
+We discovered that when providing STAR with read group split FastQs and also
 supplying STAR with header information via the `--outSAMattrRGline` parameter,
-that the read group information for individual reads becomes jumbled.
+that the read group information for individual reads may become jumbled.
 
 The simplest solution for this was to first pass exactly what would be passed
 to STAR into this program, sort it correctly, and write the reordered
@@ -59,8 +59,8 @@ def validate(
     """Ensure that the final strings are ready to be passed to STAR.
 
     The first check is that there is the same number of read groups as
-    fastq pairs. Next, it's checked that each read group ID is
-    present in a synced fastq pair.
+    FastQ pairs. Next, it's checked that each read group ID is
+    present in a synced FastQ pair.
 
     Args:
         read_one_fastqs (list): list of file paths
@@ -69,14 +69,14 @@ def validate(
     """
     if len(read_one_fastqs) != len(rgids):
         raise argparse.ArgumentError(
-            "Must have same number of read groups as fastq pairs"
+            "Must have same number of read groups as FastQ pairs"
         )
 
     for i, id in enumerate(rgids):
         if (id not in read_one_fastqs[i]) or (id not in read_two_fastqs[i]):
             raise SystemExit(
                 "Error: There's a mismatch between "
-                "read group IDs and fastq file names"
+                "read group IDs and FastQ file names"
             )
 
 
@@ -102,12 +102,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--read_one_fastqs",
         required=True,
-        help="Comma delimited (without spaces) list of read one fastq file paths",
+        help="Comma delimited (without spaces) list of read one FastQ file paths",
     )
     parser.add_argument(
         "--read_two_fastqs",
         required=False,
-        help="Comma delimited (without spaces) list of read two fastq file paths",
+        help="Comma delimited (without spaces) list of read two FastQ file paths",
     )
     parser.add_argument(
         "--read_groups",
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     if args.read_two_fastqs:
         if len(read_one_fastqs) != len(read_two_fastqs):
             raise argparse.ArgumentError(
-                "Must have the same number of read one fastqs as read two fastqs"
+                "Must have the same number of read one FastQs as read two FastQs"
             )
 
     sorted_read_one_fastqs = sort_fastqs(read_one_fastqs)

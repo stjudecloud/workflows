@@ -47,7 +47,7 @@ workflow bwa_db_build {
         reference_fa_name: "Name of output reference FASTA file"
     }
 
-    call util.download as reference_download { input: url=reference_fa_url, outfilename=reference_fa_name }
+    call util.download as reference_download { input: url=reference_fa_url, outfile_name=reference_fa_name }
     call bwa.build_bwa_db {
         input:
             reference_fasta=reference_download.outfile,
