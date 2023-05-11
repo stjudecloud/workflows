@@ -101,7 +101,7 @@ workflow make_qc_reference {
     scatter (url in kraken_fasta_urls) {
         call util.download as fastas_download { input:
             url=url,
-            outfilename="tmp.fa.gz",
+            outfile_name="tmp.fa.gz",
             max_retries=max_retries
         }
     }
