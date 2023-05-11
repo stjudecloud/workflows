@@ -59,7 +59,7 @@ task validate_bam {
         Boolean index_validation_stringency_less_exhaustive = false
         Int max_errors = 2147483647
         String output_filename = basename(bam, ".bam") + ".ValidateSamFile.txt"
-        Int memory_gb = 8
+        Int memory_gb = 12
         Int max_retries = 1
     }
 
@@ -136,7 +136,7 @@ task bam_to_fastq {
     input {
         File bam
         String prefix = basename(bam, ".bam")
-        Int memory_gb = 40
+        Int memory_gb = 48
         Int max_retries = 1
     }
 
