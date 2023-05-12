@@ -327,3 +327,105 @@ task addreplacerg {
         read_group_id: "Existing read group ID in BAM to add to reads"
     }
 }
+
+task collate {
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        Boolean use_all_cores = false
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to collate"
+    }
+
+    String outfile_name = prefix + ".collated.bam"
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(nproc)
+        fi
+
+        samtools collate --threads "$n_cores" -o ~{outfile_name} ~{bam}
+    >>>
+
+    output {
+        File collated_bam = outfile_name
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        maxRetries: max_retries
+    }
+
+
+    meta {
+        description: "This WDL tool runs `samtools collate` on the input BAM file. Shuffles and groups reads together by their names."
+    }
+}
+
+task bam_to_fastq {
+    # TODO: enable SE mode and expose more parameters
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        Boolean use_all_cores = false
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to split into read1 and read2 FastQs"
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(nproc)
+        fi
+
+        samtools fastq \
+            --threads "$n_cores" \
+            -1 ~{prefix}_R1.fastq.gz \
+            -2 ~{prefix}_R2.fastq.gz \
+            ~{bam}
+    >>>
+
+    output {
+        File read1 = "~{prefix}_R1.fastq.gz"
+        File read2 = "~{prefix}_R2.fastq.gz"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        maxRetries: max_retries
+    }
+
+
+    meta {
+        description: "This WDL tool runs `samtools fastq` on the input BAM file. Splits the BAM into read1 and read2 FastQ files."
+    }
+}
