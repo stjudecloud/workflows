@@ -24,7 +24,7 @@ task mark_duplicates {
             CREATE_INDEX=false \
             CREATE_MD5_FILE=false \
             COMPRESSION_LEVEL=5 \
-            METRICS_FILE=~{prefix}.metrics.txt
+            METRICS_FILE=~{prefix}.MarkDuplicates.metrics.txt
     }
 
     runtime {
@@ -36,6 +36,7 @@ task mark_duplicates {
 
     output {
         File duplicate_marked_bam = "~{prefix}.MarkDuplicates.bam"
+        File mark_duplicates_metrics = "~{prefix}.MarkDuplicates.metrics.txt"
     }
 
     meta {
