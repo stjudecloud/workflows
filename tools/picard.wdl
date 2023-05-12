@@ -137,7 +137,7 @@ task bam_to_fastq {
         File bam
         String prefix = basename(bam, ".bam")
         Boolean paired = true
-        Int memory_gb = 56
+        Int memory_gb = 48
         Int max_retries = 1
     }
 
