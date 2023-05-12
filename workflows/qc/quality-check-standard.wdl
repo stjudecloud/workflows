@@ -154,6 +154,26 @@ workflow quality_check {
         }
     }
 
+    if (mark_duplicates) {
+        call mosdepth.coverage as wg_nodups_coverage {
+            input:
+                bam=chosen_bam,
+                bam_index=bam_index,
+                prefix=basename(chosen_bam, 'bam')+"whole_genome.no_duplicates",
+                max_retries=max_retries
+        }
+        scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
+            call mosdepth.coverage as regions_nodups_coverage {
+                input:
+                    bam=chosen_bam,
+                    bam_index=bam_index,
+                    coverage_bed=coverage_pair.left,
+                    prefix=basename(chosen_bam, 'bam')+coverage_pair.right+".no_duplicates",
+                    max_retries=max_retries
+            }
+        }
+    }
+
     if (molecule == "RNA") {
         File gtf_defined = select_first([gtf, "No GTF"])
 
@@ -192,6 +212,8 @@ workflow quality_check {
                 wg_coverage.summary,
                 wg_coverage.global_dist,
                 markdups.mark_duplicates_metrics,
+                wg_nodups_coverage.summary,
+                wg_nodups_coverage.global_dist,
                 star_log,
                 ngsderive_strandedness.strandedness_file,
                 junction_annotation.junction_summary,
@@ -199,7 +221,9 @@ workflow quality_check {
                 qualimap_rnaseq.raw_coverage
             ],
             regions_coverage.summary,
-            regions_coverage.region_dist
+            regions_coverage.region_dist,
+            select_first([regions_nodups_coverage.summary, []]),
+            select_first([regions_nodups_coverage.region_dist, []])
         ])),
         output_prefix=basename(bam, '.bam'),
         extra_fn_clean_exts=[".ValidateSamFile"],
