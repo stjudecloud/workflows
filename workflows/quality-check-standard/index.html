@@ -218,7 +218,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>coverage_beds</code> (Array[File], default=[]): An array of 3 column BEDs which are passed to the <code>-b</code> flag of mosdepth, in order to restrict coverage analysis to select regions</li>
 <li><code>coverage_labels</code> (Array[String], default=[]): An array of equal length to <code>coverage_beds</code> which determines the prefix label applied to the output files. If omitted, defaults of <code>regions1</code>, <code>regions2</code>, etc. will be used.</li>
 <li><code>strandedness</code> (String, default=""); <strong>description</strong>: Strandedness protocol of the RNA-Seq experiment. Only used for RNA-Seq data. If unspecified, strandedness will be inferred by <code>ngsderive</code>. If specified, user supplied strandedness will be used by <code>qualimap rnaseq</code>.; <strong>choices</strong>: ['', 'Stranded-Reverse', 'Stranded-Forward', 'Unstranded']</li>
-<li><code>bam_to_fastq.memory_gb</code> (Int, default=56)</li>
+<li><code>bam_to_fastq.memory_gb</code> (Int, default=40)</li>
 <li><code>bam_to_fastq.paired</code> (Boolean, default=true)</li>
 <li><code>bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>collect_alignment_summary_metrics.memory_gb</code> (Int, default=8)</li>
