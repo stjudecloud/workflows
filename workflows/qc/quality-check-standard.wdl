@@ -52,6 +52,7 @@ workflow quality_check {
         Boolean mark_duplicates = true
         File? gtf
         File? star_log
+        Boolean use_all_cores = false
         Int? max_retries
     }
 
