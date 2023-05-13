@@ -113,8 +113,14 @@ workflow quality_check {
 
     if (mark_duplicates) {
         call picard.mark_duplicates as markdups { input: bam=bam, max_retries=max_retries }
+        call samtools.index as markdups_index { input:
+            bam=bam,
+            use_all_cores=use_all_cores,
+            max_retries=max_retries
+        }
     }
     File chosen_bam = select_first([markdups.duplicate_marked_bam, quickcheck.checked_bam])
+    File chosen_bam_index = select_first([markdups_index.bam_index, bam_index])
 
     call picard.collect_alignment_summary_metrics { input: bam=chosen_bam, max_retries=max_retries }
     call picard.collect_gc_bias_metrics { input: bam=chosen_bam, reference_fasta=reference_fasta, max_retries=max_retries }
@@ -123,7 +129,7 @@ workflow quality_check {
     call samtools.flagstat as samtools_flagstat { input: bam=chosen_bam, max_retries=max_retries }
     call fqc.fastqc { input: bam=chosen_bam, max_retries=max_retries }
     call ngsderive.instrument as ngsderive_instrument { input: bam=chosen_bam, max_retries=max_retries }
-    call ngsderive.read_length as ngsderive_read_length { input: bam=chosen_bam, bam_index=bam_index, max_retries=max_retries }
+    call ngsderive.read_length as ngsderive_read_length { input: bam=chosen_bam, bam_index=chosen_bam_index, max_retries=max_retries }
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[chosen_bam], prefix=prefix, max_retries=max_retries }
 
     call picard.bam_to_fastq { input: bam=chosen_bam, max_retries=max_retries }
@@ -158,7 +164,7 @@ workflow quality_check {
         call mosdepth.coverage as wg_nodups_coverage {
             input:
                 bam=chosen_bam,
-                bam_index=bam_index,
+                bam_index=chosen_bam_index,
                 prefix=basename(chosen_bam, 'bam')+"whole_genome.no_duplicates",
                 max_retries=max_retries
         }
@@ -166,7 +172,7 @@ workflow quality_check {
             call mosdepth.coverage as regions_nodups_coverage {
                 input:
                     bam=chosen_bam,
-                    bam_index=bam_index,
+                    bam_index=chosen_bam_index,
                     coverage_bed=coverage_pair.left,
                     prefix=basename(chosen_bam, 'bam')+coverage_pair.right+".no_duplicates",
                     max_retries=max_retries
@@ -177,9 +183,9 @@ workflow quality_check {
     if (molecule == "RNA") {
         File gtf_defined = select_first([gtf, "No GTF"])
 
-        call ngsderive.junction_annotation as junction_annotation { input: bam=chosen_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.junction_annotation as junction_annotation { input: bam=chosen_bam, bam_index=chosen_bam_index, gtf=gtf_defined, max_retries=max_retries }
 
-        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=chosen_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=chosen_bam, bam_index=chosen_bam_index, gtf=gtf_defined, max_retries=max_retries }
 
         String qualimap_strandedness = if (provided_strandedness != "")
             then qualimap_strandedness_map[provided_strandedness]
