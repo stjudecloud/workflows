@@ -115,7 +115,7 @@ workflow quality_check {
     if (mark_duplicates) {
         call picard.mark_duplicates as markdups { input: bam=bam, max_retries=max_retries }
         call samtools.index as markdups_index { input:
-            bam=bam,
+            bam=markdups.duplicate_marked_bam,
             use_all_cores=use_all_cores,
             max_retries=max_retries
         }
