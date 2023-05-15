@@ -333,7 +333,7 @@ task collate {
         File bam
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
-        Int memory_gb = 32
+        Int memory_gb = 48
         Int modify_disk_size_gb = 0
         Int ncpu = 1
         Int max_retries = 1
