@@ -433,7 +433,11 @@ task bam_to_fastq {
                 )
                 else "/dev/null"
             } \
-            -s ~{if output_singletons then prefix+".singleton.fastq.gz" else "/dev/null"}
+            -s ~{
+                if output_singletons
+                then prefix+".singleton.fastq.gz"
+                else "/dev/null"
+            } \
             ~{bam}
     >>>
 
