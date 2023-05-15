@@ -378,19 +378,36 @@ task collate {
 }
 
 task bam_to_fastq {
-    # TODO: enable SE mode and expose more parameters
     input {
         File bam
         String prefix = basename(bam, ".bam")
-        Boolean use_all_cores = false
+        String f = "0"
+        String F = "0x900"
+        String G = "0"
+        Boolean paired_end = true
+        Boolean interleaved = false
+        Boolean output_singletons = false
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int ncpu = 1
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
     parameter_meta {
-        bam: "Input BAM format file to split into read1 and read2 FastQs"
+        bam: "Input BAM format file to split into FastQs"
+        prefix: "Prefix for output FastQ(s). Extensions `[,_R1,_R2,.singleton].fastq.gz` will be added depending on other options."
+        f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x' (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0' (i.e. /^0[0-7]+/)."
+        F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x' (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0' (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
+        G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x' (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0' (i.e. /^0[0-7]+/)."
+        paired_end: "Is the data paired-end?"
+        interleaved: "Create an interleaved FastQ file from paired-end data?"
+        output_singletons: "Output singleton reads as their own FastQ?"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
+        use_all_cores: "Use all available cores? Recommended for cloud environments. Not recommended for cluster environments."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     Float bam_size = size(bam, "GiB")
@@ -406,14 +423,25 @@ task bam_to_fastq {
 
         samtools fastq \
             --threads "$n_cores" \
-            -1 ~{prefix}_R1.fastq.gz \
-            -2 ~{prefix}_R2.fastq.gz \
+            -f ~{f} \
+            -F ~{F} \
+            -G ~{G} \
+            -1 ~{if interleaved then prefix+".fastq.gz" else prefix+"_R1.fastq.gz"} \
+            -2 ~{
+                if paired_end then (
+                    if interleaved then prefix+".fastq.gz" else prefix+"_R2.fastq.gz"
+                )
+                else "/dev/null"
+            } \
+            -s ~{if output_singletons then prefix+".singleton.fastq.gz" else "/dev/null"}
             ~{bam}
     >>>
 
     output {
-        File read1 = "~{prefix}_R1.fastq.gz"
-        File read2 = "~{prefix}_R2.fastq.gz"
+        File? read1 = "~{prefix}_R1.fastq.gz"
+        File? read2 = "~{prefix}_R2.fastq.gz"
+        File? singleton_reads = "~{prefix}.singleton.fastq.gz"
+        File? interleaved_reads = "~{prefix}.fastq.gz"
     }
 
     runtime {
@@ -426,6 +454,6 @@ task bam_to_fastq {
 
 
     meta {
-        description: "This WDL tool runs `samtools fastq` on the input BAM file. Splits the BAM into read1 and read2 FastQ files."
+        description: "This WDL tool runs `samtools fastq` on the input BAM file. Splits the BAM into FastQ files."
     }
 }
