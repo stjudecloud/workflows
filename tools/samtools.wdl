@@ -329,11 +329,12 @@ task addreplacerg {
 }
 
 task collate {
+    # TODO make this memory allocation dynamic based on BAM size
     input {
         File bam
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
-        Int memory_gb = 48
+        Int memory_gb = 64
         Int modify_disk_size_gb = 0
         Int ncpu = 1
         Int max_retries = 1
