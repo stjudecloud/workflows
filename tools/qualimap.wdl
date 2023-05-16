@@ -12,7 +12,7 @@ task bamqc {
         Int max_retries = 1
         Int memory_gb = 32
         Int? disk_size_gb
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     String out_directory = basename(bam, ".bam") + '.qualimap_bamqc_results'
@@ -28,7 +28,7 @@ task bamqc {
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
         

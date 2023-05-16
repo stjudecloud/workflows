@@ -24,7 +24,7 @@ task count {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
 

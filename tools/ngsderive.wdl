@@ -12,8 +12,8 @@ task infer_strandedness {
         Int min_reads_per_gene = 10
         Int num_genes = 1000
         Int min_mapq = 30
-        Int max_retries = 1
         Int memory_gb = 5
+        Int max_retries = 1
     }
 
     String out_file = basename(bam, ".bam") + ".strandedness.txt"
@@ -83,7 +83,6 @@ task read_length {
         File bam_index
         Float majority_vote_cutoff = 0.7
         Int num_samples = 10000
-        Int max_retries = 1
         Int memory_gb = 5
         Int max_retries = 1
     }
@@ -122,8 +121,8 @@ task encoding {
         Array[File] ngs_files
         String prefix
         Int num_samples = 1000000
-        Int max_retries = 1
         Int memory_gb = 5
+        Int max_retries = 1
     }
 
     String out_file = prefix + ".encoding.txt"
@@ -187,8 +186,8 @@ task junction_annotation {
         Int min_mapq = 30
         Int min_reads = 2
         Int fuzzy_junction_match_range = 0
-        Int max_retries = 1
         Int memory_gb = 35
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
