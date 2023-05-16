@@ -169,8 +169,8 @@ workflow chipseq_standard {
     }
     call samtools.index as samtools_index { input:
         bam=markdup.mkdupbam,
-        use_all_cores=use_all_cores
-        max_retries=max_retries,
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
     }
     call picard.validate_bam { input: bam=markdup.mkdupbam, max_retries=max_retries }
 
