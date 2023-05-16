@@ -1,8 +1,8 @@
 ## scRNA-Seq Standard
 ##
-## This WDL workflow runs the Cell Ranger scRNA-seq alignment workflow for St. Jude Cloud.
+## This WDL workflow runs the Cell Ranger scRNA-Seq alignment workflow for St. Jude Cloud.
 ##
-## The workflow takes an input BAM file and splits it into fastq files for each read in the pair. 
+## The workflow takes an input BAM file and splits it into FastQ files for each read in the pair. 
 ## The read pairs are then passed through Cell Ranger to generate a BAM file and perform
 ## quantification. Strandedness is inferred using ngsderive.
 ## File validation is performed at several steps, including immediately preceeding output.
@@ -40,52 +40,55 @@ import "../../tools/md5sum.wdl"
 
 workflow scrnaseq_standard {
     input {
-        File input_bam
-        String output_prefix = basename(input_bam, ".bam")
+        File bam
+        String output_prefix = basename(bam, ".bam")
         File gtf
         File transcriptome_tar_gz
         String strandedness = ""
         Int subsample_n_reads = -1
         Boolean validate_input = true
-        Boolean detect_nproc = false
-        Int max_retries = 1
+        Boolean use_all_cores = false
+        Int? max_retries
     }
 
     parameter_meta {
-        input_bam: "Input BAM format file to quality check"
+        bam: "Input BAM format file to quality check"
         output_prefix: "Prefix for output files"
-        gtf: "GTF feature file"
-        transcriptome_tar_gz: "Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics"
-        strandedness: "empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'. If missing, will be inferred"
+        gtf: "Gzipped GTF feature file"
+        transcriptome_tar_gz: "Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics."
+        strandedness: {
+            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`."
+            choices: [
+                '',
+                'Stranded-Reverse',
+                'Stranded-Forward',
+                'Unstranded'
+            ]
+        },
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
-        detect_nproc: "Use all available cores for multi-core steps"
-        max_retries: "Number of times to retry failed steps"
+        use_all_cores: "Use all cores for multi-core steps?"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     String provided_strandedness = strandedness
 
     call parse_input { input: input_strand=provided_strandedness }
     if (validate_input) {
-       call picard.validate_bam as validate_input_bam { input: bam=input_bam, max_retries=max_retries }
+       call picard.validate_bam as validate_input_bam { input: bam=bam, max_retries=max_retries }
     }
 
     if (subsample_n_reads > 0) {
         call samtools.subsample {
             input:
-                bam=input_bam,
+                bam=bam,
                 max_retries=max_retries,
                 desired_reads=subsample_n_reads,
-                detect_nproc=detect_nproc
+                use_all_cores=use_all_cores
         }
     }
-    File selected_input_bam = select_first([subsample.sampled_bam, input_bam])
+    File selected_input_bam = select_first([subsample.sampled_bam, bam])
 
-    call b2fq.cell_ranger_bam_to_fastqs {
-        input:
-            bam=selected_input_bam,
-            detect_nproc=detect_nproc,
-            max_retries=max_retries
-    }
+    call b2fq.cell_ranger_bam_to_fastqs { input: bam=selected_input_bam, max_retries=max_retries, use_all_cores=use_all_cores }
 
     call cellranger.count {
         input:
@@ -93,22 +96,16 @@ workflow scrnaseq_standard {
             transcriptome_tar_gz=transcriptome_tar_gz,
             id=output_prefix,
             max_retries=max_retries,
-            detect_nproc=detect_nproc
+            use_all_cores=use_all_cores
     }
     call picard.validate_bam { input: bam=count.bam, max_retries=max_retries }
-    call ngsderive.infer_strandedness as ngsderive_strandedness {
-        input:
-            bam=count.bam,
-            bai=count.bam_index,
-            gtf=gtf,
-            max_retries=max_retries
-    }
+    call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=count.bam, bam_index=count.bam_index, gtf=gtf, max_retries=max_retries }
 
     call md5sum.compute_checksum { input: infile=count.bam, max_retries=max_retries }
 
     output {
-        File bam = count.bam
-        File bam_checksum = compute_checksum.outfile
+        File harmonized_bam = count.bam
+        File bam_checksum = compute_checksum.md5sum
         File bam_index = count.bam_index
         File qc = count.qc
         File barcodes = count.barcodes

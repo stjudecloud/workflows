@@ -19,7 +19,7 @@ task mark_duplicates {
 
     command {
         picard -Xmx~{java_heap_size}g MarkDuplicates I=~{bam} \
-            O=~{prefix}.duplicates.bam \
+            O=~{prefix}.MarkDuplicates.bam \
             VALIDATION_STRINGENCY=SILENT \
             CREATE_INDEX=false \
             CREATE_MD5_FILE=false \
@@ -35,7 +35,7 @@ task mark_duplicates {
     }
 
     output {
-        File out = "~{prefix}.duplicates.bam"
+        File duplicate_marked_bam = "~{prefix}.MarkDuplicates.bam"
     }
 
     meta {
@@ -58,8 +58,8 @@ task validate_bam {
         Boolean summary_mode = false
         Boolean index_validation_stringency_less_exhaustive = false
         Int max_errors = 2147483647
-        String output_filename = basename(bam, ".bam") + ".ValidateSamFile.txt"
-        Int memory_gb = 8
+        String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
+        Int memory_gb = 12
         Int max_retries = 1
     }
 
@@ -82,7 +82,7 @@ task validate_bam {
             ~{stringency_arg} \
             ~{ignore_prefix}~{sep=' IGNORE=' ignore_list} \
             MAX_OUTPUT=~{max_errors} \
-            > ~{output_filename}
+            > ~{outfile_name}
 
         rc=$?
         if [ $rc -le -1 ] || [ $rc -ge 4 ]; then
@@ -96,9 +96,9 @@ task validate_bam {
             GREP_PATTERN="(ERROR|WARNING)"
         fi
 
-        if [ "~{succeed_on_errors_string}" != "true" ] && [ "$(grep -Ec "$GREP_PATTERN" ~{output_filename})" -gt 0 ]; then
+        if [ "~{succeed_on_errors_string}" != "true" ] && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]; then
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
-            grep -E "$GREP_PATTERN" ~{output_filename} > /dev/stderr
+            grep -E "$GREP_PATTERN" ~{outfile_name} > /dev/stderr
             exit 1
         fi
     }
@@ -111,7 +111,7 @@ task validate_bam {
     }
 
     output {
-        File out = output_filename
+        File validate_report = outfile_name
         File validated_bam = bam
     }
 
@@ -136,8 +136,15 @@ task bam_to_fastq {
     input {
         File bam
         String prefix = basename(bam, ".bam")
-        Int memory_gb = 40
+        Boolean paired = true
+        Int memory_gb = 56
         Int max_retries = 1
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to convert to FastQ"
+        paired: "Is the data paired-end (true) or single-end (false)?"
+        max_retries: "Number of times to retry failed steps"
     }
 
     Float bam_size = size(bam, "GiB")
@@ -149,11 +156,12 @@ task bam_to_fastq {
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
             FASTQ=~{prefix}_R1.fastq \
-            SECOND_END_FASTQ=~{prefix}_R2.fastq \
+            ~{if paired then "SECOND_END_FASTQ="+prefix+"_R2.fastq" else ""} \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
         
-        gzip ~{prefix}_R1.fastq ~{prefix}_R2.fastq
+        gzip ~{prefix}_R1.fastq \
+            ~{if paired then prefix+"_R2.fastq" else ""}
     }
 
     runtime{
@@ -165,7 +173,7 @@ task bam_to_fastq {
 
     output {
         File read1 = "~{prefix}_R1.fastq.gz"
-        File read2 = "~{prefix}_R2.fastq.gz"
+        File? read2 = "~{prefix}_R2.fastq.gz"
     }
 
     meta {
@@ -173,17 +181,13 @@ task bam_to_fastq {
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL task converts the input BAM file into paired FastQ format files."
     }
-
-    parameter_meta {
-        bam: "Input BAM format file to convert to FastQ"
-    }
 }
 
 task sort {
     input {
         File bam
         String sort_order = "coordinate"
-        String output_filename = basename(bam, ".bam") + ".sorted.bam"
+        String outfile_name = basename(bam, ".bam") + ".sorted.bam"
         Int memory_gb = 25
         Int? disk_size_gb
         Int max_retries = 1
@@ -196,7 +200,7 @@ task sort {
     command {
         picard -Xmx~{java_heap_size}g SortSam \
             I=~{bam} \
-            O=~{output_filename} \
+            O=~{outfile_name} \
             SO=~{sort_order} \
             CREATE_INDEX=false \
             CREATE_MD5_FILE=false \
@@ -210,7 +214,7 @@ task sort {
         maxRetries: max_retries
     }
     output {
-        File sorted_bam = output_filename
+        File sorted_bam = outfile_name
     }
     meta {
         author: "Andrew Thrasher"
@@ -225,7 +229,7 @@ task sort {
 task merge_sam_files {
     input {
         Array[File] bam
-        String output_name = "merged.bam"
+        String outfile_name = "merged.bam"
         String sort_order = "coordinate"
         Boolean threading = true
         Int memory_gb = 40
@@ -242,7 +246,7 @@ task merge_sam_files {
 
         picard -Xmx~{java_heap_size}g MergeSamFiles \
             ~{sep=' ' input_arg} \
-            OUTPUT=~{output_name} \
+            OUTPUT=~{outfile_name} \
             SORT_ORDER=~{sort_order} \
             USE_THREADING=~{threading} \
             VALIDATION_STRINGENCY=SILENT
@@ -256,7 +260,7 @@ task merge_sam_files {
     }
 
     output {
-        File merged_bam = output_name
+        File merged_bam = outfile_name
     }
 
     meta {
@@ -273,7 +277,7 @@ task merge_sam_files {
 task clean_sam {
     input {
         File bam
-        String output_filename = basename(bam, ".bam") + ".cleaned.bam"
+        String outfile_name = basename(bam, ".bam") + ".cleaned.bam"
         Int memory_gb = 25
         Int? disk_size_gb
         Int max_retries = 1
@@ -286,7 +290,7 @@ task clean_sam {
     command {
         picard -Xmx~{java_heap_size}g CleanSam \
             I=~{bam} \
-            O=~{output_filename}
+            O=~{outfile_name}
     }
     runtime {
         memory: memory_gb + " GB"
@@ -295,7 +299,7 @@ task clean_sam {
         maxRetries: max_retries
     }
     output {
-        File cleaned_bam = output_filename
+        File cleaned_bam = outfile_name
     }
     meta {
         author: "Andrew Thrasher"

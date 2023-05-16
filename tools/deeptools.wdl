@@ -8,32 +8,32 @@ version 1.0
 task bamCoverage {
     input {
         File bam
-        File bai
+        File bam_index
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
         Int memory_gb = 5
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
  
-    command {
+    command <<<
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores="max"
         fi
 
         if [ ! -e ~{bam}.bai ]
         then 
-            ln -s ~{bai} ~{bam}.bai
+            ln -s ~{bam_index} ~{bam}.bai
         fi
  
         bamCoverage --bam ~{bam} --outFileName ~{prefix}.bw --outFileFormat bigwig --numberOfProcessors "$n_cores"
-    }
+    >>>
 
     runtime {
         cpu: ncpu

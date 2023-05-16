@@ -8,12 +8,19 @@ task calc_tpm {
     input {
         File counts
         File gene_lengths
-        String outfile = basename(counts, ".feature-counts.txt") + ".TPM.txt"
+        String outfile_name = basename(counts, ".feature-counts.txt") + ".TPM.txt"
         Int max_retries = 1
     }
 
+    parameter_meta {
+        counts: "A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with `htseq.wdl`."
+        gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with `calc-gene-lengths.wdl`."
+        outfile_name: "Name of the TPM file"
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     command <<<
-        COUNTS="~{counts}" GENE_LENGTHS="~{gene_lengths}" OUTFILE="~{outfile}" python3 - <<END
+        COUNTS="~{counts}" GENE_LENGTHS="~{gene_lengths}" OUTFILE="~{outfile_name}" python3 - <<END
 import os  # lint-check: ignore
 
 counts_file = open(os.environ['COUNTS'], 'r')
@@ -56,15 +63,21 @@ END
     }
 
     output {
-        File out = "~{outfile}"
+        File tpm_file = "~{outfile_name}"
     }
 }
 
 task run_ESTIMATE {
     input {
         File gene_expression_file
-        String outfile = basename(gene_expression_file, ".TPM.txt") + ".ESTIMATE.gct"
+        String outfile_name = basename(gene_expression_file, ".TPM.txt") + ".ESTIMATE.gct"
         Int max_retries = 1
+    }
+
+    parameter_meta {
+        gene_expression_file: "A 2 column headered TSV file with 'Gene name' in the first column and gene expression values (as floats) in the second column. Can be generated with the `calc_tpm` task."
+        outfile_name: "Name of the ESTIMATE output file"
+        max_retries: "Number of times to retry in case of failure"
     }
 
     command <<<
@@ -78,7 +91,7 @@ write.table(filtered, sep = "\t", file = "filtered.tsv", row.names = FALSE, quot
 outputGCT("filtered.tsv", "gene_expression.gct")
 estimateScore("gene_expression.gct", "common_estimate.gct", platform = "illumina")
 END
-    mv common_estimate.gct "~{outfile}"
+    mv common_estimate.gct "~{outfile_name}"
     >>>
 
     runtime {
@@ -89,6 +102,6 @@ END
     }
 
     output {
-        File out = "~{outfile}"
+        File estimate_file = "~{outfile_name}"
     }
 }

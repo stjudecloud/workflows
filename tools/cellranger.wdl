@@ -14,7 +14,7 @@ task count {
         Int memory_gb = 16
         String jobmode = "local"
         Int max_retries = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float fastq_size = size(fastqs_tar_gz, "GiB")
@@ -35,7 +35,7 @@ task count {
         tar zxf ~{fastqs_tar_gz} -C fastqs
 
         files=(fastqs/*.fastq.gz)
-        # sample parameter to cellranger count must match the sample prefix contained in the fastq file.
+        # sample parameter to cellranger count must match the sample prefix contained in the FastQ file.
         # So we infer it here by manipulating the file name.
         # expected sample name extension comes from:
         # https://support.illumina.com/content/dam/illumina-support/documents/documentation/software_documentation/bcl2fastq/bcl2fastq2-v2-20-software-guide-15051736-03.pdf
@@ -87,7 +87,7 @@ task count {
 
     parameter_meta {
         id: "A unique run ID"
-        fastqs_tar_gz: "Path to the fastq folder archive in .tar.gz format"
+        fastqs_tar_gz: "Path to the FastQ folder archive in .tar.gz format"
         transcriptome_tar_gz: "Path to Cell Ranger-compatible transcriptome reference in .tar.gz format"
         sample_id: "Sample name as used by cellranger mkfastq"
     }
@@ -101,7 +101,7 @@ task bamtofastq {
         Boolean cellranger11 = false
         Boolean longranger20 = false
         Boolean gemcode = false
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
@@ -117,7 +117,7 @@ task bamtofastq {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
         
@@ -144,7 +144,7 @@ task bamtofastq {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to fastq files"
+        description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files"
 
     }
 

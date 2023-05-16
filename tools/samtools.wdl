@@ -48,17 +48,17 @@ task split {
         String prefix = basename(bam, ".bam")
         Int max_retries = 1
         Int? disk_size_gb
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
-    command {
+    command <<<
         set -euo pipefail
-        
+
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -69,7 +69,7 @@ task split {
             else rm ~{prefix}.unaccounted_reads.bam
         fi 
         rm unaccounted_reads.bam
-    }
+    >>>
  
     runtime {
         cpu: ncpu
@@ -98,7 +98,7 @@ task split {
 task flagstat {
     input {
         File bam
-        String outfilename = basename(bam, ".bam")+".flagstat.txt"
+        String outfile_name = basename(bam, ".bam")+".flagstat.txt"
         Int max_retries = 1
         Int memory_gb = 5
     }
@@ -107,7 +107,7 @@ task flagstat {
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
-        samtools flagstat ~{bam} > ~{outfilename}
+        samtools flagstat ~{bam} > ~{outfile_name}
     }
 
     runtime {
@@ -118,13 +118,13 @@ task flagstat {
     }
 
     output { 
-       File outfile = outfilename
+       File flagstat_report = outfile_name
     }
 
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task generates a FastQC quality control metrics report for the input BAM file."
+        description: "This WDL tool generates a `samtools flagstat` report for the input BAM file."
     }
 
     parameter_meta {
@@ -136,22 +136,24 @@ task index {
     input {
         File bam
         Int ncpu = 1
-        String outfile = basename(bam)+".bai"
+        String outfile_name = basename(bam)+".bai"
         Int max_retries = 1
         Int memory_gb = 15
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 2) + 10)
 
     command {
+        set -euo pipefail
+
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
-        samtools index -@ "$n_cores" ~{bam} ~{outfile}
+        samtools index -@ "$n_cores" ~{bam} ~{outfile_name}
     }
 
     runtime {
@@ -164,7 +166,7 @@ task index {
     }
 
     output {
-        File bai = outfile
+        File bam_index = outfile_name
     }
 
     meta {
@@ -181,11 +183,11 @@ task index {
 task subsample {
     input {
         File bam
-        String outname = basename(bam, ".bam") + ".subsampled.bam"
+        String outfile_name = basename(bam, ".bam") + ".subsampled.bam"
         Int desired_reads = 500000
         Int max_retries = 1
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float bam_size = size(bam, "GiB")
@@ -195,7 +197,7 @@ task subsample {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -210,16 +212,16 @@ task subsample {
                     -v initial_frac="$initial_frac" \
                         'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
                 )
-            samtools view --threads "$n_cores" -h -b -s "$frac" ~{bam} > ~{outname}
+            samtools view --threads "$n_cores" -h -b -s "$frac" ~{bam} > ~{outfile_name}
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
-            mv ~{bam} ~{outname}
+            mv ~{bam} ~{outfile_name}
         fi
     >>>
 
     output {
-        File sampled_bam = outname
+        File sampled_bam = outfile_name
     }
 
     runtime {
@@ -234,12 +236,12 @@ task subsample {
 task merge {
     input {
         Array[File] bams
-        String outname = basename(bams[0], ".bam") + ".merged.bam"
+        String outfile_name = basename(bams[0], ".bam") + ".merged.bam"
         File? new_header
         Boolean attach_rg = true
         Int max_retries = 1
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float bam_size = size(bams, "GiB")
@@ -250,7 +252,7 @@ task merge {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -260,12 +262,12 @@ task merge {
             header_arg="-h ~{new_header}"
         fi
 
-        samtools merge --threads "$n_cores" $header_arg ~{rg_arg} ~{outname} ~{sep=' ' bams}
+        samtools merge --threads "$n_cores" $header_arg ~{rg_arg} ~{outfile_name} ~{sep=' ' bams}
 
     >>>
 
     output {
-        File merged_bam = outname
+        File merged_bam = outfile_name
     }
 
     runtime {
@@ -280,11 +282,11 @@ task merge {
 task addreplacerg {
     input {
         File bam
-        String outname = basename(bam, ".bam") + ".read_group.bam"
+        String outfile_name = basename(bam, ".bam") + ".read_group.bam"
         String read_group_id
         Int max_retries = 1
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
     }
 
     Float bam_size = size(bam, "GiB")
@@ -294,15 +296,15 @@ task addreplacerg {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
-        samtools addreplacerg --threads "$n_cores" -R ~{read_group_id} -o ~{outname} ~{bam}
+        samtools addreplacerg --threads "$n_cores" -R ~{read_group_id} -o ~{outfile_name} ~{bam}
     >>>
 
     output {
-        File tagged_bam = outname
+        File tagged_bam = outfile_name
     }
 
     runtime {

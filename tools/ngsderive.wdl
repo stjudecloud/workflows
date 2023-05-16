@@ -7,7 +7,7 @@ version 1.0
 task infer_strandedness {
     input {
         File bam
-        File bai
+        File bam_index
         File gtf
         Int min_reads_per_gene = 10
         Int num_genes = 1000
@@ -23,7 +23,7 @@ task infer_strandedness {
     command {
         set -euo pipefail
 
-        mv ~{bai} ~{bam}.bai || true
+        mv ~{bam_index} ~{bam}.bai || true
         ngsderive strandedness --verbose \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
@@ -42,7 +42,7 @@ task infer_strandedness {
     }
 
     output {
-        File strandedness = "strandedness.txt"
+        String strandedness = read_string("strandedness.txt")
         File strandedness_file = out_file
     }
 }
@@ -80,9 +80,10 @@ task instrument {
 task read_length {
     input {
         File bam
-        File bai
+        File bam_index
         Float majority_vote_cutoff = 0.7
         Int num_samples = 10000
+        Int max_retries = 1
         Int memory_gb = 5
         Int max_retries = 1
     }
@@ -94,7 +95,7 @@ task read_length {
     command {
         set -euo pipefail
 
-        mv ~{bai} ~{bam}.bai || true
+        mv ~{bam_index} ~{bam}.bai || true
 
         ngsderive readlen --verbose \
             -c ~{majority_vote_cutoff} \
@@ -120,20 +121,20 @@ task encoding {
     input {
         Array[File] ngs_files
         String prefix
-        Int num_reads = -1
+        Int num_samples = 1000000
         Int max_retries = 1
         Int memory_gb = 5
     }
 
     String out_file = prefix + ".encoding.txt"
     Float files_size = size(ngs_files, "GiB")
-    Int disk_size = ceil((files_size) + 10)
+    Int disk_size = ceil((files_size) + 5)
  
     command <<<
         set -euo pipefail
 
         ngsderive encoding --verbose \
-            -n ~{num_reads} \
+            -n ~{num_samples} \
             ~{sep=' ' ngs_files} \
             > ~{out_file}
         
@@ -171,7 +172,7 @@ END
     }
 
     output {
-        File inferred_encoding = "encoding.txt"
+        String inferred_encoding = read_string("encoding.txt")
         File encoding_file = out_file
     }
 }
@@ -179,7 +180,7 @@ END
 task junction_annotation {
     input {
         File bam
-        File bai
+        File bam_index
         File gtf
         String prefix = basename(bam, ".bam")
         Int min_intron = 50
@@ -196,7 +197,7 @@ task junction_annotation {
     command {
         set -euo pipefail
 
-        mv ~{bai} ~{bam}.bai || true
+        mv ~{bam_index} ~{bam}.bai || true
         ngsderive junction-annotation --verbose \
             -g ~{gtf} \
             -i ~{min_intron} \

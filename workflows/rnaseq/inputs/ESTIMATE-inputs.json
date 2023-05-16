@@ -1,0 +1,5 @@
+{
+    "counts": "/inputs/Sample.feature-counts.txt",
+    "gene_lengths": "/inputs/gencode.v31.genelengths.txt",
+    "max_retries": "Int?"
+}

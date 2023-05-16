@@ -1,0 +1,4 @@
+{
+    "calc_gene_lengths.gtf": "/inputs/gencode.v31.gtf.gz",
+    "calc_gene_lengths.max_retries": "Int?"
+}

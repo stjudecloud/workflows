@@ -1,5 +1,5 @@
 {
-    "ESTIMATE.counts_file": "/inputs/sample.feature-counts.txt",
-    "ESTIMATE.gene_lengths_file": "/inputs/gencode.v31.annotation.genelengths.txt",
-    "ESTIMATE.max_reties": "Int (default = 1)"
+    "ESTIMATE.counts": "/inputs/Sample.feature-counts.txt",
+    "ESTIMATE.gene_lengths": "/inputs/gencode.v31.genelengths.txt",
+    "ESTIMATE.max_retries": "Int?"
 }
