@@ -56,7 +56,7 @@ task build_star_db {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/star:branch-code-cleanup-1.2.0'
+        docker: 'ghcr.io/stjudecloud/star:branch-code-cleanup-2.7.10a-0'
         maxRetries: max_retries
     }
 
@@ -167,7 +167,7 @@ task alignment {
         cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/star:branch-code-cleanup-1.2.0'
+        docker: 'ghcr.io/stjudecloud/star:branch-code-cleanup-2.7.10a-0'
         maxRetries: max_retries
     }
 
