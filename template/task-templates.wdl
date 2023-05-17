@@ -82,7 +82,7 @@ task detect_nproc_task {
         memory_gb: "RAM to allocate for task, specified in GB"
         disk_size_gb: "Disk space to allocate for task, specified in GB"
         ncpu: "Number of cores to allocate for task"
-        detect_nproc: "Use all available cores? Recommended for cloud environments. Not recommended for cluster environments."
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -98,7 +98,7 @@ task detect_nproc_task {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
     >>>

@@ -299,7 +299,7 @@ task kraken {
         min_base_quality: "Minimum base quality used in classification"
         memory_gb: "RAM to allocate for task. If missing will be dynamically allocated based on database size."
         ncpu: "Number of cores to allocate for task"
-        use_all_cores: "Use all cores"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
