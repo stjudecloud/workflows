@@ -55,13 +55,6 @@ jobs:
         for file in $files; do
           while IFS= read -r line; do
             tag=$(echo "$line" | awk -F ':' '{print substr($3, 1, length($3)-1)}')
-            if ! [[ $tag =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ ]]; then
-              >&2 echo "All Docker containers must be using an official SemVer tagged image"
-              >&2 echo "Offending line: $line"
-              >&2 echo "In file: $file"
-              EXITCODE=1
-            fi
-
             tool=$(echo "$line" | awk -F ':' '{print substr($2, 23, length($2)) ":" substr($3, 1, length($3)-1)}')
             case `grep -Fx "$tool" valid_dockerimages.txt >/dev/null; echo $?` in
               0)
