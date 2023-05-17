@@ -283,7 +283,8 @@ task kraken {
         Boolean store_sequences = false
         Boolean use_names = true
         Int min_base_quality = 0
-        Int? memory_gb
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
         Int ncpu = 1
         Boolean use_all_cores = false
         Int max_retries = 1
@@ -306,9 +307,14 @@ task kraken {
     Float db_size = size(db, "GiB")
     Float read1_size = size(read1, "GiB")
     Float read2_size = size(read2, "GiB")
-    Int disk_size = ceil((db_size * 2) + read1_size + read2_size + 5)
+    Int disk_size_gb_calculation = ceil(
+        (db_size * 2) + read1_size + read2_size
+    ) + modify_disk_size_gb
+    Int disk_size_gb = if store_sequences
+        then disk_size_gb_calculation + ceil(read1_size + read2_size)
+        else disk_size_gb_calculation
 
-    Int ram_gb = select_first([memory_gb, ceil(db_size * 2)])
+    Int memory_gb = ceil(db_size * 2) + modify_memory_gb
 
     String inferred_basename = basename(read1, "_R1.fastq.gz")
     String sample_basename = select_first([sample_name, inferred_basename])
@@ -345,8 +351,8 @@ task kraken {
     >>>
  
     runtime {
-        memory: ram_gb + " GB"
-        disk: disk_size + " GB"
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         cpu: ncpu
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
