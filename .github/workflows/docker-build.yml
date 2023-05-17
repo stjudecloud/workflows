@@ -36,6 +36,7 @@ jobs:
       - name: Set Branch Tag
         if: github.ref != 'refs/heads/main'
         run: echo "IMAGE_TAG=branch-${GITHUB_REF##*/}-${{ env.SEMVER }}" >> $GITHUB_ENV
+      - uses: actions/checkout@v3
       - name: Log in to the Container registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
       - uses: webfactory/ssh-agent@v0.7.0
