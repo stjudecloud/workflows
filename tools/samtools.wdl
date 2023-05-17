@@ -329,12 +329,11 @@ task addreplacerg {
 }
 
 task collate {
-    # TODO make this memory allocation dynamic based on BAM size
     input {
         File bam
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
-        Int memory_gb = 64
+        Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
         Int ncpu = 1
         Int max_retries = 1
@@ -347,7 +346,11 @@ task collate {
     String outfile_name = prefix + ".collated.bam"
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+    Int memory_gb_calculation = ceil((bam_size * 0.2)) + modify_memory_gb
+    Int memory_gb = if memory_gb_calculation > 4
+        then memory_gb_calculation
+        else 4
+    Int disk_size_gb = ceil((bam_size * 4)) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
