@@ -9,23 +9,24 @@ task mark_duplicates {
     input {
         File bam
         String prefix = basename(bam, ".bam")
+        Boolean create_bam = true
         Int memory_gb = 50
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size = if create_bam then ceil((bam_size * 2) + 10) else ceil(bam_size + 10)
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command {
+    command <<<
         picard -Xmx~{java_heap_size}g MarkDuplicates I=~{bam} \
-            O=~{prefix}.MarkDuplicates.bam \
+            O=~{if create_bam then prefix + ".MarkDuplicates.bam" else "/dev/null"} \
             VALIDATION_STRINGENCY=SILENT \
-            CREATE_INDEX=false \
-            CREATE_MD5_FILE=false \
+            CREATE_INDEX=~{create_bam} \
+            CREATE_MD5_FILE=~{create_bam} \
             COMPRESSION_LEVEL=5 \
             METRICS_FILE=~{prefix}.MarkDuplicates.metrics.txt
-    }
+    >>>
 
     runtime {
         memory: memory_gb + " GB"
@@ -35,7 +36,9 @@ task mark_duplicates {
     }
 
     output {
-        File duplicate_marked_bam = "~{prefix}.MarkDuplicates.bam"
+        File? duplicate_marked_bam = "~{prefix}.MarkDuplicates.bam"
+        File? duplicate_marked_bam_index = "~{prefix}.MarkDuplicates.bam.bai"
+        File? duplicate_marked_bam_md5 = "~{prefix}.MarkDuplicates.bam.md5"
         File mark_duplicates_metrics = "~{prefix}.MarkDuplicates.metrics.txt"
     }
 

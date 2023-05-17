@@ -49,7 +49,7 @@ workflow quality_check {
         Array[File] coverage_beds = []
         Array[String] coverage_labels = []
         String strandedness = ""
-        Boolean mark_duplicates = true
+        Boolean mark_duplicates = if molecule == "RNA" then true else false
         File? gtf
         File? star_log
         Boolean use_all_cores = false
@@ -112,16 +112,13 @@ workflow quality_check {
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call util.compression_integrity { input: bam=bam, max_retries=max_retries }
 
-    if (mark_duplicates) {
-        call picard.mark_duplicates as markdups { input: bam=bam, max_retries=max_retries }
-        call samtools.index as markdups_index { input:
-            bam=markdups.duplicate_marked_bam,
-            use_all_cores=use_all_cores,
-            max_retries=max_retries
-        }
+    call picard.mark_duplicates as markdups { input:
+        bam=bam,
+        create_bam=mark_duplicates,
+        max_retries=max_retries
     }
     File chosen_bam = select_first([markdups.duplicate_marked_bam, quickcheck.checked_bam])
-    File chosen_bam_index = select_first([markdups_index.bam_index, bam_index])
+    File chosen_bam_index = select_first([markdups.duplicate_marked_bam_index, bam_index])
 
     call picard.collect_alignment_summary_metrics { input: bam=chosen_bam, max_retries=max_retries }
     call picard.collect_gc_bias_metrics { input: bam=chosen_bam, reference_fasta=reference_fasta, max_retries=max_retries }
@@ -206,6 +203,7 @@ workflow quality_check {
         input_files=select_all(flatten([
             [
                 validate_bam.validate_report,
+                markdups.mark_duplicates_metrics,
                 samtools_flagstat.flagstat_report,
                 ngsderive_instrument.instrument_file,
                 ngsderive_read_length.read_length_file,
@@ -218,7 +216,6 @@ workflow quality_check {
                 run_kraken.report,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
-                markdups.mark_duplicates_metrics,
                 wg_dups_marked_coverage.summary,
                 wg_dups_marked_coverage.global_dist,
                 star_log,
@@ -241,6 +238,7 @@ workflow quality_check {
     output {
         File bam_checksum = compute_checksum.md5sum
         File validate_sam_file = validate_bam.validate_report
+        File mark_duplicates_metrics = markdups.mark_duplicates_metrics
         File flagstat = samtools_flagstat.flagstat_report
         File fastqc_results = fastqc.results
         File instrument_file = ngsderive_instrument.instrument_file
@@ -258,7 +256,6 @@ workflow quality_check {
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
         File multiqc_zip = multiqc.multiqc_report
-        File? mark_duplicates_metrics = markdups.mark_duplicates_metrics
         File? kraken_sequences = run_kraken.sequences
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
