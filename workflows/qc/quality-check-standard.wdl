@@ -124,6 +124,8 @@ workflow quality_check {
 
     call samtools.bam_to_fastq { input:
         bam=collate.collated_bam,
+        paired_end=true,  # matches default but prevents user from overriding
+        interleaved=false,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
