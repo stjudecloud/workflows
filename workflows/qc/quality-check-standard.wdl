@@ -262,6 +262,10 @@ workflow quality_check {
         File? kraken_sequences = run_kraken.sequences
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
+        File? mosdepth_global_dups_marked_dist = wg_nodups_coverage.global_dist
+        File? mosdepth_global_dups_marked_summary = wg_nodups_coverage.summary
+        Array[File?]? mosdepth_region_dups_marked_dist = regions_nodups_coverage.region_dist
+        Array[File]? mosdepth_region_dups_marked_summary = regions_nodups_coverage.summary
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
