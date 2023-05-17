@@ -162,20 +162,20 @@ workflow quality_check {
     }
 
     if (mark_duplicates) {
-        call mosdepth.coverage as wg_nodups_coverage {
+        call mosdepth.coverage as wg_dups_marked_coverage {
             input:
                 bam=chosen_bam,
                 bam_index=chosen_bam_index,
-                prefix=basename(chosen_bam, 'bam')+"whole_genome.no_duplicates",
+                prefix=basename(chosen_bam, 'bam')+"whole_genome.duplicates_marked",
                 max_retries=max_retries
         }
         scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
-            call mosdepth.coverage as regions_nodups_coverage {
+            call mosdepth.coverage as regions_dups_marked_coverage {
                 input:
                     bam=chosen_bam,
                     bam_index=chosen_bam_index,
                     coverage_bed=coverage_pair.left,
-                    prefix=basename(chosen_bam, 'bam')+coverage_pair.right+".no_duplicates",
+                    prefix=basename(chosen_bam, 'bam')+coverage_pair.right+".duplicates_marked",
                     max_retries=max_retries
             }
         }
@@ -219,8 +219,8 @@ workflow quality_check {
                 wg_coverage.summary,
                 wg_coverage.global_dist,
                 markdups.mark_duplicates_metrics,
-                wg_nodups_coverage.summary,
-                wg_nodups_coverage.global_dist,
+                wg_dups_marked_coverage.summary,
+                wg_dups_marked_coverage.global_dist,
                 star_log,
                 ngsderive_strandedness.strandedness_file,
                 junction_annotation.junction_summary,
@@ -229,8 +229,8 @@ workflow quality_check {
             ],
             regions_coverage.summary,
             regions_coverage.region_dist,
-            select_first([regions_nodups_coverage.summary, []]),
-            select_first([regions_nodups_coverage.region_dist, []])
+            select_first([regions_dups_marked_coverage.summary, []]),
+            select_first([regions_dups_marked_coverage.region_dist, []])
         ])),
         output_prefix=basename(bam, '.bam'),
         extra_fn_clean_exts=[".ValidateSamFile"],
@@ -262,10 +262,10 @@ workflow quality_check {
         File? kraken_sequences = run_kraken.sequences
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
-        File? mosdepth_global_dups_marked_dist = wg_nodups_coverage.global_dist
-        File? mosdepth_global_dups_marked_summary = wg_nodups_coverage.summary
-        Array[File?]? mosdepth_region_dups_marked_dist = regions_nodups_coverage.region_dist
-        Array[File]? mosdepth_region_dups_marked_summary = regions_nodups_coverage.summary
+        File? mosdepth_global_dups_marked_dist = wg_dups_marked_coverage.global_dist
+        File? mosdepth_global_dups_marked_summary = wg_dups_marked_coverage.summary
+        Array[File?]? mosdepth_region_dups_marked_dist = regions_dups_marked_coverage.region_dist
+        Array[File]? mosdepth_region_dups_marked_summary = regions_dups_marked_coverage.summary
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
