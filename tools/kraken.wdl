@@ -279,7 +279,7 @@ task kraken {
         File read1
         File read2
         File db
-        String? sample_name
+        String? prefix = basename(read1, "_R1.fastq.gz")
         Boolean store_sequences = false
         Boolean use_names = true
         Int min_base_quality = 0
@@ -316,10 +316,8 @@ task kraken {
 
     Int memory_gb = ceil(db_size * 2) + modify_memory_gb
 
-    String inferred_basename = basename(read1, "_R1.fastq.gz")
-    String sample_basename = select_first([sample_name, inferred_basename])
-    String out_report = sample_basename + ".kraken2.txt"
-    String out_sequences = sample_basename + ".kraken2.sequences.txt"
+    String out_report = prefix + ".kraken2.txt"
+    String out_sequences = prefix + ".kraken2.sequences.txt"
 
     command <<<
         set -euo pipefail
