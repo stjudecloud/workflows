@@ -448,6 +448,7 @@ task bam_to_fastq {
                 then prefix+".singleton.fastq.gz"
                 else "/dev/null"
             } \
+            -0 /dev/null \
             ~{bam}
     >>>
 
