@@ -1,0 +1,12 @@
+{
+    "star_db_build.reference_fa_url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M32/GRCm39.primary_assembly.genome.fa.gz",
+    "star_db_build.reference_fa_name": "GRCm39.fa.gz",
+    "star_db_build.reference_fa_md5": "ea92192c379d7d4895c4a8157e628a85",
+    "star_db_build.gtf_url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M32/gencode.vM32.annotation.gtf.gz",
+    "star_db_build.gtf_name": "gencode.vM32.annotation.gtf.gz",
+    "star_db_build.gtf_md5": "8894cf43646e307f5985b4523407f155",
+    "star_db_build.build_star_db.stardb_dir_name": "GRCm39.stardb",
+    "star_db_build.build_star_db.ncpu": "Int (default = 1)",
+    "star_db_build.build_star_db.use_all_cores": "Boolean (default = false)",
+    "star_db_build.max_retries": "Int?"
+}
