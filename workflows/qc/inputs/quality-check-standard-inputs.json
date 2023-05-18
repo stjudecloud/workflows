@@ -1,13 +1,11 @@
 {
-  "quality_check.bam": "/inputs/sample.bam",
-  "quality_check.bam_index": "/inputs/sample.bam.bai",
+  "quality_check.bam": "/inputs/Sample.bam",
+  "quality_check.bam_index": "/inputs/Sample.bam.bai",
   "quality_check.reference_fasta": "/inputs/GRCh38.no_alt.fa.gz",
   "quality_check.gtf": "/inputs/gencode.v31.annotation.gtf.gz (only required for RNA-Seq data)",
-  "quality_check.star_log": "/inputs/sample.Log.final.out (optional)",
+  "quality_check.star_log": "/inputs/Sample.Log.final.out (optional)",
   "quality_check.molecule": "<DNA/RNA>",
-  "quality_check.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified we will try to guess using ngsderive. Only used for RNA-Seq)",
-  "quality_check.use_all_cores": "Boolean (default = false)",
-  "quality_check.max_retries": "Int?",
+  "quality_check.strandedness": "<Stranded-Reverse/Stranded-Forward/Unstranded> (optional, if not specified we will try to guess using ngsderive. Only used for RNA)",
   "quality_check.ngsderive_instrument.num_samples": "Int (default = 10000)",
   "quality_check.ngsderive_read_length.num_samples": "Int (default = 10000)",
   "quality_check.ngsderive_read_length.majority_vote_cutoff": "Float (default = 0.7)",
@@ -19,5 +17,7 @@
   "quality_check.ngsderive_strandedness.num_genes": "Int (default = 1000)",
   "quality_check.ngsderive_strandedness.min_mapq": "Int (default = 30)",
   "quality_check.fastqc.ncpu": "Int (default = 1)",
-  "quality_check.samtools_subsample.ncpu": "Int (default = 1)"
+  "quality_check.samtools_subsample.ncpu": "Int (default = 1)",
+  "quality_check.use_all_cores": "Boolean (default = false)",
+  "quality_check.max_retries": "Int?"
 }
