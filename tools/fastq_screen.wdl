@@ -79,10 +79,6 @@ task fastq_screen {
         mkdir -p /tmp/FastQ_Screen_Genomes/
         tar -xzf ~{db} -C /tmp/FastQ_Screen_Genomes/ --no-same-owner
 
-        tree -h /tmp
-        ls -lah /tmp
-        df
-
         gunzip -c ~{read1} ~{read2} > ~{sample_basename}.fastq
 
         fastq_screen \
@@ -91,14 +87,14 @@ task fastq_screen {
             --conf /home/fastq_screen.conf \
             --aligner bowtie2 \
             ~{sample_basename}.fastq 2>&1 \
-            | sed '/Skipping DATABASE/q1;/ERR/q1' 1>&2 \
-            || exit 42
+            | sed '/Skipping DATABASE/q42;/ERR/q42' 1>&2
 
         mkdir ~{out_directory}
         mv "~{out_file_prefix}"* "~{out_directory}"
         tar -czf ~{out_tar_gz} ~{out_directory}
 
         rm -r /tmp/FastQ_Screen_Genomes/
+        rm ~{sample_basename}.fastq
     >>>
  
     runtime {
