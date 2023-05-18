@@ -63,8 +63,6 @@ task validate_bam {
         Int max_retries = 1
     }
 
-    String succeed_on_errors_string = if (succeed_on_errors) then "true" else ""
-    String succeed_on_warnings_string = if (succeed_on_warnings) then "true" else ""
     String mode_arg = if (summary_mode) then "MODE=SUMMARY" else ""
     String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
@@ -90,13 +88,13 @@ task validate_bam {
         fi
         set -eo pipefail
 
-        if [ "~{succeed_on_warnings_string}" == "true" ]; then
+        if [ "~{succeed_on_warnings}" == "true" ]; then
             GREP_PATTERN="ERROR"
         else
             GREP_PATTERN="(ERROR|WARNING)"
         fi
 
-        if [ "~{succeed_on_errors_string}" != "true" ] && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]; then
+        if [ "~{succeed_on_errors}" == "false" ] && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]; then
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
             grep -E "$GREP_PATTERN" ~{outfile_name} > /dev/stderr
             exit 1
