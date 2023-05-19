@@ -177,7 +177,7 @@ task bwa_mem {
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
             /tmp/bwa/"$PREFIX" \
             ~{fastq} \
-            | samtools view -@ "$n_cores" -b - \
+            | samtools view -@ "$n_cores" -hb - \
             > ~{output_bam}
 
         rm -r /tmp/bwa
