@@ -113,24 +113,24 @@ workflow quality_check {
     call util.compression_integrity { input: bam=bam, max_retries=max_retries }
 
     call picard.mark_duplicates as markdups { input:
-        bam=bam,
+        bam=quickcheck.checked_bam,
         create_bam=mark_duplicates,
         max_retries=max_retries
     }
     File chosen_bam = select_first([markdups.duplicate_marked_bam, quickcheck.checked_bam])
     File chosen_bam_index = select_first([markdups.duplicate_marked_bam_index, bam_index])
 
-    call picard.collect_alignment_summary_metrics { input: bam=chosen_bam, max_retries=max_retries }
-    call picard.collect_gc_bias_metrics { input: bam=chosen_bam, reference_fasta=reference_fasta, max_retries=max_retries }
+    call picard.collect_alignment_summary_metrics { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call picard.collect_gc_bias_metrics { input: bam=quickcheck.checked_bam, reference_fasta=reference_fasta, max_retries=max_retries }
     call picard.collect_insert_size_metrics { input: bam=chosen_bam, max_retries=max_retries }
-    call picard.quality_score_distribution { input: bam=chosen_bam, max_retries=max_retries }
+    call picard.quality_score_distribution { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call samtools.flagstat as samtools_flagstat { input: bam=chosen_bam, max_retries=max_retries }
-    call fqc.fastqc { input: bam=chosen_bam, max_retries=max_retries }
-    call ngsderive.instrument as ngsderive_instrument { input: bam=chosen_bam, max_retries=max_retries }
-    call ngsderive.read_length as ngsderive_read_length { input: bam=chosen_bam, bam_index=chosen_bam_index, max_retries=max_retries }
-    call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[chosen_bam], prefix=prefix, max_retries=max_retries }
+    call fqc.fastqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call ngsderive.instrument as ngsderive_instrument { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bam_index=bam_index, max_retries=max_retries }
+    call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
 
-    call picard.bam_to_fastq { input: bam=chosen_bam, max_retries=max_retries }
+    call picard.bam_to_fastq { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
     call kraken.kraken as run_kraken { 
         input:
@@ -163,7 +163,8 @@ workflow quality_check {
             input:
                 bam=chosen_bam,
                 bam_index=chosen_bam_index,
-                prefix=basename(chosen_bam, 'bam')+"whole_genome.duplicates_marked",
+                prefix=basename(chosen_bam, 'bam')
+                    + "whole_genome.duplicates_marked",
                 max_retries=max_retries
         }
         scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
@@ -172,7 +173,9 @@ workflow quality_check {
                     bam=chosen_bam,
                     bam_index=chosen_bam_index,
                     coverage_bed=coverage_pair.left,
-                    prefix=basename(chosen_bam, 'bam')+coverage_pair.right+".duplicates_marked",
+                    prefix=basename(chosen_bam, 'bam')
+                        + coverage_pair.right
+                        + ".duplicates_marked",
                     max_retries=max_retries
             }
         }
@@ -181,15 +184,15 @@ workflow quality_check {
     if (molecule == "RNA") {
         File gtf_defined = select_first([gtf, "No GTF"])
 
-        call ngsderive.junction_annotation as junction_annotation { input: bam=chosen_bam, bam_index=chosen_bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.junction_annotation as junction_annotation { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
 
-        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=chosen_bam, bam_index=chosen_bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
 
         String qualimap_strandedness = if (provided_strandedness != "")
             then qualimap_strandedness_map[provided_strandedness]
             else qualimap_strandedness_map[ngsderive_strandedness.strandedness]
 
-        call picard.sort as picard_sort { input: bam=chosen_bam, sort_order="queryname", max_retries=max_retries }
+        call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input:
             bam=picard_sort.sorted_bam,
             gtf=gtf_defined,
