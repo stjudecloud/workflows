@@ -270,6 +270,9 @@ workflow quality_check {
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
         File multiqc_zip = multiqc.multiqc_report
+        File? duplicate_marked_bam = markdups.duplicate_marked_bam
+        File? duplicate_marked_bam_index = markdups.duplicate_marked_bam_index
+        File? duplicate_marked_bam_md5 = markdups.duplicate_marked_bam_md5
         File? kraken_sequences = run_kraken.sequences
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
