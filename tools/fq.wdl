@@ -11,12 +11,19 @@ task fqlint {
         File read1
         File? read2
         Int max_retries = 1
-        Int memory_gb = 8 
+        Int modify_memory_gb = 0
     }
 
     Float read1_size = size(read1, "GiB")
     Float read2_size = if defined(read2) then size(read2, "GiB") else 0
-    Int disk_size = ceil(((read1_size + read2_size) * 2) + 10)
+
+    Int memory_gb_calculation = ceil(((read1_size + read2_size) * 0.08)) + modify_memory_gb
+    Int memory_gb = if memory_gb_calculation > 4
+        then memory_gb_calculation
+        else 4
+
+    Int disk_size = ceil((read1_size + read2_size) * 2)
+
     String args = if defined(read2) then "" else "--disable-validator P001" 
 
     command {
