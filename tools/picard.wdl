@@ -19,6 +19,8 @@ task mark_duplicates {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g MarkDuplicates I=~{bam} \
             O=~{if create_bam then prefix + ".MarkDuplicates.bam" else "/dev/null"} \
             VALIDATION_STRINGENCY=SILENT \
@@ -26,6 +28,8 @@ task mark_duplicates {
             CREATE_MD5_FILE=~{create_bam} \
             COMPRESSION_LEVEL=5 \
             METRICS_FILE=~{prefix}.MarkDuplicates.metrics.txt
+        
+        mv ~{prefix}.MarkDuplicates.bai ~{prefix}.MarkDuplicates.bam.bai || true
     >>>
 
     runtime {
