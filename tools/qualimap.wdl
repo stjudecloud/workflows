@@ -73,7 +73,6 @@ task rnaseq {
     input {
         File bam
         File gtf
-        String strandedness
         Boolean name_sorted = false
         Boolean paired_end = true
         Int memory_gb = 16
@@ -84,10 +83,6 @@ task rnaseq {
     parameter_meta {
         bam: "Input BAM format file to run qualimap rnaseq on"
         gtf: "GTF features file"
-        strandedness: {
-            help: "Strandedness protocol used to generate the RNA-Seq data"
-            choices: ['strand-specific-reverse', 'strand-specific-forward', 'non-strand-specific']
-        }
         name_sorted: "Is the BAM name sorted?"
         paired_end: "Is the BAM paired end?"
         memory_gb: "RAM to allocate for task"
@@ -115,7 +110,6 @@ task rnaseq {
                         -gtf "$gtf_name" \
                         -outdir ~{out_directory} \
                         -oc qualimap_counts.txt \
-                        -p ~{strandedness} \
                         ~{name_sorted_arg} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
@@ -145,6 +139,6 @@ task rnaseq {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task generates runs QualiMap's rnaseq tool on the input BAM file."
+        description: "This WDL task generates runs QualiMap's rnaseq tool on the input BAM file. Note that we don't expose the `-p` parameter. This is used to set strandedness protocol of the sample, however in practice it only disables certain calculations. We do not expose the parameter so that the full suite of calculations is always performed."
     }
 }
