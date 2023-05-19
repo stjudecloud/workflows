@@ -35,14 +35,15 @@ task bwa_aln {
         tar -C /tmp/bwa -xzf ~{bwadb_tar_gz}
         PREFIX=$(basename bwa/*.ann ".ann")
 
-        bwa aln -t "${n_cores}" /tmp/bwa/"$PREFIX" ~{fastq} > sai
+        bwa aln -t "$n_cores" /tmp/bwa/"$PREFIX" ~{fastq} > sai
 
         bwa samse \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
             bwa/"$PREFIX" \
             sai \
             ~{fastq} \
-            | samtools view -@ "${n_cores}" -hb - > ~{output_bam}
+            | samtools view -@ "$n_cores" -hb - \
+            > ~{output_bam}
 
         rm -r /tmp/bwa
     >>>
@@ -102,15 +103,16 @@ task bwa_aln_pe {
         tar -C /tmp/bwa -xzf ~{bwadb_tar_gz}
         PREFIX=$(basename bwa/*.ann ".ann")
 
-        bwa aln -t "${n_cores}" /tmp/bwa/"$PREFIX" ~{fastq1} > sai_1
-        bwa aln -t "${n_cores}" /tmp/bwa/"$PREFIX" ~{fastq2} > sai_2
+        bwa aln -t "$n_cores" /tmp/bwa/"$PREFIX" ~{fastq1} > sai_1
+        bwa aln -t "$n_cores" /tmp/bwa/"$PREFIX" ~{fastq2} > sai_2
 
         bwa sampe \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
             /tmp/bwa/"$PREFIX" \
             sai_1 sai_2 \
             ~{fastq1} ~{fastq2} \
-            | samtools view -@ "${n_cores}" -hb - > ~{output_bam}
+            | samtools view -@ "$n_cores" -hb - \
+            > ~{output_bam}
 
         rm -r /tmp/bwa
     >>>
@@ -175,7 +177,8 @@ task bwa_mem {
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
             /tmp/bwa/"$PREFIX" \
             ~{fastq} \
-            | samtools view -b - > ~{output_bam}
+            | samtools view -@ "$n_cores" -b - \
+            > ~{output_bam}
 
         rm -r /tmp/bwa
     >>>
