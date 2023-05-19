@@ -33,13 +33,13 @@ task bwa_aln {
         mkdir /tmp/bwa
 
         tar -C /tmp/bwa -xzf ~{bwadb_tar_gz}
-        PREFIX=$(basename bwa/*.ann ".ann")
+        PREFIX=$(basename /tmp/bwa/*.ann ".ann")
 
         bwa aln -t "$n_cores" /tmp/bwa/"$PREFIX" ~{fastq} > sai
 
         bwa samse \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
-            bwa/"$PREFIX" \
+            /tmp/bwa/"$PREFIX" \
             sai \
             ~{fastq} \
             | samtools view -@ "$n_cores" -hb - \
@@ -101,7 +101,7 @@ task bwa_aln_pe {
         mkdir /tmp/bwa
 
         tar -C /tmp/bwa -xzf ~{bwadb_tar_gz}
-        PREFIX=$(basename bwa/*.ann ".ann")
+        PREFIX=$(basename /tmp/bwa/*.ann ".ann")
 
         bwa aln -t "$n_cores" /tmp/bwa/"$PREFIX" ~{fastq1} > sai_1
         bwa aln -t "$n_cores" /tmp/bwa/"$PREFIX" ~{fastq2} > sai_2
@@ -170,7 +170,7 @@ task bwa_mem {
         mkdir /tmp/bwa
 
         tar -C /tmp/bwa -xzf ~{bwadb_tar_gz}
-        PREFIX=$(basename bwa/*.ann ".ann")
+        PREFIX=$(basename /tmp/bwa/*.ann ".ann")
 
         bwa mem \
             -t "$n_cores" \
