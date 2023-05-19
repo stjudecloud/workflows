@@ -353,9 +353,9 @@ task collate {
 
     Float bam_size = size(bam, "GiB")
     Int memory_gb_calculation = ceil((bam_size * 0.2)) + modify_memory_gb
-    Int memory_gb = if memory_gb_calculation > 4
+    Int memory_gb = if memory_gb_calculation > 6
         then memory_gb_calculation
-        else 4
+        else 6
     Int disk_size_gb = ceil((bam_size * 4)) + modify_disk_size_gb
 
     command <<<
