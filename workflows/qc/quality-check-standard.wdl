@@ -79,7 +79,6 @@ workflow quality_check {
         input:
             gtf_provided=gtf_provided,
             input_molecule=molecule,
-            input_strand=provided_strandedness,
             coverage_beds_len=length(coverage_beds),
             coverage_labels=coverage_labels
     }
@@ -264,7 +263,6 @@ workflow quality_check {
 task parse_input {
     input {
         Boolean gtf_provided
-        String input_strand
         String input_molecule
         Int coverage_beds_len
         Array[String] coverage_labels
@@ -282,11 +280,6 @@ task parse_input {
 
         if [ "~{input_molecule}" = "RNA" ] && [ "~{gtf_provided}" = "false" ]; then
             >&2 echo "Must supply a GTF if molecule = 'RNA'"
-            EXITCODE=1
-        fi
-
-        if [ -n "~{input_strand}" ] && [ "~{input_strand}" != "Stranded-Reverse" ] && [ "~{input_strand}" != "Stranded-Forward" ] && [ "~{input_strand}" != "Unstranded" ]; then
-            >&2 echo "strandedness must be empty, 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
             EXITCODE=1
         fi
 
