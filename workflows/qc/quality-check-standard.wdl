@@ -130,8 +130,20 @@ workflow quality_check {
     call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bam_index=bam_index, max_retries=max_retries }
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
 
-    call picard.bam_to_fastq { input: bam=quickcheck.checked_bam, max_retries=max_retries }
-    call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
+    call samtools.collate { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+
+    call samtools.bam_to_fastq { input:
+        bam=collate.collated_bam,
+        paired_end=true,  # matches default but prevents user from overriding
+        interleaved=false,  # matches default but prevents user from overriding
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
+    }
+    call fq.fqlint { input:
+        read1=select_first([bam_to_fastq.read1, ""]),
+        read2=bam_to_fastq.read2,
+        max_retries=max_retries
+    }
     call kraken.kraken as run_kraken { 
         input:
             read1=fqlint.validated_read1,
@@ -192,9 +204,8 @@ workflow quality_check {
             then qualimap_strandedness_map[provided_strandedness]
             else qualimap_strandedness_map[ngsderive_strandedness.strandedness]
 
-        call picard.sort as picard_sort { input: bam=quickcheck.checked_bam, sort_order="queryname", max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam=picard_sort.sorted_bam,
+            bam=collate.collated_bam,
             gtf=gtf_defined,
             strandedness=qualimap_strandedness,
             name_sorted=true,
