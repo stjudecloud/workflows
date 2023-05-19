@@ -337,6 +337,10 @@ task kraken {
             ~{read1} \
             ~{read2}
 
+        if [ "~{store_sequences}" = "true" ]; then
+            gzip ~{out_sequences}
+        fi
+
         rm -r /tmp/kraken2_db/
     >>>
  
@@ -350,7 +354,7 @@ task kraken {
 
     output {
         File report = out_report
-        File? sequences = out_sequences
+        File? sequences = out_sequences + ".gz"
     }
 
     meta {
