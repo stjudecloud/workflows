@@ -130,7 +130,11 @@ workflow quality_check {
     call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bam_index=bam_index, max_retries=max_retries }
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
 
-    call samtools.collate { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call samtools.collate { input:
+        bam=quickcheck.checked_bam,
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
+    }
 
     call samtools.bam_to_fastq { input:
         bam=collate.collated_bam,
