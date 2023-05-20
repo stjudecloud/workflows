@@ -114,8 +114,8 @@ workflow quality_check {
         call samtools.subsample { input:
             bam=quickcheck.checked_bam,
             desired_reads=subsample_n_reads,
-            use_all_cores=use_all_cores
-            max_retries=max_retries,
+            use_all_cores=use_all_cores,
+            max_retries=max_retries
         }
     }
     File selected_input_bam = select_first([subsample.sampled_bam, bam])
