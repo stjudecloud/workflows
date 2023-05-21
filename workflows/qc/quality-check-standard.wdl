@@ -134,14 +134,14 @@ workflow quality_check {
         max_retries=max_retries
     }
     call fq.fqlint { input:
-        read1=select_first([bam_to_fastq.read1, ""]),
+        read1=select_first([bam_to_fastq.read1, "undefined"]),
         read2=bam_to_fastq.read2,
         max_retries=max_retries
     }
     call kraken.kraken as run_kraken { 
         input:
             read1=fqlint.validated_read1,
-            read2=select_first([fqlint.validated_read2, ""]),
+            read2=select_first([fqlint.validated_read2, "undefined"]),
             db=kraken_db,
             max_retries=max_retries
     }
@@ -165,11 +165,19 @@ workflow quality_check {
     }
 
     if (molecule == "RNA") {
-        File gtf_defined = select_first([gtf, "No GTF"])
+        call ngsderive.junction_annotation { input:
+            bam=quickcheck.checked_bam,
+            bam_index=bam_index,
+            gtf=select_first([gtf, "undefined"]),
+            max_retries=max_retries
+        }
 
-        call ngsderive.junction_annotation as junction_annotation { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
-
-        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.infer_strandedness as ngsderive_strandedness { input:
+            bam=quickcheck.checked_bam,
+            bam_index=bam_index,
+            gtf=select_first([gtf, "undefined"]),
+            max_retries=max_retries
+        }
 
         String qualimap_strandedness = if (provided_strandedness != "")
             then qualimap_strandedness_map[provided_strandedness]
@@ -177,7 +185,7 @@ workflow quality_check {
 
         call qualimap.rnaseq as qualimap_rnaseq { input:
             bam=collate.collated_bam,
-            gtf=gtf_defined,
+            gtf=select_first([gtf, "undefined"]),
             strandedness=qualimap_strandedness,
             name_sorted=true,
             max_retries=max_retries
