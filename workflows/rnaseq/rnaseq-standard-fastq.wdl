@@ -95,11 +95,12 @@ workflow rnaseq_standard_fastq {
     }
 
     if (subsample_n_reads > 0) {
+        Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs))
         scatter (reads in zip(read_one_fastqs, read_two_fastqs)) {
             call fq.subsample { input:
                 read1=reads.left,
                 read2=reads.right,
-                record_count=subsample_n_reads,
+                record_count=reads_per_pair,
                 max_retries=max_retries
             }
         }
