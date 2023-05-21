@@ -23,7 +23,11 @@ task infer_strandedness {
     command {
         set -euo pipefail
 
-        mv ~{bam_index} ~{bam}.bai || true
+        if [ ! -e ~{bam}.bai ]
+        then 
+            ln -s ~{bam_index} ~{bam}.bai
+        fi
+
         ngsderive strandedness --verbose \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
@@ -87,8 +91,12 @@ task read_length {
  
     command {
         set -euo pipefail
-        
-        mv ~{bam_index} ~{bam}.bai || true
+
+        if [ ! -e ~{bam}.bai ]
+        then 
+            ln -s ~{bam_index} ~{bam}.bai
+        fi
+
         ngsderive readlen --verbose ~{bam} > ~{out_file}
     }
 
@@ -181,7 +189,11 @@ task junction_annotation {
     command {
         set -euo pipefail
 
-        mv ~{bam_index} ~{bam}.bai || true
+        if [ ! -e ~{bam}.bai ]
+        then 
+            ln -s ~{bam_index} ~{bam}.bai
+        fi
+
         ngsderive junction-annotation --verbose \
             -g ~{gtf} \
             -i ~{min_intron} \
@@ -190,7 +202,7 @@ task junction_annotation {
             -k ~{fuzzy_junction_match_range} \
             -o ~{prefix}.junction_summary.txt \
             ~{bam}
-        
+
         mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"
         gzip ~{prefix}.junctions.tsv
     }

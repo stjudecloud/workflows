@@ -22,7 +22,11 @@ task coverage {
     command {
         set -euo pipefail
 
-        mv ~{bam_index} ~{bam}.bai || true
+        if [ ! -e ~{bam}.bai ]
+        then 
+            ln -s ~{bam_index} ~{bam}.bai
+        fi
+
         mosdepth \
             -n \
             ~{if defined(coverage_bed) then "-b" else ""} ~{coverage_bed} \
