@@ -120,10 +120,12 @@ workflow quality_check {
             use_all_cores=use_all_cores,
             max_retries=max_retries
         }
-        call samtools.index as subsample_index { input:
-            bam=subsample.sampled_bam,
-            use_all_cores=use_all_cores,
-            max_retries=max_retries
+        if (defined(subsample.sampled_bam)) {
+            call samtools.index as subsample_index { input:
+                bam=select_first([subsample.sampled_bam, "undefined"]),
+                use_all_cores=use_all_cores,
+                max_retries=max_retries
+            }
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, quickcheck.checked_bam])
