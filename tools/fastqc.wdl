@@ -10,6 +10,7 @@ task fastqc {
         File bam
         Int ncpu = 1
         Int memory_gb = 5
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
@@ -20,11 +21,16 @@ task fastqc {
 
     command {
         set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(nproc)
+        fi
         
         mkdir ~{out_directory}
         fastqc -f bam \
             -o ~{out_directory} \
-            -t ~{ncpu} \
+            -t "$n_cores" \
             ~{bam}
 
         tar -czf ~{out_tar_gz} ~{out_directory}

@@ -125,7 +125,11 @@ workflow quality_check {
     call picard.collect_insert_size_metrics { input: bam=chosen_bam, max_retries=max_retries }
     call picard.quality_score_distribution { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call samtools.flagstat as samtools_flagstat { input: bam=chosen_bam, max_retries=max_retries }
-    call fqc.fastqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call fqc.fastqc { input:
+        bam=quickcheck.checked_bam,
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
+    }
     call ngsderive.instrument as ngsderive_instrument { input: bam=quickcheck.checked_bam, max_retries=max_retries }
     call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bam_index=bam_index, max_retries=max_retries }
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
@@ -153,6 +157,7 @@ workflow quality_check {
             read1=fqlint.validated_read1,
             read2=select_first([fqlint.validated_read2, ""]),
             db=kraken_db,
+            use_all_cores=use_all_cores,
             max_retries=max_retries
     }
 

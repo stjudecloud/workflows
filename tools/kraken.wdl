@@ -190,7 +190,7 @@ task build_db {
         Int added_memory_gb = 0
         Int added_disk_size_gb = 0
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
@@ -205,7 +205,7 @@ task build_db {
         added_memory_gb: "Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size."
         added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on size of the input `tarballs`."
         ncpu: "Number of cores to allocate for task"
-        detect_nproc: "Use all available cores. Recommended for cloud environments. Not recommended for cluster environments."
+        use_all_cores: "Use all available cores. Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -223,7 +223,7 @@ task build_db {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -285,7 +285,7 @@ task kraken {
         Int min_base_quality = 0
         Int? memory_gb
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
@@ -299,7 +299,7 @@ task kraken {
         min_base_quality: "Minimum base quality used in classification"
         memory_gb: "RAM to allocate for task. If missing will be dynamically allocated based on database size."
         ncpu: "Number of cores to allocate for task"
-        detect_nproc: "Use all available cores"
+        use_all_cores: "Use all available cores"
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -319,7 +319,7 @@ task kraken {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
 

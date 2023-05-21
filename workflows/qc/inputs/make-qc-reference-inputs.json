@@ -27,6 +27,6 @@
     "make_qc_reference.kraken_build_db.minimizer_len": "Int (default = 31)",
     "make_qc_reference.kraken_build_db.minimizer_spaces": "Int (default = 7)",
     "make_qc_reference.kraken_build_db.max_db_size_gb": "Int (default = -1)",
-    "make_qc_reference.kraken_build_db.detect_nproc": "Boolean (default = false)",
+    "make_qc_reference.kraken_build_db.use_all_cores": "Boolean (default = false)",
     "make_qc_reference.kraken_build_db.ncpu": "Int (default = 1)"
 }
