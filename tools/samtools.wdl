@@ -216,12 +216,14 @@ task subsample {
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
-            mv ~{bam} ~{outfile_name}
+            true
         fi
+        touch success
     >>>
 
     output {
-        File sampled_bam = outfile_name
+        File success = "success"
+        File? sampled_bam = outfile_name
     }
 
     runtime {
