@@ -315,7 +315,6 @@ task addreplacerg {
         maxRetries: max_retries
     }
 
-
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
@@ -329,14 +328,11 @@ task addreplacerg {
 }
 
 task collate {
-    input {
-        File bam
-        String prefix = basename(bam, ".bam")
-        Int modify_memory_gb = 0
-        Int modify_disk_size_gb = 0
-        Int ncpu = 1
-        Boolean use_all_cores = false
-        Int max_retries = 1
+    meta {
+        description: "This WDL tool runs `samtools collate` on the input BAM file. Shuffles and groups reads together by their names."
+        outputs: {
+            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarentee of sort order)"
+        }
     }
 
     parameter_meta {
@@ -347,6 +343,16 @@ task collate {
         ncpu: "Number of cores to allocate for task"
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        Boolean use_all_cores = false
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
     }
 
     String outfile_name = prefix + ".collated.bam"
@@ -377,28 +383,17 @@ task collate {
         docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
-
-
-    meta {
-        description: "This WDL tool runs `samtools collate` on the input BAM file. Shuffles and groups reads together by their names."
-    }
 }
 
 task bam_to_fastq {
-    input {
-        File bam
-        String prefix = basename(bam, ".bam")
-        String f = "0"
-        String F = "0x900"
-        String G = "0"
-        Boolean paired_end = true
-        Boolean interleaved = false
-        Boolean output_singletons = false
-        Int memory_gb = 4
-        Int modify_disk_size_gb = 0
-        Int ncpu = 1
-        Boolean use_all_cores = false
-        Int max_retries = 1
+    meta {
+        description: "This WDL tool runs `samtools fastq` on the input BAM file. Splits the BAM into FastQ files."
+        outputs: {
+            read1: "A gzipped FastQ containing read ones"
+            read1: "A gzipped FastQ containing read twos"
+            singleton_reads: "A gzipped FastQ containing singleton reads"
+            interleaved_reads: "An interleaved gzipped paired-end FastQ"
+        }
     }
 
     parameter_meta {
@@ -415,6 +410,22 @@ task bam_to_fastq {
         ncpu: "Number of cores to allocate for task"
         use_all_cores: "Use all available cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        String f = "0"
+        String F = "0x900"
+        String G = "0"
+        Boolean paired_end = true
+        Boolean interleaved = false
+        Boolean output_singletons = false
+        Boolean use_all_cores = false
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -462,10 +473,5 @@ task bam_to_fastq {
         disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
-    }
-
-
-    meta {
-        description: "This WDL tool runs `samtools fastq` on the input BAM file. Splits the BAM into FastQ files."
     }
 }
