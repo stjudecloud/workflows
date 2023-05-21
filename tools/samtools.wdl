@@ -327,3 +327,145 @@ task addreplacerg {
         read_group_id: "Existing read group ID in BAM to add to reads"
     }
 }
+
+task collate {
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Boolean use_all_cores = false
+        Int max_retries = 1
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to collate"
+        prefix: "Prefix for the collated BAM file. The extension `.collated.bam` will be added."
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
+    String outfile_name = prefix + ".collated.bam"
+
+    Float bam_size = size(bam, "GiB")
+    Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
+    Int disk_size_gb = ceil((bam_size * 4)) + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(nproc)
+        fi
+
+        samtools collate --threads "$n_cores" -o ~{outfile_name} ~{bam}
+    >>>
+
+    output {
+        File collated_bam = outfile_name
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        maxRetries: max_retries
+    }
+
+
+    meta {
+        description: "This WDL tool runs `samtools collate` on the input BAM file. Shuffles and groups reads together by their names."
+    }
+}
+
+task bam_to_fastq {
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        String f = "0"
+        String F = "0x900"
+        String G = "0"
+        Boolean paired_end = true
+        Boolean interleaved = false
+        Boolean output_singletons = false
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Boolean use_all_cores = false
+        Int max_retries = 1
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to split into FastQs"
+        prefix: "Prefix for output FastQ(s). Extensions `[,_R1,_R2,.singleton].fastq.gz` will be added depending on other options."
+        f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x' (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0' (i.e. /^0[0-7]+/)."
+        F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x' (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0' (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
+        G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x' (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0' (i.e. /^0[0-7]+/)."
+        paired_end: "Is the data paired-end?"
+        interleaved: "Create an interleaved FastQ file from paired-end data?"
+        output_singletons: "Output singleton reads as their own FastQ?"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
+        use_all_cores: "Use all available cores? Recommended for cloud environments. Not recommended for cluster environments."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(nproc)
+        fi
+
+        samtools fastq \
+            --threads "$n_cores" \
+            -f ~{f} \
+            -F ~{F} \
+            -G ~{G} \
+            -1 ~{if interleaved then prefix+".fastq.gz" else prefix+"_R1.fastq.gz"} \
+            -2 ~{
+                if paired_end then (
+                    if interleaved then prefix+".fastq.gz" else prefix+"_R2.fastq.gz"
+                )
+                else "/dev/null"
+            } \
+            -s ~{
+                if output_singletons
+                then prefix+".singleton.fastq.gz"
+                else "/dev/null"
+            } \
+            -0 /dev/null \
+            ~{bam}
+    >>>
+
+    output {
+        File? read1 = "~{prefix}_R1.fastq.gz"
+        File? read2 = "~{prefix}_R2.fastq.gz"
+        File? singleton_reads = "~{prefix}.singleton.fastq.gz"
+        File? interleaved_reads = "~{prefix}.fastq.gz"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        maxRetries: max_retries
+    }
+
+
+    meta {
+        description: "This WDL tool runs `samtools fastq` on the input BAM file. Splits the BAM into FastQ files."
+    }
+}

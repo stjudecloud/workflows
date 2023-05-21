@@ -118,23 +118,45 @@ workflow quality_check {
             use_all_cores=use_all_cores,
             max_retries=max_retries
         }
+        call samtools.index as subsample_index { input:
+            bam=subsample.sampled_bam,
+            use_all_cores=use_all_cores,
+            max_retries=max_retries
+        }
     }
-    File selected_input_bam = select_first([subsample.sampled_bam, bam])
+    File selected_bam = select_first([subsample.sampled_bam, bam])
+    File selected_bam_index = select_first([subsample_index.bam_index, bam_index])
 
-    call picard.validate_bam { input: bam=selected_input_bam, succeed_on_errors=true, ignore_list=[], summary_mode=true, max_retries=max_retries }
+    call picard.validate_bam { input: bam=selected_bam, succeed_on_errors=true, ignore_list=[], summary_mode=true, max_retries=max_retries }
 
-    call picard.collect_alignment_summary_metrics { input: bam=selected_input_bam, max_retries=max_retries }
-    call picard.collect_gc_bias_metrics { input: bam=selected_input_bam, reference_fasta=reference_fasta, max_retries=max_retries }
-    call picard.collect_insert_size_metrics { input: bam=selected_input_bam, max_retries=max_retries }
-    call picard.quality_score_distribution { input: bam=selected_input_bam, max_retries=max_retries }
-    call samtools.flagstat as samtools_flagstat { input: bam=selected_input_bam, max_retries=max_retries }
-    call fqc.fastqc { input: bam=selected_input_bam, max_retries=max_retries }
-    call ngsderive.instrument as ngsderive_instrument { input: bam=selected_input_bam, max_retries=max_retries }
-    call ngsderive.read_length as ngsderive_read_length { input: bam=selected_input_bam, bam_index=bam_index, max_retries=max_retries }
-    call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[selected_input_bam], prefix=prefix, max_retries=max_retries }
+    call picard.collect_alignment_summary_metrics { input: bam=selected_bam, max_retries=max_retries }
+    call picard.collect_gc_bias_metrics { input: bam=selected_bam, reference_fasta=reference_fasta, max_retries=max_retries }
+    call picard.collect_insert_size_metrics { input: bam=selected_bam, max_retries=max_retries }
+    call picard.quality_score_distribution { input: bam=selected_bam, max_retries=max_retries }
+    call samtools.flagstat as samtools_flagstat { input: bam=selected_bam, max_retries=max_retries }
+    call fqc.fastqc { input: bam=selected_bam, max_retries=max_retries }
+    call ngsderive.instrument as ngsderive_instrument { input: bam=selected_bam, max_retries=max_retries }
+    call ngsderive.read_length as ngsderive_read_length { input: bam=selected_bam, bam_index=selected_bam_index, max_retries=max_retries }
+    call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[selected_bam], prefix=prefix, max_retries=max_retries }
 
-    call picard.bam_to_fastq { input: bam=selected_input_bam, max_retries=max_retries }
-    call fq.fqlint { input: read1=bam_to_fastq.read1, read2=bam_to_fastq.read2, max_retries=max_retries }
+    call samtools.collate { input:
+        bam=selected_bam,
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
+    }
+
+    call samtools.bam_to_fastq { input:
+        bam=collate.collated_bam,
+        paired_end=true,  # matches default but prevents user from overriding
+        interleaved=false,  # matches default but prevents user from overriding
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
+    }
+    call fq.fqlint { input:
+        read1=select_first([bam_to_fastq.read1, ""]),
+        read2=bam_to_fastq.read2,
+        max_retries=max_retries
+    }
     call kraken.kraken as run_kraken { 
         input:
             read1=fqlint.validated_read1,
@@ -145,18 +167,18 @@ workflow quality_check {
 
     call mosdepth.coverage as wg_coverage {
         input:
-            bam=selected_input_bam,
-            bam_index=bam_index,
-            prefix=basename(selected_input_bam, 'bam')+"whole_genome",
+            bam=selected_bam,
+            bam_index=selected_bam_index,
+            prefix=basename(selected_bam, 'bam')+"whole_genome",
             max_retries=max_retries
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
         call mosdepth.coverage as regions_coverage {
             input:
-                bam=selected_input_bam,
-                bam_index=bam_index,
+                bam=selected_bam,
+                bam_index=selected_bam_index,
                 coverage_bed=coverage_pair.left,
-                prefix=basename(selected_input_bam, 'bam')+coverage_pair.right,
+                prefix=basename(selected_bam, 'bam')+coverage_pair.right,
                 max_retries=max_retries
         }
     }
@@ -164,17 +186,16 @@ workflow quality_check {
     if (molecule == "RNA") {
         File gtf_defined = select_first([gtf, "No GTF"])
 
-        call ngsderive.junction_annotation as junction_annotation { input: bam=selected_input_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.junction_annotation as junction_annotation { input: bam=selected_bam, bam_index=selected_bam_index, gtf=gtf_defined, max_retries=max_retries }
 
-        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=selected_input_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=selected_bam, bam_index=selected_bam_index, gtf=gtf_defined, max_retries=max_retries }
 
         String qualimap_strandedness = if (provided_strandedness != "")
             then qualimap_strandedness_map[provided_strandedness]
             else qualimap_strandedness_map[ngsderive_strandedness.strandedness]
 
-        call picard.sort as picard_sort { input: bam=selected_input_bam, sort_order="queryname", max_retries=max_retries }
         call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam=picard_sort.sorted_bam,
+            bam=collate.collated_bam,
             gtf=gtf_defined,
             strandedness=qualimap_strandedness,
             name_sorted=true,
