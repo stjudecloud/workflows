@@ -59,7 +59,7 @@ workflow quality_check {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
         reference_fasta: "Reference genome in FASTA format"
-        kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a flat tarball without a root directory."
+        kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
         molecule: {
             description: "Data type"
             choices: [
