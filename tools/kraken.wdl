@@ -327,10 +327,10 @@ task kraken {
             n_cores=$(nproc)
         fi
 
-        mkdir -p /tmp/kraken2_db/
-        tar -xzf ~{db} -C /tmp/kraken2_db/ --no-same-owner
+        mkdir -p kraken2_db/
+        tar -xzf ~{db} -C kraken2_db/ --no-same-owner
 
-        kraken2 --db /tmp/kraken2_db/ \
+        kraken2 --db kraken2_db/ \
             --paired \
             --output ~{if store_sequences then out_sequences else "-"} \
             --threads "$n_cores" \
@@ -345,7 +345,7 @@ task kraken {
             gzip ~{out_sequences}
         fi
 
-        rm -r /tmp/kraken2_db/
+        rm -r kraken2_db/
     >>>
  
     runtime {
