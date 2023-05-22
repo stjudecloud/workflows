@@ -188,7 +188,7 @@ workflow quality_check {
             gtf=select_first([gtf, "undefined"]),
             strandedness=qualimap_strandedness,
             name_sorted=true,
-            paired_end=true,
+            paired_end=true,  # matches default but prevents user from overriding
             max_retries=max_retries
         }
     }
