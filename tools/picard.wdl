@@ -67,7 +67,7 @@ task validate_bam {
         Boolean index_validation_stringency_less_exhaustive = false
         Int max_errors = 2147483647
         String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
-        Int memory_gb = 12
+        Int memory_gb = 16
         Int max_retries = 1
     }
 
