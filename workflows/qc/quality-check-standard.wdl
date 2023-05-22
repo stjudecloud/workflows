@@ -128,7 +128,7 @@ workflow quality_check {
 
     call samtools.bam_to_fastq { input:
         bam=collate.collated_bam,
-        prefix=basename(bam, ".collated.bam")
+        prefix=prefix,
         paired_end=true,  # matches default but prevents user from overriding
         interleaved=false,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
@@ -151,7 +151,7 @@ workflow quality_check {
         input:
             bam=quickcheck.checked_bam,
             bam_index=bam_index,
-            prefix=basename(quickcheck.checked_bam, 'bam')+"whole_genome",
+            prefix=prefix+"whole_genome",
             max_retries=max_retries
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
@@ -160,7 +160,7 @@ workflow quality_check {
                 bam=quickcheck.checked_bam,
                 bam_index=bam_index,
                 coverage_bed=coverage_pair.left,
-                prefix=basename(quickcheck.checked_bam, 'bam')+coverage_pair.right,
+                prefix=prefix+coverage_pair.right,
                 max_retries=max_retries
         }
     }
@@ -186,7 +186,7 @@ workflow quality_check {
 
         call qualimap.rnaseq as qualimap_rnaseq { input:
             bam=collate.collated_bam,
-            prefix=basename(bam, ".collated.bam")
+            prefix=prefix,
             gtf=select_first([gtf, "undefined"]),
             strandedness=qualimap_strandedness,
             name_sorted=true,
@@ -220,7 +220,7 @@ workflow quality_check {
             regions_coverage.summary,
             regions_coverage.region_dist
         ])),
-        output_prefix=basename(bam, '.bam'),
+        output_prefix=prefix,
         extra_fn_clean_exts=[".ValidateSamFile"],
         mosdepth_labels=flatten([["whole_genome"], parse_input.labels]),
         max_retries=max_retries
