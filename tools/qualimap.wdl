@@ -66,6 +66,7 @@ task rnaseq {
         File bam
         File gtf
         String strandedness
+        String prefix = basename(bam, ".bam")
         Boolean name_sorted = false
         Boolean paired_end = true
         Int memory_gb = 16
@@ -86,7 +87,7 @@ task rnaseq {
         disk_size_gb: "Disk space to allocate for task. Default is determined dynamically based on BAM and GTF sizes."
     }
 
-    String out_directory = basename(bam, ".bam") + ".qualimap_rnaseq_results"
+    String out_directory = prefix + ".qualimap_rnaseq_results"
     String out_tar_gz = out_directory + ".tar.gz"
     String name_sorted_arg = if (name_sorted) then "-s" else ""
     String paired_end_arg = if (paired_end) then "-pe" else ""
