@@ -151,7 +151,7 @@ workflow quality_check {
         input:
             bam=quickcheck.checked_bam,
             bam_index=bam_index,
-            prefix=prefix+"whole_genome",
+            prefix=prefix+".whole_genome",
             max_retries=max_retries
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
@@ -160,7 +160,7 @@ workflow quality_check {
                 bam=quickcheck.checked_bam,
                 bam_index=bam_index,
                 coverage_bed=coverage_pair.left,
-                prefix=prefix+coverage_pair.right,
+                prefix=prefix+"."+coverage_pair.right,
                 max_retries=max_retries
         }
     }
