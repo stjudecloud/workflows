@@ -55,25 +55,34 @@ task fqlint {
 }
 
 task subsample {
+    meta {
+        description: "This WDL task subsamples input FastQs"
+        outputs {
+            subsampled_read1: "Subsampled read1 FastQ"
+            subsampled_read2: "Subsampled read2 FastQ"
+        }
+    }
+
+    parameter_meta {
+        read1: "Input FastQ with read one"
+        read2: "Input FastQ with read two"
+        prefix: "Prefix for the output FastQ file(s). The extension `_R1.subsampled.fastq.gz` and `_R2.subsampled.fastq.gz` will be added."
+        probability: "The probability a record is kept, as a percentage (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable."
+        record_count: "The exact number of records to keep. Cannot be used with `probability`. Any `record_count<=0` to disable."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     input {
         File read1
         File? read2
         String prefix = basename(read1, "_R1.fastq.gz")
         Float probability = 1.0
         Int record_count = -1
-        Int max_retries = 1
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
-    }
-
-    parameter_meta {
-        read1: "Input FastQ with read one"
-        read2: "Input FastQ with read two"
-        probability: "The probability a record is kept, as a percentage (0.0, 1.0). Cannot be used with `record-count`."
-        record_count: "The exact number of records to keep. Cannot be used with `probability`."
-        max_retries: "Number of times to retry in case of failure"
-        memory_gb: "RAM to allocate for task, specified in GB"
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        Int max_retries = 1
     }
 
     Float read1_size = size(read1, "GiB")
@@ -97,21 +106,15 @@ task subsample {
             ~{if defined(read2) then read2 else ""}
     >>>
 
-    runtime {
-        disk: disk_size_gb + " GB"
-        memory: memory_gb + " GB"
-        docker: 'quay.io/biocontainers/fq:0.10.0--h9ee0642_0'
-        maxRetries: max_retries
-    }
-
     output {
         File subsampled_read1 = prefix + "_R1.subsampled.fastq.gz"
         File? subsampled_read2 = prefix + "_R2.subsampled.fastq.gz"
     }
 
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task subsamples input FastQs"
+    runtime {
+        disk: disk_size_gb + " GB"
+        memory: memory_gb + " GB"
+        docker: 'quay.io/biocontainers/fq:0.10.0--h9ee0642_0'
+        maxRetries: max_retries
     }
 }
