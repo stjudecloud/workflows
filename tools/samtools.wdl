@@ -545,10 +545,10 @@ task collate_to_fastq {
         samtools collate \
             --threads "$n_cores" \
             ~{if fast_mode then "-f" else ""} \
-            ~{if store_collated_bam then "-o "+prefix+".collated.bam" else "-O"} \
+            -O \
             ~{bam} \
-            ~{if store_collated_bam then "" else "| \\"}
-            samtools fastq \
+            | tee ~{if store_collated_bam then prefix+".collated.bam" else "/dev/null"} \
+            | samtools fastq \
                 --threads "$n_cores" \
                 -f ~{f} \
                 -F ~{F} \
@@ -565,8 +565,7 @@ task collate_to_fastq {
                     then prefix+".singleton.fastq.gz"
                     else "/dev/null"
                 } \
-                -0 /dev/null \
-                ~{if store_collated_bam then prefix+".collated.bam" else ""}
+                -0 /dev/null
     >>>
 
     output {
