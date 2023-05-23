@@ -542,13 +542,12 @@ task collate_to_fastq {
             n_cores=$(nproc)
         fi
 
-        if [ "~{store_collated_bam}" = "true" ]; then
-            samtools collate \
-                --threads "$n_cores" \
-                ~{if fast_mode then "-f" else ""} \
-                -o ~{prefix}.collated.bam \
-                ~{bam}
-
+        samtools collate \
+            --threads "$n_cores" \
+            ~{if fast_mode then "-f" else ""} \
+            ~{if store_collated_bam then "-o "+prefix+".collated.bam" else "-O"} \
+            ~{bam} \
+            ~{if store_collated_bam then "" else "| \\"}
             samtools fastq \
                 --threads "$n_cores" \
                 -f ~{f} \
@@ -567,36 +566,7 @@ task collate_to_fastq {
                     else "/dev/null"
                 } \
                 -0 /dev/null \
-                ~{prefix}.collated.bam
-        else
-            samtools collate \
-                --threads "$n_cores" \
-                ~{if fast_mode then "-f" else ""} \
-                -O \
-                ~{bam} \
-                | samtools fastq \
-                    --threads "$n_cores" \
-                    -f ~{f} \
-                    -F ~{F} \
-                    -G ~{G} \
-                    -1 ~{
-                        if interleaved then prefix+".fastq.gz" else prefix+"_R1.fastq.gz"
-                    } \
-                    -2 ~{
-                        if paired_end then (
-                            if interleaved
-                            then prefix+".fastq.gz"
-                            else prefix+"_R2.fastq.gz"
-                        )
-                        else "/dev/null"
-                    } \
-                    -s ~{
-                        if output_singletons
-                        then prefix+".singleton.fastq.gz"
-                        else "/dev/null"
-                    } \
-                    -0 /dev/null
-        fi
+                ~{if store_collated_bam then prefix+".collated.bam" else ""}
     >>>
 
     output {
