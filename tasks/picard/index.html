@@ -58,8 +58,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../estimate/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fastq_screen/">FastQ Screen</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fastqc/">FastQC</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fq/">FQ</a>
@@ -320,7 +318,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="picard">Picard</h1>
-<p>This WDL tool wraps the <a href="https://broadinstitute.github.io/picard/">PicardTools library</a>.
+<p>This WDL file wraps the <a href="https://broadinstitute.github.io/picard/">PicardTools library</a>.
 PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <h2 id="mark_duplicates">mark_duplicates</h2>
 <dl>
@@ -329,7 +327,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool marks duplicate reads in the input BAM file using Picard.</dd>
+<dd>This WDL task marks duplicate reads in the input BAM file using Picard.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -353,7 +351,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool validates the input BAM file for correct formatting using Picard.</dd>
+<dd>This WDL task validates the input BAM file for correct formatting using Picard.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
@@ -384,7 +382,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool converts the input BAM file into paired FastQ format files.</dd>
+<dd>This WDL task converts the input BAM file into paired FastQ format files.</dd>
 </dl>
 <h3 id="inputs_2">Inputs</h3>
 <h4 id="required_2">Required</h4>
@@ -410,7 +408,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool sorts the input BAM file.</dd>
+<dd>This WDL task sorts the input BAM file.</dd>
 </dl>
 <h3 id="inputs_3">Inputs</h3>
 <h4 id="required_3">Required</h4>
@@ -439,7 +437,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool merges the input BAM files into a single BAM file.</dd>
+<dd>This WDL task merges the input BAM files into a single BAM file.</dd>
 </dl>
 <h3 id="inputs_4">Inputs</h3>
 <h4 id="required_4">Required</h4>
@@ -465,7 +463,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads</dd>
+<dd>This WDL task cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads</dd>
 </dl>
 <h3 id="inputs_5">Inputs</h3>
 <h4 id="required_5">Required</h4>
@@ -493,7 +491,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs the <code>picard CollectWgsMetrics</code> command.</dd>
+<dd>This WDL task runs the <code>picard CollectWgsMetrics</code> command.</dd>
 </dl>
 <h3 id="inputs_6">Inputs</h3>
 <h4 id="required_6">Required</h4>
@@ -521,7 +519,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs the <code>picard CollectWgsMetricsWithNonZeroCoverage</code> command.</dd>
+<dd>This WDL task runs the <code>picard CollectWgsMetricsWithNonZeroCoverage</code> command.</dd>
 </dl>
 <h3 id="inputs_7">Inputs</h3>
 <h4 id="required_7">Required</h4>
@@ -550,7 +548,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs the <code>picard CollectAlignmentSummaryMetrics</code> command.</dd>
+<dd>This WDL task runs the <code>picard CollectAlignmentSummaryMetrics</code> command.</dd>
 </dl>
 <h3 id="inputs_8">Inputs</h3>
 <h4 id="required_8">Required</h4>
@@ -578,7 +576,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs the <code>picard CollectGcBiasMetrics</code> command.</dd>
+<dd>This WDL task runs the <code>picard CollectGcBiasMetrics</code> command.</dd>
 </dl>
 <h3 id="inputs_9">Inputs</h3>
 <h4 id="required_9">Required</h4>
@@ -607,7 +605,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs the <code>picard CollectInsertSizeMetrics</code> command.</dd>
+<dd>This WDL task runs the <code>picard CollectInsertSizeMetrics</code> command.</dd>
 </dl>
 <h3 id="inputs_10">Inputs</h3>
 <h4 id="required_10">Required</h4>
@@ -635,7 +633,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs the <code>picard QualityScoreDistribution</code> command.</dd>
+<dd>This WDL task runs the <code>picard QualityScoreDistribution</code> command.</dd>
 </dl>
 <h3 id="inputs_11">Inputs</h3>
 <h4 id="required_11">Required</h4>

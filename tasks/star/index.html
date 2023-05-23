@@ -58,8 +58,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../estimate/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fastq_screen/">FastQ Screen</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fastqc/">FastQC</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fq/">FQ</a>
@@ -168,7 +166,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="star">STAR</h1>
-<p>This WDL tool wraps the <a href="https://github.com/alexdobin/STAR">STAR aligner</a>.
+<p>This WDL file wraps the <a href="https://github.com/alexdobin/STAR">STAR aligner</a>.
 STAR is an RNA-Seq aligner.</p>
 <h2 id="build_star_db">build_star_db</h2>
 <dl>
@@ -177,7 +175,7 @@ STAR is an RNA-Seq aligner.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs STAR's build command to generate a STAR format reference for alignment.</dd>
+<dd>This WDL task runs STAR's build command to generate a STAR format reference for alignment.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -194,7 +192,7 @@ STAR is an RNA-Seq aligner.</p>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=50)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
-<li><code>stardb_dir_name</code> (String, default="stardb")</li>
+<li><code>stardb_dir_name</code> (String, default="star_db")</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
@@ -208,7 +206,7 @@ STAR is an RNA-Seq aligner.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs the STAR aligner on a set of RNA-Seq FastQ files.</dd>
+<dd>This WDL task runs the STAR aligner on a set of RNA-Seq FastQ files.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>

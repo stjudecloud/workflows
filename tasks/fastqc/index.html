@@ -58,8 +58,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../estimate/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fastq_screen/">FastQ Screen</a>
-                  </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">FastQC</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#fastqc_1">fastqc</a>
@@ -150,7 +148,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="fastqc">FastQC</h1>
-<p>This WDL tool wraps the <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/">FastQC</a> tool.
+<p>This WDL file wraps the <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/">FastQC</a> tool.
 FastQC generates quality control metrics for sequencing pipelines. </p>
 <h2 id="fastqc_1">fastqc</h2>
 <dl>
@@ -159,7 +157,7 @@ FastQC generates quality control metrics for sequencing pipelines. </p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool generates a FastQC quality control metrics report for the input BAM file.</dd>
+<dd>This WDL task generates a FastQC quality control metrics report for the input BAM file.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -171,6 +169,7 @@ FastQC generates quality control metrics for sequencing pipelines. </p>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
+<li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -181,7 +180,7 @@ FastQC generates quality control metrics for sequencing pipelines. </p>
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../fastq_screen/" class="btn btn-neutral float-left" title="FastQ Screen"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../estimate/" class="btn btn-neutral float-left" title="ESTIMATE"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../fq/" class="btn btn-neutral float-right" title="FQ">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -210,7 +209,7 @@ FastQC generates quality control metrics for sequencing pipelines. </p>
         </span>
     
     
-      <span><a href="../fastq_screen/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../estimate/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../fq/" style="color: #fcfcfc">Next &raquo;</a></span>

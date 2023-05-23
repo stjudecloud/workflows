@@ -58,8 +58,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/estimate/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastq_screen/">FastQ Screen</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastqc/">FastQC</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/fq/">FQ</a>
@@ -209,12 +207,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>kraken_build_db.added_disk_size_gb</code> (Int, default=0)</li>
 <li><code>kraken_build_db.added_memory_gb</code> (Int, default=0)</li>
 <li><code>kraken_build_db.db_name</code> (String, default="kraken2_db")</li>
-<li><code>kraken_build_db.detect_nproc</code> (Boolean, default=false)</li>
 <li><code>kraken_build_db.kmer_len</code> (Int, default=if protein then 15 else 35)</li>
 <li><code>kraken_build_db.max_db_size_gb</code> (Int, default=-1)</li>
 <li><code>kraken_build_db.minimizer_len</code> (Int, default=if protein then 12 else 31)</li>
 <li><code>kraken_build_db.minimizer_spaces</code> (Int, default=if protein then 0 else 7)</li>
 <li><code>kraken_build_db.ncpu</code> (Int, default=1)</li>
+<li><code>kraken_build_db.use_all_cores</code> (Boolean, default=false)</li>
 <li><code>reference_download.disk_size_gb</code> (Int, default=10)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>

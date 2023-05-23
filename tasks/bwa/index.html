@@ -138,8 +138,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../estimate/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fastq_screen/">FastQ Screen</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fastqc/">FastQC</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fq/">FQ</a>
@@ -214,7 +212,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="bwa">BWA</h1>
-<p>This WDL tool wraps <a href="https://github.com/lh3/bwa">BWA</a>.
+<p>This WDL file wraps <a href="https://github.com/lh3/bwa">BWA</a>.
 BWA aligns sequencing reads to a reference genome.</p>
 <h2 id="bwa_aln">bwa_aln</h2>
 <dl>
@@ -223,7 +221,7 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool maps single-end FastQ files to BAM format using bwa aln.</dd>
+<dd>This WDL task maps single-end FastQ files to BAM format using bwa aln.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -255,7 +253,7 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool maps paired-end FastQ files to BAM format using bwa aln.</dd>
+<dd>This WDL task maps paired-end FastQ files to BAM format using bwa aln.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
@@ -288,7 +286,7 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool maps FastQ files to BAM format using bwa mem.</dd>
+<dd>This WDL task maps FastQ files to BAM format using bwa mem.</dd>
 </dl>
 <h3 id="inputs_2">Inputs</h3>
 <h4 id="required_2">Required</h4>
@@ -320,7 +318,7 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool creates a BWA index and returns it as a compressed tar archive.</dd>
+<dd>This WDL task creates a BWA index and returns it as a compressed tar archive.</dd>
 </dl>
 <h3 id="inputs_3">Inputs</h3>
 <h4 id="required_3">Required</h4>
@@ -333,7 +331,7 @@ BWA aligns sequencing reads to a reference genome.</p>
 </ul>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
-<li><code>bwadb_out_name</code> (String, default="bwadb.tar.gz"): Name of the output gzipped tar archive of the bwa reference files.</li>
+<li><code>bwadb_dir_name</code> (String, default="bwa_db")</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
 </ul>
@@ -348,7 +346,7 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool converts read group records from the BAM-formatted strings to strings expected by bwa.</dd>
+<dd>This WDL task converts read group records from the BAM-formatted strings to strings expected by bwa.</dd>
 </dl>
 <h3 id="inputs_4">Inputs</h3>
 <h4 id="required_4">Required</h4>

@@ -58,8 +58,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/estimate/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastq_screen/">FastQ Screen</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastqc/">FastQC</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/fq/">FQ</a>
@@ -209,15 +207,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>picard_sort.disk_size_gb</code> (Int?)</li>
 <li><code>qualimap_rnaseq.disk_size_gb</code> (Int?)</li>
 <li><code>quality_score_distribution.disk_size_gb</code> (Int?)</li>
-<li><code>run_kraken.memory_gb</code> (Int?)</li>
-<li><code>run_kraken.sample_name</code> (String?)</li>
+<li><code>run_kraken.prefix</code> (String?)</li>
 <li><code>wg_coverage.coverage_bed</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>coverage_beds</code> (Array[File], default=[]): An array of 3 column BEDs which are passed to the <code>-b</code> flag of mosdepth, in order to restrict coverage analysis to select regions</li>
 <li><code>coverage_labels</code> (Array[String], default=[]): An array of equal length to <code>coverage_beds</code> which determines the prefix label applied to the output files. If omitted, defaults of <code>regions1</code>, <code>regions2</code>, etc. will be used.</li>
-<li><code>strandedness</code> (String, default=""); <strong>description</strong>: Strandedness protocol of the RNA-Seq experiment. Only used for RNA-Seq data. If unspecified, strandedness will be inferred by <code>ngsderive</code>. If specified, user supplied strandedness will be used by <code>qualimap rnaseq</code>.; <strong>choices</strong>: ['', 'Stranded-Reverse', 'Stranded-Forward', 'Unstranded']</li>
 <li><code>bam_to_fastq.memory_gb</code> (Int, default=56)</li>
 <li><code>bam_to_fastq.paired</code> (Boolean, default=true)</li>
 <li><code>bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
@@ -228,6 +224,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>compute_checksum.outfile_name</code> (String, default=basename(infile) + ".md5")</li>
 <li><code>fastqc.memory_gb</code> (Int, default=5)</li>
 <li><code>fastqc.ncpu</code> (Int, default=1)</li>
+<li><code>fastqc.use_all_cores</code> (Boolean, default=false)</li>
 <li><code>fqlint.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>junction_annotation.fuzzy_junction_match_range</code> (Int, default=0)</li>
 <li><code>junction_annotation.memory_gb</code> (Int, default=35)</li>
@@ -239,7 +236,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>multiqc.memory_gb</code> (Int, default=5)</li>
 <li><code>ngsderive_encoding.memory_gb</code> (Int, default=5)</li>
 <li><code>ngsderive_encoding.num_samples</code> (Int, default=1000000)</li>
+<li><code>ngsderive_instrument.num_samples</code> (Int, default=10000)</li>
+<li><code>ngsderive_read_length.majority_vote_cutoff</code> (Float, default=0.7)</li>
 <li><code>ngsderive_read_length.memory_gb</code> (Int, default=5)</li>
+<li><code>ngsderive_read_length.num_samples</code> (Int, default=10000)</li>
 <li><code>ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
 <li><code>ngsderive_strandedness.min_mapq</code> (Int, default=30)</li>
 <li><code>ngsderive_strandedness.min_reads_per_gene</code> (Int, default=10)</li>
@@ -247,15 +247,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>picard_sort.memory_gb</code> (Int, default=25)</li>
 <li><code>picard_sort.outfile_name</code> (String, default=basename(bam,".bam") + ".sorted.bam")</li>
 <li><code>qualimap_rnaseq.memory_gb</code> (Int, default=16)</li>
-<li><code>qualimap_rnaseq.paired_end</code> (Boolean, default=true)</li>
 <li><code>quality_score_distribution.memory_gb</code> (Int, default=8)</li>
 <li><code>regions_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>regions_coverage.use_fast_mode</code> (Boolean, default=true)</li>
-<li><code>run_kraken.detect_nproc</code> (Boolean, default=false)</li>
 <li><code>run_kraken.min_base_quality</code> (Int, default=0)</li>
+<li><code>run_kraken.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>run_kraken.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>run_kraken.ncpu</code> (Int, default=1)</li>
 <li><code>run_kraken.store_sequences</code> (Boolean, default=false)</li>
+<li><code>run_kraken.use_all_cores</code> (Boolean, default=false)</li>
 <li><code>run_kraken.use_names</code> (Boolean, default=true)</li>
 <li><code>samtools_flagstat.memory_gb</code> (Int, default=5)</li>
 <li><code>samtools_flagstat.outfile_name</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
@@ -305,7 +306,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>coverage_labels</code> (Array[String], <strong>required</strong>)</li>
 <li><code>gtf_provided</code> (Boolean, <strong>required</strong>)</li>
 <li><code>input_molecule</code> (String, <strong>required</strong>)</li>
-<li><code>input_strand</code> (String, <strong>required</strong>)</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>

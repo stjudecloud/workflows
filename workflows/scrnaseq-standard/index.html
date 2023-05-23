@@ -58,8 +58,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/estimate/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastq_screen/">FastQ Screen</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastqc/">FastQC</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/fq/">FQ</a>
@@ -178,7 +176,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>subsample_n_reads</code> (Int, default=-1): Only process a random sampling of <code>n</code> reads. &lt;=<code>0</code> for processing entire input BAM.</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores for multi-core steps?</li>
 <li><code>validate_input</code> (Boolean, default=true)</li>
-<li><code>cell_ranger_bam_to_fastqs.bam_to_fastq_memory_gb</code> (Int, default=40)</li>
 <li><code>cell_ranger_bam_to_fastqs.cellranger11</code> (Boolean, default=false)</li>
 <li><code>cell_ranger_bam_to_fastqs.gemcode</code> (Boolean, default=false)</li>
 <li><code>cell_ranger_bam_to_fastqs.longranger20</code> (Boolean, default=false)</li>
@@ -187,7 +184,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>compute_checksum.outfile_name</code> (String, default=basename(infile) + ".md5")</li>
 <li><code>count.jobmode</code> (String, default="local")</li>
 <li><code>count.memory_gb</code> (Int, default=16)</li>
-<li><code>count.ncpu</code> (Int, default=8)</li>
+<li><code>count.ncpu</code> (Int, default=1)</li>
 <li><code>ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
 <li><code>ngsderive_strandedness.min_mapq</code> (Int, default=30)</li>
 <li><code>ngsderive_strandedness.min_reads_per_gene</code> (Int, default=10)</li>
@@ -210,7 +207,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>validate_input_bam.succeed_on_errors</code> (Boolean, default=false)</li>
 <li><code>validate_input_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
 <li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
-<li><code>cell_ranger_bam_to_fastqs.bamtofastq.ncpu</code> (Int, default=4)</li>
+<li><code>cell_ranger_bam_to_fastqs.bamtofastq.memory_gb</code> (Int, default=40)</li>
+<li><code>cell_ranger_bam_to_fastqs.bamtofastq.ncpu</code> (Int, default=1)</li>
 <li><code>cell_ranger_bam_to_fastqs.bamtofastq.use_all_cores</code> (Boolean, default=false): Use all cores for multi-core steps?</li>
 <li><code>cell_ranger_bam_to_fastqs.fqlint_pair.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>cell_ranger_bam_to_fastqs.fqlint_single.modify_memory_gb</code> (Int, default=0)</li>

@@ -58,8 +58,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../estimate/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fastq_screen/">FastQ Screen</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fastqc/">FastQC</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fq/">FQ</a>
@@ -238,7 +236,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="samtools">SAMtools</h1>
-<p>This WDL tool wraps the <a href="http://samtools.sourceforge.net/">SAMtools package</a>.
+<p>This WDL file wraps the <a href="http://samtools.sourceforge.net/">SAMtools package</a>.
 SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h2 id="quickcheck">quickcheck</h2>
 <dl>
@@ -247,7 +245,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists.</dd>
+<dd>This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -269,7 +267,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group.</dd>
+<dd>This WDL task runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
@@ -323,7 +321,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM.</dd>
+<dd>This WDL task runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM.</dd>
 </dl>
 <h3 id="inputs_3">Inputs</h3>
 <h4 id="required_3">Required</h4>
@@ -389,7 +387,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags.</dd>
+<dd>This WDL task runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags.</dd>
 </dl>
 <h3 id="inputs_6">Inputs</h3>
 <h4 id="required_6">Required</h4>

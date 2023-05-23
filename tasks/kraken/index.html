@@ -58,8 +58,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../estimate/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fastq_screen/">FastQ Screen</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fastqc/">FastQC</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fq/">FQ</a>
@@ -297,7 +295,6 @@
 <li><code>added_disk_size_gb</code> (Int, default=0): Additional disk space to allocate for task. Default disk size is determined dynamically based on size of the input <code>tarballs</code>.</li>
 <li><code>added_memory_gb</code> (Int, default=0): Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size.</li>
 <li><code>db_name</code> (String, default="kraken2_db"): Name for output in compressed, archived format. The suffix <code>.tar.gz</code> will be added.</li>
-<li><code>detect_nproc</code> (Boolean, default=false): Use all available cores. Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>kmer_len</code> (Int, default=if protein then 15 else 35): K-mer length in bp that will be used to build the database</li>
 <li><code>max_db_size_gb</code> (Int, default=-1): Maximum number of GBs for Kraken 2 hash table; if the Kraken 2 estimator determines more would normally be needed, the reference library will be downsampled to fit.</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
@@ -305,6 +302,7 @@
 <li><code>minimizer_spaces</code> (Int, default=if protein then 0 else 7): Number of characters in minimizer that are ignored in comparisons</li>
 <li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
 <li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores. Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
 <ul>
@@ -328,16 +326,17 @@
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>memory_gb</code> (Int?): RAM to allocate for task. If missing will be dynamically allocated based on database size.</li>
-<li><code>sample_name</code> (String?): Name for sample. If missing will be inferred by removing the suffix '_R1.fastq.gz' from the <code>read1</code> filename.</li>
+<li><code>prefix</code> (String?)</li>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
-<li><code>detect_nproc</code> (Boolean, default=false): Use all available cores</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>min_base_quality</code> (Int, default=0): Minimum base quality used in classification</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>modify_memory_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
 <li><code>store_sequences</code> (Boolean, default=false): Store and output main Kraken2 output in addition to the summary report</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>use_names</code> (Boolean, default=true): Print scientific names instead of just taxids</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
