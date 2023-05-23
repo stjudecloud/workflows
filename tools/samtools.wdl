@@ -467,10 +467,10 @@ task bam_to_fastq {
     >>>
 
     output {
-        File? read1 = "~{prefix}_R1.fastq.gz"
-        File? read2 = "~{prefix}_R2.fastq.gz"
-        File? singleton_reads = "~{prefix}.singleton.fastq.gz"
-        File? interleaved_reads = "~{prefix}.fastq.gz"
+        File? read_one_fastq_gz = "~{prefix}_R1.fastq.gz"
+        File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
+        File? singleton_reads_fastq_gz = "~{prefix}.singleton.fastq.gz"
+        File? interleaved_reads_fastq_gz = "~{prefix}.fastq.gz"
     }
 
     runtime {
