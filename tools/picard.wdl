@@ -1,6 +1,6 @@
 ## # Picard
 ##
-## This WDL tool wraps the [PicardTools library](https://broadinstitute.github.io/picard/).
+## This WDL file wraps the [PicardTools library](https://broadinstitute.github.io/picard/).
 ## PicardTools is a set of Java tools for manipulating sequencing data.
 
 version 1.0
@@ -30,7 +30,7 @@ task mark_duplicates {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -41,7 +41,7 @@ task mark_duplicates {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool marks duplicate reads in the input BAM file using Picard."
+        description: "This WDL task marks duplicate reads in the input BAM file using Picard."
     }
 
     parameter_meta {
@@ -63,8 +63,6 @@ task validate_bam {
         Int max_retries = 1
     }
 
-    String succeed_on_errors_string = if (succeed_on_errors) then "true" else ""
-    String succeed_on_warnings_string = if (succeed_on_warnings) then "true" else ""
     String mode_arg = if (summary_mode) then "MODE=SUMMARY" else ""
     String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
@@ -90,13 +88,13 @@ task validate_bam {
         fi
         set -eo pipefail
 
-        if [ "~{succeed_on_warnings_string}" == "true" ]; then
+        if [ "~{succeed_on_warnings}" == "true" ]; then
             GREP_PATTERN="ERROR"
         else
             GREP_PATTERN="(ERROR|WARNING)"
         fi
 
-        if [ "~{succeed_on_errors_string}" != "true" ] && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]; then
+        if [ "~{succeed_on_errors}" == "false" ] && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]; then
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
             grep -E "$GREP_PATTERN" ~{outfile_name} > /dev/stderr
             exit 1
@@ -106,7 +104,7 @@ task validate_bam {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -118,7 +116,7 @@ task validate_bam {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool validates the input BAM file for correct formatting using Picard."
+        description: "This WDL task validates the input BAM file for correct formatting using Picard."
     }
 
     parameter_meta {
@@ -167,7 +165,7 @@ task bam_to_fastq {
     runtime{
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -179,7 +177,7 @@ task bam_to_fastq {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool converts the input BAM file into paired FastQ format files."
+        description: "This WDL task converts the input BAM file into paired FastQ format files."
     }
 }
 
@@ -210,7 +208,7 @@ task sort {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
     output {
@@ -219,7 +217,7 @@ task sort {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool sorts the input BAM file."
+        description: "This WDL task sorts the input BAM file."
     }
     parameter_meta {
         bam: "Input BAM format file to sort"
@@ -255,7 +253,7 @@ task merge_sam_files {
     runtime{
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -266,7 +264,7 @@ task merge_sam_files {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool merges the input BAM files into a single BAM file."
+        description: "This WDL task merges the input BAM files into a single BAM file."
     }
 
     parameter_meta {
@@ -295,7 +293,7 @@ task clean_sam {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
     output {
@@ -304,7 +302,7 @@ task clean_sam {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads"
+        description: "This WDL task cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads"
     }
     parameter_meta {
         bam: "Input BAM format file to clean"
@@ -334,7 +332,7 @@ task collect_wgs_metrics {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
     output {
@@ -343,7 +341,7 @@ task collect_wgs_metrics {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard CollectWgsMetrics` command."
+        description: "This WDL task runs the `picard CollectWgsMetrics` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate WGS metrics for"
@@ -374,7 +372,7 @@ task collect_wgs_metrics_with_nonzero_coverage {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
     output {
@@ -384,7 +382,7 @@ task collect_wgs_metrics_with_nonzero_coverage {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard CollectWgsMetricsWithNonZeroCoverage` command."
+        description: "This WDL task runs the `picard CollectWgsMetricsWithNonZeroCoverage` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate WGS metrics for"
@@ -412,7 +410,7 @@ task collect_alignment_summary_metrics {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
     output {
@@ -422,7 +420,7 @@ task collect_alignment_summary_metrics {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard CollectAlignmentSummaryMetrics` command."
+        description: "This WDL task runs the `picard CollectAlignmentSummaryMetrics` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate alignment metrics for"
@@ -453,7 +451,7 @@ task collect_gc_bias_metrics {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
     output {
@@ -463,7 +461,7 @@ task collect_gc_bias_metrics {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard CollectGcBiasMetrics` command."
+        description: "This WDL task runs the `picard CollectGcBiasMetrics` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate GC bias metrics for"
@@ -491,7 +489,7 @@ task collect_insert_size_metrics {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
     output {
@@ -501,7 +499,7 @@ task collect_insert_size_metrics {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard CollectInsertSizeMetrics` command."
+        description: "This WDL task runs the `picard CollectInsertSizeMetrics` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate insert size metrics for"
@@ -529,7 +527,7 @@ task quality_score_distribution {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/picard:1.1.0'
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
     output {
@@ -539,7 +537,7 @@ task quality_score_distribution {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs the `picard QualityScoreDistribution` command."
+        description: "This WDL task runs the `picard QualityScoreDistribution` command."
     }
     parameter_meta {
         bam: "Input BAM format file to calculate quality score distribution for"

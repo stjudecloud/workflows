@@ -40,18 +40,28 @@ workflow bwa_db_build {
     input {
         String reference_fa_url
         String reference_fa_name
+        String? reference_fa_md5
+        Int max_retries = 1
     }
 
     parameter_meta {
         reference_fa_url: "URL to retrieve the reference FASTA file from."
         reference_fa_name: "Name of output reference FASTA file"
+        reference_fa_md5: "Expected md5sum of reference FASTA file"
+        max_retries: "Number of times to retry failed steps"
     }
 
-    call util.download as reference_download { input: url=reference_fa_url, outfile_name=reference_fa_name }
+    call util.download as reference_download {
+        input:
+            url=reference_fa_url,
+            outfile_name=reference_fa_name,
+            md5sum=reference_fa_md5,
+            max_retries=max_retries
+    }
     call bwa.build_bwa_db {
         input:
             reference_fasta=reference_download.outfile,
-            bwadb_out_name="bwa.tar.gz"
+            max_retries=max_retries
     }
 
     output {

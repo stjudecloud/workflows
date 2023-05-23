@@ -1,6 +1,6 @@
 ## # STAR
 ##
-## This WDL tool wraps the [STAR aligner](https://github.com/alexdobin/STAR).
+## This WDL file wraps the [STAR aligner](https://github.com/alexdobin/STAR).
 ## STAR is an RNA-Seq aligner.
 
 version 1.0
@@ -10,7 +10,7 @@ task build_star_db {
         Int ncpu = 1
         File reference_fasta
         File gtf
-        String stardb_dir_name = "stardb"
+        String stardb_dir_name = "star_db"
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1
@@ -56,7 +56,7 @@ task build_star_db {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/star:1.2.0'
+        docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
     }
 
@@ -67,7 +67,7 @@ task build_star_db {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs STAR's build command to generate a STAR format reference for alignment." 
+        description: "This WDL task runs STAR's build command to generate a STAR format reference for alignment." 
     }
 
     parameter_meta {
@@ -167,7 +167,7 @@ task alignment {
         cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/star:1.2.0'
+        docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
     }
 
@@ -179,7 +179,7 @@ task alignment {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs the STAR aligner on a set of RNA-Seq FastQ files."
+        description: "This WDL task runs the STAR aligner on a set of RNA-Seq FastQ files."
     }
 
     parameter_meta {

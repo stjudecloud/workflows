@@ -1,6 +1,6 @@
 ## # SAMtools
 ##
-## This WDL tool wraps the [SAMtools package](http://samtools.sourceforge.net/).
+## This WDL file wraps the [SAMtools package](http://samtools.sourceforge.net/).
 ## SAMtools provides utlities for manipulating SAM format sequence alignments.
 
 version 1.0
@@ -21,7 +21,7 @@ task quickcheck {
     runtime {
         memory: "4 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 
@@ -32,7 +32,7 @@ task quickcheck {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
+        description: "This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
     }
 
     parameter_meta {
@@ -54,7 +54,7 @@ task split {
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
-    command {
+    command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
@@ -69,13 +69,13 @@ task split {
             else rm ~{prefix}.unaccounted_reads.bam
         fi 
         rm unaccounted_reads.bam
-    }
+    >>>
  
     runtime {
         cpu: ncpu
         memory: "4 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 
@@ -86,7 +86,7 @@ task split {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
+        description: "This WDL task runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
     }
 
     parameter_meta {
@@ -112,7 +112,7 @@ task flagstat {
 
     runtime {
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         memory: memory_gb + " GB"
         maxRetries: max_retries
     }
@@ -159,7 +159,7 @@ task index {
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         memory: memory_gb + " GB"
         dx_instance_type: "azure:mem2_ssd1_x4"
         maxRetries: max_retries
@@ -172,7 +172,7 @@ task index {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM."
+        description: "This WDL task runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM."
     }
 
     parameter_meta {
@@ -228,7 +228,7 @@ task subsample {
         cpu: ncpu
         memory: "4 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 }
@@ -274,7 +274,7 @@ task merge {
         cpu: ncpu
         memory: "4 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 }
@@ -311,7 +311,7 @@ task addreplacerg {
         cpu: ncpu
         memory: "4 GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/samtools:1.0.2'
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 
@@ -319,7 +319,7 @@ task addreplacerg {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags."
+        description: "This WDL task runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags."
     }
 
     parameter_meta {
