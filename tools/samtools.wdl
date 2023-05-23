@@ -393,7 +393,7 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "This WDL task runs `samtools fastq` on the input BAM file. Splits the BAM into FastQ files."
+        description: "This WDL task runs `samtools fastq` on the input BAM file. Splits the BAM into FastQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
         outputs: {
             read_one_fastq_gz: "Gzipped FastQ file with 1st reads in pair"
 	        read_two_fastq_gz: "Gzipped FastQ file with 2nd reads in pair"
@@ -484,7 +484,7 @@ task bam_to_fastq {
 
 task collate_to_fastq {
     meta {
-        description: "This WDL task runs `samtools collate` on the input BAM file then splits it into FastQs using `samtools fastq`."
+        description: "This WDL task runs `samtools collate` on the input BAM file then converts it into FastQ(s) using `samtools fastq`."
         outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)"
             read_one_fastq_gz: "Gzipped FastQ file with 1st reads in pair"
@@ -495,7 +495,7 @@ task collate_to_fastq {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to collate"
+        bam: "Input BAM format file to collate and convert to FastQ(s)"
         prefix: "Prefix for the collated BAM and FastQ files. The extensions `.collated.bam` and `[,_R1,_R2,.singleton].fastq.gz` will be added."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
@@ -542,14 +542,13 @@ task collate_to_fastq {
             n_cores=$(nproc)
         fi
 
-        if [ "~{store_collated_bam}" = "true" ]; then
-            samtools collate \
-                --threads "$n_cores" \
-                ~{if fast_mode then "-f" else ""} \
-                -o ~{prefix}.collated.bam \
-                ~{bam}
-
-            samtools fastq \
+        samtools collate \
+            --threads "$n_cores" \
+            ~{if fast_mode then "-f" else ""} \
+            -O \
+            ~{bam} \
+            | tee ~{if store_collated_bam then prefix+".collated.bam" else ""} \
+            | samtools fastq \
                 --threads "$n_cores" \
                 -f ~{f} \
                 -F ~{F} \
@@ -566,37 +565,7 @@ task collate_to_fastq {
                     then prefix+".singleton.fastq.gz"
                     else "/dev/null"
                 } \
-                -0 /dev/null \
-                ~{prefix}.collated.bam
-        else
-            samtools collate \
-                --threads "$n_cores" \
-                ~{if fast_mode then "-f" else ""} \
-                -O \
-                ~{bam} \
-                | samtools fastq \
-                    --threads "$n_cores" \
-                    -f ~{f} \
-                    -F ~{F} \
-                    -G ~{G} \
-                    -1 ~{
-                        if interleaved then prefix+".fastq.gz" else prefix+"_R1.fastq.gz"
-                    } \
-                    -2 ~{
-                        if paired_end then (
-                            if interleaved
-                            then prefix+".fastq.gz"
-                            else prefix+"_R2.fastq.gz"
-                        )
-                        else "/dev/null"
-                    } \
-                    -s ~{
-                        if output_singletons
-                        then prefix+".singleton.fastq.gz"
-                        else "/dev/null"
-                    } \
-                    -0 /dev/null
-        fi
+                -0 /dev/null
     >>>
 
     output {
