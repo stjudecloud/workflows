@@ -547,7 +547,7 @@ task collate_to_fastq {
             ~{if fast_mode then "-f" else ""} \
             -O \
             ~{bam} \
-            | tee ~{if store_collated_bam then prefix+".collated.bam" else "/dev/null"} \
+            | tee ~{if store_collated_bam then prefix+".collated.bam" else ""} \
             | samtools fastq \
                 --threads "$n_cores" \
                 -f ~{f} \
