@@ -338,16 +338,18 @@ task collate {
     parameter_meta {
         bam: "Input BAM format file to collate"
         prefix: "Prefix for the collated BAM file. The extension `.collated.bam` will be added."
+        f: "Fast mode (primary alignments only)"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
         String prefix = basename(bam, ".bam")
+        Boolean f = true
         Boolean use_all_cores = false
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
@@ -369,7 +371,11 @@ task collate {
             n_cores=$(nproc)
         fi
 
-        samtools collate --threads "$n_cores" -o ~{outfile_name} ~{bam}
+        samtools collate \
+            --threads "$n_cores" \
+            ~{if f then "-f" else ""} \
+            -o ~{outfile_name} \
+            ~{bam}
     >>>
 
     output {
