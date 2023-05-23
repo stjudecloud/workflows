@@ -120,23 +120,18 @@ workflow quality_check {
     call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bam_index=bam_index, max_retries=max_retries }
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
 
-    call samtools.collate { input:
+    call samtools.collate_to_fastq { input:
         bam=quickcheck.checked_bam,
-        use_all_cores=use_all_cores,
-        max_retries=max_retries
-    }
-
-    call samtools.bam_to_fastq { input:
-        bam=collate.collated_bam,
-        prefix=prefix,
+        store_collated_bam=molecule=="RNA",
         paired_end=true,  # matches default but prevents user from overriding
         interleaved=false,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
+
     call fq.fqlint { input:
-        read1=select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
-        read2=bam_to_fastq.read_two_fastq_gz,
+        read1=select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+        read2=collate_to_fastq.read_two_fastq_gz,
         max_retries=max_retries
     }
     call kraken.kraken as run_kraken { 
@@ -185,7 +180,7 @@ workflow quality_check {
             else qualimap_strandedness_map[ngsderive_strandedness.strandedness]
 
         call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam=collate.collated_bam,
+            bam=select_first([collate_to_fastq.collated_bam, "undefined"]),
             prefix=prefix,
             gtf=select_first([gtf, "undefined"]),
             strandedness=qualimap_strandedness,
