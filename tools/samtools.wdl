@@ -396,7 +396,7 @@ task bam_to_fastq {
         description: "This WDL task runs `samtools fastq` on the input BAM file. Splits the BAM into FastQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
         outputs: {
             read_one_fastq_gz: "Gzipped FastQ file with 1st reads in pair"
-	        read_two_fastq_gz: "Gzipped FastQ file with 2nd reads in pair"
+            read_two_fastq_gz: "Gzipped FastQ file with 2nd reads in pair"
             singleton_reads_fastq_gz: "A gzipped FastQ containing singleton reads"
             interleaved_reads_fastq_gz: "An interleaved gzipped paired-end FastQ"
         }
