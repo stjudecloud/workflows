@@ -135,8 +135,8 @@ workflow quality_check {
         max_retries=max_retries
     }
     call fq.fqlint { input:
-        read1=select_first([bam_to_fastq.read1, "undefined"]),
-        read2=bam_to_fastq.read2,
+        read1=select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
+        read2=bam_to_fastq.read_two_fastq_gz,
         max_retries=max_retries
     }
     call kraken.kraken as run_kraken { 

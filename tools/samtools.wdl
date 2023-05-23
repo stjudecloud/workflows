@@ -395,10 +395,10 @@ task bam_to_fastq {
     meta {
         description: "This WDL tool runs `samtools fastq` on the input BAM file. Splits the BAM into FastQ files."
         outputs: {
-            read1: "A gzipped FastQ containing read ones"
-            read2: "A gzipped FastQ containing read twos"
-            singleton_reads: "A gzipped FastQ containing singleton reads"
-            interleaved_reads: "An interleaved gzipped paired-end FastQ"
+            read_one_fastq_gz: "Gzipped FastQ file with 1st reads in pair"
+	        read_two_fastq_gz: "Gzipped FastQ file with 2nd reads in pair"
+            singleton_reads_fastq_gz: "A gzipped FastQ containing singleton reads"
+            interleaved_reads_fastq_gz: "An interleaved gzipped paired-end FastQ"
         }
     }
 
