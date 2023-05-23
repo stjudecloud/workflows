@@ -35,7 +35,7 @@ task coverage {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/mosdepth:1.0.0'
+        docker: 'quay.io/biocontainers/mosdepth:0.3.3--h37c5b7d_2'
         maxRetries: max_retries
     }
 
@@ -48,6 +48,6 @@ task coverage {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL tool wraps the Mosdepth tool for calculating coverage"
+        description: "This WDL task wraps the Mosdepth tool for calculating coverage"
     }
 }
