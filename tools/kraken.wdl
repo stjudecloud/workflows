@@ -39,7 +39,7 @@ task download_taxonomy {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
         cpu: 1
-        docker: 'ghcr.io/stjudecloud/kraken2:branch-code-cleanup-2.1.2-0'
+        docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
         maxRetries: max_retries
     }
 
@@ -102,7 +102,7 @@ task download_library {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
         cpu: 1
-        docker: 'ghcr.io/stjudecloud/kraken2:branch-code-cleanup-2.1.2-0'
+        docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
         maxRetries: max_retries
     }
 
