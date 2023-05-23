@@ -210,7 +210,7 @@ task bwa_mem {
 task build_bwa_db {
     input {
         File reference_fasta
-        String bwadb_dir_name = "bwadb"
+        String bwadb_dir_name = "bwa_db"
         Int memory_gb = 5
         Int? disk_size_gb
         Int max_retries = 1

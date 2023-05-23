@@ -10,7 +10,7 @@ task build_star_db {
         Int ncpu = 1
         File reference_fasta
         File gtf
-        String stardb_dir_name = "stardb"
+        String stardb_dir_name = "star_db"
         Int memory_gb = 50
         Int? disk_size_gb
         Int max_retries = 1

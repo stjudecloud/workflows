@@ -23,7 +23,6 @@ task bamqc {
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
-
     command {
         set -euo pipefail
         
