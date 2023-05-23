@@ -403,7 +403,7 @@ task bam_to_fastq {
     }
 
     parameter_meta {
-        bam: "Input name sorted or collated BAM format file to split into FastQs"
+        bam: "Input name sorted or collated BAM format file to convert into FastQ(s)"
         prefix: "Prefix for output FastQ(s). Extensions `[,_R1,_R2,.singleton].fastq.gz` will be added depending on other options."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
@@ -489,8 +489,8 @@ task collate_to_fastq {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)"
             read_one_fastq_gz: "Gzipped FastQ file with 1st reads in pair"
 	        read_two_fastq_gz: "Gzipped FastQ file with 2nd reads in pair"
-            singleton_reads_fastq_gz: "A gzipped FastQ containing singleton reads"
-            interleaved_reads_fastq_gz: "An interleaved gzipped paired-end FastQ"
+            singleton_reads_fastq_gz: "Gzipped FastQ containing singleton reads"
+            interleaved_reads_fastq_gz: "Interleaved gzipped paired-end FastQ"
         }
     }
 
