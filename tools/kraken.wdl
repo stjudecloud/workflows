@@ -292,7 +292,7 @@ task kraken {
     parameter_meta {
         read1: "Gzipped FastQ file with 1st reads in pair"
         read2: "Gzipped FastQ file with 2nd reads in pair"
-        db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a flat tarball without a root directory."
+        db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
         sample_name: "Name for sample. If missing will be inferred by removing the suffix '_R1.fastq.gz' from the `read1` filename."
         store_sequences: "Store and output main Kraken2 output in addition to the summary report"
         use_names: "Print scientific names instead of just taxids"

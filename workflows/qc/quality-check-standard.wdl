@@ -60,7 +60,7 @@ workflow quality_check {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
         reference_fasta: "Reference genome in FASTA format"
-        kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a flat tarball without a root directory."
+        kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
         molecule: {
             description: "Data type"
             choices: [
@@ -134,28 +134,24 @@ workflow quality_check {
     call ngsderive.read_length as ngsderive_read_length { input: bam=quickcheck.checked_bam, bam_index=bam_index, max_retries=max_retries }
     call ngsderive.encoding as ngsderive_encoding { input: ngs_files=[quickcheck.checked_bam], prefix=prefix, max_retries=max_retries }
 
-    call samtools.collate { input:
+    call samtools.collate_to_fastq { input:
         bam=quickcheck.checked_bam,
-        use_all_cores=use_all_cores,
-        max_retries=max_retries
-    }
-
-    call samtools.bam_to_fastq { input:
-        bam=collate.collated_bam,
+        store_collated_bam=molecule=="RNA",
         paired_end=true,  # matches default but prevents user from overriding
         interleaved=false,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
+
     call fq.fqlint { input:
-        read1=select_first([bam_to_fastq.read1, ""]),
-        read2=bam_to_fastq.read2,
+        read1=select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+        read2=collate_to_fastq.read_two_fastq_gz,
         max_retries=max_retries
     }
     call kraken.kraken as run_kraken { 
         input:
             read1=fqlint.validated_read1,
-            read2=select_first([fqlint.validated_read2, ""]),
+            read2=select_first([fqlint.validated_read2, "undefined"]),
             db=kraken_db,
             use_all_cores=use_all_cores,
             max_retries=max_retries
@@ -165,7 +161,7 @@ workflow quality_check {
         input:
             bam=quickcheck.checked_bam,
             bam_index=bam_index,
-            prefix=basename(quickcheck.checked_bam, 'bam')+"whole_genome",
+            prefix=prefix+".whole_genome",
             max_retries=max_retries
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
@@ -174,7 +170,7 @@ workflow quality_check {
                 bam=quickcheck.checked_bam,
                 bam_index=bam_index,
                 coverage_bed=coverage_pair.left,
-                prefix=basename(quickcheck.checked_bam, 'bam')+coverage_pair.right,
+                prefix=prefix+"."+coverage_pair.right,
                 max_retries=max_retries
         }
     }
@@ -203,21 +199,31 @@ workflow quality_check {
     }
 
     if (molecule == "RNA") {
-        File gtf_defined = select_first([gtf, "No GTF"])
+        call ngsderive.junction_annotation { input:
+            bam=quickcheck.checked_bam,
+            bam_index=bam_index,
+            gtf=select_first([gtf, "undefined"]),
+            max_retries=max_retries
+        }
 
-        call ngsderive.junction_annotation as junction_annotation { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
-
-        call ngsderive.infer_strandedness as ngsderive_strandedness { input: bam=quickcheck.checked_bam, bam_index=bam_index, gtf=gtf_defined, max_retries=max_retries }
+        call ngsderive.infer_strandedness as ngsderive_strandedness { input:
+            bam=quickcheck.checked_bam,
+            bam_index=bam_index,
+            gtf=select_first([gtf, "undefined"]),
+            max_retries=max_retries
+        }
 
         String qualimap_strandedness = if (provided_strandedness != "")
             then qualimap_strandedness_map[provided_strandedness]
             else qualimap_strandedness_map[ngsderive_strandedness.strandedness]
 
         call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam=collate.collated_bam,
-            gtf=gtf_defined,
+            bam=select_first([collate_to_fastq.collated_bam, "undefined"]),
+            prefix=prefix,
+            gtf=select_first([gtf, "undefined"]),
             strandedness=qualimap_strandedness,
             name_sorted=true,
+            paired_end=true,  # matches default but prevents user from overriding
             max_retries=max_retries
         }
     }
@@ -252,7 +258,7 @@ workflow quality_check {
             select_first([regions_dups_marked_coverage.summary, []]),
             select_first([regions_dups_marked_coverage.region_dist, []])
         ])),
-        output_prefix=basename(bam, '.bam'),
+        output_prefix=prefix,
         extra_fn_clean_exts=[".ValidateSamFile"],
         mosdepth_labels=flatten([["whole_genome"], parse_input.labels]),
         max_retries=max_retries

@@ -73,7 +73,7 @@ task dynamic_disk_and_ram_task {
     }
 }
 
-task detect_nproc_task {
+task use_all_cores_task {
     meta {
         description: "This template is appropriate for all tasks which can be run on multiple cores. Update the default disk and RAM allocations, or copy and paste from `dynamic_disk_and_ram_task` as appropriate." 
     }
@@ -82,7 +82,7 @@ task detect_nproc_task {
         memory_gb: "RAM to allocate for task, specified in GB"
         disk_size_gb: "Disk space to allocate for task, specified in GB"
         ncpu: "Number of cores to allocate for task"
-        detect_nproc: "Use all available cores? Recommended for cloud environments. Not recommended for cluster environments."
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -90,7 +90,7 @@ task detect_nproc_task {
         Int memory_gb = <>
         Int disk_size_gb = <>
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
@@ -98,7 +98,7 @@ task detect_nproc_task {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
     >>>
