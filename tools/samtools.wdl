@@ -331,7 +331,7 @@ task collate {
     meta {
         description: "This WDL tool runs `samtools collate` on the input BAM file. Shuffles and groups reads together by their names."
         outputs: {
-            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarentee of sort order)"
+            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)"
         }
     }
 
