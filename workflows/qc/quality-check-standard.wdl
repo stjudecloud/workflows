@@ -139,6 +139,8 @@ workflow quality_check {
 
     call samtools.collate_to_fastq { input:
         bam=quickcheck.checked_bam,
+        # RNA needs a collated BAM for Qualimap
+        # DNA can skip the associated storage costs
         store_collated_bam=molecule=="RNA",
         paired_end=true,  # matches default but prevents user from overriding
         interleaved=false,  # matches default but prevents user from overriding
