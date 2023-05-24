@@ -116,6 +116,7 @@ workflow quality_check {
         quickcheck.checked_bam
     ])
     File post_subsample_bam_index = select_first([subsample_index.bam_index, bam_index])
+    String post_subsampled_prefix = basename(post_subsample_bam, ".bam")
 
     call picard.validate_bam { input:
         bam=post_subsample_bam,
@@ -142,6 +143,7 @@ workflow quality_check {
         markdups.duplicate_marked_bam_index,
         post_subsample_bam_index
     ])
+    String post_markdups_prefix = basename(post_markdups_bam, ".bam")
 
     call picard.collect_alignment_summary_metrics { input:
         bam=post_subsample_bam,
@@ -180,7 +182,7 @@ workflow quality_check {
     }
     call ngsderive.encoding as ngsderive_encoding { input:
         ngs_files=[post_subsample_bam],
-        prefix=prefix,
+        prefix=post_subsampled_prefix,
         max_retries=max_retries
     }
 
@@ -210,7 +212,7 @@ workflow quality_check {
         input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
-            prefix=prefix+".whole_genome",
+            prefix=post_subsampled_prefix + ".whole_genome",
             max_retries=max_retries
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
@@ -219,7 +221,7 @@ workflow quality_check {
                 bam=post_subsample_bam,
                 bam_index=post_subsample_bam_index,
                 coverage_bed=coverage_pair.left,
-                prefix=prefix+"."+coverage_pair.right,
+                prefix=post_subsampled_prefix + "." + coverage_pair.right,
                 max_retries=max_retries
         }
     }
@@ -229,8 +231,7 @@ workflow quality_check {
             input:
                 bam=post_markdups_bam,
                 bam_index=post_markdups_bam_index,
-                prefix=basename(post_markdups_bam, 'bam')
-                    + "whole_genome.duplicates_marked",
+                prefix=post_markdups_prefix + ".whole_genome.duplicates_marked",
                 max_retries=max_retries
         }
         scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
@@ -239,7 +240,7 @@ workflow quality_check {
                     bam=post_markdups_bam,
                     bam_index=post_markdups_bam_index,
                     coverage_bed=coverage_pair.left,
-                    prefix=basename(post_markdups_bam, 'bam')
+                    prefix=post_markdups_prefix
                         + coverage_pair.right
                         + ".duplicates_marked",
                     max_retries=max_retries
@@ -264,7 +265,7 @@ workflow quality_check {
 
         call qualimap.rnaseq as qualimap_rnaseq { input:
             bam=select_first([collate_to_fastq.collated_bam, "undefined"]),
-            prefix=prefix,
+            prefix=post_subsampled_prefix,
             gtf=select_first([gtf, "undefined"]),
             name_sorted=true,
             paired_end=true,  # matches default but prevents user from overriding
@@ -302,7 +303,7 @@ workflow quality_check {
             select_first([regions_dups_marked_coverage.summary, []]),
             select_first([regions_dups_marked_coverage.region_dist, []])
         ])),
-        output_prefix=prefix,
+        output_prefix=post_subsampled_prefix,
         extra_fn_clean_exts=[".ValidateSamFile"],
         mosdepth_labels=flatten([["whole_genome"], parse_input.labels]),
         max_retries=max_retries
