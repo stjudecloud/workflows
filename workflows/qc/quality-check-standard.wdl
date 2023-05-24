@@ -48,7 +48,7 @@ workflow quality_check {
         String molecule
         Array[File] coverage_beds = []
         Array[String] coverage_labels = []
-        Boolean mark_duplicates = if molecule == "RNA" then true else false
+        Boolean mark_duplicates = molecule == "RNA"
         File? gtf
         File? star_log
         Boolean output_intermediate_files = false
