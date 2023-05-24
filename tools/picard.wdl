@@ -177,7 +177,7 @@ task bam_to_fastq {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task converts the input BAM file into paired FastQ format files."
+        description: "This WDL task converts the input BAM file into FastQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
     }
 }
 
