@@ -320,7 +320,7 @@ workflow quality_check {
         File kraken_report = run_kraken.report
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
-        File multiqc_zip = multiqc.multiqc_report
+        File multiqc_report = multiqc.multiqc_report
         File? kraken_sequences = run_kraken.sequences
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
