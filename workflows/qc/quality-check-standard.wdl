@@ -39,6 +39,17 @@ import "../../tools/kraken.wdl"
 import "../../tools/multiqc.wdl" as mqc
 import "../../tools/util.wdl"
 
+struct IntermediateFiles {
+    File? collated_bam
+    File? read_one_fastq_gz
+    File? read_two_fastq_gz
+    File? singleton_reads_fastq_gz
+    File? interleaved_reads_fastq_gz
+    File? duplicate_marked_bam
+    File? duplicate_marked_bam_index
+    File? duplicate_marked_bam_md5
+}
+
 workflow quality_check {
     input {
         File bam
@@ -163,6 +174,8 @@ workflow quality_check {
 
     call samtools.collate_to_fastq { input:
         bam=quickcheck.checked_bam,
+        # RNA needs a collated BAM for Qualimap
+        # DNA can skip the associated storage costs
         store_collated_bam=molecule=="RNA",
         paired_end=true,  # matches default but prevents user from overriding
         interleaved=false,  # matches default but prevents user from overriding
@@ -286,16 +299,16 @@ workflow quality_check {
     }
 
     if (output_intermediate_files) {
-        Array[File] intermediate_files_output = select_all([
-            collate_to_fastq.collated_bam,
-            collate_to_fastq.read_one_fastq_gz,
-            collate_to_fastq.read_two_fastq_gz,
-            collate_to_fastq.singleton_reads_fastq_gz,
-            collate_to_fastq.interleaved_reads_fastq_gz,
-            markdups.duplicate_marked_bam,
-            markdups.duplicate_marked_bam_index,
-            markdups.duplicate_marked_bam_md5
-        ])
+        IntermediateFiles intermediate_files_output = {
+            "collated_bam": collate_to_fastq.collated_bam,
+            "read_one_fastq_gz": collate_to_fastq.read_one_fastq_gz,
+            "read_two_fastq_gz": collate_to_fastq.read_two_fastq_gz,
+            "singleton_reads_fastq_gz": collate_to_fastq.singleton_reads_fastq_gz,
+            "interleaved_reads_fastq_gz": collate_to_fastq.interleaved_reads_fastq_gz,
+            "duplicate_marked_bam": markdups.duplicate_marked_bam,
+            "duplicate_marked_bam": markdups.duplicate_marked_bam_index,
+            "duplicate_marked_bam": markdups.duplicate_marked_bam_md5
+        }
     }
 
     output {
@@ -330,7 +343,7 @@ workflow quality_check {
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
         File? junctions = junction_annotation.junctions
-        Array[File]? intermediate_files = intermediate_files_output
+        IntermediateFiles? intermediate_files = intermediate_files_output
     }
 }
 
