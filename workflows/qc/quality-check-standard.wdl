@@ -208,7 +208,7 @@ workflow quality_check {
                 bam=post_markdups_bam,
                 bam_index=post_markdups_bam_index,
                 prefix=basename(post_markdups_bam, 'bam')
-                    + "whole_genome.duplicates_marked",
+                    + "whole_genome",
                 max_retries=max_retries
         }
         scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
@@ -218,8 +218,7 @@ workflow quality_check {
                     bam_index=post_markdups_bam_index,
                     coverage_bed=coverage_pair.left,
                     prefix=basename(post_markdups_bam, 'bam')
-                        + coverage_pair.right
-                        + ".duplicates_marked",
+                        + coverage_pair.right,
                     max_retries=max_retries
             }
         }
