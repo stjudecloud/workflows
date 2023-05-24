@@ -3,6 +3,7 @@
     "make_qc_reference.reference_fa_name": "GRCh38_no_alt.fa.gz",
     "make_qc_reference.gtf_url": "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_31/gencode.v31.annotation.gtf.gz",
     "make_qc_reference.gtf_name": "gencode.v31.gtf.gz",
+    "make_qc_reference.protein": false,
     "make_qc_reference.kraken_libraries": [
         "archaea",
         "bacteria",
@@ -21,12 +22,12 @@
         "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_other/Danio_rerio/reference/GCF_000002035.6_GRCz11/GCF_000002035.6_GRCz11_genomic.fna.gz"
     ],
     "make_qc_reference.kraken_fastas": [],
-    "make_qc_reference.max_retries": "Int?",
-    "make_qc_reference.kraken_build_db.db_name": "kraken2_db",
-    "make_qc_reference.kraken_build_db.kmer_len": "Int (default = 35)",
-    "make_qc_reference.kraken_build_db.minimizer_len": "Int (default = 31)",
-    "make_qc_reference.kraken_build_db.minimizer_spaces": "Int (default = 7)",
+    "make_qc_reference.kraken_build_db.db_name": "custom_kraken2_db",
+    "make_qc_reference.kraken_build_db.kmer_len": "Int (default = if protein then 15 else 35)",
+    "make_qc_reference.kraken_build_db.minimizer_len": "Int (default = if protein then 12 else 31)",
+    "make_qc_reference.kraken_build_db.minimizer_spaces": "Int (default = if protein then 0 else 7)",
     "make_qc_reference.kraken_build_db.max_db_size_gb": "Int (default = -1)",
+    "make_qc_reference.kraken_build_db.ncpu": "Int (default = 1)",
     "make_qc_reference.kraken_build_db.use_all_cores": "Boolean (default = false)",
-    "make_qc_reference.kraken_build_db.ncpu": "Int (default = 1)"
+    "make_qc_reference.max_retries": "Int?"
 }

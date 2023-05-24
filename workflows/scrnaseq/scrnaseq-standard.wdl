@@ -34,6 +34,7 @@ import "./10x-bam-to-fastqs.wdl" as b2fq
 import "../../tools/picard.wdl"
 import "../../tools/ngsderive.wdl"
 import "../../tools/samtools.wdl"
+import "../../tools/util.wdl"
 import "../../tools/cellranger.wdl"
 import "../../tools/md5sum.wdl"
 

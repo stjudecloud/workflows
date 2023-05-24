@@ -1,6 +1,6 @@
 ## Cell Ranger
 ##
-## This WDL tool wrap the [10x Genomics Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) tool.
+## This WDL file wrap the [10x Genomics Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) tool.
 ## Cell Ranger is a tool for handling scRNA-Seq data.
 
 version 1.0
@@ -10,7 +10,7 @@ task count {
         String id
         File transcriptome_tar_gz
         File fastqs_tar_gz
-        Int ncpu = 8
+        Int ncpu = 1
         Int memory_gb = 16
         String jobmode = "local"
         Int max_retries = 1
@@ -57,7 +57,7 @@ task count {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: "ghcr.io/stjudecloud/cellranger:1.1.0"
+        docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
         maxRetries: max_retries
         cpu: ncpu
     }
@@ -82,7 +82,7 @@ task count {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data."
+        description: "This WDL task runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data."
     }
 
     parameter_meta {
@@ -96,8 +96,8 @@ task count {
 task bamtofastq {
     input {
         File bam
-        Int ncpu = 4
-        Int memory_gb = 8
+        Int ncpu = 1
+        Int memory_gb = 40
         Boolean cellranger11 = false
         Boolean longranger20 = false
         Boolean gemcode = false
@@ -129,7 +129,7 @@ task bamtofastq {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: "ghcr.io/stjudecloud/cellranger:1.1.0"
+        docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
         maxRetries: max_retries
         cpu: ncpu
     }
@@ -144,7 +144,7 @@ task bamtofastq {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files"
+        description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files"
 
     }
 

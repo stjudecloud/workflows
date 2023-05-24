@@ -1,6 +1,6 @@
 ## # QualiMap
 ##
-## This WDL tool wraps the [QualiMap](http://qualimap.bioinfo.cipf.es/) tool.
+## This WDL file wraps the [QualiMap](http://qualimap.bioinfo.cipf.es/) tool.
 ## QualiMap computes metrics to facilitate evaluation of sequencing data. 
 
 version 1.0
@@ -12,21 +12,28 @@ task bamqc {
         Int max_retries = 1
         Int memory_gb = 32
         Int? disk_size_gb
+        Boolean use_all_cores = false
     }
 
     String out_directory = basename(bam, ".bam") + '.qualimap_bamqc_results'
     String out_tar_gz = out_directory + ".tar.gz"
 
     Int java_heap_size = ceil(memory_gb * 0.9)
+
     Float bam_size = size(bam, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
 
     command {
         set -euo pipefail
         
+        n_cores=~{ncpu}
+        if [ "~{use_all_cores}" = "true" ]; then
+            n_cores=$(nproc)
+        fi
+        
         qualimap bamqc -bam ~{bam} \
             -outdir ~{out_directory} \
-            -nt ~{ncpu} \
+            -nt "$n_cores" \
             -nw 400 \
             --java-mem-size=~{java_heap_size}g
         
@@ -42,7 +49,7 @@ task bamqc {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/qualimap:1.0.4'
+        docker: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
         maxRetries: max_retries
     }
 
@@ -53,7 +60,7 @@ task bamqc {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool runs QualiMap's bamqc tool on the input BAM file. It has been deprecated in our pipeline due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
+        description: "This WDL task runs QualiMap's bamqc tool on the input BAM file. It has been deprecated in our pipeline due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
     }
 
     parameter_meta {
@@ -65,7 +72,6 @@ task rnaseq {
     input {
         File bam
         File gtf
-        String strandedness
         String prefix = basename(bam, ".bam")
         Boolean name_sorted = false
         Boolean paired_end = true
@@ -77,14 +83,12 @@ task rnaseq {
     parameter_meta {
         bam: "Input BAM format file to run qualimap rnaseq on"
         gtf: "GTF features file"
-        strandedness: {
-            help: "Strandedness protocol used to generate the RNA-Seq data"
-            choices: ['strand-specific-reverse', 'strand-specific-forward', 'non-strand-specific']
-        }
+        prefix: "Prefix for the results directory and output tarball. The extension `.qualimap_rnaseq_results.tar.gz` will be added."
         name_sorted: "Is the BAM name sorted?"
         paired_end: "Is the BAM paired end?"
         memory_gb: "RAM to allocate for task"
         disk_size_gb: "Disk space to allocate for task. Default is determined dynamically based on BAM and GTF sizes."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     String out_directory = prefix + ".qualimap_rnaseq_results"
@@ -108,7 +112,6 @@ task rnaseq {
                         -gtf "$gtf_name" \
                         -outdir ~{out_directory} \
                         -oc qualimap_counts.txt \
-                        -p ~{strandedness} \
                         ~{name_sorted_arg} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
@@ -116,7 +119,7 @@ task rnaseq {
         
         # Check if qualimap succeeded
         if [ ! -d "~{out_directory}/raw_data_qualimapReport/" ]; then
-            exit 1
+            exit 42
         fi
         
         tar -czf ~{out_tar_gz} ~{out_directory}
@@ -125,7 +128,7 @@ task rnaseq {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/qualimap:1.0.4'
+        docker: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
         maxRetries: max_retries
     }
 
@@ -138,6 +141,6 @@ task rnaseq {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool generates runs QualiMap's rnaseq tool on the input BAM file."
+        description: "This WDL task generates runs QualiMap's rnaseq tool on the input BAM file. Note that we don't expose the `-p` parameter. This is used to set strandedness protocol of the sample, however in practice it only disables certain calculations. We do not expose the parameter so that the full suite of calculations is always performed."
     }
 }
