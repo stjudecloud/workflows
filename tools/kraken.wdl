@@ -39,7 +39,7 @@ task download_taxonomy {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
         cpu: 1
-        docker: 'ghcr.io/stjudecloud/kraken2:1.0.0'
+        docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
         maxRetries: max_retries
     }
 
@@ -102,7 +102,7 @@ task download_library {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
         cpu: 1
-        docker: 'ghcr.io/stjudecloud/kraken2:1.0.0'
+        docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
         maxRetries: max_retries
     }
 
@@ -190,7 +190,7 @@ task build_db {
         Int added_memory_gb = 0
         Int added_disk_size_gb = 0
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
@@ -205,7 +205,7 @@ task build_db {
         added_memory_gb: "Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size."
         added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on size of the input `tarballs`."
         ncpu: "Number of cores to allocate for task"
-        detect_nproc: "Use all available cores. Recommended for cloud environments. Not recommended for cluster environments."
+        use_all_cores: "Use all cores. Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -223,7 +223,7 @@ task build_db {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
@@ -279,54 +279,58 @@ task kraken {
         File read1
         File read2
         File db
-        String? sample_name
+        String prefix = basename(read1, "_R1.fastq.gz")
         Boolean store_sequences = false
         Boolean use_names = true
         Int min_base_quality = 0
-        Int? memory_gb
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
     parameter_meta {
         read1: "Gzipped FastQ file with 1st reads in pair"
         read2: "Gzipped FastQ file with 2nd reads in pair"
-        db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a flat tarball without a root directory."
+        db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
         sample_name: "Name for sample. If missing will be inferred by removing the suffix '_R1.fastq.gz' from the `read1` filename."
         store_sequences: "Store and output main Kraken2 output in addition to the summary report"
         use_names: "Print scientific names instead of just taxids"
         min_base_quality: "Minimum base quality used in classification"
         memory_gb: "RAM to allocate for task. If missing will be dynamically allocated based on database size."
         ncpu: "Number of cores to allocate for task"
-        detect_nproc: "Use all available cores"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
     Float db_size = size(db, "GiB")
     Float read1_size = size(read1, "GiB")
     Float read2_size = size(read2, "GiB")
-    Int disk_size = ceil((db_size * 2) + read1_size + read2_size + 5)
+    Int disk_size_gb_calculation = ceil(
+        (db_size * 2) + read1_size + read2_size
+    ) + modify_disk_size_gb
+    Int disk_size_gb = if store_sequences
+        then disk_size_gb_calculation + ceil(read1_size + read2_size)
+        else disk_size_gb_calculation
 
-    Int ram_gb = select_first([memory_gb, ceil(db_size * 2)])
+    Int memory_gb = ceil(db_size * 2) + modify_memory_gb
 
-    String inferred_basename = basename(read1, "_R1.fastq.gz")
-    String sample_basename = select_first([sample_name, inferred_basename])
-    String out_report = sample_basename + ".kraken2.txt"
-    String out_sequences = sample_basename + ".kraken2.sequences.txt"
+    String out_report = prefix + ".kraken2.txt"
+    String out_sequences = prefix + ".kraken2.sequences.txt"
 
     command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{detect_nproc}" = "true" ]; then
+        if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
         fi
 
-        mkdir -p /tmp/kraken2_db/
-        tar -xzf ~{db} -C /tmp/kraken2_db/ --no-same-owner
+        mkdir -p kraken2_db/
+        tar -xzf ~{db} -C kraken2_db/ --no-same-owner
 
-        kraken2 --db /tmp/kraken2_db/ \
+        kraken2 --db kraken2_db/ \
             --paired \
             --output ~{if store_sequences then out_sequences else "-"} \
             --threads "$n_cores" \
@@ -341,12 +345,12 @@ task kraken {
             gzip ~{out_sequences}
         fi
 
-        rm -r /tmp/kraken2_db/
+        rm -r kraken2_db/
     >>>
  
     runtime {
-        memory: ram_gb + " GB"
-        disk: disk_size + " GB"
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         cpu: ncpu
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries

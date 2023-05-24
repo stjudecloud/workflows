@@ -1,6 +1,6 @@
 ## # FQ
 ##
-## This WDL tool wraps the [fq tool](https://github.com/stjude/fqlib).
+## This WDL file wraps the [fq tool](https://github.com/stjude/fqlib).
 ## The fq library provides methods for manipulating Illumina generated 
 ## FastQ files.
 
@@ -33,7 +33,7 @@ task fqlint {
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/fqlib:1.2.0'
+        docker: 'quay.io/biocontainers/fq:0.9.1--h9ee0642_0'
         maxRetries: max_retries
     }
 
@@ -45,7 +45,7 @@ task fqlint {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool performs quality control on the input FastQ pairs to ensure proper formatting."
+        description: "This WDL task performs quality control on the input FastQ pairs to ensure proper formatting."
     }
 
     parameter_meta {
@@ -57,7 +57,7 @@ task fqlint {
 task subsample {
     meta {
         description: "This WDL task subsamples input FastQs"
-        outputs {
+        outputs: {
             subsampled_read1: "Subsampled read1 FastQ"
             subsampled_read2: "Subsampled read2 FastQ"
         }

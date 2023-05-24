@@ -1,6 +1,6 @@
 ## # Deeptools
 ##
-## This WDL tool wraps the [DeepTools](https://deeptools.readthedocs.io/en/develop/index.html) tool.
+## This WDL file wraps the [DeepTools](https://deeptools.readthedocs.io/en/develop/index.html) tool.
 ## DeepTools is a suite of Python tools for analysis of high throughput sequencing analysis.
 
 version 1.0
@@ -19,7 +19,7 @@ task bamCoverage {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size * 4) + 10)
  
-    command {
+    command <<<
         set -euo pipefail
         
         n_cores=~{ncpu}
@@ -33,13 +33,13 @@ task bamCoverage {
         fi
  
         bamCoverage --bam ~{bam} --outFileName ~{prefix}.bw --outFileFormat bigwig --numberOfProcessors "$n_cores"
-    }
+    >>>
 
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/deeptools:1.0.2'
+        docker: 'quay.io/biocontainers/deeptools:3.5.1--pyhdfd78af_1'
         maxRetries: max_retries
     }
 
@@ -50,7 +50,7 @@ task bamCoverage {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html)."
+        description: "This WDL task generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html)."
     }
 
     parameter_meta {

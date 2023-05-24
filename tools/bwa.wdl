@@ -1,6 +1,6 @@
 ## # BWA
 ##
-## This WDL tool wraps [BWA](https://github.com/lh3/bwa).
+## This WDL file wraps [BWA](https://github.com/lh3/bwa).
 ## BWA aligns sequencing reads to a reference genome.
 
 version 1.0
@@ -35,18 +35,24 @@ task bwa_aln {
         tar -C bwa -xzf ~{bwadb_tar_gz}
         PREFIX=$(basename bwa/*.ann ".ann")
 
-        bwa aln -t "${n_cores}" bwa/"$PREFIX" ~{fastq} > sai
+        bwa aln -t "$n_cores" bwa/"$PREFIX" ~{fastq} > sai
 
         bwa samse \
-            ~{if read_group != "" then "-r '" else ""}~{read_group}~{if read_group != "" then "'" else ""} \
-            bwa/"$PREFIX" sai ~{fastq} | samtools view -@ "${n_cores}" -hb - > ~{output_bam}
+            ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
+            bwa/"$PREFIX" \
+            sai \
+            ~{fastq} \
+            | samtools view -@ "$n_cores" -hb - \
+            > ~{output_bam}
+
+        rm -r bwa
     >>>
 
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/bwa:1.0.2'
+        docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
 
@@ -57,7 +63,7 @@ task bwa_aln {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool maps single-end FastQ files to BAM format using bwa aln."
+        description: "This WDL task maps single-end FastQ files to BAM format using bwa aln."
     }
 
     parameter_meta {
@@ -97,19 +103,25 @@ task bwa_aln_pe {
         tar -C bwa -xzf ~{bwadb_tar_gz}
         PREFIX=$(basename bwa/*.ann ".ann")
 
-        bwa aln -t "${n_cores}" bwa/"$PREFIX" ~{fastq1} > sai_1
-        bwa aln -t "${n_cores}" bwa/"$PREFIX" ~{fastq2} > sai_2
+        bwa aln -t "$n_cores" bwa/"$PREFIX" ~{fastq1} > sai_1
+        bwa aln -t "$n_cores" bwa/"$PREFIX" ~{fastq2} > sai_2
 
         bwa sampe \
-             ~{if read_group != "" then "-r '" else ""}~{read_group}~{if read_group != "" then "'" else ""} \
-            bwa/"$PREFIX" sai_1 sai_2 ~{fastq1} ~{fastq2} | samtools view -@ "${n_cores}" -hb - > ~{output_bam}
+            ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
+            bwa/"$PREFIX" \
+            sai_1 sai_2 \
+            ~{fastq1} ~{fastq2} \
+            | samtools view -@ "$n_cores" -hb - \
+            > ~{output_bam}
+
+        rm -r bwa
     >>>
 
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/bwa:1.0.2'
+        docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
 
@@ -120,7 +132,7 @@ task bwa_aln_pe {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool maps paired-end FastQ files to BAM format using bwa aln."
+        description: "This WDL task maps paired-end FastQ files to BAM format using bwa aln."
     }
 
     parameter_meta {
@@ -162,15 +174,20 @@ task bwa_mem {
 
         bwa mem \
             -t "$n_cores" \
-            ~{if read_group != "" then "-r '" else ""}~{read_group}~{if read_group != "" then "'" else ""} \
-            bwa/"$PREFIX" ~{fastq} | samtools view -b - > ~{output_bam}
+            ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
+            bwa/"$PREFIX" \
+            ~{fastq} \
+            | samtools view -@ "$n_cores" -hb - \
+            > ~{output_bam}
+
+        rm -r bwa
     >>>
 
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
-        docker: 'ghcr.io/stjudecloud/bwa:1.0.2'
+        docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
 
@@ -181,7 +198,7 @@ task bwa_mem {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool maps FastQ files to BAM format using bwa mem."
+        description: "This WDL task maps FastQ files to BAM format using bwa mem."
     }
 
     parameter_meta {
@@ -193,7 +210,7 @@ task bwa_mem {
 task build_bwa_db {
     input {
         File reference_fasta
-        String bwadb_out_name = "bwadb.tar.gz"
+        String bwadb_dir_name = "bwa_db"
         Int memory_gb = 5
         Int? disk_size_gb
         Int max_retries = 1
@@ -201,6 +218,7 @@ task build_bwa_db {
 
     Float input_fasta_size = size(reference_fasta, "GiB")
     Int disk_size = select_first([disk_size_gb, ceil((input_fasta_size * 2))])
+    String bwadb_out_name = bwadb_dir_name + ".tar.gz"
 
     command <<<
         set -euo pipefail
@@ -211,13 +229,13 @@ task build_bwa_db {
 
         bwa index "$ref_fasta"
 
-        tar -czf ~{bwadb_out_name} "${ref_fasta}*"
+        tar -czf ~{bwadb_out_name} "${ref_fasta}"*
     >>>
 
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
-        docker: 'ghcr.io/stjudecloud/bwa:1.0.2'
+        docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
 
@@ -228,7 +246,7 @@ task build_bwa_db {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool creates a BWA index and returns it as a compressed tar archive."
+        description: "This WDL task creates a BWA index and returns it as a compressed tar archive."
     }
 
     parameter_meta {
@@ -261,7 +279,7 @@ task format_rg_for_bwa {
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL tool converts read group records from the BAM-formatted strings to strings expected by bwa."
+        description: "This WDL task converts read group records from the BAM-formatted strings to strings expected by bwa."
     }
 
     parameter_meta {

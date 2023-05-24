@@ -2,22 +2,23 @@
 
 FROM ubuntu:20.04
 
-ARG cellranger_url
-ARG cellranger_md5
+ARG CELLRANGER_URL
+ARG CELLRANGER_MD5
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install curl -y && \
-    rm -r /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install curl -y \
+    && rm -r /var/lib/apt/lists/*
 
 WORKDIR /opt
 
 RUN curl -o cellranger.tar.gz \
-    ${cellranger_url} \
-    && echo "${cellranger_md5}  cellranger.tar.gz" > cellranger.tar.gz.md5 \
+    ${CELLRANGER_URL} \
+    && echo "${CELLRANGER_MD5}  cellranger.tar.gz" > cellranger.tar.gz.md5 \
     && md5sum -c cellranger.tar.gz.md5 \
     && tar -xzvf cellranger.tar.gz \
-    && mv cellranger-* cellranger
+    && mv cellranger-* cellranger \
+    && rm cellranger.tar.gz*
 
 ENV PATH "/opt/cellranger:$PATH"
 

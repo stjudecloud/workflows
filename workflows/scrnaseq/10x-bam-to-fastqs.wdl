@@ -52,7 +52,6 @@ workflow cell_ranger_bam_to_fastqs {
         Boolean cellranger11 = false
         Boolean longranger20 = false
         Boolean gemcode = false
-        Int bam_to_fastq_memory_gb = 40
         Boolean use_all_cores = false
         Int? max_retries
     }
@@ -63,13 +62,19 @@ workflow cell_ranger_bam_to_fastqs {
         cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
         longranger20: "Convert a BAM produced by Longranger 2.0"
         gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
-        bam_to_fastq_memory_gb: "How much memory to provide while converting to FastQs."
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call cellranger.bamtofastq { input: bam=bam, cellranger11=cellranger11, longranger20=longranger20, gemcode=gemcode, memory_gb=bam_to_fastq_memory_gb, max_retries=max_retries }
+    call cellranger.bamtofastq {
+        input:
+            bam=bam,
+            cellranger11=cellranger11,
+            longranger20=longranger20,
+            gemcode=gemcode,
+            max_retries=max_retries
+    }
     scatter (reads in zip(bamtofastq.read1, bamtofastq.read2)) {
         if (paired) {
             call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
