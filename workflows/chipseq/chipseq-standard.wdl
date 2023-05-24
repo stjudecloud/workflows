@@ -46,7 +46,7 @@ workflow chipseq_standard {
         String output_prefix = basename(input_bam, ".bam")
         Array[File] bowtie_indexes
         File? excludelist
-        Boolean paired = false
+        Boolean paired_end = false
         Int subsample_n_reads = -1
         Boolean validate_input = true
         Boolean use_all_cores = false
@@ -58,7 +58,7 @@ workflow chipseq_standard {
         output_prefix: "Prefix for output files"
         bowtie_indexes: "Database of v1 reference files for the bowtie aligner. Can be generated with https://github.com/stjude/seaseq/blob/master/workflows/tasks/bowtie.wdl. [*.ebwt]"
         excludelist: "Optional list of regions that will be excluded after reference alignment"
-        paired: "Is the data paired-end (true) or single-end (false)?"
+        paired_end: "Is the data paired-end (true) or single-end (false)?"
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
         validate_input: "Run Picard ValidateSamFile on the input BAM"
         use_all_cores: "Use all cores for multi-core steps?"
@@ -93,7 +93,7 @@ workflow chipseq_standard {
 
     call b2fq.bam_to_fastqs { input:
         bam=selected_input_bam,
-        paired=paired,
+        paired_end=paired_end,
         max_retries=max_retries,
         use_all_cores=use_all_cores
     }
@@ -105,7 +105,7 @@ workflow chipseq_standard {
         bam_index=samtools_index_input.bam_index
     }
 
-    if (! paired) {
+    if (! paired_end) {
         scatter (pair in zip(bam_to_fastqs.read1s, read_groups)){
             call seaseq_util.basicfastqstats as basic_stats { input: fastqfile=pair.left }
             call seaseq_map.mapping as bowtie_single_end_mapping {

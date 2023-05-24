@@ -111,8 +111,9 @@ workflow rnaseq_standard {
     String read_groups = read_string(get_read_groups.read_groups_file)
     call b2fq.bam_to_fastqs { input:
         bam=selected_input_bam,
-        max_retries=max_retries,
+        paired_end=true,
         use_all_cores=use_all_cores
+        max_retries=max_retries,
     }
 
     call rna_core.rnaseq_core { input:
