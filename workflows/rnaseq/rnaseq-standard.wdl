@@ -112,8 +112,8 @@ workflow rnaseq_standard {
     call b2fq.bam_to_fastqs { input:
         bam=selected_input_bam,
         paired_end=true,
-        use_all_cores=use_all_cores
-        max_retries=max_retries,
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
     }
 
     call rna_core.rnaseq_core { input:
