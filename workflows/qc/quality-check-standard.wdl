@@ -196,7 +196,6 @@ workflow quality_check {
             bam=select_first([collate_to_fastq.collated_bam, "undefined"]),
             prefix=prefix,
             gtf=select_first([gtf, "undefined"]),
-            strandedness=qualimap_strandedness,
             name_sorted=true,
             paired_end=true,  # matches default but prevents user from overriding
             max_retries=max_retries
