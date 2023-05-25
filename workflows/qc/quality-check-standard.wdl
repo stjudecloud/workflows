@@ -222,6 +222,8 @@ workflow quality_check {
         }
     }
     if (! mark_duplicates) {
+        # These analyses are called in the markdups_post workflow.
+        # They should still be run if duplicates were not marked.
         call picard.collect_insert_size_metrics { input:
             bam=quickcheck.checked_bam,
             max_retries=max_retries
