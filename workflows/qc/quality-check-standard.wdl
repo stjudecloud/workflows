@@ -345,7 +345,8 @@ workflow quality_check {
         File read_length_file = ngsderive_read_length.read_length_file
         File inferred_encoding = ngsderive_encoding.encoding_file
         File alignment_metrics = collect_alignment_summary_metrics.alignment_metrics
-        File alignment_metrics_pdf = collect_alignment_summary_metrics.alignment_metrics_pdf
+        File alignment_metrics_pdf
+            = collect_alignment_summary_metrics.alignment_metrics_pdf
         File gc_bias_metrics = collect_gc_bias_metrics.gc_bias_metrics
         File gc_bias_metrics_pdf = collect_gc_bias_metrics.gc_bias_metrics_pdf
         File insert_size_metrics = select_first([
@@ -356,8 +357,10 @@ workflow quality_check {
             collect_insert_size_metrics.insert_size_metrics_pdf,
             collect_insert_size_metrics_dups_marked.insert_size_metrics_pdf
         ])
-        File quality_score_distribution_txt = quality_score_distribution.quality_score_distribution_txt
-        File quality_score_distribution_pdf = quality_score_distribution.quality_score_distribution_pdf
+        File quality_score_distribution_txt
+            = quality_score_distribution.quality_score_distribution_txt
+        File quality_score_distribution_pdf
+            = quality_score_distribution.quality_score_distribution_pdf
         File kraken_report = run_kraken.report
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
@@ -367,8 +370,10 @@ workflow quality_check {
         Array[File] mosdepth_region_summary = regions_coverage.summary
         File? mosdepth_global_dups_marked_dist = wg_dups_marked_coverage.global_dist
         File? mosdepth_global_dups_marked_summary = wg_dups_marked_coverage.summary
-        Array[File?]? mosdepth_region_dups_marked_dist = regions_dups_marked_coverage.region_dist
-        Array[File]? mosdepth_region_dups_marked_summary = regions_dups_marked_coverage.summary
+        Array[File?]? mosdepth_region_dups_marked_dist
+            = regions_dups_marked_coverage.region_dist
+        Array[File]? mosdepth_region_dups_marked_summary
+            = regions_dups_marked_coverage.summary
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
