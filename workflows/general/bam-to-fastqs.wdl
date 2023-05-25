@@ -36,20 +36,19 @@ version 1.0
 
 
 import "../../tools/samtools.wdl"
-import "../../tools/picard.wdl"
 import "../../tools/fq.wdl"
 
 workflow bam_to_fastqs {
     input {
         File bam
-        Boolean paired = true
+        Boolean paired_end = true
         Boolean use_all_cores = false
         Int? max_retries
     }
 
     parameter_meta {
         bam: "BAM file to split into FastQs"
-        paired: "Is the data paired-end (true) or single-end (false)?"
+        paired_end: "Is the data paired-end (true) or single-end (false)?"
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
@@ -57,29 +56,27 @@ workflow bam_to_fastqs {
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call samtools.split { input: bam=bam, use_all_cores=use_all_cores, max_retries=max_retries }
     scatter (split_bam in split.split_bams) {
-        call picard.bam_to_fastq { input: bam=split_bam, paired=paired, max_retries=max_retries }
-    }
-
-    if (paired) {
-        scatter (reads in zip(bam_to_fastq.read1, bam_to_fastq.read2)) {
-            call fq.fqlint as fqlint_pair { input:
-                read1=reads.left,
-                read2=reads.right,
-                max_retries=max_retries
-            }
+        call samtools.collate_to_fastq as bam_to_fastq { input:
+            bam=split_bam,
+            paired_end=paired_end,
+            interleaved=false,  # matches default but prevents user from overriding
+            use_all_cores=use_all_cores,
+            max_retries=max_retries
         }
     }
-    if (! paired) {
-        scatter (reads in bam_to_fastq.read1) {
-            call fq.fqlint as fqlint_single { input:
-                read1=reads,
-                max_retries=max_retries
-            }
+
+    scatter (reads in 
+        zip(bam_to_fastq.read_one_fastq_gz, bam_to_fastq.read_two_fastq_gz)
+    ) {
+        call fq.fqlint { input:
+            read1=select_first([reads.left, "undefined"]),
+            read2=reads.right,
+            max_retries=max_retries
         }
     }
 
     output {
-        Array[File] read1s = bam_to_fastq.read1
-        Array[File?] read2s = bam_to_fastq.read2
+        Array[File] read1s = select_all(bam_to_fastq.read_one_fastq_gz)
+        Array[File?] read2s = bam_to_fastq.read_two_fastq_gz
     }
 }

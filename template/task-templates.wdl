@@ -73,7 +73,7 @@ task dynamic_disk_and_ram_task {
     }
 }
 
-task detect_nproc_task {
+task use_all_cores_task {
     meta {
         description: "This template is appropriate for all tasks which can be run on multiple cores. Update the default disk and RAM allocations, or copy and paste from `dynamic_disk_and_ram_task` as appropriate." 
     }
@@ -90,7 +90,7 @@ task detect_nproc_task {
         Int memory_gb = <>
         Int disk_size_gb = <>
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 

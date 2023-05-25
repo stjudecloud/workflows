@@ -60,7 +60,7 @@ task bamqc {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task runs QualiMap's bamqc tool on the input BAM file. It has been deprecated in our pipeline due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
+        description: "*[Deprecated]* This WDL task runs QualiMap's bamqc tool on the input BAM file. This task has been deprecated in our pipeline due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
     }
 
     parameter_meta {
@@ -72,6 +72,7 @@ task rnaseq {
     input {
         File bam
         File gtf
+        String prefix = basename(bam, ".bam")
         Boolean name_sorted = false
         Boolean paired_end = true
         Int memory_gb = 16
@@ -82,13 +83,15 @@ task rnaseq {
     parameter_meta {
         bam: "Input BAM format file to run qualimap rnaseq on"
         gtf: "GTF features file"
+        prefix: "Prefix for the results directory and output tarball. The extension `.qualimap_rnaseq_results.tar.gz` will be added."
         name_sorted: "Is the BAM name sorted?"
         paired_end: "Is the BAM paired end?"
         memory_gb: "RAM to allocate for task"
         disk_size_gb: "Disk space to allocate for task. Default is determined dynamically based on BAM and GTF sizes."
+        max_retries: "Number of times to retry in case of failure"
     }
 
-    String out_directory = basename(bam, ".bam") + ".qualimap_rnaseq_results"
+    String out_directory = prefix + ".qualimap_rnaseq_results"
     String out_tar_gz = out_directory + ".tar.gz"
     String name_sorted_arg = if (name_sorted) then "-s" else ""
     String paired_end_arg = if (paired_end) then "-pe" else ""

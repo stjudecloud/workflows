@@ -279,7 +279,7 @@ task kraken {
         File read1
         File read2
         File db
-        String? prefix = basename(read1, "_R1.fastq.gz")
+        String prefix = basename(read1, "_R1.fastq.gz")
         Boolean store_sequences = false
         Boolean use_names = true
         Int min_base_quality = 0
@@ -293,8 +293,8 @@ task kraken {
     parameter_meta {
         read1: "Gzipped FastQ file with 1st reads in pair"
         read2: "Gzipped FastQ file with 2nd reads in pair"
-        db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a flat tarball without a root directory."
-        sample_name: "Name for sample. If missing will be inferred by removing the suffix '_R1.fastq.gz' from the `read1` filename."
+        db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
+        prefix: "Prefix for the Kraken2 output files. The extensions `.kraken2.txt` and `.kraken2.sequences.txt.gz` will be added."
         store_sequences: "Store and output main Kraken2 output in addition to the summary report"
         use_names: "Print scientific names instead of just taxids"
         min_base_quality: "Minimum base quality used in classification"
