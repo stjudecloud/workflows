@@ -27,6 +27,7 @@
 
 version 1.0
 
+import "./markdups-post.wdl" as mark_duplicates_post
 import "../../tools/md5sum.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/mosdepth.wdl"
@@ -208,60 +209,16 @@ workflow quality_check {
         create_bam=mark_duplicates,
         max_retries=max_retries
     }
-    # The next block of code was originally:
-    # ```
-    # File post_markdups_bam = select_first([
-    #     markdups.duplicate_marked_bam,
-    #     quickcheck.checked_bam
-    # ])
-    # File post_markdups_bam_index = select_first([
-    #     markdups.duplicate_marked_bam_index,
-    #     bam_index
-    # ])
-    # ```
-    # However this required the `markdups` step to complete before
-    # `collect_insert_size_metrics` and `samtools_flagstat` could begin _even if_
-    # the dup marked BAM wasn't being created/used.
-    # Since `markdups` is often the longest running task, those 2 other tasks would
-    # run at the very end of execution, extending the runtime.
-    # The code you're about to look at is admittedly ugly and not the most readable code,
-    # however it shortens overall runtime by a significant degree.
-    File markdups_bam = select_first([
-        markdups.duplicate_marked_bam,
-        "undefined"
-    ])
-    File markdups_bam_index = select_first([
-        markdups.duplicate_marked_bam_index,
-        "undefined"
-    ])
-    String markdups_prefix = basename(markdups_bam, ".bam")
-
     if (mark_duplicates) {
-        call picard.collect_insert_size_metrics
-            as collect_insert_size_metrics_dups_marked { input:
-                bam=markdups_bam,
-                max_retries=max_retries
-            }
-        call samtools.flagstat as samtools_flagstat_dups_marked { input:
-            bam=markdups_bam,
+        call mark_duplicates_post.markdups_post { input:
+            markdups_bam=select_first([markdups.duplicate_marked_bam, "undefined"]),
+            markdups_bam_index=select_first([
+                markdups.duplicate_marked_bam_index,
+                "undefined"
+            ]),
+            coverage_beds=coverage_beds,
+            coverage_labels=parse_input.labels,
             max_retries=max_retries
-        }
-
-        call mosdepth.coverage as wg_dups_marked_coverage {
-            input:
-                bam=markdups_bam,
-                bam_index=markdups_bam_index,
-                prefix=markdups_prefix + "." + "whole_genome",
-                max_retries=max_retries
-        }
-        scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
-            call mosdepth.coverage as regions_dups_marked_coverage {
-                input:
-                    bam=markdups_bam,
-                    bam_index=markdups_bam_index,
-                    prefix=markdups_prefix + "." + coverage_pair.right,
-                    max_retries=max_retries
-            }
         }
     }
     if (! mark_duplicates) {
@@ -281,7 +238,7 @@ workflow quality_check {
                 validate_bam.validate_report,
                 markdups.mark_duplicates_metrics,
                 samtools_flagstat.flagstat_report,
-                samtools_flagstat_dups_marked.flagstat_report,
+                markdups_post.flagstat,
                 ngsderive_instrument.instrument_file,
                 ngsderive_read_length.read_length_file,
                 ngsderive_encoding.encoding_file,
@@ -289,13 +246,13 @@ workflow quality_check {
                 collect_alignment_summary_metrics.alignment_metrics,
                 collect_gc_bias_metrics.gc_bias_metrics,
                 collect_insert_size_metrics.insert_size_metrics,
-                collect_insert_size_metrics_dups_marked.insert_size_metrics,
+                markdups_post.insert_size_metrics,
                 quality_score_distribution.quality_score_distribution_txt,
                 run_kraken.report,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
-                wg_dups_marked_coverage.summary,
-                wg_dups_marked_coverage.global_dist,
+                markdups_post.mosdepth_global_summary,
+                markdups_post.mosdepth_global_dist,
                 star_log,
                 ngsderive_strandedness.strandedness_file,
                 junction_annotation.junction_summary,
@@ -304,8 +261,8 @@ workflow quality_check {
             ],
             regions_coverage.summary,
             regions_coverage.region_dist,
-            select_first([regions_dups_marked_coverage.summary, []]),
-            select_first([regions_dups_marked_coverage.region_dist, []])
+            select_first([markdups_post.mosdepth_region_summary, []]),
+            select_first([markdups_post.mosdepth_region_dist, []])
         ])),
         output_prefix=prefix,
         extra_fn_clean_exts=[".ValidateSamFile"],
@@ -331,8 +288,8 @@ workflow quality_check {
         File validate_sam_file = validate_bam.validate_report
         File mark_duplicates_metrics = markdups.mark_duplicates_metrics
         File flagstat = select_first([
-            samtools_flagstat.flagstat_report,
-            samtools_flagstat_dups_marked.flagstat_report
+            markdups_post.flagstat,
+            samtools_flagstat.flagstat_report
         ])
         File fastqc_results = fastqc.results
         File instrument_file = ngsderive_instrument.instrument_file
@@ -344,12 +301,12 @@ workflow quality_check {
         File gc_bias_metrics = collect_gc_bias_metrics.gc_bias_metrics
         File gc_bias_metrics_pdf = collect_gc_bias_metrics.gc_bias_metrics_pdf
         File insert_size_metrics = select_first([
-            collect_insert_size_metrics.insert_size_metrics,
-            collect_insert_size_metrics_dups_marked.insert_size_metrics
+            markdups_post.insert_size_metrics,
+            collect_insert_size_metrics.insert_size_metrics
         ])
         File insert_size_metrics_pdf = select_first([
-            collect_insert_size_metrics.insert_size_metrics_pdf,
-            collect_insert_size_metrics_dups_marked.insert_size_metrics_pdf
+            markdups_post.insert_size_metrics_pdf,
+            collect_insert_size_metrics.insert_size_metrics_pdf
         ])
         File quality_score_distribution_txt
             = quality_score_distribution.quality_score_distribution_txt
@@ -358,16 +315,16 @@ workflow quality_check {
         File kraken_report = run_kraken.report
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
-        File multiqc_report = multiqc.multiqc_report
-        File? kraken_sequences = run_kraken.sequences
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
-        File? mosdepth_global_dups_marked_dist = wg_dups_marked_coverage.global_dist
-        File? mosdepth_global_dups_marked_summary = wg_dups_marked_coverage.summary
-        Array[File?]? mosdepth_region_dups_marked_dist
-            = regions_dups_marked_coverage.region_dist
-        Array[File]? mosdepth_region_dups_marked_summary
-            = regions_dups_marked_coverage.summary
+        File multiqc_report = multiqc.multiqc_report
+        File? kraken_sequences = run_kraken.sequences
+        File? mosdepth_dups_marked_global_dist = markdups_post.mosdepth_global_dist
+        File? mosdepth_dups_marked_global_summary = markdups_post.mosdepth_global_summary
+        Array[File]? mosdepth_dups_marked_region_summary
+            = markdups_post.mosdepth_region_summary
+        Array[File?]? mosdepth_dups_marked_region_dist
+            = markdups_post.mosdepth_region_dist
         File? inferred_strandedness = ngsderive_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
