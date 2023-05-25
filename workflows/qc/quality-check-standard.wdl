@@ -129,7 +129,11 @@ workflow quality_check {
         bam=quickcheck.checked_bam,
         max_retries=max_retries
     }
-    call fqc.fastqc { input: bam=quickcheck.checked_bam, max_retries=max_retries }
+    call fqc.fastqc { input:
+        bam=quickcheck.checked_bam,
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
+    }
     call ngsderive.instrument as ngsderive_instrument { input:
         bam=quickcheck.checked_bam,
         max_retries=max_retries
@@ -166,6 +170,7 @@ workflow quality_check {
             read1=fqlint.validated_read1,
             read2=select_first([fqlint.validated_read2, "undefined"]),
             db=kraken_db,
+            use_all_cores=use_all_cores,
             max_retries=max_retries
     }
 
