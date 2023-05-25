@@ -126,8 +126,6 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
-    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_4">Defaults</a>
     </li>
         </ul>
@@ -320,13 +318,9 @@
 <h3 id="inputs_4">Inputs</h3>
 <h4 id="required_3">Required</h4>
 <ul>
-<li><code>db</code> (File, <strong>required</strong>): Kraken2 database. Can be generated with <code>make-qc-reference.wdl</code>. Must be a flat tarball without a root directory.</li>
+<li><code>db</code> (File, <strong>required</strong>): Kraken2 database. Can be generated with <code>make-qc-reference.wdl</code>. Must be a tarball without a root directory.</li>
 <li><code>read1</code> (File, <strong>required</strong>): Gzipped FastQ file with 1st reads in pair</li>
 <li><code>read2</code> (File, <strong>required</strong>): Gzipped FastQ file with 2nd reads in pair</li>
-</ul>
-<h4 id="optional">Optional</h4>
-<ul>
-<li><code>prefix</code> (String?)</li>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
@@ -335,6 +329,7 @@
 <li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>modify_memory_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>prefix</code> (String, default=basename(read1,"_R1.fastq.gz")): Prefix for the Kraken2 output files. The extensions <code>.kraken2.txt</code> and <code>.kraken2.sequences.txt.gz</code> will be added.</li>
 <li><code>store_sequences</code> (Boolean, default=false): Store and output main Kraken2 output in addition to the summary report</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>use_names</code> (Boolean, default=true): Print scientific names instead of just taxids</li>

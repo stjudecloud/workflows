@@ -192,7 +192,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <ul>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to quality check</li>
 <li><code>bam_index</code> (File, <strong>required</strong>): BAM index file corresponding to the input BAM</li>
-<li><code>kraken_db</code> (File, <strong>required</strong>): Kraken2 database. Can be generated with <code>make-qc-reference.wdl</code>. Must be a flat tarball without a root directory.</li>
+<li><code>kraken_db</code> (File, <strong>required</strong>): Kraken2 database. Can be generated with <code>make-qc-reference.wdl</code>. Must be a tarball without a root directory.</li>
 <li><code>molecule</code> (String, <strong>required</strong>); <strong>description</strong>: Data type; <strong>choices</strong>: ['DNA', 'RNA']</li>
 <li><code>reference_fasta</code> (File, <strong>required</strong>): Reference genome in FASTA format</li>
 </ul>
@@ -204,19 +204,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>collect_alignment_summary_metrics.disk_size_gb</code> (Int?)</li>
 <li><code>collect_gc_bias_metrics.disk_size_gb</code> (Int?)</li>
 <li><code>collect_insert_size_metrics.disk_size_gb</code> (Int?)</li>
-<li><code>picard_sort.disk_size_gb</code> (Int?)</li>
 <li><code>qualimap_rnaseq.disk_size_gb</code> (Int?)</li>
 <li><code>quality_score_distribution.disk_size_gb</code> (Int?)</li>
-<li><code>run_kraken.prefix</code> (String?)</li>
 <li><code>wg_coverage.coverage_bed</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>coverage_beds</code> (Array[File], default=[]): An array of 3 column BEDs which are passed to the <code>-b</code> flag of mosdepth, in order to restrict coverage analysis to select regions</li>
 <li><code>coverage_labels</code> (Array[String], default=[]): An array of equal length to <code>coverage_beds</code> which determines the prefix label applied to the output files. If omitted, defaults of <code>regions1</code>, <code>regions2</code>, etc. will be used.</li>
-<li><code>bam_to_fastq.memory_gb</code> (Int, default=56)</li>
-<li><code>bam_to_fastq.paired</code> (Boolean, default=true)</li>
-<li><code>bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>output_intermediate_files</code> (Boolean, default=false): Output intermediate files? FastQs and if RNA a collated BAM. <em>WARNING</em> these files can be large.</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
+<li><code>collate_to_fastq.F</code> (String, default="0x900")</li>
+<li><code>collate_to_fastq.G</code> (String, default="0")</li>
+<li><code>collate_to_fastq.f</code> (String, default="0")</li>
+<li><code>collate_to_fastq.fast_mode</code> (Boolean, default=true)</li>
+<li><code>collate_to_fastq.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>collate_to_fastq.modify_memory_gb</code> (Int, default=0)</li>
+<li><code>collate_to_fastq.ncpu</code> (Int, default=1)</li>
+<li><code>collate_to_fastq.output_singletons</code> (Boolean, default=false)</li>
+<li><code>collate_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>collect_alignment_summary_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>collect_gc_bias_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>collect_insert_size_metrics.memory_gb</code> (Int, default=8)</li>
@@ -224,7 +230,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>compute_checksum.outfile_name</code> (String, default=basename(infile) + ".md5")</li>
 <li><code>fastqc.memory_gb</code> (Int, default=5)</li>
 <li><code>fastqc.ncpu</code> (Int, default=1)</li>
-<li><code>fastqc.use_all_cores</code> (Boolean, default=false)</li>
 <li><code>fqlint.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>junction_annotation.fuzzy_junction_match_range</code> (Int, default=0)</li>
 <li><code>junction_annotation.memory_gb</code> (Int, default=35)</li>
@@ -244,8 +249,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>ngsderive_strandedness.min_mapq</code> (Int, default=30)</li>
 <li><code>ngsderive_strandedness.min_reads_per_gene</code> (Int, default=10)</li>
 <li><code>ngsderive_strandedness.num_genes</code> (Int, default=1000)</li>
-<li><code>picard_sort.memory_gb</code> (Int, default=25)</li>
-<li><code>picard_sort.outfile_name</code> (String, default=basename(bam,".bam") + ".sorted.bam")</li>
 <li><code>qualimap_rnaseq.memory_gb</code> (Int, default=16)</li>
 <li><code>quality_score_distribution.memory_gb</code> (Int, default=8)</li>
 <li><code>regions_coverage.memory_gb</code> (Int, default=8)</li>
@@ -255,8 +258,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>run_kraken.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>run_kraken.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>run_kraken.ncpu</code> (Int, default=1)</li>
+<li><code>run_kraken.prefix</code> (String, default=basename(read1,"_R1.fastq.gz"))</li>
 <li><code>run_kraken.store_sequences</code> (Boolean, default=false)</li>
-<li><code>run_kraken.use_all_cores</code> (Boolean, default=false)</li>
 <li><code>run_kraken.use_names</code> (Boolean, default=true)</li>
 <li><code>samtools_flagstat.memory_gb</code> (Int, default=5)</li>
 <li><code>samtools_flagstat.outfile_name</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
@@ -297,6 +300,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>qualimap_rnaseq_results</code> (File?)</li>
 <li><code>junction_summary</code> (File?)</li>
 <li><code>junctions</code> (File?)</li>
+<li><code>intermediate_files</code> (IntermediateFiles?)</li>
 </ul>
 <h2 id="parse_input">parse_input</h2>
 <h3 id="inputs_1">Inputs</h3>

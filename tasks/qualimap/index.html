@@ -175,7 +175,7 @@ QualiMap computes metrics to facilitate evaluation of sequencing data. </p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL task runs QualiMap's bamqc tool on the input BAM file. It has been deprecated in our pipeline due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM.</dd>
+<dd><em>[Deprecated]</em> This WDL task runs QualiMap's bamqc tool on the input BAM file. This task has been deprecated in our pipeline due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -218,10 +218,11 @@ QualiMap computes metrics to facilitate evaluation of sequencing data. </p>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>memory_gb</code> (Int, default=16): RAM to allocate for task</li>
 <li><code>name_sorted</code> (Boolean, default=false): Is the BAM name sorted?</li>
 <li><code>paired_end</code> (Boolean, default=true): Is the BAM paired end?</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the results directory and output tarball. The extension <code>.qualimap_rnaseq_results.tar.gz</code> will be added.</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>

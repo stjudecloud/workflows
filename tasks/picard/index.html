@@ -382,7 +382,7 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 <dt>email</dt>
 <dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL task converts the input BAM file into paired FastQ format files.</dd>
+<dd><em>[Deprecated]</em> This WDL task converts the input BAM file into FastQ format files. This task has been deprecated in favor of <code>samtools.collate_to_fastq</code> which is more performant and doesn't error on 'illegal mate states'.</dd>
 </dl>
 <h3 id="inputs_2">Inputs</h3>
 <h4 id="required_2">Required</h4>
