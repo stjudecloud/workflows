@@ -119,11 +119,12 @@ workflow quality_check {
         max_retries=max_retries
     }
     if (mark_duplicates) {
-        call picard.collect_insert_size_metrics { input:
-            bam=markdups.duplicate_marked_bam,
-            max_retries=max_retries
-        }
-        call samtools.flagstat as samtools_flagstat { input:
+        call picard.collect_insert_size_metrics
+            as collect_insert_size_metrics_dups_marked { input:
+                bam=markdups.duplicate_marked_bam,
+                max_retries=max_retries
+            }
+        call samtools.flagstat as samtools_flagstat_dups_marked { input:
             bam=markdups.duplicate_marked_bam,
             max_retries=max_retries
         }
@@ -268,6 +269,7 @@ workflow quality_check {
                 validate_bam.validate_report,
                 markdups.mark_duplicates_metrics,
                 samtools_flagstat.flagstat_report,
+                samtools_flagstat_dups_marked.flagstat_report,
                 ngsderive_instrument.instrument_file,
                 ngsderive_read_length.read_length_file,
                 ngsderive_encoding.encoding_file,
@@ -275,6 +277,7 @@ workflow quality_check {
                 collect_alignment_summary_metrics.alignment_metrics,
                 collect_gc_bias_metrics.gc_bias_metrics,
                 collect_insert_size_metrics.insert_size_metrics,
+                collect_insert_size_metrics_dups_marked.insert_size_metrics,
                 quality_score_distribution.quality_score_distribution_txt,
                 run_kraken.report,
                 wg_coverage.summary,
@@ -315,7 +318,10 @@ workflow quality_check {
         File bam_checksum = compute_checksum.md5sum
         File validate_sam_file = validate_bam.validate_report
         File mark_duplicates_metrics = markdups.mark_duplicates_metrics
-        File flagstat = samtools_flagstat.flagstat_report
+        File flagstat = select_first([
+            samtools_flagstat.flagstat_report,
+            samtools_flagstat_dups_marked.flagstat_report
+        ])
         File fastqc_results = fastqc.results
         File instrument_file = ngsderive_instrument.instrument_file
         File read_length_file = ngsderive_read_length.read_length_file
@@ -324,8 +330,14 @@ workflow quality_check {
         File alignment_metrics_pdf = collect_alignment_summary_metrics.alignment_metrics_pdf
         File gc_bias_metrics = collect_gc_bias_metrics.gc_bias_metrics
         File gc_bias_metrics_pdf = collect_gc_bias_metrics.gc_bias_metrics_pdf
-        File insert_size_metrics = collect_insert_size_metrics.insert_size_metrics
-        File insert_size_metrics_pdf = collect_insert_size_metrics.insert_size_metrics_pdf
+        File insert_size_metrics = select_first([
+            collect_insert_size_metrics.insert_size_metrics,
+            collect_insert_size_metrics_dups_marked.insert_size_metrics
+        ])
+        File insert_size_metrics_pdf = select_first([
+            collect_insert_size_metrics.insert_size_metrics_pdf,
+            collect_insert_size_metrics_dups_marked.insert_size_metrics_pdf
+        ])
         File quality_score_distribution_txt = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf = quality_score_distribution.quality_score_distribution_pdf
         File kraken_report = run_kraken.report
