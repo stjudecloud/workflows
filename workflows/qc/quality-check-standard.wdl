@@ -118,6 +118,24 @@ workflow quality_check {
         create_bam=mark_duplicates,
         max_retries=max_retries
     }
+    # The next block of code was originally:
+    # ```
+    # File post_markdups_bam = select_first([
+    #     markdups.duplicate_marked_bam,
+    #     quickcheck.checked_bam
+    # ])
+    # File post_markdups_bam_index = select_first([
+    #     markdups.duplicate_marked_bam_index,
+    #     bam_index
+    # ])
+    # ```
+    # However this required the `markdups` step to complete before
+    # `collect_insert_size_metrics` and `samtools_flagstat` could begin _even if_
+    # the dup marked BAM wasn't being created/used.
+    # Since `markdups` is often the longest running task, those 2 other tasks would
+    # run at the very end of execution, extending the runtime.
+    # The code you're about to look at is admittedly ugly and not the most readable code,
+    # however it shortens overall runtime by a significant degree.
     if (mark_duplicates) {
         call picard.collect_insert_size_metrics
             as collect_insert_size_metrics_dups_marked { input:
