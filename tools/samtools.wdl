@@ -545,7 +545,7 @@ task collate_to_fastq {
         samtools collate \
             --threads "$n_cores" \
             ~{if fast_mode then "-f" else ""} \
-            \  # skip compression (and decompression) if not storing the output
+            `# skip compression (and decompression) if not storing the output` \
             ~{if store_collated_bam then "" else "-u"} \
             -O \
             ~{bam} \
