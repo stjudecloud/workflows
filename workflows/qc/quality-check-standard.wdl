@@ -102,61 +102,6 @@ workflow quality_check {
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call util.compression_integrity { input: bam=bam, max_retries=max_retries }
 
-    call picard.mark_duplicates as markdups { input:
-        bam=quickcheck.checked_bam,
-        create_bam=mark_duplicates,
-        max_retries=max_retries
-    }
-    # The next block of code was originally:
-    # ```
-    # File post_markdups_bam = select_first([
-    #     markdups.duplicate_marked_bam,
-    #     quickcheck.checked_bam
-    # ])
-    # File post_markdups_bam_index = select_first([
-    #     markdups.duplicate_marked_bam_index,
-    #     bam_index
-    # ])
-    # ```
-    # However this required the `markdups` step to complete before
-    # `collect_insert_size_metrics` and `samtools_flagstat` could begin _even if_
-    # the dup marked BAM wasn't being created/used.
-    # Since `markdups` is often the longest running task, those 2 other tasks would
-    # run at the very end of execution, extending the runtime.
-    # The code you're about to look at is admittedly ugly and not the most readable code,
-    # however it shortens overall runtime by a significant degree.
-    File markdups_bam = select_first([
-        markdups.duplicate_marked_bam,
-        "undefined"
-    ])
-    File markdups_bam_index = select_first([
-        markdups.duplicate_marked_bam_index,
-        "undefined"
-    ])
-    String markdups_prefix = basename(markdups_bam, ".bam")
-
-    if (mark_duplicates) {
-        call picard.collect_insert_size_metrics
-            as collect_insert_size_metrics_dups_marked { input:
-                bam=markdups_bam,
-                max_retries=max_retries
-            }
-        call samtools.flagstat as samtools_flagstat_dups_marked { input:
-            bam=markdups_bam,
-            max_retries=max_retries
-        }
-    }
-    if (! mark_duplicates) {
-        call picard.collect_insert_size_metrics { input:
-            bam=quickcheck.checked_bam,
-            max_retries=max_retries
-        }
-        call samtools.flagstat as samtools_flagstat { input:
-            bam=quickcheck.checked_bam,
-            max_retries=max_retries
-        }
-    }
-
     call picard.collect_alignment_summary_metrics { input:
         bam=quickcheck.checked_bam,
         max_retries=max_retries
@@ -233,25 +178,6 @@ workflow quality_check {
         }
     }
 
-    if (mark_duplicates) {
-        call mosdepth.coverage as wg_dups_marked_coverage {
-            input:
-                bam=markdups_bam,
-                bam_index=markdups_bam_index,
-                prefix=markdups_prefix + "." + "whole_genome",
-                max_retries=max_retries
-        }
-        scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
-            call mosdepth.coverage as regions_dups_marked_coverage {
-                input:
-                    bam=markdups_bam,
-                    bam_index=markdups_bam_index,
-                    prefix=markdups_prefix + "." + coverage_pair.right,
-                    max_retries=max_retries
-            }
-        }
-    }
-
     if (molecule == "RNA") {
         call ngsderive.junction_annotation { input:
             bam=quickcheck.checked_bam,
@@ -273,6 +199,78 @@ workflow quality_check {
             gtf=select_first([gtf, "undefined"]),
             name_sorted=true,
             paired_end=true,  # matches default but prevents user from overriding
+            max_retries=max_retries
+        }
+    }
+
+    call picard.mark_duplicates as markdups { input:
+        bam=quickcheck.checked_bam,
+        create_bam=mark_duplicates,
+        max_retries=max_retries
+    }
+    # The next block of code was originally:
+    # ```
+    # File post_markdups_bam = select_first([
+    #     markdups.duplicate_marked_bam,
+    #     quickcheck.checked_bam
+    # ])
+    # File post_markdups_bam_index = select_first([
+    #     markdups.duplicate_marked_bam_index,
+    #     bam_index
+    # ])
+    # ```
+    # However this required the `markdups` step to complete before
+    # `collect_insert_size_metrics` and `samtools_flagstat` could begin _even if_
+    # the dup marked BAM wasn't being created/used.
+    # Since `markdups` is often the longest running task, those 2 other tasks would
+    # run at the very end of execution, extending the runtime.
+    # The code you're about to look at is admittedly ugly and not the most readable code,
+    # however it shortens overall runtime by a significant degree.
+    File markdups_bam = select_first([
+        markdups.duplicate_marked_bam,
+        "undefined"
+    ])
+    File markdups_bam_index = select_first([
+        markdups.duplicate_marked_bam_index,
+        "undefined"
+    ])
+    String markdups_prefix = basename(markdups_bam, ".bam")
+
+    if (mark_duplicates) {
+        call picard.collect_insert_size_metrics
+            as collect_insert_size_metrics_dups_marked { input:
+                bam=markdups_bam,
+                max_retries=max_retries
+            }
+        call samtools.flagstat as samtools_flagstat_dups_marked { input:
+            bam=markdups_bam,
+            max_retries=max_retries
+        }
+
+        call mosdepth.coverage as wg_dups_marked_coverage {
+            input:
+                bam=markdups_bam,
+                bam_index=markdups_bam_index,
+                prefix=markdups_prefix + "." + "whole_genome",
+                max_retries=max_retries
+        }
+        scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
+            call mosdepth.coverage as regions_dups_marked_coverage {
+                input:
+                    bam=markdups_bam,
+                    bam_index=markdups_bam_index,
+                    prefix=markdups_prefix + "." + coverage_pair.right,
+                    max_retries=max_retries
+            }
+        }
+    }
+    if (! mark_duplicates) {
+        call picard.collect_insert_size_metrics { input:
+            bam=quickcheck.checked_bam,
+            max_retries=max_retries
+        }
+        call samtools.flagstat as samtools_flagstat { input:
+            bam=quickcheck.checked_bam,
             max_retries=max_retries
         }
     }
