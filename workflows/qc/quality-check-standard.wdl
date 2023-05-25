@@ -39,17 +39,6 @@ import "../../tools/kraken.wdl"
 import "../../tools/multiqc.wdl" as mqc
 import "../../tools/util.wdl"
 
-struct IntermediateFiles {
-    File? collated_bam
-    File? read_one_fastq_gz
-    File? read_two_fastq_gz
-    File? singleton_reads_fastq_gz
-    File? interleaved_reads_fastq_gz
-    File? duplicate_marked_bam
-    File? duplicate_marked_bam_index
-    File? duplicate_marked_bam_md5
-}
-
 workflow quality_check {
     input {
         File bam
@@ -327,8 +316,8 @@ workflow quality_check {
             "singleton_reads_fastq_gz": collate_to_fastq.singleton_reads_fastq_gz,
             "interleaved_reads_fastq_gz": collate_to_fastq.interleaved_reads_fastq_gz,
             "duplicate_marked_bam": markdups.duplicate_marked_bam,
-            "duplicate_marked_bam": markdups.duplicate_marked_bam_index,
-            "duplicate_marked_bam": markdups.duplicate_marked_bam_md5
+            "duplicate_marked_bam_index": markdups.duplicate_marked_bam_index,
+            "duplicate_marked_bam_md5": markdups.duplicate_marked_bam_md5
         }
     }
 
@@ -432,4 +421,15 @@ task parse_input {
         String check = "passed"
         Array[String] labels = read_lines("labels.txt")
     }
+}
+
+struct IntermediateFiles {
+    File? collated_bam
+    File? read_one_fastq_gz
+    File? read_two_fastq_gz
+    File? singleton_reads_fastq_gz
+    File? interleaved_reads_fastq_gz
+    File? duplicate_marked_bam
+    File? duplicate_marked_bam_index
+    File? duplicate_marked_bam_md5
 }
