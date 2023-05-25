@@ -39,14 +39,6 @@ import "../../tools/kraken.wdl"
 import "../../tools/multiqc.wdl" as mqc
 import "../../tools/util.wdl"
 
-struct IntermediateFiles {
-    File? collated_bam
-    File? read_one_fastq_gz
-    File? read_two_fastq_gz
-    File? singleton_reads_fastq_gz
-    File? interleaved_reads_fastq_gz
-}
-
 workflow quality_check {
     input {
         File bam
@@ -339,4 +331,12 @@ task parse_input {
         String check = "passed"
         Array[String] labels = read_lines("labels.txt")
     }
+}
+
+struct IntermediateFiles {
+    File? collated_bam
+    File? read_one_fastq_gz
+    File? read_two_fastq_gz
+    File? singleton_reads_fastq_gz
+    File? interleaved_reads_fastq_gz
 }
