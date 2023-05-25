@@ -125,14 +125,24 @@ workflow quality_check {
     # run at the very end of execution, extending the runtime.
     # The code you're about to look at is admittedly ugly and not the most readable code,
     # however it shortens overall runtime by a significant degree.
+    File markdups_bam = select_first([
+        markdups.duplicate_marked_bam,
+        "undefined"
+    ])
+    File markdups_bam_index = select_first([
+        markdups.duplicate_marked_bam_index,
+        "undefined"
+    ])
+    String markdups_prefix = basename(markdups_bam, ".bam")
+
     if (mark_duplicates) {
         call picard.collect_insert_size_metrics
             as collect_insert_size_metrics_dups_marked { input:
-                bam=select_first([markdups.duplicate_marked_bam, "undefined"]),
+                bam=markdups_bam,
                 max_retries=max_retries
             }
         call samtools.flagstat as samtools_flagstat_dups_marked { input:
-            bam=select_first([markdups.duplicate_marked_bam, "undefined"]),
+            bam=markdups_bam,
             max_retries=max_retries
         }
     }
@@ -226,29 +236,17 @@ workflow quality_check {
     if (mark_duplicates) {
         call mosdepth.coverage as wg_dups_marked_coverage {
             input:
-                bam=select_first([markdups.duplicate_marked_bam, "undefined"]),
-                bam_index=select_first([
-                    markdups.duplicate_marked_bam_index,
-                    "undefined"
-                ]),
-                prefix=basename(
-                    select_first([markdups.duplicate_marked_bam, "undefined"]),
-                    'bam'
-                ) + "whole_genome",
+                bam=markdups_bam,
+                bam_index=markdups_bam_index,
+                prefix=markdups_prefix + "." + "whole_genome",
                 max_retries=max_retries
         }
         scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
             call mosdepth.coverage as regions_dups_marked_coverage {
                 input:
-                    bam=select_first([markdups.duplicate_marked_bam, "undefined"]),
-                    bam_index=select_first([
-                        markdups.duplicate_marked_bam_index,
-                        "undefined"
-                    ]),
-                    prefix=basename(
-                        select_first([markdups.duplicate_marked_bam, "undefined"]),
-                        'bam'
-                    ) + coverage_pair.right,
+                    bam=markdups_bam,
+                    bam_index=markdups_bam_index,
+                    prefix=markdups_prefix + "." + coverage_pair.right,
                     max_retries=max_retries
             }
         }
