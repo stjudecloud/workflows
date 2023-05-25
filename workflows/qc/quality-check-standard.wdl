@@ -118,18 +118,26 @@ workflow quality_check {
         create_bam=mark_duplicates,
         max_retries=max_retries
     }
-    # If `mark_duplicates` is `false`, this will be `quickcheck.checked_bam`
-    # However the `markdups` task must complete before WDL can know that.
-    # Any tasks using `post_markdups_bam` must wait on `markdups`
-    # completion before starting.
-    File post_markdups_bam = select_first([
-        markdups.duplicate_marked_bam,
-        quickcheck.checked_bam
-    ])
-    File post_markdups_bam_index = select_first([
-        markdups.duplicate_marked_bam_index,
-        bam_index
-    ])
+    if (mark_duplicates) {
+        call picard.collect_insert_size_metrics { input:
+            bam=markdups.duplicate_marked_bam,
+            max_retries=max_retries
+        }
+        call samtools.flagstat as samtools_flagstat { input:
+            bam=markdups.duplicate_marked_bam,
+            max_retries=max_retries
+        }
+    }
+    if (! mark_duplicates) {
+        call picard.collect_insert_size_metrics { input:
+            bam=quickcheck.checked_bam,
+            max_retries=max_retries
+        }
+        call samtools.flagstat as samtools_flagstat { input:
+            bam=quickcheck.checked_bam,
+            max_retries=max_retries
+        }
+    }
 
     call picard.collect_alignment_summary_metrics { input:
         bam=quickcheck.checked_bam,
@@ -140,16 +148,8 @@ workflow quality_check {
         reference_fasta=reference_fasta,
         max_retries=max_retries
     }
-    call picard.collect_insert_size_metrics { input:
-        bam=post_markdups_bam,
-        max_retries=max_retries
-    }
     call picard.quality_score_distribution { input:
         bam=quickcheck.checked_bam,
-        max_retries=max_retries
-    }
-    call samtools.flagstat as samtools_flagstat { input:
-        bam=post_markdups_bam,
         max_retries=max_retries
     }
     call fqc.fastqc { input:
@@ -218,19 +218,19 @@ workflow quality_check {
     if (mark_duplicates) {
         call mosdepth.coverage as wg_dups_marked_coverage {
             input:
-                bam=post_markdups_bam,
-                bam_index=post_markdups_bam_index,
-                prefix=basename(post_markdups_bam, 'bam')
+                bam=markdups.duplicate_marked_bam_index,
+                bam_index=markdups.duplicate_marked_bam_index,
+                prefix=basename(markdups.duplicate_marked_bam_index, 'bam')
                     + "whole_genome",
                 max_retries=max_retries
         }
         scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
             call mosdepth.coverage as regions_dups_marked_coverage {
                 input:
-                    bam=post_markdups_bam,
-                    bam_index=post_markdups_bam_index,
+                    bam=markdups.duplicate_marked_bam_index,
+                    bam_index=markdups.duplicate_marked_bam_index,
                     coverage_bed=coverage_pair.left,
-                    prefix=basename(post_markdups_bam, 'bam')
+                    prefix=basename(markdups.duplicate_marked_bam_index, 'bam')
                         + coverage_pair.right,
                     max_retries=max_retries
             }
