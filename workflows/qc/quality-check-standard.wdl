@@ -128,11 +128,11 @@ workflow quality_check {
     if (mark_duplicates) {
         call picard.collect_insert_size_metrics
             as collect_insert_size_metrics_dups_marked { input:
-                bam=select_first([markdups.duplicate_marked_bam, "undefined"])
+                bam=select_first([markdups.duplicate_marked_bam, "undefined"]),
                 max_retries=max_retries
             }
         call samtools.flagstat as samtools_flagstat_dups_marked { input:
-            bam=select_first([markdups.duplicate_marked_bam, "undefined"])
+            bam=select_first([markdups.duplicate_marked_bam, "undefined"]),
             max_retries=max_retries
         }
     }
@@ -226,11 +226,11 @@ workflow quality_check {
     if (mark_duplicates) {
         call mosdepth.coverage as wg_dups_marked_coverage {
             input:
-                bam=select_first([markdups.duplicate_marked_bam, "undefined"])
+                bam=select_first([markdups.duplicate_marked_bam, "undefined"]),
                 bam_index=select_first([
                     markdups.duplicate_marked_bam_index,
                     "undefined"
-                ])
+                ]),
                 prefix=basename(
                     select_first([markdups.duplicate_marked_bam, "undefined"]),
                     'bam'
@@ -240,11 +240,11 @@ workflow quality_check {
         scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
             call mosdepth.coverage as regions_dups_marked_coverage {
                 input:
-                    bam=select_first([markdups.duplicate_marked_bam, "undefined"])
+                    bam=select_first([markdups.duplicate_marked_bam, "undefined"]),
                     bam_index=select_first([
                         markdups.duplicate_marked_bam_index,
                         "undefined"
-                    ])
+                    ]),
                     prefix=basename(
                         select_first([markdups.duplicate_marked_bam, "undefined"]),
                         'bam'
