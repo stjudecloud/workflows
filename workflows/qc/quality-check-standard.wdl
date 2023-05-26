@@ -212,7 +212,10 @@ workflow quality_check {
     }
     if (mark_duplicates) {
         call mark_duplicates_post.markdups_post { input:
-            markdups_bam=select_first([markdups.duplicate_marked_bam, "undefined"]),
+            markdups_bam=select_first([
+                markdups.duplicate_marked_bam,
+                "undefined"
+            ]),
             markdups_bam_index=select_first([
                 markdups.duplicate_marked_bam_index,
                 "undefined"
