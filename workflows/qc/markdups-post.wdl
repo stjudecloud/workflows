@@ -1,4 +1,10 @@
 ## # MarkDuplicates Post
+##
+## An investigation of all our QC tools was conducted when duplicate marking
+## was introduced to our pipeline. Most tools do not take into consideration
+## whether a read is a duplicate or not.
+## But the tasks called below produce different results depending on whether the
+## input BAM has been duplicate marked or not.
 
 version 1.0
 
