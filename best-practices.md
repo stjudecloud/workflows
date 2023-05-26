@@ -36,7 +36,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
       - If a user does supply `max_retries`, it should override the default for *every* task called
 - multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-templates.wdl`)
   - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter
-- Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-templates.wdl`)
+- Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-templates.wdl`)
   - This is to accomodate as many backends as possible
 - output file names should *always* be determined with either the `outfile_name` parameter or the `prefix` parameter.
   - `outfile_name` should be preferred if no downstream tasks/tools rely on the file name/extension
