@@ -99,6 +99,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../markdups-post/">MarkDuplicates Post</a>
+                  </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Quality Check Standard</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING</a>
@@ -207,12 +209,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>qualimap_rnaseq.disk_size_gb</code> (Int?)</li>
 <li><code>quality_score_distribution.disk_size_gb</code> (Int?)</li>
 <li><code>wg_coverage.coverage_bed</code> (File?)</li>
+<li><code>markdups_post.collect_insert_size_metrics.disk_size_gb</code> (Int?)</li>
+<li><code>markdups_post.wg_coverage.coverage_bed</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>coverage_beds</code> (Array[File], default=[]): An array of 3 column BEDs which are passed to the <code>-b</code> flag of mosdepth, in order to restrict coverage analysis to select regions</li>
 <li><code>coverage_labels</code> (Array[String], default=[]): An array of equal length to <code>coverage_beds</code> which determines the prefix label applied to the output files. If omitted, defaults of <code>regions1</code>, <code>regions2</code>, etc. will be used.</li>
-<li><code>output_intermediate_files</code> (Boolean, default=false): Output intermediate files? FastQs and if RNA a collated BAM. <em>WARNING</em> these files can be large.</li>
+<li><code>mark_duplicates</code> (Boolean, default=molecule == "RNA"): Mark duplicates before analyses? Note that regardless of this setting, <code>picard MarkDuplicates</code> will be run in order to generate a <code>*.MarkDuplicates.metrics.txt</code> file. However if <code>mark_duplicates</code> is set to <code>false</code>, no BAM will be generated. If set to <code>true</code>, a BAM will be generated and passed to selected downstream analyses.</li>
+<li><code>output_intermediate_files</code> (Boolean, default=false): Output intermediate files? FastQs, if RNA a collated BAM, if <code>mark_duplicates==true</code> a duplicate marked BAM with an index and MD5. <em>WARNING</em> these files can be large.</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for ~all~ most results files</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>collate_to_fastq.F</code> (String, default="0x900")</li>
 <li><code>collate_to_fastq.G</code> (String, default="0")</li>
@@ -222,7 +228,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>collate_to_fastq.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>collate_to_fastq.ncpu</code> (Int, default=1)</li>
 <li><code>collate_to_fastq.output_singletons</code> (Boolean, default=false)</li>
-<li><code>collate_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>collate_to_fastq.prefix</code> (String, default=basename(bam,".bam")): Prefix for ~all~ most results files</li>
 <li><code>collect_alignment_summary_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>collect_gc_bias_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>collect_insert_size_metrics.memory_gb</code> (Int, default=8)</li>
@@ -236,7 +242,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>junction_annotation.min_intron</code> (Int, default=50)</li>
 <li><code>junction_annotation.min_mapq</code> (Int, default=30)</li>
 <li><code>junction_annotation.min_reads</code> (Int, default=2)</li>
-<li><code>junction_annotation.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>junction_annotation.prefix</code> (String, default=basename(bam,".bam")): Prefix for ~all~ most results files</li>
+<li><code>markdups.memory_gb</code> (Int, default=50)</li>
+<li><code>markdups.prefix</code> (String, default=basename(bam,".bam")): Prefix for ~all~ most results files</li>
+<li><code>markdups_post.prefix</code> (String, default=basename(markdups_bam,".bam")): Prefix for ~all~ most results files</li>
 <li><code>multiqc.disk_size</code> (Int, default=20)</li>
 <li><code>multiqc.memory_gb</code> (Int, default=5)</li>
 <li><code>ngsderive_encoding.memory_gb</code> (Int, default=5)</li>
@@ -258,7 +267,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>run_kraken.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>run_kraken.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>run_kraken.ncpu</code> (Int, default=1)</li>
-<li><code>run_kraken.prefix</code> (String, default=basename(read1,"_R1.fastq.gz"))</li>
+<li><code>run_kraken.prefix</code> (String, default=basename(read1,"_R1.fastq.gz")): Prefix for ~all~ most results files</li>
 <li><code>run_kraken.store_sequences</code> (Boolean, default=false)</li>
 <li><code>run_kraken.use_names</code> (Boolean, default=true)</li>
 <li><code>samtools_flagstat.memory_gb</code> (Int, default=5)</li>
@@ -271,11 +280,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>wg_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>wg_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>wg_coverage.use_fast_mode</code> (Boolean, default=true)</li>
+<li><code>markdups_post.collect_insert_size_metrics.memory_gb</code> (Int, default=8)</li>
+<li><code>markdups_post.regions_coverage.memory_gb</code> (Int, default=8)</li>
+<li><code>markdups_post.regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
+<li><code>markdups_post.regions_coverage.use_fast_mode</code> (Boolean, default=true)</li>
+<li><code>markdups_post.samtools_flagstat.memory_gb</code> (Int, default=5)</li>
+<li><code>markdups_post.samtools_flagstat.outfile_name</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
+<li><code>markdups_post.wg_coverage.memory_gb</code> (Int, default=8)</li>
+<li><code>markdups_post.wg_coverage.min_mapping_quality</code> (Int, default=20)</li>
+<li><code>markdups_post.wg_coverage.use_fast_mode</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>bam_checksum</code> (File)</li>
 <li><code>validate_sam_file</code> (File)</li>
+<li><code>mark_duplicates_metrics</code> (File)</li>
 <li><code>flagstat</code> (File)</li>
 <li><code>fastqc_results</code> (File)</li>
 <li><code>instrument_file</code> (File)</li>
@@ -292,10 +311,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>kraken_report</code> (File)</li>
 <li><code>mosdepth_global_dist</code> (File)</li>
 <li><code>mosdepth_global_summary</code> (File)</li>
-<li><code>multiqc_zip</code> (File)</li>
-<li><code>kraken_sequences</code> (File?)</li>
 <li><code>mosdepth_region_dist</code> (Array[File])</li>
 <li><code>mosdepth_region_summary</code> (Array[File])</li>
+<li><code>multiqc_report</code> (File)</li>
+<li><code>kraken_sequences</code> (File?)</li>
+<li><code>mosdepth_dups_marked_global_dist</code> (File?)</li>
+<li><code>mosdepth_dups_marked_global_summary</code> (File?)</li>
+<li><code>mosdepth_dups_marked_region_summary</code> (Array[File]?)</li>
+<li><code>mosdepth_dups_marked_region_dist</code> (Array[File?]?)</li>
 <li><code>inferred_strandedness</code> (File?)</li>
 <li><code>qualimap_rnaseq_results</code> (File?)</li>
 <li><code>junction_summary</code> (File?)</li>
@@ -320,7 +343,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../make-qc-reference/" class="btn btn-neutral float-left" title="Make QC Reference"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../markdups-post/" class="btn btn-neutral float-left" title="MarkDuplicates Post"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../scrnaseq-standard/" class="btn btn-neutral float-right" title="Scrnaseq standard">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -349,7 +372,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
         </span>
     
     
-      <span><a href="../make-qc-reference/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../markdups-post/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../scrnaseq-standard/" style="color: #fcfcfc">Next &raquo;</a></span>

@@ -285,6 +285,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/scrnaseq-standard/">Scrnaseq standard</a>
@@ -336,13 +338,17 @@ PicardTools is a set of Java tools for manipulating sequencing data.</p>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>create_bam</code> (Boolean, default=true)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=50)</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>duplicate_marked_bam</code> (File)</li>
+<li><code>duplicate_marked_bam</code> (File?)</li>
+<li><code>duplicate_marked_bam_index</code> (File?)</li>
+<li><code>duplicate_marked_bam_md5</code> (File?)</li>
+<li><code>mark_duplicates_metrics</code> (File)</li>
 </ul>
 <h2 id="validate_bam">validate_bam</h2>
 <dl>
