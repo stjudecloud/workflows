@@ -29,7 +29,7 @@ task mark_duplicates {
             COMPRESSION_LEVEL=5 \
             METRICS_FILE=~{prefix}.MarkDuplicates.metrics.txt
         
-        mv ~{prefix}.MarkDuplicates.bai ~{prefix}.MarkDuplicates.bam.bai || true
+        mv ~{prefix}.MarkDuplicates.bai ~{prefix}.MarkDuplicates.bam.bai
     >>>
 
     runtime {
