@@ -111,7 +111,8 @@ workflow quality_check {
             }
         }
     }
-    # If subsampling is disabled, this will be `quickcheck.checked_bam`
+    # If subsampling is disabled or input BAM has fewer reads than `subsample_n_reads`
+    # this will be `quickcheck.checked_bam`
     File post_subsample_bam = select_first([
         subsample.sampled_bam,
         quickcheck.checked_bam
