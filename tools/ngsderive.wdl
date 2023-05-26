@@ -20,23 +20,27 @@ task infer_strandedness {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size) + 10)
  
-    command {
+    command <<<
         set -euo pipefail
 
-        if [ ! -e ~{bam}.bai ]
-        then 
-            ln -s ~{bam_index} ~{bam}.bai
-        fi
+        # localize BAM and BAI to CWD
+        # some backends place them in separate directories
+        # some backends prevent writing to the inputs directories
+        # to accomodate these possibilites, create symlinks in CWD
+        CWD_BAM=~{basename(bam)}
+        ln -s ~{bam} "$CWD_BAM"
+        ln -s ~{bam_index} "$CWD_BAM".bai
 
         ngsderive strandedness --verbose \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
             -q ~{min_mapq} \
-            ~{bam} \
             -g ~{gtf} \
+            "$CWD_BAM" \
             > ~{out_file}
+
         awk 'NR > 1' ~{out_file} | cut -d$'\t' -f5 > strandedness.txt
-    }
+    >>>
 
     runtime {
         disk: disk_size + " GB"
@@ -95,20 +99,23 @@ task read_length {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(bam_size + 10)
 
-    command {
+    command <<<
         set -euo pipefail
 
-        if [ ! -e ~{bam}.bai ]
-        then 
-            ln -s ~{bam_index} ~{bam}.bai
-        fi
+        # localize BAM and BAI to CWD
+        # some backends place them in separate directories
+        # some backends prevent writing to the inputs directories
+        # to accomodate these possibilites, create symlinks in CWD
+        CWD_BAM=~{basename(bam)}
+        ln -s ~{bam} "$CWD_BAM"
+        ln -s ~{bam_index} "$CWD_BAM".bai
 
         ngsderive readlen --verbose \
             -c ~{majority_vote_cutoff} \
             -n ~{num_samples} \
-            ~{bam} \
+            "$CWD_BAM" \
             > ~{out_file}
-    }
+    >>>
 
     runtime {
         disk: disk_size + " GB"
@@ -200,13 +207,16 @@ task junction_annotation {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil((bam_size) + 10)
 
-    command {
+    command <<<
         set -euo pipefail
 
-        if [ ! -e ~{bam}.bai ]
-        then 
-            ln -s ~{bam_index} ~{bam}.bai
-        fi
+        # localize BAM and BAI to CWD
+        # some backends place them in separate directories
+        # some backends prevent writing to the inputs directories
+        # to accomodate these possibilites, create symlinks in CWD
+        CWD_BAM=~{basename(bam)}
+        ln -s ~{bam} "$CWD_BAM"
+        ln -s ~{bam_index} "$CWD_BAM".bai
 
         ngsderive junction-annotation --verbose \
             -g ~{gtf} \
@@ -215,11 +225,11 @@ task junction_annotation {
             -m ~{min_reads} \
             -k ~{fuzzy_junction_match_range} \
             -o ~{prefix}.junction_summary.txt \
-            ~{bam}
+            "$CWD_BAM"
 
         mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"
         gzip ~{prefix}.junctions.tsv
-    }
+    >>>
 
     runtime {
         disk: disk_size + " GB"
