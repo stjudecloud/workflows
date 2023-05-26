@@ -37,6 +37,8 @@ task coverage {
             ~{if (use_fast_mode) then "-x" else ""} \
             ~{prefix} \
             "$CWD_BAM"
+
+        rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
     runtime {

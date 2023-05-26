@@ -40,6 +40,8 @@ task infer_strandedness {
             > ~{out_file}
 
         awk 'NR > 1' ~{out_file} | cut -d$'\t' -f5 > strandedness.txt
+
+        rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
     runtime {
@@ -115,6 +117,8 @@ task read_length {
             -n ~{num_samples} \
             "$CWD_BAM" \
             > ~{out_file}
+
+        rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
     runtime {
@@ -229,6 +233,8 @@ task junction_annotation {
 
         mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"
         gzip ~{prefix}.junctions.tsv
+
+        rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
     runtime {

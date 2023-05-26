@@ -27,12 +27,17 @@ task bamCoverage {
             n_cores="max"
         fi
 
-        if [ ! -e ~{bam}.bai ]
-        then 
-            ln -s ~{bam_index} ~{bam}.bai
-        fi
+        # localize BAM and BAI to CWD
+        # some backends place them in separate directories
+        # some backends prevent writing to the inputs directories
+        # to accomodate these possibilites, create symlinks in CWD
+        CWD_BAM=~{basename(bam)}
+        ln -s ~{bam} "$CWD_BAM"
+        ln -s ~{bam_index} "$CWD_BAM".bai
  
-        bamCoverage --bam ~{bam} --outFileName ~{prefix}.bw --outFileFormat bigwig --numberOfProcessors "$n_cores"
+        bamCoverage --bam "$CWD_BAM" --outFileName ~{prefix}.bw --outFileFormat bigwig --numberOfProcessors "$n_cores"
+
+        rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
     runtime {

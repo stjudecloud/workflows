@@ -149,6 +149,10 @@ task localize_files_task {
         ln -s ~{bam_index} "$CWD_BAM".bai
 
         # from now on we will use `"$CWD_BAM"` instead of `~{bam}`
+        ...
+        # After task completion, the symlinks will be broken.
+        # So we should delete them when we're done.
+        rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
     output {
