@@ -109,9 +109,12 @@ workflow rnaseq_standard_fastq {
         subsample.subsampled_read1,
         read_one_fastqs
     ])
-    Array[File] selected_read_two_fastqs = if defined(subsample.subsampled_read2)
-        then select_all(select_first([subsample.subsampled_read2, []]))
-        else read_two_fastqs
+    Array[File] selected_read_two_fastqs = select_all(
+        select_first([
+            subsample.subsampled_read2,
+            read_two_fastqs
+        ])
+    )
 
     call rna_core.rnaseq_core { input:
         read_one_fastqs=selected_read_one_fastqs,
