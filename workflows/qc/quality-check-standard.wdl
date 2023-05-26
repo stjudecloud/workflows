@@ -273,10 +273,9 @@ workflow quality_check {
             ["whole_genome"],
             parse_input.labels,
             # this does not currently work properly.
-            # I have a major refactor of the MultiQC task
-            # on the horizon, and do not want to waste time
-            # writing complex code to properly handle this
-            # when it's about to get deleted.
+            # A future PR will refactor the MultiQC task
+            # and ensure this is handled properly.
+            # That fix is out-of-scope for now.
             prefix("MarkDuplicates.", parse_input.labels)
         ]),
         max_retries=max_retries
