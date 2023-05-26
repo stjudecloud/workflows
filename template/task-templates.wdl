@@ -116,6 +116,53 @@ task use_all_cores_task {
     }
 }
 
+task localize_files_task {
+    meta {
+        description: "This template is appropriate for tasks which assume multiple files share the same basename with specific extensions and/or that these files are in the same directory (this task will use BAM and BAI files as an example)." 
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to <brief description of task>"
+        bam_index: "BAM index file corresponding to the input BAM"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        disk_size_gb: "Disk space to allocate for task, specified in GB"
+        max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        File bam
+        File bam_index
+        Int memory_gb = <>
+        Int disk_size_gb = <>
+        Int max_retries = 1
+    }
+
+    command <<<
+        set -euo pipefail
+
+        # localize BAM and BAI to CWD
+        # some backends place them in separate directories
+        # some backends prevent writing to the inputs directories
+        # to accomodate these possibilites, create symlinks in CWD
+        CWD_BAM=~{basename(bam)}
+        ln -s ~{bam} "$CWD_BAM"
+        ln -s ~{bam_index} "$CWD_BAM".bai
+
+        # from now on we will use `"$CWD_BAM"` instead of `~{bam}`
+    >>>
+
+    output {
+
+    }
+
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: ""
+        maxRetries: max_retries
+    }
+}
+
 task outfile_name_task {
     meta {
         description: "This template is appropriate for tasks where naming of the output file doesn't effect downstream analysis. Update the `parameter_meta` for `outfile_name` with the type of file in question, but do not change the variable name of `outfile_name`. Change `<output name>` to something short but descriptive." 
