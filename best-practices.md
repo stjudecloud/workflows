@@ -10,13 +10,14 @@ All rules below should be followed by contributors to this repo. Contributors sh
 - Variables should be in "snake_case"
 - See `template/common-parameter-meta.txt` for common description strings.
   - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
-- Check all assumptions made about inputs before beginning long running executions that will fail if assumptions don't hold
+- Check all assumptions made about workflow inputs before beginning long running executions
   - Common examples of assumptions that should be checked: valid `String` choice, mutually exclusive parameters, missing optional file for selected parameters, filename extensions
   - This can commonly be handled by a `parse_input` task (defined in the same file as the workflow in question)
     - When possible, avoid passing in entire files to the `parse_input` task. Coerce files to `Boolean`s or `String`s to avoid unnecessary disk space usage
+- All tasks with multiple commands (including any pipes (`|`)) should have `set -euo pipefail` before any other commands.
 - Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-templates.wdl`)
   - they should also fail quickly with an informative error message if an invalid input is provided
-    - In most cases, just passing the parameter to the underlying tool should produce a satisfactory error, but this must be checked for each task
+    - In most cases, just passing the parameter to the underlying tool should produce a satisfactory error, but this must be checked for each tool
   - While redundant, it is still best practice to validate these strings in the `parse_input` task of any workflow which calls the task
     - This ensures the workflow will fail as fast as possible to save users time and resources
 - All tasks must have configurable memory and disk space allocations
@@ -33,14 +34,16 @@ All rules below should be followed by contributors to this repo. Contributors sh
     - This allows each task to have it's own specific default `max_retries`
       - If a user does not supply `max_retries`, those task level defaults will get used
       - If a user does supply `max_retries`, it should override the default for *every* task called
-- multi-core tasks should *always* follow the conventions laid out in the `detect_nproc_task` example (see `template/task-templates.wdl`)
+- multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-templates.wdl`)
   - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter
+- Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-templates.wdl`)
+  - This is to accomodate as many backends as possible
 - output file names should *always* be determined with either the `outfile_name` parameter or the `prefix` parameter.
   - `outfile_name` should be preferred if no downstream tasks/tools rely on the file name/extension
   - tasks with multiple outputs should always use the `prefix` convention
 - After the input sorting rules in `style-guide.md` have been applied, follow the below rules for further sorting.
   - "sample" files come before "reference" files
-  - If present, `detect_nproc` should be the last `Boolean` in its block
+  - If present, `use_all_cores` should be the last `Boolean` in its block
   - the `ncpu` parameter comes before inputs that allocate memory, which come before inputs that allocate disk space, which come before `max_retries`
     - This block of 3-4 inputs should come after all other inputs.
 - All tasks should have an output

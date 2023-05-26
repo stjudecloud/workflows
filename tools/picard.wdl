@@ -29,7 +29,7 @@ task mark_duplicates {
             COMPRESSION_LEVEL=5 \
             METRICS_FILE=~{prefix}.MarkDuplicates.metrics.txt
         
-        mv ~{prefix}.MarkDuplicates.bai ~{prefix}.MarkDuplicates.bam.bai || true
+        mv ~{prefix}.MarkDuplicates.bai ~{prefix}.MarkDuplicates.bam.bai
     >>>
 
     runtime {
@@ -185,7 +185,7 @@ task bam_to_fastq {
     meta {
         author: "Andrew Thrasher, Andrew Frantz"
         email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task converts the input BAM file into FastQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
+        description: "*[Deprecated]* This WDL task converts the input BAM file into FastQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
     }
 }
 

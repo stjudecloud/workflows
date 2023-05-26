@@ -544,11 +544,12 @@ task collate_to_fastq {
             n_cores=$(nproc)
         fi
 
+        # Use the `-u` flag to skip compression (and decompression)
+        # if not storing the output
         samtools collate \
+            ~{if store_collated_bam then "" else "-u"} \
             --threads "$n_cores" \
             ~{if fast_mode then "-f" else ""} \
-            # skip compression (and decompression) if not storing the output
-            ~{if store_collated_bam then "" else "-u"} \
             -O \
             ~{bam} \
             | tee ~{if store_collated_bam then prefix+".collated.bam" else ""} \
