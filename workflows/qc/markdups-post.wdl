@@ -63,6 +63,7 @@ workflow markdups_post {
             input:
                 bam=markdups_bam,
                 bam_index=markdups_bam_index,
+                coverage_bed=coverage_pair.left,
                 prefix=prefix + "." + coverage_pair.right,
                 max_retries=max_retries
         }
