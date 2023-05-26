@@ -141,9 +141,8 @@ task localize_files_task {
         set -euo pipefail
 
         # localize BAM and BAI to CWD
-        # some backends place them in separate directories
         # some backends prevent writing to the inputs directories
-        # to accomodate these possibilites, create symlinks in CWD
+        # to accomodate this, create symlinks in CWD
         CWD_BAM=~{basename(bam)}
         ln -s ~{bam} "$CWD_BAM"
         ln -s ~{bam_index} "$CWD_BAM".bai
