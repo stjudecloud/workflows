@@ -12,7 +12,6 @@ task fastqc {
         Int memory_gb = 5
         Boolean use_all_cores = false
         Int max_retries = 1
-        Boolean use_all_cores = false
     }
 
     String out_directory = basename(bam, ".bam") + ".fastqc_results"
