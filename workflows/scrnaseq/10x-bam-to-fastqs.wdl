@@ -46,16 +46,6 @@ import "../../tools/cellranger.wdl"
 import "../../tools/fq.wdl"
 
 workflow cell_ranger_bam_to_fastqs {
-    input {
-        File bam
-        Boolean paired = true
-        Boolean cellranger11 = false
-        Boolean longranger20 = false
-        Boolean gemcode = false
-        Boolean use_all_cores = false
-        Int? max_retries
-    }
-
     parameter_meta {
         bam: "BAM file to split into FastQs."
         paired: "Is the data paired-end (true) or single-end (false)?"
@@ -64,6 +54,16 @@ workflow cell_ranger_bam_to_fastqs {
         gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        File bam
+        Boolean paired = true
+        Boolean cellranger11 = false
+        Boolean longranger20 = false
+        Boolean gemcode = false
+        Boolean use_all_cores = false
+        Int? max_retries
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
@@ -108,13 +108,13 @@ task parse_input {
         fi
     >>>
 
+    output {
+        String input_check = "passed"
+    }
+
     runtime {
         memory: "4 GB"
         disk: "1 GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
-    }
-
-    output {
-        String input_check = "passed"
     }
 }

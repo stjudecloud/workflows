@@ -6,6 +6,18 @@
 version 1.0
 
 task bwa_aln {
+
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL task maps single-end FastQ files to BAM format using bwa aln."
+    }
+
+    parameter_meta {
+        fastq: "Input FastQ file to align with bwa"
+        bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+    }
+
     input {
         File fastq
         String output_bam = basename(fastq, ".fq.gz") + ".bam"
@@ -48,6 +60,10 @@ task bwa_aln {
         rm -r bwa
     >>>
 
+    output {
+        File bam = output_bam
+    }
+
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
@@ -55,24 +71,22 @@ task bwa_aln {
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
+}
 
-    output {
-        File bam = output_bam
-    }
+task bwa_aln_pe {
 
     meta {
         author: "Andrew Thrasher"
         email: "andrew.thrasher@stjude.org"
-        description: "This WDL task maps single-end FastQ files to BAM format using bwa aln."
+        description: "This WDL task maps paired-end FastQ files to BAM format using bwa aln."
     }
 
     parameter_meta {
-        fastq: "Input FastQ file to align with bwa"
+        fastq1: "Input FastQ read 1 file to align with bwa"
+        fastq2: "Input FastQ read 2 file to align with bwa"
         bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
-}
 
-task bwa_aln_pe {
     input {
         File fastq1
         File fastq2
@@ -117,6 +131,10 @@ task bwa_aln_pe {
         rm -r bwa
     >>>
 
+    output {
+        File bam = output_bam
+    }
+
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
@@ -124,25 +142,20 @@ task bwa_aln_pe {
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
-
-    output {
-        File bam = output_bam
-    }
-
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        description: "This WDL task maps paired-end FastQ files to BAM format using bwa aln."
-    }
-
-    parameter_meta {
-        fastq1: "Input FastQ read 1 file to align with bwa"
-        fastq2: "Input FastQ read 2 file to align with bwa"
-        bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-    }
 }
 
 task bwa_mem {
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL task maps FastQ files to BAM format using bwa mem."
+    }
+
+    parameter_meta {
+        fastq: "Input FastQ file to align with bwa"
+        bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+    }
+
     input {
         File fastq
         String output_bam = basename(fastq, ".fq.gz") + ".bam"
@@ -183,6 +196,10 @@ task bwa_mem {
         rm -r bwa
     >>>
 
+    output {
+        File bam = output_bam
+    }
+
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
@@ -190,24 +207,20 @@ task bwa_mem {
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
-
-    output {
-        File bam = output_bam
-    }
-
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        description: "This WDL task maps FastQ files to BAM format using bwa mem."
-    }
-
-    parameter_meta {
-        fastq: "Input FastQ file to align with bwa"
-        bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-    }
 }
 
 task build_bwa_db {
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL task creates a BWA index and returns it as a compressed tar archive."
+    }
+
+    parameter_meta {
+        reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
+        bwadb_out_name: "Name of the output gzipped tar archive of the bwa reference files."
+    }
+
     input {
         File reference_fasta
         String bwadb_dir_name = "bwa_db"
@@ -232,30 +245,29 @@ task build_bwa_db {
         tar -czf ~{bwadb_out_name} "${ref_fasta}"*
     >>>
 
+    output {
+        File bwadb_tar_gz = bwadb_out_name
+    }
+
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
-
-    output {
-        File bwadb_tar_gz = bwadb_out_name
-    }
-
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        description: "This WDL task creates a BWA index and returns it as a compressed tar archive."
-    }
-
-    parameter_meta {
-        reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
-        bwadb_out_name: "Name of the output gzipped tar archive of the bwa reference files."
-    }
 }
 
 task format_rg_for_bwa {
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL task converts read group records from the BAM-formatted strings to strings expected by bwa."
+    }
+
+    parameter_meta {
+        read_group: "Read group string"
+    }
+
     input {
         String read_group
         Int max_retries = 1
@@ -274,15 +286,5 @@ task format_rg_for_bwa {
         disk: "1 GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
-    }
-
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        description: "This WDL task converts read group records from the BAM-formatted strings to strings expected by bwa."
-    }
-
-    parameter_meta {
-        read_group: "Read group string"
     }
 }

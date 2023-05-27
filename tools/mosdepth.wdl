@@ -5,6 +5,12 @@
 version 1.0
 
 task coverage {
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task wraps the Mosdepth tool for calculating coverage"
+    }
+
     input {
         File bam
         File bam_index
@@ -40,22 +46,16 @@ task coverage {
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
-    runtime {
-        disk: disk_size + " GB"
-        memory: memory_gb + " GB"
-        docker: 'quay.io/biocontainers/mosdepth:0.3.3--h37c5b7d_2'
-        maxRetries: max_retries
-    }
-
     output {
         File summary = prefix + ".mosdepth.summary.txt"
         File global_dist = prefix + ".mosdepth.global.dist.txt"
         File? region_dist = prefix + ".mosdepth.region.dist.txt"
     }
 
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task wraps the Mosdepth tool for calculating coverage"
+    runtime {
+        disk: disk_size + " GB"
+        memory: memory_gb + " GB"
+        docker: 'quay.io/biocontainers/mosdepth:0.3.3--h37c5b7d_2'
+        maxRetries: max_retries
     }
 }

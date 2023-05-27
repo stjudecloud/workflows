@@ -41,24 +41,6 @@ import "../../tools/multiqc.wdl" as mqc
 import "../../tools/util.wdl"
 
 workflow quality_check {
-    input {
-        File bam
-        File bam_index
-        File reference_fasta
-        File kraken_db
-        String molecule
-        Array[File] coverage_beds = []
-        Array[String] coverage_labels = []
-        Int subsample_n_reads = -1
-        Boolean mark_duplicates = molecule == "RNA"
-        File? gtf
-        File? star_log
-        String prefix = basename(bam, ".bam")
-        Boolean output_intermediate_files = false
-        Boolean use_all_cores = false
-        Int? max_retries
-    }
-
     parameter_meta {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
@@ -81,6 +63,24 @@ workflow quality_check {
         output_intermediate_files: "Output intermediate files? FastQs, if RNA a collated BAM, if `mark_duplicates==true` a duplicate marked BAM with an index and MD5. *WARNING* these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        File bam
+        File bam_index
+        File reference_fasta
+        File kraken_db
+        String molecule
+        Array[File] coverage_beds = []
+        Array[String] coverage_labels = []
+        Int subsample_n_reads = -1
+        Boolean mark_duplicates = molecule == "RNA"
+        File? gtf
+        File? star_log
+        String prefix = basename(bam, ".bam")
+        Boolean output_intermediate_files = false
+        Boolean use_all_cores = false
+        Int? max_retries
     }
 
     call parse_input {
@@ -414,15 +414,15 @@ task parse_input {
         exit $EXITCODE
     >>>
 
+    output {
+        String check = "passed"
+        Array[String] labels = read_lines("labels.txt")
+    }
+
     runtime {
         memory: "1 GB"
         disk: "1 GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
-    }
-
-    output {
-        String check = "passed"
-        Array[String] labels = read_lines("labels.txt")
     }
 }
 

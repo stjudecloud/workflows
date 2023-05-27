@@ -40,16 +40,6 @@ import "../../tools/star.wdl"
 import "../../tools/util.wdl"
 
 workflow star_db_build {
-    input {
-        String reference_fa_url
-        String reference_fa_name
-        String? reference_fa_md5
-        String gtf_url
-        String gtf_name
-        String? gtf_md5
-        Int? max_retries
-    }
-
     parameter_meta {
         reference_fa_url: "URL to retrieve the reference FASTA file from"
         reference_fa_name: "Name of output reference FASTA file"
@@ -58,6 +48,16 @@ workflow star_db_build {
         gtf_name: "Name of output GTF file"
         gtf_md5: "Expected md5sum of GTF file"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        String reference_fa_url
+        String reference_fa_name
+        String? reference_fa_md5
+        String gtf_url
+        String gtf_name
+        String? gtf_md5
+        Int? max_retries
     }
 
     call util.download as reference_download { input:

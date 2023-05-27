@@ -6,16 +6,6 @@ import "../../tools/md5sum.wdl"
 import "https://raw.githubusercontent.com/stjude/XenoCP/4.0.0-alpha/wdl/workflows/xenocp.wdl" as xenocp_workflow
 
 workflow alignment_post {
-    input {
-        File bam
-        Boolean mark_duplicates
-        File? contaminant_db
-        Boolean cleanse_xenograft = false
-        String xenocp_aligner = ""
-        Boolean use_all_cores = false
-        Int? max_retries
-    }
-
     parameter_meta {
         bam: "Input BAM format file to process"
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
@@ -31,6 +21,16 @@ workflow alignment_post {
         },
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        File bam
+        Boolean mark_duplicates
+        File? contaminant_db
+        Boolean cleanse_xenograft = false
+        String xenocp_aligner = ""
+        Boolean use_all_cores = false
+        Int? max_retries
     }
 
     call picard.sort as picard_sort { input: bam=bam, max_retries=max_retries }

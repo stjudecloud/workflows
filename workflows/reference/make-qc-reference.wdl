@@ -31,27 +31,6 @@ import "../../tools/util.wdl"
 import "../../tools/kraken.wdl"
 
 workflow make_qc_reference {
-    input {
-        String reference_fa_url
-        String reference_fa_name
-        String gtf_url
-        String gtf_name
-        Array[String] kraken_libraries = [
-            "archaea",
-            "bacteria",
-            "plasmid",
-            "viral",
-            "human",
-            "fungi",
-            "protozoa",
-            "UniVec_Core"
-        ]
-        Boolean protein = false
-        Array[String] kraken_fasta_urls = []
-        Array[File] kraken_fastas = []
-        Int? max_retries
-    }
-
     parameter_meta {
         reference_fa_url: "URL to retrieve the reference FASTA file from"
         reference_fa_name: "Name of output reference FASTA file"
@@ -77,6 +56,27 @@ workflow make_qc_reference {
         kraken_fasta_urls: "URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database. This allows the addition of individual genomes (or other sequences) of interest."
         kraken_fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        String reference_fa_url
+        String reference_fa_name
+        String gtf_url
+        String gtf_name
+        Array[String] kraken_libraries = [
+            "archaea",
+            "bacteria",
+            "plasmid",
+            "viral",
+            "human",
+            "fungi",
+            "protozoa",
+            "UniVec_Core"
+        ]
+        Boolean protein = false
+        Array[String] kraken_fasta_urls = []
+        Array[File] kraken_fastas = []
+        Int? max_retries
     }
 
     call util.download as reference_download {

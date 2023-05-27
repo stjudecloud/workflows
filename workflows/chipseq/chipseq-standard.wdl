@@ -41,18 +41,6 @@ import "../../tools/deeptools.wdl"
 import "../../tools/md5sum.wdl"
 
 workflow chipseq_standard {
-    input {
-        File input_bam
-        String output_prefix = basename(input_bam, ".bam")
-        Array[File] bowtie_indexes
-        File? excludelist
-        Boolean paired_end = false
-        Int subsample_n_reads = -1
-        Boolean validate_input = true
-        Boolean use_all_cores = false
-        Int max_retries = 1
-    }
-
     parameter_meta {
         input_bam: "Input BAM format file to realign with bowtie"
         output_prefix: "Prefix for output files"
@@ -63,6 +51,18 @@ workflow chipseq_standard {
         validate_input: "Run Picard ValidateSamFile on the input BAM"
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps"
+    }
+
+    input {
+        File input_bam
+        String output_prefix = basename(input_bam, ".bam")
+        Array[File] bowtie_indexes
+        File? excludelist
+        Boolean paired_end = false
+        Int subsample_n_reads = -1
+        Boolean validate_input = true
+        Boolean use_all_cores = false
+        Int max_retries = 1
     }
 
     if (validate_input) {

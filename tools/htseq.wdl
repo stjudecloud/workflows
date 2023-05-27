@@ -6,21 +6,10 @@
 version 1.0
 
 task count {
-    input {
-        File bam
-        File gtf
-        String strandedness
-        String outfile_name = basename(bam, ".bam") + ".feature-counts.txt"
-        Boolean pos_sorted = true
-        Int minaqual = 10
-        String feature_type = "exon"
-        String idattr = "gene_name"
-        String mode = "union"
-        Boolean nonunique = false
-        Boolean secondary_alignments = false
-        Boolean supplementary_alignments = false
-        Int added_memory_gb = 0
-        Int max_retries = 1
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL task performs read counting for a set of features in the input BAM file."
     }
 
     parameter_meta {
@@ -47,6 +36,23 @@ task count {
         max_retries: "Number of times to retry in case of failure"
     }
 
+    input {
+        File bam
+        File gtf
+        String strandedness
+        String outfile_name = basename(bam, ".bam") + ".feature-counts.txt"
+        Boolean pos_sorted = true
+        Int minaqual = 10
+        String feature_type = "exon"
+        String idattr = "gene_name"
+        String mode = "union"
+        Boolean nonunique = false
+        Boolean secondary_alignments = false
+        Boolean supplementary_alignments = false
+        Int added_memory_gb = 0
+        Int max_retries = 1
+    }
+
     Float bam_size = size(bam, "GiB")
     Float mem_size = bam_size + added_memory_gb
     Float gtf_size = size(gtf, "GiB")
@@ -68,21 +74,15 @@ task count {
             ~{gtf} \
             > ~{outfile_name}
     }
+   
+    output {
+        File feature_counts = "~{outfile_name}"
+    }
 
     runtime {
         memory: mem_size + " GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/htseq:2.0.2--py310ha14a713_0'
         maxRetries: max_retries
-    }
-   
-    output {
-        File feature_counts = "~{outfile_name}"
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task performs read counting for a set of features in the input BAM file."
     }
 }

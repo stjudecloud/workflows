@@ -6,6 +6,16 @@
 version 1.0
 
 task mark_duplicates {
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL task marks duplicate reads in the input BAM file using Picard."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to mark duplicates"
+    }
+
     input {
         File bam
         String prefix = basename(bam, ".bam")
@@ -32,13 +42,6 @@ task mark_duplicates {
         mv ~{prefix}.MarkDuplicates.bai ~{prefix}.MarkDuplicates.bam.bai
     >>>
 
-    runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size + " GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
-        maxRetries: max_retries
-    }
-
     output {
         File? duplicate_marked_bam = "~{prefix}.MarkDuplicates.bam"
         File? duplicate_marked_bam_index = "~{prefix}.MarkDuplicates.bam.bai"
@@ -46,18 +49,31 @@ task mark_duplicates {
         File mark_duplicates_metrics = "~{prefix}.MarkDuplicates.metrics.txt"
     }
 
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task marks duplicate reads in the input BAM file using Picard."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to mark duplicates"
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        maxRetries: max_retries
     }
 }
 
 task validate_bam {
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL task validates the input BAM file for correct formatting using Picard."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to validate"
+        succeed_on_errors: "Succeed the task even if errors *and/or* warnings are detected"
+        succeed_on_warnings: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`"
+        ignore_list: "List of Picard errors and warnings to ignore. Possible values can be found on the [GATK website](https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile)"
+        summary_mode: "Boolean to enable SUMMARY mode of `picard ValidateSamFile`"
+        index_validation_stringency_less_exhaustive: "Boolean to set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE` for `picard ValidateSamFile`"
+        max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
+    }
+
     input {
         File bam
         Boolean succeed_on_errors = false
@@ -109,48 +125,38 @@ task validate_bam {
         fi
     }
 
+    output {
+        File validate_report = outfile_name
+        File validated_bam = bam
+    }
+
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
-
-    output {
-        File validate_report = outfile_name
-        File validated_bam = bam
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task validates the input BAM file for correct formatting using Picard."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to validate"
-        succeed_on_errors: "Succeed the task even if errors *and/or* warnings are detected"
-        succeed_on_warnings: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`"
-        ignore_list: "List of Picard errors and warnings to ignore. Possible values can be found on the [GATK website](https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile)"
-        summary_mode: "Boolean to enable SUMMARY mode of `picard ValidateSamFile`"
-        index_validation_stringency_less_exhaustive: "Boolean to set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE` for `picard ValidateSamFile`"
-        max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
-    }
 }
 
 task bam_to_fastq {
-    input {
-        File bam
-        String prefix = basename(bam, ".bam")
-        Boolean paired = true
-        Int memory_gb = 56
-        Int max_retries = 1
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "*[Deprecated]* This WDL task converts the input BAM file into FastQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
     }
 
     parameter_meta {
         bam: "Input BAM format file to convert to FastQ"
         paired: "Is the data paired-end (true) or single-end (false)?"
         max_retries: "Number of times to retry failed steps"
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        Boolean paired = true
+        Int memory_gb = 56
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -170,22 +176,16 @@ task bam_to_fastq {
             ~{if paired then prefix+"_R2.fastq" else ""}
     }
 
-    runtime{
-        memory: memory_gb + " GB"
-        disk: disk_size + " GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
-        maxRetries: max_retries
-    }
-
     output {
         File read1 = "~{prefix}_R1.fastq.gz"
         File? read2 = "~{prefix}_R2.fastq.gz"
     }
 
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "*[Deprecated]* This WDL task converts the input BAM file into FastQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
+    runtime{
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        maxRetries: max_retries
     }
 }
 

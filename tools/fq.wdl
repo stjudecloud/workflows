@@ -7,6 +7,17 @@
 version 1.0
 
 task fqlint {
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL task performs quality control on the input FastQ pairs to ensure proper formatting."
+    }
+
+    parameter_meta {
+        read1: "Input FastQ with read one"
+        read2: "Input FastQ with read two"
+    }
+
     input {
         File read1
         File? read2
@@ -30,27 +41,16 @@ task fqlint {
         fq lint ~{args} ~{read1} ~{read2}
     }
 
-    runtime {
-        disk: disk_size + " GB"
-        memory: memory_gb + " GB"
-        docker: 'quay.io/biocontainers/fq:0.9.1--h9ee0642_0'
-        maxRetries: max_retries
-    }
-
     output {
         File validated_read1 = read1
         File? validated_read2 = read2
     }
 
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task performs quality control on the input FastQ pairs to ensure proper formatting."
-    }
-
-    parameter_meta {
-        read1: "Input FastQ with read one"
-        read2: "Input FastQ with read two"
+    runtime {
+        disk: disk_size + " GB"
+        memory: memory_gb + " GB"
+        docker: 'quay.io/biocontainers/fq:0.9.1--h9ee0642_0'
+        maxRetries: max_retries
     }
 }
 

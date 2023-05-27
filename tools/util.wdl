@@ -6,19 +6,23 @@
 version 1.0
 
 task download {
+    meta {
+        author: "Clay McLeod"
+        email: "clay.mcleod@stjude.org"
+        description: "This WDL task uses wget to download a file from a remote URL to the local filesystem" 
+    }
+
+    parameter_meta {
+        url: "URL of the file to download"
+        outfile_name: "Name of the output file"
+    }
+
     input {
         String url
         String outfile_name
         String? md5sum
         Int disk_size_gb = 10
         Int max_retries = 1
-    }
-
-    runtime {
-        memory: "4 GB"
-        disk: disk_size_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
-        maxRetries: max_retries
     }
 
     command <<<
@@ -36,19 +40,25 @@ task download {
         File outfile = outfile_name
     }
 
-    meta {
-        author: "Clay McLeod"
-        email: "clay.mcleod@stjude.org"
-        description: "This WDL task uses wget to download a file from a remote URL to the local filesystem" 
-    }
-
-    parameter_meta {
-        url: "URL of the file to download"
-        outfile_name: "Name of the output file"
+    runtime {
+        memory: "4 GB"
+        disk: disk_size_gb + " GB"
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        maxRetries: max_retries
     }
 }
 
 task get_read_groups {
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL task is a utility to get read group information from a BAM file and write it out to as a string" 
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to get read groups from"
+    }
+
     input {
         File bam
         Int max_retries = 1
@@ -73,25 +83,15 @@ task get_read_groups {
         fi
     >>>
 
+    output { 
+        File read_groups_file = "read_groups.txt"
+    }
+
     runtime {
         memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
-    }
-
-    output { 
-        File read_groups_file = "read_groups.txt"
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task is a utility to get read group information from a BAM file and write it out to as a string" 
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to get read groups from"
     }
 }
 
@@ -102,11 +102,17 @@ task split_string {
         Int max_retries = 1
         Int disk_size = 1
     }
+
     command <<<
         set -euo pipefail
 
         echo ~{input_string} | sed 's/~{delimiter}/\n/g' > split_strings.txt
     >>>
+
+    output {
+        File split_strings_file = "split_strings.txt"
+        Array[String] split_strings = read_lines("split_strings.txt")
+    }
 
     runtime {
         memory: "4 GB"
@@ -114,24 +120,19 @@ task split_string {
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
-
-    output {
-        File split_strings_file = "split_strings.txt"
-        Array[String] split_strings = read_lines("split_strings.txt")
-    }
 }
 
 task calc_gene_lengths {
-    input {
-        File gtf
-        String outfile_name = basename(gtf, ".gtf.gz") + ".genelengths.txt"
-        Int max_retries = 1
-    }
-
     parameter_meta {
         gtf: "GTF feature file"
         outfile_name: "Name of the gene lengths file"
         max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        File gtf
+        String outfile_name = basename(gtf, ".gtf.gz") + ".genelengths.txt"
+        Int max_retries = 1
     }
 
     Float gtf_size = size(gtf, "GiB")
@@ -190,19 +191,25 @@ for (gene, exonic_intersection) in sorted(gene_exon_intersection.items()):
 END
     >>>
 
+    output {
+        File gene_lengths = "~{outfile_name}"
+    }
+
     runtime {
         memory: "8 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
         maxRetries: max_retries
     }
-
-    output {
-        File gene_lengths = "~{outfile_name}"
-    }
 }
 
 task qc_summary {
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
+    }
+
     input {
         File multiqc_tar_gz
         String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
@@ -256,21 +263,15 @@ task qc_summary {
             }' > ~{outfile_name}
     >>>
 
+    output {
+        File summary = "~{outfile_name}"
+    }
+
     runtime {
         memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
-    }
-
-    output {
-        File summary = "~{outfile_name}"
-    }
-
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
     }
 }
 
@@ -287,15 +288,15 @@ task compression_integrity {
         bgzip -t ~{bam}
     }
 
+    output {
+        String check = "passed"
+    }
+
     runtime {
         memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
-    }
-
-    output {
-        String check = "passed"
     }
 }
 
@@ -316,17 +317,17 @@ task add_to_bam_header {
         samtools reheader -P header.sam ~{input_bam} > ~{output_bam_name}
     >>>
 
+    output {
+        File updated_header = "header.sam"
+        Array[String] header_lines = read_lines("header.sam")
+        File reheadered_bam = output_bam_name
+    }
+
     runtime {
         memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
-    }
-
-    output {
-        File updated_header = "header.sam"
-        Array[String] header_lines = read_lines("header.sam")
-        File reheadered_bam = output_bam_name
     }
 }
 
@@ -348,19 +349,25 @@ task unpack_tarball {
         find unpacked_tarball/ -type f > file_list.txt
     >>>
 
+    output {
+        Array[File] tarball_contents = read_lines("file_list.txt")
+    }
+
     runtime {
         memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
-
-    output {
-        Array[File] tarball_contents = read_lines("file_list.txt")
-    }
 }
 
 task make_coverage_regions_beds {
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
+    }
+
     input {
         File gtf
         Int max_retries = 1
@@ -382,21 +389,15 @@ task make_coverage_regions_beds {
         awk '/\tCDS\t/ {print $1 "\t" $2 "\t" $3}' "$BED" > "$CDS"
     >>>
 
-    runtime {
-        disk: disk_size + " GB"
-        memory: "4 GB"
-        docker: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
-        maxRetries: max_retries
-    }
-
     output {
         File exon_bed = basename(gtf, '.gz') + ".exon.bed"
         File CDS_bed = basename(gtf, '.gz') + ".CDS.bed"
     }
 
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
+    runtime {
+        disk: disk_size + " GB"
+        memory: "4 GB"
+        docker: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
+        maxRetries: max_retries
     }
 }

@@ -6,6 +6,16 @@
 version 1.0
 
 task fastqc {
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL task generates a FastQC quality control metrics report for the input BAM file."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+    }
+
     input {
         File bam
         Int ncpu = 1
@@ -37,26 +47,16 @@ task fastqc {
         tar -czf ~{out_tar_gz} ~{out_directory}
     }
 
+    output {
+        File raw_data = "~{out_directory}/~{basename(bam, '.bam')}_fastqc.zip"
+        File results = out_tar_gz
+    }
+
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         cpu: ncpu
         docker: 'quay.io/biocontainers/fastqc:0.11.9--hdfd78af_1'
         maxRetries: max_retries
-    }
-
-    output {
-        File raw_data = "~{out_directory}/~{basename(bam, '.bam')}_fastqc.zip"
-        File results = out_tar_gz
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task generates a FastQC quality control metrics report for the input BAM file."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
     }
 }
