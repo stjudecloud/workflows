@@ -73,7 +73,7 @@ task dynamic_disk_and_ram_task {
     }
 }
 
-task detect_nproc_task {
+task use_all_cores_task {
     meta {
         description: "This template is appropriate for all tasks which can be run on multiple cores. Update the default disk and RAM allocations, or copy and paste from `dynamic_disk_and_ram_task` as appropriate." 
     }
@@ -90,7 +90,7 @@ task detect_nproc_task {
         Int memory_gb = <>
         Int disk_size_gb = <>
         Int ncpu = 1
-        Boolean detect_nproc = false
+        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
@@ -111,6 +111,56 @@ task detect_nproc_task {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
         cpu: ncpu
+        docker: ""
+        maxRetries: max_retries
+    }
+}
+
+task localize_files_task {
+    meta {
+        description: "This template is appropriate for tasks which assume multiple files share the same basename with specific extensions and/or that these files are in the same directory (this task will use BAM and BAI files as an example)." 
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to <brief description of task>"
+        bam_index: "BAM index file corresponding to the input BAM"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        disk_size_gb: "Disk space to allocate for task, specified in GB"
+        max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        File bam
+        File bam_index
+        Int memory_gb = <>
+        Int disk_size_gb = <>
+        Int max_retries = 1
+    }
+
+    command <<<
+        set -euo pipefail
+
+        # localize BAM and BAI to CWD
+        # some backends prevent writing to the inputs directories
+        # to accomodate this, create symlinks in CWD
+        CWD_BAM=~{basename(bam)}
+        ln -s ~{bam} "$CWD_BAM"
+        ln -s ~{bam_index} "$CWD_BAM".bai
+
+        # from now on we will use `"$CWD_BAM"` instead of `~{bam}`
+        ...
+        # After task completion, the symlinks will be broken.
+        # So we should delete them when we're done.
+        rm "$CWD_BAM" "$CWD_BAM".bai
+    >>>
+
+    output {
+
+    }
+
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: ""
         maxRetries: max_retries
     }

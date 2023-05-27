@@ -19,18 +19,26 @@ task coverage {
     Float bam_size = size(bam, "GiB")
     Int disk_size = ceil(bam_size + 5)
 
-    command {
+    command <<<
         set -euo pipefail
 
-        mv ~{bam_index} ~{bam}.bai || true
+        # localize BAM and BAI to CWD
+        # some backends prevent writing to the inputs directories
+        # to accomodate this, create symlinks in CWD
+        CWD_BAM=~{basename(bam)}
+        ln -s ~{bam} "$CWD_BAM"
+        ln -s ~{bam_index} "$CWD_BAM".bai
+
         mosdepth \
             -n \
             ~{if defined(coverage_bed) then "-b" else ""} ~{coverage_bed} \
             -Q ~{min_mapping_quality} \
             ~{if (use_fast_mode) then "-x" else ""} \
             ~{prefix} \
-            ~{bam}
-    }
+            "$CWD_BAM"
+
+        rm "$CWD_BAM" "$CWD_BAM".bai
+    >>>
 
     runtime {
         disk: disk_size + " GB"
