@@ -7,8 +7,6 @@ version 1.0
 
 task count {
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
         description: "This WDL task runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data."
     }
 
@@ -20,18 +18,20 @@ task count {
     }
 
     input {
-        String id
-        File transcriptome_tar_gz
         File fastqs_tar_gz
-        Int ncpu = 1
-        Int memory_gb = 16
-        String jobmode = "local"
-        Int max_retries = 1
+        File transcriptome_tar_gz
+        String id
+        String jobmode = "local"  # TODO would a non-local jobmode work?
         Boolean use_all_cores = false
+        Int memory_gb = 16
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
     }
 
+    # TODO add reference to disk calculation
     Float fastq_size = size(fastqs_tar_gz, "GiB")
-    Int disk_size = ceil((fastq_size * 2) + 10)
+    Int disk_size_gb = ceil((fastq_size * 2) + 10) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -42,13 +42,17 @@ task count {
         fi
 
         mkdir transcriptome_dir
-        tar zxf ~{transcriptome_tar_gz} -C transcriptome_dir --strip-components 1
+        tar -xzf ~{transcriptome_tar_gz} \
+            -C transcriptome_dir \
+            --strip-components 1 \
+            --no-same-owner
    
         mkdir fastqs
-        tar zxf ~{fastqs_tar_gz} -C fastqs
+        tar -xzf ~{fastqs_tar_gz} -C fastqs --no-same-owner
 
         files=(fastqs/*.fastq.gz)
-        # sample parameter to cellranger count must match the sample prefix contained in the FastQ file.
+        # sample parameter to cellranger count must match
+        # the sample prefix contained in the FastQ file.
         # So we infer it here by manipulating the file name.
         # expected sample name extension comes from:
         # https://support.illumina.com/content/dam/illumina-support/documents/documentation/software_documentation/bcl2fastq/bcl2fastq2-v2-20-software-guide-15051736-03.pdf
@@ -63,8 +67,6 @@ task count {
             --localcores "$n_cores" \
             --localmem ~{memory_gb} \
             --disable-ui
-
-        ls > /dev/stderr
     >>>
 
     output {
@@ -81,24 +83,21 @@ task count {
         File raw_matrix = glob("*/outs/raw_feature_bc_matrix/matrix.mtx.gz")[0]
         File mol_info_h5 = glob("*/outs/molecule_info.h5")[0]
         File web_summary = glob("*/outs/web_summary.html")[0]
-        File loupe = glob("*/outs/cloupe.cloupe" )[0]
+        File loupe = glob("*/outs/cloupe.cloupe" )[0]  # TODO should this be "cloupe" instead of "loupe"?
     }
 
     runtime {
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
+        cpu: ncpu
         docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
         maxRetries: max_retries
-        cpu: ncpu
     }
 }
 
 task bamtofastq {
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
         description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files"
-
     }
 
     parameter_meta {
@@ -110,17 +109,18 @@ task bamtofastq {
 
     input {
         File bam
-        Int ncpu = 1
-        Int memory_gb = 40
         Boolean cellranger11 = false
         Boolean longranger20 = false
         Boolean gemcode = false
         Boolean use_all_cores = false
+        Int memory_gb = 40
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
 
     String data_arg = if (cellranger11) then "--cr11"
                         else if (longranger20) then "--lr10"
@@ -136,22 +136,23 @@ task bamtofastq {
         fi
         
         cellranger bamtofastq --nthreads "$n_cores" ~{data_arg} ~{bam} fastqs
+
         cd fastqs/*/
-        tar -zcf archive.tar.gz ./*.fastq.gz
+        tar -czf archive.tar.gz ./*.fastq.gz
     >>>
 
     output {
         Array[File] fastqs = glob("fastqs/*/*fastq.gz")
         File fastqs_archive = glob("fastqs/*/*.tar.gz")[0]
-        Array[File] read1 = glob("fastqs/*/*R1*.fastq.gz")
-        Array[File] read2 = glob("fastqs/*/*R2*.fastq.gz")
+        Array[File] read_one_fastq_gz = glob("fastqs/*/*R1*.fastq.gz")
+        Array[File] read_two_fastq_gz = glob("fastqs/*/*R2*.fastq.gz")
     }
 
     runtime {
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
+        cpu: ncpu
         docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
         maxRetries: max_retries
-        cpu: ncpu
     }
 }

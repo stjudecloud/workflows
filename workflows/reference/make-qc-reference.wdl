@@ -32,10 +32,7 @@ import "../../tools/kraken.wdl"
 
 workflow make_qc_reference {
     parameter_meta {
-        reference_fa_url: "URL to retrieve the reference FASTA file from"
-        reference_fa_name: "Name of output reference FASTA file"
-        gtf_url: "URL to retrieve the reference GTF file from"
-        gtf_name: "Name of output GTF file"
+        kraken_fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         kraken_libraries: {
             description: "List of kraken libraries to download"
             choices: [
@@ -52,17 +49,17 @@ workflow make_qc_reference {
                 'UniVec_Core'
             ]
         }
-        protein: "Construct a protein database?"
         kraken_fasta_urls: "URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database. This allows the addition of individual genomes (or other sequences) of interest."
-        kraken_fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
+        reference_fa_url: "URL to retrieve the reference FASTA file from"
+        reference_fa_name: "Name of output reference FASTA file"
+        gtf_url: "URL to retrieve the reference GTF file from"
+        gtf_name: "Name of output GTF file"
+        protein: "Construct a protein database?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     input {
-        String reference_fa_url
-        String reference_fa_name
-        String gtf_url
-        String gtf_name
+        Array[File] kraken_fastas = []
         Array[String] kraken_libraries = [
             "archaea",
             "bacteria",
@@ -73,9 +70,12 @@ workflow make_qc_reference {
             "protozoa",
             "UniVec_Core"
         ]
-        Boolean protein = false
         Array[String] kraken_fasta_urls = []
-        Array[File] kraken_fastas = []
+        String reference_fa_url
+        String reference_fa_name
+        String gtf_url
+        String gtf_name
+        Boolean protein = false
         Int? max_retries
     }
 
@@ -94,7 +94,7 @@ workflow make_qc_reference {
 
     call util.make_coverage_regions_beds {
         input:
-            gtf=gtf_download.outfile,
+            gtf=gtf_download.downloaded_file,
             max_retries=max_retries
     }
 
@@ -116,7 +116,7 @@ workflow make_qc_reference {
         }
     }
 
-    Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.outfile])
+    Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.downloaded_file])
     Array[File] empty_array = []  # this structure is required by the WDL v1 spec
     if (custom_fastas != empty_array) {
         call kraken.create_library_from_fastas { input:
@@ -137,8 +137,8 @@ workflow make_qc_reference {
     }
 
     output {
-        File reference_fa = reference_download.outfile
-        File gtf = gtf_download.outfile
+        File reference_fa = reference_download.downloaded_file
+        File gtf = gtf_download.downloaded_file
         File exon_bed = make_coverage_regions_beds.exon_bed
         File CDS_bed = make_coverage_regions_beds.CDS_bed
         File kraken_db = kraken_build_db.built_db

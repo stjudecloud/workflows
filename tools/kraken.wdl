@@ -6,8 +6,6 @@ version 1.0
 
 task download_taxonomy {
     meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
         description: "This WDL task downloads the NCBI taxonomy which Kraken2 uses to create a tree and taxon map during the database build."
     }
 
@@ -36,7 +34,7 @@ task download_taxonomy {
             --db ~{db_name} 2>&1 \
             | awk '/gunzip:/ { print; exit 42 } !/gunzip:/ { print }' 1>&2
 
-        tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
+        tar -C ~{db_name} -czf "~{db_name}.tar.gz" .
 
         rm -r ~{db_name}
     >>>
@@ -48,7 +46,6 @@ task download_taxonomy {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: 1
         docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
         maxRetries: max_retries
     }
@@ -56,19 +53,30 @@ task download_taxonomy {
 
 task download_library {
     meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
         description: "This WDL task downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available at: https://ftp.ncbi.nlm.nih.gov/genomes/refseq/."
     }
 
     parameter_meta {
         library_name: {
             description: "Library to download. Note that `protein` must equal `true` if downloading the `nr` library, and `protein` must equal `false` if downloading the `UniVec` or `UniVec_Core` library."
-            choices: ['archaea', 'bacteria', 'plasmid', 'viral', 'human', 'fungi', 'plant', 'protozoa', 'nt', 'nr', 'UniVec', 'UniVec_Core']
+            choices: [
+                'archaea',
+                'bacteria',
+                'plasmid',
+                'viral',
+                'human',
+                'fungi',
+                'plant',
+                'protozoa',
+                'nt',
+                'nr',
+                'UniVec',
+                'UniVec_Core'
+            ]
         }
         protein: "Construct a protein database?"
-        memory_gb: "RAM to allocate for task"
-        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `library_name`. Note that the default sizes are adequate as of April 2023, but new genomes are constantly being added to the NCBI database. More disk space may be required depending on when in the future this task is run."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation, specified in GB. Default disk size is determined dynamically based on `library_name`. Note that the default sizes are adequate as of April 2023, but new genomes are constantly being added to the NCBI database. More disk space may be required depending on when in the future this task is run."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -76,7 +84,7 @@ task download_library {
         String library_name
         Boolean protein = false
         Int memory_gb = 4
-        Int added_disk_size_gb = 0
+        Int modify_disk_size_gb = 0
         Int max_retries = 3
     }
 
@@ -87,7 +95,7 @@ task download_library {
         else if library_name=="nr" then 600
         else if library_name=="nt" then 2500
         else 20
-    ) + added_disk_size_gb
+    ) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -99,7 +107,7 @@ task download_library {
             --db ~{db_name} 2>&1 \
             | awk '/gunzip:/ { print; exit 42 } !/gunzip:/ { print }' 1>&2
 
-        tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
+        tar -C ~{db_name} -czf "~{db_name}.tar.gz" .
 
         rm -r ~{db_name}
     >>>
@@ -111,7 +119,6 @@ task download_library {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: 1
         docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
         maxRetries: max_retries
     }
@@ -119,16 +126,14 @@ task download_library {
 
 task create_library_from_fastas {
     meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
         description: "This WDL task adds custom entries from FASTA files to a Kraken2 DB."
     }
 
     parameter_meta {
         fastas: "Array of gzipped FASTA files. Each FASTA sequence ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         protein: "Construct a protein database?"
-        memory_gb: "RAM to allocate for task"
-        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `fastas` size."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -160,7 +165,7 @@ task create_library_from_fastas {
         rm tmp.fa
         >&2 echo "*** done adding custom FASTAs ***"
 
-        tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
+        tar -C ~{db_name} -czf "~{db_name}.tar.gz" .
 
         rm -r ~{db_name}
     >>>
@@ -172,7 +177,6 @@ task create_library_from_fastas {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: 1
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
     }
@@ -180,21 +184,19 @@ task create_library_from_fastas {
 
 task build_db {
     meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
         description: "This WDL task builds a custom Kraken2 database."
     }
 
     parameter_meta {
         tarballs: "Tarballs containing the NCBI taxonomy (generated by the `download_taxonomy` task) and at least one library (generated by the `download_library` task). Tarballs must not have a root directory."
-        db_name: "Name for output in compressed, archived format. The suffix `.tar.gz` will be added."
+        db_name: "Name for output in compressed, archived format. The suffix `.tar.gz` will be added."  # should this be prefix instead?
         protein: "Construct a protein database?"
         kmer_len: "K-mer length in bp that will be used to build the database"
         minimizer_len: "Minimizer length in bp that will be used to build the database"
         minimizer_spaces: "Number of characters in minimizer that are ignored in comparisons"
         max_db_size_gb: "Maximum number of GBs for Kraken 2 hash table; if the Kraken 2 estimator determines more would normally be needed, the reference library will be downsampled to fit."
-        added_memory_gb: "Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size."
-        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on size of the input `tarballs`."
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
         use_all_cores: "Use all cores. Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
@@ -204,24 +206,24 @@ task build_db {
         Array[File] tarballs
         String db_name = "kraken2_db"
         Boolean protein = false
+        Boolean use_all_cores = false
         Int kmer_len = if protein then 15 else 35
         Int minimizer_len = if protein then 12 else 31
         Int minimizer_spaces = if protein then 0 else 7
         Int max_db_size_gb = -1
-        Int added_memory_gb = 0
-        Int added_disk_size_gb = 0
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
         Int ncpu = 1
-        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
     Int tarballs_size = ceil(size(tarballs, "GiB"))
-    Int disk_size_gb = tarballs_size * 6 + added_disk_size_gb
+    Int disk_size_gb = tarballs_size * 6 + modify_disk_size_gb
     Int memory_gb = (
         if (max_db_size_gb > 0)
         then (ceil(max_db_size_gb * 1.2))
         else (tarballs_size * 2)
-    ) + added_memory_gb
+    ) + modify_memory_gb
 
     String max_db_size_bytes = max_db_size_gb + "000000000"
 
@@ -247,7 +249,10 @@ task build_db {
             --kmer-len ~{kmer_len} \
             --minimizer-len ~{minimizer_len} \
             --minimizer-spaces ~{minimizer_spaces} \
-            ~{if (max_db_size_gb > 0) then "--max-db-size" else ""} ~{if (max_db_size_gb > 0) then max_db_size_bytes else ""} \
+            ~{if (max_db_size_gb > 0)
+                then "--max-db-size " + max_db_size_bytes
+                else ""
+            } \
             --threads "$n_cores" \
             --db ~{db_name}
 
@@ -276,43 +281,41 @@ task build_db {
 
 task kraken {
     meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
         description: "This WDL tool runs Kraken2 on a pair of fastq files."
     }
 
     parameter_meta {
-        read1: "Gzipped FastQ file with 1st reads in pair"
-        read2: "Gzipped FastQ file with 2nd reads in pair"
+        read_one_fastq_gz: "Gzipped FastQ file with 1st reads in pair"
+        read_two_fastq_gz: "Gzipped FastQ file with 2nd reads in pair"
         db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
         prefix: "Prefix for the Kraken2 output files. The extensions `.kraken2.txt` and `.kraken2.sequences.txt.gz` will be added."
         store_sequences: "Store and output main Kraken2 output in addition to the summary report"
         use_names: "Print scientific names instead of just taxids"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         min_base_quality: "Minimum base quality used in classification"
         memory_gb: "RAM to allocate for task. If missing will be dynamically allocated based on database size."
         ncpu: "Number of cores to allocate for task"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
     input {
-        File read1
-        File read2
+        File read_one_fastq_gz
+        File read_two_fastq_gz
         File db
-        String prefix = basename(read1, "_R1.fastq.gz")
+        String prefix = basename(read_one_fastq_gz, "_R1.fastq.gz")
         Boolean store_sequences = false
         Boolean use_names = true
+        Boolean use_all_cores = false
         Int min_base_quality = 0
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
         Int ncpu = 1
-        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
     Float db_size = size(db, "GiB")
-    Float read1_size = size(read1, "GiB")
-    Float read2_size = size(read2, "GiB")
+    Float read1_size = size(read_one_fastq_gz, "GiB")
+    Float read2_size = size(read_two_fastq_gz, "GiB")
     Int disk_size_gb_calculation = ceil(
         (db_size * 2) + read1_size + read2_size
     ) + modify_disk_size_gb
@@ -333,7 +336,7 @@ task kraken {
             n_cores=$(nproc)
         fi
 
-        mkdir -p kraken2_db/
+        mkdir kraken2_db/
         tar -xzf ~{db} -C kraken2_db/ --no-same-owner
 
         kraken2 --db kraken2_db/ \
@@ -344,8 +347,8 @@ task kraken {
             --report ~{out_report} \
             --report-zero-counts \
             ~{if use_names then "--use-names" else ""} \
-            ~{read1} \
-            ~{read2}
+            ~{read_one_fastq_gz} \
+            ~{read_two_fastq_gz}
 
         if [ "~{store_sequences}" = "true" ]; then
             gzip ~{out_sequences}

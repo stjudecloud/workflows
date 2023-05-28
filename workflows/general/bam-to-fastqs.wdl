@@ -34,7 +34,6 @@
 
 version 1.0
 
-
 import "../../tools/samtools.wdl"
 import "../../tools/fq.wdl"
 
@@ -69,8 +68,8 @@ workflow bam_to_fastqs {
         zip(bam_to_fastq.read_one_fastq_gz, bam_to_fastq.read_two_fastq_gz)
     ) {
         call fq.fqlint { input:
-            read1=select_first([reads.left, "undefined"]),
-            read2=reads.right,
+            read_one_fastq_gz=select_first([reads.left, "undefined"]),
+            read_two_fastq_gz=reads.right,
             max_retries=max_retries
         }
     }

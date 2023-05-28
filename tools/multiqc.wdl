@@ -7,32 +7,30 @@ version 1.0
 
 task multiqc {
     meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL task generates a MultiQC quality control metrics report summary from input QC result files."
     }
 
     parameter_meta {
         input_files: "An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
-        output_prefix: "A string for the MultiQC output directory: <prefix>.multiqc/ and <prefix>.multiqc.tar.gz"
+        prefix: "A string for the MultiQC output directory: <prefix>.multiqc/ and <prefix>.multiqc.tar.gz"
         extra_fn_clean_exts: "An array of strings that should be cleaned from sample names by MultiQC"
         mosdepth_labels: "If passing in multiple runs of `mosdepth`, an array of strings for labelling the different runs (must match part of the filenames)"
     }
 
     input {
         Array[File] input_files
-        String output_prefix
+        String prefix
         Array[String] extra_fn_clean_exts = []
         Array[String] mosdepth_labels = []
-        Int disk_size = 20
         Int memory_gb = 5
+        Int disk_size_gb = 20
         Int max_retries = 1
     }
 
-    String out_directory = output_prefix + ".multiqc"
+    String out_directory = prefix + ".multiqc"
     String out_tar_gz = out_directory + ".tar.gz"
 
-    command {
+    command <<<
         set -euo pipefail
         
         # set ENV variables for `multiqc`
@@ -45,14 +43,14 @@ task multiqc {
         echo "extra_fn_clean_exts:" > multiqc_config.yaml
         
         # if extra extensions are to be cleaned, add them to YAML
-        if [ "~{if (length(extra_fn_clean_exts) > 0) then "true" else ""}" = "true" ]; then
+        if [ "~{(length(extra_fn_clean_exts) > 0)}" = "true" ]; then
             echo "~{sep="\n" extra_fn_clean_exts}" > extensions.txt
             while read -r ext; do
                 echo "  - $ext"
             done < extensions.txt >> multiqc_config.yaml
         fi
 
-        if [ "~{if (length(mosdepth_labels) > 0) then "true" else ""}" = "true" ]; then
+        if [ "~{(length(mosdepth_labels) > 0)}" = "true" ]; then
             # if mosdepth labels are provided, add them to `extra_fn_clean_exts`
             echo "~{sep="\n" mosdepth_labels}" > labels.txt
             while read -r label; do
@@ -71,8 +69,10 @@ task multiqc {
             done < labels.txt >> multiqc_config.yaml
         fi
 
-        multiqc -vvv -c multiqc_config.yaml \
-            --file-list file_list.txt -o ~{out_directory}
+        multiqc -v \
+            -c multiqc_config.yaml \
+            --file-list file_list.txt \
+            -o ~{out_directory}
         
         if [ ! -d ~{out_directory} ]; then
             >&2 echo "MultiQC didn't find any valid files!"
@@ -80,16 +80,16 @@ task multiqc {
         fi
 
         tar -czf ~{out_tar_gz} ~{out_directory}
-    }
+    >>>
 
     output {
         File multiqc_report = out_tar_gz
     }
 
     runtime {
-        disk: disk_size + " GB"
-        docker: 'quay.io/biocontainers/multiqc:1.14--pyhdfd78af_0'
         memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: 'quay.io/biocontainers/multiqc:1.14--pyhdfd78af_0'
         maxRetries: max_retries
     }
 }

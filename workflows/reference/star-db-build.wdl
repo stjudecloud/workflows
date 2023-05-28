@@ -43,9 +43,9 @@ workflow star_db_build {
     parameter_meta {
         reference_fa_url: "URL to retrieve the reference FASTA file from"
         reference_fa_name: "Name of output reference FASTA file"
-        reference_fa_md5: "Expected md5sum of reference FASTA file"
         gtf_url: "URL to retrieve the reference GTF file from"
         gtf_name: "Name of output GTF file"
+        reference_fa_md5: "Expected md5sum of reference FASTA file"
         gtf_md5: "Expected md5sum of GTF file"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
@@ -53,9 +53,9 @@ workflow star_db_build {
     input {
         String reference_fa_url
         String reference_fa_name
-        String? reference_fa_md5
         String gtf_url
         String gtf_name
+        String? reference_fa_md5
         String? gtf_md5
         Int? max_retries
     }
@@ -73,14 +73,14 @@ workflow star_db_build {
         max_retries=max_retries
     }
     call star.build_star_db { input:
-        reference_fasta=reference_download.outfile,
-        gtf=gtf_download.outfile,
+        reference_fasta=reference_download.downloaded_file,
+        gtf=gtf_download.downloaded_file,
         max_retries=max_retries
     }
 
     output {
-      File reference_fa = reference_download.outfile
-      File gtf = gtf_download.outfile
+      File reference_fa = reference_download.downloaded_file
+      File gtf = gtf_download.downloaded_file
       File stardb_tar_gz = build_star_db.stardb_out
     }
 }

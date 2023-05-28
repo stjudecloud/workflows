@@ -7,8 +7,6 @@ version 1.0
 
 task quickcheck {
     meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
     }
 
@@ -18,23 +16,25 @@ task quickcheck {
 
     input {
         File bam
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size_gb = ceil((bam_size * 1.2) + 10) + modify_disk_size_gb
 
-    command {
+    command <<<
         samtools quickcheck ~{bam}
-    }
+    >>>
 
     output {
         File checked_bam = bam
     }
 
     runtime {
-        memory: "4 GB"
-        disk: disk_size + " GB"
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -42,8 +42,6 @@ task quickcheck {
 
 task split {
     meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL task runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
     }
 
@@ -54,16 +52,17 @@ task split {
 
     input {
         File bam
-        Int ncpu = 1
-        Boolean reject_unaccounted = true
         String prefix = basename(bam, ".bam")
-        Int max_retries = 1
-        Int? disk_size_gb
+        Boolean reject_unaccounted = true
         Boolean use_all_cores = false
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
+    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -73,6 +72,7 @@ task split {
             n_cores=$(nproc)
         fi
 
+        # TODO at a glance this looks like it could be made more efficient
         samtools split --threads "$n_cores" -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
         samtools view  --threads "$n_cores" ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
         if ~{reject_unaccounted} && [ -s unaccounted_reads.bam ]
@@ -87,9 +87,9 @@ task split {
     }
  
     runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         cpu: ncpu
-        memory: "4 GB"
-        disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -97,8 +97,6 @@ task split {
 
 task flagstat {
     meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL tool generates a `samtools flagstat` report for the input BAM file."
     }
 
@@ -108,42 +106,52 @@ task flagstat {
 
     input {
         File bam
-        String outfile_name = basename(bam, ".bam")+".flagstat.txt"
-        Int max_retries = 1
+        String outfile_name = basename(bam, ".bam") + ".flagstat.txt"
         Int memory_gb = 5
+        Int modify_disk_size_gb = 0
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size_gb = ceil((bam_size * 1.2) + 10) + modify_disk_size_gb
 
-    command {
+    command <<<
         samtools flagstat ~{bam} > ~{outfile_name}
-    }
+    >>>
 
     output { 
        File flagstat_report = outfile_name
     }
 
     runtime {
-        disk: disk_size + " GB"
-        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 }
 
 task index {
+    meta {
+        description: "This WDL task runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to index"
+    }
+
     input {
         File bam
-        Int ncpu = 1
-        String outfile_name = basename(bam)+".bai"
-        Int max_retries = 1
-        Int memory_gb = 15
+        String outfile_name = basename(bam) + ".bai"  # TODO we might want to disable customizing the name for the BAI? Breaks our best practices, but also please do not change the BAI name
         Boolean use_all_cores = false
+        Int memory_gb = 15  # TODO this seems like more RAM than should be necessary
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size_gb = ceil((bam_size * 1.5) + 10) + modify_disk_size_gb
 
     command {
         set -euo pipefail
@@ -156,42 +164,34 @@ task index {
         samtools index -@ "$n_cores" ~{bam} ~{outfile_name}
     }
 
-    runtime {
-        cpu: ncpu
-        disk: disk_size + " GB"
-        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
-        memory: memory_gb + " GB"
-        dx_instance_type: "azure:mem2_ssd1_x4"
-        maxRetries: max_retries
-    }
-
     output {
         File bam_index = outfile_name
     }
 
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to index"
+    runtime {
+        dx_instance_type: "azure:mem2_ssd1_x4"
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        cpu: ncpu
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
+        maxRetries: max_retries
     }
 }
 
 task subsample {
     input {
         File bam
-        String outfile_name = basename(bam, ".bam") + ".subsampled.bam"
-        Int desired_reads = 500000
-        Int max_retries = 1
-        Int ncpu = 1
+        String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
+        Int desired_reads = 500000
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -201,18 +201,28 @@ task subsample {
             n_cores=$(nproc)
         fi
 
-        if [[ "$(samtools view --threads "$n_cores" ~{bam} | head -n ~{desired_reads} | wc -l)" -ge "~{desired_reads}" ]]; then
+        if [[ \
+            "$(samtools view --threads "$n_cores" ~{bam} \
+                | head -n ~{desired_reads} | wc -l)" \
+            -ge "~{desired_reads}" \
+        ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
             # subsample it.
             initial_frac=0.00001
-            initial_reads=$(samtools view --threads "$n_cores" -s "$initial_frac" ~{bam} | wc -l)
+            initial_reads=$( \
+                samtools view --threads "$n_cores" -s "$initial_frac" ~{bam} | wc -l \
+            )
             frac=$( \
                 awk -v desired_reads=~{desired_reads} \
                     -v initial_reads="$initial_reads" \
                     -v initial_frac="$initial_frac" \
-                        'BEGIN{printf "%1.8f", ( desired_reads / initial_reads * initial_frac )}' \
+                        'BEGIN{
+                            printf "%1.8f",
+                            ( desired_reads / initial_reads * initial_frac )
+                        }' \
                 )
-            samtools view --threads "$n_cores" -h -b -s "$frac" ~{bam} > ~{outfile_name}
+            samtools view --threads "$n_cores" -hb -s "$frac" ~{bam} \
+                > ~{prefix}.subsampled.bam
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
@@ -223,13 +233,13 @@ task subsample {
 
     output {
         File success = "success"
-        File? sampled_bam = outfile_name
+        File? sampled_bam = prefix + ".subsampled.bam"
     }
 
     runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         cpu: ncpu
-        memory: "4 GB"
-        disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -238,18 +248,19 @@ task subsample {
 task merge {
     input {
         Array[File] bams
-        String outfile_name = basename(bams[0], ".bam") + ".merged.bam"
         File? new_header
+        String outfile_name = basename(bams[0], ".bam") + ".merged.bam"  # TODO is this desired behavior?
         Boolean attach_rg = true
-        Int max_retries = 1
-        Int ncpu = 1
         Boolean use_all_cores = false
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
     }
 
-    Float bam_size = size(bams, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
-    String rg_arg = if attach_rg then "-r" else ""
-
+    Float bams_size = size(bams, "GiB")
+    Int disk_size_gb = ceil((bams_size * 2) + 10) + modify_disk_size_gb
+    
     command <<<
         set -euo pipefail
 
@@ -264,8 +275,12 @@ task merge {
             header_arg="-h ~{new_header}"
         fi
 
-        samtools merge --threads "$n_cores" $header_arg ~{rg_arg} ~{outfile_name} ~{sep=' ' bams}
-
+        samtools merge \
+            --threads "$n_cores" \
+            $header_arg \
+            ~{if attach_rg then "-r" else ""} \
+            ~{outfile_name} \
+            ~{sep=' ' bams}
     >>>
 
     output {
@@ -273,26 +288,37 @@ task merge {
     }
 
     runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         cpu: ncpu
-        memory: "4 GB"
-        disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 }
 
 task addreplacerg {
+    meta {
+        description: "This WDL task runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to add read group information"
+        read_group_id: "Existing read group ID in BAM to add to reads"
+    }
+
     input {
         File bam
-        String outfile_name = basename(bam, ".bam") + ".read_group.bam"
         String read_group_id
-        Int max_retries = 1
-        Int ncpu = 1
+        String outfile_name = basename(bam, ".bam") + ".read_group.bam"
         Boolean use_all_cores = false
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -302,7 +328,11 @@ task addreplacerg {
             n_cores=$(nproc)
         fi
 
-        samtools addreplacerg --threads "$n_cores" -R ~{read_group_id} -o ~{outfile_name} ~{bam}
+        samtools addreplacerg \
+            --threads "$n_cores" \
+            -R ~{read_group_id} \
+            -o ~{outfile_name} \
+            ~{bam}
     >>>
 
     output {
@@ -310,22 +340,11 @@ task addreplacerg {
     }
 
     runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         cpu: ncpu
-        memory: "4 GB"
-        disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
-    }
-
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        description: "This WDL task runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to add read group information"
-        read_group_id: "Existing read group ID in BAM to add to reads"
     }
 }
 
@@ -350,7 +369,7 @@ task collate {
 
     input {
         File bam
-        String prefix = basename(bam, ".bam")
+        String outfile_name = basename(bam, ".bam") + ".collated.bam"
         Boolean f = true
         Boolean use_all_cores = false
         Int modify_memory_gb = 0
@@ -358,8 +377,6 @@ task collate {
         Int ncpu = 1
         Int max_retries = 1
     }
-
-    String outfile_name = prefix + ".collated.bam"
 
     Float bam_size = size(bam, "GiB")
     Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
@@ -385,9 +402,9 @@ task collate {
     }
 
     runtime {
-        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
+        cpu: ncpu
         docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
@@ -452,10 +469,13 @@ task bam_to_fastq {
             -f ~{f} \
             -F ~{F} \
             -G ~{G} \
-            -1 ~{if interleaved then prefix+".fastq.gz" else prefix+"_R1.fastq.gz"} \
+            -1 ~{if interleaved
+                then prefix + ".fastq.gz"
+                else prefix + "_R1.fastq.gz"
+            } \
             -2 ~{
                 if paired_end then (
-                    if interleaved then prefix+".fastq.gz" else prefix+"_R2.fastq.gz"
+                    if interleaved then prefix + ".fastq.gz" else prefix + "_R2.fastq.gz"
                 )
                 else "/dev/null"
             } \
@@ -469,6 +489,8 @@ task bam_to_fastq {
     >>>
 
     output {
+        # one of `read_one_fastq_gz` or `interleaved_reads_fastq_gz` is
+        # guaranteed to exist at the end of execution
         File? read_one_fastq_gz = "~{prefix}_R1.fastq.gz"
         File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
         File? singleton_reads_fastq_gz = "~{prefix}.singleton.fastq.gz"
@@ -476,9 +498,9 @@ task bam_to_fastq {
     }
 
     runtime {
-        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
+        cpu: ncpu
         docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
@@ -552,28 +574,35 @@ task collate_to_fastq {
             ~{if fast_mode then "-f" else ""} \
             -O \
             ~{bam} \
-            | tee ~{if store_collated_bam then prefix+".collated.bam" else ""} \
+            | tee ~{if store_collated_bam then prefix + ".collated.bam" else ""} \
             | samtools fastq \
                 --threads "$n_cores" \
                 -f ~{f} \
                 -F ~{F} \
                 -G ~{G} \
-                -1 ~{if interleaved then prefix+".fastq.gz" else prefix+"_R1.fastq.gz"} \
+                -1 ~{if interleaved
+                    then prefix + ".fastq.gz"
+                    else prefix + "_R1.fastq.gz"
+                } \
                 -2 ~{
                     if paired_end then (
-                        if interleaved then prefix+".fastq.gz" else prefix+"_R2.fastq.gz"
+                        if interleaved
+                        then prefix + ".fastq.gz"
+                        else prefix + "_R2.fastq.gz"
                     )
                     else "/dev/null"
                 } \
                 -s ~{
                     if output_singletons
-                    then prefix+".singleton.fastq.gz"
+                    then prefix + ".singleton.fastq.gz"
                     else "/dev/null"
                 } \
                 -0 /dev/null
     >>>
 
     output {
+        # one of `read_one_fastq_gz` or `interleaved_reads_fastq_gz` is
+        # guaranteed to exist at the end of execution
         File? collated_bam = "~{prefix}.collated.bam"
         File? read_one_fastq_gz = "~{prefix}_R1.fastq.gz"
         File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
@@ -582,9 +611,9 @@ task collate_to_fastq {
     }
 
     runtime {
-        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
+        cpu: ncpu
         docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }

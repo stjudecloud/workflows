@@ -7,8 +7,6 @@ version 1.0
 
 task build_star_db {
     meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL task runs STAR's build command to generate a STAR format reference for alignment." 
     }
 
@@ -18,20 +16,24 @@ task build_star_db {
     }
 
     input {
-        Int ncpu = 1
         File reference_fasta
         File gtf
-        String stardb_dir_name = "star_db"
-        Int memory_gb = 50
-        Int? disk_size_gb
-        Int max_retries = 1
+        String stardb_name = "star_db"
         Boolean use_all_cores = false
+        Int memory_gb = 50
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
     }
 
-    String stardb_out_name = stardb_dir_name + ".tar.gz"
+    String stardb_out_name = stardb_name + ".tar.gz"
     Float reference_fasta_size = size(reference_fasta, "GiB")
     Float gtf_size = size(gtf, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(((reference_fasta_size + gtf_size) * 3) + 10)])
+    Int disk_size_gb = ceil(
+        ((reference_fasta_size + gtf_size) * 3) + 10
+    ) + modify_disk_size_gb
+
+    String memory_limit_bytes = (memory_gb - 2) + "000000000"
 
     command <<<
         set -euo pipefail
@@ -43,24 +45,24 @@ task build_star_db {
 
         orig_gtf=~{gtf}
         gtf_name=$(basename "${orig_gtf%.gz}")
-        gunzip -c ~{gtf} > "$gtf_name" || cp ~{gtf} "$gtf_name"
+        gunzip -c ~{gtf} > "$gtf_name" || cp ~{gtf} "$gtf_name"  # TODO would this be better as an `ln -s`?
 
         orig_fasta=~{reference_fasta}
         ref_fasta=$(basename "${orig_fasta%.gz}")
-        gunzip -c ~{reference_fasta} > "$ref_fasta" || cp ~{reference_fasta} "$ref_fasta"
+        gunzip -c ~{reference_fasta} > "$ref_fasta" || cp ~{reference_fasta} "$ref_fasta"  # TODO would this be better as an `ln -s`?
         
-        mkdir ~{stardb_dir_name};
+        mkdir ~{stardb_name};
         STAR --runMode genomeGenerate \
-            --genomeDir ~{stardb_dir_name} \
+            --genomeDir ~{stardb_name} \
             --runThreadN "$n_cores" \
-            --limitGenomeGenerateRAM ~{(memory_gb - 2) + "000000000"} \
+            --limitGenomeGenerateRAM ~{memory_limit_bytes} \
             --genomeFastaFiles "$ref_fasta" \
             --sjdbGTFfile "$gtf_name" \
             --sjdbOverhang 125
 
         rm "$gtf_name" "$ref_fasta"
 
-        tar -czf ~{stardb_out_name} ~{stardb_dir_name}
+        tar -czf ~{stardb_out_name} ~{stardb_name}
     >>>
 
     output {
@@ -69,7 +71,7 @@ task build_star_db {
 
     runtime {
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
         cpu: ncpu
         docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
@@ -78,29 +80,27 @@ task build_star_db {
 
 task alignment {
     meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL task runs the STAR aligner on a set of RNA-Seq FastQ files."
     }
 
     parameter_meta {
         read_one_fastqs: "An array of FastQ files containing read one information"
-        read_two_fastqs: "An array of FastQ files containing read two information"
         stardb_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
+        read_two_fastqs: "An array of FastQ files containing read two information"
     }
 
     input {
-        Int ncpu = 1
         Array[File] read_one_fastqs
-        Array[File] read_two_fastqs = []
         File stardb_tar_gz
         String output_prefix
         String? read_groups
-        Int memory_gb = 50
-        Int? disk_size_gb
-        Int max_retries = 1
+        Array[File] read_two_fastqs = []
         Boolean use_all_cores = false
+        Int memory_gb = 50
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Int max_retries = 1
     }
     
     String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
@@ -110,11 +110,13 @@ task alignment {
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
     Float stardb_tar_gz_size = size(stardb_tar_gz, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10)])
+    Int disk_size_gb = ceil(
+        ((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10
+    ) + modify_disk_size_gb
 
-    Array[File] empty_comparison_array = []  # odd construction forced by WDL v1.0 spec
+    Array[File] empty_array = []  # odd construction forced by WDL v1.0 spec
 
-    command {
+    command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
@@ -122,15 +124,12 @@ task alignment {
             n_cores=$(nproc)
         fi
 
-        # This STAR image (base is BusyBox v1.22.1 ) does not support the `tar -z` command
-        # So tar and gzip must be called separately
-        gunzip -c ~{stardb_tar_gz} > tmp.tar
-        tar -xf tmp.tar
+        tar -xzf ~{stardb_tar_gz}
 
         # TODO rework `sort_star_input.py` to avoid this spaghetti logic
         if [ -n "~{if defined(read_groups) then read_groups else ""}" ]
         then
-            if [ -n "~{if read_two_fastqs != empty_comparison_array then "read_two_fastqs" else ""}" ]
+            if [ -n "~{if read_two_fastqs != empty_array then "read_two_fastqs" else ""}" ]
             then
                 python3 /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}" \
@@ -142,7 +141,7 @@ task alignment {
                     --read_groups "~{read_groups}"
             fi
         else 
-            if [ -n "~{if read_two_fastqs != empty_comparison_array then "read_two_fastqs" else ""}" ]
+            if [ -n "~{if read_two_fastqs != empty_array then "read_two_fastqs" else ""}" ]
             then
                 python3 /home/sort_star_input.py \
                     --read_one_fastqs "~{sep=',' read_one_fastqs}" \
@@ -153,7 +152,9 @@ task alignment {
             fi
         fi
 
-        STAR --readFilesIn $(cat read_one_fastqs_sorted.txt) $(cat read_two_fastqs_sorted.txt) \
+        STAR --readFilesIn \
+                $(cat read_one_fastqs_sorted.txt) \
+                $(cat read_two_fastqs_sorted.txt) \
              --readFilesCommand "gunzip -c" \
              --genomeDir ~{stardb_dir} \
              --runThreadN "$n_cores" \
@@ -174,7 +175,7 @@ task alignment {
              --twopassMode Basic \
              --limitBAMsortRAM ~{memory_limit_bytes} \
              --outSAMattrRGline $(cat read_groups_sorted.txt)
-    }
+    >>>
 
     output {
         File star_log = output_prefix + ".Log.final.out"
@@ -182,9 +183,9 @@ task alignment {
     }
 
     runtime {
-        cpu: ncpu
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
+        cpu: ncpu
         docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
     }

@@ -9,6 +9,8 @@ task calc_tpm {
         counts: "A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with `htseq.wdl`."
         gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with `calc-gene-lengths.wdl`."
         outfile_name: "Name of the TPM file"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        disk_size_gb: "Disk space to allocate for task, specified in GB"
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -16,6 +18,8 @@ task calc_tpm {
         File counts
         File gene_lengths
         String outfile_name = basename(counts, ".feature-counts.txt") + ".TPM.txt"
+        Int memory_gb = 4
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 
@@ -60,23 +64,29 @@ END
     }
 
     runtime {
-        memory: "4 GB"
-        disk: "4 GB"
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
 }
 
-task run_ESTIMATE {
+task run_ESTIMATE {  # TODO should be lowercase?
     parameter_meta {
         gene_expression_file: "A 2 column headered TSV file with 'Gene name' in the first column and gene expression values (as floats) in the second column. Can be generated with the `calc_tpm` task."
         outfile_name: "Name of the ESTIMATE output file"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        disk_size_gb: "Disk space to allocate for task, specified in GB"
         max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File gene_expression_file
-        String outfile_name = basename(gene_expression_file, ".TPM.txt") + ".ESTIMATE.gct"
+        String outfile_name = basename(
+            gene_expression_file, ".TPM.txt"
+        ) + ".ESTIMATE.gct"
+        Int memory_gb = 4
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 
@@ -99,8 +109,8 @@ END
     }
 
     runtime {
-        memory: "4 GB"
-        disk: "4 GB"
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'ghcr.io/stjudecloud/estimate:1.0.0'
         maxRetries: max_retries
     }

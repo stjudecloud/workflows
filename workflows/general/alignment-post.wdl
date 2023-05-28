@@ -1,3 +1,7 @@
+## # Alignment Post
+##
+## TODO write something here
+
 version 1.0
 
 import "../../tools/samtools.wdl"
@@ -10,27 +14,27 @@ workflow alignment_post {
         bam: "Input BAM format file to process"
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
-        cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination"
             choices: [
-                'bwa aln',
-                'bwa mem',
-                'star'
+                'bwa aln',  # TODO this is SE. Is `bwa_aln_pe` a possibility?
+                'bwa mem',  # TODO this is also SE.
+                'star'  # TODO I think only this will work with paired end? What would DNA use?
             ]
         },
+        cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
         use_all_cores: "Use all cores for multi-core steps?"
-        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     input {
         File bam
         Boolean mark_duplicates
         File? contaminant_db
-        Boolean cleanse_xenograft = false
-        String xenocp_aligner = ""
-        Boolean use_all_cores = false
         Int? max_retries
+        String xenocp_aligner = ""
+        Boolean cleanse_xenograft = false
+        Boolean use_all_cores = false
     }
 
     call picard.sort as picard_sort { input: bam=bam, max_retries=max_retries }

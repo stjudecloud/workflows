@@ -41,7 +41,7 @@ workflow bwa_db_build {
         reference_fa_url: "URL to retrieve the reference FASTA file from."
         reference_fa_name: "Name of output reference FASTA file"
         reference_fa_md5: "Expected md5sum of reference FASTA file"
-        max_retries: "Number of times to retry failed steps"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     input {
@@ -60,12 +60,12 @@ workflow bwa_db_build {
     }
     call bwa.build_bwa_db {
         input:
-            reference_fasta=reference_download.outfile,
+            reference_fasta=reference_download.downloaded_file,
             max_retries=max_retries
     }
 
     output {
-      File reference_fa = reference_download.outfile
+      File reference_fa = reference_download.downloaded_file
       File bwadb_tar_gz = build_bwa_db.bwadb_tar_gz
     }
 }
