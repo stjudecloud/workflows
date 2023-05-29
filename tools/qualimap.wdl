@@ -117,11 +117,11 @@ task rnaseq {
         gtf_name=$(basename "${orig%.gz}")
         gunzip -c ~{gtf} > "$gtf_name" || ln -s ~{gtf} "$gtf_name"
 
-        # TODO are we capturing the `-oc` flag file?
+        # '-oc qualimap_counts.txt' puts the file in '-outdir'
         qualimap rnaseq -bam ~{bam} \
+                        -oc qualimap_counts.txt \
                         -gtf "$gtf_name" \
                         -outdir ~{out_directory} \
-                        -oc qualimap_counts.txt \
                         ~{name_sorted_arg} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
