@@ -115,7 +115,7 @@ task rnaseq {
 
         orig=~{gtf}
         gtf_name=$(basename "${orig%.gz}")
-        gunzip -c ~{gtf} > "$gtf_name" || cp ~{gtf} "$gtf_name"  # TODO would this be better as an `ln -s`?
+        gunzip -c ~{gtf} > "$gtf_name" || ln -s ~{gtf} "$gtf_name"
 
         # TODO are we capturing the `-oc` flag file?
         qualimap rnaseq -bam ~{bam} \

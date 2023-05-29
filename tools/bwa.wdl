@@ -240,7 +240,8 @@ task build_bwa_db {
 
         orig_fasta=~{reference_fasta}
         ref_fasta=$(basename "${orig_fasta%.gz}")
-        gunzip -c ~{reference_fasta} > "$ref_fasta" || cp ~{reference_fasta} "$ref_fasta"  # TODO would this be better as an `ln -s`?
+        gunzip -c ~{reference_fasta} > "$ref_fasta" \
+            || ln -s ~{reference_fasta} "$ref_fasta"
 
         bwa index "$ref_fasta"
 

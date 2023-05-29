@@ -45,11 +45,12 @@ task build_star_db {
 
         orig_gtf=~{gtf}
         gtf_name=$(basename "${orig_gtf%.gz}")
-        gunzip -c ~{gtf} > "$gtf_name" || cp ~{gtf} "$gtf_name"  # TODO would this be better as an `ln -s`?
+        gunzip -c ~{gtf} > "$gtf_name" || ln -s ~{gtf} "$gtf_name"
 
         orig_fasta=~{reference_fasta}
         ref_fasta=$(basename "${orig_fasta%.gz}")
-        gunzip -c ~{reference_fasta} > "$ref_fasta" || cp ~{reference_fasta} "$ref_fasta"  # TODO would this be better as an `ln -s`?
+        gunzip -c ~{reference_fasta} > "$ref_fasta" \
+            || ln -s ~{reference_fasta} "$ref_fasta"
         
         mkdir ~{stardb_name};
         STAR --runMode genomeGenerate \
