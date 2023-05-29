@@ -47,7 +47,6 @@ workflow chipseq_standard {
         bowtie_indexes: "Database of v1 reference files for the bowtie aligner. Can be generated with https://github.com/stjude/seaseq/blob/master/workflows/tasks/bowtie.wdl. [*.ebwt]"
         excludelist: "Optional list of regions that will be excluded after reference alignment"
         output_prefix: "Prefix for output files"
-        paired_end: "Is the data paired-end (true) or single-end (false)?"
         validate_input: "Run Picard ValidateSamFile on the input BAM"
         use_all_cores: "Use all cores for multi-core steps?"
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
@@ -59,7 +58,6 @@ workflow chipseq_standard {
         Array[File] bowtie_indexes
         File? excludelist
         String output_prefix = basename(bam, ".bam")
-        Boolean paired_end = false
         Boolean validate_input = true
         Boolean use_all_cores = false
         Int subsample_n_reads = -1
@@ -94,7 +92,7 @@ workflow chipseq_standard {
 
     call b2fq.bam_to_fastqs { input:
         bam=selected_bam,
-        paired_end=paired_end,
+        paired_end=false,
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
@@ -110,59 +108,41 @@ workflow chipseq_standard {
         max_retries=max_retries
     }
 
-    if (! paired_end) {
-        scatter (pair in zip(bam_to_fastqs.read1s, read_groups)){
-            call seaseq_util.basicfastqstats as basic_stats { input:
-                fastqfile=pair.left
-            }
-            call seaseq_map.mapping as bowtie_single_end_mapping {
-                input:
-                    fastqfile=pair.left,
-                    index_files=bowtie_indexes,
-                    metricsfile=basic_stats.metrics_out,
-                    blacklist=excludelist,
-                    read_length=read_tsv(read_length.read_length_file)[1][3]  # TODO explain these indices
-            }
-            File chosen_bam = select_first(
-                [
-                    bowtie_single_end_mapping.bklist_bam,
-                    bowtie_single_end_mapping.mkdup_bam,
-                    bowtie_single_end_mapping.sorted_bam
-                ]
-            )
-            call util.add_to_bam_header {
-                input:
-                    bam=chosen_bam,
-                    additional_header=pair.right,
-                    max_retries=max_retries
-            }
-            String rg_id_field = sub(sub(pair.right, ".*ID:", "ID:"), "\t.*", "") 
-            String rg_id = sub(rg_id_field, "ID:", "")
-            call samtools.addreplacerg as single_end { input:
-                bam=add_to_bam_header.reheadered_bam,
-                read_group_id=rg_id,
+    scatter (pair in zip(bam_to_fastqs.read1s, read_groups)){
+        call seaseq_util.basicfastqstats as basic_stats { input:
+            fastqfile=pair.left
+        }
+        call seaseq_map.mapping as bowtie_single_end_mapping {
+            input:
+                fastqfile=pair.left,
+                index_files=bowtie_indexes,
+                metricsfile=basic_stats.metrics_out,
+                blacklist=excludelist,
+                read_length=read_tsv(read_length.read_length_file)[1][3]  # TODO explain these indices
+        }
+        File chosen_bam = select_first(
+            [
+                bowtie_single_end_mapping.bklist_bam,
+                bowtie_single_end_mapping.mkdup_bam,
+                bowtie_single_end_mapping.sorted_bam
+            ]
+        )
+        call util.add_to_bam_header {
+            input:
+                bam=chosen_bam,
+                additional_header=pair.right,
                 max_retries=max_retries
-            }
+        }
+        String rg_id_field = sub(sub(pair.right, ".*ID:", "ID:"), "\t.*", "") 
+        String rg_id = sub(rg_id_field, "ID:", "")
+        call samtools.addreplacerg as single_end { input:
+            bam=add_to_bam_header.reheadered_bam,
+            read_group_id=rg_id,
+            max_retries=max_retries
         }
     }
 
-    # if (pairing == "Paired-end"){
-    #     Array[Pair[File, File]] fastqs = zip(bam_to_fastqs.read1s, bam_to_fastqs.read2s)
-    #     scatter(pair in zip(fastqs, format_rg_for_bwa.formatted_rg)){
-    #         call bwa.bwa_aln_pe as paired_end {
-    #             input:
-    #                 fastq1=pair.left.left,
-    #                 fastq2=pair.left.right,
-    #                 bwadb_tar_gz=bwadb_tar_gz,
-    #                 read_group=pair.right,
-    #                 max_retries=max_retries,
-    #                 use_all_cores=use_all_cores
-    #         }
-    #     }
-    # }
-
-    Array[File] aligned_bams = select_first([single_end.tagged_bam, []])#paired_end.bam])
-
+    Array[File] aligned_bams = select_first([single_end.tagged_bam, []])
     scatter(aligned_bam in aligned_bams){
         call picard.clean_sam as picard_clean { input:
             bam=aligned_bam,
