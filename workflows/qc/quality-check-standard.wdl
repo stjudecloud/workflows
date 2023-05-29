@@ -58,7 +58,7 @@ workflow quality_check {
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
         coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions"
         coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used."
-        prefix: "Prefix for ~all~ most results files"  # TODO will be updated to be used by all tasks in a future PR
+        prefix: "Prefix for all results files"
         mark_duplicates: "Mark duplicates before analyses? Note that regardless of this setting, `picard MarkDuplicates` will be run in order to generate a `*.MarkDuplicates.metrics.txt` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses."
         output_intermediate_files: "Output intermediate files? FastQs, if RNA a collated BAM, if `mark_duplicates==true` a duplicate marked BAM with an index and MD5. *WARNING* these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
@@ -91,7 +91,7 @@ workflow quality_check {
             coverage_labels=coverage_labels
     }
 
-    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }
+    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }  # TODO should prefix go to this call?
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call util.compression_integrity { input: bam=bam, max_retries=max_retries }
@@ -99,12 +99,13 @@ workflow quality_check {
     if (subsample_n_reads > 0) {
         call samtools.subsample { input:
             bam=quickcheck.checked_bam,
+            prefix=prefix,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
             max_retries=max_retries
         }
         if (defined(subsample.sampled_bam)) {
-            call samtools.index as subsample_index { input:
+            call samtools.index as subsample_index { input:  # TODO use prefix here?
                 bam=select_first([subsample.sampled_bam, "undefined"]),
                 use_all_cores=use_all_cores,
                 max_retries=max_retries
@@ -121,10 +122,13 @@ workflow quality_check {
         subsample_index.bam_index,
         bam_index
     ])
-    String post_subsample_prefix = basename(post_subsample_bam, ".bam")
+    String post_subsample_prefix = if (defined(subsample.sampled_bam))
+        then prefix + ".subsampled"
+        else prefix
 
     call picard.validate_bam { input:
         bam=post_subsample_bam,
+        outfile_name=post_subsample_prefix + ".ValidateSamFile.txt",
         succeed_on_errors=true,
         ignore_list=[],
         summary_mode=true,
@@ -133,29 +137,35 @@ workflow quality_check {
 
     call picard.collect_alignment_summary_metrics { input:
         bam=post_subsample_bam,
+        prefix=post_subsample_prefix,
         max_retries=max_retries
     }
     call picard.collect_gc_bias_metrics { input:
         bam=post_subsample_bam,
         reference_fasta=reference_fasta,
+        prefix=post_subsample_prefix,
         max_retries=max_retries
     }
     call picard.quality_score_distribution { input:
         bam=post_subsample_bam,
+        prefix=post_subsample_prefix,
         max_retries=max_retries
     }
     call fqc.fastqc { input:
         bam=post_subsample_bam,
+        results_directory=post_subsample_prefix + ".fastqc_results",
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
     call ngsderive.instrument as ngsderive_instrument { input:
         bam=post_subsample_bam,
+        outfile_name=post_subsample_prefix + ".instrument.txt",
         max_retries=max_retries
     }
     call ngsderive.read_length as ngsderive_read_length { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
+        outfile_name=post_subsample_prefix + ".readlength.txt",
         max_retries=max_retries
     }
     call ngsderive.encoding as ngsderive_encoding { input:
@@ -166,6 +176,7 @@ workflow quality_check {
 
     call samtools.collate_to_fastq { input:
         bam=post_subsample_bam,
+        prefix=post_subsample_prefix,
         # RNA needs a collated BAM for Qualimap
         # DNA can skip the associated storage costs
         store_collated_bam=(molecule == "RNA"),
@@ -181,30 +192,28 @@ workflow quality_check {
         read_two_fastq_gz=collate_to_fastq.read_two_fastq_gz,
         max_retries=max_retries
     }
-    call kraken.kraken as run_kraken { 
-        input:
-            read_one_fastq_gz=fqlint.validated_read1,
-            read_two_fastq_gz=select_first([fqlint.validated_read2, "undefined"]),
-            db=kraken_db,
-            use_all_cores=use_all_cores,
-            max_retries=max_retries
+    call kraken.kraken as run_kraken { input:
+        read_one_fastq_gz=fqlint.validated_read1,
+        read_two_fastq_gz=select_first([fqlint.validated_read2, "undefined"]),
+        db=kraken_db,
+        prefix=post_subsample_prefix,
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
     }
 
-    call mosdepth.coverage as wg_coverage {
-        input:
-            bam=post_subsample_bam,
-            bam_index=post_subsample_bam_index,
-            prefix=post_subsample_prefix + ".whole_genome",
-            max_retries=max_retries
+    call mosdepth.coverage as wg_coverage { input:
+        bam=post_subsample_bam,
+        bam_index=post_subsample_bam_index,
+        prefix=post_subsample_prefix + ".whole_genome",
+        max_retries=max_retries
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
-        call mosdepth.coverage as regions_coverage {
-            input:
-                bam=post_subsample_bam,
-                bam_index=post_subsample_bam_index,
-                coverage_bed=coverage_pair.left,
-                prefix=post_subsample_prefix + "." + coverage_pair.right,
-                max_retries=max_retries
+        call mosdepth.coverage as regions_coverage { input:
+            bam=post_subsample_bam,
+            bam_index=post_subsample_bam_index,
+            coverage_bed=coverage_pair.left,
+            prefix=post_subsample_prefix + "." + coverage_pair.right,
+            max_retries=max_retries
         }
     }
 
@@ -213,12 +222,14 @@ workflow quality_check {
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gtf=select_first([gtf, "undefined"]),
+            prefix=post_subsample_prefix,
             max_retries=max_retries
         }
         call ngsderive.infer_strandedness as ngsderive_strandedness { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gtf=select_first([gtf, "undefined"]),
+            outfile_name=post_subsample_prefix + ".strandedness.txt",
             max_retries=max_retries
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
@@ -234,6 +245,7 @@ workflow quality_check {
     call picard.mark_duplicates as markdups { input:
         bam=post_subsample_bam,
         create_bam=mark_duplicates,
+        prefix=post_subsample_prefix,
         max_retries=max_retries
     }
     if (mark_duplicates) {
@@ -248,6 +260,7 @@ workflow quality_check {
             ]),
             coverage_beds=coverage_beds,
             coverage_labels=parse_input.labels,
+            prefix=post_subsample_prefix + ".MarkDuplicates",
             max_retries=max_retries
         }
     }
@@ -256,10 +269,12 @@ workflow quality_check {
         # They should still be run if duplicates were not marked.
         call picard.collect_insert_size_metrics { input:
             bam=post_subsample_bam,
+            prefix=post_subsample_prefix,
             max_retries=max_retries
         }
         call samtools.flagstat as samtools_flagstat { input:
             bam=post_subsample_bam,
+            outfile_name=post_subsample_prefix + ".flagstat.txt",
             max_retries=max_retries
         }
     }

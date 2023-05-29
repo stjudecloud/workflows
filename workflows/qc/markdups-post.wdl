@@ -45,29 +45,29 @@ workflow markdups_post {
     }
 
     call picard.collect_insert_size_metrics { input:
-            bam=markdups_bam,
-            max_retries=max_retries
-        }
+        bam=markdups_bam,
+        prefix=prefix,
+        max_retries=max_retries
+    }
     call samtools.flagstat as samtools_flagstat { input:
         bam=markdups_bam,
+        outfile_name=prefix + ".flagstat.txt",
         max_retries=max_retries
     }
 
-    call mosdepth.coverage as wg_coverage {
-        input:
-            bam=markdups_bam,
-            bam_index=markdups_bam_index,
-            prefix=prefix + "." + "whole_genome",
-            max_retries=max_retries
+    call mosdepth.coverage as wg_coverage { input:
+        bam=markdups_bam,
+        bam_index=markdups_bam_index,
+        prefix=prefix + "." + "whole_genome",
+        max_retries=max_retries
     }
     scatter(coverage_pair in zip(coverage_beds, coverage_labels)) {
-        call mosdepth.coverage as regions_coverage {
-            input:
-                bam=markdups_bam,
-                bam_index=markdups_bam_index,
-                coverage_bed=coverage_pair.left,
-                prefix=prefix + "." + coverage_pair.right,
-                max_retries=max_retries
+        call mosdepth.coverage as regions_coverage { input:
+            bam=markdups_bam,
+            bam_index=markdups_bam_index,
+            coverage_bed=coverage_pair.left,
+            prefix=prefix + "." + coverage_pair.right,
+            max_retries=max_retries
         }
     }
 

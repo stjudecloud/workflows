@@ -255,7 +255,7 @@ task merge_sam_files {
         Array[File] bams
         String outfile_name = "merged.bam"  # TODO is there a better default for this?
         String sort_order = "coordinate"
-        Boolean threading = true  # TODO what's this do? Should we have `ncpu` too?
+        Boolean threading = true
         Int memory_gb = 40
         Int modify_disk_size_gb = 0
         Int max_retries = 1

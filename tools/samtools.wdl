@@ -73,8 +73,17 @@ task split {
         fi
 
         # TODO at a glance this looks like it could be made more efficient
-        samtools split --threads "$n_cores" -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
-        samtools view  --threads "$n_cores" ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
+        samtools split \
+            --threads "$n_cores" \
+            -u ~{prefix}.unaccounted_reads.bam \
+            -f '%*_%!.%.' \
+            ~{bam}
+        
+        samtools view \
+            --threads "$n_cores" \
+            ~{prefix}.unaccounted_reads.bam \
+            > unaccounted_reads.bam
+        
         if ~{reject_unaccounted} && [ -s unaccounted_reads.bam ]; then
             exit 1
         else
