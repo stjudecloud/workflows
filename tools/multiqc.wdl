@@ -70,6 +70,7 @@ task multiqc {
         fi
 
         multiqc -v \
+            --no-ansi \
             -c multiqc_config.yaml \
             --file-list file_list.txt \
             -o ~{out_directory}
