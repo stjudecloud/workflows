@@ -108,7 +108,7 @@ task subsample {
             } \
             \
             ~{read_one_fastq_gz} \
-            ~{if defined(read_two_fastq_gz) then read_two_fastq_gz else ""}
+            ~{read_two_fastq_gz}
     >>>
 
     output {
