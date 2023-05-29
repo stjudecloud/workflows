@@ -43,22 +43,21 @@ task bwa_aln {
             n_cores=$(nproc)
         fi
 
-        mkdir bwa
+        mkdir bwa_db
+        tar -C bwa_db -xzf ~{bwadb_tar_gz} --no-same-owner
+        PREFIX=$(basename bwa_db/*.ann ".ann")
 
-        tar -C bwa -xzf ~{bwadb_tar_gz} --no-same-owner
-        PREFIX=$(basename bwa/*.ann ".ann")
-
-        bwa aln -t "$n_cores" bwa/"$PREFIX" ~{fastq} > sai
+        bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{fastq} > sai
 
         bwa samse \
             ~{if read_group != "" then "-r '" + read_group + "'" else ""} \
-            bwa/"$PREFIX" \
+            bwa_db/"$PREFIX" \
             sai \
             ~{fastq} \
             | samtools view -@ "$n_cores" -hb - \
             > ~{output_bam}
 
-        rm -r bwa
+        rm -r bwa_db
     >>>
 
     output {
@@ -114,22 +113,22 @@ task bwa_aln_pe {
             n_cores=$(nproc)
         fi
 
-        mkdir bwa
-        tar -C bwa -xzf ~{bwadb_tar_gz} --no-same-owner
-        PREFIX=$(basename bwa/*.ann ".ann")
+        mkdir bwa_db
+        tar -C bwa_db -xzf ~{bwadb_tar_gz} --no-same-owner
+        PREFIX=$(basename bwa_db/*.ann ".ann")
 
-        bwa aln -t "$n_cores" bwa/"$PREFIX" ~{read_one_fastq_gz} > sai_1
-        bwa aln -t "$n_cores" bwa/"$PREFIX" ~{read_two_fastq_gz} > sai_2
+        bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_one_fastq_gz} > sai_1
+        bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_two_fastq_gz} > sai_2
 
         bwa sampe \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
-            bwa/"$PREFIX" \
+            bwa_db/"$PREFIX" \
             sai_1 sai_2 \
             ~{read_one_fastq_gz} ~{read_two_fastq_gz} \
             | samtools view -@ "$n_cores" -hb - \
             > ~{output_bam}
 
-        rm -r bwa
+        rm -r bwa_db
     >>>
 
     output {
@@ -183,19 +182,19 @@ task bwa_mem {
             n_cores=$(nproc)
         fi
 
-        mkdir bwa
-        tar -C bwa -xzf ~{bwadb_tar_gz} --no-same-owner
-        PREFIX=$(basename bwa/*.ann ".ann")
+        mkdir bwa_db
+        tar -C bwa_db -xzf ~{bwadb_tar_gz} --no-same-owner
+        PREFIX=$(basename bwa_db/*.ann ".ann")
 
         bwa mem \
             -t "$n_cores" \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
-            bwa/"$PREFIX" \
+            bwa_db/"$PREFIX" \
             ~{fastq} \
             | samtools view -@ "$n_cores" -hb - \
             > ~{output_bam}
 
-        rm -r bwa
+        rm -r bwa_db
     >>>
 
     output {
