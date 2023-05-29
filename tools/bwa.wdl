@@ -18,7 +18,7 @@ task bwa_aln {
     input {
         File fastq
         File bwadb_tar_gz
-        String prefix = basename(fastq, ".fq.gz")
+        String prefix = basename(fastq, ".fq.gz")  # TODO is this right?
         String read_group = ""
         Boolean use_all_cores = false
         Int memory_gb = 5
@@ -51,7 +51,7 @@ task bwa_aln {
         bwa aln -t "$n_cores" bwa/"$PREFIX" ~{fastq} > sai
 
         bwa samse \
-            ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
+            ~{if read_group != "" then "-r '" + read_group + "'" else ""} \
             bwa/"$PREFIX" \
             sai \
             ~{fastq} \
@@ -80,16 +80,16 @@ task bwa_aln_pe {
     }
 
     parameter_meta {
-        fastq1: "Input FastQ read 1 file to align with bwa"
-        fastq2: "Input FastQ read 2 file to align with bwa"
+        read_one_fastq_gz: "Input FastQ read 1 file to align with bwa"
+        read_two_fastq_gz: "Input FastQ read 2 file to align with bwa"
         bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 
     input {
-        File fastq1
-        File fastq2
+        File read_one_fastq_gz
+        File read_two_fastq_gz
         File bwadb_tar_gz
-        String prefix = basename(fastq1, ".fq.gz")  # TODO is this right?
+        String prefix = basename(read_one_fastq_gz, ".fq.gz")  # TODO is this right?
         String read_group = ""
         Boolean use_all_cores = false
         Int memory_gb = 5
@@ -100,7 +100,7 @@ task bwa_aln_pe {
 
     String output_bam = prefix + ".bam"
 
-    Float input_fastq_size = size(fastq1, "GiB") + size(fastq2, "GiB")
+    Float input_fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
     Float reference_size = size(bwadb_tar_gz, "GiB")
     Int disk_size_gb = ceil(
         (input_fastq_size * 2) + (reference_size * 2)
@@ -115,18 +115,17 @@ task bwa_aln_pe {
         fi
 
         mkdir bwa
-
         tar -C bwa -xzf ~{bwadb_tar_gz} --no-same-owner
         PREFIX=$(basename bwa/*.ann ".ann")
 
-        bwa aln -t "$n_cores" bwa/"$PREFIX" ~{fastq1} > sai_1
-        bwa aln -t "$n_cores" bwa/"$PREFIX" ~{fastq2} > sai_2
+        bwa aln -t "$n_cores" bwa/"$PREFIX" ~{read_one_fastq_gz} > sai_1
+        bwa aln -t "$n_cores" bwa/"$PREFIX" ~{read_two_fastq_gz} > sai_2
 
         bwa sampe \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
             bwa/"$PREFIX" \
             sai_1 sai_2 \
-            ~{fastq1} ~{fastq2} \
+            ~{read_one_fastq_gz} ~{read_two_fastq_gz} \
             | samtools view -@ "$n_cores" -hb - \
             > ~{output_bam}
 
@@ -159,7 +158,7 @@ task bwa_mem {
     input {
         File fastq
         File bwadb_tar_gz
-        String prefix = basename(fastq, ".fq.gz")
+        String prefix = basename(fastq, ".fq.gz")  # TODO is this right?
         String read_group = ""
         Boolean use_all_cores = false
         Int memory_gb = 5
@@ -185,7 +184,6 @@ task bwa_mem {
         fi
 
         mkdir bwa
-
         tar -C bwa -xzf ~{bwadb_tar_gz} --no-same-owner
         PREFIX=$(basename bwa/*.ann ".ann")
 

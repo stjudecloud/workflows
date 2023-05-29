@@ -29,9 +29,11 @@ task count {
         Int max_retries = 1
     }
 
-    # TODO add reference to disk calculation
     Float fastq_size = size(fastqs_tar_gz, "GiB")
-    Int disk_size_gb = ceil((fastq_size * 2) + 10) + modify_disk_size_gb
+    Float transcriptome_size = size(transcriptome_tar_gz, "GiB")
+    Int disk_size_gb = ceil(
+        ((fastq_size + transcriptome_size) * 2) + 10
+    ) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

@@ -335,7 +335,7 @@ task collect_wgs_metrics {
     input {
         File bam
         File reference_fasta
-        String outfile_name = basename(bam, ".bam") + ".CollectWgsMetrics.txt"  # TODO is this really the only file output?
+        String outfile_name = basename(bam, ".bam") + ".CollectWgsMetrics.txt"
         Int memory_gb = 12
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -350,7 +350,7 @@ task collect_wgs_metrics {
             -I ~{bam} \
             -R ~{reference_fasta} \
             -O ~{outfile_name} \
-            --INCLUDE_BQ_HISTOGRAM true  # TODO any reason to make this toggleable?
+            --INCLUDE_BQ_HISTOGRAM true 
     >>>
 
     output {
@@ -367,7 +367,7 @@ task collect_wgs_metrics {
 
 task collect_wgs_metrics_with_nonzero_coverage {
     meta {
-        description: "*[Deprecated]* This WDL task runs the `picard CollectWgsMetricsWithNonZeroCoverage` command. This command is <TODO read the docs on this command and use that language to explain deprecated status>"
+        description: "*[Deprecated]* This WDL task runs the `picard CollectWgsMetricsWithNonZeroCoverage` command. This command is labelled as 'EXPERIMENTAL' in the Picard documentation."  # TODO does more need to be said?
     }
 
     parameter_meta {

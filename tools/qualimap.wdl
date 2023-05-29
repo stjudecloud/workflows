@@ -127,12 +127,6 @@ task rnaseq {
                         --java-mem-size=~{java_heap_size}G
         rm "$gtf_name"
 
-        # TODO is this still necessary now that we expect the `raw_coverage` file?
-        # Check if qualimap succeeded
-        if [ ! -d "~{out_directory}/raw_data_qualimapReport/" ]; then
-            exit 42
-        fi
-
         tar -czf ~{out_tar_gz} ~{out_directory}
     >>>
 

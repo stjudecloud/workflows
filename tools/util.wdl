@@ -111,7 +111,6 @@ task split_string {
     >>>
 
     output {
-        File split_strings_file = "split_strings.txt"  # TODO why would we ever use the file? Delete?
         Array[String] split_strings = read_lines("split_strings.txt")
     }
 

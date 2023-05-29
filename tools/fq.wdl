@@ -25,8 +25,7 @@ task fqlint {
     }
 
     Float read1_size = size(read_one_fastq_gz, "GiB")
-    Float read2_size = if defined(read_two_fastq_gz) then size(read_two_fastq_gz, "GiB") else 0  # TODO is this `if` necessary? Check what happens without it
-
+    Float read2_size = size(read_two_fastq_gz, "GiB")
     Int memory_gb_calculation = ceil(
         ((read1_size + read2_size) * 0.08)
     ) + modify_memory_gb
