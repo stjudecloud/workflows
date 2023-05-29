@@ -248,10 +248,11 @@ task merge_sam_files {
 
     parameter_meta {
         bam: "Input BAMs to merge"
+        threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file."
     }
 
     input {
-        Array[File] bam
+        Array[File] bams
         String outfile_name = "merged.bam"  # TODO is there a better default for this?
         String sort_order = "coordinate"
         Boolean threading = true  # TODO what's this do? Should we have `ncpu` too?
@@ -260,10 +261,10 @@ task merge_sam_files {
         Int max_retries = 1
     }
 
-    Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+    Float bams_size = size(bams, "GiB")
+    Int disk_size_gb = ceil((bams_size * 2) + 10) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
-    Array[String] input_arg = prefix("INPUT=", bam)
+    Array[String] input_arg = prefix("INPUT=", bams)
 
     command <<<
         picard -Xmx~{java_heap_size}g MergeSamFiles \

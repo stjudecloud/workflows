@@ -14,7 +14,7 @@ task count {
         bam: "Input BAM format file to generate coverage for"
         gtf: "Input genomic features in gzipped GTF format to count reads for"
         strandedness: {
-            description: "Strandedness protocol of the RNA-Seq experiment"  # TODO look up what HTSeq says here
+            description: "Strandedness protocol of the RNA-Seq experiment. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/release_0.11.1/count.html#cmdoption-htseq-count-s) for an explanation of what this parameter effects."
             choices: [
                 "yes",
                 "reverse",
@@ -25,7 +25,7 @@ task count {
         feature_type: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored"
         idattr: "GFF attribute to be used as feature ID"
         mode: {
-            description: "Mode to handle reads overlapping more than one feature"
+            description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/release_0.11.1/count.html#counting-reads-in-features-with-htseq-count) for an explanation of what this parameter effects."
             choices: [
                 "union",
                 "intersection-strict",
@@ -61,7 +61,7 @@ task count {
     }
 
     Int bam_size = ceil(size(bam, "GiB"))
-    Int memory_gb = bam_size + 5 + modify_memory_gb
+    Int memory_gb = bam_size + 5 + modify_memory_gb  # TODO what's the memory usage like if the BAM is name sorted?
     Int gtf_size = ceil(size(gtf, "GiB"))
     Int disk_size_gb = ((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb  # TODO why would htseq need this much disk?
  
