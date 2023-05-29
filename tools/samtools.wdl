@@ -68,16 +68,17 @@ task split {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 
         # TODO at a glance this looks like it could be made more efficient
         samtools split --threads "$n_cores" -u ~{prefix}.unaccounted_reads.bam -f '%*_%!.%.' ~{bam}
         samtools view  --threads "$n_cores" ~{prefix}.unaccounted_reads.bam > unaccounted_reads.bam
-        if ~{reject_unaccounted} && [ -s unaccounted_reads.bam ]
-            then exit 1; 
-            else rm ~{prefix}.unaccounted_reads.bam
+        if ~{reject_unaccounted} && [ -s unaccounted_reads.bam ]; then
+            exit 1
+        else
+            rm ~{prefix}.unaccounted_reads.bam
         fi 
         rm unaccounted_reads.bam
     >>>
@@ -157,7 +158,7 @@ task index {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 
@@ -197,7 +198,7 @@ task subsample {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 
@@ -265,19 +266,13 @@ task merge {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
-        fi
-
-        header_arg=""
-        if [ -e ~{new_header} ]
-        then
-            header_arg="-h ~{new_header}"
         fi
 
         samtools merge \
             --threads "$n_cores" \
-            $header_arg \
+            ~{if defined(new_header) then "-h " + new_header else ""} \
             ~{if attach_rg then "-r" else ""} \
             ~{outfile_name} \
             ~{sep=' ' bams}
@@ -324,7 +319,7 @@ task addreplacerg {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 
@@ -386,7 +381,7 @@ task collate {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 
@@ -460,7 +455,7 @@ task bam_to_fastq {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 
@@ -562,7 +557,7 @@ task collate_to_fastq {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 

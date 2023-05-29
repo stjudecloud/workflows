@@ -33,7 +33,7 @@ task bam_coverage {
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores="max"
         fi
 

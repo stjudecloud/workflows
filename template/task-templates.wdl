@@ -98,7 +98,7 @@ task use_all_cores_task {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
     >>>

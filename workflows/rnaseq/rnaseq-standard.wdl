@@ -168,8 +168,7 @@ task parse_input {
             exit 1
         fi
 
-        if [ "~{cleanse_xenograft}" == "true" ] && [ "~{contaminant_db}" == "false" ]
-        then
+        if ~{cleanse_xenograft} && [ "~{contaminant_db}" = "false" ]; then
             >&2 echo "'contaminant_db' must be supplied if 'cleanse_xenograft' is 'true'"
             exit 1
         fi

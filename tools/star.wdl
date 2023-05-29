@@ -39,7 +39,7 @@ task build_star_db {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 
@@ -121,7 +121,7 @@ task alignment {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 

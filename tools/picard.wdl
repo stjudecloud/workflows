@@ -40,7 +40,7 @@ task mark_duplicates {
             COMPRESSION_LEVEL=5 \
             METRICS_FILE=~{prefix}.MarkDuplicates.metrics.txt
         
-        if [ "~{create_bam}" == "true" ]; then
+        if ~{create_bam}; then
             mv ~{prefix}.MarkDuplicates.bai ~{prefix}.MarkDuplicates.bam.bai
         fi
     >>>
@@ -118,13 +118,13 @@ task validate_bam {
 
         set -euo pipefail
 
-        if [ "~{succeed_on_warnings}" == "true" ]; then
+        if ~{succeed_on_warnings}; then
             GREP_PATTERN="ERROR"
         else
             GREP_PATTERN="(ERROR|WARNING)"
         fi
 
-        if [ "~{succeed_on_errors}" == "false" ] \
+        if ~{succeed_on_errors} \
             && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]
         then
             echo "Errors detected by Picard ValidateSamFile" > /dev/stderr

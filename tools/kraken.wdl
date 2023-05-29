@@ -231,7 +231,7 @@ task build_db {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 
@@ -332,7 +332,7 @@ task kraken {
         set -euo pipefail
 
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 
@@ -350,7 +350,7 @@ task kraken {
             ~{read_one_fastq_gz} \
             ~{read_two_fastq_gz}
 
-        if [ "~{store_sequences}" = "true" ]; then
+        if ~{store_sequences}; then
             gzip ~{out_sequences}
         fi
 
