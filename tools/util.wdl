@@ -70,7 +70,7 @@ task get_read_groups {
     command <<<
         set -euo pipefail
 
-        if ~{format_for_star}; then    
+        if ~{format_for_star}; then
             samtools view -H ~{bam} \
                 | grep "@RG" \
                 | cut -f 2- \
