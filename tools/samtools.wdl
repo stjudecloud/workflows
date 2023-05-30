@@ -192,9 +192,9 @@ task index {
 task subsample {
     input {
         File bam
+        Int desired_reads
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
-        Int desired_reads = 500000
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int ncpu = 1
@@ -206,6 +206,11 @@ task subsample {
 
     command <<<
         set -euo pipefail
+
+        if [[ ~{desired_reads} -le 0 ]]; then
+            echo "'desired_reads' must be >0!" > /dev/stderr
+            exit 1
+        fi
 
         n_cores=~{ncpu}
         if ~{use_all_cores}; then

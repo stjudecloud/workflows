@@ -65,14 +65,13 @@ workflow cell_ranger_bam_to_fastqs {
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call cellranger.bamtofastq {
-        input:
-            bam=bam,
-            cellranger11=cellranger11,
-            longranger20=longranger20,
-            gemcode=gemcode,
-            use_all_cores=use_all_cores,
-            max_retries=max_retries
+    call cellranger.bamtofastq { input:
+        bam=bam,
+        cellranger11=cellranger11,
+        longranger20=longranger20,
+        gemcode=gemcode,
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
     }
     scatter (reads in zip(bamtofastq.read_one_fastq_gz, bamtofastq.read_two_fastq_gz)) {
         call fq.fqlint as fqlint_pair { input:
