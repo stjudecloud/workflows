@@ -151,7 +151,7 @@ workflow chipseq_standard {
     }
 
     call picard.merge_sam_files as picard_merge { input:
-        bam=picard_clean.cleaned_bam,
+        bams=picard_clean.cleaned_bam,
         outfile_name=output_prefix + ".bam",
         max_retries=max_retries
     }
