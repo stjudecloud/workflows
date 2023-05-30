@@ -183,8 +183,8 @@ task index {
 task subsample {
     input {
         File bam
+        Int desired_reads
         String outfile_name = basename(bam, ".bam") + ".subsampled.bam"
-        Int desired_reads = 500000
         Int max_retries = 1
         Int ncpu = 1
         Boolean use_all_cores = false
