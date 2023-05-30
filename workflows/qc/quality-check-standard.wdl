@@ -234,7 +234,7 @@ workflow quality_check {
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
             bam=select_first([collate_to_fastq.collated_bam, "undefined"]),
-            prefix=post_subsample_prefix,
+            results_directory=post_subsample_prefix + ".qualimap_rnaseq_results",
             gtf=select_first([gtf, "undefined"]),
             name_sorted=true,
             paired_end=true,  # matches default but prevents user from overriding
