@@ -183,8 +183,8 @@ task index {
 task subsample {
     input {
         File bam
+        Int desired_reads
         String outfile_name = basename(bam, ".bam") + ".subsampled.bam"
-        Int desired_reads = 500000
         Int max_retries = 1
         Int ncpu = 1
         Boolean use_all_cores = false
@@ -195,6 +195,11 @@ task subsample {
 
     command <<<
         set -euo pipefail
+
+        if [[ ~{desired_reads} -le 0 ]]; then
+            echo "'desired_reads' must be >0!" > /dev/stderr
+            exit 1
+        fi
 
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
@@ -216,12 +221,14 @@ task subsample {
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
-            mv ~{bam} ~{outfile_name}
+            true
         fi
+        touch success
     >>>
 
     output {
-        File sampled_bam = outfile_name
+        File success = "success"
+        File? sampled_bam = outfile_name
     }
 
     runtime {
