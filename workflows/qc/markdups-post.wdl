@@ -46,7 +46,7 @@ workflow markdups_post {
 
     call picard.collect_insert_size_metrics { input:
         bam=markdups_bam,
-        prefix=prefix,
+        prefix=prefix + ".CollectInsertSizeMetrics",
         max_retries=max_retries
     }
     call samtools.flagstat as samtools_flagstat { input:

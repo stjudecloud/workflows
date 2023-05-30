@@ -16,7 +16,7 @@ task fastqc {
 
     input {
         File bam
-        String results_directory = basename(bam, ".bam") + ".fastqc_results"
+        String prefix = basename(bam, ".bam") + ".fastqc_results"
         Boolean use_all_cores = false
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
@@ -24,7 +24,7 @@ task fastqc {
         Int max_retries = 1
     }
 
-    String out_tar_gz = results_directory + ".tar.gz"
+    String out_tar_gz = prefix + ".tar.gz"
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
@@ -37,17 +37,17 @@ task fastqc {
             n_cores=$(nproc)
         fi
         
-        mkdir ~{results_directory}
+        mkdir ~{prefix}
         fastqc -f bam \
-            -o ~{results_directory} \
+            -o ~{prefix} \
             -t "$n_cores" \
             ~{bam}
 
-        tar -czf ~{out_tar_gz} ~{results_directory}
+        tar -czf ~{out_tar_gz} ~{prefix}
     >>>
 
     output {
-        File raw_data = "~{results_directory}/~{basename(bam, '.bam')}_fastqc.zip"
+        File raw_data = "~{prefix}/~{basename(bam, '.bam')}_fastqc.zip"
         File results = out_tar_gz
     }
 

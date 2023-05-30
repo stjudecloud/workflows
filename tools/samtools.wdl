@@ -193,7 +193,7 @@ task subsample {
     input {
         File bam
         Int desired_reads
-        String prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam") + ".subsampled"
         Boolean use_all_cores = false
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
@@ -238,7 +238,7 @@ task subsample {
                         }' \
                 )
             samtools view --threads "$n_cores" -hb -s "$frac" ~{bam} \
-                > ~{prefix}.subsampled.bam
+                > ~{prefix}.bam
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
@@ -249,7 +249,7 @@ task subsample {
 
     output {
         File success = "success"
-        File? sampled_bam = prefix + ".subsampled.bam"
+        File? sampled_bam = prefix + ".bam"
     }
 
     runtime {

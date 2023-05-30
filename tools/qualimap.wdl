@@ -86,7 +86,7 @@ task rnaseq {
     input {
         File bam
         File gtf
-        String results_directory = basename(bam, ".bam") + ".qualimap_rnaseq_results"
+        String prefix = basename(bam, ".bam") + ".qualimap_rnaseq_results"
         Boolean name_sorted = false
         Boolean paired_end = true
         Int memory_gb = 16
@@ -94,7 +94,7 @@ task rnaseq {
         Int max_retries = 1
     }
 
-    String out_tar_gz = results_directory + ".tar.gz"
+    String out_tar_gz = prefix + ".tar.gz"
     String name_sorted_arg = if (name_sorted) then "-s" else ""
     String paired_end_arg = if (paired_end) then "-pe" else ""
 
@@ -120,18 +120,18 @@ task rnaseq {
         qualimap rnaseq -bam ~{bam} \
                         -oc qualimap_counts.txt \
                         -gtf "$gtf_name" \
-                        -outdir ~{results_directory} \
+                        -outdir ~{prefix} \
                         ~{name_sorted_arg} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
         rm "$gtf_name"
 
-        tar -czf ~{out_tar_gz} ~{results_directory}
+        tar -czf ~{out_tar_gz} ~{prefix}
     >>>
 
     output {
-        File raw_summary = "~{results_directory}/rnaseq_qc_results.txt"
-        File raw_coverage = "~{results_directory}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
+        File raw_summary = "~{prefix}/rnaseq_qc_results.txt"
+        File raw_coverage = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
         File results = out_tar_gz
     }
 

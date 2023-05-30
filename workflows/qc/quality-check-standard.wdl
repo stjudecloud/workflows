@@ -137,23 +137,23 @@ workflow quality_check {
 
     call picard.collect_alignment_summary_metrics { input:
         bam=post_subsample_bam,
-        prefix=post_subsample_prefix,
+        prefix=post_subsample_prefix + ".CollectAlignmentSummaryMetrics",
         max_retries=max_retries
     }
     call picard.collect_gc_bias_metrics { input:
         bam=post_subsample_bam,
         reference_fasta=reference_fasta,
-        prefix=post_subsample_prefix,
+        prefix=post_subsample_prefix + ".CollectGcBiasMetrics",
         max_retries=max_retries
     }
     call picard.quality_score_distribution { input:
         bam=post_subsample_bam,
-        prefix=post_subsample_prefix,
+        prefix=post_subsample_prefix + ".QualityScoreDistribution",
         max_retries=max_retries
     }
     call fqc.fastqc { input:
         bam=post_subsample_bam,
-        results_directory=post_subsample_prefix + ".fastqc_results",
+        prefix=post_subsample_prefix + ".fastqc_results",
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
@@ -234,7 +234,7 @@ workflow quality_check {
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
             bam=select_first([collate_to_fastq.collated_bam, "undefined"]),
-            results_directory=post_subsample_prefix + ".qualimap_rnaseq_results",
+            prefix=post_subsample_prefix + ".qualimap_rnaseq_results",
             gtf=select_first([gtf, "undefined"]),
             name_sorted=true,
             paired_end=true,  # matches default but prevents user from overriding
@@ -269,7 +269,7 @@ workflow quality_check {
         # They should still be run if duplicates were not marked.
         call picard.collect_insert_size_metrics { input:
             bam=post_subsample_bam,
-            prefix=post_subsample_prefix,
+            prefix=post_subsample_prefix + ".CollectInsertSizeMetrics",
             max_retries=max_retries
         }
         call samtools.flagstat as samtools_flagstat { input:

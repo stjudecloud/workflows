@@ -425,7 +425,7 @@ task collect_alignment_summary_metrics {
 
     input {
         File bam
-        String prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam") + ".CollectAlignmentSummaryMetrics"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -438,13 +438,13 @@ task collect_alignment_summary_metrics {
     command <<<
         picard -Xmx~{java_heap_size}g CollectAlignmentSummaryMetrics \
             -I ~{bam} \
-            -O ~{prefix}.CollectAlignmentSummaryMetrics.txt \
-            -H ~{prefix}.CollectAlignmentSummaryMetrics.pdf
+            -O ~{prefix}.txt \
+            -H ~{prefix}.pdf
     >>>
 
     output {
-        File alignment_metrics = prefix + ".CollectAlignmentSummaryMetrics.txt"
-        File alignment_metrics_pdf = prefix + ".CollectAlignmentSummaryMetrics.pdf"
+        File alignment_metrics = prefix + ".txt"
+        File alignment_metrics_pdf = prefix + ".pdf"
     }
 
     runtime {
@@ -467,7 +467,7 @@ task collect_gc_bias_metrics {
     input {
         File bam
         File reference_fasta
-        String prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam") + ".CollectGcBiasMetrics"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -481,15 +481,15 @@ task collect_gc_bias_metrics {
         picard -Xmx~{java_heap_size}g CollectGcBiasMetrics \
             -I ~{bam} \
             -R ~{reference_fasta} \
-            -O ~{prefix}.CollectGcBiasMetrics.txt \
-            -S ~{prefix}.CollectGcBiasMetrics.summary.txt \
-            -CHART ~{prefix}.CollectGcBiasMetrics.pdf
+            -O ~{prefix}.txt \
+            -S ~{prefix}.summary.txt \
+            -CHART ~{prefix}.pdf
     >>>
 
     output {
-        File gc_bias_metrics = prefix + ".CollectGcBiasMetrics.txt"
-        File gc_bias_metrics_summary = prefix + ".CollectGcBiasMetrics.summary.txt"
-        File gc_bias_metrics_pdf = prefix + ".CollectGcBiasMetrics.pdf"
+        File gc_bias_metrics = prefix + ".txt"
+        File gc_bias_metrics_summary = prefix + ".summary.txt"
+        File gc_bias_metrics_pdf = prefix + ".pdf"
     }
 
     runtime {
@@ -511,7 +511,7 @@ task collect_insert_size_metrics {
 
     input {
         File bam
-        String prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam") + ".CollectInsertSizeMetrics"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -524,13 +524,13 @@ task collect_insert_size_metrics {
     command <<<
         picard -Xmx~{java_heap_size}g CollectInsertSizeMetrics \
             -I ~{bam} \
-            -O ~{prefix}.CollectInsertSizeMetrics.txt \
-            -H ~{prefix}.CollectInsertSizeMetrics.pdf
+            -O ~{prefix}.txt \
+            -H ~{prefix}.pdf
     >>>
 
     output {
-        File insert_size_metrics = prefix + ".CollectInsertSizeMetrics.txt"
-        File insert_size_metrics_pdf = prefix + ".CollectInsertSizeMetrics.pdf"
+        File insert_size_metrics = prefix + ".txt"
+        File insert_size_metrics_pdf = prefix + ".pdf"
     }
 
     runtime {
@@ -552,7 +552,7 @@ task quality_score_distribution {
 
     input {
         File bam
-        String prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam") + ".QualityScoreDistribution"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -565,13 +565,13 @@ task quality_score_distribution {
     command <<<
         picard -Xmx~{java_heap_size}g QualityScoreDistribution \
             -I ~{bam} \
-            -O ~{prefix}.QualityScoreDistribution.txt \
-            -CHART ~{prefix}.QualityScoreDistribution.pdf
+            -O ~{prefix}.txt \
+            -CHART ~{prefix}.pdf
     >>>
 
     output {
-        File quality_score_distribution_txt = prefix + ".QualityScoreDistribution.txt"
-        File quality_score_distribution_pdf = prefix + ".QualityScoreDistribution.pdf"
+        File quality_score_distribution_txt = prefix + ".txt"
+        File quality_score_distribution_pdf = prefix + ".pdf"
     }
 
     runtime {
