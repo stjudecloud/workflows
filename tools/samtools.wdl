@@ -196,6 +196,11 @@ task subsample {
     command <<<
         set -euo pipefail
 
+        if [[ ~{desired_reads} -le 0 ]]; then
+            echo "'desired_reads' must be >0!" > /dev/stderr
+            exit 1
+        fi
+
         n_cores=~{ncpu}
         if [ "~{use_all_cores}" = "true" ]; then
             n_cores=$(nproc)
