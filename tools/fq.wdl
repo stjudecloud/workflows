@@ -58,8 +58,8 @@ task subsample {
     meta {
         description: "This WDL task subsamples input FastQs"
         outputs: {
-            subsampled_read1: "Subsampled read1 FastQ"
-            subsampled_read2: "Subsampled read2 FastQ"
+            subsampled_read1: "Gzipped FastQ file containing subsampled read1"
+            subsampled_read2: "Gzipped FastQ file containing subsampled read2"
         }
     }
 
@@ -67,7 +67,7 @@ task subsample {
         read1: "Input FastQ with read one"
         read2: "Input FastQ with read two"
         prefix: "Prefix for the output FastQ file(s). The extension `_R1.subsampled.fastq.gz` and `_R2.subsampled.fastq.gz` will be added."
-        probability: "The probability a record is kept, as a percentage (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable."
+        probability: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable."
         record_count: "The exact number of records to keep. Cannot be used with `probability`. Any `record_count<=0` to disable."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
