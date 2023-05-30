@@ -413,7 +413,7 @@ task parse_input {
             EXITCODE=1
         fi
 
-        if [ "~{input_molecule}" = "RNA" ] && [ "~{gtf_provided}" = "false" ]; then
+        if [ "~{input_molecule}" = "RNA" ] && [ ! ~{gtf_provided} ]; then
             >&2 echo "Must supply a GTF if molecule = 'RNA'"
             EXITCODE=1
         fi

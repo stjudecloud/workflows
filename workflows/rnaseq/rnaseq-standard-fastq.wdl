@@ -150,6 +150,7 @@ workflow rnaseq_standard_fastq {
 }
 
 task parse_input {
+    # TODO this is the exact same code as parse_input in the BAM entrypoint
     input {
         String input_strand
         Boolean cleanse_xenograft
@@ -170,7 +171,7 @@ task parse_input {
             exit 1
         fi
 
-        if ~{cleanse_xenograft} && [ "~{contaminant_db}" = "false" ]; then
+        if ~{cleanse_xenograft} && [ ! ~{contaminant_db} ]; then
             >&2 echo "'contaminant_db' must be supplied if 'cleanse_xenograft' is 'true'"
             exit 1
         fi
