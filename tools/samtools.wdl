@@ -72,15 +72,16 @@ task split {
             n_cores=$(nproc)
         fi
 
-        # TODO at a glance this looks like it could be made more efficient
         samtools split \
             --threads "$n_cores" \
             -u ~{prefix}.unaccounted_reads.bam \
             -f '%*_%!.%.' \
             ~{bam}
         
-        samtools view \
+        samtools head \
             --threads "$n_cores" \
+            -h 0 \
+            -n 1 \
             ~{prefix}.unaccounted_reads.bam \
             > unaccounted_reads.bam
         
@@ -212,8 +213,8 @@ task subsample {
         fi
 
         if [[ \
-            "$(samtools view --threads "$n_cores" ~{bam} \
-                | head -n ~{desired_reads} | wc -l)" \
+            "$(samtools head --threads "$n_cores" -h 0 -n ~{desired_reads} ~{bam} \
+                | wc -l)" \
             -ge "~{desired_reads}" \
         ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
