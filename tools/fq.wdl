@@ -90,22 +90,23 @@ task subsample {
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
+    String probability_arg = if (probability < 1.0 && probability > 0)
+        then "-p " + probability
+        else ""
+    String record_count_arg = if (record_count > 0) then "-n " + record_count else ""
+
+    String r1_dst = prefix + "_R1.subsampled.fastq.gz"
+    String r2_dst = prefix + "_R2.subsampled.fastq.gz"
+
     command <<<
-        # TODO this whole block is hard to read
         fq subsample \
-            `# handle probability and record_count parameters` \
-            ~{if (probability < 1.0 && probability > 0)
-                then "-p " + probability
-                else ""
-            } \
-            ~{if (record_count > 0) then "-n " + record_count else ""} \
-            `# handle output file names` \
-            --r1-dst ~{prefix + "_R1.subsampled.fastq.gz"} \
+            ~{probability_arg} \
+            ~{record_count_arg} \
+            --r1-dst ~{r1_dst} \
             ~{if defined(read_two_fastq_gz)
-                then "--r2-dst " + prefix + "_R2.subsampled.fastq.gz"
+                then "--r2-dst " + r2_dst
                 else ""
             } \
-            `# input files` \
             ~{read_one_fastq_gz} \
             ~{read_two_fastq_gz}
     >>>
