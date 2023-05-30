@@ -43,16 +43,16 @@ task infer_strandedness {
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
+    output {
+        String strandedness = read_string("strandedness.txt")
+        File strandedness_file = out_file
+    }
+
     runtime {
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         memory: memory_gb + " GB"
         maxRetries: max_retries
-    }
-
-    output {
-        String strandedness = read_string("strandedness.txt")
-        File strandedness_file = out_file
     }
 }
 
@@ -74,15 +74,15 @@ task instrument {
             > ~{out_file}
     }
 
+    output {
+        File instrument_file = out_file
+    }
+
     runtime {
         memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
-    }
-
-    output {
-        File instrument_file = out_file
     }
 }
 
@@ -119,17 +119,16 @@ task read_length {
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
+    output {
+        File read_length_file = out_file
+    }
+
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
-
-    output {
-        File read_length_file = out_file
-    }
-
 }
 
 task encoding {
@@ -179,16 +178,16 @@ outfile.close()
 END
     >>>
 
+    output {
+        String inferred_encoding = read_string("encoding.txt")
+        File encoding_file = out_file
+    }
+
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
-    }
-
-    output {
-        String inferred_encoding = read_string("encoding.txt")
-        File encoding_file = out_file
     }
 }
 
@@ -234,15 +233,15 @@ task junction_annotation {
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
+    output {
+        File junction_summary = "~{prefix}.junction_summary.txt"
+        File junctions = "~{prefix}.junctions.tsv.gz"
+    }
+
     runtime {
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
-    }
-
-    output {
-        File junction_summary = "~{prefix}.junction_summary.txt"
-        File junctions = "~{prefix}.junctions.tsv.gz"
     }
 }

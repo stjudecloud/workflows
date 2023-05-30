@@ -28,14 +28,14 @@ version 1.0
 import "../../tools/util.wdl"
 
 workflow calc_gene_lengths {
-    input {
-        File gtf
-        Int? max_retries
-    }
-
     parameter_meta {
         gtf: "GTF feature file"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        File gtf
+        Int? max_retries
     }
 
     call util.calc_gene_lengths as calc { input: gtf=gtf, max_retries=max_retries }

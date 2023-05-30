@@ -39,18 +39,18 @@ import "../../tools/samtools.wdl"
 import "../../tools/fq.wdl"
 
 workflow bam_to_fastqs {
-    input {
-        File bam
-        Boolean paired_end = true
-        Boolean use_all_cores = false
-        Int? max_retries
-    }
-
     parameter_meta {
         bam: "BAM file to split into FastQs"
         paired_end: "Is the data paired-end (true) or single-end (false)?"
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        File bam
+        Boolean paired_end = true
+        Boolean use_all_cores = false
+        Int? max_retries
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }

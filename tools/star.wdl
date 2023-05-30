@@ -6,6 +6,17 @@
 version 1.0
 
 task build_star_db {
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL task runs STAR's build command to generate a STAR format reference for alignment." 
+    }
+
+    parameter_meta {
+        reference_fasta: "The FASTA format reference file for the genome"
+        gtf: "GTF format feature file"
+    }
+
     input {
         Int ncpu = 1
         File reference_fasta
@@ -52,6 +63,10 @@ task build_star_db {
         tar -czf ~{stardb_out_name} ~{stardb_dir_name}
     >>>
 
+    output {
+        File stardb_out = stardb_out_name
+    }
+
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
@@ -59,24 +74,22 @@ task build_star_db {
         docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
     }
-
-    output {
-        File stardb_out = stardb_out_name
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task runs STAR's build command to generate a STAR format reference for alignment." 
-    }
-
-    parameter_meta {
-        reference_fasta: "The FASTA format reference file for the genome"
-        gtf: "GTF format feature file"
-    }
 }
 
 task alignment {
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL task runs the STAR aligner on a set of RNA-Seq FastQ files."
+    }
+
+    parameter_meta {
+        read_one_fastqs: "An array of FastQ files containing read one information"
+        read_two_fastqs: "An array of FastQ files containing read two information"
+        stardb_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
+        read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
+    }
+
     input {
         Int ncpu = 1
         Array[File] read_one_fastqs
@@ -163,29 +176,16 @@ task alignment {
              --outSAMattrRGline $(cat read_groups_sorted.txt)
     }
 
+    output {
+        File star_log = output_prefix + ".Log.final.out"
+        File star_bam = output_prefix + ".Aligned.out.bam"
+    }
+
     runtime {
         cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
-    }
-
-    output {
-        File star_log = output_prefix + ".Log.final.out"
-        File star_bam = output_prefix + ".Aligned.out.bam"
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task runs the STAR aligner on a set of RNA-Seq FastQ files."
-    }
-
-    parameter_meta {
-        read_one_fastqs: "An array of FastQ files containing read one information"
-        read_two_fastqs: "An array of FastQ files containing read two information"
-        stardb_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
-        read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
     }
 }

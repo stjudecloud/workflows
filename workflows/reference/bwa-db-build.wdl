@@ -37,18 +37,18 @@ import "../../tools/bwa.wdl"
 import "../../tools/util.wdl"
 
 workflow bwa_db_build {
-    input {
-        String reference_fa_url
-        String reference_fa_name
-        String? reference_fa_md5
-        Int max_retries = 1
-    }
-
     parameter_meta {
         reference_fa_url: "URL to retrieve the reference FASTA file from."
         reference_fa_name: "Name of output reference FASTA file"
         reference_fa_md5: "Expected md5sum of reference FASTA file"
         max_retries: "Number of times to retry failed steps"
+    }
+
+    input {
+        String reference_fa_url
+        String reference_fa_name
+        String? reference_fa_md5
+        Int max_retries = 1
     }
 
     call util.download as reference_download {

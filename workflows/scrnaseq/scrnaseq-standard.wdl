@@ -39,18 +39,6 @@ import "../../tools/cellranger.wdl"
 import "../../tools/md5sum.wdl"
 
 workflow scrnaseq_standard {
-    input {
-        File bam
-        String output_prefix = basename(bam, ".bam")
-        File gtf
-        File transcriptome_tar_gz
-        String strandedness = ""
-        Int subsample_n_reads = -1
-        Boolean validate_input = true
-        Boolean use_all_cores = false
-        Int? max_retries
-    }
-
     parameter_meta {
         bam: "Input BAM format file to quality check"
         output_prefix: "Prefix for output files"
@@ -68,6 +56,18 @@ workflow scrnaseq_standard {
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        File bam
+        String output_prefix = basename(bam, ".bam")
+        File gtf
+        File transcriptome_tar_gz
+        String strandedness = ""
+        Int subsample_n_reads = -1
+        Boolean validate_input = true
+        Boolean use_all_cores = false
+        Int? max_retries
     }
 
     String provided_strandedness = strandedness
@@ -134,13 +134,13 @@ task parse_input {
         fi
     }
 
+    output {
+        String input_check = "passed"
+    }
+
     runtime {
         memory: "4 GB"
         disk: "1 GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
-    }
-
-    output {
-        String input_check = "passed"
     }
 }

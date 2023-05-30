@@ -40,22 +40,6 @@ import "../../tools/util.wdl"
 import "./rnaseq-core.wdl" as rna_core
 
 workflow rnaseq_standard {
-    input {
-        File bam
-        String output_prefix = basename(bam, ".bam")
-        File gtf
-        File stardb
-        Boolean mark_duplicates = false
-        Int subsample_n_reads = -1
-        File? contaminant_db
-        Boolean cleanse_xenograft = false
-        String xenocp_aligner = "star"
-        String strandedness = ""
-        Boolean validate_input = true
-        Boolean use_all_cores = false
-        Int? max_retries
-    }
-
     parameter_meta {
         bam: "Input BAM format file to harmonize"
         output_prefix: "Prefix for output files"
@@ -85,6 +69,22 @@ workflow rnaseq_standard {
         validate_input: "Ensure input BAM is well-formed before beginning harmonization"
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        File bam
+        String output_prefix = basename(bam, ".bam")
+        File gtf
+        File stardb
+        Boolean mark_duplicates = false
+        Int subsample_n_reads = -1
+        File? contaminant_db
+        Boolean cleanse_xenograft = false
+        String xenocp_aligner = "star"
+        String strandedness = ""
+        Boolean validate_input = true
+        Boolean use_all_cores = false
+        Int? max_retries
     }
 
     call parse_input { input:
@@ -163,13 +163,13 @@ task parse_input {
         fi
     }
 
+    output {
+        String input_check = "passed"
+    }
+
     runtime {
         memory: "4 GB"
         disk: "1 GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
-    }
-
-    output {
-        String input_check = "passed"
     }
 }

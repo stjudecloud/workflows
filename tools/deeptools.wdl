@@ -6,6 +6,17 @@
 version 1.0
 
 task bamCoverage {
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL task generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html)."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to generate coverage for"
+        bai: "BAM index file corresponding to the input BAM"
+    }
+
     input {
         File bam
         File bam_index
@@ -39,26 +50,15 @@ task bamCoverage {
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
+    output {
+        File bigwig = "~{prefix}.bw"
+    }
+
     runtime {
         cpu: ncpu
         disk: disk_size + " GB"
         memory: memory_gb + " GB"
         docker: 'quay.io/biocontainers/deeptools:3.5.1--pyhdfd78af_1'
         maxRetries: max_retries
-    }
-
-    output {
-        File bigwig = "~{prefix}.bw"
-    }
-
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        description: "This WDL task generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html)."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
-        bai: "BAM index file corresponding to the input BAM"
     }
 } 

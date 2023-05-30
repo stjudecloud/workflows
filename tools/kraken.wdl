@@ -5,11 +5,10 @@
 version 1.0
 
 task download_taxonomy {
-    input {
-        Boolean protein = false
-        Int memory_gb = 4
-        Int disk_size_gb = 60
-        Int max_retries = 3
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task downloads the NCBI taxonomy which Kraken2 uses to create a tree and taxon map during the database build."
     }
 
     parameter_meta {
@@ -17,6 +16,13 @@ task download_taxonomy {
         memory_gb: "RAM to allocate for task"
         disk_size_gb: "Disk space to allocate for task"
         max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        Boolean protein = false
+        Int memory_gb = 4
+        Int disk_size_gb = 60
+        Int max_retries = 3
     }
 
     String db_name = "kraken2_taxonomy"
@@ -34,6 +40,10 @@ task download_taxonomy {
 
         rm -r ~{db_name}
     >>>
+
+    output {
+        File taxonomy = db_name + ".tar.gz"
+    }
  
     runtime {
         memory: memory_gb + " GB"
@@ -42,28 +52,14 @@ task download_taxonomy {
         docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
         maxRetries: max_retries
     }
-
-    output {
-        File taxonomy = db_name + ".tar.gz"
-    }
-
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task downloads the NCBI taxonomy which Kraken2 uses to create a tree and taxon map during the database build."
-    }
 }
 
 task download_library {
-    input {
-        String library_name
-        Boolean protein = false
-        Int memory_gb = 4
-        Int added_disk_size_gb = 0
-        Int max_retries = 3
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available at: https://ftp.ncbi.nlm.nih.gov/genomes/refseq/."
     }
-
-    String db_name = "kraken2_"+library_name+"_library"
 
     parameter_meta {
         library_name: {
@@ -75,6 +71,16 @@ task download_library {
         added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `library_name`. Note that the default sizes are adequate as of April 2023, but new genomes are constantly being added to the NCBI database. More disk space may be required depending on when in the future this task is run."
         max_retries: "Number of times to retry in case of failure"
     }
+
+    input {
+        String library_name
+        Boolean protein = false
+        Int memory_gb = 4
+        Int added_disk_size_gb = 0
+        Int max_retries = 3
+    }
+
+    String db_name = "kraken2_"+library_name+"_library"
 
     Int disk_size_gb = (
         if library_name=="bacteria" then 300
@@ -97,6 +103,10 @@ task download_library {
 
         rm -r ~{db_name}
     >>>
+
+    output {
+        File library = db_name + ".tar.gz"
+    }
  
     runtime {
         memory: memory_gb + " GB"
@@ -105,19 +115,23 @@ task download_library {
         docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
         maxRetries: max_retries
     }
-
-    output {
-        File library = db_name + ".tar.gz"
-    }
-
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available at: https://ftp.ncbi.nlm.nih.gov/genomes/refseq/."
-    }
 }
 
 task create_library_from_fastas {
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task adds custom entries from FASTA files to a Kraken2 DB."
+    }
+
+    parameter_meta {
+        fastas: "Array of gzipped FASTA files. Each FASTA sequence ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
+        protein: "Construct a protein database?"
+        memory_gb: "RAM to allocate for task"
+        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `fastas` size."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     input {
         Array[File] fastas
         Boolean protein = false
@@ -127,14 +141,6 @@ task create_library_from_fastas {
     }
 
     String db_name = "kraken2_custom_library"
-
-    parameter_meta {
-        fastas: "Array of gzipped FASTA files. Each FASTA sequence ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
-        protein: "Construct a protein database?"
-        memory_gb: "RAM to allocate for task"
-        added_disk_size_gb: "Additional disk space to allocate for task. Default disk size is determined dynamically based on `fastas` size."
-        max_retries: "Number of times to retry in case of failure"
-    }
 
     Int fastas_size = ceil(size(fastas, "GiB"))
     Int disk_size_gb = fastas_size * 5 + added_disk_size_gb
@@ -158,6 +164,10 @@ task create_library_from_fastas {
 
         rm -r ~{db_name}
     >>>
+
+    output {
+        File custom_library = db_name + ".tar.gz"
+    }
  
     runtime {
         memory: memory_gb + " GB"
@@ -166,32 +176,13 @@ task create_library_from_fastas {
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
     }
-
-    output {
-        File custom_library = db_name + ".tar.gz"
-    }
-
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task adds custom entries from FASTA files to a Kraken2 DB."
-    }
 }
 
 task build_db {
-    input {
-        Array[File] tarballs
-        String db_name = "kraken2_db"
-        Boolean protein = false
-        Int kmer_len = if protein then 15 else 35
-        Int minimizer_len = if protein then 12 else 31
-        Int minimizer_spaces = if protein then 0 else 7
-        Int max_db_size_gb = -1
-        Int added_memory_gb = 0
-        Int added_disk_size_gb = 0
-        Int ncpu = 1
-        Boolean use_all_cores = false
-        Int max_retries = 1
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task builds a custom Kraken2 database."
     }
 
     parameter_meta {
@@ -207,6 +198,21 @@ task build_db {
         ncpu: "Number of cores to allocate for task"
         use_all_cores: "Use all cores. Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        Array[File] tarballs
+        String db_name = "kraken2_db"
+        Boolean protein = false
+        Int kmer_len = if protein then 15 else 35
+        Int minimizer_len = if protein then 12 else 31
+        Int minimizer_spaces = if protein then 0 else 7
+        Int max_db_size_gb = -1
+        Int added_memory_gb = 0
+        Int added_disk_size_gb = 0
+        Int ncpu = 1
+        Boolean use_all_cores = false
+        Int max_retries = 1
     }
 
     Int tarballs_size = ceil(size(tarballs, "GiB"))
@@ -254,6 +260,10 @@ task build_db {
 
         rm -r ~{db_name}
     >>>
+
+    output {
+        File built_db = db_name + ".tar.gz"
+    }
  
     runtime {
         memory: memory_gb + " GB"
@@ -262,32 +272,13 @@ task build_db {
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
     }
-
-    output {
-        File built_db = db_name + ".tar.gz"
-    }
-
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task builds a custom Kraken2 database."
-    }
 }
 
 task kraken {
-    input {
-        File read1
-        File read2
-        File db
-        String prefix = basename(read1, "_R1.fastq.gz")
-        Boolean store_sequences = false
-        Boolean use_names = true
-        Int min_base_quality = 0
-        Int modify_memory_gb = 0
-        Int modify_disk_size_gb = 0
-        Int ncpu = 1
-        Boolean use_all_cores = false
-        Int max_retries = 1
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL tool runs Kraken2 on a pair of fastq files."
     }
 
     parameter_meta {
@@ -302,6 +293,21 @@ task kraken {
         ncpu: "Number of cores to allocate for task"
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        File read1
+        File read2
+        File db
+        String prefix = basename(read1, "_R1.fastq.gz")
+        Boolean store_sequences = false
+        Boolean use_names = true
+        Int min_base_quality = 0
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
+        Int ncpu = 1
+        Boolean use_all_cores = false
+        Int max_retries = 1
     }
 
     Float db_size = size(db, "GiB")
@@ -347,6 +353,11 @@ task kraken {
 
         rm -r kraken2_db/
     >>>
+
+    output {
+        File report = out_report
+        File? sequences = out_sequences + ".gz"
+    }
  
     runtime {
         memory: memory_gb + " GB"
@@ -354,16 +365,5 @@ task kraken {
         cpu: ncpu
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
-    }
-
-    output {
-        File report = out_report
-        File? sequences = out_sequences + ".gz"
-    }
-
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL tool runs Kraken2 on a pair of fastq files."
     }
 }

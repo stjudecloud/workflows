@@ -32,24 +32,6 @@ import "../../tools/fq.wdl"
 import "./rnaseq-core.wdl" as rna_core
 
 workflow rnaseq_standard_fastq {
-    input {
-        Array[File] read_one_fastqs
-        Array[File] read_two_fastqs
-        String read_groups
-        String output_prefix
-        File gtf
-        File stardb
-        Boolean mark_duplicates = false
-        Int subsample_n_reads = -1
-        File? contaminant_db
-        Boolean cleanse_xenograft = false
-        String xenocp_aligner = "star"
-        String strandedness = ""
-        Boolean validate_input = true
-        Boolean use_all_cores = false
-        Int? max_retries
-    }
-
     parameter_meta {
         read_one_fastqs: "Input Fastq format file(s) with 1st read in pair to align"
         read_two_fastqs: "Input Fastq format file(s) with 2nd read in pair to align"
@@ -80,6 +62,24 @@ workflow rnaseq_standard_fastq {
         },
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        Array[File] read_one_fastqs
+        Array[File] read_two_fastqs
+        String read_groups
+        String output_prefix
+        File gtf
+        File stardb
+        Boolean mark_duplicates = false
+        Int subsample_n_reads = -1
+        File? contaminant_db
+        Boolean cleanse_xenograft = false
+        String xenocp_aligner = "star"
+        String strandedness = ""
+        Boolean validate_input = true
+        Boolean use_all_cores = false
+        Int? max_retries
     }
 
     call parse_input { input:
@@ -163,13 +163,13 @@ task parse_input {
         fi
     }
 
+    output {
+        String input_check = "passed"
+    }
+
     runtime {
         memory: "4 GB"
         disk: "1 GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
-    }
-
-    output {
-        String input_check = "passed"
     }
 }

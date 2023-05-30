@@ -7,22 +7,6 @@ import "../../tools/ngsderive.wdl"
 import "../../tools/htseq.wdl"
 
 workflow rnaseq_core {
-    input {
-        Array[File] read_one_fastqs
-        Array[File] read_two_fastqs
-        String read_groups
-        String output_prefix
-        File gtf
-        File stardb
-        Boolean mark_duplicates = false
-        File? contaminant_db
-        Boolean cleanse_xenograft = false
-        String xenocp_aligner = "star"
-        String strandedness = ""
-        Boolean use_all_cores = false
-        Int? max_retries
-    }
-    
     parameter_meta {
         read_one_fastqs: "Input FastQ format file(s) with 1st read in pair to align"
         read_two_fastqs: "Input FastQ format file(s) with 2nd read in pair to align"
@@ -52,6 +36,22 @@ workflow rnaseq_core {
         },
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        Array[File] read_one_fastqs
+        Array[File] read_two_fastqs
+        String read_groups
+        String output_prefix
+        File gtf
+        File stardb
+        Boolean mark_duplicates = false
+        File? contaminant_db
+        Boolean cleanse_xenograft = false
+        String xenocp_aligner = "star"
+        String strandedness = ""
+        Boolean use_all_cores = false
+        Int? max_retries
     }
 
     Map[String, String] htseq_strandedness_map = {

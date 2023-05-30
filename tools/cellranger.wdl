@@ -6,6 +6,19 @@
 version 1.0
 
 task count {
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL task runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data."
+    }
+
+    parameter_meta {
+        id: "A unique run ID"
+        fastqs_tar_gz: "Path to the FastQ folder archive in .tar.gz format"
+        transcriptome_tar_gz: "Path to Cell Ranger-compatible transcriptome reference in .tar.gz format"
+        sample_id: "Sample name as used by cellranger mkfastq"
+    }
+
     input {
         String id
         File transcriptome_tar_gz
@@ -54,14 +67,6 @@ task count {
         ls > /dev/stderr
     >>>
 
-    runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size + " GB"
-        docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
-        maxRetries: max_retries
-        cpu: ncpu
-    }
-
     output {
         File bam = glob("*/outs/possorted_genome_bam.bam")[0]
         File bam_index = glob("*/outs/possorted_genome_bam.bam.bai")[0]
@@ -79,21 +84,30 @@ task count {
         File loupe = glob("*/outs/cloupe.cloupe" )[0]
     }
 
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        description: "This WDL task runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data."
-    }
-
-    parameter_meta {
-        id: "A unique run ID"
-        fastqs_tar_gz: "Path to the FastQ folder archive in .tar.gz format"
-        transcriptome_tar_gz: "Path to Cell Ranger-compatible transcriptome reference in .tar.gz format"
-        sample_id: "Sample name as used by cellranger mkfastq"
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
+        maxRetries: max_retries
+        cpu: ncpu
     }
 }
 
 task bamtofastq {
+    meta {
+        author: "Andrew Thrasher"
+        email: "andrew.thrasher@stjude.org"
+        description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files"
+
+    }
+
+    parameter_meta {
+        bam: "Input BAM to convert to Cell Ranger compatible fastqs"
+        cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
+        longranger20: "Convert a BAM produced by Longranger 2.0"
+        gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
+    }
+
     input {
         File bam
         Int ncpu = 1
@@ -126,14 +140,6 @@ task bamtofastq {
         tar -zcf archive.tar.gz ./*.fastq.gz
     >>>
 
-    runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size + " GB"
-        docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
-        maxRetries: max_retries
-        cpu: ncpu
-    }
-
     output {
         Array[File] fastqs = glob("fastqs/*/*fastq.gz")
         File fastqs_archive = glob("fastqs/*/*.tar.gz")[0]
@@ -141,17 +147,11 @@ task bamtofastq {
         Array[File] read2 = glob("fastqs/*/*R2*.fastq.gz")
     }
 
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files"
-
-    }
-
-    parameter_meta {
-        bam: "Input BAM to convert to Cell Ranger compatible fastqs"
-        cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
-        longranger20: "Convert a BAM produced by Longranger 2.0"
-        gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size + " GB"
+        docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
+        maxRetries: max_retries
+        cpu: ncpu
     }
 }

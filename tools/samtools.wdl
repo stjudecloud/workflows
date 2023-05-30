@@ -6,6 +6,16 @@
 version 1.0
 
 task quickcheck {
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to quickcheck"
+    }
+
     input {
         File bam
         Int max_retries = 1
@@ -18,29 +28,30 @@ task quickcheck {
         samtools quickcheck ~{bam}
     }
 
+    output {
+        File checked_bam = bam
+    }
+
     runtime {
         memory: "4 GB"
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
-
-    output {
-        File checked_bam = bam
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to quickcheck"
-    }
 }
 
 task split {
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL task runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to split"
+        reject_unaccounted: "If true, error if there are reads present that do not have read group information."
+    }
+
     input {
         File bam
         Int ncpu = 1
@@ -70,6 +81,10 @@ task split {
         fi 
         rm unaccounted_reads.bam
     >>>
+
+    output {
+       Array[File] split_bams = glob("*.bam")
+    }
  
     runtime {
         cpu: ncpu
@@ -78,24 +93,19 @@ task split {
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
-
-    output {
-       Array[File] split_bams = glob("*.bam")
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to split"
-        reject_unaccounted: "If true, error if there are reads present that do not have read group information."
-    }
 }
 
 task flagstat {
+    meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
+        description: "This WDL tool generates a `samtools flagstat` report for the input BAM file."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to generate flagstat for"
+    }
+
     input {
         File bam
         String outfile_name = basename(bam, ".bam")+".flagstat.txt"
@@ -110,25 +120,15 @@ task flagstat {
         samtools flagstat ~{bam} > ~{outfile_name}
     }
 
+    output { 
+       File flagstat_report = outfile_name
+    }
+
     runtime {
         disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         memory: memory_gb + " GB"
         maxRetries: max_retries
-    }
-
-    output { 
-       File flagstat_report = outfile_name
-    }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL tool generates a `samtools flagstat` report for the input BAM file."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to generate flagstat for"
     }
 }
 
