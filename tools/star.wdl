@@ -18,7 +18,7 @@ task build_star_db {
     input {
         File reference_fasta
         File gtf
-        String star_db_name = "star_db"
+        String db_name = "star_db"
         Boolean use_all_cores = false
         Int memory_gb = 50
         Int modify_disk_size_gb = 0
@@ -26,7 +26,7 @@ task build_star_db {
         Int max_retries = 1
     }
 
-    String star_db_tar_gz = star_db_name + ".tar.gz"
+    String star_db_tar_gz = db_name + ".tar.gz"
     Float reference_fasta_size = size(reference_fasta, "GiB")
     Float gtf_size = size(gtf, "GiB")
     Int disk_size_gb = ceil(
@@ -52,9 +52,9 @@ task build_star_db {
         gunzip -c ~{reference_fasta} > "$ref_fasta" \
             || ln -s ~{reference_fasta} "$ref_fasta"
         
-        mkdir ~{star_db_name};
+        mkdir ~{db_name};
         STAR --runMode genomeGenerate \
-            --genomeDir ~{star_db_name} \
+            --genomeDir ~{db_name} \
             --runThreadN "$n_cores" \
             --limitGenomeGenerateRAM ~{memory_limit_bytes} \
             --genomeFastaFiles "$ref_fasta" \
@@ -63,7 +63,7 @@ task build_star_db {
 
         rm "$gtf_name" "$ref_fasta"
 
-        tar -czf ~{star_db_tar_gz} ~{star_db_name}
+        tar -czf ~{star_db_tar_gz} ~{db_name}
     >>>
 
     output {

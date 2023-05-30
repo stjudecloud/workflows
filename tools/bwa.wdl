@@ -12,12 +12,12 @@ task bwa_aln {
 
     parameter_meta {
         fastq: "Input FastQ file to align with bwa"
-        bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+        bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 
     input {
         File fastq
-        File bwadb_tar_gz
+        File bwa_db_tar_gz
         String prefix = basename(fastq, ".fq.gz")  # TODO is this right?
         String read_group = ""
         Boolean use_all_cores = false
@@ -30,7 +30,7 @@ task bwa_aln {
     String output_bam = prefix + ".bam"
 
     Float input_fastq_size = size(fastq, "GiB")
-    Float reference_size = size(bwadb_tar_gz, "GiB")
+    Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = ceil(
         (input_fastq_size + reference_size) * 2
     ) + modify_disk_size_gb
@@ -44,7 +44,7 @@ task bwa_aln {
         fi
 
         mkdir bwa_db
-        tar -C bwa_db -xzf ~{bwadb_tar_gz} --no-same-owner
+        tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
         bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{fastq} > sai
@@ -81,13 +81,13 @@ task bwa_aln_pe {
     parameter_meta {
         read_one_fastq_gz: "Input FastQ read 1 file to align with bwa"
         read_two_fastq_gz: "Input FastQ read 2 file to align with bwa"
-        bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+        bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 
     input {
         File read_one_fastq_gz
         File read_two_fastq_gz
-        File bwadb_tar_gz
+        File bwa_db_tar_gz
         String prefix = basename(read_one_fastq_gz, ".fq.gz")  # TODO is this right?
         String read_group = ""
         Boolean use_all_cores = false
@@ -100,7 +100,7 @@ task bwa_aln_pe {
     String output_bam = prefix + ".bam"
 
     Float input_fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
-    Float reference_size = size(bwadb_tar_gz, "GiB")
+    Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = ceil(
         (input_fastq_size * 2) + (reference_size * 2)
     ) + modify_disk_size_gb
@@ -114,7 +114,7 @@ task bwa_aln_pe {
         fi
 
         mkdir bwa_db
-        tar -C bwa_db -xzf ~{bwadb_tar_gz} --no-same-owner
+        tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
         bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_one_fastq_gz} > sai_1
@@ -151,12 +151,12 @@ task bwa_mem {
 
     parameter_meta {
         fastq: "Input FastQ file to align with bwa"
-        bwadb_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+        bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 
     input {
         File fastq
-        File bwadb_tar_gz
+        File bwa_db_tar_gz
         String prefix = basename(fastq, ".fq.gz")  # TODO is this right?
         String read_group = ""
         Boolean use_all_cores = false
@@ -169,7 +169,7 @@ task bwa_mem {
     String output_bam = prefix + ".bam"
 
     Float input_fastq_size = size(fastq, "GiB")
-    Float reference_size = size(bwadb_tar_gz, "GiB")
+    Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = ceil(
         (input_fastq_size * 2) + (reference_size * 2)
     ) + modify_disk_size_gb
@@ -183,7 +183,7 @@ task bwa_mem {
         fi
 
         mkdir bwa_db
-        tar -C bwa_db -xzf ~{bwadb_tar_gz} --no-same-owner
+        tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
         bwa mem \
@@ -217,12 +217,12 @@ task build_bwa_db {
 
     parameter_meta {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
-        bwa_db_name: "Name of the output gzipped tar archive of the bwa reference files."
+        db_name: "Name of the output gzipped tar archive of the bwa reference files."
     }
 
     input {
         File reference_fasta
-        String bwa_db_name = "bwa_db"
+        String db_name = "bwa_db"
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -230,7 +230,7 @@ task build_bwa_db {
 
     Float input_fasta_size = size(reference_fasta, "GiB")
     Int disk_size_gb = ceil(input_fasta_size * 2) + modify_disk_size_gb
-    String bwadb_out_name = bwa_db_name + ".tar.gz"
+    String bwa_db_out_name = db_name + ".tar.gz"
 
     command <<<
         set -euo pipefail
@@ -242,11 +242,11 @@ task build_bwa_db {
 
         bwa index "$ref_fasta"
 
-        tar -czf ~{bwadb_out_name} "${ref_fasta}"*
+        tar -czf ~{bwa_db_out_name} "${ref_fasta}"*
     >>>
 
     output {
-        File bwadb_tar_gz = bwadb_out_name
+        File bwa_db_tar_gz = bwa_db_out_name
     }
 
     runtime {

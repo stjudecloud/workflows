@@ -22,7 +22,7 @@
         "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_other/Danio_rerio/reference/GCF_000002035.6_GRCz11/GCF_000002035.6_GRCz11_genomic.fna.gz"
     ],
     "make_qc_reference.kraken_fastas": [],
-    "make_qc_reference.kraken_build_db.kraken_db_name": "custom_kraken2_db",
+    "make_qc_reference.kraken_build_db.db_name": "custom_kraken2_db",
     "make_qc_reference.kraken_build_db.kmer_len": "Int (default = if protein then 15 else 35)",
     "make_qc_reference.kraken_build_db.minimizer_len": "Int (default = if protein then 12 else 31)",
     "make_qc_reference.kraken_build_db.minimizer_spaces": "Int (default = if protein then 0 else 7)",

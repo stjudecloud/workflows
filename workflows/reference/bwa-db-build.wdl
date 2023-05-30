@@ -7,7 +7,7 @@
 ## reference_fa
 ## : the reference FASTA file
 ##
-## bwadb_tar_gz
+## bwa_db_tar_gz
 ## : the BWA reference folder in .tar.gz format
 ##
 ## ## LICENSING
@@ -66,6 +66,6 @@ workflow bwa_db_build {
 
     output {
       File reference_fa = reference_download.downloaded_file
-      File bwadb_tar_gz = build_bwa_db.bwadb_tar_gz
+      File bwa_db_tar_gz = build_bwa_db.bwa_db_tar_gz
     }
 }
