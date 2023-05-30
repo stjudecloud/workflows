@@ -18,7 +18,7 @@ task build_star_db {
     input {
         File reference_fasta
         File gtf
-        String stardb_name = "star_db"
+        String star_db_name = "star_db"
         Boolean use_all_cores = false
         Int memory_gb = 50
         Int modify_disk_size_gb = 0
@@ -26,7 +26,7 @@ task build_star_db {
         Int max_retries = 1
     }
 
-    String stardb_out_name = stardb_name + ".tar.gz"
+    String star_db_tar_gz = star_db_name + ".tar.gz"
     Float reference_fasta_size = size(reference_fasta, "GiB")
     Float gtf_size = size(gtf, "GiB")
     Int disk_size_gb = ceil(
@@ -52,9 +52,9 @@ task build_star_db {
         gunzip -c ~{reference_fasta} > "$ref_fasta" \
             || ln -s ~{reference_fasta} "$ref_fasta"
         
-        mkdir ~{stardb_name};
+        mkdir ~{star_db_name};
         STAR --runMode genomeGenerate \
-            --genomeDir ~{stardb_name} \
+            --genomeDir ~{star_db_name} \
             --runThreadN "$n_cores" \
             --limitGenomeGenerateRAM ~{memory_limit_bytes} \
             --genomeFastaFiles "$ref_fasta" \
@@ -63,11 +63,11 @@ task build_star_db {
 
         rm "$gtf_name" "$ref_fasta"
 
-        tar -czf ~{stardb_out_name} ~{stardb_name}
+        tar -czf ~{star_db_tar_gz} ~{star_db_name}
     >>>
 
     output {
-        File stardb_out = stardb_out_name
+        File star_db = star_db_tar_gz
     }
 
     runtime {
@@ -86,14 +86,14 @@ task alignment {
 
     parameter_meta {
         read_one_fastqs: "An array of FastQ files containing read one information"
-        stardb_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
+        star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
         read_two_fastqs: "An array of FastQ files containing read two information"
     }
 
     input {
         Array[File] read_one_fastqs
-        File stardb_tar_gz
+        File star_db_tar_gz
         String output_prefix
         String? read_groups
         Array[File] read_two_fastqs = []
@@ -104,15 +104,15 @@ task alignment {
         Int max_retries = 1
     }
     
-    String stardb_dir = basename(stardb_tar_gz, ".tar.gz")
+    String star_db_dir = basename(star_db_tar_gz, ".tar.gz")
 
     String memory_limit_bytes = (memory_gb - 2) + "000000000"
 
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
-    Float stardb_tar_gz_size = size(stardb_tar_gz, "GiB")
+    Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
     Int disk_size_gb = ceil(
-        ((read_one_fastqs_size + read_two_fastqs_size + stardb_tar_gz_size) * 3) + 10
+        ((read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size) * 3) + 10
     ) + modify_disk_size_gb
 
     Array[File] empty_array = []  # odd construction forced by WDL v1.0 spec
@@ -125,7 +125,7 @@ task alignment {
             n_cores=$(nproc)
         fi
 
-        tar -xzf ~{stardb_tar_gz}
+        tar -xzf ~{star_db_tar_gz}
 
         # TODO rework `sort_star_input.py` to avoid this spaghetti logic
         if [ -n "~{if defined(read_groups) then read_groups else ""}" ]
@@ -157,7 +157,7 @@ task alignment {
                 $(cat read_one_fastqs_sorted.txt) \
                 $(cat read_two_fastqs_sorted.txt) \
              --readFilesCommand "gunzip -c" \
-             --genomeDir ~{stardb_dir} \
+             --genomeDir ~{star_db_dir} \
              --runThreadN "$n_cores" \
              --outSAMunmapped Within \
              --outSAMstrandField intronMotif \

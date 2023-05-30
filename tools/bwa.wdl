@@ -217,12 +217,12 @@ task build_bwa_db {
 
     parameter_meta {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
-        bwadb_dir_name: "Name of the output gzipped tar archive of the bwa reference files."
+        bwa_db_name: "Name of the output gzipped tar archive of the bwa reference files."
     }
 
     input {
         File reference_fasta
-        String bwadb_dir_name = "bwa_db"
+        String bwa_db_name = "bwa_db"
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -230,7 +230,7 @@ task build_bwa_db {
 
     Float input_fasta_size = size(reference_fasta, "GiB")
     Int disk_size_gb = ceil(input_fasta_size * 2) + modify_disk_size_gb
-    String bwadb_out_name = bwadb_dir_name + ".tar.gz"
+    String bwadb_out_name = bwa_db_name + ".tar.gz"
 
     command <<<
         set -euo pipefail

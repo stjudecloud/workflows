@@ -10,7 +10,7 @@
 ## gtf
 ## : the reference GTF file
 ##
-## stardb_tar_gz
+## star_db_tar_gz
 ## : the STAR DB folder in .tar.gz format
 ##
 ## ## LICENSING
@@ -81,6 +81,6 @@ workflow star_db_build {
     output {
       File reference_fa = reference_download.downloaded_file
       File gtf = gtf_download.downloaded_file
-      File stardb_tar_gz = build_star_db.stardb_out
+      File star_db_tar_gz = build_star_db.star_db
     }
 }
