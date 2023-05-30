@@ -219,6 +219,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>mark_duplicates</code> (Boolean, default=molecule == "RNA"): Mark duplicates before analyses? Note that regardless of this setting, <code>picard MarkDuplicates</code> will be run in order to generate a <code>*.MarkDuplicates.metrics.txt</code> file. However if <code>mark_duplicates</code> is set to <code>false</code>, no BAM will be generated. If set to <code>true</code>, a BAM will be generated and passed to selected downstream analyses.</li>
 <li><code>output_intermediate_files</code> (Boolean, default=false): Output intermediate files? FastQs, if RNA a collated BAM, if <code>mark_duplicates==true</code> a duplicate marked BAM with an index and MD5. <em>WARNING</em> these files can be large.</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for ~all~ most results files</li>
+<li><code>subsample_n_reads</code> (Int, default=-1): Only process a random sampling of <code>n</code> reads. Any <code>n</code>&lt;=<code>0</code> for processing the entire input. Subsampling is done probabilistically so the exact number of reads in the output will have some variation.</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>collate_to_fastq.F</code> (String, default="0x900")</li>
 <li><code>collate_to_fastq.G</code> (String, default="0")</li>
@@ -272,9 +273,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>run_kraken.use_names</code> (Boolean, default=true)</li>
 <li><code>samtools_flagstat.memory_gb</code> (Int, default=5)</li>
 <li><code>samtools_flagstat.outfile_name</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
+<li><code>subsample.ncpu</code> (Int, default=1)</li>
+<li><code>subsample.outfile_name</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
+<li><code>subsample_index.memory_gb</code> (Int, default=15)</li>
+<li><code>subsample_index.ncpu</code> (Int, default=1)</li>
+<li><code>subsample_index.outfile_name</code> (String, default=basename(bam) + ".bai")</li>
 <li><code>validate_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
 <li><code>validate_bam.max_errors</code> (Int, default=2147483647)</li>
-<li><code>validate_bam.memory_gb</code> (Int, default=12)</li>
+<li><code>validate_bam.memory_gb</code> (Int, default=16)</li>
 <li><code>validate_bam.outfile_name</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
 <li><code>validate_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
 <li><code>wg_coverage.memory_gb</code> (Int, default=8)</li>

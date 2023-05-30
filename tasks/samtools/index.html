@@ -389,10 +389,10 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h4 id="required_4">Required</h4>
 <ul>
 <li><code>bam</code> (File, <strong>required</strong>)</li>
+<li><code>desired_reads</code> (Int, <strong>required</strong>)</li>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
-<li><code>desired_reads</code> (Int, default=500000)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
 <li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
@@ -400,7 +400,8 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
 <ul>
-<li><code>sampled_bam</code> (File)</li>
+<li><code>success</code> (File)</li>
+<li><code>sampled_bam</code> (File?)</li>
 </ul>
 <h2 id="merge">merge</h2>
 <h3 id="inputs_5">Inputs</h3>
