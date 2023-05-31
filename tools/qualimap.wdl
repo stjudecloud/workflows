@@ -107,7 +107,7 @@ task rnaseq {
     Int disk_size_gb = (
         (
             if name_sorted
-            then ceil(((bam_size + gtf_size) * 1.5) + 10)
+            then ceil(bam_size + gtf_size + 15)
             else ceil(((bam_size + gtf_size) * 12) + 10)
         ) + modify_disk_size_gb
     )
