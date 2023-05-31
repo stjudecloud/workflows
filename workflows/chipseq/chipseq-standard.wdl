@@ -171,7 +171,7 @@ workflow chipseq_standard {
     call picard.validate_bam { input: bam=markdup.mkdupbam, max_retries=max_retries }
 
     call md5sum.compute_checksum { input:
-        infile=markdup.mkdupbam,
+        file=markdup.mkdupbam,
         max_retries=max_retries
     }
 
