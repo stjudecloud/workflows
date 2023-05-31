@@ -180,7 +180,6 @@ task index {
     }
 
     runtime {
-        dx_instance_type: "azure:mem2_ssd1_x4"
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
         cpu: ncpu
