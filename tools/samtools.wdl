@@ -153,16 +153,17 @@ task index {
 
     input {
         File bam
-        String outfile_name = basename(bam) + ".bai"  # TODO we might want to disable customizing the name for the BAI? Breaks our best practices, but also please do not change the BAI name
         Boolean use_all_cores = false
         Int ncpu = 1
-        Int memory_gb = 15  # TODO this seems like more RAM than should be necessary
+        Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 1.2) + 10 + modify_disk_size_gb
+
+    String outfile_name = basename(bam) + ".bai"
 
     command {
         set -euo pipefail
