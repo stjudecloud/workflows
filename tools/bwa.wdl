@@ -102,7 +102,7 @@ task bwa_aln_pe {
     Float input_fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = ceil(
-        (input_fastq_size * 2) + (reference_size * 2)
+        (input_fastq_size + reference_size) * 2
     ) + modify_disk_size_gb
 
     command <<<
@@ -171,7 +171,7 @@ task bwa_mem {
     Float input_fastq_size = size(fastq, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = ceil(
-        (input_fastq_size * 2) + (reference_size * 2)
+        (input_fastq_size + reference_size) * 2
     ) + modify_disk_size_gb
 
     command <<<
