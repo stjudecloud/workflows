@@ -23,9 +23,9 @@ task count {
         String id
         String jobmode = "local"  # TODO would a non-local jobmode work?
         Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -89,9 +89,9 @@ task count {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
         maxRetries: max_retries
     }
@@ -115,9 +115,9 @@ task bamtofastq {
         Boolean longranger20 = false
         Boolean gemcode = false
         Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 40
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -151,9 +151,9 @@ task bamtofastq {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
         maxRetries: max_retries
     }

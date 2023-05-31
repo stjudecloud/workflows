@@ -18,9 +18,9 @@ task fastqc {
         File bam
         String prefix = basename(bam, ".bam") + ".fastqc_results"
         Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -52,9 +52,9 @@ task fastqc {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: 'quay.io/biocontainers/fastqc:0.11.9--hdfd78af_1'
         maxRetries: max_retries
     }

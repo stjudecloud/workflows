@@ -79,17 +79,17 @@ task use_all_cores_task {
     }
 
     parameter_meta {
+        ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
         disk_size_gb: "Disk space to allocate for task, specified in GB"
-        ncpu: "Number of cores to allocate for task"
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
     input {
+        Int ncpu = 1
         Int memory_gb = <>
         Int disk_size_gb = <>
-        Int ncpu = 1
         Boolean use_all_cores = false
         Int max_retries = 1
     }
@@ -108,9 +108,9 @@ task use_all_cores_task {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: ""
         maxRetries: max_retries
     }

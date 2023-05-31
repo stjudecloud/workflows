@@ -20,9 +20,9 @@ task bam_coverage {
         File bam_index
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -54,9 +54,9 @@ task bam_coverage {
     }
 
     runtime {
-        disk: disk_size_gb + " GB"
-        memory: memory_gb + " GB"
         cpu: ncpu
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/deeptools:3.5.1--pyhdfd78af_1'
         maxRetries: max_retries
     }

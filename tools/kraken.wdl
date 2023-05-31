@@ -195,9 +195,9 @@ task build_db {
         minimizer_len: "Minimizer length in bp that will be used to build the database"
         minimizer_spaces: "Number of characters in minimizer that are ignored in comparisons"
         max_db_size_gb: "Maximum number of GBs for Kraken 2 hash table; if the Kraken 2 estimator determines more would normally be needed, the reference library will be downsampled to fit."
+        ncpu: "Number of cores to allocate for task"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        ncpu: "Number of cores to allocate for task"
         use_all_cores: "Use all cores. Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
@@ -211,9 +211,9 @@ task build_db {
         Int minimizer_len = if protein then 12 else 31
         Int minimizer_spaces = if protein then 0 else 7
         Int max_db_size_gb = -1
+        Int ncpu = 1
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -271,9 +271,9 @@ task build_db {
     }
  
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
     }
@@ -293,8 +293,9 @@ task kraken {
         use_names: "Print scientific names instead of just taxids"
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         min_base_quality: "Minimum base quality used in classification"
-        memory_gb: "RAM to allocate for task. If missing will be dynamically allocated based on database size."
         ncpu: "Number of cores to allocate for task"
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -307,9 +308,9 @@ task kraken {
         Boolean use_names = true
         Boolean use_all_cores = false
         Int min_base_quality = 0
+        Int ncpu = 1
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -363,9 +364,9 @@ task kraken {
     }
  
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
     }

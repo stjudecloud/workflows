@@ -20,9 +20,9 @@ task build_star_db {
         File gtf
         String db_name = "star_db"
         Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 50
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -71,9 +71,9 @@ task build_star_db {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
     }
@@ -98,9 +98,9 @@ task alignment {
         String? read_groups
         Array[File] read_two_fastqs = []
         Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 50
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
     
@@ -184,9 +184,9 @@ task alignment {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
     }

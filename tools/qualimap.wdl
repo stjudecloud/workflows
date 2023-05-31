@@ -18,9 +18,9 @@ task bamqc {
         File bam
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 32
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -59,9 +59,9 @@ task bamqc {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
         maxRetries: max_retries
     }

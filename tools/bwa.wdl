@@ -21,9 +21,9 @@ task bwa_aln {
         String prefix = basename(fastq, ".fq.gz")  # TODO is this right?
         String read_group = ""
         Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -65,9 +65,9 @@ task bwa_aln {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
@@ -91,9 +91,9 @@ task bwa_aln_pe {
         String prefix = basename(read_one_fastq_gz, ".fq.gz")  # TODO is this right?
         String read_group = ""
         Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -136,9 +136,9 @@ task bwa_aln_pe {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
@@ -160,9 +160,9 @@ task bwa_mem {
         String prefix = basename(fastq, ".fq.gz")  # TODO is this right?
         String read_group = ""
         Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 5
         Int modify_disk_size_gb
-        Int ncpu = 1
         Int max_retries = 1
     }
 
@@ -202,9 +202,9 @@ task bwa_mem {
     }
 
     runtime {
+        cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        cpu: ncpu
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
