@@ -137,7 +137,7 @@ task read_length {
 task encoding {
     input {
         Array[File] ngs_files
-        String outfile_name = basename(ngs_files[0], ".bam") + ".encoding.txt"
+        String outfile_name
         Int num_samples = 1000000
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
