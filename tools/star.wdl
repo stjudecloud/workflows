@@ -112,8 +112,8 @@ task alignment {
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
     Int disk_size_gb = (
-        ceil(
-            (read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size) * 3
+        (
+            ceil(read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size) * 3
         ) + 10 + modify_disk_size_gb
     )
 
