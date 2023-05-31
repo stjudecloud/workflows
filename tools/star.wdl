@@ -45,12 +45,10 @@ task build_star_db {
             n_cores=$(nproc)
         fi
 
-        orig_gtf=~{gtf}
-        gtf_name=$(basename "${orig_gtf%.gz}")
+        gtf_name=~{basename(gtf, ".gz")}
         gunzip -c ~{gtf} > "$gtf_name" || ln -s ~{gtf} "$gtf_name"
 
-        orig_fasta=~{reference_fasta}
-        ref_fasta=$(basename "${orig_fasta%.gz}")
+        ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c ~{reference_fasta} > "$ref_fasta" \
             || ln -s ~{reference_fasta} "$ref_fasta"
         

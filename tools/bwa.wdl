@@ -18,7 +18,7 @@ task bwa_aln {
     input {
         File fastq
         File bwa_db_tar_gz
-        String prefix = basename(fastq, ".fq.gz")  # TODO is this right?
+        String prefix = basename(fastq, ".fastq.gz")
         String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 1
@@ -88,7 +88,7 @@ task bwa_aln_pe {
         File read_one_fastq_gz
         File read_two_fastq_gz
         File bwa_db_tar_gz
-        String prefix = basename(read_one_fastq_gz, ".fq.gz")  # TODO is this right?
+        String prefix = basename(read_one_fastq_gz, ".fastq.gz")
         String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 1
@@ -159,7 +159,7 @@ task bwa_mem {
     input {
         File fastq
         File bwa_db_tar_gz
-        String prefix = basename(fastq, ".fq.gz")  # TODO is this right?
+        String prefix = basename(fastq, ".fastq.gz")
         String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 1
@@ -237,14 +237,13 @@ task build_bwa_db {
     command <<<
         set -euo pipefail
 
-        orig_fasta=~{reference_fasta}
-        ref_fasta=$(basename "${orig_fasta%.gz}")
+        ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c ~{reference_fasta} > "$ref_fasta" \
             || ln -s ~{reference_fasta} "$ref_fasta"
 
         bwa index "$ref_fasta"
 
-        tar -czf ~{bwa_db_out_name} "${ref_fasta}"*
+        tar -czf ~{bwa_db_out_name} "$ref_fasta"*
     >>>
 
     output {

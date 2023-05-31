@@ -380,50 +380,6 @@ task collect_wgs_metrics {
     }
 }
 
-task collect_wgs_metrics_with_nonzero_coverage {
-    meta {
-        description: "*[Deprecated]* This WDL task runs the `picard CollectWgsMetricsWithNonZeroCoverage` command. This command is labelled as 'EXPERIMENTAL' in the Picard documentation."  # TODO does more need to be said?
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to calculate WGS metrics for"
-    }
-
-    input {
-        File bam
-        File reference_fasta
-        String prefix = basename(bam, ".bam")
-        Int memory_gb = 12
-        Int modify_disk_size_gb = 0
-        Int max_retries = 1
-    }
-
-    Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
-    Int java_heap_size = ceil(memory_gb * 0.9)
-
-    command <<<
-        picard -Xmx~{java_heap_size}g CollectWgsMetricsWithNonZeroCoverage \
-            -I ~{bam} \
-            -O ~{prefix}.CollectWgsMetricsWithNonZeroCoverage.txt \
-            -CHART ~{prefix}.CollectWgsMetricsWithNonZeroCoverage.pdf \
-            -R ~{reference_fasta} \
-            --INCLUDE_BQ_HISTOGRAM true
-    >>>
-
-    output {
-        File wgs_metrics = prefix + ".CollectWgsMetricsWithNonZeroCoverage.txt"
-        File wgs_metrics_pdf = prefix + ".CollectWgsMetricsWithNonZeroCoverage.pdf"
-    }
-
-    runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
-        maxRetries: max_retries
-    }
-}
-
 task collect_alignment_summary_metrics {
     meta {
         author: "Andrew Frantz"

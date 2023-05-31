@@ -71,7 +71,7 @@ END
     }
 }
 
-task run_ESTIMATE {  # TODO should be lowercase?
+task run_ESTIMATE {
     parameter_meta {
         gene_expression_file: "A 2 column headered TSV file with 'Gene name' in the first column and gene expression values (as floats) in the second column. Can be generated with the `calc_tpm` task."
         outfile_name: "Name of the ESTIMATE output file"
@@ -82,9 +82,9 @@ task run_ESTIMATE {  # TODO should be lowercase?
 
     input {
         File gene_expression_file
-        String outfile_name = basename(
-            gene_expression_file, ".TPM.txt"
-        ) + ".ESTIMATE.gct"
+        String outfile_name = (
+            basename(gene_expression_file, ".TPM.txt") + ".ESTIMATE.gct"
+        )
         Int memory_gb = 4
         Int disk_size_gb = 10
         Int max_retries = 1

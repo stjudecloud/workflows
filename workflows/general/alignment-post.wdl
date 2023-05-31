@@ -18,9 +18,9 @@ workflow alignment_post {
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination"
             choices: [
-                'bwa aln',  # TODO this is SE. Is `bwa_aln_pe` a possibility?
-                'bwa mem',  # TODO this is also SE.
-                'star'  # TODO I think only this will work with paired end? What would DNA use?
+                'bwa aln',
+                'bwa mem',
+                'star'
             ]
         },
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"

@@ -144,7 +144,7 @@ task flagstat {
 
 task index {
     meta {
-        description: "This WDL task runs samtools index on the input BAM file.
+        description: "This WDL task runs samtools index on the input BAM file."
     }
 
     parameter_meta {

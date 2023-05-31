@@ -11,7 +11,7 @@ task compute_checksum {
     }
 
     parameter_meta {
-        file: "Input file to generate MD5 checksum for"  # TODO rename
+        file: "Input file to generate MD5 checksum for"
     }
 
     input {

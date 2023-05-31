@@ -25,7 +25,7 @@ task count {
         feature_type: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored"
         idattr: "GFF attribute to be used as feature ID"
         mode: {
-            description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/release_0.11.1/count.html#counting-reads-in-features-with-htseq-count) for an explanation of what this parameter effects."
+            description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/release_0.11.1/count.html#counting-reads-in-features-with-htseq-count) for an explanation of what this parameter affects."
             choices: [
                 "union",
                 "intersection-strict",

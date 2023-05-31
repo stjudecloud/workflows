@@ -21,7 +21,6 @@ task count {
         File fastqs_tar_gz
         File transcriptome_tar_gz
         String id
-        String jobmode = "local"  # TODO would a non-local jobmode work?
         Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = 16
@@ -65,7 +64,7 @@ task count {
             --transcriptome transcriptome_dir \
             --fastqs fastqs \
             --sample "${sample_id}" \
-            --jobmode ~{jobmode} \
+            --jobmode local \
             --localcores "$n_cores" \
             --localmem ~{memory_gb} \
             --disable-ui
@@ -85,7 +84,7 @@ task count {
         File raw_matrix = glob("*/outs/raw_feature_bc_matrix/matrix.mtx.gz")[0]
         File mol_info_h5 = glob("*/outs/molecule_info.h5")[0]
         File web_summary = glob("*/outs/web_summary.html")[0]
-        File loupe = glob("*/outs/cloupe.cloupe" )[0]  # TODO should this be "cloupe" instead of "loupe"?
+        File cloupe = glob("*/outs/cloupe.cloupe" )[0]
     }
 
     runtime {
