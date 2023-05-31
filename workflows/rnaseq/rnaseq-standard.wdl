@@ -148,7 +148,6 @@ workflow rnaseq_standard {
 }
 
 task parse_input {
-    # TODO this is the exact same code as parse_input in the fastq entrypoint
     input {
         String input_strand
         Boolean cleanse_xenograft

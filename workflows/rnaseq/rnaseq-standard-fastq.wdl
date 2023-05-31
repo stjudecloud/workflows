@@ -29,6 +29,7 @@
 version 1.0
 
 import "../../tools/fq.wdl"
+import "./rnaseq-standard.wdl" as rnaseq_standard
 import "./rnaseq-core.wdl" as rna_core
 
 workflow rnaseq_standard_fastq {
@@ -83,7 +84,7 @@ workflow rnaseq_standard_fastq {
         Int subsample_n_reads = -1
     }
 
-    call parse_input { input:
+    call rnaseq_standard.parse_input { input:
         input_strand=strandedness,
         cleanse_xenograft=cleanse_xenograft,
         contaminant_db=defined(contaminant_db)
@@ -146,45 +147,5 @@ workflow rnaseq_standard_fastq {
         File inferred_strandedness = rnaseq_core.inferred_strandedness
         String inferred_strandedness_string = rnaseq_core.inferred_strandedness_string
         File bigwig = rnaseq_core.bigwig
-    }
-}
-
-task parse_input {
-    # TODO this is the exact same code as parse_input in the BAM entrypoint
-    input {
-        String input_strand
-        Boolean cleanse_xenograft
-        Boolean contaminant_db
-        Int memory_gb = 4
-        Int disk_size_gb = 1
-        Int max_retries = 1
-    }
-
-    command <<<
-        if [ -n "~{input_strand}" ] \
-            && [ "~{input_strand}" != "Stranded-Reverse" ] \
-            && [ "~{input_strand}" != "Stranded-Forward" ] \
-            && [ "~{input_strand}" != "Unstranded" ]
-        then
-            >&2 echo "strandedness must be:"
-            >&2 echo "'', 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
-            exit 1
-        fi
-
-        if ~{cleanse_xenograft} && [ ! ~{contaminant_db} ]; then
-            >&2 echo "'contaminant_db' must be supplied if 'cleanse_xenograft' is 'true'"
-            exit 1
-        fi
-    >>>
-
-    output {
-        String input_check = "passed"
-    }
-
-    runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
-        maxRetries: max_retries
     }
 }
