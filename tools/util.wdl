@@ -65,7 +65,7 @@ task get_read_groups {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -100,7 +100,7 @@ task split_string {
         String input_string
         String delimiter = " , "
         Int memory_gb = 4
-        Int disk_size_gb = 1
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 
@@ -138,7 +138,7 @@ task calc_gene_lengths {
     }
 
     Float gtf_size = size(gtf, "GiB")
-    Int disk_size_gb = ceil((gtf_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -207,6 +207,7 @@ END
 
 task qc_summary {
     # TODO not sure why I implemented as a JSON. Wouldn't TSV be easier to work with? Talk to Delaram/David
+    # Delaram+David okayed a switch to TSV
     meta {
         description: "*[OUT OF DATE]* This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
     }
@@ -215,7 +216,7 @@ task qc_summary {
         File multiqc_tar_gz
         String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
         Int memory_gb = 4
-        Int disk_size_gb = 5
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 
@@ -286,7 +287,7 @@ task compression_integrity {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         bgzip -t ~{bam}
@@ -315,7 +316,7 @@ task add_to_bam_header {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         samtools view -H ~{bam} > header.sam
@@ -384,7 +385,7 @@ task make_coverage_regions_beds {
     }
 
     Float gtf_size = size(gtf, "GiB")
-    Int disk_size_gb = ceil(gtf_size * 3) + modify_disk_size_gb
+    Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

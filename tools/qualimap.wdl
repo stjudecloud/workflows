@@ -30,7 +30,7 @@ task bamqc {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -104,10 +104,13 @@ task rnaseq {
 
     # Qualimap has an inefficient name sorting algorithm and will
     # use an excessive amount of storage.
-    Int disk_size_gb = (if name_sorted
-        then ceil(((bam_size + gtf_size) * 1.5) + 10)
-        else ceil(((bam_size + gtf_size) * 12) + 10))
-        + modify_disk_size_gb
+    Int disk_size_gb = (
+        (
+            if name_sorted
+            then ceil(((bam_size + gtf_size) * 1.5) + 10)
+            else ceil(((bam_size + gtf_size) * 12) + 10)
+        ) + modify_disk_size_gb
+    )
  
     command <<<
         set -euo pipefail

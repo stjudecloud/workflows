@@ -27,11 +27,12 @@ task build_star_db {
     }
 
     String star_db_tar_gz = db_name + ".tar.gz"
+
     Float reference_fasta_size = size(reference_fasta, "GiB")
     Float gtf_size = size(gtf, "GiB")
-    Int disk_size_gb = ceil(
-        ((reference_fasta_size + gtf_size) * 3) + 10
-    ) + modify_disk_size_gb
+    Int disk_size_gb = (
+        ceil((reference_fasta_size + gtf_size) * 3) + 10 + modify_disk_size_gb
+    )
 
     String memory_limit_bytes = (memory_gb - 2) + "000000000"
 
@@ -111,9 +112,11 @@ task alignment {
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
-    Int disk_size_gb = ceil(
-        ((read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size) * 3) + 10
-    ) + modify_disk_size_gb
+    Int disk_size_gb = (
+        ceil(
+            (read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size) * 3
+        ) + 10 + modify_disk_size_gb
+    )
 
     Array[File] empty_array = []  # odd construction forced by WDL v1.0 spec
 

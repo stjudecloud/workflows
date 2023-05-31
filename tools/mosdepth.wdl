@@ -17,11 +17,12 @@ task coverage {
         Boolean use_fast_mode = true
         Int min_mapping_quality = 20
         Int memory_gb = 8 
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 5)
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

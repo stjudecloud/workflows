@@ -19,13 +19,18 @@ task mark_duplicates {
         String prefix = basename(bam, ".bam") + ".MarkDuplicates"
         Boolean create_bam = true
         Int memory_gb = 50
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = if create_bam
-        then ceil((bam_size * 2) + 10)
-        else ceil(bam_size + 10)
+    Int disk_size_gb = (
+        (
+            if create_bam
+            then ceil((bam_size * 2) + 10)
+            else ceil(bam_size + 10)
+        ) + modify_disk_size_gb
+    )
     
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -99,7 +104,7 @@ task validate_bam {
     String ignore_prefix = if (length(ignore_list) != 0) then "IGNORE=" else ""
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
     
     command <<<
@@ -167,7 +172,7 @@ task bam_to_fastq {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 4) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -215,7 +220,7 @@ task sort {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 4) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     String outfile_name = prefix + ".bam"
@@ -264,8 +269,9 @@ task merge_sam_files {
     }
 
     Float bams_size = size(bams, "GiB")
-    Int disk_size_gb = ceil((bams_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
+
     Array[String] input_arg = prefix("INPUT=", bams)
 
     String outfile_name = prefix + ".bam"
@@ -309,7 +315,7 @@ task clean_sam {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     String outfile_name = prefix + ".bam"
@@ -351,7 +357,7 @@ task collect_wgs_metrics {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -393,7 +399,7 @@ task collect_wgs_metrics_with_nonzero_coverage {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -438,7 +444,7 @@ task collect_alignment_summary_metrics {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -480,7 +486,7 @@ task collect_gc_bias_metrics {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -524,7 +530,7 @@ task collect_insert_size_metrics {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -565,7 +571,7 @@ task quality_score_distribution {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<

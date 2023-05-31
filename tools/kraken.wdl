@@ -91,11 +91,13 @@ task download_library {
     String db_name = "kraken2_"+library_name+"_library"
 
     Int disk_size_gb = (
-        if library_name=="bacteria" then 300
-        else if library_name=="nr" then 600
-        else if library_name=="nt" then 2500
-        else 20
-    ) + modify_disk_size_gb
+        (
+            if library_name=="bacteria" then 300
+            else if library_name=="nr" then 600
+            else if library_name=="nt" then 2500
+            else 25
+        ) + modify_disk_size_gb
+    )
 
     command <<<
         set -euo pipefail
@@ -141,14 +143,14 @@ task create_library_from_fastas {
         Array[File] fastas
         Boolean protein = false
         Int memory_gb = 4
-        Int added_disk_size_gb = 0
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     String db_name = "kraken2_custom_library"
 
-    Int fastas_size = ceil(size(fastas, "GiB"))
-    Int disk_size_gb = fastas_size * 5 + added_disk_size_gb
+    Int fastas_size = size(fastas, "GiB")
+    Int disk_size_gb = ceil(fastas_size * 5) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -217,13 +219,15 @@ task build_db {
         Int max_retries = 1
     }
 
-    Int tarballs_size = ceil(size(tarballs, "GiB"))
-    Int disk_size_gb = tarballs_size * 6 + modify_disk_size_gb
+    Int tarballs_size = size(tarballs, "GiB")
+    Int disk_size_gb = ceil(tarballs_size * 6) + 10 + modify_disk_size_gb
     Int memory_gb = (
-        if (max_db_size_gb > 0)
-        then (ceil(max_db_size_gb * 1.2))
-        else (tarballs_size * 2)
-    ) + modify_memory_gb
+        (
+            if (max_db_size_gb > 0)
+            then (ceil(max_db_size_gb * 1.2))
+            else (tarballs_size * 2)
+        ) + modify_memory_gb
+    )
 
     String max_db_size_bytes = max_db_size_gb + "000000000"
 
@@ -317,9 +321,9 @@ task kraken {
     Float db_size = size(db, "GiB")
     Float read1_size = size(read_one_fastq_gz, "GiB")
     Float read2_size = size(read_two_fastq_gz, "GiB")
-    Int disk_size_gb_calculation = ceil(
-        (db_size * 2) + read1_size + read2_size
-    ) + modify_disk_size_gb
+    Int disk_size_gb_calculation = (
+        ceil((db_size * 2) + read1_size + read2_size) + 10 + modify_disk_size_gb
+    )
     Int disk_size_gb = if store_sequences
         then disk_size_gb_calculation + ceil(read1_size + read2_size)
         else disk_size_gb_calculation

@@ -22,7 +22,7 @@ task quickcheck {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 1.2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         samtools quickcheck ~{bam}
@@ -62,7 +62,7 @@ task split {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -124,7 +124,7 @@ task flagstat {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 1.2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         samtools flagstat ~{bam} > ~{outfile_name}
@@ -162,7 +162,7 @@ task index {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 1.5) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 1.2) + 10 + modify_disk_size_gb
 
     command {
         set -euo pipefail
@@ -201,7 +201,7 @@ task subsample {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -274,7 +274,7 @@ task merge {
     }
 
     Float bams_size = size(bams, "GiB")
-    Int disk_size_gb = ceil((bams_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
     
     command <<<
         set -euo pipefail
@@ -327,7 +327,7 @@ task addreplacerg {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     String outfile_name = prefix + ".bam"
 
@@ -391,7 +391,7 @@ task collate {
 
     Float bam_size = size(bam, "GiB")
     Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
-    Int disk_size_gb = ceil((bam_size * 4)) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
 
     String outfile_name = prefix + ".bam"
 
@@ -467,7 +467,7 @@ task bam_to_fastq {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -569,7 +569,7 @@ task collate_to_fastq {
 
     Float bam_size = size(bam, "GiB")
     Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
-    Int disk_size_gb = ceil((bam_size * 5) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 5) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

@@ -31,9 +31,9 @@ task count {
 
     Float fastq_size = size(fastqs_tar_gz, "GiB")
     Float transcriptome_size = size(transcriptome_tar_gz, "GiB")
-    Int disk_size_gb = ceil(
-        ((fastq_size + transcriptome_size) * 2) + 10
-    ) + modify_disk_size_gb
+    Int disk_size_gb = (
+        ceil((fastq_size + transcriptome_size) * 2) + 10 + modify_disk_size_gb
+    )
 
     command <<<
         set -euo pipefail
@@ -122,7 +122,7 @@ task bamtofastq {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     String data_arg = if (cellranger11) then "--cr11"
                         else if (longranger20) then "--lr10"

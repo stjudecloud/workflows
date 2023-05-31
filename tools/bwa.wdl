@@ -31,9 +31,9 @@ task bwa_aln {
 
     Float input_fastq_size = size(fastq, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
-    Int disk_size_gb = ceil(
-        (input_fastq_size + reference_size) * 2
-    ) + modify_disk_size_gb
+    Int disk_size_gb = (
+        ceil((input_fastq_size + reference_size) * 2) + modify_disk_size_gb
+    )
 
     command <<<
         set -euo pipefail
@@ -99,11 +99,13 @@ task bwa_aln_pe {
 
     String output_bam = prefix + ".bam"
 
-    Float input_fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+    Float input_fastq_size = (
+        size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+    )
     Float reference_size = size(bwa_db_tar_gz, "GiB")
-    Int disk_size_gb = ceil(
-        (input_fastq_size + reference_size) * 2
-    ) + modify_disk_size_gb
+    Int disk_size_gb = (
+        ceil((input_fastq_size + reference_size) * 2) + modify_disk_size_gb
+    )
 
     command <<<
         set -euo pipefail
@@ -170,9 +172,9 @@ task bwa_mem {
 
     Float input_fastq_size = size(fastq, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
-    Int disk_size_gb = ceil(
-        (input_fastq_size + reference_size) * 2
-    ) + modify_disk_size_gb
+    Int disk_size_gb = (
+        ceil((input_fastq_size + reference_size) * 2) + modify_disk_size_gb
+    )
 
     command <<<
         set -euo pipefail
@@ -268,6 +270,8 @@ task format_rg_for_bwa {
 
     input {
         String read_group
+        Int memory_gb = 4
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 
@@ -280,8 +284,8 @@ task format_rg_for_bwa {
     }
 
     runtime {
-        memory: "1 GB"
-        disk: "1 GB"
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }

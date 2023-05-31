@@ -60,10 +60,12 @@ task count {
         Int max_retries = 1
     }
 
-    Int bam_size = ceil(size(bam, "GiB"))
+    Int bam_size = size(bam, "GiB")
+    Int gtf_size = size(gtf, "GiB")
+
     Int memory_gb = bam_size + 5 + modify_memory_gb  # TODO what's the memory usage like if the BAM is name sorted?
-    Int gtf_size = ceil(size(gtf, "GiB"))
-    Int disk_size_gb = ((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb  # TODO why would htseq need this much disk?
+
+    Int disk_size_gb = ceil((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb  # TODO why would htseq need this much disk?
  
     command <<<
         # 9223372036854776000 == max 64 bit Float

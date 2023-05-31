@@ -153,7 +153,7 @@ task parse_input {
         Boolean cleanse_xenograft
         Boolean contaminant_db
         Int memory_gb = 4
-        Int disk_size_gb = 1
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 

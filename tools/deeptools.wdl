@@ -27,7 +27,7 @@ task bam_coverage {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size * 4) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb  # is all this disk needed?
  
     command <<<
         set -euo pipefail

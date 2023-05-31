@@ -95,7 +95,7 @@ task parse_input {
         Boolean longranger20
         Boolean gemcode
         Int memory_gb = 4
-        Int disk_size_gb = 1
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 

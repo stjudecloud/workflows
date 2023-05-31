@@ -26,9 +26,10 @@ task fqlint {
 
     Float read1_size = size(read_one_fastq_gz, "GiB")
     Float read2_size = size(read_two_fastq_gz, "GiB")
-    Int memory_gb_calculation = ceil(
-        ((read1_size + read2_size) * 0.08)
-    ) + modify_memory_gb
+
+    Int memory_gb_calculation = (
+        ceil((read1_size + read2_size) * 0.08) + modify_memory_gb
+    )
     Int memory_gb = if memory_gb_calculation > 4
         then memory_gb_calculation
         else 4

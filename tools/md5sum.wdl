@@ -11,18 +11,19 @@ task compute_checksum {
     }
 
     parameter_meta {
-        infile: "Input file to generate MD5 checksum for"
+        infile: "Input file to generate MD5 checksum for"  # TODO rename
     }
 
     input {
         File infile
         String outfile_name = basename(infile) + ".md5"
         Int memory_gb = 5
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float infile_size = size(infile, "GiB")
-    Int disk_size_gb = ceil(infile_size * 1.5)
+    Int disk_size_gb = ceil(infile_size) + 10 + modify_disk_size_gb
 
     command <<<
         md5sum ~{infile} > ~{outfile_name}

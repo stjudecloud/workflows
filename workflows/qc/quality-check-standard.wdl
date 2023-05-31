@@ -402,7 +402,7 @@ task parse_input {
         Boolean gtf_provided
         Int coverage_beds_len
         Int memory_gb = 4
-        Int disk_size_gb = 1
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 

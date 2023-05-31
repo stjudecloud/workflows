@@ -14,11 +14,12 @@ task infer_strandedness {
         Int num_genes = 1000
         Int min_mapq = 30
         Int memory_gb = 5
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size) + 10)
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
  
     command <<<
         set -euo pipefail
@@ -67,7 +68,7 @@ task instrument {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         ngsderive instrument --verbose \
@@ -101,7 +102,7 @@ task read_length {
     }
     
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -145,7 +146,7 @@ task encoding {
     }
 
     Float files_size = size(ngs_files, "GiB")
-    Int disk_size_gb = ceil((files_size) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(files_size) + 10 + modify_disk_size_gb
  
     command <<<
         set -euo pipefail
@@ -210,7 +211,7 @@ task junction_annotation {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil((bam_size) + 10) + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
