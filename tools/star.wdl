@@ -106,6 +106,7 @@ task alignment {
     
     String star_db_dir = basename(star_db_tar_gz, ".tar.gz")
 
+    # Leave 2GB as system overhead
     String memory_limit_bytes = (memory_gb - 2) + "000000000"
 
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
