@@ -344,7 +344,7 @@ task collect_wgs_metrics {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to calculate WGS metrics for"
+        bam: "Input BAM format file for which to calculate WGS metrics"
     }
 
     input {
@@ -428,11 +428,11 @@ task collect_alignment_summary_metrics {
     meta {
         author: "Andrew Frantz"
         email: "andrew.frantz@stjude.org"
-        description: "This WDL task runs the `picard CollectAlignmentSummaryMetrics` command."
+        description: "This WDL task runs `picard CollectAlignmentSummaryMetrics` to calculate metrics detailing the quality of the read alignments as well as the proportion of the reads that passed machine signal-to-noise threshold quality filters."
     }
 
     parameter_meta {
-        bam: "Input BAM format file to calculate alignment metrics for"
+        bam: "Input BAM format file for which to calculate alignment metrics"
     }
 
     input {
@@ -469,11 +469,11 @@ task collect_alignment_summary_metrics {
 
 task collect_gc_bias_metrics {
     meta {
-        description: "This WDL task runs the `picard CollectGcBiasMetrics` command."
+        description: "This WDL task runs `picard CollectGcBiasMetrics` to collect information about the relative proportions of guanine (G) and cytosine (C) nucleotides."
     }
 
     parameter_meta {
-        bam: "Input BAM format file to calculate GC bias metrics for"
+        bam: "Input BAM format file for which to calculate GC bias metrics"
     }
 
     input {
@@ -514,11 +514,11 @@ task collect_gc_bias_metrics {
 
 task collect_insert_size_metrics {
     meta {
-        description: "This WDL task runs the `picard CollectInsertSizeMetrics` command."
+        description: "This WDL task runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction including the insert size distribution and read orientation of paired-end libraries."
     }
 
     parameter_meta {
-        bam: "Input BAM format file to calculate insert size metrics for"
+        bam: "Input BAM format file for which to calculate insert size metrics"
     }
 
     input {
@@ -555,11 +555,11 @@ task collect_insert_size_metrics {
 
 task quality_score_distribution {
     meta {
-        description: "This WDL task runs the `picard QualityScoreDistribution` command."
+        description: "This WDL task runs `picard QualityScoreDistribution` to calculate the range of quality scores and an accompanying chart."
     }
 
     parameter_meta {
-        bam: "Input BAM format file to calculate quality score distribution for"
+        bam: "Input BAM format file for which to calculate quality score distribution"
     }
 
     input {
