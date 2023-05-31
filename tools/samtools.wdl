@@ -83,14 +83,14 @@ task split {
             -h 0 \
             -n 1 \
             ~{prefix}.unaccounted_reads.bam \
-            > unaccounted_reads.bam
+            > first_unaccounted_read.bam
         
-        if ~{reject_unaccounted} && [ -s unaccounted_reads.bam ]; then
+        if ~{reject_unaccounted} && [ -s first_unaccounted_read.bam ]; then
             exit 1
         else
             rm ~{prefix}.unaccounted_reads.bam
         fi 
-        rm unaccounted_reads.bam
+        rm first_unaccounted_read.bam
     >>>
 
     output {
