@@ -16,7 +16,7 @@ task mark_duplicates {
 
     input {
         File bam
-        String prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam") + ".MarkDuplicates"
         Boolean create_bam = true
         Int memory_gb = 50
         Int max_retries = 1
@@ -33,23 +33,23 @@ task mark_duplicates {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g MarkDuplicates I=~{bam} \
-            O=~{if create_bam then prefix + ".MarkDuplicates.bam" else "/dev/null"} \
+            O=~{if create_bam then prefix + ".bam" else "/dev/null"} \
             VALIDATION_STRINGENCY=SILENT \
             CREATE_INDEX=~{create_bam} \
             CREATE_MD5_FILE=~{create_bam} \
             COMPRESSION_LEVEL=5 \
-            METRICS_FILE=~{prefix}.MarkDuplicates.metrics.txt
+            METRICS_FILE=~{prefix}.metrics.txt
         
         if ~{create_bam}; then
-            mv ~{prefix}.MarkDuplicates.bai ~{prefix}.MarkDuplicates.bam.bai
+            mv ~{prefix}.bai ~{prefix}.bam.bai
         fi
     >>>
 
     output {
-        File? duplicate_marked_bam = "~{prefix}.MarkDuplicates.bam"
-        File? duplicate_marked_bam_index = "~{prefix}.MarkDuplicates.bam.bai"
-        File? duplicate_marked_bam_md5 = "~{prefix}.MarkDuplicates.bam.md5"
-        File mark_duplicates_metrics = "~{prefix}.MarkDuplicates.metrics.txt"
+        File? duplicate_marked_bam = "~{prefix}.bam"
+        File? duplicate_marked_bam_index = "~{prefix}.bam.bai"
+        File? duplicate_marked_bam_md5 = "~{prefix}.bam.md5"
+        File mark_duplicates_metrics = "~{prefix}.metrics.txt"
     }
 
     runtime {
@@ -208,7 +208,7 @@ task sort {
     input {
         File bam
         String sort_order = "coordinate"
-        String outfile_name = basename(bam, ".bam") + ".sorted.bam"
+        String prefix = basename(bam, ".bam") + ".sorted"
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -217,6 +217,8 @@ task sort {
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil((bam_size * 4) + 10) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
+
+    String outfile_name = prefix + ".bam"
 
     command <<<
         picard -Xmx~{java_heap_size}g SortSam \
@@ -253,7 +255,7 @@ task merge_sam_files {
 
     input {
         Array[File] bams
-        String outfile_name = "merged.bam"  # TODO is there a better default for this?
+        String prefix
         String sort_order = "coordinate"
         Boolean threading = true
         Int memory_gb = 40
@@ -265,6 +267,8 @@ task merge_sam_files {
     Int disk_size_gb = ceil((bams_size * 2) + 10) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
     Array[String] input_arg = prefix("INPUT=", bams)
+
+    String outfile_name = prefix + ".bam"
 
     command <<<
         picard -Xmx~{java_heap_size}g MergeSamFiles \
@@ -298,7 +302,7 @@ task clean_sam {
 
     input {
         File bam
-        String outfile_name = basename(bam, ".bam") + ".cleaned.bam"
+        String prefix = basename(bam, ".bam") + ".cleaned"
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -307,6 +311,8 @@ task clean_sam {
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
+
+    String outfile_name = prefix + ".bam"
 
     command <<<
         picard -Xmx~{java_heap_size}g CleanSam \

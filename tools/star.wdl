@@ -94,7 +94,7 @@ task alignment {
     input {
         Array[File] read_one_fastqs
         File star_db_tar_gz
-        String output_prefix
+        String prefix
         String? read_groups
         Array[File] read_two_fastqs = []
         Boolean use_all_cores = false
@@ -172,15 +172,15 @@ task alignment {
              --alignSJDBoverhangMin 1 \
              --outFilterMatchNminOverLread 0.66 \
              --outFilterScoreMinOverLread 0.66 \
-             --outFileNamePrefix ~{output_prefix + "."} \
+             --outFileNamePrefix ~{prefix + "."} \
              --twopassMode Basic \
              --limitBAMsortRAM ~{memory_limit_bytes} \
              --outSAMattrRGline $(cat read_groups_sorted.txt)
     >>>
 
     output {
-        File star_log = output_prefix + ".Log.final.out"
-        File star_bam = output_prefix + ".Aligned.out.bam"
+        File star_log = prefix + ".Log.final.out"
+        File star_bam = prefix + ".Aligned.out.bam"
     }
 
     runtime {

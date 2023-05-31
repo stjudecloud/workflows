@@ -264,8 +264,8 @@ task subsample {
 task merge {
     input {
         Array[File] bams
+        String prefix
         File? new_header
-        String outfile_name = basename(bams[0], ".bam") + ".merged.bam"  # TODO is this desired behavior?
         Boolean attach_rg = true
         Boolean use_all_cores = false
         Int memory_gb = 4
@@ -289,12 +289,12 @@ task merge {
             --threads "$n_cores" \
             ~{if defined(new_header) then "-h " + new_header else ""} \
             ~{if attach_rg then "-r" else ""} \
-            ~{outfile_name} \
+            ~{prefix}.bam \
             ~{sep=' ' bams}
     >>>
 
     output {
-        File merged_bam = outfile_name
+        File merged_bam = prefix + ".bam"
     }
 
     runtime {
@@ -319,7 +319,7 @@ task addreplacerg {
     input {
         File bam
         String read_group_id
-        String outfile_name = basename(bam, ".bam") + ".read_group.bam"
+        String prefix = basename(bam, ".bam") + ".read_group"
         Boolean use_all_cores = false
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
@@ -329,6 +329,8 @@ task addreplacerg {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
+
+    String outfile_name = prefix + ".bam"
 
     command <<<
         set -euo pipefail
@@ -379,7 +381,7 @@ task collate {
 
     input {
         File bam
-        String outfile_name = basename(bam, ".bam") + ".collated.bam"
+        String prefix = basename(bam, ".bam") + ".collated"
         Boolean f = true
         Boolean use_all_cores = false
         Int modify_memory_gb = 0
@@ -391,6 +393,8 @@ task collate {
     Float bam_size = size(bam, "GiB")
     Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
     Int disk_size_gb = ceil((bam_size * 4)) + modify_disk_size_gb
+
+    String outfile_name = prefix + ".bam"
 
     command <<<
         set -euo pipefail
