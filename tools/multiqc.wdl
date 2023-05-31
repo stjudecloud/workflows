@@ -27,8 +27,7 @@ task multiqc {
         Int max_retries = 1
     }
 
-    String out_directory = prefix + ".multiqc"
-    String out_tar_gz = out_directory + ".tar.gz"
+    String out_tar_gz = prefix + ".tar.gz"
 
     command <<<
         set -euo pipefail
@@ -73,14 +72,14 @@ task multiqc {
             --no-ansi \
             -c multiqc_config.yaml \
             --file-list file_list.txt \
-            -o ~{out_directory}
+            -o ~{prefix}
         
-        if [ ! -d ~{out_directory} ]; then
+        if [ ! -d ~{prefix} ]; then
             >&2 echo "MultiQC didn't find any valid files!"
             exit 1
         fi
 
-        tar -czf ~{out_tar_gz} ~{out_directory}
+        tar -czf ~{out_tar_gz} ~{prefix}
     >>>
 
     output {

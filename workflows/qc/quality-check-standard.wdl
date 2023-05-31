@@ -312,7 +312,7 @@ workflow quality_check {
             select_first([markdups_post.mosdepth_region_summary, []]),
             select_first([markdups_post.mosdepth_region_dist, []])
         ])),
-        prefix=post_subsample_prefix,
+        prefix=post_subsample_prefix + ".multiqc",
         extra_fn_clean_exts=[".ValidateSamFile", ".MarkDuplicates"],
         mosdepth_labels=flatten([
             ["whole_genome"],
