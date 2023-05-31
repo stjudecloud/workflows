@@ -108,20 +108,23 @@ task validate_bam {
     Int java_heap_size = ceil(memory_gb * 0.9)
     
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             I=~{bam} \
             ~{mode_arg} \
             ~{stringency_arg} \
             ~{ignore_prefix}~{sep=' IGNORE=' ignore_list} \
             MAX_OUTPUT=~{max_errors} \
-            > ~{outfile_name}
+            > ~{outfile_name} \
+            || rc=$?
 
-        rc=$?
-        if [ $rc -le -1 ] || [ $rc -ge 4 ]; then  # TODO explain this
+        # rc = 0 = success
+        # rc = 2 = validation warnings
+        # rc = 3 = validation errors
+        if [ $rc -ne 0 ] && [ $rc -ne 2 ] && [ $rc -ne 3 ]; then
             exit $rc
         fi
-
-        set -euo pipefail
 
         if ~{succeed_on_warnings}; then
             GREP_PATTERN="ERROR"
