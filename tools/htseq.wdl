@@ -14,7 +14,7 @@ task count {
         bam: "Input BAM format file to generate coverage for"
         gtf: "Input genomic features in gzipped GTF format to count reads for"
         strandedness: {
-            description: "Strandedness protocol of the RNA-Seq experiment. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/release_0.11.1/count.html#cmdoption-htseq-count-s) for an explanation of what this parameter effects."
+            description: "Strandedness protocol of the RNA-Seq experiment. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/release_0.11.1/count.html#cmdoption-htseq-count-s) for an explanation of what this parameter affects."
             choices: [
                 "yes",
                 "reverse",
