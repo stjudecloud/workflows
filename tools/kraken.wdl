@@ -224,8 +224,8 @@ task build_db {
     Int memory_gb = (
         (
             if (max_db_size_gb > 0)
-            then (ceil(max_db_size_gb * 1.2))
-            else (tarballs_size * 2)
+            then ceil(max_db_size_gb * 1.2)
+            else ceil(tarballs_size * 2)
         ) + modify_memory_gb
     )
 
