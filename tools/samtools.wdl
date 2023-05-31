@@ -108,7 +108,7 @@ task split {
 
 task flagstat {
     meta {
-        description: "This WDL tool generates a `samtools flagstat` report for the input BAM file."
+        description: "This WDL tool produces a `samtools flagstat` report containing statistics about the alignments based on the bit flags set in the BAM."
     }
 
     parameter_meta {
@@ -144,7 +144,7 @@ task flagstat {
 
 task index {
     meta {
-        description: "This WDL task runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM."
+        description: "This WDL task runs samtools index on the input BAM file.
     }
 
     parameter_meta {

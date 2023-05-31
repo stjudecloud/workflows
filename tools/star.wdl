@@ -34,6 +34,7 @@ task build_star_db {
         ceil((reference_fasta_size + gtf_size) * 3) + 10 + modify_disk_size_gb
     )
 
+    # Leave 2GB as system overhead
     String memory_limit_bytes = (memory_gb - 2) + "000000000"
 
     command <<<
