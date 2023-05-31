@@ -180,7 +180,10 @@ workflow quality_check {
         # RNA needs a collated BAM for Qualimap
         # DNA can skip the associated storage costs
         store_collated_bam=(molecule == "RNA"),
-        fast_mode=(molecule != "RNA"),  # TODO check if this makes a difference for Qualimap
+        # disabling fast_mode enables writing of secondary and supplementary alignments
+        # to the collated BAM when processing RNA.
+        # Those alignments are used downstream by Qualimap.
+        fast_mode=(molecule != "RNA"),
         paired_end=true,  # matches default but prevents user from overriding
         interleaved=false,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
