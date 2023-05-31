@@ -91,7 +91,7 @@ workflow quality_check {
             coverage_labels=coverage_labels
     }
 
-    call md5sum.compute_checksum { input: infile=bam, max_retries=max_retries }  # TODO should prefix go to this call?
+    call md5sum.compute_checksum { input: file=bam, max_retries=max_retries }  # TODO should prefix go to this call?
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call util.compression_integrity { input: bam=bam, max_retries=max_retries }

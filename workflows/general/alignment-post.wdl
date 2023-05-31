@@ -76,7 +76,7 @@ workflow alignment_post {
 
     call picard.validate_bam { input: bam=aligned_bam, max_retries=max_retries }
 
-    call md5sum.compute_checksum { input: infile=aligned_bam, max_retries=max_retries }
+    call md5sum.compute_checksum { input: file=aligned_bam, max_retries=max_retries }
 
     output {
         File out_bam = aligned_bam

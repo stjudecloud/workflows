@@ -99,7 +99,7 @@ workflow scrnaseq_standard {
         max_retries=max_retries
     }
 
-    call md5sum.compute_checksum { input: infile=count.bam, max_retries=max_retries }
+    call md5sum.compute_checksum { input: file=count.bam, max_retries=max_retries }
 
     output {
         File harmonized_bam = count.bam
