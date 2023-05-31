@@ -245,7 +245,7 @@ workflow quality_check {
     call picard.mark_duplicates as markdups { input:
         bam=post_subsample_bam,
         create_bam=mark_duplicates,
-        prefix=post_subsample_prefix,
+        prefix=post_subsample_prefix + ".MarkDuplicates",
         max_retries=max_retries
     }
     if (mark_duplicates) {
