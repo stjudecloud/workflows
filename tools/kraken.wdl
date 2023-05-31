@@ -149,7 +149,7 @@ task create_library_from_fastas {
 
     String db_name = "kraken2_custom_library"
 
-    Int fastas_size = size(fastas, "GiB")
+    Float fastas_size = size(fastas, "GiB")
     Int disk_size_gb = ceil(fastas_size * 5) + 10 + modify_disk_size_gb
 
     command <<<
@@ -219,7 +219,7 @@ task build_db {
         Int max_retries = 1
     }
 
-    Int tarballs_size = size(tarballs, "GiB")
+    Float tarballs_size = size(tarballs, "GiB")
     Int disk_size_gb = ceil(tarballs_size * 6) + 10 + modify_disk_size_gb
     Int memory_gb = (
         (
