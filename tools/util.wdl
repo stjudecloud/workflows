@@ -339,8 +339,6 @@ task add_to_bam_header {
 }
 
 task unpack_tarball {
-    # TODO I don't think I've ever checked if this task actually works.
-    #   I wrote it then realized there was a better way before this made it to testing
     input {
         File tarball
         Int memory_gb = 4

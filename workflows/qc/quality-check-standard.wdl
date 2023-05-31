@@ -105,7 +105,7 @@ workflow quality_check {
             max_retries=max_retries
         }
         if (defined(subsample.sampled_bam)) {
-            call samtools.index as subsample_index { input:  # TODO use prefix here?
+            call samtools.index as subsample_index { input:
                 bam=select_first([subsample.sampled_bam, "undefined"]),
                 use_all_cores=use_all_cores,
                 max_retries=max_retries
