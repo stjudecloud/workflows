@@ -340,7 +340,7 @@ task clean_sam {
 
 task collect_wgs_metrics {
     meta {
-        description: "This WDL task runs the `picard CollectWgsMetrics` command."
+        description: "This WDL task runs `picard CollectWgsMetrics`  to collect metrics about the fractions of reads that pass base- and mapping-quality filters as well as coverage (read-depth) levels."
     }
 
     parameter_meta {
