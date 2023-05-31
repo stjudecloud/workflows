@@ -46,7 +46,7 @@ workflow chipseq_standard {
         bam: "Input BAM format file to realign with bowtie"
         bowtie_indexes: "Database of v1 reference files for the bowtie aligner. Can be generated with https://github.com/stjude/seaseq/blob/master/workflows/tasks/bowtie.wdl. [*.ebwt]"
         excludelist: "Optional list of regions that will be excluded after reference alignment"
-        output_prefix: "Prefix for output files"
+        prefix: "Prefix for output files"
         validate_input: "Run Picard ValidateSamFile on the input BAM"
         use_all_cores: "Use all cores for multi-core steps?"
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
@@ -57,7 +57,7 @@ workflow chipseq_standard {
         File bam
         Array[File] bowtie_indexes
         File? excludelist
-        String output_prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam")
         Boolean validate_input = true
         Boolean use_all_cores = false
         Int subsample_n_reads = -1
@@ -152,13 +152,13 @@ workflow chipseq_standard {
 
     call picard.merge_sam_files as picard_merge { input:
         bams=picard_clean.cleaned_bam,
-        outfile_name=output_prefix + ".bam",
+        prefix=prefix,
         max_retries=max_retries
     }
 
     call seaseq_samtools.markdup { input:
         bamfile=picard_merge.merged_bam,
-        outputfile=output_prefix + ".bam"
+        outputfile=prefix + ".bam"
     }
     call samtools.index as samtools_index { input:
         bam=markdup.mkdupbam,
@@ -175,7 +175,7 @@ workflow chipseq_standard {
     call deeptools.bam_coverage as deeptools_bam_coverage { input:
         bam=markdup.mkdupbam,
         bam_index=samtools_index.bam_index,
-        prefix=output_prefix,
+        prefix=prefix,
         max_retries=max_retries
     }
 

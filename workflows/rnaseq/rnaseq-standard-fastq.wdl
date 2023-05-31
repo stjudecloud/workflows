@@ -38,7 +38,7 @@ workflow rnaseq_standard_fastq {
         read_one_fastqs: "Input Fastq format file(s) with 1st read in pair to align"
         read_two_fastqs: "Input Fastq format file(s) with 2nd read in pair to align"
         read_groups: "A space-delimited read group record for each read group. Exactly one FastQ filename must match each read group ID from `read_one_fastqs` and `read_two_fastqs`. Read group fields (Required fields: ID, LB, PL, PU, & SM.) should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a FastQ file (up to the first period). Expected form: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
-        output_prefix: "Prefix for output files"
+        prefix: "Prefix for output files"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
         xenocp_aligner: {
@@ -71,7 +71,7 @@ workflow rnaseq_standard_fastq {
         Array[File] read_one_fastqs
         Array[File] read_two_fastqs
         String read_groups
-        String output_prefix
+        String prefix
         File? contaminant_db
         Int? max_retries
         String xenocp_aligner = "star"
@@ -125,7 +125,7 @@ workflow rnaseq_standard_fastq {
         read_one_fastqs=selected_read_one_fastqs,
         read_two_fastqs=selected_read_two_fastqs,
         read_groups=read_groups,
-        output_prefix=output_prefix,
+        prefix=prefix,
         gtf=gtf,
         star_db=star_db,
         mark_duplicates=mark_duplicates,

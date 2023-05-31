@@ -46,7 +46,7 @@ workflow rnaseq_standard {
         gtf: "Gzipped GTF feature file"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
-        output_prefix: "Prefix for output files"
+        prefix: "Prefix for output files"
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination"
             choices: [
@@ -77,7 +77,7 @@ workflow rnaseq_standard {
         File star_db
         File? contaminant_db
         Int? max_retries
-        String output_prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam")
         String xenocp_aligner = "star"
         String strandedness = ""
         Boolean mark_duplicates = false
@@ -123,7 +123,7 @@ workflow rnaseq_standard {
         read_one_fastqs=bam_to_fastqs.read1s,
         read_two_fastqs=select_all(bam_to_fastqs.read2s),
         read_groups=read_groups,
-        output_prefix=output_prefix,
+        prefix=prefix,
         gtf=gtf,
         star_db=star_db,
         mark_duplicates=mark_duplicates,

@@ -43,7 +43,7 @@ workflow scrnaseq_standard {
         gtf: "Gzipped GTF feature file"
         transcriptome_tar_gz: "Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics."
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
-        output_prefix: "Prefix for output files"
+        prefix: "Prefix for output files"
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores for multi-core steps?"
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
@@ -54,7 +54,7 @@ workflow scrnaseq_standard {
         File gtf
         File transcriptome_tar_gz
         Int? max_retries
-        String output_prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam")
         Boolean validate_input = true
         Boolean use_all_cores = false
         Int subsample_n_reads = -1
@@ -87,7 +87,7 @@ workflow scrnaseq_standard {
     call cellranger.count { input:
         fastqs_tar_gz=cell_ranger_bam_to_fastqs.fastqs_archive,
         transcriptome_tar_gz=transcriptome_tar_gz,
-        id=output_prefix,
+        id=prefix,
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
