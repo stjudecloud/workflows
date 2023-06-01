@@ -36,7 +36,7 @@ import "../../tools/fastqc.wdl" as fqc
 import "../../tools/ngsderive.wdl"
 import "../../tools/qualimap.wdl"
 import "../../tools/fq.wdl"
-import "../../tools/kraken.wdl"
+import "../../tools/kraken.wdl" as kraken2
 import "../../tools/multiqc.wdl" as mqc
 import "../../tools/util.wdl"
 
@@ -194,7 +194,7 @@ workflow quality_check {
         read_two_fastq_gz=collate_to_fastq.read_two_fastq_gz,
         max_retries=max_retries
     }
-    call kraken.kraken as run_kraken { input:
+    call kraken2.kraken { input:
         read_one_fastq_gz=fqlint.validated_read1,
         read_two_fastq_gz=select_first([fqlint.validated_read2, "undefined"]),
         db=kraken_db,
@@ -298,7 +298,7 @@ workflow quality_check {
                 collect_insert_size_metrics.insert_size_metrics,
                 markdups_post.insert_size_metrics,
                 quality_score_distribution.quality_score_distribution_txt,
-                run_kraken.report,
+                kraken.report,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
                 markdups_post.mosdepth_global_summary,
@@ -373,13 +373,13 @@ workflow quality_check {
             = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf
             = quality_score_distribution.quality_score_distribution_pdf
-        File kraken_report = run_kraken.report
+        File kraken_report = kraken.report
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
         File multiqc_report = multiqc.multiqc_report
-        File? kraken_sequences = run_kraken.sequences
+        File? kraken_sequences = kraken.sequences
         File? mosdepth_dups_marked_global_dist = markdups_post.mosdepth_global_dist
         File? mosdepth_dups_marked_global_summary = markdups_post.mosdepth_global_summary
         Array[File]? mosdepth_dups_marked_region_summary
