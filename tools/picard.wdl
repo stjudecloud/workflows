@@ -123,9 +123,12 @@ task validate_bam {
         # rc = 0 = success
         # rc = 2 = validation warnings
         # rc = 3 = validation errors
+        echo "rc = $rc"
         if [ $rc -ne 0 ] && [ $rc -ne 2 ] && [ $rc -ne 3 ]; then
+            echo "exitting with error code $rc"
             exit $rc
         fi
+        echo "seems like success"
 
         if ~{succeed_on_warnings}; then
             GREP_PATTERN="ERROR"
