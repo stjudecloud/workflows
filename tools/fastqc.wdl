@@ -47,7 +47,7 @@ task fastqc {
     >>>
 
     output {
-        File raw_data = "~{prefix}/~{basename(bam, '.bam')}_fastqc.zip"
+        File raw_data = "~{prefix}/~{basename(bam, '.bam')}_fastqc.zip"  # TODO verify this works if prefix differs
         File results = out_tar_gz
     }
 

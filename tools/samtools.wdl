@@ -319,7 +319,7 @@ task addreplacerg {
     input {
         File bam
         String read_group_id
-        String prefix = basename(bam, ".bam") + ".read_group"
+        String prefix = basename(bam, ".bam") + ".read_group"  # TODO revisit this name
         Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = 4
