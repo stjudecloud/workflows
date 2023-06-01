@@ -339,6 +339,10 @@ task add_to_bam_header {
 }
 
 task unpack_tarball {
+    meta {
+        description: "Accepts a `.tar.gz` archive and converts it into a flat array of files. Any directory structure of the archive is ignored."
+    }
+
     input {
         File tarball
         Int memory_gb = 4
