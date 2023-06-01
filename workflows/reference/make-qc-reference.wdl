@@ -79,23 +79,20 @@ workflow make_qc_reference {
         Int? max_retries
     }
 
-    call util.download as reference_download {
-        input:
-            url=reference_fa_url,
-            outfile_name=reference_fa_name,
-            max_retries=max_retries
+    call util.download as reference_download { input:
+        url=reference_fa_url,
+        outfile_name=reference_fa_name,
+        max_retries=max_retries
     }
-    call util.download as gtf_download {
-        input:
-            url=gtf_url,
-            outfile_name=gtf_name,
-            max_retries=max_retries
+    call util.download as gtf_download { input:
+        url=gtf_url,
+        outfile_name=gtf_name,
+        max_retries=max_retries
     }
 
-    call util.make_coverage_regions_beds {
-        input:
-            gtf=gtf_download.downloaded_file,
-            max_retries=max_retries
+    call util.make_coverage_regions_beds { input:
+        gtf=gtf_download.downloaded_file,
+        max_retries=max_retries
     }
 
     scatter (url in kraken_fasta_urls) {

@@ -83,12 +83,11 @@ workflow quality_check {
         Int subsample_n_reads = -1
     }
 
-    call parse_input {
-        input:
-            gtf_provided=defined(gtf),
-            input_molecule=molecule,
-            coverage_beds_len=length(coverage_beds),
-            coverage_labels=coverage_labels
+    call parse_input { input:
+        gtf_provided=defined(gtf),
+        input_molecule=molecule,
+        coverage_beds_len=length(coverage_beds),
+        coverage_labels=coverage_labels
     }
 
     call md5sum.compute_checksum { input: file=bam, max_retries=max_retries }  # TODO should prefix go to this call?

@@ -65,20 +65,18 @@ workflow chipseq_standard {
     }
 
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam {
-            input:
-                bam=bam,
-                max_retries=max_retries
+        call picard.validate_bam as validate_input_bam { input:
+            bam=bam,
+            max_retries=max_retries
         }
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample {
-            input:
-                bam=bam,
-                desired_reads=subsample_n_reads,
-                use_all_cores=use_all_cores,
-                max_retries=max_retries
+        call samtools.subsample { input:
+            bam=bam,
+            desired_reads=subsample_n_reads,
+            use_all_cores=use_all_cores,
+            max_retries=max_retries
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
@@ -112,16 +110,15 @@ workflow chipseq_standard {
         call seaseq_util.basicfastqstats as basic_stats { input:
             fastqfile=pair.left
         }
-        call seaseq_map.mapping as bowtie_single_end_mapping {
-            input:
-                fastqfile=pair.left,
-                index_files=bowtie_indexes,
-                metricsfile=basic_stats.metrics_out,
-                blacklist=excludelist,
-                # get read length from ngsderive output
-                # row 1 == sample entry
-                # col 3 == read length
-                read_length=read_tsv(read_length.read_length_file)[1][3]
+        call seaseq_map.mapping as bowtie_single_end_mapping { input:
+            fastqfile=pair.left,
+            index_files=bowtie_indexes,
+            metricsfile=basic_stats.metrics_out,
+            blacklist=excludelist,
+            # get read length from ngsderive output
+            # row 1 == sample entry
+            # col 3 == read length
+            read_length=read_tsv(read_length.read_length_file)[1][3]
         }
         File chosen_bam = select_first(
             [
@@ -130,11 +127,10 @@ workflow chipseq_standard {
                 bowtie_single_end_mapping.sorted_bam
             ]
         )
-        call util.add_to_bam_header {
-            input:
-                bam=chosen_bam,
-                additional_header=pair.right,
-                max_retries=max_retries
+        call util.add_to_bam_header { input:
+            bam=chosen_bam,
+            additional_header=pair.right,
+            max_retries=max_retries
         }
         String rg_id_field = sub(sub(pair.right, ".*ID:", "ID:"), "\t.*", "") 
         String rg_id = sub(rg_id_field, "ID:", "")

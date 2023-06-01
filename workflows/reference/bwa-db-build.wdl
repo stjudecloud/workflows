@@ -51,17 +51,15 @@ workflow bwa_db_build {
         Int max_retries = 1
     }
 
-    call util.download as reference_download {
-        input:
-            url=reference_fa_url,
-            outfile_name=reference_fa_name,
-            md5sum=reference_fa_md5,
-            max_retries=max_retries
+    call util.download as reference_download { input:
+        url=reference_fa_url,
+        outfile_name=reference_fa_name,
+        md5sum=reference_fa_md5,
+        max_retries=max_retries
     }
-    call bwa.build_bwa_db {
-        input:
-            reference_fasta=reference_download.downloaded_file,
-            max_retries=max_retries
+    call bwa.build_bwa_db { input:
+        reference_fasta=reference_download.downloaded_file,
+        max_retries=max_retries
     }
 
     output {
