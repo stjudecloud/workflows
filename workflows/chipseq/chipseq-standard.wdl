@@ -114,11 +114,7 @@ workflow chipseq_standard {
             fastqfile=pair.left,
             index_files=bowtie_indexes,
             metricsfile=basic_stats.metrics_out,
-            blacklist=excludelist,
-            # get read length from ngsderive output
-            # row 1 == sample entry
-            # col 3 == read length
-            read_length=read_tsv(read_length.read_length_file)[1][3]
+            blacklist=excludelist
         }
         File chosen_bam = select_first(
             [
