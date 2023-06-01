@@ -309,7 +309,7 @@ task add_to_bam_header {
     input {
         File bam
         String additional_header
-        String outfile_name = basename(bam, ".bam") + ".reheader.bam"
+        String prefix = basename(bam, ".bam") + ".reheader"
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -317,6 +317,8 @@ task add_to_bam_header {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+
+    String outfile_name = prefix + ".bam"
 
     command <<<
         samtools view -H ~{bam} > header.sam
