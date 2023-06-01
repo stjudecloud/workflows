@@ -18,7 +18,11 @@ task bwa_aln {
     input {
         File fastq
         File bwa_db_tar_gz
-        String prefix = sub(basename(fastq), ".fastq.gz|.fq.gz", "")
+        String prefix = sub(
+            basename(fastq),
+            ".([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            ""
+        )
         String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 1
@@ -88,7 +92,11 @@ task bwa_aln_pe {
         File read_one_fastq_gz
         File read_two_fastq_gz
         File bwa_db_tar_gz
-        String prefix = sub(basename(read_one_fastq_gz), ".fastq.gz|.fq.gz", "")
+        String prefix = sub(
+            basename(read_one_fastq_gz),
+            ".([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            ""
+        )
         String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 1
@@ -159,7 +167,11 @@ task bwa_mem {
     input {
         File fastq
         File bwa_db_tar_gz
-        String prefix = sub(basename(fastq), ".fastq.gz|.fq.gz", "")
+        String prefix = sub(
+            basename(fastq),
+            ".([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            ""
+        )
         String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 1

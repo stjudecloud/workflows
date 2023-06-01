@@ -307,7 +307,11 @@ task kraken {
         File read_one_fastq_gz
         File read_two_fastq_gz
         File db
-        String prefix = sub(basename(read_one_fastq_gz), "_R1.fastq.gz|_R1.fq.gz", "")
+        String prefix = sub(
+            basename(read_one_fastq_gz),
+            ".([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            ""
+        )
         Boolean store_sequences = false
         Boolean use_names = true
         Boolean use_all_cores = false
