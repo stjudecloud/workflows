@@ -110,6 +110,7 @@ task validate_bam {
     command <<<
         set -euo pipefail
 
+        rc=0
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             I=~{bam} \
             ~{mode_arg} \
