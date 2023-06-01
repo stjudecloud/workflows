@@ -76,6 +76,7 @@ workflow make_qc_reference {
         String gtf_url
         String gtf_name
         Boolean protein = false
+        Int kraken_fastas_disk_size_gb = 10
         Int reference_fa_disk_size_gb = 10
         Int gtf_disk_size_gb = 10
         Int? max_retries
@@ -103,6 +104,7 @@ workflow make_qc_reference {
         call util.download as fastas_download { input:
             url=url,
             outfile_name="tmp.fa.gz",
+            disk_size_gb=kraken_fastas_disk_size_gb,
             max_retries=max_retries
         }
     }
