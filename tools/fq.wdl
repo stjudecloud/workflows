@@ -80,7 +80,7 @@ task subsample {
         File? read_two_fastq_gz
         String prefix = sub(
             basename(read_one_fastq_gz),
-            ".([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
         Float probability = 1.0

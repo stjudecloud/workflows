@@ -20,7 +20,7 @@ task bwa_aln {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(fastq),
-            ".([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
         String read_group = ""
@@ -94,7 +94,7 @@ task bwa_aln_pe {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(read_one_fastq_gz),
-            ".([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
         String read_group = ""
@@ -169,7 +169,7 @@ task bwa_mem {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(fastq),
-            ".([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
         String read_group = ""
