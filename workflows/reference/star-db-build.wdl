@@ -57,6 +57,8 @@ workflow star_db_build {
         String gtf_name
         String? reference_fa_md5
         String? gtf_md5
+        Int reference_fa_disk_size_gb = 10
+        Int gtf_disk_size_gb = 10
         Int? max_retries
     }
 
@@ -64,12 +66,14 @@ workflow star_db_build {
         url=reference_fa_url,
         outfile_name=reference_fa_name,
         md5sum=reference_fa_md5,
+        disk_size_gb=reference_fa_disk_size_gb,
         max_retries=max_retries
     }
     call util.download as gtf_download { input:
         url=gtf_url,
         outfile_name=gtf_name,
         md5sum=gtf_md5,
+        disk_size_gb=gtf_disk_size_gb,
         max_retries=max_retries
     }
     call star.build_star_db { input:

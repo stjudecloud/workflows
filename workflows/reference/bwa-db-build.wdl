@@ -48,12 +48,14 @@ workflow bwa_db_build {
         String reference_fa_url
         String reference_fa_name
         String? reference_fa_md5
+        Int reference_fa_disk_size_gb = 10
         Int max_retries = 1
     }
 
     call util.download as reference_download { input:
         url=reference_fa_url,
         outfile_name=reference_fa_name,
+        disk_size_gb=reference_fa_disk_size_gb,
         md5sum=reference_fa_md5,
         max_retries=max_retries
     }
