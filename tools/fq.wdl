@@ -78,7 +78,7 @@ task subsample {
     input {
         File read_one_fastq_gz
         File? read_two_fastq_gz
-        String prefix = basename(read_one_fastq_gz, "_R1.fastq.gz")
+        String prefix = sub(basename(read_one_fastq_gz), "_R1.fastq.gz|_R1.fq.gz", "")
         Float probability = 1.0
         Int record_count = -1
         Int memory_gb = 4
