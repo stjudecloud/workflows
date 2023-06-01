@@ -98,7 +98,7 @@ workflow quality_check {
     if (subsample_n_reads > 0) {
         call samtools.subsample { input:
             bam=quickcheck.checked_bam,
-            prefix=prefix,
+            prefix=prefix + ".subsampled",
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
             max_retries=max_retries
