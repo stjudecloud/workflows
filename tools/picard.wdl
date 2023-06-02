@@ -124,7 +124,7 @@ task validate_bam {
         # rc = 1 = validation warnings (no errors)
         # rc = 2 = validation errors and warnings
         # rc = 3 = validation errors (no warnings)
-        if [ $rc -ne 0 ] && [ $rc -ne 1 ] [ $rc -ne 2 ] && [ $rc -ne 3 ]; then
+        if [ $rc -ne 0 ] && [ $rc -ne 1 ] && [ $rc -ne 2 ] && [ $rc -ne 3 ]; then
             exit $rc
         fi
 
