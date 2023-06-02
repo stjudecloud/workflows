@@ -74,7 +74,7 @@ workflow cell_ranger_bam_to_fastqs {
         max_retries=max_retries
     }
     scatter (reads in zip(bamtofastq.read_one_fastq_gz, bamtofastq.read_two_fastq_gz)) {
-        call fq.fqlint as fqlint_pair { input:
+        call fq.fqlint { input:
             read_one_fastq_gz=reads.left,
             read_two_fastq_gz=reads.right,
             max_retries=max_retries
