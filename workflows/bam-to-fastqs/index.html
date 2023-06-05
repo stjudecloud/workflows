@@ -193,7 +193,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h4 id="optional">Optional</h4>
 <ul>
 <li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
-<li><code>split.disk_size_gb</code> (Int?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
@@ -209,7 +208,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>bam_to_fastq.output_singletons</code> (Boolean, default=false)</li>
 <li><code>bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>bam_to_fastq.store_collated_bam</code> (Boolean, default=false)</li>
+<li><code>fqlint.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>fqlint.modify_memory_gb</code> (Int, default=0)</li>
+<li><code>quickcheck.memory_gb</code> (Int, default=4)</li>
+<li><code>quickcheck.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>split.memory_gb</code> (Int, default=4)</li>
+<li><code>split.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>split.ncpu</code> (Int, default=1)</li>
 <li><code>split.prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>split.reject_unaccounted</code> (Boolean, default=true)</li>

@@ -154,10 +154,6 @@
 HTSeq is a Python library for analyzing sequencing data.</p>
 <h2 id="count">count</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher, Andrew Frantz</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task performs read counting for a set of features in the input BAM file.</dd>
 </dl>
@@ -166,16 +162,17 @@ HTSeq is a Python library for analyzing sequencing data.</p>
 <ul>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to generate coverage for</li>
 <li><code>gtf</code> (File, <strong>required</strong>): Input genomic features in gzipped GTF format to count reads for</li>
-<li><code>strandedness</code> (String, <strong>required</strong>); <strong>description</strong>: ; <strong>choices</strong>: ['yes', 'reverse', 'no']</li>
+<li><code>strandedness</code> (String, <strong>required</strong>); <strong>description</strong>: Strandedness protocol of the RNA-Seq experiment. Read the <a href="https://htseq.readthedocs.io/en/release_0.11.1/count.html#cmdoption-htseq-count-s">HTSeq-count docs</a> for an explanation of what this parameter affects.; <strong>choices</strong>: ['yes', 'reverse', 'no']</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>added_memory_gb</code> (Int, default=0): Additional RAM to allocate for task. Default RAM is allocated dynamically based on the BAM size.</li>
 <li><code>feature_type</code> (String, default="exon"): Feature type (3rd column in GTF file) to be used, all features of other type are ignored</li>
 <li><code>idattr</code> (String, default="gene_name"): GFF attribute to be used as feature ID</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>minaqual</code> (Int, default=10): Skip all reads with alignment quality lower than the given minimum value</li>
-<li><code>mode</code> (String, default="union"): <union/intersection-strict/intersection-nonempty> Mode to handle reads overlapping more than one feature</li>
+<li><code>mode</code> (String, default="union"); <strong>description</strong>: Mode to handle reads overlapping more than one feature. <code>union</code> is recommended for most use-cases. Read the <a href="https://htseq.readthedocs.io/en/release_0.11.1/count.html#counting-reads-in-features-with-htseq-count">HTSeq-count docs</a> for an explanation of what this parameter affects.; <strong>choices</strong>: ['union', 'intersection-strict', 'intersection-nonempty']</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>nonunique</code> (Boolean, default=false): Score reads that align to or are assigned to more than one feature?</li>
 <li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".feature-counts.txt"): Name of the feature count file</li>
 <li><code>pos_sorted</code> (Boolean, default=true): Is the BAM position sorted (true) or name sorted (false)?</li>

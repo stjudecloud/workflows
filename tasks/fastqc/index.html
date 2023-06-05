@@ -154,23 +154,21 @@
 FastQC generates quality control metrics for sequencing pipelines. </p>
 <h2 id="fastqc_1">fastqc</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher, Andrew Frantz</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task generates a FastQC quality control metrics report for the input BAM file.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to generate coverage for</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to run FastQC on</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam") + ".fastqc_results")</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>

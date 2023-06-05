@@ -146,27 +146,22 @@
             <div class="section" itemprop="articleBody">
               
                 <p>This WDL file wraps the md5sum tool from the <a href="https://github.com/coreutils/coreutils">GNU core utilities</a>.
-md5sum is a utility for generating and verifying MD5
-hashes.  </p>
+md5sum is a utility for generating and verifying MD5 hashes.</p>
 <h2 id="compute_checksum">compute_checksum</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher, Andrew Frantz</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task generates an MD5 checksum for the input file.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>infile</code> (File, <strong>required</strong>): Input file to generate MD5 checksum</li>
+<li><code>file</code> (File, <strong>required</strong>): Input file to generate MD5 checksum for</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>outfile_name</code> (String, default=basename(infile) + ".md5")</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>

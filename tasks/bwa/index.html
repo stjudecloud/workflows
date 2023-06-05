@@ -58,8 +58,6 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
-    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -73,8 +71,6 @@
     <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional_1">Optional</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
     </li>
@@ -90,8 +86,6 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_2">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional_2">Optional</a>
-    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_2">Defaults</a>
     </li>
         </ul>
@@ -105,8 +99,6 @@
     <li class="toctree-l3"><a class="reference internal" href="#inputs_3">Inputs</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional_3">Optional</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_3">Defaults</a>
     </li>
@@ -218,29 +210,22 @@
 BWA aligns sequencing reads to a reference genome.</p>
 <h2 id="bwa_aln">bwa_aln</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task maps single-end FastQ files to BAM format using bwa aln.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>bwadb_tar_gz</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
+<li><code>bwa_db_tar_gz</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
 <li><code>fastq</code> (File, <strong>required</strong>): Input FastQ file to align with bwa</li>
-</ul>
-<h4 id="optional">Optional</h4>
-<ul>
-<li><code>disk_size_gb</code> (Int?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
-<li><code>output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>prefix</code> (String, default=sub(basename(fastq),"([_.]R[12])?(.subsampled)?.(fastq|fq)(.gz)?$",""))</li>
 <li><code>read_group</code> (String, default="")</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
@@ -250,30 +235,23 @@ BWA aligns sequencing reads to a reference genome.</p>
 </ul>
 <h2 id="bwa_aln_pe">bwa_aln_pe</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task maps paired-end FastQ files to BAM format using bwa aln.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
-<li><code>bwadb_tar_gz</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
-<li><code>fastq1</code> (File, <strong>required</strong>): Input FastQ read 1 file to align with bwa</li>
-<li><code>fastq2</code> (File, <strong>required</strong>): Input FastQ read 2 file to align with bwa</li>
-</ul>
-<h4 id="optional_1">Optional</h4>
-<ul>
-<li><code>disk_size_gb</code> (Int?)</li>
+<li><code>bwa_db_tar_gz</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
+<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Input FastQ read 1 file to align with bwa</li>
+<li><code>read_two_fastq_gz</code> (File, <strong>required</strong>): Input FastQ read 2 file to align with bwa</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
-<li><code>output_bam</code> (String, default=basename(fastq1,".fq.gz") + ".bam")</li>
+<li><code>prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.]R[12])?(.subsampled)?.(fastq|fq)(.gz)?$",""))</li>
 <li><code>read_group</code> (String, default="")</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
@@ -283,29 +261,22 @@ BWA aligns sequencing reads to a reference genome.</p>
 </ul>
 <h2 id="bwa_mem">bwa_mem</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task maps FastQ files to BAM format using bwa mem.</dd>
 </dl>
 <h3 id="inputs_2">Inputs</h3>
 <h4 id="required_2">Required</h4>
 <ul>
-<li><code>bwadb_tar_gz</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
+<li><code>bwa_db_tar_gz</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
 <li><code>fastq</code> (File, <strong>required</strong>): Input FastQ file to align with bwa</li>
-</ul>
-<h4 id="optional_2">Optional</h4>
-<ul>
-<li><code>disk_size_gb</code> (Int?)</li>
 </ul>
 <h4 id="defaults_2">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
-<li><code>output_bam</code> (String, default=basename(fastq,".fq.gz") + ".bam")</li>
+<li><code>prefix</code> (String, default=sub(basename(fastq),"([_.]R[12])?(.subsampled)?.(fastq|fq)(.gz)?$",""))</li>
 <li><code>read_group</code> (String, default="")</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
@@ -315,10 +286,6 @@ BWA aligns sequencing reads to a reference genome.</p>
 </ul>
 <h2 id="build_bwa_db">build_bwa_db</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task creates a BWA index and returns it as a compressed tar archive.</dd>
 </dl>
@@ -327,26 +294,19 @@ BWA aligns sequencing reads to a reference genome.</p>
 <ul>
 <li><code>reference_fasta</code> (File, <strong>required</strong>): Input reference Fasta file to index with bwa. Should be compressed with gzip.</li>
 </ul>
-<h4 id="optional_3">Optional</h4>
-<ul>
-<li><code>disk_size_gb</code> (Int?)</li>
-</ul>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
-<li><code>bwadb_dir_name</code> (String, default="bwa_db")</li>
+<li><code>db_name</code> (String, default="bwa_db"): Name of the output gzipped tar archive of the bwa reference files.</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
 <ul>
-<li><code>bwadb_tar_gz</code> (File)</li>
+<li><code>bwa_db_tar_gz</code> (File)</li>
 </ul>
 <h2 id="format_rg_for_bwa">format_rg_for_bwa</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task converts read group records from the BAM-formatted strings to strings expected by bwa.</dd>
 </dl>
@@ -357,7 +317,9 @@ BWA aligns sequencing reads to a reference genome.</p>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
+<li><code>disk_size_gb</code> (Int, default=10)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
+<li><code>memory_gb</code> (Int, default=4)</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
 <ul>

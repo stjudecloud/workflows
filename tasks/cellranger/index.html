@@ -150,10 +150,6 @@
 Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <h2 id="count">count</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data.</dd>
 </dl>
@@ -166,9 +162,9 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>jobmode</code> (String, default="local")</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=16)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
@@ -187,14 +183,10 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <li><code>raw_matrix</code> (File)</li>
 <li><code>mol_info_h5</code> (File)</li>
 <li><code>web_summary</code> (File)</li>
-<li><code>loupe</code> (File)</li>
+<li><code>cloupe</code> (File)</li>
 </ul>
 <h2 id="bamtofastq">bamtofastq</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files</dd>
 </dl>
@@ -210,6 +202,7 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <li><code>longranger20</code> (Boolean, default=false): Convert a BAM produced by Longranger 2.0</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=40)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
@@ -217,8 +210,8 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <ul>
 <li><code>fastqs</code> (Array[File])</li>
 <li><code>fastqs_archive</code> (File)</li>
-<li><code>read1</code> (Array[File])</li>
-<li><code>read2</code> (Array[File])</li>
+<li><code>read_one_fastq_gz</code> (Array[File])</li>
+<li><code>read_two_fastq_gz</code> (Array[File])</li>
 </ul>
               
             </div>

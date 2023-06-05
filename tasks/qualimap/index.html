@@ -84,8 +84,6 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
-    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -99,8 +97,6 @@
     <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional_1">Optional</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
     </li>
@@ -172,27 +168,21 @@
 QualiMap computes metrics to facilitate evaluation of sequencing data. </p>
 <h2 id="bamqc">bamqc</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher, Andrew Frantz</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd><em>[Deprecated]</em> This WDL task runs QualiMap's bamqc tool on the input BAM file. This task has been deprecated in our pipeline due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM.</dd>
+<dd><em>[Deprecated]</em> This WDL task runs QualiMap's bamqc tool on the input BAM file. This task has been deprecated due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to run qualimap bamqc on</li>
 </ul>
-<h4 id="optional">Optional</h4>
-<ul>
-<li><code>disk_size_gb</code> (Int?)</li>
-</ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=32)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
@@ -201,10 +191,6 @@ QualiMap computes metrics to facilitate evaluation of sequencing data. </p>
 </ul>
 <h2 id="rnaseq">rnaseq</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher, Andrew Frantz</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task generates runs QualiMap's rnaseq tool on the input BAM file. Note that we don't expose the <code>-p</code> parameter. This is used to set strandedness protocol of the sample, however in practice it only disables certain calculations. We do not expose the parameter so that the full suite of calculations is always performed.</dd>
 </dl>
@@ -214,17 +200,14 @@ QualiMap computes metrics to facilitate evaluation of sequencing data. </p>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to run qualimap rnaseq on</li>
 <li><code>gtf</code> (File, <strong>required</strong>): GTF features file</li>
 </ul>
-<h4 id="optional_1">Optional</h4>
-<ul>
-<li><code>disk_size_gb</code> (Int?): Disk space to allocate for task. Default is determined dynamically based on BAM and GTF sizes.</li>
-</ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>memory_gb</code> (Int, default=16): RAM to allocate for task</li>
-<li><code>name_sorted</code> (Boolean, default=false): Is the BAM name sorted?</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>name_sorted</code> (Boolean, default=false): Is the BAM name sorted? Qualimap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before Qualimap and setting this parameter to true.</li>
 <li><code>paired_end</code> (Boolean, default=true): Is the BAM paired end?</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the results directory and output tarball. The extension <code>.qualimap_rnaseq_results.tar.gz</code> will be added.</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam") + ".qualimap_rnaseq_results"): Prefix for the results directory and output tarball. The extension <code>.qualimap_rnaseq_results.tar.gz</code> will be added.</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
