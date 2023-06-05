@@ -7,55 +7,54 @@ version 1.0
 
 task fastqc {
     meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL task generates a FastQC quality control metrics report for the input BAM file."
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to run FastQC on"
     }
 
     input {
         File bam
+        String prefix = basename(bam, ".bam") + ".fastqc_results"
+        Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = 5
-        Boolean use_all_cores = false
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
-    String out_directory = basename(bam, ".bam") + ".fastqc_results"
-    String out_tar_gz = out_directory + ".tar.gz"
+    String out_tar_gz = prefix + ".tar.gz"
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
-    command {
+    command <<<
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
         
-        mkdir ~{out_directory}
+        mkdir ~{prefix}
         fastqc -f bam \
-            -o ~{out_directory} \
+            -o ~{prefix} \
             -t "$n_cores" \
             ~{bam}
 
-        tar -czf ~{out_tar_gz} ~{out_directory}
-    }
+        tar -czf ~{out_tar_gz} ~{prefix}
+    >>>
 
     output {
-        File raw_data = "~{out_directory}/~{basename(bam, '.bam')}_fastqc.zip"
+        File raw_data = "~{prefix}/~{basename(bam, '.bam')}_fastqc.zip"  # TODO verify this works if prefix differs
         File results = out_tar_gz
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size + " GB"
         cpu: ncpu
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/fastqc:0.11.9--hdfd78af_1'
         maxRetries: max_retries
     }

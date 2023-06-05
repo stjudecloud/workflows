@@ -7,8 +7,6 @@ version 1.0
 
 task mark_duplicates {
     meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL task marks duplicate reads in the input BAM file using Picard."
     }
 
@@ -18,51 +16,60 @@ task mark_duplicates {
 
     input {
         File bam
-        String prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam") + ".MarkDuplicates"
         Boolean create_bam = true
         Int memory_gb = 50
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = if create_bam then ceil((bam_size * 2) + 10) else ceil(bam_size + 10)
+    Int disk_size_gb = (
+        (
+            if create_bam
+            then ceil((bam_size * 2) + 10)
+            else ceil(bam_size + 10)
+        ) + modify_disk_size_gb
+    )
+    
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g MarkDuplicates I=~{bam} \
-            O=~{if create_bam then prefix + ".MarkDuplicates.bam" else "/dev/null"} \
+            O=~{if create_bam then prefix + ".bam" else "/dev/null"} \
             VALIDATION_STRINGENCY=SILENT \
             CREATE_INDEX=~{create_bam} \
             CREATE_MD5_FILE=~{create_bam} \
             COMPRESSION_LEVEL=5 \
-            METRICS_FILE=~{prefix}.MarkDuplicates.metrics.txt
+            METRICS_FILE=~{prefix}.metrics.txt
         
-        if [ "~{create_bam}" == "true" ]; then
-            mv ~{prefix}.MarkDuplicates.bai ~{prefix}.MarkDuplicates.bam.bai
+        if ~{create_bam}; then
+            mv ~{prefix}.bai ~{prefix}.bam.bai
         fi
     >>>
 
     output {
-        File? duplicate_marked_bam = "~{prefix}.MarkDuplicates.bam"
-        File? duplicate_marked_bam_index = "~{prefix}.MarkDuplicates.bam.bai"
-        File? duplicate_marked_bam_md5 = "~{prefix}.MarkDuplicates.bam.md5"
-        File mark_duplicates_metrics = "~{prefix}.MarkDuplicates.metrics.txt"
+        File? duplicate_marked_bam = "~{prefix}.bam"
+        File? duplicate_marked_bam_index = "~{prefix}.bam.bai"
+        File? duplicate_marked_bam_md5 = "~{prefix}.bam.md5"
+        File mark_duplicates_metrics = "~{prefix}.metrics.txt"
     }
 
     runtime {
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
 }
 
 task validate_bam {
+    # TODO should this be refactored to behave as "default" Picard behaves?
+    #   Default Picard has some weird/not ideal behaviors
+    #   e.g. `max_errors = 100`
     meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL task validates the input BAM file for correct formatting using Picard."
     }
 
@@ -78,14 +85,15 @@ task validate_bam {
 
     input {
         File bam
+        Array[String] ignore_list = ["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"]
+        String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
         Boolean succeed_on_errors = false
         Boolean succeed_on_warnings = true
-        Array[String] ignore_list = ["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"]
         Boolean summary_mode = false
         Boolean index_validation_stringency_less_exhaustive = false
-        Int max_errors = 2147483647
-        String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
+        Int max_errors = 2147483647  # max 32-bit INT
         Int memory_gb = 16
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
@@ -96,36 +104,44 @@ task validate_bam {
     String ignore_prefix = if (length(ignore_list) != 0) then "IGNORE=" else ""
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
     
-    command {       
+    command <<<
+        set -euo pipefail
+
+        rc=0
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             I=~{bam} \
             ~{mode_arg} \
             ~{stringency_arg} \
             ~{ignore_prefix}~{sep=' IGNORE=' ignore_list} \
             MAX_OUTPUT=~{max_errors} \
-            > ~{outfile_name}
+            > ~{outfile_name} \
+            || rc=$?
 
-        rc=$?
-        if [ $rc -le -1 ] || [ $rc -ge 4 ]; then
+        # rc = 0 = success
+        # rc = 1 = validation warnings (no errors)
+        # rc = 2 = validation errors and warnings
+        # rc = 3 = validation errors (no warnings)
+        if [ $rc -ne 0 ] && [ $rc -ne 1 ] && [ $rc -ne 2 ] && [ $rc -ne 3 ]; then
             exit $rc
         fi
-        set -eo pipefail
 
-        if [ "~{succeed_on_warnings}" == "true" ]; then
+        if ~{succeed_on_warnings}; then
             GREP_PATTERN="ERROR"
         else
             GREP_PATTERN="(ERROR|WARNING)"
         fi
 
-        if [ "~{succeed_on_errors}" == "false" ] && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]; then
-            echo "Errors detected by Picard ValidateSamFile" > /dev/stderr
+        if [ ! ~{succeed_on_errors} ] \
+            && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]
+        then
+            echo "Problems detected by Picard ValidateSamFile" > /dev/stderr
             grep -E "$GREP_PATTERN" ~{outfile_name} > /dev/stderr
-            exit 1
+            exit $rc
         fi
-    }
+    >>>
 
     output {
         File validate_report = outfile_name
@@ -134,7 +150,7 @@ task validate_bam {
 
     runtime {
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -142,8 +158,6 @@ task validate_bam {
 
 task bam_to_fastq {
     meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "*[Deprecated]* This WDL task converts the input BAM file into FastQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
     }
 
@@ -158,14 +172,15 @@ task bam_to_fastq {
         String prefix = basename(bam, ".bam")
         Boolean paired = true
         Int memory_gb = 56
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 4) + 10)
+    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command {
+    command <<<
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
@@ -176,36 +191,46 @@ task bam_to_fastq {
         
         gzip ~{prefix}_R1.fastq \
             ~{if paired then prefix+"_R2.fastq" else ""}
-    }
+    >>>
 
     output {
-        File read1 = "~{prefix}_R1.fastq.gz"
-        File? read2 = "~{prefix}_R2.fastq.gz"
+        File read_one_fastq_gz = "~{prefix}_R1.fastq.gz"
+        File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
     }
 
     runtime{
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
 }
 
 task sort {
+    meta {
+        description: "This WDL task sorts the input BAM file."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to sort"
+    }
+
     input {
         File bam
         String sort_order = "coordinate"
-        String outfile_name = basename(bam, ".bam") + ".sorted.bam"
+        String prefix = basename(bam, ".bam") + ".sorted"
         Int memory_gb = 25
-        Int? disk_size_gb
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil((bam_size * 4) + 10)])
+    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command {
+    String outfile_name = prefix + ".bam"
+
+    command <<<
         picard -Xmx~{java_heap_size}g SortSam \
             I=~{bam} \
             O=~{outfile_name} \
@@ -214,55 +239,60 @@ task sort {
             CREATE_MD5_FILE=false \
             COMPRESSION_LEVEL=5 \
             VALIDATION_STRINGENCY=SILENT
-    }
-    runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size + " GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
-        maxRetries: max_retries
-    }
+    >>>
+
     output {
         File sorted_bam = outfile_name
     }
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        description: "This WDL task sorts the input BAM file."
-    }
-    parameter_meta {
-        bam: "Input BAM format file to sort"
+
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        maxRetries: max_retries
     }
 }
 
 task merge_sam_files {
+    meta {
+        description: "This WDL task merges the input BAM files into a single BAM file."
+    }
+
+    parameter_meta {
+        bam: "Input BAMs to merge"
+        threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file."
+    }
+
     input {
-        Array[File] bam
-        String outfile_name = "merged.bam"
+        Array[File] bams
+        String prefix
         String sort_order = "coordinate"
         Boolean threading = true
         Int memory_gb = 40
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
-    Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 2) + 10)
+    Float bams_size = size(bams, "GiB")
+    Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
-    Array[String] input_arg = prefix("INPUT=", bam)
 
-    command {
-        set -euo pipefail
+    Array[String] input_arg = prefix("INPUT=", bams)
 
+    String outfile_name = prefix + ".bam"
+
+    command <<<
         picard -Xmx~{java_heap_size}g MergeSamFiles \
             ~{sep=' ' input_arg} \
             OUTPUT=~{outfile_name} \
             SORT_ORDER=~{sort_order} \
             USE_THREADING=~{threading} \
             VALIDATION_STRINGENCY=SILENT
-    }
+    >>>
 
     runtime{
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -270,286 +300,257 @@ task merge_sam_files {
     output {
         File merged_bam = outfile_name
     }
-
-    meta {
-        author: "Andrew Thrasher, Andrew Frantz"
-        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
-        description: "This WDL task merges the input BAM files into a single BAM file."
-    }
-
-    parameter_meta {
-        bam: "Input BAMs to merge"
-    }
 }
 
 task clean_sam {
+    meta {
+        description: "This WDL task cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads"
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to clean"
+    }
+
     input {
         File bam
-        String outfile_name = basename(bam, ".bam") + ".cleaned.bam"
+        String prefix = basename(bam, ".bam") + ".cleaned"
         Int memory_gb = 25
-        Int? disk_size_gb
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil((bam_size * 2) + 10)])
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command {
+    String outfile_name = prefix + ".bam"
+
+    command <<<
         picard -Xmx~{java_heap_size}g CleanSam \
             I=~{bam} \
             O=~{outfile_name}
-    }
-    runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size + " GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
-        maxRetries: max_retries
-    }
+    >>>
+
     output {
         File cleaned_bam = outfile_name
     }
-    meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
-        description: "This WDL task cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads"
-    }
-    parameter_meta {
-        bam: "Input BAM format file to clean"
+
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        maxRetries: max_retries
     }
 }
 
 task collect_wgs_metrics {
+    meta {
+        description: "This WDL task runs `picard CollectWgsMetrics`  to collect metrics about the fractions of reads that pass base- and mapping-quality filters as well as coverage (read-depth) levels."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file for which to calculate WGS metrics"
+    }
+
     input {
         File bam
         File reference_fasta
+        String outfile_name = basename(bam, ".bam") + ".CollectWgsMetrics.txt"
         Int memory_gb = 12
-        Int? disk_size_gb
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command {
+    command <<<
         picard -Xmx~{java_heap_size}g CollectWgsMetrics \
             -I ~{bam} \
-            -O "$(basename ~{bam} '.bam').CollectWgsMetrics.txt" \
             -R ~{reference_fasta} \
-            --INCLUDE_BQ_HISTOGRAM true
+            -O ~{outfile_name} \
+            --INCLUDE_BQ_HISTOGRAM true 
+    >>>
+
+    output {
+        File wgs_metrics = outfile_name
     }
+
     runtime {
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
-    }
-    output {
-        File wgs_metrics = basename(bam, ".bam") + ".CollectWgsMetrics.txt"
-    }
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task runs the `picard CollectWgsMetrics` command."
-    }
-    parameter_meta {
-        bam: "Input BAM format file to calculate WGS metrics for"
-    }
-}
-
-task collect_wgs_metrics_with_nonzero_coverage {
-    input {
-        File bam
-        File reference_fasta
-        Int memory_gb = 12
-        Int? disk_size_gb
-        Int max_retries = 1
-    }
-
-    Float bam_size = size(bam, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
-    Int java_heap_size = ceil(memory_gb * 0.9)
-
-    command {
-        picard -Xmx~{java_heap_size}g CollectWgsMetricsWithNonZeroCoverage \
-            -I ~{bam} \
-            -O "$(basename ~{bam} '.bam').CollectWgsMetricsWithNonZeroCoverage.txt" \
-            -CHART "$(basename ~{bam} '.bam').CollectWgsMetricsWithNonZeroCoverage.pdf" \
-            -R ~{reference_fasta} \
-            --INCLUDE_BQ_HISTOGRAM true
-    }
-    runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size + " GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
-        maxRetries: max_retries
-    }
-    output {
-        File wgs_metrics = basename(bam, ".bam") + ".CollectWgsMetricsWithNonZeroCoverage.txt"
-        File wgs_metrics_pdf = basename(bam, ".bam") + ".CollectWgsMetricsWithNonZeroCoverage.pdf"
-    }
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task runs the `picard CollectWgsMetricsWithNonZeroCoverage` command."
-    }
-    parameter_meta {
-        bam: "Input BAM format file to calculate WGS metrics for"
     }
 }
 
 task collect_alignment_summary_metrics {
+    meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task runs `picard CollectAlignmentSummaryMetrics` to calculate metrics detailing the quality of the read alignments as well as the proportion of the reads that passed machine signal-to-noise threshold quality filters."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file for which to calculate alignment metrics"
+    }
+
     input {
         File bam
+        String prefix = basename(bam, ".bam") + ".CollectAlignmentSummaryMetrics"
         Int memory_gb = 8
-        Int? disk_size_gb
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command {
+    command <<<
         picard -Xmx~{java_heap_size}g CollectAlignmentSummaryMetrics \
             -I ~{bam} \
-            -O "$(basename ~{bam} '.bam').CollectAlignmentSummaryMetrics.txt" \
-            -H "$(basename ~{bam} '.bam').CollectAlignmentSummaryMetrics.pdf"
+            -O ~{prefix}.txt \
+            -H ~{prefix}.pdf
+    >>>
+
+    output {
+        File alignment_metrics = prefix + ".txt"
+        File alignment_metrics_pdf = prefix + ".pdf"
     }
+
     runtime {
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
-    }
-    output {
-        File alignment_metrics = basename(bam, ".bam") + ".CollectAlignmentSummaryMetrics.txt"
-        File alignment_metrics_pdf = basename(bam, ".bam") + ".CollectAlignmentSummaryMetrics.pdf"
-    }
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task runs the `picard CollectAlignmentSummaryMetrics` command."
-    }
-    parameter_meta {
-        bam: "Input BAM format file to calculate alignment metrics for"
     }
 }
 
 task collect_gc_bias_metrics {
+    meta {
+        description: "This WDL task runs `picard CollectGcBiasMetrics` to collect information about the relative proportions of guanine (G) and cytosine (C) nucleotides."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file for which to calculate GC bias metrics"
+    }
+
     input {
         File bam
         File reference_fasta
+        String prefix = basename(bam, ".bam") + ".CollectGcBiasMetrics"
         Int memory_gb = 8
-        Int? disk_size_gb
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command {
+    command <<<
         picard -Xmx~{java_heap_size}g CollectGcBiasMetrics \
             -I ~{bam} \
             -R ~{reference_fasta} \
-            -O "$(basename ~{bam} '.bam').CollectGcBiasMetrics.txt" \
-            -S "$(basename ~{bam} '.bam').CollectGcBiasMetrics.summary.txt" \
-            -CHART "$(basename ~{bam} '.bam').CollectGcBiasMetrics.pdf"
+            -O ~{prefix}.txt \
+            -S ~{prefix}.summary.txt \
+            -CHART ~{prefix}.pdf
+    >>>
+
+    output {
+        File gc_bias_metrics = prefix + ".txt"
+        File gc_bias_metrics_summary = prefix + ".summary.txt"
+        File gc_bias_metrics_pdf = prefix + ".pdf"
     }
+
     runtime {
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
-    }
-    output {
-        File gc_bias_metrics = basename(bam, ".bam") + ".CollectGcBiasMetrics.txt"
-        File gc_bias_metrics_pdf = basename(bam, ".bam") + ".CollectGcBiasMetrics.pdf"
-    }
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task runs the `picard CollectGcBiasMetrics` command."
-    }
-    parameter_meta {
-        bam: "Input BAM format file to calculate GC bias metrics for"
     }
 }
 
 task collect_insert_size_metrics {
+    meta {
+        description: "This WDL task runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction including the insert size distribution and read orientation of paired-end libraries."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file for which to calculate insert size metrics"
+    }
+
     input {
         File bam
+        String prefix = basename(bam, ".bam") + ".CollectInsertSizeMetrics"
         Int memory_gb = 8
-        Int? disk_size_gb
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command {
+    command <<<
         picard -Xmx~{java_heap_size}g CollectInsertSizeMetrics \
             -I ~{bam} \
-            -O "$(basename ~{bam} '.bam').CollectInsertSizeMetrics.txt" \
-            -H "$(basename ~{bam} '.bam').CollectInsertSizeMetrics.pdf"
+            -O ~{prefix}.txt \
+            -H ~{prefix}.pdf
+    >>>
+
+    output {
+        File insert_size_metrics = prefix + ".txt"
+        File insert_size_metrics_pdf = prefix + ".pdf"
     }
+
     runtime {
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
-    }
-    output {
-        File insert_size_metrics = basename(bam, ".bam") + ".CollectInsertSizeMetrics.txt"
-        File insert_size_metrics_pdf = basename(bam, ".bam") + ".CollectInsertSizeMetrics.pdf"
-    }
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task runs the `picard CollectInsertSizeMetrics` command."
-    }
-    parameter_meta {
-        bam: "Input BAM format file to calculate insert size metrics for"
     }
 }
 
 task quality_score_distribution {
+    meta {
+        description: "This WDL task runs `picard QualityScoreDistribution` to calculate the range of quality scores and an accompanying chart."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file for which to calculate quality score distribution"
+    }
+
     input {
         File bam
+        String prefix = basename(bam, ".bam") + ".QualityScoreDistribution"
         Int memory_gb = 8
-        Int? disk_size_gb
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = select_first([disk_size_gb, ceil(bam_size + 5)])
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    command {
+    command <<<
         picard -Xmx~{java_heap_size}g QualityScoreDistribution \
             -I ~{bam} \
-            -O "$(basename ~{bam} '.bam').QualityScoreDistribution.txt" \
-            -CHART "$(basename ~{bam} '.bam').QualityScoreDistribution.pdf"
+            -O ~{prefix}.txt \
+            -CHART ~{prefix}.pdf
+    >>>
+
+    output {
+        File quality_score_distribution_txt = prefix + ".txt"
+        File quality_score_distribution_pdf = prefix + ".pdf"
     }
+
     runtime {
         memory: memory_gb + " GB"
-        disk: disk_size + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
-    }
-    output {
-        File quality_score_distribution_txt = basename(bam, ".bam") + ".QualityScoreDistribution.txt"
-        File quality_score_distribution_pdf = basename(bam, ".bam") + ".QualityScoreDistribution.pdf"
-    }
-    meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
-        description: "This WDL task runs the `picard QualityScoreDistribution` command."
-    }
-    parameter_meta {
-        bam: "Input BAM format file to calculate quality score distribution for"
     }
 }

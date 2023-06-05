@@ -48,7 +48,6 @@ import "../../tools/fq.wdl"
 workflow cell_ranger_bam_to_fastqs {
     parameter_meta {
         bam: "BAM file to split into FastQs."
-        paired: "Is the data paired-end (true) or single-end (false)?"
         cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
         longranger20: "Convert a BAM produced by Longranger 2.0"
         gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
@@ -58,7 +57,6 @@ workflow cell_ranger_bam_to_fastqs {
 
     input {
         File bam
-        Boolean paired = true
         Boolean cellranger11 = false
         Boolean longranger20 = false
         Boolean gemcode = false
@@ -67,28 +65,27 @@ workflow cell_ranger_bam_to_fastqs {
     }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call cellranger.bamtofastq {
-        input:
-            bam=bam,
-            cellranger11=cellranger11,
-            longranger20=longranger20,
-            gemcode=gemcode,
-            max_retries=max_retries
+    call cellranger.bamtofastq { input:
+        bam=bam,
+        cellranger11=cellranger11,
+        longranger20=longranger20,
+        gemcode=gemcode,
+        use_all_cores=use_all_cores,
+        max_retries=max_retries
     }
-    scatter (reads in zip(bamtofastq.read1, bamtofastq.read2)) {
-        if (paired) {
-            call fq.fqlint as fqlint_pair { input: read1=reads.left, read2=reads.right, max_retries=max_retries }
-        }
-        if (! paired) {
-            call fq.fqlint as fqlint_single { input: read1=reads.left, max_retries=max_retries }
+    scatter (reads in zip(bamtofastq.read_one_fastq_gz, bamtofastq.read_two_fastq_gz)) {
+        call fq.fqlint { input:
+            read_one_fastq_gz=reads.left,
+            read_two_fastq_gz=reads.right,
+            max_retries=max_retries
         }
     }
 
     output {
         Array[File] fastqs = bamtofastq.fastqs
         File fastqs_archive = bamtofastq.fastqs_archive
-        Array[File] read1s = bamtofastq.read1
-        Array[File] read2s = bamtofastq.read2
+        Array[File] read1s = bamtofastq.read_one_fastq_gz
+        Array[File] read2s = bamtofastq.read_two_fastq_gz
     }
 }
 
@@ -97,9 +94,14 @@ task parse_input {
         Boolean cellranger11
         Boolean longranger20
         Boolean gemcode
+        Int memory_gb = 4
+        Int disk_size_gb = 10
+        Int max_retries = 1
     }
 
-    Int exclusive_arg = (if cellranger11 then 1 else 0) + (if longranger20 then 1 else 0) + (if gemcode then 1 else 0)
+    Int exclusive_arg = (if cellranger11 then 1 else 0)
+        + (if longranger20 then 1 else 0)
+        + (if gemcode then 1 else 0)
 
     command <<<
         if [ "~{exclusive_arg}" -gt 1 ]; then
@@ -113,8 +115,9 @@ task parse_input {
     }
 
     runtime {
-        memory: "4 GB"
-        disk: "1 GB"
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        maxRetries: max_retries
     }
 }

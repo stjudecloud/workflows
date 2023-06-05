@@ -9,16 +9,17 @@ task infer_strandedness {
         File bam
         File bam_index
         File gtf
+        String outfile_name = basename(bam, ".bam") + ".strandedness.txt"
         Int min_reads_per_gene = 10
         Int num_genes = 1000
         Int min_mapq = 30
         Int memory_gb = 5
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
-    String out_file = basename(bam, ".bam") + ".strandedness.txt"
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size) + 10)
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
  
     command <<<
         set -euo pipefail
@@ -36,22 +37,22 @@ task infer_strandedness {
             -q ~{min_mapq} \
             -g ~{gtf} \
             "$CWD_BAM" \
-            > ~{out_file}
+            > ~{outfile_name}
 
-        awk 'NR > 1' ~{out_file} | cut -d$'\t' -f5 > strandedness.txt
+        awk 'NR > 1' ~{outfile_name} | cut -d$'\t' -f5 > strandedness.txt
 
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
     output {
         String strandedness = read_string("strandedness.txt")
-        File strandedness_file = out_file
+        File strandedness_file = outfile_name
     }
 
     runtime {
-        disk: disk_size + " GB"
-        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -59,28 +60,30 @@ task infer_strandedness {
 task instrument {
     input {
         File bam
+        String outfile_name = basename(bam, ".bam") + ".instrument.txt"
         Int num_samples = 10000
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
-    String out_file = basename(bam, ".bam") + ".instrument.txt"
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size) + 10)
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
-    command {
+    command <<<
         ngsderive instrument --verbose \
             -n ~{num_samples} \
             ~{bam} \
-            > ~{out_file}
-    }
+            > ~{outfile_name}
+    >>>
 
     output {
-        File instrument_file = out_file
+        File instrument_file = outfile_name
     }
 
     runtime {
-        memory: "4 GB"
-        disk: disk_size + " GB"
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -90,15 +93,16 @@ task read_length {
     input {
         File bam
         File bam_index
+        String outfile_name = basename(bam, ".bam") + ".readlength.txt"
         Float majority_vote_cutoff = 0.7
         Int num_samples = 10000
         Int memory_gb = 5
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
-
-    String out_file = basename(bam, ".bam") + ".readlength.txt"
+    
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil(bam_size + 10)
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -114,18 +118,18 @@ task read_length {
             -c ~{majority_vote_cutoff} \
             -n ~{num_samples} \
             "$CWD_BAM" \
-            > ~{out_file}
+            > ~{outfile_name}
 
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
     output {
-        File read_length_file = out_file
+        File read_length_file = outfile_name
     }
 
     runtime {
-        disk: disk_size + " GB"
         memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -134,15 +138,15 @@ task read_length {
 task encoding {
     input {
         Array[File] ngs_files
-        String prefix
+        String outfile_name
         Int num_samples = 1000000
         Int memory_gb = 5
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
-    String out_file = prefix + ".encoding.txt"
     Float files_size = size(ngs_files, "GiB")
-    Int disk_size = ceil((files_size) + 5)
+    Int disk_size_gb = ceil(files_size) + 10 + modify_disk_size_gb
  
     command <<<
         set -euo pipefail
@@ -150,9 +154,9 @@ task encoding {
         ngsderive encoding --verbose \
             -n ~{num_samples} \
             ~{sep=' ' ngs_files} \
-            > ~{out_file}
+            > ~{outfile_name}
         
-        ENCODING_FILE="~{out_file}" python - <<END
+        ENCODING_FILE="~{outfile_name}" python - <<END
 import os  # lint-check: ignore
 
 encoding_file = open(os.environ['ENCODING_FILE'], 'r')
@@ -180,12 +184,12 @@ END
 
     output {
         String inferred_encoding = read_string("encoding.txt")
-        File encoding_file = out_file
+        File encoding_file = outfile_name
     }
 
     runtime {
-        disk: disk_size + " GB"
         memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -202,11 +206,12 @@ task junction_annotation {
         Int min_reads = 2
         Int fuzzy_junction_match_range = 0
         Int memory_gb = 35
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size) + 10)
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -227,7 +232,7 @@ task junction_annotation {
             -o ~{prefix}.junction_summary.txt \
             "$CWD_BAM"
 
-        mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"
+        mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"  # TODO why are we renaming this?/can we update ngsderive to name things properly?
         gzip ~{prefix}.junctions.tsv
 
         rm "$CWD_BAM" "$CWD_BAM".bai
@@ -239,8 +244,8 @@ task junction_annotation {
     }
 
     runtime {
-        disk: disk_size + " GB"
         memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
