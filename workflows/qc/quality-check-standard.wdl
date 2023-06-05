@@ -27,18 +27,18 @@
 
 version 1.0
 
-import "./markdups-post.wdl" as mark_duplicates_post
-import "../../tools/md5sum.wdl"
-import "../../tools/picard.wdl"
-import "../../tools/mosdepth.wdl"
-import "../../tools/samtools.wdl"
 import "../../tools/fastqc.wdl" as fqc
-import "../../tools/ngsderive.wdl"
-import "../../tools/qualimap.wdl"
 import "../../tools/fq.wdl"
 import "../../tools/kraken.wdl" as kraken2
+import "../../tools/md5sum.wdl"
+import "../../tools/mosdepth.wdl"
 import "../../tools/multiqc.wdl" as mqc
+import "../../tools/ngsderive.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/qualimap.wdl"
+import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
+import "./markdups-post.wdl" as mark_duplicates_post
 
 workflow quality_check {
     parameter_meta {
