@@ -42,7 +42,7 @@ task download {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:branch-phred-scores-1.3.0'
         maxRetries: max_retries
     }
 }
@@ -117,7 +117,7 @@ task split_string {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:branch-phred-scores-1.3.0'
         maxRetries: max_retries
     }
 }
@@ -273,7 +273,7 @@ task qc_summary {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:branch-phred-scores-1.3.0'
         maxRetries: max_retries
     }
 }
@@ -370,7 +370,7 @@ task unpack_tarball {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:branch-phred-scores-1.3.0'
         maxRetries: max_retries
     }
 }
@@ -527,7 +527,7 @@ END
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:branch-phred-scores-1.3.0'
         maxRetries: max_retries
     }
 }
