@@ -417,3 +417,117 @@ task make_coverage_regions_beds {
         maxRetries: max_retries
     }
 }
+
+task global_phred_scores {
+    meta {
+        description: "Calculates statistics about PHRED scores of the input BAM."
+    }
+
+    input {
+        File bam
+        String outfile_name = basename(bam, ".bam") + ".global_PHRED_scores.txt"
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        BAM="~{bam}" OUTFILE="~{outfile_name}" python - <<END
+import os  # lint-check: ignore
+import pysam  # lint-check: ignore
+from collections import defaultdict  # lint-check: ignore
+
+bam_path = os.environ["BAM"]
+bam = pysam.AlignmentFile(bam_path, "rb")
+
+tot_quals = defaultdict(lambda: 0)
+mapped_quals = defaultdict(lambda: 0)
+unmapped_quals = defaultdict(lambda: 0)
+middle_tot_quals = defaultdict(lambda: 0)
+middle_mapped_quals = defaultdict(lambda: 0)
+middle_unmapped_quals = defaultdict(lambda: 0)
+for read in bam:
+    cur_quals = read.query_alignment_qualities  # array of phred scores
+    for i, qual in enumerate(cur_quals):
+        tot_quals[qual] += 1
+        if read.is_unmapped:
+            unmapped_quals[qual] += 1
+        else:
+            mapped_quals[qual] += 1
+
+    middle_pos = len(read.query_alignment_qualities) // 2  # middle base of read
+    middle_tot_quals[cur_quals[middle_pos]] += 1
+    if read.is_unmapped:
+        middle_unmapped_quals[cur_quals[middle_pos]] += 1
+    else:
+        middle_mapped_quals[cur_quals[middle_pos]] += 1
+
+outfile = open(os.environ['OUTFILE'], 'w')
+
+avg_numerator = 0
+avg_denominator = 0
+for score, quant in tot_quals.items():
+    avg_numerator += score * quant
+    avg_denominator += quant
+tot_avg = avg_numerator / avg_denominator
+print(f"total average:\t{tot_avg}", file=outfile)
+
+avg_numerator = 0
+avg_denominator = 0
+for score, quant in mapped_quals.items():
+    avg_numerator += score * quant
+    avg_denominator += quant
+mapped_avg = avg_numerator / avg_denominator
+print(f"mapped average:\t{mapped_avg}", file=outfile)
+
+avg_numerator = 0
+avg_denominator = 0
+for score, quant in unmapped_quals.items():
+    avg_numerator += score * quant
+    avg_denominator += quant
+unmapped_avg = avg_numerator / avg_denominator
+print(f"unmapped average:\t{unmapped_avg}", file=outfile)
+
+avg_numerator = 0
+avg_denominator = 0
+for score, quant in middle_tot_quals.items():
+    avg_numerator += score * quant
+    avg_denominator += quant
+middle_tot_avg = avg_numerator / avg_denominator
+print(f"middle pos average:\t{middle_tot_avg}", file=outfile)
+
+avg_numerator = 0
+avg_denominator = 0
+for score, quant in middle_mapped_quals.items():
+    avg_numerator += score * quant
+    avg_denominator += quant
+middle_mapped_avg = avg_numerator / avg_denominator
+print(f"mapped middle pos average:\t{middle_mapped_avg}", file=outfile)
+
+avg_numerator = 0
+avg_denominator = 0
+for score, quant in middle_mapped_quals.items():
+    avg_numerator += score * quant
+    avg_denominator += quant
+middle_unmapped_avg = avg_numerator / avg_denominator
+print(f"unmapped middle pos average:\t{middle_unmapped_avg}", file=outfile)
+
+END
+    >>>
+
+    output {
+        File global_phred_scores = "~{outfile_name}"
+    }
+
+    runtime {
+        memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
+        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        maxRetries: max_retries
+    }
+}
