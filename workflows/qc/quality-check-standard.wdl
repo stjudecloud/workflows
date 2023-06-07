@@ -172,6 +172,11 @@ workflow quality_check {
         outfile_name=post_subsample_prefix + ".encoding.txt",
         max_retries=max_retries
     }
+    call util.global_phred_scores as phred_scores { input:
+        bam=post_subsample_bam,
+        outfile_name=post_subsample_prefix + ".global_PHRED_scores.txt",
+        max_retries=max_retries
+    }
 
     call samtools.collate_to_fastq { input:
         bam=post_subsample_bam,
@@ -373,6 +378,7 @@ workflow quality_check {
             = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf
             = quality_score_distribution.quality_score_distribution_pdf
+        File global_phred_scores = phred_scores.global_phred_scores
         File kraken_report = kraken.report
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
