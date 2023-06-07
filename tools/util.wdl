@@ -437,7 +437,7 @@ task global_phred_scores {
     command <<<
         set -euo pipefail
 
-        BAM="~{bam}" OUTFILE="~{outfile_name}" python - <<END
+        BAM="~{bam}" OUTFILE="~{outfile_name}" python3 - <<END
 import os  # lint-check: ignore
 import pysam  # lint-check: ignore
 from collections import defaultdict  # lint-check: ignore
