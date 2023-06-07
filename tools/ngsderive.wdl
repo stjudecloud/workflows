@@ -95,7 +95,7 @@ task read_length {
         File bam_index
         String outfile_name = basename(bam, ".bam") + ".readlength.txt"
         Float majority_vote_cutoff = 0.7
-        Int num_samples = 10000
+        Int num_samples = -1
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
         Int max_retries = 1
