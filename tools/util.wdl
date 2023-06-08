@@ -440,6 +440,7 @@ task global_phred_scores {
         BAM="~{bam}" OUTFILE="~{outfile_name}" python3 - <<END
 import os  # lint-check: ignore
 import pysam  # lint-check: ignore
+import numpy as np  # lint-check: ignore
 from collections import defaultdict  # lint-check: ignore
 
 bam_path = os.environ["BAM"]
@@ -453,69 +454,64 @@ middle_mapped_quals = defaultdict(lambda: 0)
 middle_unmapped_quals = defaultdict(lambda: 0)
 for read in bam:
     cur_quals = read.query_alignment_qualities  # array of phred scores
-    for i, qual in enumerate(cur_quals):
+    for qual in cur_quals:
         tot_quals[qual] += 1
         if read.is_unmapped:
             unmapped_quals[qual] += 1
         else:
             mapped_quals[qual] += 1
 
-    middle_pos = len(read.query_alignment_qualities) // 2  # middle base of read
-    middle_tot_quals[cur_quals[middle_pos]] += 1
+    middle_pos = len(cur_quals) // 2  # middle base of read
+    middle_score = cur_quals[middle_pos]
+    middle_tot_quals[middle_score] += 1
     if read.is_unmapped:
-        middle_unmapped_quals[cur_quals[middle_pos]] += 1
+        middle_unmapped_quals[middle_score] += 1
     else:
-        middle_mapped_quals[cur_quals[middle_pos]] += 1
+        middle_mapped_quals[middle_score] += 1
 
 outfile = open(os.environ['OUTFILE'], 'w')
 
-avg_numerator = 0
-avg_denominator = 0
-for score, quant in tot_quals.items():
-    avg_numerator += score * quant
-    avg_denominator += quant
-tot_avg = avg_numerator / avg_denominator
-print(f"total average:\t{tot_avg}", file=outfile)
+np_array = np.array([], int)
+for score, count in tot_quals.items():
+    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
+print(f"total average:\t{np.mean(np_array)}", file=outfile)
+print(f"total median:\t{np.median(np_array)}", file=outfile)
+print(f"total stdev:\t{np.std(np_array)}", file=outfile)
 
-avg_numerator = 0
-avg_denominator = 0
-for score, quant in mapped_quals.items():
-    avg_numerator += score * quant
-    avg_denominator += quant
-mapped_avg = avg_numerator / avg_denominator
-print(f"mapped average:\t{mapped_avg}", file=outfile)
+np_array = np.array([], int)
+for score, count in mapped_quals.items():
+    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
+print(f"mapped average:\t{np.mean(np_array)}", file=outfile)
+print(f"mapped median:\t{np.median(np_array)}", file=outfile)
+print(f"mapped stdev:\t{np.std(np_array)}", file=outfile)
 
-avg_numerator = 0
-avg_denominator = 0
-for score, quant in unmapped_quals.items():
-    avg_numerator += score * quant
-    avg_denominator += quant
-unmapped_avg = avg_numerator / avg_denominator
-print(f"unmapped average:\t{unmapped_avg}", file=outfile)
+np_array = np.array([], int)
+for score, count in unmapped_quals.items():
+    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
+print(f"unmapped average:\t{np.mean(np_array)}", file=outfile)
+print(f"unmapped median:\t{np.median(np_array)}", file=outfile)
+print(f"unmapped stdev:\t{np.std(np_array)}", file=outfile)
 
-avg_numerator = 0
-avg_denominator = 0
-for score, quant in middle_tot_quals.items():
-    avg_numerator += score * quant
-    avg_denominator += quant
-middle_tot_avg = avg_numerator / avg_denominator
-print(f"middle pos average:\t{middle_tot_avg}", file=outfile)
+np_array = np.array([], int)
+for score, count in middle_tot_quals.items():
+    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
+print(f"middle base total average:\t{np.mean(np_array)}", file=outfile)
+print(f"middle base total median:\t{np.median(np_array)}", file=outfile)
+print(f"middle base total stdev:\t{np.std(np_array)}", file=outfile)
 
-avg_numerator = 0
-avg_denominator = 0
-for score, quant in middle_mapped_quals.items():
-    avg_numerator += score * quant
-    avg_denominator += quant
-middle_mapped_avg = avg_numerator / avg_denominator
-print(f"mapped middle pos average:\t{middle_mapped_avg}", file=outfile)
+np_array = np.array([], int)
+for score, count in middle_mapped_quals.items():
+    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
+print(f"middle base mapped average:\t{np.mean(np_array)}", file=outfile)
+print(f"middle base mapped median:\t{np.median(np_array)}", file=outfile)
+print(f"middle base mapped stdev:\t{np.std(np_array)}", file=outfile)
 
-avg_numerator = 0
-avg_denominator = 0
-for score, quant in middle_mapped_quals.items():
-    avg_numerator += score * quant
-    avg_denominator += quant
-middle_unmapped_avg = avg_numerator / avg_denominator
-print(f"unmapped middle pos average:\t{middle_unmapped_avg}", file=outfile)
+np_array = np.array([], int)
+for score, count in middle_unmapped_quals.items():
+    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
+print(f"middle base unmapped average:\t{np.mean(np_array)}", file=outfile)
+print(f"middle base unmapped median:\t{np.median(np_array)}", file=outfile)
+print(f"middle base unmapped stdev:\t{np.std(np_array)}", file=outfile)
 
 END
     >>>
