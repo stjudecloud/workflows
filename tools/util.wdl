@@ -440,7 +440,6 @@ task global_phred_scores {
         BAM="~{bam}" OUTFILE="~{outfile_name}" python3 - <<END
 import os  # lint-check: ignore
 import pysam  # lint-check: ignore
-import numpy as np  # lint-check: ignore
 from collections import defaultdict  # lint-check: ignore
 
 bam_path = os.environ["BAM"]
@@ -471,47 +470,155 @@ for read in bam:
 
 outfile = open(os.environ['OUTFILE'], 'w')
 
-np_array = np.array([], int)
-for score, count in tot_quals.items():
-    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
-print(f"total average:\t{np.mean(np_array)}", file=outfile)
-print(f"total median:\t{np.median(np_array)}", file=outfile)
-print(f"total stdev:\t{np.std(np_array)}", file=outfile)
+total_score = 0
+total_freq = 0
+freq_table = []
+for score, freq in tot_quals.items():
+    total_score += score * freq
+    total_freq += freq
+    freq_table.append((score, freq))
+avg = total_score / total_freq
+print(f"total average:\t{avg}", file=outfile)
+freq_table.sort(key=lambda entry: entry[0])
+median_pos = (total_freq + 1) / 2
+cumul_freq = 0
+median_found = False
+sum_freq_times_score_sqrd = 0
+for score, freq in freq_table:
+    cumul_freq += freq
+    if cumul_freq >= median_pos:
+        if not median_found:
+            median = score
+        median_found = True
+    sum_freq_times_score_sqrd += freq * (score**2)
+print(f"total median:\t{median}", file=outfile)
+stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
+print(f"total stdev:\t{stdev}", file=outfile)
 
-np_array = np.array([], int)
-for score, count in mapped_quals.items():
-    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
-print(f"mapped average:\t{np.mean(np_array)}", file=outfile)
-print(f"mapped median:\t{np.median(np_array)}", file=outfile)
-print(f"mapped stdev:\t{np.std(np_array)}", file=outfile)
+total_score = 0
+total_freq = 0
+freq_table = []
+for score, freq in mapped_quals.items():
+    total_score += score * freq
+    total_freq += freq
+    freq_table.append((score, freq))
+avg = total_score / total_freq
+print(f"mapped average:\t{avg}", file=outfile)
+freq_table.sort(key=lambda entry: entry[0])
+median_pos = (total_freq + 1) / 2
+cumul_freq = 0
+median_found = False
+sum_freq_times_score_sqrd = 0
+for score, freq in freq_table:
+    cumul_freq += freq
+    if cumul_freq >= median_pos:
+        if not median_found:
+            median = score
+        median_found = True
+    sum_freq_times_score_sqrd += freq * (score**2)
+print(f"mapped median:\t{median}", file=outfile)
+stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
+print(f"mapped stdev:\t{stdev}", file=outfile)
 
-np_array = np.array([], int)
-for score, count in unmapped_quals.items():
-    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
-print(f"unmapped average:\t{np.mean(np_array)}", file=outfile)
-print(f"unmapped median:\t{np.median(np_array)}", file=outfile)
-print(f"unmapped stdev:\t{np.std(np_array)}", file=outfile)
+total_score = 0
+total_freq = 0
+freq_table = []
+for score, freq in unmapped_quals.items():
+    total_score += score * freq
+    total_freq += freq
+    freq_table.append((score, freq))
+avg = total_score / total_freq
+print(f"unmapped average:\t{avg}", file=outfile)
+freq_table.sort(key=lambda entry: entry[0])
+median_pos = (total_freq + 1) / 2
+cumul_freq = 0
+median_found = False
+sum_freq_times_score_sqrd = 0
+for score, freq in freq_table:
+    cumul_freq += freq
+    if cumul_freq >= median_pos:
+        if not median_found:
+            median = score
+        median_found = True
+    sum_freq_times_score_sqrd += freq * (score**2)
+print(f"unmapped median:\t{median}", file=outfile)
+stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
+print(f"unmapped stdev:\t{stdev}", file=outfile)
 
-np_array = np.array([], int)
-for score, count in middle_tot_quals.items():
-    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
-print(f"middle base total average:\t{np.mean(np_array)}", file=outfile)
-print(f"middle base total median:\t{np.median(np_array)}", file=outfile)
-print(f"middle base total stdev:\t{np.std(np_array)}", file=outfile)
+total_score = 0
+total_freq = 0
+freq_table = []
+for score, freq in middle_tot_quals.items():
+    total_score += score * freq
+    total_freq += freq
+    freq_table.append((score, freq))
+avg = total_score / total_freq
+print(f"middle position total average:\t{avg}", file=outfile)
+freq_table.sort(key=lambda entry: entry[0])
+median_pos = (total_freq + 1) / 2
+cumul_freq = 0
+median_found = False
+sum_freq_times_score_sqrd = 0
+for score, freq in freq_table:
+    cumul_freq += freq
+    if cumul_freq >= median_pos:
+        if not median_found:
+            median = score
+        median_found = True
+    sum_freq_times_score_sqrd += freq * (score**2)
+print(f"middle position total median:\t{median}", file=outfile)
+stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
+print(f"middle position total stdev:\t{stdev}", file=outfile)
 
-np_array = np.array([], int)
-for score, count in middle_mapped_quals.items():
-    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
-print(f"middle base mapped average:\t{np.mean(np_array)}", file=outfile)
-print(f"middle base mapped median:\t{np.median(np_array)}", file=outfile)
-print(f"middle base mapped stdev:\t{np.std(np_array)}", file=outfile)
+total_score = 0
+total_freq = 0
+freq_table = []
+for score, freq in middle_mapped_quals.items():
+    total_score += score * freq
+    total_freq += freq
+    freq_table.append((score, freq))
+avg = total_score / total_freq
+print(f"middle position mapped average:\t{avg}", file=outfile)
+freq_table.sort(key=lambda entry: entry[0])
+median_pos = (total_freq + 1) / 2
+cumul_freq = 0
+median_found = False
+sum_freq_times_score_sqrd = 0
+for score, freq in freq_table:
+    cumul_freq += freq
+    if cumul_freq >= median_pos:
+        if not median_found:
+            median = score
+        median_found = True
+    sum_freq_times_score_sqrd += freq * (score**2)
+print(f"middle position mapped median:\t{median}", file=outfile)
+stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
+print(f"middle position mapped stdev:\t{stdev}", file=outfile)
 
-np_array = np.array([], int)
-for score, count in middle_unmapped_quals.items():
-    np_array = np.concatenate((np_array, np.array([score] * count, int)), dtype=int)
-print(f"middle base unmapped average:\t{np.mean(np_array)}", file=outfile)
-print(f"middle base unmapped median:\t{np.median(np_array)}", file=outfile)
-print(f"middle base unmapped stdev:\t{np.std(np_array)}", file=outfile)
+total_score = 0
+total_freq = 0
+freq_table = []
+for score, freq in middle_unmapped_quals.items():
+    total_score += score * freq
+    total_freq += freq
+    freq_table.append((score, freq))
+avg = total_score / total_freq
+print(f"middle position unmapped average:\t{avg}", file=outfile)
+freq_table.sort(key=lambda entry: entry[0])
+median_pos = (total_freq + 1) / 2
+cumul_freq = 0
+median_found = False
+sum_freq_times_score_sqrd = 0
+for score, freq in freq_table:
+    cumul_freq += freq
+    if cumul_freq >= median_pos:
+        if not median_found:
+            median = score
+        median_found = True
+    sum_freq_times_score_sqrd += freq * (score**2)
+print(f"middle position unmapped median:\t{median}", file=outfile)
+stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
+print(f"middle position unmapped stdev:\t{stdev}", file=outfile)
 
 END
     >>>
