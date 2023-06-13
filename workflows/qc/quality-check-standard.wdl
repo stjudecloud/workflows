@@ -380,6 +380,7 @@ task parse_input {
         String input_molecule
         Int coverage_beds_len
         Array[String] coverage_labels
+        Int max_retries = 1
     }
 
     Int coverage_labels_len = length(coverage_labels)
