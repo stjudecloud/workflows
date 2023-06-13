@@ -93,8 +93,8 @@ task alignment {
 
     input {
         Array[File] read_one_fastqs
-        File stardb_tar_gz
-        String output_prefix
+        File star_db_tar_gz
+        String prefix
         String? read_groups
         Array[File] read_two_fastqs = []
         Boolean use_all_cores = false

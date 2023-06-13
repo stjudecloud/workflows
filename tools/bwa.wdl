@@ -17,7 +17,7 @@ task bwa_aln {
 
     input {
         File fastq
-        File bwadb_tar_gz
+        File bwa_db_tar_gz
         String prefix = sub(
             basename(fastq),
             "([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
@@ -166,7 +166,7 @@ task bwa_mem {
 
     input {
         File fastq
-        File bwadb_tar_gz
+        File bwa_db_tar_gz
         String prefix = sub(
             basename(fastq),
             "([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
