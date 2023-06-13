@@ -16,11 +16,15 @@ workflow markdups_post {
     meta {
         description: "This workflow runs QC analyses which are impacted by duplicate marking."
         outputs: {
-            insert_size_metrics: "`*.txt` output file of `picard collectInsertSizeMetrics`"
-            insert_size_metrics_pdf: "`*.pdf` output file of `picard collectInsertSizeMetrics`"
+            insert_size_metrics:
+                "`*.txt` output file of `picard collectInsertSizeMetrics`"
+            insert_size_metrics_pdf:
+                "`*.pdf` output file of `picard collectInsertSizeMetrics`"
             flagstat: "`samtools flagstat` report"
-            mosdepth_global_summary: "Summary of whole genome coverage produced by `mosdepth`"
-            mosdepth_global_dist: "Distribution of whole genome coverage produced by `mosdepth`"
+            mosdepth_global_summary:
+                "Summary of whole genome coverage produced by `mosdepth`"
+            mosdepth_global_dist:
+                "Distribution of whole genome coverage produced by `mosdepth`"
             mosdepth_region_summary: "Summaries of coverage corresponding to the regions defined by `coverage_beds` input, produced by `mosdepth`"
             mosdepth_region_dist: "Distributions of coverage corresponding to the regions defined by `coverage_beds` input, produced by `mosdepth`"
         }
@@ -45,29 +49,29 @@ workflow markdups_post {
     }
 
     call picard.collect_insert_size_metrics { input:
-        bam=markdups_bam,
-        prefix=prefix + ".CollectInsertSizeMetrics",
-        max_retries=max_retries
-    }
+            bam=markdups_bam,
+            max_retries=max_retries
+        }
     call samtools.flagstat as samtools_flagstat { input:
         bam=markdups_bam,
-        outfile_name=prefix + ".flagstat.txt",
         max_retries=max_retries
     }
 
-    call mosdepth.coverage as wg_coverage { input:
-        bam=markdups_bam,
-        bam_index=markdups_bam_index,
-        prefix=prefix + "." + "whole_genome",
-        max_retries=max_retries
-    }
-    scatter(coverage_pair in zip(coverage_beds, coverage_labels)) {
-        call mosdepth.coverage as regions_coverage { input:
+    call mosdepth.coverage as wg_coverage {
+        input:
             bam=markdups_bam,
             bam_index=markdups_bam_index,
-            coverage_bed=coverage_pair.left,
-            prefix=prefix + "." + coverage_pair.right,
+            prefix=prefix + "." + "whole_genome",
             max_retries=max_retries
+    }
+    scatter(coverage_pair in zip(coverage_beds, coverage_labels)) {
+        call mosdepth.coverage as regions_coverage {
+            input:
+                bam=markdups_bam,
+                bam_index=markdups_bam_index,
+                coverage_bed=coverage_pair.left,
+                prefix=prefix + "." + coverage_pair.right,
+                max_retries=max_retries
         }
     }
 

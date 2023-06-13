@@ -7,6 +7,8 @@ version 1.0
 
 task download {
     meta {
+        author: "Clay McLeod"
+        email: "clay.mcleod@stjude.org"
         description: "This WDL task uses wget to download a file from a remote URL to the local filesystem" 
     }
 
@@ -18,9 +20,8 @@ task download {
     input {
         String url
         String outfile_name
-        Int disk_size_gb 
         String? md5sum
-        Int memory_gb = 4
+        Int disk_size_gb = 10
         Int max_retries = 1
     }
 
@@ -36,11 +37,11 @@ task download {
     >>>
 
     output {
-        File downloaded_file = outfile_name
+        File outfile = outfile_name
     }
 
     runtime {
-        memory: memory_gb + " GB"
+        memory: "4 GB"
         disk: disk_size_gb + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
@@ -49,6 +50,8 @@ task download {
 
 task get_read_groups {
     meta {
+        author: "Andrew Thrasher, Andrew Frantz"
+        email: "andrew.thrasher@stjude.org, andrew.frantz@stjude.org"
         description: "This WDL task is a utility to get read group information from a BAM file and write it out to as a string" 
     }
 
@@ -58,27 +61,25 @@ task get_read_groups {
 
     input {
         File bam
-        Int memory_gb = 4
-        Int modify_disk_size_gb = 0
-        Boolean format_for_star = true
         Int max_retries = 1
+        Boolean format_for_star = true
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size = ceil((bam_size * 2) + 10)
 
     command <<<
         set -euo pipefail
 
-        if ~{format_for_star}; then
-            samtools view -H ~{bam} \
-                | grep "@RG" \
+        if [ "~{format_for_star}" == "true" ]
+        then        
+            samtools view -H ~{bam} | grep "@RG" \
                 | cut -f 2- \
                 | sed -e 's/\t/ /g' \
                 | awk '{print}' ORS=' , ' \
-                | sed 's/ , $//' > read_groups.txt
+                | sed 's/ , $//' >> read_groups.txt
         else
-            samtools view -H ~{bam} | grep "@RG" > read_groups.txt
+            samtools view -H ~{bam} | grep "@RG" >> read_groups.txt
         fi
     >>>
 
@@ -87,21 +88,19 @@ task get_read_groups {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "4 GB"
+        disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 }
 
 task split_string {
-    # TODO check if there's a way to accomplish this in pure WDL. Delete task?
     input {
         String input_string
         String delimiter = " , "
-        Int memory_gb = 4
-        Int disk_size_gb = 10
         Int max_retries = 1
+        Int disk_size = 1
     }
 
     command <<<
@@ -111,12 +110,13 @@ task split_string {
     >>>
 
     output {
+        File split_strings_file = "split_strings.txt"
         Array[String] split_strings = read_lines("split_strings.txt")
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "4 GB"
+        disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
@@ -132,13 +132,11 @@ task calc_gene_lengths {
     input {
         File gtf
         String outfile_name = basename(gtf, ".gtf.gz") + ".genelengths.txt"
-        Int memory_gb = 8
-        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float gtf_size = size(gtf, "GiB")
-    Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size = ceil(gtf_size * 2 + 10)
 
     command <<<
         set -euo pipefail
@@ -198,25 +196,24 @@ END
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "8 GB"
+        disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
         maxRetries: max_retries
     }
 }
 
 task qc_summary {
-    # TODO not sure why I implemented as a JSON. Wouldn't TSV be easier to work with? Talk to Delaram/David
-    # Delaram+David okayed a switch to TSV
     meta {
-        description: "*[OUT OF DATE]* This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
+        description: "This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
     }
 
     input {
         File multiqc_tar_gz
         String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
-        Int memory_gb = 4
-        Int disk_size_gb = 10
+        Int disk_size = 1
         Int max_retries = 1
     }
 
@@ -225,7 +222,7 @@ task qc_summary {
     command <<<
         set -euo pipefail
 
-        tar -xzf "~{multiqc_tar_gz}" --no-same-owner
+        tar -xzf "~{multiqc_tar_gz}"
         gen_stats_file=~{sample_name}.multiqc/multiqc_data/multiqc_general_stats.txt
 
         TOTAL_READS=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-total_reads $gen_stats_file | tail -n 1 | awk '{ printf("%.0f", $1) }')
@@ -271,8 +268,8 @@ task qc_summary {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "4 GB"
+        disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
@@ -281,25 +278,23 @@ task qc_summary {
 task compression_integrity {
     input {
         File bam
-        Int memory_gb = 4
-        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size = ceil(bam_size + 10)
 
-    command <<<
+    command {
         bgzip -t ~{bam}
-    >>>
+    }
 
     output {
         String check = "passed"
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "4 GB"
+        disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -307,59 +302,50 @@ task compression_integrity {
 
 task add_to_bam_header {
     input {
-        File bam
+        File input_bam
         String additional_header
-        String prefix = basename(bam, ".bam") + ".reheader"
-        Int memory_gb = 4
-        Int modify_disk_size_gb = 0
+        String output_bam_name = basename(input_bam, ".bam") + ".reheader.bam"
         Int max_retries = 1
     }
 
-    Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
-
-    String outfile_name = prefix + ".bam"
+    Float bam_size = size(input_bam, "GiB")
+    Int disk_size = ceil(bam_size + 1)
 
     command <<<
-        samtools view -H ~{bam} > header.sam
+        samtools view -H ~{input_bam} > header.sam
         echo "~{additional_header}" >> header.sam
-        samtools reheader -P header.sam ~{bam} > ~{outfile_name}
+        samtools reheader -P header.sam ~{input_bam} > ~{output_bam_name}
     >>>
 
     output {
         File updated_header = "header.sam"
         Array[String] header_lines = read_lines("header.sam")
-        File reheadered_bam = outfile_name
+        File reheadered_bam = output_bam_name
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "4 GB"
+        disk: disk_size + " GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 }
 
 task unpack_tarball {
-    meta {
-        description: "Accepts a `.tar.gz` archive and converts it into a flat array of files. Any directory structure of the archive is ignored."
-    }
-
     input {
         File tarball
-        Int memory_gb = 4
-        Int modify_disk_size_gb = 0
+        Int extra_disk_gb = 0
         Int max_retries = 1
     }
 
     Float tarball_size = size(tarball, "GiB")
-    Int disk_size_gb = ceil(tarball_size * 8) + modify_disk_size_gb
+    Int disk_size = ceil(tarball_size * 8) + extra_disk_gb
 
     command <<<
         set -euo pipefail
 
         mkdir unpacked_tarball
-        tar -C unpacked_tarball -xzf ~{tarball} --no-same-owner
+        tar -C unpacked_tarball -xzf ~{tarball}
         find unpacked_tarball/ -type f > file_list.txt
     >>>
 
@@ -368,28 +354,27 @@ task unpack_tarball {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "4 GB"
+        disk: disk_size + " GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }
 }
 
 task make_coverage_regions_beds {
-    # TODO should this be customizable?
     meta {
+        author: "Andrew Frantz"
+        email: "andrew.frantz@stjude.org"
         description: "This WDL task takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
     }
 
     input {
         File gtf
-        Int memory_gb = 4
-        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
     Float gtf_size = size(gtf, "GiB")
-    Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size = ceil(gtf_size * 3)
 
     command <<<
         set -euo pipefail
@@ -405,14 +390,13 @@ task make_coverage_regions_beds {
     >>>
 
     output {
-        File bed = basename(gtf, '.gz') + ".bed"  # TODO I added this but I'm not sure I should have. It doesn't work with the task name
         File exon_bed = basename(gtf, '.gz') + ".exon.bed"
         File CDS_bed = basename(gtf, '.gz') + ".CDS.bed"
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        disk: disk_size + " GB"
+        memory: "4 GB"
         docker: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
         maxRetries: max_retries
     }

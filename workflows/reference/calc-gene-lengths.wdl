@@ -1,7 +1,6 @@
 ## # Calculate Gene Lengths
 ##
 ## Calculates gene lengths from a GTF file.
-## TODO should explain algorithm somewhere. Lots of different ways to calculate gene lengths
 ##
 ## ## LICENSING:
 ## 
