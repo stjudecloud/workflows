@@ -50,6 +50,8 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa/">BWA</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../cellranger/">Cellranger</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../deeptools/">Deeptools</a>
@@ -148,6 +150,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../samtools/">SAMtools</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star/">STAR</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../util/">Utilities</a>
                   </li>
               </ul>
@@ -159,15 +163,17 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -199,6 +205,10 @@
 <p>Methods for bootstrapping and running <a href="https://github.com/DerrickWood/kraken2">Kraken2</a></p>
 <h2 id="download_taxonomy">download_taxonomy</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task downloads the NCBI taxonomy which Kraken2 uses to create a tree and taxon map during the database build.</dd>
 </dl>
@@ -216,6 +226,10 @@
 </ul>
 <h2 id="download_library">download_library</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available at: https://ftp.ncbi.nlm.nih.gov/genomes/refseq/.</dd>
 </dl>
@@ -226,9 +240,9 @@
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
+<li><code>added_disk_size_gb</code> (Int, default=0): Additional disk space to allocate for task. Default disk size is determined dynamically based on <code>library_name</code>. Note that the default sizes are adequate as of April 2023, but new genomes are constantly being added to the NCBI database. More disk space may be required depending on when in the future this task is run.</li>
 <li><code>max_retries</code> (Int, default=3): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation, specified in GB. Default disk size is determined dynamically based on <code>library_name</code>. Note that the default sizes are adequate as of April 2023, but new genomes are constantly being added to the NCBI database. More disk space may be required depending on when in the future this task is run.</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task</li>
 <li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
@@ -237,6 +251,10 @@
 </ul>
 <h2 id="create_library_from_fastas">create_library_from_fastas</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task adds custom entries from FASTA files to a Kraken2 DB.</dd>
 </dl>
@@ -247,9 +265,9 @@
 </ul>
 <h4 id="defaults_2">Defaults</h4>
 <ul>
+<li><code>added_disk_size_gb</code> (Int, default=0): Additional disk space to allocate for task. Default disk size is determined dynamically based on <code>fastas</code> size.</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task</li>
 <li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
@@ -258,6 +276,10 @@
 </ul>
 <h2 id="build_db">build_db</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task builds a custom Kraken2 database.</dd>
 </dl>
@@ -268,14 +290,14 @@
 </ul>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
+<li><code>added_disk_size_gb</code> (Int, default=0): Additional disk space to allocate for task. Default disk size is determined dynamically based on size of the input <code>tarballs</code>.</li>
+<li><code>added_memory_gb</code> (Int, default=0): Additional RAM to allocate for task. Default RAM is allocated dynamically based on the database size.</li>
 <li><code>db_name</code> (String, default="kraken2_db"): Name for output in compressed, archived format. The suffix <code>.tar.gz</code> will be added.</li>
 <li><code>kmer_len</code> (Int, default=if protein then 15 else 35): K-mer length in bp that will be used to build the database</li>
 <li><code>max_db_size_gb</code> (Int, default=-1): Maximum number of GBs for Kraken 2 hash table; if the Kraken 2 estimator determines more would normally be needed, the reference library will be downsampled to fit.</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>minimizer_len</code> (Int, default=if protein then 12 else 31): Minimizer length in bp that will be used to build the database</li>
 <li><code>minimizer_spaces</code> (Int, default=if protein then 0 else 7): Number of characters in minimizer that are ignored in comparisons</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
-<li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
 <li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores. Recommended for cloud environments. Not recommended for cluster environments.</li>
@@ -286,6 +308,10 @@
 </ul>
 <h2 id="kraken">kraken</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL tool runs Kraken2 on a pair of fastq files.</dd>
 </dl>
@@ -293,17 +319,17 @@
 <h4 id="required_3">Required</h4>
 <ul>
 <li><code>db</code> (File, <strong>required</strong>): Kraken2 database. Can be generated with <code>make-qc-reference.wdl</code>. Must be a tarball without a root directory.</li>
-<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Gzipped FastQ file with 1st reads in pair</li>
-<li><code>read_two_fastq_gz</code> (File, <strong>required</strong>): Gzipped FastQ file with 2nd reads in pair</li>
+<li><code>read1</code> (File, <strong>required</strong>): Gzipped FastQ file with 1st reads in pair</li>
+<li><code>read2</code> (File, <strong>required</strong>): Gzipped FastQ file with 2nd reads in pair</li>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>min_base_quality</code> (Int, default=0): Minimum base quality used in classification</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
-<li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>modify_memory_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
-<li><code>prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.]R[12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the Kraken2 output files. The extensions <code>.kraken2.txt</code> and <code>.kraken2.sequences.txt.gz</code> will be added.</li>
+<li><code>prefix</code> (String, default=basename(read1,"_R1.fastq.gz")): Prefix for the Kraken2 output files. The extensions <code>.kraken2.txt</code> and <code>.kraken2.sequences.txt.gz</code> will be added.</li>
 <li><code>store_sequences</code> (Boolean, default=false): Store and output main Kraken2 output in addition to the summary report</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>use_names</code> (Boolean, default=true): Print scientific names instead of just taxids</li>

@@ -50,6 +50,8 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/bwa/">BWA</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/cellranger/">Cellranger</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/deeptools/">Deeptools</a>
@@ -77,6 +79,8 @@
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/qualimap/">QualiMap</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/samtools/">SAMtools</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/star/">STAR</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/util/">Utilities</a>
                   </li>
@@ -113,15 +117,17 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../markdups-post/">MarkDuplicates Post</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -179,11 +185,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>calc_tpm.disk_size_gb</code> (Int, default=10)</li>
-<li><code>calc_tpm.memory_gb</code> (Int, default=4)</li>
 <li><code>calc_tpm.outfile_name</code> (String, default=basename(counts,".feature-counts.txt") + ".TPM.txt")</li>
-<li><code>run_ESTIMATE.disk_size_gb</code> (Int, default=10)</li>
-<li><code>run_ESTIMATE.memory_gb</code> (Int, default=4)</li>
 <li><code>run_ESTIMATE.outfile_name</code> (String, default=basename(gene_expression_file,".TPM.txt") + ".ESTIMATE.gct")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>

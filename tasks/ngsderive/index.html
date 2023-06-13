@@ -50,6 +50,8 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa/">BWA</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../cellranger/">Cellranger</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../deeptools/">Deeptools</a>
@@ -150,6 +152,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../samtools/">SAMtools</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star/">STAR</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../util/">Utilities</a>
                   </li>
               </ul>
@@ -161,15 +165,17 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -213,9 +219,7 @@
 <li><code>memory_gb</code> (Int, default=5)</li>
 <li><code>min_mapq</code> (Int, default=30)</li>
 <li><code>min_reads_per_gene</code> (Int, default=10)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>num_genes</code> (Int, default=1000)</li>
-<li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".strandedness.txt")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -231,10 +235,7 @@
 <h4 id="defaults_1">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>num_samples</code> (Int, default=10000)</li>
-<li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".instrument.txt")</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
@@ -252,9 +253,7 @@
 <li><code>majority_vote_cutoff</code> (Float, default=0.7)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>num_samples</code> (Int, default=-1)</li>
-<li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".readlength.txt")</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
 <ul>
@@ -265,13 +264,12 @@
 <h4 id="required_3">Required</h4>
 <ul>
 <li><code>ngs_files</code> (Array[File], <strong>required</strong>)</li>
-<li><code>outfile_name</code> (String, <strong>required</strong>)</li>
+<li><code>prefix</code> (String, <strong>required</strong>)</li>
 </ul>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>num_samples</code> (Int, default=1000000)</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
@@ -295,7 +293,6 @@
 <li><code>min_intron</code> (Int, default=50)</li>
 <li><code>min_mapq</code> (Int, default=30)</li>
 <li><code>min_reads</code> (Int, default=2)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>

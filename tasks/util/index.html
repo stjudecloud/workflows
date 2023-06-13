@@ -50,6 +50,8 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa/">BWA</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../cellranger/">Cellranger</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../deeptools/">Deeptools</a>
@@ -77,6 +79,8 @@
                   <li class="toctree-l1"><a class="reference internal" href="../qualimap/">QualiMap</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../samtools/">SAMtools</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star/">STAR</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Utilities</a>
     <ul class="current">
@@ -219,15 +223,17 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -260,13 +266,16 @@
 task output as part of a workflow as well as generic tasks.</p>
 <h2 id="download">download</h2>
 <dl>
+<dt>author</dt>
+<dd>Clay McLeod</dd>
+<dt>email</dt>
+<dd>clay.mcleod@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task uses wget to download a file from a remote URL to the local filesystem</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>disk_size_gb</code> (Int, <strong>required</strong>)</li>
 <li><code>outfile_name</code> (String, <strong>required</strong>): Name of the output file</li>
 <li><code>url</code> (String, <strong>required</strong>): URL of the file to download</li>
 </ul>
@@ -276,15 +285,19 @@ task output as part of a workflow as well as generic tasks.</p>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>disk_size_gb</code> (Int, default=10)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>downloaded_file</code> (File)</li>
+<li><code>outfile</code> (File)</li>
 </ul>
 <h2 id="get_read_groups">get_read_groups</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Thrasher, Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task is a utility to get read group information from a BAM file and write it out to as a string</dd>
 </dl>
@@ -297,8 +310,6 @@ task output as part of a workflow as well as generic tasks.</p>
 <ul>
 <li><code>format_for_star</code> (Boolean, default=true)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
@@ -313,12 +324,12 @@ task output as part of a workflow as well as generic tasks.</p>
 <h4 id="defaults_2">Defaults</h4>
 <ul>
 <li><code>delimiter</code> (String, default=" , ")</li>
-<li><code>disk_size_gb</code> (Int, default=10)</li>
+<li><code>disk_size</code> (Int, default=1)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
 <ul>
+<li><code>split_strings_file</code> (File)</li>
 <li><code>split_strings</code> (Array[String])</li>
 </ul>
 <h2 id="calc_gene_lengths">calc_gene_lengths</h2>
@@ -330,8 +341,6 @@ task output as part of a workflow as well as generic tasks.</p>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=8)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>outfile_name</code> (String, default=basename(gtf,".gtf.gz") + ".genelengths.txt"): Name of the gene lengths file</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
@@ -340,8 +349,12 @@ task output as part of a workflow as well as generic tasks.</p>
 </ul>
 <h2 id="qc_summary">qc_summary</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd><em>[OUT OF DATE]</em> This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive.</dd>
+<dd>This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive.</dd>
 </dl>
 <h3 id="inputs_4">Inputs</h3>
 <h4 id="required_4">Required</h4>
@@ -350,9 +363,8 @@ task output as part of a workflow as well as generic tasks.</p>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
-<li><code>disk_size_gb</code> (Int, default=10)</li>
+<li><code>disk_size</code> (Int, default=1)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
 <li><code>outfile_name</code> (String, default=basename(multiqc_tar_gz,".multiqc.tar.gz") + ".qc_summary.json")</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
@@ -368,8 +380,6 @@ task output as part of a workflow as well as generic tasks.</p>
 <h4 id="defaults_5">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 </ul>
 <h3 id="outputs_5">Outputs</h3>
 <ul>
@@ -380,14 +390,12 @@ task output as part of a workflow as well as generic tasks.</p>
 <h4 id="required_6">Required</h4>
 <ul>
 <li><code>additional_header</code> (String, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>)</li>
+<li><code>input_bam</code> (File, <strong>required</strong>)</li>
 </ul>
 <h4 id="defaults_6">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam") + ".reheader")</li>
+<li><code>output_bam_name</code> (String, default=basename(input_bam,".bam") + ".reheader.bam")</li>
 </ul>
 <h3 id="outputs_6">Outputs</h3>
 <ul>
@@ -396,10 +404,6 @@ task output as part of a workflow as well as generic tasks.</p>
 <li><code>reheadered_bam</code> (File)</li>
 </ul>
 <h2 id="unpack_tarball">unpack_tarball</h2>
-<dl>
-<dt>description</dt>
-<dd>Accepts a <code>.tar.gz</code> archive and converts it into a flat array of files. Any directory structure of the archive is ignored.</dd>
-</dl>
 <h3 id="inputs_7">Inputs</h3>
 <h4 id="required_7">Required</h4>
 <ul>
@@ -407,9 +411,8 @@ task output as part of a workflow as well as generic tasks.</p>
 </ul>
 <h4 id="defaults_7">Defaults</h4>
 <ul>
+<li><code>extra_disk_gb</code> (Int, default=0)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 </ul>
 <h3 id="outputs_7">Outputs</h3>
 <ul>
@@ -417,6 +420,10 @@ task output as part of a workflow as well as generic tasks.</p>
 </ul>
 <h2 id="make_coverage_regions_beds">make_coverage_regions_beds</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions</dd>
 </dl>
@@ -428,12 +435,9 @@ task output as part of a workflow as well as generic tasks.</p>
 <h4 id="defaults_8">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 </ul>
 <h3 id="outputs_8">Outputs</h3>
 <ul>
-<li><code>bed</code> (File)</li>
 <li><code>exon_bed</code> (File)</li>
 <li><code>CDS_bed</code> (File)</li>
 </ul>
@@ -441,7 +445,7 @@ task output as part of a workflow as well as generic tasks.</p>
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../samtools/" class="btn btn-neutral float-left" title="SAMtools"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../star/" class="btn btn-neutral float-left" title="STAR"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../../workflows/10x-bam-to-fastqs/" class="btn btn-neutral float-right" title="Cell Ranger Bam to FastQs">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -470,7 +474,7 @@ task output as part of a workflow as well as generic tasks.</p>
         </span>
     
     
-      <span><a href="../samtools/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../star/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../../workflows/10x-bam-to-fastqs/" style="color: #fcfcfc">Next &raquo;</a></span>

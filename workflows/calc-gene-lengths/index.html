@@ -50,6 +50,8 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/bwa/">BWA</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/cellranger/">Cellranger</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/deeptools/">Deeptools</a>
@@ -78,6 +80,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/samtools/">SAMtools</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/star/">STAR</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/util/">Utilities</a>
                   </li>
               </ul>
@@ -88,6 +92,8 @@
                   <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Calculate Gene Lengths</a>
     <ul class="current">
@@ -119,9 +125,9 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../markdups-post/">MarkDuplicates Post</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality Check Standard</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -150,8 +156,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="calculate-gene-lengths">Calculate Gene Lengths</h1>
-<p>Calculates gene lengths from a GTF file.
-TODO should explain algorithm somewhere. Lots of different ways to calculate gene lengths</p>
+<p>Calculates gene lengths from a GTF file.</p>
 <h2 id="licensing">LICENSING:</h2>
 <h4 id="mit-license">MIT License</h4>
 <p>Copyright 2020-Present St. Jude Children's Research Hospital</p>
@@ -179,8 +184,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>calc.memory_gb</code> (Int, default=8)</li>
-<li><code>calc.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>calc.outfile_name</code> (String, default=basename(gtf,".gtf.gz") + ".genelengths.txt")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
@@ -191,7 +194,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../bam-to-fastqs/" class="btn btn-neutral float-left" title="Bam to FastQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../bwa-db-build/" class="btn btn-neutral float-left" title="BWA DB build"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../make-qc-reference/" class="btn btn-neutral float-right" title="Make QC Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -220,7 +223,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
         </span>
     
     
-      <span><a href="../bam-to-fastqs/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../bwa-db-build/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../make-qc-reference/" style="color: #fcfcfc">Next &raquo;</a></span>

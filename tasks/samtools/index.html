@@ -50,6 +50,8 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa/">BWA</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../cellranger/">Cellranger</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../deeptools/">Deeptools</a>
@@ -97,6 +99,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
     </li>
@@ -154,7 +158,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_5">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_1">Optional</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_5">Defaults</a>
     </li>
@@ -222,6 +226,8 @@
     </li>
     </ul>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star/">STAR</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../util/">Utilities</a>
                   </li>
               </ul>
@@ -233,15 +239,17 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -274,6 +282,10 @@
 SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h2 id="quickcheck">quickcheck</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Thrasher, Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists.</dd>
 </dl>
@@ -285,8 +297,6 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -294,6 +304,10 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 </ul>
 <h2 id="split">split</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Thrasher, Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group.</dd>
 </dl>
@@ -302,11 +316,13 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <ul>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to split</li>
 </ul>
+<h4 id="optional">Optional</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int?)</li>
+</ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>reject_unaccounted</code> (Boolean, default=true): If true, error if there are reads present that do not have read group information.</li>
@@ -318,8 +334,12 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 </ul>
 <h2 id="flagstat">flagstat</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Thrasher, Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL tool produces a <code>samtools flagstat</code> report containing statistics about the alignments based on the bit flags set in the BAM.</dd>
+<dd>This WDL tool generates a <code>samtools flagstat</code> report for the input BAM file.</dd>
 </dl>
 <h3 id="inputs_2">Inputs</h3>
 <h4 id="required_2">Required</h4>
@@ -330,7 +350,6 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
@@ -339,8 +358,12 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 </ul>
 <h2 id="index">index</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Thrasher, Andrew Frantz</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
-<dd>This WDL task runs samtools index on the input BAM file.</dd>
+<dd>This WDL task runs Samtools flagstat on the input BAM file. Produces statistics about the alignments based on the bit flags set in the BAM.</dd>
 </dl>
 <h3 id="inputs_3">Inputs</h3>
 <h4 id="required_3">Required</h4>
@@ -350,9 +373,9 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>memory_gb</code> (Int, default=15)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
+<li><code>outfile_name</code> (String, default=basename(bam) + ".bai")</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
@@ -369,10 +392,8 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam") + ".subsampled")</li>
+<li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".subsampled.bam")</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
@@ -385,9 +406,8 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h4 id="required_5">Required</h4>
 <ul>
 <li><code>bams</code> (Array[File], <strong>required</strong>)</li>
-<li><code>prefix</code> (String, <strong>required</strong>)</li>
 </ul>
-<h4 id="optional">Optional</h4>
+<h4 id="optional_1">Optional</h4>
 <ul>
 <li><code>new_header</code> (File?)</li>
 </ul>
@@ -395,9 +415,8 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <ul>
 <li><code>attach_rg</code> (Boolean, default=true)</li>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
+<li><code>outfile_name</code> (String, default=basename(bams[0],".bam") + ".merged.bam")</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs_5">Outputs</h3>
@@ -406,6 +425,10 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 </ul>
 <h2 id="addreplacerg">addreplacerg</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Thrasher</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags.</dd>
 </dl>
@@ -418,10 +441,8 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h4 id="defaults_6">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam") + ".read_group")</li>
+<li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".read_group.bam")</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs_6">Outputs</h3>
@@ -447,7 +468,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam") + ".collated"): Prefix for the collated BAM file. The extension <code>.collated.bam</code> will be added.</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the collated BAM file. The extension <code>.collated.bam</code> will be added.</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_7">Outputs</h3>
@@ -530,7 +551,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../qualimap/" class="btn btn-neutral float-left" title="QualiMap"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../util/" class="btn btn-neutral float-right" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../star/" class="btn btn-neutral float-right" title="STAR">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -561,7 +582,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
       <span><a href="../qualimap/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../util/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../star/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

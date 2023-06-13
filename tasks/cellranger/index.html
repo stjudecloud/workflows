@@ -50,6 +50,8 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa/">BWA</a>
+                  </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Cellranger</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
@@ -90,6 +92,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../samtools/">SAMtools</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star/">STAR</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../util/">Utilities</a>
                   </li>
               </ul>
@@ -101,15 +105,17 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">STAR DB build</a>
                   </li>
               </ul>
       </div>
@@ -142,6 +148,10 @@
 Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <h2 id="count">count</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Thrasher</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data.</dd>
 </dl>
@@ -154,9 +164,9 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>jobmode</code> (String, default="local")</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=16)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
@@ -175,10 +185,14 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <li><code>raw_matrix</code> (File)</li>
 <li><code>mol_info_h5</code> (File)</li>
 <li><code>web_summary</code> (File)</li>
-<li><code>cloupe</code> (File)</li>
+<li><code>loupe</code> (File)</li>
 </ul>
 <h2 id="bamtofastq">bamtofastq</h2>
 <dl>
+<dt>author</dt>
+<dd>Andrew Thrasher</dd>
+<dt>email</dt>
+<dd>andrew.thrasher@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files</dd>
 </dl>
@@ -194,7 +208,6 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <li><code>longranger20</code> (Boolean, default=false): Convert a BAM produced by Longranger 2.0</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=40)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
@@ -202,14 +215,14 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
 <ul>
 <li><code>fastqs</code> (Array[File])</li>
 <li><code>fastqs_archive</code> (File)</li>
-<li><code>read_one_fastq_gz</code> (Array[File])</li>
-<li><code>read_two_fastq_gz</code> (Array[File])</li>
+<li><code>read1</code> (Array[File])</li>
+<li><code>read2</code> (Array[File])</li>
 </ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../../build_for_dnanexus/" class="btn btn-neutral float-left" title="Building WDL workflows for DNAnexus"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../bwa/" class="btn btn-neutral float-left" title="BWA"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../deeptools/" class="btn btn-neutral float-right" title="Deeptools">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -238,7 +251,7 @@ Cell Ranger is a tool for handling scRNA-Seq data.</p>
         </span>
     
     
-      <span><a href="../../build_for_dnanexus/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../bwa/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../deeptools/" style="color: #fcfcfc">Next &raquo;</a></span>
