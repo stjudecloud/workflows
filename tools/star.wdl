@@ -130,31 +130,22 @@ task alignment {
 
         tar -xzf ~{star_db_tar_gz}
 
-        # TODO rework `sort_star_input.py` to avoid this spaghetti logic
-        if [ -n "~{if defined(read_groups) then read_groups else ""}" ]
-        then
-            if [ -n "~{if read_two_fastqs != empty_array then "read_two_fastqs" else ""}" ]
-            then
-                python3 /home/sort_star_input.py \
-                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                    --read_two_fastqs "~{sep=',' read_two_fastqs}" \
-                    --read_groups "~{read_groups}"
-            else
-                python3 /home/sort_star_input.py \
-                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                    --read_groups "~{read_groups}"
-            fi
-        else 
-            if [ -n "~{if read_two_fastqs != empty_array then "read_two_fastqs" else ""}" ]
-            then
-                python3 /home/sort_star_input.py \
-                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                    --read_two_fastqs "~{sep=',' read_two_fastqs}"
-            else
-                python3 /home/sort_star_input.py \
-                    --read_one_fastqs "~{sep=',' read_one_fastqs}"
-            fi
-        fi
+        python3 /home/sort_star_input.py \
+            --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+            # odd constructions a combination of needing white space properly parsed
+            # and limitations of the WDL v1.0 spec
+            ~{if (read_two_fastqs != empty_array) then "--read_two_fastqs" else ""} "~{
+                sep=',' (
+                    if (read_two_fastqs != empty_array)
+                    then read_two_fastqs
+                    else []
+                )
+            }" \
+            ~{if defined(read_groups) then "--read_groups" else ""} "~{
+                if defined(read_groups)
+                then read_groups
+                else ''
+            }"
 
         STAR --readFilesIn \
                 $(cat read_one_fastqs_sorted.txt) \
@@ -190,7 +181,7 @@ task alignment {
         cpu: ncpu
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
+        docker: 'ghcr.io/stjudecloud/star:branch-star-2.7.10a-1'
         maxRetries: max_retries
     }
 }
