@@ -131,17 +131,17 @@ task alignment {
         tar -xzf ~{star_db_tar_gz}
 
         python3 /home/sort_star_input.py \
-            --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+            --read-one-fastqs "~{sep=',' read_one_fastqs}" \
             # odd constructions a combination of needing white space properly parsed
             # and limitations of the WDL v1.0 spec
-            ~{if (read_two_fastqs != empty_array) then "--read_two_fastqs" else ""} "~{
+            ~{if (read_two_fastqs != empty_array) then "--read-two-fastqs" else ""} "~{
                 sep=',' (
                     if (read_two_fastqs != empty_array)
                     then read_two_fastqs
                     else []
                 )
             }" \
-            ~{if defined(read_groups) then "--read_groups" else ""} "~{
+            ~{if defined(read_groups) then "--read-groups" else ""} "~{
                 if defined(read_groups)
                 then read_groups
                 else ''

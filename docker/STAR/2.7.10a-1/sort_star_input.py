@@ -106,17 +106,17 @@ def write_outfiles(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--read_one_fastqs",
+        "--read-one-fastqs",
         required=True,
         help="Comma delimited (without spaces) list of read one FastQ file paths",
     )
     parser.add_argument(
-        "--read_two_fastqs",
+        "--read-two-fastqs",
         required=False,
         help="Comma delimited (without spaces) list of read two FastQ file paths",
     )
     parser.add_argument(
-        "--read_groups",
+        "--read-groups",
         required=False,
         help="Exactly what would be passed to STAR "
         "after `--outSAMattrRGline`.\nSince this will have spaces, "
