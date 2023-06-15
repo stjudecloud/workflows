@@ -4,7 +4,7 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/fastq_screen.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/fastq_screen.wdl"
 
 workflow make_qc_reference {
     call fastq_screen.build_db as fastq_screen_build_db

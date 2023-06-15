@@ -30,14 +30,14 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/workflows/general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/star.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/picard.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/ngsderive.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/htseq.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/util.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/deeptools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/workflows/general/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/star.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/picard.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/ngsderive.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/htseq.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/util.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/deeptools.wdl"
 import "https://raw.githubusercontent.com/stjude/xenocp/3.1.4/wdl/workflows/xenocp.wdl"
 
 workflow rnaseq_standard {

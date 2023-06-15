@@ -33,8 +33,8 @@
 
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/bwa.wdl"
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/wget.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/bwa.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/wget.wdl"
 
 workflow bwa_db_build {
     input {

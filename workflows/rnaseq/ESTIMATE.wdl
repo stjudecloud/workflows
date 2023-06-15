@@ -1,6 +1,6 @@
 version 1.0
 
-import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/estimate.wdl"
+import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/tools/estimate.wdl"
 
 workflow ESTIMATE {
     input {
