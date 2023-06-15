@@ -38,7 +38,7 @@ import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/util.wdl"
 import "https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.0/tools/deeptools.wdl"
-import "https://raw.githubusercontent.com/stjude/xenocp/3.1.1/wdl/workflows/xenocp.wdl"
+import "https://raw.githubusercontent.com/stjude/xenocp/3.1.4/wdl/workflows/xenocp.wdl"
 
 workflow rnaseq_standard {
     input {
