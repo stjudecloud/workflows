@@ -147,9 +147,10 @@ task alignment {
                 else ''
             }"
 
-        STAR --readFilesIn \
-                $(cat read_one_fastqs_sorted.txt) \
-                $(cat read_two_fastqs_sorted.txt) \
+        read -ra read_one_args < <(cat read_one_fastqs_sorted.txt)
+        read -ra read_two_args < <(cat read_two_fastqs_sorted.txt)
+        read -ra read_group_args < <(cat read_groups_sorted.txt)
+        STAR --readFilesIn "${read_one_args[@]}" "${read_two_args[@]}" \
              --readFilesCommand "gunzip -c" \
              --genomeDir ~{star_db_dir} \
              --runThreadN "$n_cores" \
@@ -169,7 +170,7 @@ task alignment {
              --outFileNamePrefix ~{prefix + "."} \
              --twopassMode Basic \
              --limitBAMsortRAM ~{memory_limit_bytes} \
-             --outSAMattrRGline $(cat read_groups_sorted.txt)
+             --outSAMattrRGline "${read_group_args[@]}"
     >>>
 
     output {
