@@ -90,6 +90,7 @@ task alignment {
         prefix: "Prefix for the BAM and log file. The extensions `.Aligned.out.bam` and `.Log.final.out` will be added."
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
         read_two_fastqs_gz: "Array of gzipped FastQ files with 2nd reads in pair"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
