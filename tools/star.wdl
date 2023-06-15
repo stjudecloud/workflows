@@ -85,18 +85,23 @@ task alignment {
     }
 
     parameter_meta {
-        read_one_fastqs: "An array of FastQ files containing read one information"
+        read_one_fastqs_gz: "Array of gzipped FastQ files with 1st reads in pair"
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
+        prefix: "Prefix for the BAM and log file. The extensions `.Aligned.out.bam` and `.Log.final.out` will be added."
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
-        read_two_fastqs: "An array of FastQ files containing read two information"
+        read_two_fastqs_gz: "Array of gzipped FastQ files with 2nd reads in pair"
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
-        Array[File] read_one_fastqs
+        Array[File] read_one_fastqs_gz
         File star_db_tar_gz
         String prefix
         String? read_groups
-        Array[File] read_two_fastqs = []
+        Array[File] read_two_fastqs_gz = []
         Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = 50
@@ -109,8 +114,8 @@ task alignment {
     # Leave 2GB as system overhead
     String memory_limit_bytes = (memory_gb - 2) + "000000000"
 
-    Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
-    Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
+    Float read_one_fastqs_size = size(read_one_fastqs_gz, "GiB")
+    Float read_two_fastqs_size = size(read_two_fastqs_gz, "GiB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
     Int disk_size_gb = (
         (
@@ -131,13 +136,13 @@ task alignment {
         tar -xzf ~{star_db_tar_gz}
 
         python3 /home/sort_star_input.py \
-            --read-one-fastqs "~{sep=',' read_one_fastqs}" \
+            --read-one-fastqs "~{sep=',' read_one_fastqs_gz}" \
             # odd constructions a combination of needing white space properly parsed
             # and limitations of the WDL v1.0 spec
-            ~{if (read_two_fastqs != empty_array) then "--read-two-fastqs" else ""} "~{
+            ~{if (read_two_fastqs_gz != empty_array) then "--read-two-fastqs" else ""} "~{
                 sep=',' (
-                    if (read_two_fastqs != empty_array)
-                    then read_two_fastqs
+                    if (read_two_fastqs_gz != empty_array)
+                    then read_two_fastqs_gz
                     else []
                 )
             }" \
