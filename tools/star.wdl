@@ -492,10 +492,10 @@ task alignment {
 
         tar -xzf ~{star_db_tar_gz}
 
+        # odd constructions a combination of needing white space properly parsed
+        # and limitations of the WDL v1.0 spec
         python3 /home/sort_star_input.py \
             --read-one-fastqs "~{sep=',' read_one_fastqs_gz}" \
-            # odd constructions a combination of needing white space properly parsed
-            # and limitations of the WDL v1.0 spec
             ~{if (read_two_fastqs_gz != empty_array) then "--read-two-fastqs" else ""} "~{
                 sep=',' (
                     if (read_two_fastqs_gz != empty_array)
@@ -517,7 +517,7 @@ task alignment {
             --genomeDir ~{star_db_dir} \
             --runThreadN "$n_cores" \
             --outSAMtype BAM Unsorted \
-            --outMultimapperOrder Random
+            --outMultimapperOrder Random \
             --outFileNamePrefix ~{prefix + "."} \
             --twopassMode ~{twopassMode} \
             --outSAMattrRGline "${read_group_args[@]}" \
@@ -574,7 +574,8 @@ task alignment {
                 then "1"
                 else (
                     if (outSAMtlen == "left_any") then "2" else "error"
-                )} \
+                )
+            } \
             --outFilterType ~{outFilterType} \
             --outFilterIntronMotifs ~{outFilterIntronMotifs} \
             --outFilterIntronStrands ~{outFilterIntronStrands} \
@@ -651,7 +652,7 @@ task alignment {
             --chimMainSegmentMultNmax ~{chimMainSegmentMultNmax} \
             --chimMultimapNmax ~{chimMultimapNmax} \
             --chimMultimapScoreRange ~{chimMultimapScoreRange} \
-            --chimNonchimScoreDropMin ~{chimNonchimScoreDropMin} \ 
+            --chimNonchimScoreDropMin ~{chimNonchimScoreDropMin} \
             --twopass1readsN ~{twopass1readsN}
     >>>
 
