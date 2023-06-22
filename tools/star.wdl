@@ -173,7 +173,7 @@ task alignment {
             description: "calculation method for the TLEN field in the SAM/BAM files",
             choices: {
                 left_plus: 'leftmost base of the (+)strand mate to rightmost base of the (-)mate. (+)sign for the (+)strand mate',
-                left_any: 'leftmost base of any mate to rightmost base of any mate. (+)sign for the mate with the leftmost base. This is different from 1 for overlapping mates with protruding ends'
+                left_any: 'leftmost base of any mate to rightmost base of any mate. (+)sign for the mate with the leftmost base. This is different from `left_plus` for overlapping mates with protruding ends'
             }
         }
         outFilterType: {
@@ -194,8 +194,8 @@ task alignment {
         outFilterIntronStrands: {
             description: "filter alignments",
             choices: {
-                RemoveInconsistentStrands: "remove alignments that have junctions with inconsistent strands",
-                None: "no filtering"
+                None: "no filtering",
+                RemoveInconsistentStrands: "remove alignments that have junctions with inconsistent strands"
             }
         }
         outSJfilterReads: {
@@ -232,7 +232,6 @@ task alignment {
             description: "type of chimeric output",
             choices: {
                 Junctions: "Chimeric.out.junction",
-                SeparateSAMold: "output old SAM into separate Chimeric.out.sam file",  # TODO should be hidden?
                 WithinBAM_HardClip: "output into main aligned BAM files (Aligned.*.bam). Hard-clipping in the CIGAR for supplemental chimeric alignments."
                 WithinBAM_SoftClip: "output into main aligned BAM files (Aligned.*.bam). Soft-clipping in the CIGAR for supplemental chimeric alignments."
             }
@@ -251,6 +250,13 @@ task alignment {
                 comments: "comment lines at the end of the file: command line and Nreads: total, unique/multi-mapping"
             }
         }
+        twopassMode: {
+            description: "2-pass mapping mode",
+            choices: {
+                None: "1-pass mapping **[STAR default]**",
+                Basic: "basic 2-pass mapping, with all 1st pass junctions inserted into the genome indices on the fly **[WDL default]**"
+            }
+        }
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         outFilterMismatchNoverLmax: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
         outFilterMismatchNoverReadLmax: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
@@ -265,6 +271,8 @@ task alignment {
         readMapNumber: "number of reads to map from the beginning of the file. -1 to map all reads"
         readQualityScoreBase: "number to be subtracted from the ASCII code to get Phred quality score"
         limitOutSJoneRead: "max number of junctions for one read (including all multi-mappers)"
+        limitOutSJcollapsed: "max number of collapsed junctions"
+        limitSjdbInsertNsj: "maximum number of junction to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run"
         outQSconversionAdd: "add this number to the quality score (e.g. to convert from Illumina to Sanger, use -31)"
         outSAMattrIHstart: "start value for the IH attribute. 0 may be required by some downstream software, such as Cufflinks or StringTie."
         outSAMmapqUnique: "`0-255`: the MAPQ value for unique mappers"
@@ -317,6 +325,7 @@ task alignment {
         chimMultimapNmax: "maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments"
         chimMultimapScoreRange: "the score range for multi-mapping chimeras below the best chimeric score. Only works with --chimMultimapNmax > 1."
         chimNonchimScoreDropMin: "to trigger chimeric detection, the drop in the best non-chimeric alignment score with respect to the read length has to be greater than this value"
+        twopass1readsN: "number of reads to process for the 1st step. Use default (`-1`) to map all reads in the first step"
         ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -376,6 +385,7 @@ task alignment {
         String outSAMtlen = "left_plus"
         String outFilterType = "Normal"
         String outFilterIntronMotifs = "None"
+        String outFilterIntronStrands = "RemoveInconsistentStrands"
         String outSJfilterReads = "All"
         String alignEndsType = "Local"
         String alignSoftClipAtReferenceEnds = "Yes"
@@ -383,6 +393,7 @@ task alignment {
         String chimOutType = "Junctions"
         String chimFilter = "banGenomicN"
         String chimOutJunctionFormat = "plain"
+        String twopassMode = "Basic"
         Boolean use_all_cores = false
         Float outFilterMismatchNoverLmax = 0.3
         Float outFilterMismatchNoverReadLmax = 1.0
@@ -397,6 +408,8 @@ task alignment {
         Int readMapNumber = -1
         Int readQualityScoreBase = 33
         Int limitOutSJoneRead = 1000
+        Int limitOutSJcollapsed = 1000000
+        Int limitSjdbInsertNsj = 1000000
         Int outQSconversionAdd = 0
         Int outSAMattrIHstart = 1
         Int outSAMmapqUnique = 255
@@ -449,6 +462,7 @@ task alignment {
         Int chimMultimapNmax = 0
         Int chimMultimapScoreRange = 1
         Int chimNonchimScoreDropMin = 20
+        Int twopass1readsN = -1
         Int ncpu = 1
         Int memory_gb = 50
         Int modify_disk_size_gb = 0
@@ -456,9 +470,6 @@ task alignment {
     }
     
     String star_db_dir = basename(star_db_tar_gz, ".tar.gz")
-
-    # Leave 2GB as system overhead
-    String memory_limit_bytes = (memory_gb - 2) + "000000000"
 
     Float read_one_fastqs_size = size(read_one_fastqs_gz, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs_gz, "GiB")
@@ -502,31 +513,153 @@ task alignment {
         read -ra read_two_args < <(cat read_two_fastqs_sorted.txt)
         read -ra read_group_args < <(cat read_groups_sorted.txt)
         STAR --readFilesIn "${read_one_args[@]}" "${read_two_args[@]}" \
-             --readFilesCommand "gunzip -c" \
-             --genomeDir ~{star_db_dir} \
-             --runThreadN "$n_cores" \
-             --outSAMunmapped Within \
-             --outSAMstrandField intronMotif \
-             --outSAMtype BAM Unsorted \
-             --outSAMattributes NH HI AS nM NM MD XS \
-             --outFilterMultimapScoreRange 1 \
-             --outFilterMultimapNmax 20 \
-             --outFilterMismatchNmax 10 \
-             --alignIntronMax 500000 \
-             --alignMatesGapMax 1000000 \
-             --sjdbScore 2 \
-             --alignSJDBoverhangMin 1 \
-             --outFilterMatchNminOverLread 0.66 \
-             --outFilterScoreMinOverLread 0.66 \
-             --outFileNamePrefix ~{prefix + "."} \
-             --twopassMode Basic \
-             --limitBAMsortRAM ~{memory_limit_bytes} \
-             --outSAMattrRGline "${read_group_args[@]}"
+            --readFilesCommand "gunzip -c" \
+            --genomeDir ~{star_db_dir} \
+            --runThreadN "$n_cores" \
+            --outSAMtype BAM Unsorted \
+            --outMultimapperOrder Random
+            --outFileNamePrefix ~{prefix + "."} \
+            --twopassMode ~{twopassMode} \
+            --outSAMattrRGline "${read_group_args[@]}" \
+            --outSJfilterIntronMaxVsReadN ~{sep=' ' outSJfilterIntronMaxVsReadN} \
+            --outSJfilterOverhangMin ~{sep=' ' [
+                outSJfilterOverhangMin['noncanonical_motifs'],
+                outSJfilterOverhangMin['GT/AG_and_CT/AC_motif'],
+                outSJfilterOverhangMin['GC/AG_and_CT/GC_motif'],
+                outSJfilterOverhangMin['AT/AC_and_GT/AT_motif']
+            ]} \
+            --outSJfilterCountUniqueMin ~{sep=' ' [
+                outSJfilterCountUniqueMin['noncanonical_motifs'],
+                outSJfilterCountUniqueMin['GT/AG_and_CT/AC_motif'],
+                outSJfilterCountUniqueMin['GC/AG_and_CT/GC_motif'],
+                outSJfilterCountUniqueMin['AT/AC_and_GT/AT_motif']
+            ]} \
+            --outSJfilterCountTotalMin ~{sep=' ' [
+                outSJfilterCountTotalMin['noncanonical_motifs'],
+                outSJfilterCountTotalMin['GT/AG_and_CT/AC_motif'],
+                outSJfilterCountTotalMin['GC/AG_and_CT/GC_motif'],
+                outSJfilterCountTotalMin['AT/AC_and_GT/AT_motif']
+            ]} \
+            --outSJfilterDistToOtherSJmin ~{sep=' ' [
+                outSJfilterDistToOtherSJmin['noncanonical_motifs'],
+                outSJfilterDistToOtherSJmin['GT/AG_and_CT/AC_motif'],
+                outSJfilterDistToOtherSJmin['GC/AG_and_CT/GC_motif'],
+                outSJfilterDistToOtherSJmin['AT/AC_and_GT/AT_motif']
+            ]} \
+            --alignSJstitchMismatchNmax ~{sep=' ' [
+                alignSJstitchMismatchNmax['noncanonical_motifs'],
+                alignSJstitchMismatchNmax['GT/AG_and_CT/AC_motif'],
+                alignSJstitchMismatchNmax['GC/AG_and_CT/GC_motif'],
+                alignSJstitchMismatchNmax['AT/AC_and_GT/AT_motif']
+            ]} \
+            --clip3pAdapterSeq ~{clip3pAdapterSeq.left + ' ' + clip3pAdapterSeq.right} \
+            --clip3pAdapterMMp ~{clip3pAdapterMMp.left + ' ' + clip3pAdapterMMp.right} \
+            --alignEndsProtrude ~{
+                alignEndsProtrude.left + ' ' + alignEndsProtrude.right
+            } \
+            --clip3pNbases ~{clip3pNbases.left + ' ' + clip3pNbases.right} \
+            --clip3pAfterAdapterNbases ~{
+                clip3pAfterAdapterNbases.left + ' ' + clip3pAfterAdapterNbases.right
+            } \
+            --clip5pNbases ~{clip5pNbases.left + ' ' + clip5pNbases.right} \
+            --readNameSeparator ~{readNameSeparator} \
+            --clipAdapterType ~{clipAdapterType} \
+            --outSAMstrandField ~{outSAMstrandField} \
+            --outSAMattributes ~{outSAMattributes} \
+            --outSAMunmapped ~{outSAMunmapped} \
+            --outSAMorder ~{outSAMorder} \
+            --outSAMreadID ~{outSAMreadID} \
+            --outSAMtlen ~{
+                if (outSAMtlen == "left_plus")
+                then "1"
+                else (
+                    if (outSAMtlen == "left_any") then "2" else "error"
+                )} \
+            --outFilterType ~{outFilterType} \
+            --outFilterIntronMotifs ~{outFilterIntronMotifs} \
+            --outFilterIntronStrands ~{outFilterIntronStrands} \
+            --outSJfilterReads ~{outSJfilterReads} \
+            --alignEndsType ~{alignEndsType} \
+            --alignSoftClipAtReferenceEnds ~{alignSoftClipAtReferenceEnds} \
+            --alignInsertionFlush ~{alignInsertionFlush} \
+            --chimOutType ~{chimOutType} \
+            --chimFilter ~{chimFilter} \
+            --chimOutJunctionFormat ~{chimOutJunctionFormat} \
+            --outFilterMismatchNoverLmax ~{outFilterMismatchNoverLmax} \
+            --outFilterMismatchNoverReadLmax ~{outFilterMismatchNoverReadLmax} \
+            --outFilterScoreMinOverLread ~{outFilterScoreMinOverLread} \
+            --outFilterMatchNminOverLread ~{outFilterMatchNminOverLread} \
+            --scoreGenomicLengthLog2scale ~{scoreGenomicLengthLog2scale} \
+            --seedSearchStartLmaxOverLread ~{seedSearchStartLmaxOverLread} \
+            --alignSplicedMateMapLminOverLmate ~{alignSplicedMateMapLminOverLmate} \
+            --peOverlapMMp ~{peOverlapMMp} \
+            --runRNGseed ~{runRNGseed} \
+            --sjdbScore ~{sjdbScore} \
+            --readMapNumber ~{readMapNumber} \
+            --readQualityScoreBase ~{readQualityScoreBase} \
+            --limitOutSJoneRead ~{limitOutSJoneRead} \
+            --limitOutSJcollapsed ~{limitOutSJcollapsed} \
+            --limitSjdbInsertNsj ~{limitSjdbInsertNsj} \
+            --outQSconversionAdd ~{outQSconversionAdd} \
+            --outSAMattrIHstart ~{outSAMattrIHstart} \
+            --outSAMmapqUnique ~{outSAMmapqUnique} \
+            --outSAMflagOR ~{outSAMflagOR} \
+            --outSAMflagAND ~{outSAMflagAND} \
+            --outFilterMultimapScoreRange ~{outFilterMultimapScoreRange} \
+            --outFilterMultimapNmax ~{outFilterMultimapNmax} \
+            --outFilterMismatchNmax ~{outFilterMismatchNmax} \
+            --outFilterScoreMin ~{outFilterScoreMin} \
+            --outFilterMatchNmin ~{outFilterMatchNmin} \
+            --scoreGap ~{scoreGap} \
+            --scoreGapNoncan ~{scoreGapNoncan} \
+            --scoreGapGCAG ~{scoreGapGCAG} \
+            --scoreGapATAC ~{scoreGapATAC} \
+            --scoreDelOpen ~{scoreDelOpen} \
+            --scoreDelBase ~{scoreDelBase} \
+            --scoreInsOpen ~{scoreInsOpen} \
+            --scoreInsBase ~{scoreInsBase} \
+            --scoreStitchSJshift ~{scoreStitchSJshift} \
+            --seedSearchStartLmax ~{seedSearchStartLmax} \
+            --seedSearchLmax ~{seedSearchLmax} \
+            --seedMultimapNmax ~{seedMultimapNmax} \
+            --seedPerReadNmax ~{seedPerReadNmax} \
+            --seedPerWindowNmax ~{seedPerWindowNmax} \
+            --seedNoneLociPerWindow ~{seedNoneLociPerWindow} \
+            --seedSplitMin ~{seedSplitMin} \
+            --seedMapMin ~{seedMapMin} \
+            --alignIntronMin ~{alignIntronMin} \
+            --alignIntronMax ~{alignIntronMax} \
+            --alignMatesGapMax ~{alignMatesGapMax} \
+            --alignSJoverhangMin ~{alignSJoverhangMin} \
+            --alignSJDBoverhangMin ~{alignSJDBoverhangMin} \
+            --alignSplicedMateMapLmin ~{alignSplicedMateMapLmin} \
+            --alignWindowsPerReadNmax ~{alignWindowsPerReadNmax} \
+            --alignTranscriptsPerWindowNmax ~{alignTranscriptsPerWindowNmax} \
+            --alignTranscriptsPerReadNmax ~{alignTranscriptsPerReadNmax} \
+            --peOverlapNbasesMin ~{peOverlapNbasesMin} \
+            --winAnchorMultimapNmax ~{winAnchorMultimapNmax} \
+            --winBinNbits ~{winBinNbits} \
+            --winAnchorDistNbins ~{winAnchorDistNbins} \
+            --winFlankNbins ~{winFlankNbins} \
+            --chimSegmentMin ~{chimSegmentMin} \
+            --chimScoreMin ~{chimScoreMin} \
+            --chimScoreDropMax ~{chimScoreDropMax} \
+            --chimScoreSeparation ~{chimScoreSeparation} \
+            --chimScoreJunctionNonGTAG ~{chimScoreJunctionNonGTAG} \
+            --chimJunctionOverhangMin ~{chimJunctionOverhangMin} \
+            --chimSegmentReadGapMax ~{chimSegmentReadGapMax} \
+            --chimMainSegmentMultNmax ~{chimMainSegmentMultNmax} \
+            --chimMultimapNmax ~{chimMultimapNmax} \
+            --chimMultimapScoreRange ~{chimMultimapScoreRange} \
+            --chimNonchimScoreDropMin ~{chimNonchimScoreDropMin} \ 
+            --twopass1readsN ~{twopass1readsN}
     >>>
 
     output {
         File star_log = prefix + ".Log.final.out"
         File star_bam = prefix + ".Aligned.out.bam"
+        File star_junctions = prefix + ".SJ.out.tab"
+        File? star_chimeric_junctions = prefix + ".Chimeric.out.junction"
     }
 
     runtime {
