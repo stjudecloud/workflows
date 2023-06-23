@@ -210,8 +210,8 @@ task alignment {
         outSAMtlen: {
             description: "calculation method for the TLEN field in the SAM/BAM files",
             choices: {
-                left_plus: 'leftmost base of the (+)strand mate to rightmost base of the (-)mate. (+)sign for the (+)strand mate',
-                left_any: 'leftmost base of any mate to rightmost base of any mate. (+)sign for the mate with the leftmost base. This is different from `left_plus` for overlapping mates with protruding ends'
+                left_plus: "leftmost base of the (+)strand mate to rightmost base of the (-)mate. (+)sign for the (+)strand mate",
+                left_any: "leftmost base of any mate to rightmost base of any mate. (+)sign for the mate with the leftmost base. This is different from `left_plus` for overlapping mates with protruding ends"
             }
         }
         outFilterType: {
