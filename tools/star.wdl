@@ -13,13 +13,41 @@ task build_star_db {
     parameter_meta {
         reference_fasta: "The FASTA format reference file for the genome"
         gtf: "GTF format feature file"
+        db_name: "Name for output in compressed, archived format. The suffix `.tar.gz` will be added."
+        sjdbGTFchrPrefix: "prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSMEBL annotations with UCSC genomes)"
+        sjdbGTFfeatureExon: "feature type in GTF file to be used as exons for building transcripts"
+        sjdbGTFtagExonParentTranscript: "GTF attribute name for parent transcript ID (default 'transcript_id' works for GTF files)"
+        sjdbGTFtagExonParentGene: "GTF attribute name for parent gene ID (default 'gene_id' works for GTF files)"
+        sjdbGTFtagExonParentGeneName: "GTF attrbute name for parent gene name"
+        sjdbGTFtagExonParentGeneType: "GTF attrbute name for parent gene type"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        genomeChrBinNbits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
+        genomeSAindexNbases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
+        genomeSAsparseD: "suffux array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction."
+        genomeSuffixLengthMax: "maximum length of the suffixes, has to be longer than read length. -1 = infinite."
+        sjdbOverhang: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). **[STAR default]**: `100`. **[WDL default]**: `125`."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File reference_fasta
         File gtf
         String db_name = "star_db"
+        String sjdbGTFchrPrefix = "-"
+        String sjdbGTFfeatureExon = "exon"
+        String sjdbGTFtagExonParentTranscript = "transcript_id"
+        String sjdbGTFtagExonParentGene = "gene_id"
+        String sjdbGTFtagExonParentGeneName = "gene_name"
+        String sjdbGTFtagExonParentGeneType = "gene_type gene_biotype"
         Boolean use_all_cores = false
+        Int genomeChrBinNbits = 18
+        Int genomeSAindexNbases = 14
+        Int genomeSAsparseD = 1
+        Int genomeSuffixLengthMax = -1
+        Int sjdbOverhang = 125
         Int ncpu = 1
         Int memory_gb = 50
         Int modify_disk_size_gb = 0
@@ -59,7 +87,17 @@ task build_star_db {
             --limitGenomeGenerateRAM ~{memory_limit_bytes} \
             --genomeFastaFiles "$ref_fasta" \
             --sjdbGTFfile "$gtf_name" \
-            --sjdbOverhang 125
+            --sjdbGTFchrPrefix ~{sjdbGTFchrPrefix} \
+            --sjdbGTFfeatureExon ~{sjdbGTFfeatureExon} \
+            --sjdbGTFtagExonParentTranscript ~{sjdbGTFtagExonParentTranscript} \
+            --sjdbGTFtagExonParentGene ~{sjdbGTFtagExonParentGene} \
+            --sjdbGTFtagExonParentGeneName ~{sjdbGTFtagExonParentGeneName} \
+            --sjdbGTFtagExonParentGeneType ~{sjdbGTFtagExonParentGeneType} \
+            --genomeChrBinNbits ~{genomeChrBinNbits} \
+            --genomeSAindexNbases ~{genomeSAindexNbases} \
+            --genomeSAsparseD ~{genomeSAsparseD} \
+            --genomeSuffixLengthMax ~{genomeSuffixLengthMax} \
+            --sjdbOverhang ~{sjdbOverhang} 
 
         rm "$gtf_name" "$ref_fasta"
 
