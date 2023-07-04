@@ -174,7 +174,7 @@ workflow quality_check {
     }
     call util.global_phred_scores as phred_scores { input:
         bam=post_subsample_bam,
-        outfile_name=post_subsample_prefix + ".global_PHRED_scores.txt",
+        prefix=post_subsample_prefix,
         max_retries=max_retries
     }
 
