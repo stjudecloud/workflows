@@ -425,7 +425,7 @@ task global_phred_scores {
 
     input {
         File bam
-        String outfile_name = basename(bam, ".bam") + ".global_PHRED_scores.txt"
+        String prefix = basename(bam, ".bam")
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -434,10 +434,12 @@ task global_phred_scores {
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
+    outfile_name = prefix + ".global_PHRED_scores.txt"
+
     command <<<
         set -euo pipefail
 
-        BAM="~{bam}" OUTFILE="~{outfile_name}" python3 - <<END
+        BAM="~{bam}" PREFIX="~{prefix}" python3 - <<END
 import os  # lint-check: ignore
 import pysam  # lint-check: ignore
 from collections import defaultdict  # lint-check: ignore
@@ -468,7 +470,35 @@ for read in bam:
     else:
         middle_mapped_quals[middle_score] += 1
 
-outfile = open(os.environ['OUTFILE'], 'w')
+prefix = os.environ['PREFIX']
+outfile = open(prefix + ".global_PHRED_scores.txt", 'w')
+
+# print header
+print(
+    "\t".join([
+        "sample",
+        "total average",
+        "total median",
+        "total stdev",
+        "mapped average",
+        "mapped median",
+        "mapped stdev",
+        "unmapped average",
+        "unmapped median",
+        "unmapped stdev",
+        "middle position total average",
+        "middle position total median",
+        "middle position total stdev",
+        "middle position mapped average",
+        "middle position mapped median",
+        "middle position mapped stdev",
+        "middle position unmapped average",
+        "middle position unmapped median",
+        "middle position unmapped stdev",
+    ]),
+    file=outfile
+)
+print(prefix, file=outfile, end="\t")
 
 total_score = 0
 total_freq = 0
@@ -478,7 +508,7 @@ for score, freq in tot_quals.items():
     total_freq += freq
     freq_table.append((score, freq))
 avg = total_score / total_freq
-print(f"total average:\t{avg}", file=outfile)
+print(f"{avg}", file=outfile, end="\t")
 freq_table.sort(key=lambda entry: entry[0])
 median_pos = (total_freq + 1) / 2
 cumul_freq = 0
@@ -491,9 +521,9 @@ for score, freq in freq_table:
             median = score
         median_found = True
     sum_freq_times_score_sqrd += freq * (score**2)
-print(f"total median:\t{median}", file=outfile)
+print(f"{median}", file=outfile, end="\t")
 stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
-print(f"total stdev:\t{stdev}", file=outfile)
+print(f"{stdev}", file=outfile, end="\t")
 
 total_score = 0
 total_freq = 0
@@ -503,7 +533,7 @@ for score, freq in mapped_quals.items():
     total_freq += freq
     freq_table.append((score, freq))
 avg = total_score / total_freq
-print(f"mapped average:\t{avg}", file=outfile)
+print(f"{avg}", file=outfile, end="\t")
 freq_table.sort(key=lambda entry: entry[0])
 median_pos = (total_freq + 1) / 2
 cumul_freq = 0
@@ -516,9 +546,9 @@ for score, freq in freq_table:
             median = score
         median_found = True
     sum_freq_times_score_sqrd += freq * (score**2)
-print(f"mapped median:\t{median}", file=outfile)
+print(f"{median}", file=outfile, end="\t")
 stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
-print(f"mapped stdev:\t{stdev}", file=outfile)
+print(f"{stdev}", file=outfile, end="\t")
 
 total_score = 0
 total_freq = 0
@@ -528,7 +558,7 @@ for score, freq in unmapped_quals.items():
     total_freq += freq
     freq_table.append((score, freq))
 avg = total_score / total_freq
-print(f"unmapped average:\t{avg}", file=outfile)
+print(f"{avg}", file=outfile, end="\t")
 freq_table.sort(key=lambda entry: entry[0])
 median_pos = (total_freq + 1) / 2
 cumul_freq = 0
@@ -541,9 +571,9 @@ for score, freq in freq_table:
             median = score
         median_found = True
     sum_freq_times_score_sqrd += freq * (score**2)
-print(f"unmapped median:\t{median}", file=outfile)
+print(f"{median}", file=outfile, end="\t")
 stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
-print(f"unmapped stdev:\t{stdev}", file=outfile)
+print(f"{stdev}", file=outfile, end="\t")
 
 total_score = 0
 total_freq = 0
@@ -553,7 +583,7 @@ for score, freq in middle_tot_quals.items():
     total_freq += freq
     freq_table.append((score, freq))
 avg = total_score / total_freq
-print(f"middle position total average:\t{avg}", file=outfile)
+print(f"{avg}", file=outfile, end="\t")
 freq_table.sort(key=lambda entry: entry[0])
 median_pos = (total_freq + 1) / 2
 cumul_freq = 0
@@ -566,9 +596,9 @@ for score, freq in freq_table:
             median = score
         median_found = True
     sum_freq_times_score_sqrd += freq * (score**2)
-print(f"middle position total median:\t{median}", file=outfile)
+print(f"{median}", file=outfile, end="\t")
 stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
-print(f"middle position total stdev:\t{stdev}", file=outfile)
+print(f"{stdev}", file=outfile, end="\t")
 
 total_score = 0
 total_freq = 0
@@ -578,7 +608,7 @@ for score, freq in middle_mapped_quals.items():
     total_freq += freq
     freq_table.append((score, freq))
 avg = total_score / total_freq
-print(f"middle position mapped average:\t{avg}", file=outfile)
+print(f"{avg}", file=outfile, end="\t")
 freq_table.sort(key=lambda entry: entry[0])
 median_pos = (total_freq + 1) / 2
 cumul_freq = 0
@@ -591,9 +621,9 @@ for score, freq in freq_table:
             median = score
         median_found = True
     sum_freq_times_score_sqrd += freq * (score**2)
-print(f"middle position mapped median:\t{median}", file=outfile)
+print(f"{median}", file=outfile, end="\t")
 stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
-print(f"middle position mapped stdev:\t{stdev}", file=outfile)
+print(f"{stdev}", file=outfile, end="\t")
 
 total_score = 0
 total_freq = 0
@@ -603,7 +633,7 @@ for score, freq in middle_unmapped_quals.items():
     total_freq += freq
     freq_table.append((score, freq))
 avg = total_score / total_freq
-print(f"middle position unmapped average:\t{avg}", file=outfile)
+print(f"{avg}", file=outfile, end="\t")
 freq_table.sort(key=lambda entry: entry[0])
 median_pos = (total_freq + 1) / 2
 cumul_freq = 0
@@ -616,9 +646,13 @@ for score, freq in freq_table:
             median = score
         median_found = True
     sum_freq_times_score_sqrd += freq * (score**2)
-print(f"middle position unmapped median:\t{median}", file=outfile)
+print(f"{median}", file=outfile, end="\t")
 stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2))**0.5
-print(f"middle position unmapped stdev:\t{stdev}", file=outfile)
+print(f"{stdev}", file=outfile, end="\t")
+
+# print newline at EOF
+print("", file=outfile)
+outfile.close()
 
 END
     >>>
