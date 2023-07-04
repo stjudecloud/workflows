@@ -565,10 +565,8 @@ middle_unmapped_avg, middle_unmapped_median, middle_unmapped_stdev = stats_from_
 )
 print(f"{middle_unmapped_avg}", file=outfile, end="\t")
 print(f"{middle_unmapped_median}", file=outfile, end="\t")
-print(f"{middle_unmapped_stdev}", file=outfile, end="\t")
+print(f"{middle_unmapped_stdev}", file=outfile)  # end="\n"
 
-# print newline at EOF
-print("", file=outfile)
 outfile.close()
 
 END
