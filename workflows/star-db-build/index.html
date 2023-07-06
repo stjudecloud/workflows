@@ -167,7 +167,7 @@
 <dd>the reference FASTA file</dd>
 <dt>gtf</dt>
 <dd>the reference GTF file</dd>
-<dt>stardb_tar_gz</dt>
+<dt>star_db_tar_gz</dt>
 <dd>the STAR DB folder in .tar.gz format</dd>
 </dl>
 <h2 id="licensing">LICENSING</h2>
@@ -199,22 +199,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>gtf_md5</code> (String?): Expected md5sum of GTF file</li>
 <li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
 <li><code>reference_fa_md5</code> (String?): Expected md5sum of reference FASTA file</li>
-<li><code>build_star_db.disk_size_gb</code> (Int?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>gtf_disk_size_gb</code> (Int, default=10)</li>
+<li><code>reference_fa_disk_size_gb</code> (Int, default=10)</li>
+<li><code>build_star_db.db_name</code> (String, default="star_db")</li>
 <li><code>build_star_db.memory_gb</code> (Int, default=50)</li>
+<li><code>build_star_db.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>build_star_db.ncpu</code> (Int, default=1)</li>
-<li><code>build_star_db.stardb_dir_name</code> (String, default="star_db")</li>
 <li><code>build_star_db.use_all_cores</code> (Boolean, default=false)</li>
-<li><code>gtf_download.disk_size_gb</code> (Int, default=10)</li>
-<li><code>reference_download.disk_size_gb</code> (Int, default=10)</li>
+<li><code>gtf_download.memory_gb</code> (Int, default=4)</li>
+<li><code>reference_download.memory_gb</code> (Int, default=4)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>reference_fa</code> (File)</li>
 <li><code>gtf</code> (File)</li>
-<li><code>stardb_tar_gz</code> (File)</li>
+<li><code>star_db_tar_gz</code> (File)</li>
 </ul>
               
             </div>

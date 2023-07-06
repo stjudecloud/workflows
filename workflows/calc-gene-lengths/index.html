@@ -158,7 +158,8 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="calculate-gene-lengths">Calculate Gene Lengths</h1>
-<p>Calculates gene lengths from a GTF file.</p>
+<p>Calculates gene lengths from a GTF file.
+TODO should explain algorithm somewhere. Lots of different ways to calculate gene lengths</p>
 <h2 id="licensing">LICENSING:</h2>
 <h4 id="mit-license">MIT License</h4>
 <p>Copyright 2020-Present St. Jude Children's Research Hospital</p>
@@ -186,6 +187,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>calc.memory_gb</code> (Int, default=8)</li>
+<li><code>calc.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>calc.outfile_name</code> (String, default=basename(gtf,".gtf.gz") + ".genelengths.txt")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>

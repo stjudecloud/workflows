@@ -165,7 +165,7 @@
 <dl>
 <dt>reference_fa</dt>
 <dd>the reference FASTA file</dd>
-<dt>bwadb_tar_gz</dt>
+<dt>bwa_db_tar_gz</dt>
 <dd>the BWA reference folder in .tar.gz format</dd>
 </dl>
 <h2 id="licensing">LICENSING</h2>
@@ -193,19 +193,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h4 id="optional">Optional</h4>
 <ul>
 <li><code>reference_fa_md5</code> (String?): Expected md5sum of reference FASTA file</li>
-<li><code>build_bwa_db.disk_size_gb</code> (Int?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps</li>
-<li><code>build_bwa_db.bwadb_dir_name</code> (String, default="bwa_db")</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry failed steps. Overrides task level defaults.</li>
+<li><code>reference_fa_disk_size_gb</code> (Int, default=10)</li>
+<li><code>build_bwa_db.db_name</code> (String, default="bwa_db")</li>
 <li><code>build_bwa_db.memory_gb</code> (Int, default=5)</li>
-<li><code>reference_download.disk_size_gb</code> (Int, default=10)</li>
+<li><code>build_bwa_db.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>reference_download.memory_gb</code> (Int, default=4)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>reference_fa</code> (File)</li>
-<li><code>bwadb_tar_gz</code> (File)</li>
+<li><code>bwa_db_tar_gz</code> (File)</li>
 </ul>
               
             </div>

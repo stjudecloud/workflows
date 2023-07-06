@@ -173,7 +173,6 @@ input BAM has been duplicate marked or not.</p>
 <h4 id="optional">Optional</h4>
 <ul>
 <li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
-<li><code>collect_insert_size_metrics.disk_size_gb</code> (Int?)</li>
 <li><code>wg_coverage.coverage_bed</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
@@ -182,13 +181,16 @@ input BAM has been duplicate marked or not.</p>
 <li><code>coverage_labels</code> (Array[String], default=[]): An array of equal length to <code>coverage_beds</code> which determines the prefix label applied to the output files. If omitted, defaults of <code>regions1</code>, <code>regions2</code>, etc. will be used.</li>
 <li><code>prefix</code> (String, default=basename(markdups_bam,".bam")): Prefix for all results files</li>
 <li><code>collect_insert_size_metrics.memory_gb</code> (Int, default=8)</li>
+<li><code>collect_insert_size_metrics.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>regions_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
+<li><code>regions_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>regions_coverage.use_fast_mode</code> (Boolean, default=true)</li>
 <li><code>samtools_flagstat.memory_gb</code> (Int, default=5)</li>
-<li><code>samtools_flagstat.outfile_name</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
+<li><code>samtools_flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>wg_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>wg_coverage.min_mapping_quality</code> (Int, default=20)</li>
+<li><code>wg_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>wg_coverage.use_fast_mode</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>

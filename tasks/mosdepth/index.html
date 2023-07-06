@@ -155,10 +155,6 @@
 <p>This WDL file wraps the <a href="https://github.com/brentp/mosdepth">mosdepth tool</a>.</p>
 <h2 id="coverage">coverage</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Frantz</dd>
-<dt>email</dt>
-<dd>andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task wraps the Mosdepth tool for calculating coverage</dd>
 </dl>
@@ -177,6 +173,7 @@
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=8)</li>
 <li><code>min_mapping_quality</code> (Int, default=20)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>prefix</code> (String, default=basename(bam,'.bam'))</li>
 <li><code>use_fast_mode</code> (Boolean, default=true)</li>
 </ul>

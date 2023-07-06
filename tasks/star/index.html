@@ -88,8 +88,6 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
-    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -104,7 +102,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional_1">Optional</a>
+    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
     </li>
@@ -172,10 +170,6 @@
 STAR is an RNA-Seq aligner.</p>
 <h2 id="build_star_db">build_star_db</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher, Andrew Frantz</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task runs STAR's build command to generate a STAR format reference for alignment.</dd>
 </dl>
@@ -185,47 +179,40 @@ STAR is an RNA-Seq aligner.</p>
 <li><code>gtf</code> (File, <strong>required</strong>): GTF format feature file</li>
 <li><code>reference_fasta</code> (File, <strong>required</strong>): The FASTA format reference file for the genome</li>
 </ul>
-<h4 id="optional">Optional</h4>
-<ul>
-<li><code>disk_size_gb</code> (Int?)</li>
-</ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>db_name</code> (String, default="star_db")</li>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=50)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
-<li><code>stardb_dir_name</code> (String, default="star_db")</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>stardb_out</code> (File)</li>
+<li><code>star_db</code> (File)</li>
 </ul>
 <h2 id="alignment">alignment</h2>
 <dl>
-<dt>author</dt>
-<dd>Andrew Thrasher, Andrew Frantz</dd>
-<dt>email</dt>
-<dd>andrew.thrasher@stjude.org, andrew.frantz@stjude.org</dd>
 <dt>description</dt>
 <dd>This WDL task runs the STAR aligner on a set of RNA-Seq FastQ files.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
-<li><code>output_prefix</code> (String, <strong>required</strong>)</li>
+<li><code>prefix</code> (String, <strong>required</strong>)</li>
 <li><code>read_one_fastqs</code> (Array[File], <strong>required</strong>): An array of FastQ files containing read one information</li>
-<li><code>stardb_tar_gz</code> (File, <strong>required</strong>): A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the <code>.tar.gz</code> extension.</li>
+<li><code>star_db_tar_gz</code> (File, <strong>required</strong>): A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the <code>.tar.gz</code> extension.</li>
 </ul>
-<h4 id="optional_1">Optional</h4>
+<h4 id="optional">Optional</h4>
 <ul>
-<li><code>disk_size_gb</code> (Int?)</li>
 <li><code>read_groups</code> (String?): A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: <code>ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1</code></li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1)</li>
 <li><code>memory_gb</code> (Int, default=50)</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
 <li><code>read_two_fastqs</code> (Array[File], default=[]): An array of FastQ files containing read two information</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
