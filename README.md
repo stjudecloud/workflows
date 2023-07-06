@@ -1,7 +1,8 @@
 <p align="center">
   <a href="https://github.com/stjudecloud/workflows"><img src="./docs/workflows-banner-flowchart.jpg" width="800" title="St. Jude Cloud Workflows"></a>
-  <a href="https://actions-badge.atrox.dev/stjudecloud/workflows/goto">
-    <img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fstjudecloud%2Fworkflows%2Fbadge&style=flat" />
+  <br />
+  <a href="https://actions-badge.atrox.dev/stjudecloud/workflows/goto?ref=main">
+    <img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fstjudecloud%2Fworkflows%2Fbadge%3Fref%3Dmain&style=flat" />
   </a>
   <a href="https://stjudecloud.github.io/workflows/" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />

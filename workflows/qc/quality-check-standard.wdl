@@ -87,7 +87,8 @@ workflow quality_check {
         gtf_provided=defined(gtf),
         input_molecule=molecule,
         coverage_beds_len=length(coverage_beds),
-        coverage_labels=coverage_labels
+        coverage_labels=coverage_labels,
+        max_retries=max_retries
     }
 
     call md5sum.compute_checksum { input: file=bam, max_retries=max_retries }
