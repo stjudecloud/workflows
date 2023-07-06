@@ -1,0 +1,9 @@
+
+- name: download_miniwdl
+  tags:
+    - miniwdl
+  command: >-
+    miniwdl run -d test-output/. -i tests/tools/util_download.json --task download tools/util.wdl
+  stdout:
+    contains_regex:
+      - '"download.downloaded_file": ".*test-output/out/downloaded_file/license.txt"'
