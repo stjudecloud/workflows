@@ -454,6 +454,10 @@ middle_tot_quals = defaultdict(lambda: 0)
 middle_mapped_quals = defaultdict(lambda: 0)
 middle_unmapped_quals = defaultdict(lambda: 0)
 for read in bam:
+    # only count primary alignments and unmapped reads
+    if read.is_secondary and not read.is_unmapped:
+        continue
+
     cur_quals = read.query_alignment_qualities  # array of phred scores
     for qual in cur_quals:
         tot_quals[qual] += 1
