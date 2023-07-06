@@ -307,6 +307,9 @@ workflow quality_check {
                 kraken.report,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
+                # TODO PHRED score files are currently
+                # ignored by MultiQC
+                phred_scores.global_phred_scores,
                 markdups_post.mosdepth_global_summary,
                 markdups_post.mosdepth_global_dist,
                 star_log,
