@@ -5,36 +5,35 @@
 
 version 1.0
 
-task bamCoverage {
+task bam_coverage {
     meta {
-        author: "Andrew Thrasher"
-        email: "andrew.thrasher@stjude.org"
         description: "This WDL task generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html)."
     }
 
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
-        bai: "BAM index file corresponding to the input BAM"
+        bam_index: "BAM index file corresponding to the input BAM"
     }
 
     input {
         File bam
         File bam_index
         String prefix = basename(bam, ".bam")
-        Int max_retries = 1
-        Int memory_gb = 5
-        Int ncpu = 1
         Boolean use_all_cores = false
+        Int ncpu = 1
+        Int memory_gb = 5
+        Int modify_disk_size_gb = 0
+        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size = ceil((bam_size * 4) + 10)
+    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb  # is all this disk needed?
  
     command <<<
         set -euo pipefail
         
         n_cores=~{ncpu}
-        if [ "~{use_all_cores}" = "true" ]; then
+        if ~{use_all_cores}; then
             n_cores="max"
         fi
 
@@ -56,8 +55,8 @@ task bamCoverage {
 
     runtime {
         cpu: ncpu
-        disk: disk_size + " GB"
         memory: memory_gb + " GB"
+        disk: disk_size_gb + " GB"
         docker: 'quay.io/biocontainers/deeptools:3.5.1--pyhdfd78af_1'
         maxRetries: max_retries
     }
