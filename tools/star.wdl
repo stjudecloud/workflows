@@ -46,11 +46,11 @@ task build_star_db {
         fi
 
         gtf_name=~{basename(gtf, ".gz")}
-        gunzip -c ~{gtf} > "$gtf_name" || ln -s ~{gtf} "$gtf_name"
+        gunzip -c ~{gtf} > "$gtf_name" || (rm "$gtf_name" && ln -s ~{gtf} "$gtf_name")
 
         ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c ~{reference_fasta} > "$ref_fasta" \
-            || ln -s ~{reference_fasta} "$ref_fasta"
+            || (rm "$ref_fasta" && ln -s ~{reference_fasta} "$ref_fasta")
         
         mkdir ~{db_name};
         STAR --runMode genomeGenerate \

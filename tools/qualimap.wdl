@@ -117,7 +117,7 @@ task rnaseq {
 
         orig=~{gtf}
         gtf_name=$(basename "${orig%.gz}")
-        gunzip -c ~{gtf} > "$gtf_name" || ln -s ~{gtf} "$gtf_name"
+        gunzip -c ~{gtf} > "$gtf_name" || (rm "$gtf_name" && ln -s ~{gtf} "$gtf_name")
 
         # '-oc qualimap_counts.txt' puts the file in '-outdir'
         qualimap rnaseq -bam ~{bam} \

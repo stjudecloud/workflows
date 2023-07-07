@@ -251,7 +251,7 @@ task build_bwa_db {
 
         ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c ~{reference_fasta} > "$ref_fasta" \
-            || ln -s ~{reference_fasta} "$ref_fasta"
+            || (rm "$ref_fasta" && ln -s ~{reference_fasta} "$ref_fasta")
 
         bwa index "$ref_fasta"
 
