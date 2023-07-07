@@ -4,7 +4,7 @@
 ## The fq library provides methods for manipulating Illumina generated 
 ## FastQ files.
 
-version 1.0
+version 1.1
 
 task fqlint {
     meta {
@@ -48,8 +48,8 @@ task fqlint {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/fq:0.9.1--h9ee0642_0'
         maxRetries: max_retries
     }
@@ -96,9 +96,9 @@ task subsample {
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
     String probability_arg = if (probability < 1.0 && probability > 0)
-        then "-p " + probability
+        then "-p ~{probability}"
         else ""
-    String record_count_arg = if (record_count > 0) then "-n " + record_count else ""
+    String record_count_arg = if (record_count > 0) then "-n ~{record_count}" else ""
 
     String r1_dst = prefix + "_R1.subsampled.fastq.gz"
     String r2_dst = prefix + "_R2.subsampled.fastq.gz"
@@ -122,8 +122,8 @@ task subsample {
     }
 
     runtime {
-        disk: disk_size_gb + " GB"
-        memory: memory_gb + " GB"
+        disk: "~{disk_size_gb} GB"
+        memory: "~{memory_gb} GB"
         docker: 'quay.io/biocontainers/fq:0.10.0--h9ee0642_0'
         maxRetries: max_retries
     }

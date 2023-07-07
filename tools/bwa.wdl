@@ -3,7 +3,7 @@
 ## This WDL file wraps [BWA](https://github.com/lh3/bwa).
 ## BWA aligns sequencing reads to a reference genome.
 
-version 1.0
+version 1.1
 
 task bwa_aln {
     meta {
@@ -70,8 +70,8 @@ task bwa_aln {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
@@ -147,8 +147,8 @@ task bwa_aln_pe {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
@@ -217,8 +217,8 @@ task bwa_mem {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
@@ -263,8 +263,8 @@ task build_bwa_db {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
@@ -295,8 +295,8 @@ task format_rg_for_bwa {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/util:1.2.0'
         maxRetries: max_retries
     }

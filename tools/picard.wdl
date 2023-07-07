@@ -3,7 +3,7 @@
 ## This WDL file wraps the [PicardTools library](https://broadinstitute.github.io/picard/).
 ## PicardTools is a set of Java tools for manipulating sequencing data.
 
-version 1.0
+version 1.1
 
 task mark_duplicates {
     meta {
@@ -58,8 +58,8 @@ task mark_duplicates {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -115,7 +115,7 @@ task validate_bam {
             I=~{bam} \
             ~{mode_arg} \
             ~{stringency_arg} \
-            ~{ignore_prefix}~{sep=' IGNORE=' ignore_list} \
+            ~{ignore_prefix}~{sep(' IGNORE=', ignore_list)} \
             MAX_OUTPUT=~{max_errors} \
             > ~{outfile_name} \
             || rc=$?
@@ -149,8 +149,8 @@ task validate_bam {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -199,8 +199,8 @@ task bam_to_fastq {
     }
 
     runtime{
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -246,8 +246,8 @@ task sort {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -283,7 +283,7 @@ task merge_sam_files {
 
     command <<<
         picard -Xmx~{java_heap_size}g MergeSamFiles \
-            ~{sep=' ' input_arg} \
+            ~{sep(" ", input_arg)} \
             OUTPUT=~{outfile_name} \
             SORT_ORDER=~{sort_order} \
             USE_THREADING=~{threading} \
@@ -291,8 +291,8 @@ task merge_sam_files {
     >>>
 
     runtime{
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -336,8 +336,8 @@ task clean_sam {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -378,8 +378,8 @@ task collect_wgs_metrics {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -421,8 +421,8 @@ task collect_alignment_summary_metrics {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -466,8 +466,8 @@ task collect_gc_bias_metrics {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -507,8 +507,8 @@ task collect_insert_size_metrics {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }
@@ -548,8 +548,8 @@ task quality_score_distribution {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: max_retries
     }

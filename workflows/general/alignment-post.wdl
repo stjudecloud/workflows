@@ -2,7 +2,7 @@
 ##
 ## TODO write something here
 
-version 1.0
+version 1.1
 
 import "../../tools/samtools.wdl"
 import "../../tools/picard.wdl"

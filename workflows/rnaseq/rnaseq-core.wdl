@@ -1,4 +1,4 @@
-version 1.0
+version 1.1
 
 import "../../tools/star.wdl"
 import "../general/alignment-post.wdl" as align_post

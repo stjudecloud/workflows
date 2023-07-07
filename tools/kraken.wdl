@@ -2,7 +2,7 @@
 ##
 ## Methods for bootstrapping and running [Kraken2](https://github.com/DerrickWood/kraken2)
 
-version 1.0
+version 1.1
 
 task download_taxonomy {
     meta {
@@ -44,8 +44,8 @@ task download_taxonomy {
     }
  
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
         maxRetries: max_retries
     }
@@ -119,8 +119,8 @@ task download_library {
     }
  
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
         maxRetries: max_retries
     }
@@ -156,7 +156,7 @@ task create_library_from_fastas {
         set -euo pipefail
 
         >&2 echo "*** start adding custom FASTAs ***"
-        echo "~{sep="\n" fastas}" > fastas.txt
+        echo "~{sep('\n', fastas)}" > fastas.txt
         while read -r fasta; do
             gunzip -c "$fasta" > tmp.fa
             kraken2-build \
@@ -177,8 +177,8 @@ task create_library_from_fastas {
     }
  
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
     }
@@ -229,7 +229,7 @@ task build_db {
         ) + modify_memory_gb
     )
 
-    String max_db_size_bytes = max_db_size_gb + "000000000"
+    String max_db_size_bytes = "~{max_db_size_gb}000000000"
 
     command <<<
         set -euo pipefail
@@ -240,7 +240,7 @@ task build_db {
         fi
 
         >&2 echo "*** start unpacking tarballs ***"
-        echo "~{sep="\n" tarballs}" > tarballs.txt
+        echo "~{sep('\n', tarballs)}" > tarballs.txt
         mkdir ~{db_name}
         while read -r tarball; do
             tar -xzf "$tarball" -C ~{db_name} --no-same-owner
@@ -276,8 +276,8 @@ task build_db {
  
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
     }
@@ -373,8 +373,8 @@ task kraken {
  
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
         maxRetries: max_retries
     }

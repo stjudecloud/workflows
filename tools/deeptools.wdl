@@ -3,7 +3,7 @@
 ## This WDL file wraps the [DeepTools](https://deeptools.readthedocs.io/en/develop/index.html) tool.
 ## DeepTools is a suite of Python tools for analysis of high throughput sequencing analysis.
 
-version 1.0
+version 1.1
 
 task bam_coverage {
     meta {
@@ -55,8 +55,8 @@ task bam_coverage {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/deeptools:3.5.1--pyhdfd78af_1'
         maxRetries: max_retries
     }

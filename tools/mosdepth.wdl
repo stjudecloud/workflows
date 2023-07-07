@@ -2,7 +2,7 @@
 ##
 ## This WDL file wraps the [mosdepth tool](https://github.com/brentp/mosdepth).
 
-version 1.0
+version 1.1
 
 task coverage {
     meta {
@@ -52,8 +52,8 @@ task coverage {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/mosdepth:0.3.3--h37c5b7d_2'
         maxRetries: max_retries
     }

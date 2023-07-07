@@ -3,7 +3,7 @@
 ## This WDL file wraps the [QualiMap](http://qualimap.bioinfo.cipf.es/) tool.
 ## QualiMap computes metrics to facilitate evaluation of sequencing data. 
 
-version 1.0
+version 1.1
 
 task bamqc {
     meta {
@@ -60,8 +60,8 @@ task bamqc {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
         maxRetries: max_retries
     }
@@ -139,8 +139,8 @@ task rnaseq {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
         maxRetries: max_retries
     }

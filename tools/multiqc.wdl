@@ -3,7 +3,7 @@
 ## This WDL file wraps the [MultiQC](https://multiqc.info/) tool.
 ## MultiQC aggregates quality control results for bioinformatics.
 
-version 1.0
+version 1.1
 
 task multiqc {
     meta {
@@ -36,14 +36,14 @@ task multiqc {
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
         
-        echo "~{sep="\n" input_files}" > file_list.txt
+        echo "~{sep('\n', input_files)}" > file_list.txt
 
         # Start YAML generation
         echo "extra_fn_clean_exts:" > multiqc_config.yaml
         
         # if extra extensions are to be cleaned, add them to YAML
         if [ "~{(length(extra_fn_clean_exts) > 0)}" = "true" ]; then
-            echo "~{sep="\n" extra_fn_clean_exts}" > extensions.txt
+            echo "~{sep('\n', extra_fn_clean_exts)}" > extensions.txt
             while read -r ext; do
                 echo "  - $ext"
             done < extensions.txt >> multiqc_config.yaml
@@ -51,7 +51,7 @@ task multiqc {
 
         if [ "~{(length(mosdepth_labels) > 0)}" = "true" ]; then
             # if mosdepth labels are provided, add them to `extra_fn_clean_exts`
-            echo "~{sep="\n" mosdepth_labels}" > labels.txt
+            echo "~{sep('\n', mosdepth_labels)}" > labels.txt
             while read -r label; do
                 echo "  - .$label"
             done < labels.txt >> multiqc_config.yaml
@@ -87,8 +87,8 @@ task multiqc {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/multiqc:1.14--pyhdfd78af_0'
         maxRetries: max_retries
     }

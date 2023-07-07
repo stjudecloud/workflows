@@ -3,7 +3,7 @@
 ## This WDL file wrap the [10x Genomics Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) tool.
 ## Cell Ranger is a tool for handling scRNA-Seq data.
 
-version 1.0
+version 1.1
 
 task count {
     meta {
@@ -89,8 +89,8 @@ task count {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
         maxRetries: max_retries
     }
@@ -151,8 +151,8 @@ task bamtofastq {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
         maxRetries: max_retries
     }
