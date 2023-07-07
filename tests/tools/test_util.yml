@@ -2,6 +2,7 @@
 - name: download_miniwdl
   tags:
     - miniwdl
+    - util
   command: >-
     miniwdl run -d test-output/. -i tests/tools/input_json/util_download.json --task download tools/util.wdl
   stdout:
@@ -16,6 +17,7 @@
 - name: get_read_groups_miniwdl
   tags:
     - miniwdl
+    - util
   command: >-
     miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_get_read_groups.json --task get_read_groups --copy-input-files tools/util.wdl
   files:
@@ -29,6 +31,7 @@
 - name: split_string_miniwdl
   tags:
     - miniwdl
+    - util
   command: >-
         miniwdl run -d test-output/. --task split_string tools/util.wdl input_string="rg1 , rg2"
   stdout:
@@ -42,6 +45,7 @@
 - name: calc_gene_lengths_miniwdl
   tags:
     - miniwdl
+    - util
   command: >-
     miniwdl run -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
   files:
@@ -53,12 +57,14 @@
 #- name: qc_summary_miniwdl
 #  tags:
 #    - miniwdl
+#    - util
 #  command: >-
 #    miniwdl run -d test-output/. --task qc_summary --copy-input-files tools/util.wdl multiqc_tar_gz=""
 
 - name: compression_integrity_miniwdl
   tags:
     - miniwdl
+    - util
   command: >-
     miniwdl run -d test-output/. --task compression_integrity --copy-input-files tools/util.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
   stdout:
@@ -68,6 +74,7 @@
 - name: add_to_bam_header_miniwdl
   tags:
     - miniwdl
+    - util
   command: >-
       miniwdl run -d test-output/. --task add_to_bam_header --copy-input-files tools/util.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam" additional_header="@RG	ID:3"
   files:
@@ -79,6 +86,7 @@
 - name: unpack_tarball_miniwdl
   tags:
     - miniwdl
+    - util
   command: >-
       miniwdl run -d test-output/. --task unpack_tarball --copy-input-files tools/util.wdl tarball="tests/tools/input/test.tar.gz"
   files:
@@ -88,6 +96,7 @@
 - name: make_coverage_regions_beds_miniwdl
   tags:
     - miniwdl
+    - util
   command: >-
     miniwdl run -d test-output/. --task make_coverage_regions_beds --copy-input-files tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
   files:
