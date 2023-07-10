@@ -3,11 +3,13 @@
   tags:
     - miniwdl
     - star
+    - database
   command: >-
     miniwdl run -d test-output/. --copy-input-files --task build_star_db tools/star.wdl reference_fasta=tests/tools/input/GRCh38.chrY_chrM.fa.gz gtf=tests/tools/input/genes.gtf.gz
   files:
     - path: test-output/out/star_db/star_db.tar.gz
 
+# TODO: relocate STAR reference database
 - name: alignment_miniwdl
   tags:
     - miniwdl

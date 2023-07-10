@@ -1,0 +1,47 @@
+
+- name: bwa_aln_miniwdl
+  tags:
+    - miniwdl
+    - bwa
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task bwa_aln -i tests/tools/input_json/bwa_aln.json tools/bwa.wdl
+  files:
+    - path: test-output/out/bam/test.bam
+
+
+- name: bwa_aln_pe_miniwdl
+  tags:
+    - miniwdl
+    - bwa
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task bwa_aln_pe -i tests/tools/input_json/bwa_aln_pe.json tools/bwa.wdl
+  files:
+    - path: test-output/out/bam/test.bam
+
+
+- name: bwa_mem_miniwdl
+  tags:
+    - miniwdl
+    - bwa
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task bwa_mem -i tests/tools/input_json/bwa_mem.json tools/bwa.wdl
+  files:
+    - path: test-output/out/bam/test.bam
+
+- name: build_bwa_db_miniwdl
+  tags:
+    - miniwdl
+    - bwa
+    - database
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task build_bwa_db tools/bwa.wdl reference_fasta="tests/tools/input/GRCh38.chrY_chrM.fa.gz"
+  files:
+    - path: test-output/out/bwa_db_tar_gz/bwa_db.tar.gz
+
+# TODO: finish test for format_rg_for_bwa
+# - name: format_rg_for_bwa_miniwdl
+#   tags:
+#     - miniwdl
+#     - bwa
+#   command: >-
+#     miniwdl run -d test-output/. --copy-input-files --task format_rg_for_bwa tools/bwa.wdl

@@ -48,7 +48,6 @@
 
 #TODO: addreplacerg
 
-#TODO: collate
 - name: collate_miniwdl
   tags:
     - miniwdl
@@ -58,7 +57,6 @@
   files:
     - path: test-output/out/collated_bam/test.collated.bam
 
-#TODO: bam_to_fastq
 - name: bam_to_fastq_miniwdl
   tags:
     - miniwdl
@@ -69,7 +67,6 @@
     - path: test-output/out/read_one_fastq_gz/test_R1.fastq.gz
     - path: test-output/out/read_two_fastq_gz/test_R2.fastq.gz
 
-#TODO: collate_to_fastq
 - name: collate_to_fastq_miniwdl
   tags:
     - miniwdl

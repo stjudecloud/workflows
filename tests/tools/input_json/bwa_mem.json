@@ -1,0 +1,4 @@
+{
+    "fastq": "tests/tools/input/test_R1.fq.gz",
+    "bwa_db_tar_gz": "tests/tools/input/bwa_db.tar.gz"
+}
