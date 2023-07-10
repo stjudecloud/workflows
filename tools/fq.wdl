@@ -2,18 +2,18 @@
 ##
 ## This WDL file wraps the [fq tool](https://github.com/stjude/fqlib).
 ## The fq library provides methods for manipulating Illumina generated 
-## FastQ files.
+## FASTQ files.
 
 version 1.1
 
 task fqlint {
     meta {
-        description: "This WDL task performs quality control on the input FastQ pairs to ensure proper formatting."
+        description: "This WDL task performs quality control on the input FASTQ pairs to ensure proper formatting."
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Input FastQ with read one"
-        read_two_fastq_gz: "Input FastQ with read two"
+        read_one_fastq_gz: "Input FASTQ with read one"
+        read_two_fastq_gz: "Input FASTQ with read two"
     }
 
     input {
@@ -57,17 +57,17 @@ task fqlint {
 
 task subsample {
     meta {
-        description: "This WDL task subsamples input FastQs"
+        description: "This WDL task subsamples input FASTQs"
         outputs: {
-            subsampled_read1: "Gzipped FastQ file containing subsampled read1"
-            subsampled_read2: "Gzipped FastQ file containing subsampled read2"
+            subsampled_read1: "Gzipped FASTQ file containing subsampled read1"
+            subsampled_read2: "Gzipped FASTQ file containing subsampled read2"
         }
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Input FastQ with read one"
-        read_two_fastq_gz: "Input FastQ with read two"
-        prefix: "Prefix for the output FastQ file(s). The extension `_R1.subsampled.fastq.gz` and `_R2.subsampled.fastq.gz` will be added."
+        read_one_fastq_gz: "Input FASTQ with read one"
+        read_two_fastq_gz: "Input FASTQ with read two"
+        prefix: "Prefix for the output FASTQ file(s). The extension `_R1.subsampled.fastq.gz` and `_R2.subsampled.fastq.gz` will be added."
         probability: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable."
         record_count: "The exact number of records to keep. Cannot be used with `probability`. Any `record_count<=0` to disable."
         memory_gb: "RAM to allocate for task, specified in GB"

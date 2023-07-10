@@ -12,7 +12,7 @@ task count {
 
     parameter_meta {
         id: "A unique run ID"
-        fastqs_tar_gz: "Path to the FastQ folder archive in .tar.gz format"
+        fastqs_tar_gz: "Path to the FASTQ folder archive in .tar.gz format"
         transcriptome_tar_gz: "Path to Cell Ranger-compatible transcriptome reference in .tar.gz format"
         sample_id: "Sample name as used by cellranger mkfastq"
     }
@@ -53,7 +53,7 @@ task count {
 
         files=(fastqs/*.fastq.gz)
         # sample parameter to cellranger count must match
-        # the sample prefix contained in the FastQ file.
+        # the sample prefix contained in the FASTQ file.
         # So we infer it here by manipulating the file name.
         # expected sample name extension comes from:
         # https://support.illumina.com/content/dam/illumina-support/documents/documentation/software_documentation/bcl2fastq/bcl2fastq2-v2-20-software-guide-15051736-03.pdf
@@ -98,7 +98,7 @@ task count {
 
 task bamtofastq {
     meta {
-        description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files"
+        description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FASTQ files"
     }
 
     parameter_meta {

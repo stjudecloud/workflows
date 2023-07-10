@@ -158,11 +158,11 @@ task validate_bam {
 
 task bam_to_fastq {
     meta {
-        description: "*[Deprecated]* This WDL task converts the input BAM file into FastQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
+        description: "*[Deprecated]* This WDL task converts the input BAM file into FASTQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
     }
 
     parameter_meta {
-        bam: "Input BAM format file to convert to FastQ"
+        bam: "Input BAM format file to convert to FASTQ"
         paired: "Is the data paired-end (true) or single-end (false)?"
         max_retries: "Number of times to retry failed steps"
     }

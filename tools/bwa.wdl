@@ -7,11 +7,11 @@ version 1.1
 
 task bwa_aln {
     meta {
-        description: "This WDL task maps single-end FastQ files to BAM format using bwa aln."
+        description: "This WDL task maps single-end FASTQ files to BAM format using bwa aln."
     }
 
     parameter_meta {
-        fastq: "Input FastQ file to align with bwa"
+        fastq: "Input FASTQ file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 
@@ -79,12 +79,12 @@ task bwa_aln {
 
 task bwa_aln_pe {
     meta {
-        description: "This WDL task maps paired-end FastQ files to BAM format using bwa aln."
+        description: "This WDL task maps paired-end FASTQ files to BAM format using bwa aln."
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Input FastQ read 1 file to align with bwa"
-        read_two_fastq_gz: "Input FastQ read 2 file to align with bwa"
+        read_one_fastq_gz: "Input FASTQ read 1 file to align with bwa"
+        read_two_fastq_gz: "Input FASTQ read 2 file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 
@@ -156,11 +156,11 @@ task bwa_aln_pe {
 
 task bwa_mem {
     meta {
-        description: "This WDL task maps FastQ files to BAM format using bwa mem."
+        description: "This WDL task maps FASTQ files to BAM format using bwa mem."
     }
 
     parameter_meta {
-        fastq: "Input FastQ file to align with bwa"
+        fastq: "Input FASTQ file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 
