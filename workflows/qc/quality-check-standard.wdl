@@ -309,7 +309,7 @@ workflow quality_check {
                 wg_coverage.global_dist,
                 # TODO PHRED score files are currently
                 # ignored by MultiQC
-                phred_scores.global_phred_scores,
+                phred_scores.phred_scores,
                 markdups_post.mosdepth_global_summary,
                 markdups_post.mosdepth_global_dist,
                 star_log,
@@ -382,7 +382,7 @@ workflow quality_check {
             = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf
             = quality_score_distribution.quality_score_distribution_pdf
-        File global_phred_scores = phred_scores.global_phred_scores
+        File global_phred_scores = phred_scores.phred_scores
         File kraken_report = kraken.report
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary

@@ -577,7 +577,7 @@ END
     >>>
 
     output {
-        File global_phred_scores = "~{outfile_name}"
+        File phred_scores = "~{outfile_name}"
     }
 
     runtime {
