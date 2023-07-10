@@ -74,7 +74,7 @@ task rnaseq {
 
     parameter_meta {
         bam: "Input BAM format file to run qualimap rnaseq on"
-        gtf: "GTF features file"
+        gtf: "GTF features file. Gzipped or uncompressed."
         prefix: "Prefix for the results directory and output tarball. The extension `.qualimap_rnaseq_results.tar.gz` will be added."
         name_sorted: "Is the BAM name sorted? Qualimap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before Qualimap and setting this parameter to true."
         paired_end: "Is the BAM paired end?"

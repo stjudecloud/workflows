@@ -9,7 +9,7 @@ PERMITTED META DESCRIPTIONS:
         max_retries: "<for a workflow> Number of times to retry failed steps. Overrides task level defaults."
         outfile_name: "Name for the <type of file> file"
         prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
-        gtf: "GTF features file. Either gzipped or uncompressed."
+        gtf: "GTF features file. Gzipped or uncompressed."
         gtf_gz: "Gzipped GTF features file"
         bam: "Input BAM format file to <brief description of task>"
         bam_index: "BAM index file corresponding to the input BAM"
