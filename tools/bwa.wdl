@@ -202,7 +202,7 @@ task bwa_mem {
 
         bwa mem \
             -t "$n_cores" \
-            ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
+            ~{if read_group != "" then "-R '"+read_group+"'" else ""} \
             bwa_db/"$PREFIX" \
             ~{fastq} \
             | samtools view -@ "$n_cores" -hb - \
