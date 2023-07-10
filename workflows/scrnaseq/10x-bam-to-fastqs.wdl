@@ -41,9 +41,9 @@
 version 1.1
 
 
-import "../../tools/samtools.wdl"
 import "../../tools/cellranger.wdl"
 import "../../tools/fq.wdl"
+import "../../tools/samtools.wdl"
 
 workflow cell_ranger_bam_to_fastqs {
     parameter_meta {
@@ -117,7 +117,7 @@ task parse_input {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }

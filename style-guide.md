@@ -14,6 +14,9 @@ These rules might also be enforced by a yet-to-be-written linter.
   - The linter would autogenerate these fields for the user to fill in
     - or they could be filled in automatically if specified in the configuration/parameters
     - This behavior could be disabled
+- All import statements should follow the WDL version declaration (with one empty line between the version and the first import statement)
+- Import statements should be sorted by the lexicographical ordering of each entire line
+  - No extra white space allowed between symbols or lines
 - For workflows, the following sections must be present and in this order: `meta`, `parameter_meta`, `input`, `output`
   - `input`, `parameter_meta`, and `output` are technically optional in the WDL spec, though it is discouraged to write workflows in this manner.
     - The linter will not enforce the presence of these sections

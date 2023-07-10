@@ -27,18 +27,18 @@
 
 version 1.1
 
-import "./markdups-post.wdl" as mark_duplicates_post
-import "../../tools/md5sum.wdl"
-import "../../tools/picard.wdl"
-import "../../tools/mosdepth.wdl"
-import "../../tools/samtools.wdl"
 import "../../tools/fastqc.wdl" as fqc
-import "../../tools/ngsderive.wdl"
-import "../../tools/qualimap.wdl"
 import "../../tools/fq.wdl"
 import "../../tools/kraken.wdl" as kraken2
+import "../../tools/md5sum.wdl"
+import "../../tools/mosdepth.wdl"
 import "../../tools/multiqc.wdl" as mqc
+import "../../tools/ngsderive.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/qualimap.wdl"
+import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
+import "./markdups-post.wdl" as mark_duplicates_post
 
 workflow quality_check {
     parameter_meta {
@@ -159,18 +159,23 @@ workflow quality_check {
     }
     call ngsderive.instrument as ngsderive_instrument { input:
         bam=post_subsample_bam,
-        outfile_name=post_subsample_prefix + ".instrument.txt",
+        outfile_name=post_subsample_prefix + ".instrument.tsv",
         max_retries=max_retries
     }
     call ngsderive.read_length as ngsderive_read_length { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
-        outfile_name=post_subsample_prefix + ".readlength.txt",
+        outfile_name=post_subsample_prefix + ".readlength.tsv",
         max_retries=max_retries
     }
     call ngsderive.encoding as ngsderive_encoding { input:
         ngs_files=[post_subsample_bam],
-        outfile_name=post_subsample_prefix + ".encoding.txt",
+        outfile_name=post_subsample_prefix + ".encoding.tsv",
+        max_retries=max_retries
+    }
+    call util.global_phred_scores as phred_scores { input:
+        bam=post_subsample_bam,
+        prefix=post_subsample_prefix,
         max_retries=max_retries
     }
 
@@ -232,7 +237,7 @@ workflow quality_check {
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gtf=select_first([gtf, "undefined"]),
-            outfile_name=post_subsample_prefix + ".strandedness.txt",
+            outfile_name=post_subsample_prefix + ".strandedness.tsv",
             max_retries=max_retries
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
@@ -302,6 +307,9 @@ workflow quality_check {
                 kraken.report,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
+                # TODO PHRED score files are currently
+                # ignored by MultiQC
+                phred_scores.global_phred_scores,
                 markdups_post.mosdepth_global_summary,
                 markdups_post.mosdepth_global_dist,
                 star_log,
@@ -374,6 +382,7 @@ workflow quality_check {
             = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf
             = quality_score_distribution.quality_score_distribution_pdf
+        File global_phred_scores = phred_scores.global_phred_scores
         File kraken_report = kraken.report
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
@@ -445,7 +454,7 @@ task parse_input {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }

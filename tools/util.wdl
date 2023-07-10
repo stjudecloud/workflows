@@ -42,7 +42,7 @@ task download {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }
@@ -117,7 +117,7 @@ task split_string {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }
@@ -273,7 +273,7 @@ task qc_summary {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }
@@ -370,7 +370,7 @@ task unpack_tarball {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }
@@ -414,6 +414,176 @@ task make_coverage_regions_beds {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
+        maxRetries: max_retries
+    }
+}
+
+task global_phred_scores {
+    meta {
+        description: "Calculates statistics about PHRED scores of the input BAM."
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+
+    String outfile_name = prefix + ".global_PHRED_scores.tsv"
+
+    command <<<
+        set -euo pipefail
+
+        BAM="~{bam}" PREFIX="~{prefix}" python3 - <<END
+import os  # lint-check: ignore
+import pysam  # lint-check: ignore
+from collections import defaultdict  # lint-check: ignore
+
+bam_path = os.environ["BAM"]
+bam = pysam.AlignmentFile(bam_path, "rb")
+
+tot_quals = defaultdict(lambda: 0)
+mapped_quals = defaultdict(lambda: 0)
+unmapped_quals = defaultdict(lambda: 0)
+middle_tot_quals = defaultdict(lambda: 0)
+middle_mapped_quals = defaultdict(lambda: 0)
+middle_unmapped_quals = defaultdict(lambda: 0)
+for read in bam:
+    # only count primary alignments and unmapped reads
+    if read.is_secondary and not read.is_unmapped:
+        continue
+
+    cur_quals = read.query_alignment_qualities  # array of phred scores
+    for qual in cur_quals:
+        tot_quals[qual] += 1
+        if read.is_unmapped:
+            unmapped_quals[qual] += 1
+        else:
+            mapped_quals[qual] += 1
+
+    middle_pos = len(cur_quals) // 2  # middle base of read
+    middle_score = cur_quals[middle_pos]
+    middle_tot_quals[middle_score] += 1
+    if read.is_unmapped:
+        middle_unmapped_quals[middle_score] += 1
+    else:
+        middle_mapped_quals[middle_score] += 1
+
+prefix = os.environ["PREFIX"]
+outfile = open(prefix + ".global_PHRED_scores.tsv", "w")
+
+# print header
+print(
+    "\t".join(
+        [
+            "sample",
+            "total average",
+            "total median",
+            "total stdev",
+            "mapped average",
+            "mapped median",
+            "mapped stdev",
+            "unmapped average",
+            "unmapped median",
+            "unmapped stdev",
+            "middle position total average",
+            "middle position total median",
+            "middle position total stdev",
+            "middle position mapped average",
+            "middle position mapped median",
+            "middle position mapped stdev",
+            "middle position unmapped average",
+            "middle position unmapped median",
+            "middle position unmapped stdev",
+        ]
+    ),
+    file=outfile,
+)
+print(prefix, file=outfile, end="\t")
+
+
+def stats_from_dict(score_dict):
+    total_score = 0
+    total_freq = 0
+    freq_table = []
+    for score, freq in score_dict.items():
+        total_score += score * freq
+        total_freq += freq
+        freq_table.append((score, freq))
+
+    avg = total_score / total_freq
+
+    freq_table.sort(key=lambda entry: entry[0])
+
+    median_pos = (total_freq + 1) / 2
+    cumul_freq = 0
+    median_found = False
+    sum_freq_times_score_sqrd = 0
+    for score, freq in freq_table:
+        cumul_freq += freq
+        if cumul_freq >= median_pos:
+            if not median_found:
+                median = score
+            median_found = True
+        sum_freq_times_score_sqrd += freq * (score**2)
+
+    stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2)) ** 0.5
+
+    return avg, median, stdev
+
+
+tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
+print(f"{tot_avg}", file=outfile, end="\t")
+print(f"{tot_median}", file=outfile, end="\t")
+print(f"{tot_stdev}", file=outfile, end="\t")
+
+mapped_avg, mapped_median, mapped_stdev = stats_from_dict(mapped_quals)
+print(f"{mapped_avg}", file=outfile, end="\t")
+print(f"{mapped_median}", file=outfile, end="\t")
+print(f"{mapped_stdev}", file=outfile, end="\t")
+
+unmapped_avg, unmapped_median, unmapped_stdev = stats_from_dict(unmapped_quals)
+print(f"{unmapped_avg}", file=outfile, end="\t")
+print(f"{unmapped_median}", file=outfile, end="\t")
+print(f"{unmapped_stdev}", file=outfile, end="\t")
+
+middle_tot_avg, middle_tot_median, middle_tot_stdev = stats_from_dict(middle_tot_quals)
+print(f"{middle_tot_avg}", file=outfile, end="\t")
+print(f"{middle_tot_median}", file=outfile, end="\t")
+print(f"{middle_tot_stdev}", file=outfile, end="\t")
+
+middle_mapped_avg, middle_mapped_median, middle_mapped_stdev = stats_from_dict(
+    middle_mapped_quals
+)
+print(f"{middle_mapped_avg}", file=outfile, end="\t")
+print(f"{middle_mapped_median}", file=outfile, end="\t")
+print(f"{middle_mapped_stdev}", file=outfile, end="\t")
+
+middle_unmapped_avg, middle_unmapped_median, middle_unmapped_stdev = stats_from_dict(
+    middle_unmapped_quals
+)
+print(f"{middle_unmapped_avg}", file=outfile, end="\t")
+print(f"{middle_unmapped_median}", file=outfile, end="\t")
+print(f"{middle_unmapped_stdev}", file=outfile)  # end="\n"
+
+outfile.close()
+
+END
+    >>>
+
+    output {
+        File global_phred_scores = "~{outfile_name}"
+    }
+
+    runtime {
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }

@@ -30,12 +30,12 @@
 
 version 1.1
 
-import "./10x-bam-to-fastqs.wdl" as b2fq
-import "../../tools/picard.wdl"
-import "../../tools/ngsderive.wdl"
-import "../../tools/samtools.wdl"
 import "../../tools/cellranger.wdl"
 import "../../tools/md5sum.wdl"
+import "../../tools/ngsderive.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/samtools.wdl"
+import "./10x-bam-to-fastqs.wdl" as b2fq
 
 workflow scrnaseq_standard {
     parameter_meta {

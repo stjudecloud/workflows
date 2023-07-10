@@ -29,17 +29,16 @@
 
 version 1.1
 
-# TODO should we enfore an order to imports? Alphabetical? Order referenced? URLs before/after relatives?
-import "../general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl" as seaseq_map
-import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
+import "../../tools/deeptools.wdl"
+import "../../tools/md5sum.wdl"
 import "../../tools/ngsderive.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
 import "../../tools/util.wdl"
-import "../../tools/deeptools.wdl"
-import "../../tools/md5sum.wdl"
+import "../general/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl" as seaseq_map
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 
 workflow chipseq_standard {
     parameter_meta {

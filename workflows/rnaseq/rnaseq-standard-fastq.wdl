@@ -29,8 +29,8 @@
 version 1.1
 
 import "../../tools/fq.wdl"
-import "./rnaseq-standard.wdl" as rnaseq_standard
 import "./rnaseq-core.wdl" as rna_core
+import "./rnaseq-standard.wdl" as rnaseq_standard
 
 workflow rnaseq_standard_fastq {
     parameter_meta {

@@ -33,10 +33,10 @@
 
 version 1.1
 
-import "../general/bam-to-fastqs.wdl" as b2fq
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
+import "../general/bam-to-fastqs.wdl" as b2fq
 import "./rnaseq-core.wdl" as rna_core
 
 workflow rnaseq_standard {
@@ -181,7 +181,7 @@ task parse_input {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }

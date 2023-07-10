@@ -34,8 +34,8 @@
 
 version 1.1
 
-import "../../tools/samtools.wdl"
 import "../../tools/fq.wdl"
+import "../../tools/samtools.wdl"
 
 workflow bam_to_fastqs {
     parameter_meta {
