@@ -324,16 +324,6 @@ workflow quality_check {
             select_first([markdups_post.mosdepth_region_dist, []])
         ])),
         prefix=post_subsample_prefix + ".multiqc",
-        extra_fn_clean_exts=[".ValidateSamFile", ".MarkDuplicates"],
-        mosdepth_labels=flatten([
-            ["whole_genome"],
-            parse_input.labels,
-            # TODO this does not currently work properly.
-            # A future PR will refactor the MultiQC task
-            # and ensure this is handled properly.
-            # That fix is out-of-scope for now.
-            prefix("MarkDuplicates.", parse_input.labels)
-        ]),
         max_retries=max_retries
     }
 

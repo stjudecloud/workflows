@@ -12,16 +12,12 @@ task multiqc {
 
     parameter_meta {
         input_files: "An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
-        prefix: "A string for the MultiQC output directory: <prefix>.multiqc/ and <prefix>.multiqc.tar.gz"
-        extra_fn_clean_exts: "An array of strings that should be cleaned from sample names by MultiQC"
-        mosdepth_labels: "If passing in multiple runs of `mosdepth`, an array of strings for labelling the different runs (must match part of the filenames)"
+        prefix: "A string for the MultiQC output directory: <prefix>/ and <prefix>.tar.gz"
     }
 
     input {
         Array[File] input_files
         String prefix
-        Array[String] extra_fn_clean_exts = []
-        Array[String] mosdepth_labels = []
         Int memory_gb = 5
         Int disk_size_gb = 20
         Int max_retries = 1
@@ -31,42 +27,12 @@ task multiqc {
 
     command <<<
         set -euo pipefail
-        
+
         # set ENV variables for `multiqc`
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
-        
+
         echo "~{sep('\n', input_files)}" > file_list.txt
-
-        # Start YAML generation
-        echo "extra_fn_clean_exts:" > multiqc_config.yaml
-        
-        # if extra extensions are to be cleaned, add them to YAML
-        if [ "~{(length(extra_fn_clean_exts) > 0)}" = "true" ]; then
-            echo "~{sep('\n', extra_fn_clean_exts)}" > extensions.txt
-            while read -r ext; do
-                echo "  - $ext"
-            done < extensions.txt >> multiqc_config.yaml
-        fi
-
-        if [ "~{(length(mosdepth_labels) > 0)}" = "true" ]; then
-            # if mosdepth labels are provided, add them to `extra_fn_clean_exts`
-            echo "~{sep('\n', mosdepth_labels)}" > labels.txt
-            while read -r label; do
-                echo "  - .$label"
-            done < labels.txt >> multiqc_config.yaml
-
-            # next YAML section
-            echo "top_modules:" >> multiqc_config.yaml
-            
-            # create a "top module" entry for each mosdepth label provided
-            while read -r label; do
-                echo "  - mosdepth:"
-                echo "      name: \"mosdepth ($label)\""
-                echo "      path_filters:"
-                echo "        - \"*.$label.*\""
-            done < labels.txt >> multiqc_config.yaml
-        fi
 
         multiqc -v \
             --no-ansi \
