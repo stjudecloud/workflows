@@ -33,10 +33,10 @@
 
 version 1.0
 
-import "../general/bam-to-fastqs.wdl" as b2fq
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
+import "../general/bam-to-fastqs.wdl" as b2fq
 import "./rnaseq-core.wdl" as rna_core
 
 workflow rnaseq_standard {

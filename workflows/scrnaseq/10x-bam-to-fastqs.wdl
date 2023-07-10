@@ -41,9 +41,9 @@
 version 1.0
 
 
-import "../../tools/samtools.wdl"
 import "../../tools/cellranger.wdl"
 import "../../tools/fq.wdl"
+import "../../tools/samtools.wdl"
 
 workflow cell_ranger_bam_to_fastqs {
     parameter_meta {

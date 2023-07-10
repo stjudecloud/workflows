@@ -8,9 +8,9 @@
 
 version 1.0
 
+import "../../tools/mosdepth.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
-import "../../tools/mosdepth.wdl"
 
 workflow markdups_post {
     meta {

@@ -1,10 +1,10 @@
 version 1.0
 
+import "../../tools/deeptools.wdl"
+import "../../tools/htseq.wdl"
+import "../../tools/ngsderive.wdl"
 import "../../tools/star.wdl"
 import "../general/alignment-post.wdl" as align_post
-import "../../tools/deeptools.wdl"
-import "../../tools/ngsderive.wdl"
-import "../../tools/htseq.wdl"
 
 workflow rnaseq_core {
     parameter_meta {

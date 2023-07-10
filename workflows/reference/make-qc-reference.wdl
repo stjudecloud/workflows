@@ -27,8 +27,8 @@
 
 version 1.0
 
-import "../../tools/util.wdl"
 import "../../tools/kraken.wdl"
+import "../../tools/util.wdl"
 
 workflow make_qc_reference {
     parameter_meta {
