@@ -159,18 +159,18 @@ workflow quality_check {
     }
     call ngsderive.instrument as ngsderive_instrument { input:
         bam=post_subsample_bam,
-        outfile_name=post_subsample_prefix + ".instrument.txt",
+        outfile_name=post_subsample_prefix + ".instrument.tsv",
         max_retries=max_retries
     }
     call ngsderive.read_length as ngsderive_read_length { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
-        outfile_name=post_subsample_prefix + ".readlength.txt",
+        outfile_name=post_subsample_prefix + ".readlength.tsv",
         max_retries=max_retries
     }
     call ngsderive.encoding as ngsderive_encoding { input:
         ngs_files=[post_subsample_bam],
-        outfile_name=post_subsample_prefix + ".encoding.txt",
+        outfile_name=post_subsample_prefix + ".encoding.tsv",
         max_retries=max_retries
     }
     call util.global_phred_scores as phred_scores { input:
@@ -237,7 +237,7 @@ workflow quality_check {
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gtf=select_first([gtf, "undefined"]),
-            outfile_name=post_subsample_prefix + ".strandedness.txt",
+            outfile_name=post_subsample_prefix + ".strandedness.tsv",
             max_retries=max_retries
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:

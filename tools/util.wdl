@@ -434,7 +434,7 @@ task global_phred_scores {
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
-    String outfile_name = prefix + ".global_PHRED_scores.txt"
+    String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
     command <<<
         set -euo pipefail
@@ -475,7 +475,7 @@ for read in bam:
         middle_mapped_quals[middle_score] += 1
 
 prefix = os.environ["PREFIX"]
-outfile = open(prefix + ".global_PHRED_scores.txt", "w")
+outfile = open(prefix + ".global_PHRED_scores.tsv", "w")
 
 # print header
 print(
