@@ -9,7 +9,7 @@ task infer_strandedness {
         File bam
         File bam_index
         File gtf
-        String outfile_name = basename(bam, ".bam") + ".strandedness.txt"
+        String outfile_name = basename(bam, ".bam") + ".strandedness.tsv"
         Int min_reads_per_gene = 10
         Int num_genes = 1000
         Int min_mapq = 30
@@ -60,7 +60,7 @@ task infer_strandedness {
 task instrument {
     input {
         File bam
-        String outfile_name = basename(bam, ".bam") + ".instrument.txt"
+        String outfile_name = basename(bam, ".bam") + ".instrument.tsv"
         Int num_samples = 10000
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
@@ -93,7 +93,7 @@ task read_length {
     input {
         File bam
         File bam_index
-        String outfile_name = basename(bam, ".bam") + ".readlength.txt"
+        String outfile_name = basename(bam, ".bam") + ".readlength.tsv"
         Float majority_vote_cutoff = 0.7
         Int num_samples = -1
         Int memory_gb = 5
@@ -229,7 +229,7 @@ task junction_annotation {
             -q ~{min_mapq} \
             -m ~{min_reads} \
             -k ~{fuzzy_junction_match_range} \
-            -o ~{prefix}.junction_summary.txt \
+            -o ~{prefix}.junction_summary.tsv \
             "$CWD_BAM"
 
         mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"  # TODO why are we renaming this?/can we update ngsderive to name things properly?
@@ -239,7 +239,7 @@ task junction_annotation {
     >>>
 
     output {
-        File junction_summary = "~{prefix}.junction_summary.txt"
+        File junction_summary = "~{prefix}.junction_summary.tsv"
         File junctions = "~{prefix}.junctions.tsv.gz"
     }
 

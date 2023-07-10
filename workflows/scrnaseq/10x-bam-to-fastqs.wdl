@@ -117,7 +117,7 @@ task parse_input {
     runtime {
         memory: memory_gb + " GB"
         disk: disk_size_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }
