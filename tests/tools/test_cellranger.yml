@@ -1,0 +1,33 @@
+- name: cellranger_count_miniwdl
+  tags:
+    - miniwdl
+    - cellranger
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task count -i tests/tools/input_json/cellranger_count.json tools/cellranger.wdl
+  files:
+    - path: test-output/out/bam/possorted_genome_bam.bam
+    - path: test-output/out/bam_index/possorted_genome_bam.bam.bai
+    - path: test-output/out/qc/metrics_summary.csv
+    - path: test-output/out/barcodes/barcodes.tsv.gz
+    - path: test-output/out/features/features.tsv.gz
+    - path: test-output/out/matrix/matrix.mtx.gz
+    - path: test-output/out/filtered_gene_h5/filtered_feature_bc_matrix.h5
+    - path: test-output/out/raw_gene_h5/raw_feature_bc_matrix.h5
+    - path: test-output/out/raw_barcodes/barcodes.tsv.gz
+    - path: test-output/out/raw_features/features.tsv.gz
+    - path: test-output/out/raw_matrix/matrix.mtx.gz
+    - path: test-output/out/mol_info_h5/molecule_info.h5
+    - path: test-output/out/web_summary/web_summary.html
+    - path: test-output/out/cloupe/cloupe.cloupe
+
+# - name: cellranger_bamtofastq_miniwdl
+#   tags:
+#     - miniwdl
+#     - cellranger
+#   command: >-
+#     miniwdl run -d test-output/. --copy-input-files --task bamtofastq tools/cellranger.wdl bam=
+#   files:
+#     - path: test-output/out/fastqs/possorted_genome_bam.bam
+#     - path: test-output/out/fastqs_archive/possorted_genome_bam.bam
+#     - path: test-output/out/read_one_fastq_gz/possorted_genome_bam.bam
+#     - path: test-output/out/read_two_fastq_gz/possorted_genome_bam.bam
