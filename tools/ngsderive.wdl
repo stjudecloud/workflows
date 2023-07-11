@@ -153,7 +153,7 @@ task encoding {
 
         ngsderive encoding --verbose \
             -n ~{num_samples} \
-            ~{sep(",", ngs_files)} \
+            ~{sep(" ", ngs_files)} \
             > ~{outfile_name}
         
         ENCODING_FILE="~{outfile_name}" python - <<END
