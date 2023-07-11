@@ -1,0 +1,4 @@
+{
+    "input_files": ["tests/tools/input/test.bwa_aln_pe.bam"],
+    "prefix": "test.bwa_aln_pe"
+}
