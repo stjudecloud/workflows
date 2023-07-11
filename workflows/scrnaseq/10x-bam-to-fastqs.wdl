@@ -15,7 +15,7 @@
 ## : an array of files sufficient for localizing in Cell Ranger's expected format
 ##
 ## fastqs_archive
-## : a compressed archive comtaining the array of FASTQ files
+## : a compressed archive containing the array of FASTQ files
 ##
 ## ## LICENSING:
 ## 
