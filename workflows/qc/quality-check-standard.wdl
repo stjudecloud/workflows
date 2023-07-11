@@ -314,7 +314,6 @@ workflow quality_check {
                 phred_scores.phred_scores,
                 markdups_post.mosdepth_global_summary,
                 markdups_post.mosdepth_global_dist,
-                star_log,
                 ngsderive_strandedness.strandedness_file,
                 junction_annotation.junction_summary,
                 qualimap_rnaseq.raw_summary,
@@ -322,6 +321,7 @@ workflow quality_check {
             ],
             regions_coverage.summary,
             regions_coverage.region_dist,
+            extra_multiqc_inputs,
             select_first([markdups_post.mosdepth_region_summary, []]),
             select_first([markdups_post.mosdepth_region_dist, []])
         ])),
