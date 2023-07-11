@@ -3,7 +3,7 @@
 ## This WDL file wraps the [QualiMap](http://qualimap.bioinfo.cipf.es/) tool.
 ## QualiMap computes metrics to facilitate evaluation of sequencing data. 
 
-version 1.0
+version 1.1
 
 task bamqc {
     meta {
@@ -60,8 +60,8 @@ task bamqc {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
         maxRetries: max_retries
     }
@@ -74,7 +74,7 @@ task rnaseq {
 
     parameter_meta {
         bam: "Input BAM format file to run qualimap rnaseq on"
-        gtf: "GTF features file"
+        gtf: "GTF features file. Gzipped or uncompressed."
         prefix: "Prefix for the results directory and output tarball. The extension `.qualimap_rnaseq_results.tar.gz` will be added."
         name_sorted: "Is the BAM name sorted? Qualimap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before Qualimap and setting this parameter to true."
         paired_end: "Is the BAM paired end?"
@@ -117,7 +117,7 @@ task rnaseq {
 
         orig=~{gtf}
         gtf_name=$(basename "${orig%.gz}")
-        gunzip -c ~{gtf} > "$gtf_name" || ln -s ~{gtf} "$gtf_name"
+        gunzip -c ~{gtf} > "$gtf_name" || ln -sf ~{gtf} "$gtf_name"
 
         # '-oc qualimap_counts.txt' puts the file in '-outdir'
         qualimap rnaseq -bam ~{bam} \
@@ -139,8 +139,8 @@ task rnaseq {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
         maxRetries: max_retries
     }

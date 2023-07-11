@@ -1,6 +1,6 @@
-## # Bam to FastQs
+## # BAM to FASTQs
 ##
-## This WDL workflow converts an input BAM file to a set of FastQ files for read 1 and read 2.
+## This WDL workflow converts an input BAM file to a set of FASTQ files for read 1 and read 2.
 ## It performs QC checks along the way to validate the input and output.
 ##
 ## ### Output:
@@ -32,14 +32,14 @@
 ## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-version 1.0
+version 1.1
 
 import "../../tools/fq.wdl"
 import "../../tools/samtools.wdl"
 
 workflow bam_to_fastqs {
     parameter_meta {
-        bam: "BAM file to split into FastQs"
+        bam: "BAM file to split into FASTQs"
         paired_end: "Is the data paired-end (true) or single-end (false)?"
         use_all_cores: "Use all cores for multi-core steps?"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."

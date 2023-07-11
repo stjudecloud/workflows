@@ -2,7 +2,7 @@
 ##
 ## This WDL file wraps the [ngsderive package](https://github.com/stjudecloud/ngsderive)
 
-version 1.0
+version 1.1
 
 task infer_strandedness {
     input {
@@ -50,8 +50,8 @@ task infer_strandedness {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -82,8 +82,8 @@ task instrument {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -128,8 +128,8 @@ task read_length {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -153,7 +153,7 @@ task encoding {
 
         ngsderive encoding --verbose \
             -n ~{num_samples} \
-            ~{sep=' ' ngs_files} \
+            ~{sep(" ", ngs_files)} \
             > ~{outfile_name}
         
         ENCODING_FILE="~{outfile_name}" python - <<END
@@ -188,8 +188,8 @@ END
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -244,8 +244,8 @@ task junction_annotation {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }

@@ -6,7 +6,7 @@
 ## But the tasks called below produce different results depending on whether the
 ## input BAM has been duplicate marked or not.
 
-version 1.0
+version 1.1
 
 import "../../tools/mosdepth.wdl"
 import "../../tools/picard.wdl"

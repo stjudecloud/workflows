@@ -3,7 +3,7 @@
 ## This WDL file wraps the [htseq](https://github.com/htseq/htseq) tool.
 ## HTSeq is a Python library for analyzing sequencing data.
 
-version 1.0
+version 1.1
 
 task count {
     meta {
@@ -90,8 +90,8 @@ task count {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/htseq:2.0.2--py310ha14a713_0'
         maxRetries: max_retries
     }

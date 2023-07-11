@@ -9,7 +9,7 @@ PERMITTED META DESCRIPTIONS:
         max_retries: "<for a workflow> Number of times to retry failed steps. Overrides task level defaults."
         outfile_name: "Name for the <type of file> file"
         prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
-        gtf: "GTF features file. Either gzipped or uncompressed."
+        gtf: "GTF features file. Gzipped or uncompressed."
         gtf_gz: "Gzipped GTF features file"
         bam: "Input BAM format file to <brief description of task>"
         bam_index: "BAM index file corresponding to the input BAM"
@@ -23,10 +23,10 @@ PERMITTED META DESCRIPTIONS:
                 'Unstranded'
             ]
         },
-        read_one_fastq_gz: "Gzipped FastQ file with 1st reads in pair"
-        read_two_fastq_gz: "Gzipped FastQ file with 2nd reads in pair"
-        read_one_fastqs_gz: "Array of gzipped FastQ files with 1st reads in pair"
-        read_two_fastqs_gz: "Array of gzipped FastQ files with 2nd reads in pair"
+        read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
+        read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
+        read_one_fastqs_gz: "Array of gzipped FASTQ files with 1st reads in pair"
+        read_two_fastqs_gz: "Array of gzipped FASTQ files with 2nd reads in pair"
         paired_end: "Is the data paired-end?"
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
 

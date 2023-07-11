@@ -2,7 +2,7 @@
 ##
 ## This WDL workflow runs the BWA ChIP-seq alignment workflow for St. Jude Cloud.
 ##
-## The workflow takes an input BAM file and splits it into FastQ files for each read in the pair.
+## The workflow takes an input BAM file and splits it into FASTQ files for each read in the pair.
 ## The read pairs are then passed through BWA alignment to generate a BAM file.
 ## File validation is performed at several steps, including immediately preceeding output.
 ##
@@ -27,7 +27,7 @@
 ## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-version 1.0
+version 1.1
 
 import "../../tools/deeptools.wdl"
 import "../../tools/md5sum.wdl"

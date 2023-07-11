@@ -3,7 +3,7 @@
 ## This WDL file wraps the md5sum tool from the [GNU core utilities](https://github.com/coreutils/coreutils).
 ## md5sum is a utility for generating and verifying MD5 hashes.
 
-version 1.0
+version 1.1
 
 task compute_checksum {
     meta {
@@ -35,8 +35,8 @@ task compute_checksum {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }

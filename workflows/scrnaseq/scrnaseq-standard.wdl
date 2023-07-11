@@ -2,7 +2,7 @@
 ##
 ## This WDL workflow runs the Cell Ranger scRNA-Seq alignment workflow for St. Jude Cloud.
 ##
-## The workflow takes an input BAM file and splits it into FastQ files for each read in the pair. 
+## The workflow takes an input BAM file and splits it into FASTQ files for each read in the pair. 
 ## The read pairs are then passed through Cell Ranger to generate a BAM file and perform
 ## quantification. Strandedness is inferred using ngsderive.
 ## File validation is performed at several steps, including immediately preceeding output.
@@ -28,7 +28,7 @@
 ## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-version 1.0
+version 1.1
 
 import "../../tools/cellranger.wdl"
 import "../../tools/md5sum.wdl"

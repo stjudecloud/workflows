@@ -3,7 +3,7 @@
 ## This WDL file wraps the [STAR aligner](https://github.com/alexdobin/STAR).
 ## STAR is an RNA-Seq aligner.
 
-version 1.0
+version 1.1
 
 task build_star_db {
     meta {
@@ -35,7 +35,7 @@ task build_star_db {
     )
 
     # Leave 2GB as system overhead
-    String memory_limit_bytes = (memory_gb - 2) + "000000000"
+    String memory_limit_bytes = "~{memory_gb - 2}000000000"
 
     command <<<
         set -euo pipefail
@@ -46,11 +46,11 @@ task build_star_db {
         fi
 
         gtf_name=~{basename(gtf, ".gz")}
-        gunzip -c ~{gtf} > "$gtf_name" || ln -s ~{gtf} "$gtf_name"
+        gunzip -c ~{gtf} > "$gtf_name" || ln -sf ~{gtf} "$gtf_name"
 
         ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c ~{reference_fasta} > "$ref_fasta" \
-            || ln -s ~{reference_fasta} "$ref_fasta"
+            || ln -sf ~{reference_fasta} "$ref_fasta"
         
         mkdir ~{db_name};
         STAR --runMode genomeGenerate \
@@ -72,8 +72,8 @@ task build_star_db {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
     }
@@ -81,14 +81,14 @@ task build_star_db {
 
 task alignment {
     meta {
-        description: "This WDL task runs the STAR aligner on a set of RNA-Seq FastQ files."
+        description: "This WDL task runs the STAR aligner on a set of RNA-Seq FASTQ files."
     }
 
     parameter_meta {
-        read_one_fastqs: "An array of FastQ files containing read one information"
+        read_one_fastqs: "An array of FASTQ files containing read one information"
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
-        read_two_fastqs: "An array of FastQ files containing read two information"
+        read_two_fastqs: "An array of FASTQ files containing read two information"
     }
 
     input {
@@ -107,7 +107,7 @@ task alignment {
     String star_db_dir = basename(star_db_tar_gz, ".tar.gz")
 
     # Leave 2GB as system overhead
-    String memory_limit_bytes = (memory_gb - 2) + "000000000"
+    String memory_limit_bytes = "~{memory_gb - 2}000000000"
 
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
@@ -136,23 +136,23 @@ task alignment {
             if [ -n "~{if read_two_fastqs != empty_array then "read_two_fastqs" else ""}" ]
             then
                 python3 /home/sort_star_input.py \
-                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                    --read_two_fastqs "~{sep=',' read_two_fastqs}" \
+                    --read_one_fastqs "~{sep(',', read_one_fastqs)}" \
+                    --read_two_fastqs "~{sep(',', read_two_fastqs)}" \
                     --read_groups "~{read_groups}"
             else
                 python3 /home/sort_star_input.py \
-                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
+                    --read_one_fastqs "~{sep(',', read_one_fastqs)}" \
                     --read_groups "~{read_groups}"
             fi
         else 
             if [ -n "~{if read_two_fastqs != empty_array then "read_two_fastqs" else ""}" ]
             then
                 python3 /home/sort_star_input.py \
-                    --read_one_fastqs "~{sep=',' read_one_fastqs}" \
-                    --read_two_fastqs "~{sep=',' read_two_fastqs}"
+                    --read_one_fastqs "~{sep(',', read_one_fastqs)}" \
+                    --read_two_fastqs "~{sep(',', read_two_fastqs)}"
             else
                 python3 /home/sort_star_input.py \
-                    --read_one_fastqs "~{sep=',' read_one_fastqs}"
+                    --read_one_fastqs "~{sep(',', read_one_fastqs)}"
             fi
         fi
 
@@ -188,8 +188,8 @@ task alignment {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
     }

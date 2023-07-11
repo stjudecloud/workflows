@@ -3,7 +3,7 @@
 ## This WDL file wraps the [SAMtools package](http://samtools.sourceforge.net/).
 ## SAMtools provides utlities for manipulating SAM format sequence alignments.
 
-version 1.0
+version 1.1
 
 task quickcheck {
     meta {
@@ -33,8 +33,8 @@ task quickcheck {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -99,8 +99,8 @@ task split {
  
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -135,8 +135,8 @@ task flagstat {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -182,8 +182,8 @@ task index {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -254,8 +254,8 @@ task subsample {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -290,7 +290,7 @@ task merge {
             ~{if defined(new_header) then "-h " + new_header else ""} \
             ~{if attach_rg then "-r" else ""} \
             ~{prefix}.bam \
-            ~{sep=' ' bams}
+            ~{sep(" ", bams)}
     >>>
 
     output {
@@ -299,8 +299,8 @@ task merge {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -353,8 +353,8 @@ task addreplacerg {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
@@ -417,8 +417,8 @@ task collate {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
@@ -426,24 +426,24 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "This WDL task runs `samtools fastq` on the input BAM file. Splits the BAM into FastQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
+        description: "This WDL task runs `samtools fastq` on the input BAM file. Splits the BAM into FASTQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
         outputs: {
-            read_one_fastq_gz: "Gzipped FastQ file with 1st reads in pair"
-            read_two_fastq_gz: "Gzipped FastQ file with 2nd reads in pair"
-            singleton_reads_fastq_gz: "A gzipped FastQ containing singleton reads"
-            interleaved_reads_fastq_gz: "An interleaved gzipped paired-end FastQ"
+            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
+            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
+            singleton_reads_fastq_gz: "A gzipped FASTQ containing singleton reads"
+            interleaved_reads_fastq_gz: "An interleaved gzipped paired-end FASTQ"
         }
     }
 
     parameter_meta {
-        bam: "Input name sorted or collated BAM format file to convert into FastQ(s)"
-        prefix: "Prefix for output FastQ(s). Extensions `[,_R1,_R2,.singleton].fastq.gz` will be added depending on other options."
+        bam: "Input name sorted or collated BAM format file to convert into FASTQ(s)"
+        prefix: "Prefix for output FASTQ(s). Extensions `[,_R1,_R2,.singleton].fastq.gz` will be added depending on other options."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         paired_end: "Is the data paired-end?"
-        interleaved: "Create an interleaved FastQ file from paired-end data?"
-        output_singletons: "Output singleton reads as their own FastQ?"
+        interleaved: "Create an interleaved FASTQ file from paired-end data?"
+        output_singletons: "Output singleton reads as their own FASTQ?"
         ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -513,8 +513,8 @@ task bam_to_fastq {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
@@ -522,27 +522,27 @@ task bam_to_fastq {
 
 task collate_to_fastq {
     meta {
-        description: "This WDL task runs `samtools collate` on the input BAM file then converts it into FastQ(s) using `samtools fastq`."
+        description: "This WDL task runs `samtools collate` on the input BAM file then converts it into FASTQ(s) using `samtools fastq`."
         outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)"
-            read_one_fastq_gz: "Gzipped FastQ file with 1st reads in pair"
-	        read_two_fastq_gz: "Gzipped FastQ file with 2nd reads in pair"
-            singleton_reads_fastq_gz: "Gzipped FastQ containing singleton reads"
-            interleaved_reads_fastq_gz: "Interleaved gzipped paired-end FastQ"
+            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
+	        read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
+            singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads"
+            interleaved_reads_fastq_gz: "Interleaved gzipped paired-end FASTQ"
         }
     }
 
     parameter_meta {
-        bam: "Input BAM format file to collate and convert to FastQ(s)"
-        prefix: "Prefix for the collated BAM and FastQ files. The extensions `.collated.bam` and `[,_R1,_R2,.singleton].fastq.gz` will be added."
+        bam: "Input BAM format file to collate and convert to FASTQ(s)"
+        prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,_R1,_R2,.singleton].fastq.gz` will be added."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         fast_mode: "Fast mode for `samtools collate` (primary alignments only)"
-        store_collated_bam: "Save the collated BAM (true) or delete it after FastQ split (false)?"
+        store_collated_bam: "Save the collated BAM (true) or delete it after FASTQ split (false)?"
         paired_end: "Is the data paired-end?"
-        interleaved: "Create an interleaved FastQ file from paired-end data?"
-        output_singletons: "Output singleton reads as their own FastQ?"
+        interleaved: "Create an interleaved FASTQ file from paired-end data?"
+        output_singletons: "Output singleton reads as their own FASTQ?"
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         ncpu: "Number of cores to allocate for task"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
@@ -626,8 +626,8 @@ task collate_to_fastq {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
