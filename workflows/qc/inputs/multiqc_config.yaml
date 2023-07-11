@@ -43,6 +43,11 @@ custom_data:
     file_format: "tsv"
     section_name: "Global PHRED scores"
     plot_type: "table"
+  orig_read_counts:
+    file_format: "tsv"
+    plot_type: "generalstats"
 sp:
   global_PHRED_scores:
     fn: "*.global_PHRED_scores.tsv"
+  orig_read_counts:
+    fn: "*.orig_read_count.tsv"
