@@ -121,11 +121,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
                   </li>
@@ -170,20 +170,21 @@
                 <h1 id="fq">FQ</h1>
 <p>This WDL file wraps the <a href="https://github.com/stjude/fqlib">fq tool</a>.
 The fq library provides methods for manipulating Illumina generated 
-FastQ files.</p>
+FASTQ files.</p>
 <h2 id="fqlint">fqlint</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task performs quality control on the input FastQ pairs to ensure proper formatting.</dd>
+<dd>This WDL task performs quality control on the input FASTQ pairs to ensure proper formatting.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Input FastQ with read one</li>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Input FASTQ with read one</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>read_two_fastq_gz</code> (File?): Input FastQ with read two</li>
+<li><code>read_two_fastq_gz</code> (File?): Input FASTQ with read two</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
@@ -199,25 +200,26 @@ FastQ files.</p>
 <h2 id="subsample">subsample</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task subsamples input FastQs</dd>
+<dd>This WDL task subsamples input FASTQs</dd>
 <dt>outputs</dt>
-<dd>{'subsampled_read1': 'Gzipped FastQ file containing subsampled read1', 'subsampled_read2': 'Gzipped FastQ file containing subsampled read2'}</dd>
+<dd>{'subsampled_read1': 'Gzipped FASTQ file containing subsampled read1', 'subsampled_read2': 'Gzipped FASTQ file containing subsampled read2'}</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
-<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Input FastQ with read one</li>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Input FASTQ with read one</li>
 </ul>
 <h4 id="optional_1">Optional</h4>
 <ul>
-<li><code>read_two_fastq_gz</code> (File?): Input FastQ with read two</li>
+<li><code>read_two_fastq_gz</code> (File?): Input FASTQ with read two</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
-<li><code>prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.]R[12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the output FastQ file(s). The extension <code>_R1.subsampled.fastq.gz</code> and <code>_R2.subsampled.fastq.gz</code> will be added.</li>
+<li><code>prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.]R[12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the output FASTQ file(s). The extension <code>_R1.subsampled.fastq.gz</code> and <code>_R2.subsampled.fastq.gz</code> will be added.</li>
 <li><code>probability</code> (Float, default=1.0): The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with <code>record-count</code>. Any <code>probability&lt;=0.0</code> or <code>probability&gt;=1.0</code> to disable.</li>
 <li><code>record_count</code> (Int, default=-1): The exact number of records to keep. Cannot be used with <code>probability</code>. Any <code>record_count&lt;=0</code> to disable.</li>
 </ul>

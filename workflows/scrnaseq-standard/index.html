@@ -87,11 +87,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">Cell Ranger Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
                   </li>
@@ -139,7 +139,7 @@
               
                 <p>scRNA-Seq Standard</p>
 <p>This WDL workflow runs the Cell Ranger scRNA-Seq alignment workflow for St. Jude Cloud.</p>
-<p>The workflow takes an input BAM file and splits it into FastQ files for each read in the pair. 
+<p>The workflow takes an input BAM file and splits it into FASTQ files for each read in the pair. 
 The read pairs are then passed through Cell Ranger to generate a BAM file and perform
 quantification. Strandedness is inferred using ngsderive.
 File validation is performed at several steps, including immediately preceeding output.</p>
@@ -165,6 +165,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to quality check</li>
 <li><code>gtf</code> (File, <strong>required</strong>): Gzipped GTF feature file</li>
 <li><code>transcriptome_tar_gz</code> (File, <strong>required</strong>): Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics.</li>
+<li><code>compute_checksum._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>count._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>ngsderive_strandedness._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>subsample._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>validate_bam._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>validate_input_bam._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>cell_ranger_bam_to_fastqs.bamtofastq._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>cell_ranger_bam_to_fastqs.fqlint._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>cell_ranger_bam_to_fastqs.quickcheck._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>

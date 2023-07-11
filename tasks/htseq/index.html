@@ -103,11 +103,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
                   </li>
@@ -160,6 +160,7 @@ HTSeq is a Python library for analyzing sequencing data.</p>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to generate coverage for</li>
 <li><code>gtf</code> (File, <strong>required</strong>): Input genomic features in gzipped GTF format to count reads for</li>
 <li><code>strandedness</code> (String, <strong>required</strong>); <strong>description</strong>: Strandedness protocol of the RNA-Seq experiment. Read the <a href="https://htseq.readthedocs.io/en/release_0.11.1/count.html#cmdoption-htseq-count-s">HTSeq-count docs</a> for an explanation of what this parameter affects.; <strong>choices</strong>: ['yes', 'reverse', 'no']</li>

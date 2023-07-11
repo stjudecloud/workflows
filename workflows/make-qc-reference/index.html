@@ -87,11 +87,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">Cell Ranger Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
                   </li>
@@ -184,6 +184,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>gtf_url</code> (String, <strong>required</strong>): URL to retrieve the reference GTF file from</li>
 <li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of output reference FASTA file</li>
 <li><code>reference_fa_url</code> (String, <strong>required</strong>): URL to retrieve the reference FASTA file from</li>
+<li><code>create_library_from_fastas._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>download_library._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>download_taxonomy._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>fastas_download._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>gtf_download._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>kraken_build_db._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>make_coverage_regions_beds._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>reference_download._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>

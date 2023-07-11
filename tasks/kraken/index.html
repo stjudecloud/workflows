@@ -70,6 +70,8 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -82,7 +84,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
+    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
     </li>
@@ -96,7 +98,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_2">Inputs</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
+    <li class="toctree-l4"><a class="reference internal" href="#required_2">Required</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_2">Defaults</a>
     </li>
@@ -110,7 +112,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_3">Inputs</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_2">Required</a>
+    <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_3">Defaults</a>
     </li>
@@ -124,7 +126,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_4">Inputs</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
+    <li class="toctree-l4"><a class="reference internal" href="#required_4">Required</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_4">Defaults</a>
     </li>
@@ -157,11 +159,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
                   </li>
@@ -211,6 +213,10 @@
 <dd>This WDL task downloads the NCBI taxonomy which Kraken2 uses to create a tree and taxon map during the database build.</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
+<h4 id="required">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+</ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>disk_size_gb</code> (Int, default=60): Disk space to allocate for task</li>
@@ -228,8 +234,9 @@
 <dd>This WDL task downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available at: https://ftp.ncbi.nlm.nih.gov/genomes/refseq/.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
-<h4 id="required">Required</h4>
+<h4 id="required_1">Required</h4>
 <ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>library_name</code> (String, <strong>required</strong>); <strong>description</strong>: Library to download. Note that <code>protein</code> must equal <code>true</code> if downloading the <code>nr</code> library, and <code>protein</code> must equal <code>false</code> if downloading the <code>UniVec</code> or <code>UniVec_Core</code> library.; <strong>choices</strong>: ['archaea', 'bacteria', 'plasmid', 'viral', 'human', 'fungi', 'plant', 'protozoa', 'nt', 'nr', 'UniVec', 'UniVec_Core']</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
@@ -249,8 +256,9 @@
 <dd>This WDL task adds custom entries from FASTA files to a Kraken2 DB.</dd>
 </dl>
 <h3 id="inputs_2">Inputs</h3>
-<h4 id="required_1">Required</h4>
+<h4 id="required_2">Required</h4>
 <ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>fastas</code> (Array[File], <strong>required</strong>): Array of gzipped FASTA files. Each FASTA sequence ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using <code>kraken:taxid</code></li>
 </ul>
 <h4 id="defaults_2">Defaults</h4>
@@ -270,8 +278,9 @@
 <dd>This WDL task builds a custom Kraken2 database.</dd>
 </dl>
 <h3 id="inputs_3">Inputs</h3>
-<h4 id="required_2">Required</h4>
+<h4 id="required_3">Required</h4>
 <ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>tarballs</code> (Array[File], <strong>required</strong>): Tarballs containing the NCBI taxonomy (generated by the <code>download_taxonomy</code> task) and at least one library (generated by the <code>download_library</code> task). Tarballs must not have a root directory.</li>
 </ul>
 <h4 id="defaults_3">Defaults</h4>
@@ -298,11 +307,12 @@
 <dd>This WDL tool runs Kraken2 on a pair of fastq files.</dd>
 </dl>
 <h3 id="inputs_4">Inputs</h3>
-<h4 id="required_3">Required</h4>
+<h4 id="required_4">Required</h4>
 <ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>db</code> (File, <strong>required</strong>): Kraken2 database. Can be generated with <code>make-qc-reference.wdl</code>. Must be a tarball without a root directory.</li>
-<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Gzipped FastQ file with 1st reads in pair</li>
-<li><code>read_two_fastq_gz</code> (File, <strong>required</strong>): Gzipped FastQ file with 2nd reads in pair</li>
+<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Gzipped FASTQ file with 1st reads in pair</li>
+<li><code>read_two_fastq_gz</code> (File, <strong>required</strong>): Gzipped FASTQ file with 2nd reads in pair</li>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>

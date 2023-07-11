@@ -117,11 +117,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
                   </li>
@@ -174,6 +174,7 @@ QualiMap computes metrics to facilitate evaluation of sequencing data. </p>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to run qualimap bamqc on</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
@@ -197,8 +198,9 @@ QualiMap computes metrics to facilitate evaluation of sequencing data. </p>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to run qualimap rnaseq on</li>
-<li><code>gtf</code> (File, <strong>required</strong>): GTF features file</li>
+<li><code>gtf</code> (File, <strong>required</strong>): GTF features file. Gzipped or uncompressed.</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>

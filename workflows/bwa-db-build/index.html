@@ -87,11 +87,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">Cell Ranger Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">BWA DB build</a>
     <ul class="current">
@@ -189,6 +189,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <ul>
 <li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of output reference FASTA file</li>
 <li><code>reference_fa_url</code> (String, <strong>required</strong>): URL to retrieve the reference FASTA file from.</li>
+<li><code>build_bwa_db._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>reference_download._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -212,7 +214,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../bam-to-fastqs/" class="btn btn-neutral float-left" title="Bam to FastQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../bam-to-fastqs/" class="btn btn-neutral float-left" title="BAM to FASTQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../calc-gene-lengths/" class="btn btn-neutral float-right" title="Calculate Gene Lengths">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 

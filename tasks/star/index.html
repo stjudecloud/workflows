@@ -119,11 +119,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
                   </li>
@@ -176,6 +176,7 @@ STAR is an RNA-Seq aligner.</p>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>gtf</code> (File, <strong>required</strong>): GTF format feature file</li>
 <li><code>reference_fasta</code> (File, <strong>required</strong>): The FASTA format reference file for the genome</li>
 </ul>
@@ -195,13 +196,14 @@ STAR is an RNA-Seq aligner.</p>
 <h2 id="alignment">alignment</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task runs the STAR aligner on a set of RNA-Seq FastQ files.</dd>
+<dd>This WDL task runs the STAR aligner on a set of RNA-Seq FASTQ files.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>prefix</code> (String, <strong>required</strong>)</li>
-<li><code>read_one_fastqs</code> (Array[File], <strong>required</strong>): An array of FastQ files containing read one information</li>
+<li><code>read_one_fastqs</code> (Array[File], <strong>required</strong>): An array of FASTQ files containing read one information</li>
 <li><code>star_db_tar_gz</code> (File, <strong>required</strong>): A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the <code>.tar.gz</code> extension.</li>
 </ul>
 <h4 id="optional">Optional</h4>
@@ -214,7 +216,7 @@ STAR is an RNA-Seq aligner.</p>
 <li><code>memory_gb</code> (Int, default=50)</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
-<li><code>read_two_fastqs</code> (Array[File], default=[]): An array of FastQ files containing read two information</li>
+<li><code>read_two_fastqs</code> (Array[File], default=[]): An array of FASTQ files containing read two information</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>

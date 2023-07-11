@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Cell Ranger Bam to FastQs - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Cell Ranger BAM to FASTQs - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Cell Ranger Bam to FastQs";
+        var mkdocs_page_name = "Cell Ranger BAM to FASTQs";
         var mkdocs_page_input_path = "workflows/10x-bam-to-fastqs.md";
         var mkdocs_page_url = null;
       </script>
@@ -87,7 +87,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Cell Ranger Bam to FastQs</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Cell Ranger BAM to FASTQs</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#output">Output:</a>
     </li>
@@ -131,7 +131,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to FastQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">BAM to FASTQs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
                   </li>
@@ -163,7 +163,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
           <li>Workflows &raquo;</li>
-      <li>Cell Ranger Bam to FastQs</li>
+      <li>Cell Ranger BAM to FASTQs</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/10x-bam-to-fastqs.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -173,8 +173,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="cell-ranger-bam-to-fastqs">Cell Ranger Bam to FastQs</h1>
-<p>This WDL workflow converts an input BAM file to a set of FastQ files.
+                <h1 id="cell-ranger-bam-to-fastqs">Cell Ranger BAM to FASTQs</h1>
+<p>This WDL workflow converts an input BAM file to a set of FASTQ files.
 It performs QC checks along the way to validate the input and output.</p>
 <h3 id="output">Output:</h3>
 <dl>
@@ -185,7 +185,7 @@ It performs QC checks along the way to validate the input and output.</p>
 <dt>fastqs</dt>
 <dd>an array of files sufficient for localizing in Cell Ranger's expected format</dd>
 <dt>fastqs_archive</dt>
-<dd>a compressed archive comtaining the array of FastQ files</dd>
+<dd>a compressed archive containing the array of FASTQ files</dd>
 </dl>
 <h2 id="licensing">LICENSING:</h2>
 <h4 id="mit-license">MIT License</h4>
@@ -206,7 +206,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>bam</code> (File, <strong>required</strong>): BAM file to split into FastQs.</li>
+<li><code>bam</code> (File, <strong>required</strong>): BAM file to split into FASTQs.</li>
+<li><code>bamtofastq._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>fqlint._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>quickcheck._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -237,6 +240,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>cellranger11</code> (Boolean, <strong>required</strong>)</li>
 <li><code>gemcode</code> (Boolean, <strong>required</strong>)</li>
 <li><code>longranger20</code> (Boolean, <strong>required</strong>)</li>
