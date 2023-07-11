@@ -217,28 +217,26 @@ task subsample {
             n_cores=$(nproc)
         fi
 
-        if [[ \
-            "$(samtools head --threads "$n_cores" -h 0 -n ~{desired_reads} ~{bam} \
-                | wc -l)" \
-            -ge "~{desired_reads}" \
-        ]]; then
+        read_count="$(samtools view --threads "$n_cores" -c)"
+
+        if [[ "$read_count" -gt "~{desired_reads}" ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
             # subsample it.
-            initial_frac=0.00001
-            initial_reads=$( \
-                samtools view --threads "$n_cores" -s "$initial_frac" ~{bam} | wc -l \
-            )
             frac=$( \
                 awk -v desired_reads=~{desired_reads} \
-                    -v initial_reads="$initial_reads" \
-                    -v initial_frac="$initial_frac" \
+                    -v read_count="$read_count" \
                         'BEGIN{
                             printf "%1.8f",
-                            ( desired_reads / initial_reads * initial_frac )
+                            ( desired_reads / read_count )
                         }' \
                 )
             samtools view --threads "$n_cores" -hb -s "$frac" ~{bam} \
                 > ~{prefix}.bam
+            
+            {
+                echo -e "sample\toriginal read count"
+                echo -e "~{basename(bam)}\t$read_count"
+            } > ~{prefix}.orig_read_count.tsv
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
@@ -250,6 +248,7 @@ task subsample {
     output {
         File success = "success"
         File? sampled_bam = prefix + ".bam"
+        File? orig_read_count = prefix + ".orig_read_count.tsv"
     }
 
     runtime {
