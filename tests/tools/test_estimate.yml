@@ -3,7 +3,7 @@
     - miniwdl
     - estimate
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task calc_tpm tools/estimate.wdl counts="tests/tools/input/test.bwa_aln_pe.feature-counts.txt" gene_lengths="test-output/out/bed/genes.genelengths.txt"
+    miniwdl run -d test-output/. --copy-input-files --task calc_tpm tools/estimate.wdl counts="tests/tools/input/test.bwa_aln_pe.feature-counts.txt" gene_lengths="tests/tools/input/genes.genelengths.txt"
   files:
     - path: test-output/out/tpm_file/test.bwa_aln_pe.TPM.txt
 
