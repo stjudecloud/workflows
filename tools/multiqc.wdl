@@ -14,16 +14,19 @@ task multiqc {
         input_files: "An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
         prefix: "A string for the MultiQC output directory: <prefix>/ and <prefix>.tar.gz"
         memory_gb: "RAM to allocate for task, specified in GB"
-        disk_size_gb: "Disk space to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         Array[File] input_files
         String prefix
         Int memory_gb = 5
-        Int disk_size_gb = 20  # TODO why is this so high? Convert to dynamic
+        Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
+
+    Float input_size = size(input_files, "GiB")
+    Int disk_size_gb = ceil(input_size) + 5 + modify_disk_size_gb
 
     String out_tar_gz = prefix + ".tar.gz"
 
