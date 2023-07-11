@@ -416,7 +416,7 @@ task parse_input {
             EXITCODE=1
         fi
 
-        if [ "~{input_molecule}" = "RNA" ] && [ ! ~{gtf_provided} ]; then
+        if [ "~{input_molecule}" = "RNA" ] && ! ~{gtf_provided}; then
             >&2 echo "Must supply a GTF if molecule = 'RNA'"
             EXITCODE=1
         fi
@@ -431,7 +431,7 @@ task parse_input {
             >&2 echo "Otherwise the exact same amount must be supplied."
             EXITCODE=1
         else
-            echo "~{sep="\n" coverage_labels}" >> labels.txt
+            echo "~{sep('\n', coverage_labels)}" >> labels.txt
         fi
 
         exit $EXITCODE
