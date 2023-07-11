@@ -13,6 +13,7 @@ task multiqc {
     parameter_meta {
         input_files: "An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
         prefix: "A string for the MultiQC output directory: <prefix>/ and <prefix>.tar.gz"
+        config: "YAML file for configuring generated report"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -20,6 +21,7 @@ task multiqc {
     input {
         Array[File] input_files
         String prefix
+        File? config
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -41,7 +43,7 @@ task multiqc {
 
         multiqc -v \
             --no-ansi \
-            -c multiqc_config.yaml \
+            -c ~{config} \
             --file-list file_list.txt \
             -o ~{prefix}
         
