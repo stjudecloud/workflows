@@ -9,3 +9,4 @@ channels:
 dependencies:
     - pytest-workflow
     - miniwdl
+    - git-lfs
