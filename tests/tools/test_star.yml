@@ -9,7 +9,6 @@
   files:
     - path: test-output/out/star_db/star_db.tar.gz
 
-# TODO: relocate STAR reference database
 - name: alignment_miniwdl
   tags:
     - miniwdl

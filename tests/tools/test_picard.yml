@@ -42,7 +42,7 @@
 - name: merge_sam_files_miniwdl
   tags:
     - miniwdl
-    - picard2
+    - picard
   command: >-
     miniwdl run -d test-output/. --copy-input-files --task merge_sam_files -i tests/tools/input_json/picard_merge_sam_files.json tools/picard.wdl
   files:
