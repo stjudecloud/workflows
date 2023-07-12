@@ -259,7 +259,7 @@ task merge_sam_files {
     }
 
     parameter_meta {
-        bam: "Input BAMs to merge"
+        bams: "Input BAMs to merge"
         threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file."
     }
 

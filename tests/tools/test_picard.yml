@@ -39,7 +39,14 @@
   files:
     - path: test-output/out/sorted_bam/test.bwa_aln_pe.sorted.bam
 
-# TODO: merge_sam_files
+- name: merge_sam_files_miniwdl
+  tags:
+    - miniwdl
+    - picard2
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task merge_sam_files -i tests/tools/input_json/picard_merge_sam_files.json tools/picard.wdl
+  files:
+    - path: test-output/out/merged_bam/test.bam
 
 - name: clean_sam_miniwdl
   tags:
@@ -50,7 +57,6 @@
   files:
     - path: test-output/out/cleaned_bam/test.bwa_aln_pe.cleaned.bam
 
-# TODO: collect_wgs_metrics
 - name: collect_wgs_metrics_miniwdl
   tags:
     - miniwdl
