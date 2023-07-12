@@ -3,9 +3,9 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task quickcheck tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
+    miniwdl run -d test-output/. --copy-input-files --task quickcheck tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
-    - path: test-output/out/checked_bam/test.bam
+    - path: test-output/out/checked_bam/test.bwa_aln_pe.bam
 
 - name: split_miniwdl
   tags:
@@ -22,19 +22,20 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task flagstat tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
+    miniwdl run -d test-output/. --copy-input-files --task flagstat tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
-    - path: test-output/out/flagstat_report/test.flagstat.txt
+    - path: test-output/out/flagstat_report/test.bwa_aln_pe.flagstat.txt
 
 - name: index_miniwdl
   tags:
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task index tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
+    miniwdl run -d test-output/. --copy-input-files --task index tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
-    - path: test-output/out/bam_index/test.bam.bai
-  
+    - path: test-output/out/bam_index/test.bwa_aln_pe.bam.bai
+
+# This fails due to insufficient reads in the BAM. The underlying task will be updated.
 - name: subsample_miniwdl
   tags:
     - miniwdl
@@ -67,27 +68,27 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task collate tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
+    miniwdl run -d test-output/. --copy-input-files --task collate tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
-    - path: test-output/out/collated_bam/test.collated.bam
+    - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
 
 - name: bam_to_fastq_miniwdl
   tags:
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task bam_to_fastq tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
+    miniwdl run -d test-output/. --copy-input-files --task bam_to_fastq tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
-    - path: test-output/out/read_one_fastq_gz/test_R1.fastq.gz
-    - path: test-output/out/read_two_fastq_gz/test_R2.fastq.gz
+    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz
+    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz
 
 - name: collate_to_fastq_miniwdl
   tags:
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task collate_to_fastq tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam" store_collated_bam=true
+    miniwdl run -d test-output/. --copy-input-files --task collate_to_fastq tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" store_collated_bam=true
   files:
-    - path: test-output/out/collated_bam/test.collated.bam
-    - path: test-output/out/read_one_fastq_gz/test_R1.fastq.gz
-    - path: test-output/out/read_two_fastq_gz/test_R2.fastq.gz
+    - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
+    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz
+    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz
