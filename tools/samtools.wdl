@@ -217,7 +217,7 @@ task subsample {
             n_cores=$(nproc)
         fi
 
-        read_count="$(samtools view --threads "$n_cores" -c)"
+        read_count="$(samtools view --threads "$n_cores" -c ~{bam})"
 
         if [[ "$read_count" -gt "~{desired_reads}" ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
