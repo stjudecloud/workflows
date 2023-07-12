@@ -235,7 +235,7 @@ task subsample {
             
             {
                 echo -e "sample\toriginal read count"
-                echo -e "~{basename(bam)}\t$read_count"
+                echo -e "~{prefix}\t$read_count"
             } > ~{prefix}.orig_read_count.tsv
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
