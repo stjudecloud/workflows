@@ -20,14 +20,19 @@
     - path: test-output/out/web_summary/web_summary.html
     - path: test-output/out/cloupe/cloupe.cloupe
 
-# - name: cellranger_bamtofastq_miniwdl
-#   tags:
-#     - miniwdl
-#     - cellranger
-#   command: >-
-#     miniwdl run -d test-output/. --copy-input-files --task bamtofastq tools/cellranger.wdl bam=
-#   files:
-#     - path: test-output/out/fastqs/possorted_genome_bam.bam
-#     - path: test-output/out/fastqs_archive/possorted_genome_bam.bam
-#     - path: test-output/out/read_one_fastq_gz/possorted_genome_bam.bam
-#     - path: test-output/out/read_two_fastq_gz/possorted_genome_bam.bam
+- name: cellranger_bamtofastq_miniwdl
+  tags:
+    - miniwdl
+    - cellranger
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task bamtofastq tools/cellranger.wdl bam="tests/tools/input/possorted_genome_bam.bam"
+  files:
+    - path: test-output/out/fastqs/0/bamtofastq_S1_L001_R1_001.fastq.gz
+    - path: test-output/out/fastqs/1/bamtofastq_S1_L001_R2_001.fastq.gz
+    - path: test-output/out/fastqs/2/bamtofastq_S1_L002_R1_001.fastq.gz
+    - path: test-output/out/fastqs/3/bamtofastq_S1_L002_R2_001.fastq.gz
+    - path: test-output/out/fastqs_archive/archive.tar.gz
+    - path: test-output/out/read_one_fastq_gz/0/bamtofastq_S1_L001_R1_001.fastq.gz
+    - path: test-output/out/read_one_fastq_gz/1/bamtofastq_S1_L002_R1_001.fastq.gz
+    - path: test-output/out/read_two_fastq_gz/0/bamtofastq_S1_L001_R2_001.fastq.gz
+    - path: test-output/out/read_two_fastq_gz/1/bamtofastq_S1_L002_R2_001.fastq.gz
