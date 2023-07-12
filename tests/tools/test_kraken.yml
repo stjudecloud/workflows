@@ -14,31 +14,31 @@
   command: >-
     miniwdl run -d test-output/. --task download_library tools/kraken.wdl library_name='fungi'
   files:
-    - path: test-output/out/library/kraken2_fungi.tar.gz
+    - path: test-output/out/library/kraken2_fungi_library.tar.gz
 
 - name: create_library_from_fastas_miniwdl
   tags:
     - miniwdl
     - kraken
   command: >-
-    miniwdl run -d test-output/. --task create_library_from_fastas -i tests/tools/input_jsons/kraken_create_library_from_fastas.json tools/kraken.wdl
+    miniwdl run -d test-output/. --copy-input-files --task create_library_from_fastas -i tests/tools/input_json/kraken_create_library_from_fastas.json tools/kraken.wdl
   files:
     - path: test-output/out/custom_library/kraken2_custom_library.tar.gz
   
-# - name: build_db_miniwdl
-#   tags:
-#     - miniwdl
-#     - kraken
-#   command: >-
-#     miniwdl run -d test-output/. --task build_db -i tests/tools/input/kraken_build_db.json tools/kraken.wdl
-#   files:
-#     - path: test-output/out/built_db/kraken2_db.tar.gz 
+- name: build_db_miniwdl
+  tags:
+    - miniwdl
+    - kraken
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task build_db -i tests/tools/input_json/kraken_build_db.json tools/kraken.wdl
+  files:
+    - path: test-output/out/built_db/kraken2_db.tar.gz
 
-# - name: kraken_miniwdl
-#   tags:
-#     - miniwdl
-#     - kraken
-#   command: >-
-#     miniwdl run -d test-output/. --task kraken tools/kraken.wdl read_one_fastq_gz="tests/tools/input/test_R1.fq.gz" read_two_fastq_gz="tests/tools/input/test_R2.fq.gz"
-#   files:
-#     - path: test-output/out/report/test.tar.gz 
+- name: kraken_miniwdl
+  tags:
+    - miniwdl
+    - kraken
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task kraken tools/kraken.wdl read_one_fastq_gz="tests/tools/input/test_R1.fq.gz" read_two_fastq_gz="tests/tools/input/test_R2.fq.gz" db="tests/tools/input/kraken2_db.tar.gz"
+  files:
+    - path: test-output/out/report/test.kraken2.txt
