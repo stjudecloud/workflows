@@ -240,15 +240,21 @@ task subsample {
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
-            true
+
+            # Assumes being called by one of our workflows
+            # or the default 'prefix' was used.
+            # If not, 'sample_name' will equal 'prefix'
+            sample_name=$(basename ~{prefix} '.subsampled')
+            {
+                echo -e "sample\toriginal read count"
+                echo -e "$sample_name\t-"
+            } > "$sample_name".orig_read_count.tsv
         fi
-        touch success
     >>>
 
     output {
-        File success = "success"
+        File orig_read_count = glob("*.orig_read_count.tsv")[0]
         File? sampled_bam = prefix + ".bam"
-        File? orig_read_count = prefix + ".orig_read_count.tsv"
     }
 
     runtime {
