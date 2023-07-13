@@ -1,4 +1,4 @@
-- name: cellranger_count_miniwdl
+- name: cellranger_count
   tags:
     - miniwdl
     - cellranger
@@ -20,7 +20,7 @@
     - path: test-output/out/web_summary/web_summary.html
     - path: test-output/out/cloupe/cloupe.cloupe
 
-- name: cellranger_bamtofastq_miniwdl
+- name: cellranger_bamtofastq
   tags:
     - miniwdl
     - cellranger

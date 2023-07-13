@@ -1,4 +1,4 @@
-- name: compute_checksum_miniwdl
+- name: compute_checksum
   tags:
     - miniwdl
     - md5sum

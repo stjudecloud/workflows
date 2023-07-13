@@ -1,4 +1,4 @@
-- name: mark_duplicates_miniwdl
+- name: picard_mark_duplicates
   tags:
     - miniwdl
     - picard
@@ -10,7 +10,7 @@
     - path: test-output/out/duplicate_marked_bam_md5/test.bwa_aln_pe.MarkDuplicates.bam.md5
     - path: test-output/out/mark_duplicates_metrics/test.bwa_aln_pe.MarkDuplicates.metrics.txt
 
-- name: validate_bam_miniwdl
+- name: picard_validate_bam
   tags:
     - miniwdl
     - picard
@@ -20,7 +20,7 @@
     - path: test-output/out/validated_bam/test.bwa_aln_pe.bam
     - path: test-output/out/validate_report/test.bwa_aln_pe.ValidateSamFile.txt
 
-- name: bam_to_fastq_picard_miniwdl
+- name: picard_bam_to_fastq
   tags:
     - miniwdl
     - picard
@@ -30,7 +30,7 @@
     - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz
     - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz
 
-- name: sort_miniwdl
+- name: picard_sort
   tags:
     - miniwdl
     - picard
@@ -39,7 +39,7 @@
   files:
     - path: test-output/out/sorted_bam/test.bwa_aln_pe.sorted.bam
 
-- name: merge_sam_files_miniwdl
+- name: picard_merge_sam_files
   tags:
     - miniwdl
     - picard
@@ -48,7 +48,7 @@
   files:
     - path: test-output/out/merged_bam/test.bam
 
-- name: clean_sam_miniwdl
+- name: picard_clean_sam
   tags:
     - miniwdl
     - picard
@@ -57,7 +57,7 @@
   files:
     - path: test-output/out/cleaned_bam/test.bwa_aln_pe.cleaned.bam
 
-- name: collect_wgs_metrics_miniwdl
+- name: picard_collect_wgs_metrics
   tags:
     - miniwdl
     - picard
@@ -66,7 +66,7 @@
   files:
     - path: test-output/out/wgs_metrics/test.bwa_aln_pe.CollectWgsMetrics.txt
 
-- name: collect_alignment_summary_metrics_miniwdl
+- name: picard_collect_alignment_summary_metrics
   tags:
     - miniwdl
     - picard
@@ -76,7 +76,7 @@
     - path: test-output/out/alignment_metrics/test.bwa_aln_pe.CollectAlignmentSummaryMetrics.txt
     - path: test-output/out/alignment_metrics_pdf/test.bwa_aln_pe.CollectAlignmentSummaryMetrics.pdf
 
-- name: collect_gc_bias_metrics_miniwdl
+- name: picard_collect_gc_bias_metrics
   tags:
     - miniwdl
     - picard
@@ -87,7 +87,7 @@
     - path: test-output/out/gc_bias_metrics_summary/test.bwa_aln_pe.CollectGcBiasMetrics.summary.txt
     - path: test-output/out/gc_bias_metrics_pdf/test.bwa_aln_pe.CollectGcBiasMetrics.pdf
 
-- name: collect_insert_size_metrics_miniwdl
+- name: picard_collect_insert_size_metrics
   tags:
     - miniwdl
     - picard
@@ -97,7 +97,7 @@
     - path: test-output/out/insert_size_metrics/test.bwa_aln_pe.CollectInsertSizeMetrics.txt
     - path: test-output/out/insert_size_metrics_pdf/test.bwa_aln_pe.CollectInsertSizeMetrics.pdf
 
-- name: quality_score_distribution_miniwdl
+- name: picard_quality_score_distribution
   tags:
     - miniwdl
     - picard

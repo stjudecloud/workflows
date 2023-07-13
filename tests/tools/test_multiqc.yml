@@ -1,4 +1,4 @@
-- name: multiqc_miniwdl
+- name: multiqc
   tags:
     - miniwdl
     - multiqc

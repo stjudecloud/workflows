@@ -1,5 +1,5 @@
 
-- name: bwa_aln_miniwdl
+- name: bwa_aln
   tags:
     - miniwdl
     - bwa
@@ -9,7 +9,7 @@
     - path: test-output/out/bam/test.bam
 
 
-- name: bwa_aln_pe_miniwdl
+- name: bwa_aln_pe
   tags:
     - miniwdl
     - bwa
@@ -19,7 +19,7 @@
     - path: test-output/out/bam/test.bam
 
 
-- name: bwa_mem_miniwdl
+- name: bwa_mem
   tags:
     - miniwdl
     - bwa
@@ -28,17 +28,17 @@
   files:
     - path: test-output/out/bam/test.bam
 
-- name: build_bwa_db_miniwdl
+- name: build_bwa_db
   tags:
     - miniwdl
     - bwa
-    - database
+    - reference
   command: >-
     miniwdl run -d test-output/. --copy-input-files --task build_bwa_db tools/bwa.wdl reference_fasta="tests/tools/input/GRCh38.chrY_chrM.fa.gz"
   files:
     - path: test-output/out/bwa_db_tar_gz/bwa_db.tar.gz
 
-- name: format_rg_for_bwa_miniwdl
+- name: format_rg_for_bwa
   tags:
     - miniwdl
     - bwa

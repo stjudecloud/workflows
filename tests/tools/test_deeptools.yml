@@ -1,4 +1,4 @@
-- name: bam_coverage_miniwdl
+- name: deeptools_bam_coverage
   tags:
     - miniwdl
     - deeptools

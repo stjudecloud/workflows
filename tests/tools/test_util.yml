@@ -1,5 +1,5 @@
 
-- name: download_miniwdl
+- name: download
   tags:
     - miniwdl
     - util
@@ -14,7 +14,7 @@
       contains:
         - "MIT License"
 
-- name: get_read_groups_miniwdl
+- name: get_read_groups
   tags:
     - miniwdl
     - util
@@ -28,7 +28,7 @@
       must_not_contain:
         - "@RG	ID:3"
 
-- name: split_string_miniwdl
+- name: split_string
   tags:
     - miniwdl
     - util
@@ -42,7 +42,7 @@
       - "rg1 , rg2"
 
 # This fails currently because the underlying task is broken.
-- name: calc_gene_lengths_miniwdl
+- name: calc_gene_lengths
   tags:
     - miniwdl
     - util
@@ -54,7 +54,7 @@
         - "AL954722.1"
 
 # This fails, but the underlying task will be updated.
-- name: qc_summary_miniwdl
+- name: qc_summary
   tags:
    - miniwdl
    - util
@@ -63,7 +63,7 @@
   files:
     - path: "test-output/out/summary/SJBT031344_D1.Exome.qc_summary.json"
 
-- name: compression_integrity_miniwdl
+- name: compression_integrity
   tags:
     - miniwdl
     - util
@@ -73,7 +73,7 @@
     contains:
       - "passed"
 
-- name: add_to_bam_header_miniwdl
+- name: add_to_bam_header
   tags:
     - miniwdl
     - util
@@ -85,7 +85,7 @@
     contains:
       - "@RG\\tID:3"
 
-- name: unpack_tarball_miniwdl
+- name: unpack_tarball
   tags:
     - miniwdl
     - util
@@ -95,7 +95,7 @@
     - path: "test-output/out/tarball_contents/2/a"
     - path: "test-output/out/tarball_contents/3/b"
 
-- name: make_coverage_regions_beds_miniwdl
+- name: make_coverage_regions_beds
   tags:
     - miniwdl
     - util

@@ -1,4 +1,4 @@
-- name: quickcheck_miniwdl
+- name: samtools_quickcheck
   tags:
     - miniwdl
     - samtools
@@ -7,7 +7,7 @@
   files:
     - path: test-output/out/checked_bam/test.bwa_aln_pe.bam
 
-- name: split_miniwdl
+- name: samtools_split
   tags:
     - miniwdl
     - samtools
@@ -17,7 +17,7 @@
     - path: test-output/out/split_bams/0/
     - path: test-output/out/split_bams/1/
 
-- name: flagstat_miniwdl
+- name: samtools_flagstat
   tags:
     - miniwdl
     - samtools
@@ -26,7 +26,7 @@
   files:
     - path: test-output/out/flagstat_report/test.bwa_aln_pe.flagstat.txt
 
-- name: index_miniwdl
+- name: samtools_index
   tags:
     - miniwdl
     - samtools
@@ -36,7 +36,7 @@
     - path: test-output/out/bam_index/test.bwa_aln_pe.bam.bai
 
 # This fails due to insufficient reads in the BAM. The underlying task will be updated.
-- name: subsample_miniwdl
+- name: samtools_subsample
   tags:
     - miniwdl
     - samtools
@@ -45,7 +45,7 @@
   files:
     - path: test-output/out/sampled_bam/test.subsampled.bam
 
-- name: merge_miniwdl
+- name: samtools_merge
   tags:
     - miniwdl
     - samtools
@@ -54,7 +54,7 @@
   files:
     - path: test-output/out/merged_bam/test.bam
 
-- name: addreplacerg_miniwdl
+- name: samtools_addreplacerg
   tags:
     - miniwdl
     - samtools
@@ -63,7 +63,7 @@
   files:
     - path: test-output/out/tagged_bam/test.bwa_aln_pe.read_group.bam
 
-- name: collate_miniwdl
+- name: samtools_collate
   tags:
     - miniwdl
     - samtools
@@ -72,7 +72,7 @@
   files:
     - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
 
-- name: bam_to_fastq_miniwdl
+- name: samtools_bam_to_fastq
   tags:
     - miniwdl
     - samtools
@@ -82,7 +82,7 @@
     - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz
     - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz
 
-- name: collate_to_fastq_miniwdl
+- name: samtools_collate_to_fastq
   tags:
     - miniwdl
     - samtools

@@ -1,4 +1,4 @@
-- name: fqlint_miniwdl
+- name: fqlint
   tags:
     - miniwdl
     - fq
@@ -8,7 +8,7 @@
     - path: test-output/out/validated_read1/test_R1.fq.gz
     - path: test-output/out/validated_read2/test_R2.fq.gz
 
-- name: subsample_fq_miniwdl
+- name: subsample_fq
   tags:
     - miniwdl
     - fq
@@ -18,7 +18,7 @@
     - path: test-output/out/subsampled_read1/test_R1.subsampled.fastq.gz
     - path: test-output/out/subsampled_read2/test_R2.subsampled.fastq.gz
 
-- name: subsample_fq_percentage_miniwdl
+- name: subsample_fq_percentage
   tags:
     - miniwdl
     - fq

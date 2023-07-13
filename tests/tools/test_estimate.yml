@@ -1,4 +1,4 @@
-- name: calc_tpm_miniwdl
+- name: calc_tpm
   tags:
     - miniwdl
     - estimate
@@ -7,7 +7,7 @@
   files:
     - path: test-output/out/tpm_file/test.bwa_aln_pe.TPM.txt
 
-- name: run_ESTIMATE_miniwdl
+- name: run_ESTIMATE
   tags:
     - miniwdl
     - estimate

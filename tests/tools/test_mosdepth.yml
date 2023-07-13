@@ -1,4 +1,4 @@
-- name: coverage_miniwdl
+- name: mosdepth_coverage
   tags:
     - miniwdl
     - mosdepth

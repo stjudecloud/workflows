@@ -1,4 +1,4 @@
-- name: infer_strandedness_miniwdl
+- name: infer_strandedness
   tags:
     - miniwdl
     - ngsderive
@@ -9,7 +9,7 @@
       contains:
         - "Unstranded"
 
-- name: instrument_miniwdl
+- name: instrument
   tags:
     - miniwdl
     - ngsderive
@@ -21,7 +21,7 @@
         - "multiple instruments"
         - "unknown confidence"
 
-- name: read_length_miniwdl
+- name: read_length
   tags:
     - miniwdl
     - ngsderive
@@ -32,7 +32,7 @@
       contains:
         - "150=20000"
 
-- name: encoding_miniwdl
+- name: encoding
   tags:
     - miniwdl
     - ngsderive
@@ -44,7 +44,7 @@
         - "ASCII range: 74-74"
         - "Illumina 1.3"
 
-- name: junction_annotation_miniwdl
+- name: junction_annotation
   tags:
     - miniwdl
     - ngsderive
