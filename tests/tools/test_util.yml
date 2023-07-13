@@ -41,7 +41,7 @@
     must_not_contain:
       - "rg1 , rg2"
 
-# This fails currently because the underlying task is broken.
+# TODO: This fails currently because the underlying task is broken.
 - name: calc_gene_lengths
   tags:
     - miniwdl
@@ -53,7 +53,7 @@
       contains:
         - "AL954722.1"
 
-# This fails, but the underlying task will be updated.
+# TODO: This fails, but the underlying task will be updated.
 - name: qc_summary
   tags:
    - miniwdl

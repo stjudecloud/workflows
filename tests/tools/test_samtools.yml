@@ -14,8 +14,8 @@
   command: >-
     miniwdl run -d test-output/. --copy-input-files --task split tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
   files:
-    - path: test-output/out/split_bams/0/
-    - path: test-output/out/split_bams/1/
+    - path: test-output/out/split_bams/0/test_1.bam
+    - path: test-output/out/split_bams/1/test_2.bam
 
 - name: samtools_flagstat
   tags:
@@ -35,7 +35,7 @@
   files:
     - path: test-output/out/bam_index/test.bwa_aln_pe.bam.bai
 
-# This fails due to insufficient reads in the BAM. The underlying task will be updated.
+# TODO: This fails due to insufficient reads in the BAM. The underlying task will be updated.
 - name: samtools_subsample
   tags:
     - miniwdl
