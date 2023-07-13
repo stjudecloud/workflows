@@ -1,0 +1,4 @@
+{
+    "ngs_files": ["tests/tools/input/test.bwa_aln_pe.bam"],
+    "outfile_name": "test.bwa_aln_pe.encoding.txt"
+}

@@ -1,0 +1,6 @@
+{
+    "read_one_fastq_gz": "tests/tools/input/test_R1.fq.gz",
+    "read_two_fastq_gz": "tests/tools/input/test_R2.fq.gz",
+    "read_group": "@RG\\tID:test\\tSM:test",
+    "bwa_db_tar_gz": "tests/tools/input/bwa_db.tar.gz"
+}

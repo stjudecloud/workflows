@@ -39,8 +39,11 @@ task multiqc {
         echo "~{sep('\n', input_files)}" > file_list.txt
 
         # Start YAML generation
-        echo "extra_fn_clean_exts:" > multiqc_config.yaml
-        
+        touch multiqc_config.yaml
+        if [ "~{(length(extra_fn_clean_exts) > 0)}" = "true" ] || [ "~{(length(mosdepth_labels) > 0)}" = "true" ]; then
+            echo "extra_fn_clean_exts:" > multiqc_config.yaml
+        fi
+
         # if extra extensions are to be cleaned, add them to YAML
         if [ "~{(length(extra_fn_clean_exts) > 0)}" = "true" ]; then
             echo "~{sep('\n', extra_fn_clean_exts)}" > extensions.txt

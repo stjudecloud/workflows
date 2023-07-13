@@ -1,0 +1,4 @@
+{
+    "bams": ["tests/tools/input/test2.bam", "tests/tools/input/test.bwa_aln_pe.bam"],
+    "prefix": "test"
+}

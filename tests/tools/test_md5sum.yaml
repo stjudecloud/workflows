@@ -1,0 +1,10 @@
+- name: compute_checksum
+  tags:
+    - miniwdl
+    - md5sum
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task compute_checksum tools/md5sum.wdl file="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: test-output/out/md5sum/test.bwa_aln_pe.bam.md5
+      contains:
+        - "3d7f3b18dd97d02a3fba7c7cccb4245c"
