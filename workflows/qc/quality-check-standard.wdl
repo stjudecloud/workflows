@@ -310,6 +310,7 @@ workflow quality_check {
                 wg_coverage.summary,
                 wg_coverage.global_dist,
                 phred_scores.phred_scores,
+                subsample.orig_read_count,
                 markdups_post.mosdepth_global_summary,
                 markdups_post.mosdepth_global_dist,
                 ngsderive_strandedness.strandedness_file,
@@ -380,6 +381,7 @@ workflow quality_check {
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
         File multiqc_report = multiqc.multiqc_report
+        File? orig_read_count = subsample.orig_read_count
         File? kraken_sequences = kraken.sequences
         File? mosdepth_dups_marked_global_dist = markdups_post.mosdepth_global_dist
         File? mosdepth_dups_marked_global_summary = markdups_post.mosdepth_global_summary
