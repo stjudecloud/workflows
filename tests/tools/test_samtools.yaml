@@ -25,6 +25,12 @@
     miniwdl run -d test-output/. --task flagstat tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/flagstat_report/test.bwa_aln_pe.flagstat.txt
+      contains:
+        - "20000"
+        - "0 + 0 secondary"
+        - "20000 + 0 in total (QC-passed reads + QC-failed reads)"
+        - "10000 + 0 read1"
+        - "10000 + 0 read2"
 
 - name: samtools_index
   tags:
