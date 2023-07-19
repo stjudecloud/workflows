@@ -464,8 +464,8 @@ for read in bam:
         continue
 
     cur_quals = read.query_alignment_qualities  # array of phred scores
-    for qual in cur_quals:
-        if not only_mid:
+    if not only_mid:
+        for qual in cur_quals:
             tot_quals[qual] += 1
             if read.is_unmapped:
                 unmapped_quals[qual] += 1
