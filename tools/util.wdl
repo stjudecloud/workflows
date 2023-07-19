@@ -484,10 +484,9 @@ prefix = os.environ["PREFIX"]
 outfile = open(prefix + ".global_PHRED_scores.tsv", "w")
 
 # print header
-header = []
+header = ["sample"]
 if not only_mid:
     header += [
-        "sample",
         "total average",
         "total median",
         "total stdev",
