@@ -193,13 +193,15 @@ task subsample {
     input {
         File bam
         Int desired_reads
-        String prefix = basename(bam, ".bam") + ".subsampled"
+        String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
+
+    String suffixed = prefix + ".subsampled"
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
@@ -217,39 +219,42 @@ task subsample {
             n_cores=$(nproc)
         fi
 
-        if [[ \
-            "$(samtools head --threads "$n_cores" -h 0 -n ~{desired_reads} ~{bam} \
-                | wc -l)" \
-            -ge "~{desired_reads}" \
-        ]]; then
+        read_count="$(samtools view --threads "$n_cores" -c ~{bam})"
+
+        if [[ "$read_count" -gt "~{desired_reads}" ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
             # subsample it.
-            initial_frac=0.00001
-            initial_reads=$( \
-                samtools view --threads "$n_cores" -s "$initial_frac" ~{bam} | wc -l \
-            )
             frac=$( \
                 awk -v desired_reads=~{desired_reads} \
-                    -v initial_reads="$initial_reads" \
-                    -v initial_frac="$initial_frac" \
+                    -v read_count="$read_count" \
                         'BEGIN{
                             printf "%1.8f",
-                            ( desired_reads / initial_reads * initial_frac )
+                            ( desired_reads / read_count )
                         }' \
                 )
             samtools view --threads "$n_cores" -hb -s "$frac" ~{bam} \
-                > ~{prefix}.bam
+                > ~{suffixed}.bam
+            
+            {
+                echo -e "sample\toriginal read count"
+                echo -e "~{prefix}\t$read_count"
+            } > ~{suffixed}.orig_read_count.tsv
         else
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
-            true
+
+            # Do not use the '.subsampled' suffixed name
+            # if not subsampled. Use ~{prefix} instead.
+            {
+                echo -e "sample\toriginal read count"
+                echo -e "$sample_name\t-"
+            } > ~{prefix}.orig_read_count.tsv
         fi
-        touch success
     >>>
 
     output {
-        File success = "success"
-        File? sampled_bam = prefix + ".bam"
+        File orig_read_count = glob("*.orig_read_count.tsv")[0]
+        File? sampled_bam = suffixed + ".bam"
     }
 
     runtime {
