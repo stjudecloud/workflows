@@ -32,7 +32,7 @@ def test_samtools_merge(workflow_dir):
     assert read_groups[0] == "test2"
     assert read_groups[1] == "test.bwa_aln_pe"
 
-@pytest.mark.workflow('samtools_collate')
+@pytest.mark.workflow('samtools_collate', 'samtools_collate_to_fastq')
 def test_samtools_collate(workflow_dir):
     bam = pathlib.Path(workflow_dir, 'test-output/out/collated_bam/test.bwa_aln_pe.collated.bam')
     samfile = pysam.AlignmentFile(bam, "rb")
@@ -42,30 +42,10 @@ def test_samtools_collate(workflow_dir):
         assert reads[c].query_name == reads[c+1].query_name
         assert reads[c].is_read1 != reads[c+1].is_read1
 
-@pytest.mark.workflow('samtools_bam_to_fastq')
+@pytest.mark.workflow('samtools_bam_to_fastq', 'samtools_collate_to_fastq')
 def test_samtools_bam_to_fastq(workflow_dir):
     fq1 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz'))
     fq2 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz'))
 
     for r1, r2 in zip(fq1, fq2):
         assert r1.head.removesuffix("/1") == r2.head.removesuffix("/2")
-
-@pytest.mark.workflow('samtools_collate_to_fastq')
-def test_samtools_collate_to_fastq(workflow_dir):
-    fq1 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz'))
-    fq2 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz'))
-    bam = pathlib.Path(workflow_dir, 'test-output/out/collated_bam/test.bwa_aln_pe.collated.bam')
-
-    for r1, r2 in zip(fq1, fq2):
-        assert r1.head.removesuffix("/1") == r2.head.removesuffix("/2")
-
-    samfile = pysam.AlignmentFile(bam, "rb")
-
-    reads = list(samfile.head(n=100))
-    for c in range(0, 100, 2):
-        assert reads[c].query_name == reads[c+1].query_name
-        assert reads[c].is_read1 != reads[c+1].is_read1
-
-    
-
-
