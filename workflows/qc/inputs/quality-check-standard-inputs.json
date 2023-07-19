@@ -7,7 +7,7 @@
   "quality_check.ngsderive_instrument.num_samples": "Int (default = 10000)",
   "quality_check.ngsderive_read_length.num_samples": "Int (default = 10000)",
   "quality_check.ngsderive_read_length.majority_vote_cutoff": "Float (default = 0.7)",
-  "quality_check.phred_scores.fast_mode": "Boolean (default = false)",
+  "quality_check.phred_scores.fast_mode": "Boolean (default = true)",
   "quality_check.junction_annotation.min_intron": "Int (default = 50)",
   "quality_check.junction_annotation.min_mapq": "Int (default = 30)",
   "quality_check.junction_annotation.min_reads": "Int (default = 2)",
