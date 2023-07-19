@@ -78,6 +78,8 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -162,15 +164,17 @@ MultiQC aggregates quality control results for bioinformatics.</p>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>input_files</code> (Array[File], <strong>required</strong>): An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC.</li>
-<li><code>prefix</code> (String, <strong>required</strong>): A string for the MultiQC output directory: <prefix>.multiqc/ and <prefix>.multiqc.tar.gz</li>
+<li><code>prefix</code> (String, <strong>required</strong>): A string for the MultiQC output directory: <prefix>/ and <prefix>.tar.gz</li>
+</ul>
+<h4 id="optional">Optional</h4>
+<ul>
+<li><code>config</code> (File?): YAML file for configuring generated report</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>disk_size_gb</code> (Int, default=20)</li>
-<li><code>extra_fn_clean_exts</code> (Array[String], default=[]): An array of strings that should be cleaned from sample names by MultiQC</li>
 <li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>mosdepth_labels</code> (Array[String], default=[]): If passing in multiple runs of <code>mosdepth</code>, an array of strings for labelling the different runs (must match part of the filenames)</li>
+<li><code>memory_gb</code> (Int, default=5): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>

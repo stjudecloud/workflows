@@ -385,12 +385,12 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <li><code>memory_gb</code> (Int, default=4)</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam") + ".subsampled")</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
 <li><code>use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
 <ul>
-<li><code>success</code> (File)</li>
+<li><code>orig_read_count</code> (File)</li>
 <li><code>sampled_bam</code> (File?)</li>
 </ul>
 <h2 id="merge">merge</h2>
