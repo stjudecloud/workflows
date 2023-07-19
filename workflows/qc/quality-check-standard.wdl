@@ -74,7 +74,7 @@ workflow quality_check {
         String molecule
         File? gtf
         Int? max_retries
-        File multiqc_config = "https://raw.githubusercontent.com/stjudecloud/workflows/multiqc/workflows/qc/inputs/multiqc_config.yaml"
+        File multiqc_config = "https://raw.githubusercontent.com/stjudecloud/workflows/multiqc/workflows/qc/inputs/multiqc_config_hg38.yaml"
         Array[File] extra_multiqc_inputs = []
         Array[File] coverage_beds = []
         Array[String] coverage_labels = []
