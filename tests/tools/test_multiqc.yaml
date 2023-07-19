@@ -1,0 +1,8 @@
+- name: multiqc
+  tags:
+    - miniwdl
+    - multiqc
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task multiqc -i tests/tools/input_json/multiqc.json tools/multiqc.wdl
+  files:
+    - path: test-output/out/multiqc_report/test.bwa_aln_pe.tar.gz

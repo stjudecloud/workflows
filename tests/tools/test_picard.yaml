@@ -1,0 +1,108 @@
+- name: picard_mark_duplicates
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task mark_duplicates tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" memory_gb=16
+  files:
+    - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.MarkDuplicates.bam
+    - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.MarkDuplicates.bam.bai
+    - path: test-output/out/duplicate_marked_bam_md5/test.bwa_aln_pe.MarkDuplicates.bam.md5
+    - path: test-output/out/mark_duplicates_metrics/test.bwa_aln_pe.MarkDuplicates.metrics.txt
+
+- name: picard_validate_bam
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task validate_bam tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: test-output/out/validated_bam/test.bwa_aln_pe.bam
+    - path: test-output/out/validate_report/test.bwa_aln_pe.ValidateSamFile.txt
+
+- name: picard_bam_to_fastq
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task bam_to_fastq tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz
+    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz
+
+- name: picard_sort
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task sort tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" memory_gb=16
+  files:
+    - path: test-output/out/sorted_bam/test.bwa_aln_pe.sorted.bam
+
+- name: picard_merge_sam_files
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task merge_sam_files -i tests/tools/input_json/picard_merge_sam_files.json tools/picard.wdl
+  files:
+    - path: test-output/out/merged_bam/test.bam
+
+- name: picard_clean_sam
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task clean_sam tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: test-output/out/cleaned_bam/test.bwa_aln_pe.cleaned.bam
+
+- name: picard_collect_wgs_metrics
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task collect_wgs_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" reference_fasta="tests/tools/input/GRCh38.chrY_chrM.fa.gz"
+  files:
+    - path: test-output/out/wgs_metrics/test.bwa_aln_pe.CollectWgsMetrics.txt
+
+- name: picard_collect_alignment_summary_metrics
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task collect_alignment_summary_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: test-output/out/alignment_metrics/test.bwa_aln_pe.CollectAlignmentSummaryMetrics.txt
+    - path: test-output/out/alignment_metrics_pdf/test.bwa_aln_pe.CollectAlignmentSummaryMetrics.pdf
+
+- name: picard_collect_gc_bias_metrics
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task collect_gc_bias_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" reference_fasta=tests/tools/input/GRCh38.chrY_chrM.fa.gz
+  files:
+    - path: test-output/out/gc_bias_metrics/test.bwa_aln_pe.CollectGcBiasMetrics.txt
+    - path: test-output/out/gc_bias_metrics_summary/test.bwa_aln_pe.CollectGcBiasMetrics.summary.txt
+    - path: test-output/out/gc_bias_metrics_pdf/test.bwa_aln_pe.CollectGcBiasMetrics.pdf
+
+- name: picard_collect_insert_size_metrics
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task collect_insert_size_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: test-output/out/insert_size_metrics/test.bwa_aln_pe.CollectInsertSizeMetrics.txt
+    - path: test-output/out/insert_size_metrics_pdf/test.bwa_aln_pe.CollectInsertSizeMetrics.pdf
+
+- name: picard_quality_score_distribution
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task quality_score_distribution tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: test-output/out/quality_score_distribution_txt/test.bwa_aln_pe.QualityScoreDistribution.txt
+    - path: test-output/out/quality_score_distribution_pdf/test.bwa_aln_pe.QualityScoreDistribution.pdf

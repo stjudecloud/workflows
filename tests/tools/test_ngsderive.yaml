@@ -1,0 +1,55 @@
+- name: infer_strandedness
+  tags:
+    - miniwdl
+    - ngsderive
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task infer_strandedness tools/ngsderive.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" bam_index="tests/tools/input/test.bwa_aln_pe.bam.bai" gtf="tests/tools/input/genes.gtf.gz"
+  files:
+    - path: test-output/out/strandedness_file/test.bwa_aln_pe.strandedness.txt
+      contains:
+        - "Unstranded"
+
+- name: instrument
+  tags:
+    - miniwdl
+    - ngsderive
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task instrument tools/ngsderive.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: test-output/out/instrument_file/test.bwa_aln_pe.instrument.txt
+      contains:
+        - "multiple instruments"
+        - "unknown confidence"
+
+- name: read_length
+  tags:
+    - miniwdl
+    - ngsderive
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task read_length tools/ngsderive.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" bam_index="tests/tools/input/test.bwa_aln_pe.bam.bai"
+  files:
+    - path: test-output/out/read_length_file/test.bwa_aln_pe.readlength.txt
+      contains:
+        - "150=20000"
+
+- name: encoding
+  tags:
+    - miniwdl
+    - ngsderive
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task encoding -i tests/tools/input_json/ngsderive_encoding.json tools/ngsderive.wdl
+  files:
+    - path: test-output/out/encoding_file/test.bwa_aln_pe.encoding.txt
+      contains:
+        - "ASCII range: 74-74"
+        - "Illumina 1.3"
+
+- name: junction_annotation
+  tags:
+    - miniwdl
+    - ngsderive
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task junction_annotation tools/ngsderive.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" bam_index="tests/tools/input/test.bwa_aln_pe.bam.bai" gtf="tests/tools/input/genes.gtf.gz"
+  files:
+    - path: test-output/out/junction_summary/test.bwa_aln_pe.junction_summary.txt
+    - path: test-output/out/junctions/test.bwa_aln_pe.junctions.tsv.gz
