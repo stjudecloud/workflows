@@ -426,6 +426,7 @@ task global_phred_scores {
     input {
         File bam
         String prefix = basename(bam, ".bam")
+        Boolean fast_mode = true
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -439,17 +440,21 @@ task global_phred_scores {
     command <<<
         set -euo pipefail
 
-        BAM="~{bam}" PREFIX="~{prefix}" python3 - <<END
+        BAM="~{bam}" PREFIX="~{prefix}" FAST_MODE=~{fast_mode} python3 - <<END
 import os  # lint-check: ignore
-import pysam  # lint-check: ignore
 from collections import defaultdict  # lint-check: ignore
+
+import pysam  # lint-check: ignore
 
 bam_path = os.environ["BAM"]
 bam = pysam.AlignmentFile(bam_path, "rb")
 
-tot_quals = defaultdict(lambda: 0)
-mapped_quals = defaultdict(lambda: 0)
-unmapped_quals = defaultdict(lambda: 0)
+only_mid = os.environ["FAST_MODE"] == "true"
+
+if not only_mid:
+    tot_quals = defaultdict(lambda: 0)
+    mapped_quals = defaultdict(lambda: 0)
+    unmapped_quals = defaultdict(lambda: 0)
 middle_tot_quals = defaultdict(lambda: 0)
 middle_mapped_quals = defaultdict(lambda: 0)
 middle_unmapped_quals = defaultdict(lambda: 0)
@@ -460,11 +465,12 @@ for read in bam:
 
     cur_quals = read.query_alignment_qualities  # array of phred scores
     for qual in cur_quals:
-        tot_quals[qual] += 1
-        if read.is_unmapped:
-            unmapped_quals[qual] += 1
-        else:
-            mapped_quals[qual] += 1
+        if not only_mid:
+            tot_quals[qual] += 1
+            if read.is_unmapped:
+                unmapped_quals[qual] += 1
+            else:
+                mapped_quals[qual] += 1
 
     middle_pos = len(cur_quals) // 2  # middle base of read
     middle_score = cur_quals[middle_pos]
@@ -478,30 +484,33 @@ prefix = os.environ["PREFIX"]
 outfile = open(prefix + ".global_PHRED_scores.tsv", "w")
 
 # print header
+header = []
+if not only_mid:
+    header += [
+        "sample",
+        "total average",
+        "total median",
+        "total stdev",
+        "mapped average",
+        "mapped median",
+        "mapped stdev",
+        "unmapped average",
+        "unmapped median",
+        "unmapped stdev",
+    ]
+header += [
+    "middle position total average",
+    "middle position total median",
+    "middle position total stdev",
+    "middle position mapped average",
+    "middle position mapped median",
+    "middle position mapped stdev",
+    "middle position unmapped average",
+    "middle position unmapped median",
+    "middle position unmapped stdev",
+]
 print(
-    "\t".join(
-        [
-            "sample",
-            "total average",
-            "total median",
-            "total stdev",
-            "mapped average",
-            "mapped median",
-            "mapped stdev",
-            "unmapped average",
-            "unmapped median",
-            "unmapped stdev",
-            "middle position total average",
-            "middle position total median",
-            "middle position total stdev",
-            "middle position mapped average",
-            "middle position mapped median",
-            "middle position mapped stdev",
-            "middle position unmapped average",
-            "middle position unmapped median",
-            "middle position unmapped stdev",
-        ]
-    ),
+    "\t".join(header),
     file=outfile,
 )
 print(prefix, file=outfile, end="\t")
@@ -537,20 +546,21 @@ def stats_from_dict(score_dict):
     return avg, median, stdev
 
 
-tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
-print(f"{tot_avg}", file=outfile, end="\t")
-print(f"{tot_median}", file=outfile, end="\t")
-print(f"{tot_stdev}", file=outfile, end="\t")
+if not only_mid:
+    tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
+    print(f"{tot_avg}", file=outfile, end="\t")
+    print(f"{tot_median}", file=outfile, end="\t")
+    print(f"{tot_stdev}", file=outfile, end="\t")
 
-mapped_avg, mapped_median, mapped_stdev = stats_from_dict(mapped_quals)
-print(f"{mapped_avg}", file=outfile, end="\t")
-print(f"{mapped_median}", file=outfile, end="\t")
-print(f"{mapped_stdev}", file=outfile, end="\t")
+    mapped_avg, mapped_median, mapped_stdev = stats_from_dict(mapped_quals)
+    print(f"{mapped_avg}", file=outfile, end="\t")
+    print(f"{mapped_median}", file=outfile, end="\t")
+    print(f"{mapped_stdev}", file=outfile, end="\t")
 
-unmapped_avg, unmapped_median, unmapped_stdev = stats_from_dict(unmapped_quals)
-print(f"{unmapped_avg}", file=outfile, end="\t")
-print(f"{unmapped_median}", file=outfile, end="\t")
-print(f"{unmapped_stdev}", file=outfile, end="\t")
+    unmapped_avg, unmapped_median, unmapped_stdev = stats_from_dict(unmapped_quals)
+    print(f"{unmapped_avg}", file=outfile, end="\t")
+    print(f"{unmapped_median}", file=outfile, end="\t")
+    print(f"{unmapped_stdev}", file=outfile, end="\t")
 
 middle_tot_avg, middle_tot_median, middle_tot_stdev = stats_from_dict(middle_tot_quals)
 print(f"{middle_tot_avg}", file=outfile, end="\t")
