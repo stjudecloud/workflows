@@ -205,7 +205,7 @@ task junction_annotation {
         Int min_mapq = 30
         Int min_reads = 2
         Int fuzzy_junction_match_range = 0
-        Int memory_gb = 35
+        Int memory_gb = 45
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
