@@ -574,7 +574,7 @@ task collate_to_fastq {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
+    Int memory_gb = ceil(bam_size * 0.3) + 4 + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * 5) + 10 + modify_disk_size_gb
 
     command <<<
