@@ -8,17 +8,51 @@ version 1.1
 
 task fqlint {
     meta {
-        description: "This WDL task performs quality control on the input FASTQ pairs to ensure proper formatting."
+        description: "This WDL task performs quality control on the input FASTQs to ensure proper formatting."
     }
 
     parameter_meta {
         read_one_fastq: "Input FASTQ with read one"
         read_two_fastq: "Input FASTQ with read two"
+        disable_validator_codes: {
+            description: "Array of codes to disable specific validators",
+            choices: {
+                S001: "Plus line starts with a '+'",
+                S002: "All characters in sequence line are one of 'ACGTN', case-insensitive",
+                S003: "Name line starts with an '@'",
+                S004: "All four record lines (name, sequence, plus line, and quality) are present",
+                S005: "Sequence and quality lengths are the same",
+                S006: "All characters in quality line are between '!' and '~' (ordinal values)",
+                S007: "All record names are unique",
+                P001: "Each paired read name is the same, excluding interleave"
+            }
+        }
+        single_read_validation_level: {
+            description: "Only use single read validators up to a given level",
+            choices: [
+                "low",
+                "medium",
+                "high"
+            ]
+        }
+        paired_read_validation_level: {
+            description: "Only use paired read validators up to a given level",
+            choices: [
+                "low",
+                "medium",
+                "high"
+            ]
+        }
+        panic: "Panic on first error (true) or log all errors (false)"
     }
 
     input {
         File read_one_fastq
         File? read_two_fastq
+        Array[String] disable_validator_codes = []
+        String single_read_validation_level = "high"
+        String paired_read_validation_level = "high"
+        Boolean panic = true
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -36,10 +70,14 @@ task fqlint {
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
-    String args = if defined(read_two_fastq_gz) then "" else "--disable-validator P001" 
-
     command <<<
-        fq lint ~{args} ~{read_one_fastq_gz} ~{read_two_fastq_gz}
+        fq lint \
+            ~{sep(" ", prefix("--disable-validator ", disable_validator_codes))} \
+            --single-read-validation-level ~{single_read_validation_level} \
+            --paired-read-validation-level ~{paired_read_validation_level} \
+            --lint-mode ~{if panic then "panic" else "log"} \
+            ~{read_one_fastq} \
+            ~{read_two_fastq}
     >>>
 
     output {
