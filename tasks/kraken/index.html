@@ -320,7 +320,7 @@
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
-<li><code>prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.]R[12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the Kraken2 output files. The extensions <code>.kraken2.txt</code> and <code>.kraken2.sequences.txt.gz</code> will be added.</li>
+<li><code>prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the Kraken2 output files. The extensions <code>.kraken2.txt</code> and <code>.kraken2.sequences.txt.gz</code> will be added.</li>
 <li><code>store_sequences</code> (Boolean, default=false): Store and output main Kraken2 output in addition to the summary report</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>use_names</code> (Boolean, default=true): Print scientific names instead of just taxids</li>
