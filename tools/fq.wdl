@@ -12,8 +12,8 @@ task fqlint {
     }
 
     parameter_meta {
-        read_one_fastq: "Input FASTQ with read one"
-        read_two_fastq: "Input FASTQ with read two"
+        read_one_fastq: "Input FASTQ with read one. Can be gzipped or uncompressed."
+        read_two_fastq: "Input FASTQ with read two. Can be gzipped or uncompressed."
         disable_validator_codes: {
             description: "Array of codes to disable specific validators",
             choices: {
@@ -103,8 +103,8 @@ task subsample {
     }
 
     parameter_meta {
-        read_one_fastq: "Input FASTQ with read one"
-        read_two_fastq: "Input FASTQ with read two"
+        read_one_fastq: "Input FASTQ with read one. Can be gzipped or uncompressed."
+        read_two_fastq: "Input FASTQ with read two. Can be gzipped or uncompressed."
         prefix: "Prefix for the output FASTQ file(s). The extension `_R1.subsampled.fastq.gz` and `_R2.subsampled.fastq.gz` will be added."
         probability: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable."
         record_count: "The exact number of records to keep. Cannot be used with `probability`. Any `record_count<=0` to disable."
