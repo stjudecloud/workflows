@@ -198,8 +198,8 @@ workflow quality_check {
     }
 
     call fq.fqlint { input:
-        read_one_fastq_gz=select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
-        read_two_fastq_gz=collate_to_fastq.read_two_fastq_gz,
+        read_one_fastq=select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+        read_two_fastq=collate_to_fastq.read_two_fastq_gz,
         max_retries=max_retries
     }
     call kraken2.kraken { input:

@@ -93,8 +93,8 @@ workflow rnaseq_standard_fastq {
     if (validate_input){
         scatter (reads in zip(read_one_fastqs, read_two_fastqs)) {
             call fq.fqlint { input:
-                read_one_fastq_gz=reads.left,
-                read_two_fastq_gz=reads.right,
+                read_one_fastq=reads.left,
+                read_two_fastq=reads.right,
                 max_retries=max_retries
             }
         }
@@ -104,8 +104,8 @@ workflow rnaseq_standard_fastq {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs))
         scatter (reads in zip(read_one_fastqs, read_two_fastqs)) {
             call fq.subsample { input:
-                read_one_fastq_gz=reads.left,
-                read_two_fastq_gz=reads.right,
+                read_one_fastq=reads.left,
+                read_two_fastq=reads.right,
                 record_count=reads_per_pair,
                 max_retries=max_retries
             }
