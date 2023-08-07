@@ -282,7 +282,7 @@ workflow quality_check {
             prefix=post_subsample_prefix + ".CollectInsertSizeMetrics",
             max_retries=max_retries
         }
-        call samtools.flagstat as flagstat_task { input:
+        call samtools.flagstat { input:
             bam=post_subsample_bam,
             outfile_name=post_subsample_prefix + ".flagstat.txt",
             max_retries=max_retries
@@ -294,8 +294,8 @@ workflow quality_check {
             [
                 validate_bam.validate_report,
                 markdups.mark_duplicates_metrics,
-                flagstat_task.flagstat_report,
-                markdups_post.flagstat,
+                flagstat.flagstat_report,
+                markdups_post.flagstat_report,
                 instrument.instrument_file,
                 read_length.read_length_file,
                 encoding.encoding_file,
@@ -348,9 +348,9 @@ workflow quality_check {
         File bam_checksum = compute_checksum.md5sum
         File validate_sam_file = validate_bam.validate_report
         File mark_duplicates_metrics = markdups.mark_duplicates_metrics
-        File flagstat = select_first([
-            markdups_post.flagstat,
-            flagstat_task.flagstat_report
+        File flagstat_report = select_first([
+            markdups_post.flagstat_report,
+            flagstat.flagstat_report
         ])
         File fastqc_results = fastqc.results
         File instrument_file = instrument.instrument_file
