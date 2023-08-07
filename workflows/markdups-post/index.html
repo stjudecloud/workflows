@@ -63,7 +63,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/htseq/">HTSeq</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/kraken/">Kraken2</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/kraken2/">Kraken2</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/md5sum/">Md5sum</a>
                   </li>
@@ -161,7 +161,7 @@ input BAM has been duplicate marked or not.</p>
 <dt>description</dt>
 <dd>This workflow runs QC analyses which are impacted by duplicate marking.</dd>
 <dt>outputs</dt>
-<dd>{'insert_size_metrics': '<code>*.txt</code> output file of <code>picard collectInsertSizeMetrics</code>', 'insert_size_metrics_pdf': '<code>*.pdf</code> output file of <code>picard collectInsertSizeMetrics</code>', 'flagstat': '<code>samtools flagstat</code> report', 'mosdepth_global_summary': 'Summary of whole genome coverage produced by <code>mosdepth</code>', 'mosdepth_global_dist': 'Distribution of whole genome coverage produced by <code>mosdepth</code>', 'mosdepth_region_summary': 'Summaries of coverage corresponding to the regions defined by <code>coverage_beds</code> input, produced by <code>mosdepth</code>', 'mosdepth_region_dist': 'Distributions of coverage corresponding to the regions defined by <code>coverage_beds</code> input, produced by <code>mosdepth</code>'}</dd>
+<dd>{'insert_size_metrics': '<code>*.txt</code> output file of <code>picard collectInsertSizeMetrics</code>', 'insert_size_metrics_pdf': '<code>*.pdf</code> output file of <code>picard collectInsertSizeMetrics</code>', 'flagstat_report': '<code>samtools flagstat</code> report', 'mosdepth_global_summary': 'Summary of whole genome coverage produced by <code>mosdepth</code>', 'mosdepth_global_dist': 'Distribution of whole genome coverage produced by <code>mosdepth</code>', 'mosdepth_region_summary': 'Summaries of coverage corresponding to the regions defined by <code>coverage_beds</code> input, produced by <code>mosdepth</code>', 'mosdepth_region_dist': 'Distributions of coverage corresponding to the regions defined by <code>coverage_beds</code> input, produced by <code>mosdepth</code>'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -169,8 +169,8 @@ input BAM has been duplicate marked or not.</p>
 <li><code>markdups_bam</code> (File, <strong>required</strong>): Input BAM format file to quality check. Duplicates being marked is not necessary for a successful run of this workflow.</li>
 <li><code>markdups_bam_index</code> (File, <strong>required</strong>): BAM index file corresponding to the input BAM</li>
 <li><code>collect_insert_size_metrics._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>flagstat._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>regions_coverage._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>samtools_flagstat._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>wg_coverage._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
@@ -185,12 +185,12 @@ input BAM has been duplicate marked or not.</p>
 <li><code>prefix</code> (String, default=basename(markdups_bam,".bam")): Prefix for all results files</li>
 <li><code>collect_insert_size_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>collect_insert_size_metrics.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>flagstat.memory_gb</code> (Int, default=5)</li>
+<li><code>flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>regions_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>regions_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>regions_coverage.use_fast_mode</code> (Boolean, default=true)</li>
-<li><code>samtools_flagstat.memory_gb</code> (Int, default=5)</li>
-<li><code>samtools_flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>wg_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>wg_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>wg_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
@@ -200,7 +200,7 @@ input BAM has been duplicate marked or not.</p>
 <ul>
 <li><code>insert_size_metrics</code> (File)</li>
 <li><code>insert_size_metrics_pdf</code> (File)</li>
-<li><code>flagstat</code> (File)</li>
+<li><code>flagstat_report</code> (File)</li>
 <li><code>mosdepth_global_summary</code> (File)</li>
 <li><code>mosdepth_global_dist</code> (File)</li>
 <li><code>mosdepth_region_summary</code> (Array[File])</li>

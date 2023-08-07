@@ -63,7 +63,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/htseq/">HTSeq</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/kraken/">Kraken2</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/kraken2/">Kraken2</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/md5sum/">Md5sum</a>
                   </li>
@@ -204,30 +204,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>collect_insert_size_metrics._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>compression_integrity._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>compute_checksum._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>encoding._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>fastqc._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>flagstat._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>fqlint._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>global_phred_scores._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>infer_strandedness._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>instrument._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>junction_annotation._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>kraken._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>markdups._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>multiqc._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>ngsderive_encoding._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>ngsderive_instrument._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>ngsderive_read_length._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>ngsderive_strandedness._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>parse_input._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>phred_scores._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>qualimap_rnaseq._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>quality_score_distribution._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>quickcheck._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>read_length._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>regions_coverage._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>samtools_flagstat._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>subsample._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>subsample_index._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>validate_bam._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>wg_coverage._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>markdups_post.collect_insert_size_metrics._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>markdups_post.flagstat._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>markdups_post.regions_coverage._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>markdups_post.samtools_flagstat._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>markdups_post.wg_coverage._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
@@ -265,15 +265,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>compression_integrity.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>compute_checksum.memory_gb</code> (Int, default=5)</li>
 <li><code>compute_checksum.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>encoding.memory_gb</code> (Int, default=5)</li>
+<li><code>encoding.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>encoding.num_samples</code> (Int, default=1000000)</li>
 <li><code>fastqc.memory_gb</code> (Int, default=5)</li>
 <li><code>fastqc.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>fastqc.ncpu</code> (Int, default=1)</li>
+<li><code>flagstat.memory_gb</code> (Int, default=5)</li>
+<li><code>flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>fqlint.disable_validator_codes</code> (Array[String], default=[])</li>
 <li><code>fqlint.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>fqlint.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>fqlint.paired_read_validation_level</code> (String, default="high")</li>
 <li><code>fqlint.panic</code> (Boolean, default=true)</li>
 <li><code>fqlint.single_read_validation_level</code> (String, default="high")</li>
+<li><code>global_phred_scores.fast_mode</code> (Boolean, default=true)</li>
+<li><code>global_phred_scores.memory_gb</code> (Int, default=4)</li>
+<li><code>global_phred_scores.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>infer_strandedness.memory_gb</code> (Int, default=5)</li>
+<li><code>infer_strandedness.min_mapq</code> (Int, default=30)</li>
+<li><code>infer_strandedness.min_reads_per_gene</code> (Int, default=10)</li>
+<li><code>infer_strandedness.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>infer_strandedness.num_genes</code> (Int, default=1000)</li>
+<li><code>instrument.memory_gb</code> (Int, default=4)</li>
+<li><code>instrument.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>instrument.num_samples</code> (Int, default=10000)</li>
 <li><code>junction_annotation.fuzzy_junction_match_range</code> (Int, default=0)</li>
 <li><code>junction_annotation.memory_gb</code> (Int, default=56)</li>
 <li><code>junction_annotation.min_intron</code> (Int, default=50)</li>
@@ -290,38 +306,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>markdups.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>multiqc.memory_gb</code> (Int, default=5)</li>
 <li><code>multiqc.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ngsderive_encoding.memory_gb</code> (Int, default=5)</li>
-<li><code>ngsderive_encoding.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ngsderive_encoding.num_samples</code> (Int, default=1000000)</li>
-<li><code>ngsderive_instrument.memory_gb</code> (Int, default=4)</li>
-<li><code>ngsderive_instrument.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ngsderive_instrument.num_samples</code> (Int, default=10000)</li>
-<li><code>ngsderive_read_length.majority_vote_cutoff</code> (Float, default=0.7)</li>
-<li><code>ngsderive_read_length.memory_gb</code> (Int, default=5)</li>
-<li><code>ngsderive_read_length.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ngsderive_read_length.num_samples</code> (Int, default=-1)</li>
-<li><code>ngsderive_strandedness.memory_gb</code> (Int, default=5)</li>
-<li><code>ngsderive_strandedness.min_mapq</code> (Int, default=30)</li>
-<li><code>ngsderive_strandedness.min_reads_per_gene</code> (Int, default=10)</li>
-<li><code>ngsderive_strandedness.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ngsderive_strandedness.num_genes</code> (Int, default=1000)</li>
 <li><code>parse_input.disk_size_gb</code> (Int, default=10)</li>
 <li><code>parse_input.memory_gb</code> (Int, default=4)</li>
-<li><code>phred_scores.fast_mode</code> (Boolean, default=true)</li>
-<li><code>phred_scores.memory_gb</code> (Int, default=4)</li>
-<li><code>phred_scores.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>qualimap_rnaseq.memory_gb</code> (Int, default=16)</li>
 <li><code>qualimap_rnaseq.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>quality_score_distribution.memory_gb</code> (Int, default=8)</li>
 <li><code>quality_score_distribution.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>quickcheck.memory_gb</code> (Int, default=4)</li>
 <li><code>quickcheck.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>read_length.majority_vote_cutoff</code> (Float, default=0.7)</li>
+<li><code>read_length.memory_gb</code> (Int, default=5)</li>
+<li><code>read_length.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>read_length.num_samples</code> (Int, default=-1)</li>
 <li><code>regions_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>regions_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>regions_coverage.use_fast_mode</code> (Boolean, default=true)</li>
-<li><code>samtools_flagstat.memory_gb</code> (Int, default=5)</li>
-<li><code>samtools_flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>subsample.memory_gb</code> (Int, default=4)</li>
 <li><code>subsample.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>subsample.ncpu</code> (Int, default=1)</li>
@@ -339,12 +339,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>wg_coverage.use_fast_mode</code> (Boolean, default=true)</li>
 <li><code>markdups_post.collect_insert_size_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>markdups_post.collect_insert_size_metrics.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>markdups_post.flagstat.memory_gb</code> (Int, default=5)</li>
+<li><code>markdups_post.flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>markdups_post.regions_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>markdups_post.regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>markdups_post.regions_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>markdups_post.regions_coverage.use_fast_mode</code> (Boolean, default=true)</li>
-<li><code>markdups_post.samtools_flagstat.memory_gb</code> (Int, default=5)</li>
-<li><code>markdups_post.samtools_flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>markdups_post.wg_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>markdups_post.wg_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>markdups_post.wg_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
@@ -355,7 +355,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>bam_checksum</code> (File)</li>
 <li><code>validate_sam_file</code> (File)</li>
 <li><code>mark_duplicates_metrics</code> (File)</li>
-<li><code>flagstat</code> (File)</li>
+<li><code>flagstat_report</code> (File)</li>
 <li><code>fastqc_results</code> (File)</li>
 <li><code>instrument_file</code> (File)</li>
 <li><code>read_length_file</code> (File)</li>
@@ -369,7 +369,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>insert_size_metrics_pdf</code> (File)</li>
 <li><code>quality_score_distribution_txt</code> (File)</li>
 <li><code>quality_score_distribution_pdf</code> (File)</li>
-<li><code>global_phred_scores</code> (File)</li>
+<li><code>phred_scores</code> (File)</li>
 <li><code>kraken_report</code> (File)</li>
 <li><code>mosdepth_global_dist</code> (File)</li>
 <li><code>mosdepth_global_summary</code> (File)</li>

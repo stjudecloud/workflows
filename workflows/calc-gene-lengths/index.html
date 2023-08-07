@@ -63,7 +63,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/htseq/">HTSeq</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/kraken/">Kraken2</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/kraken2/">Kraken2</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/md5sum/">Md5sum</a>
                   </li>
@@ -102,7 +102,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#calc_gene_lengths">calc_gene_lengths</a>
+    <li class="toctree-l2"><a class="reference internal" href="#calculate_gene_lengths">calculate_gene_lengths</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -174,12 +174,12 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="calc_gene_lengths">calc_gene_lengths</h2>
+<h2 id="calculate_gene_lengths">calculate_gene_lengths</h2>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
 <li><code>gtf</code> (File, <strong>required</strong>): GTF feature file</li>
-<li><code>calc._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>calc_gene_lengths._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -187,9 +187,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>calc.memory_gb</code> (Int, default=8)</li>
-<li><code>calc.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>calc.outfile_name</code> (String, default=basename(gtf,".gtf.gz") + ".genelengths.txt")</li>
+<li><code>calc_gene_lengths.memory_gb</code> (Int, default=8)</li>
+<li><code>calc_gene_lengths.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>calc_gene_lengths.outfile_name</code> (String, default=basename(gtf,".gtf.gz") + ".genelengths.txt")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
