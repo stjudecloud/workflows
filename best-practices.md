@@ -49,6 +49,10 @@ All rules below should be followed by contributors to this repo. Contributors sh
 - All tasks should have an output
   - This may be a hardcoded "dummy" output such as `String check = "passed"`
   - This ensures the task can be cached by runners. Tasks without outputs may be required to rerun on the same input due to a cache miss.
+- Use the `as` keyword as sparingly as possible
+  - Prefer using `as` in the import block rather than at the task/workflow call level
+  - When using `as` to rename an invalid URI, attempt to make as few changes to the filename as possible (i.e. try not to abbreviate)
+  - To disambiguate a task or workflow file from it's contents, you can respectively add the `_tasks` or `_wf` suffix in the import section.
 - Whenever possible, prefer a Docker image maintained by an external source (such as BioContainers) rather than creating your own image
 - When adding a Dockerfile to this repository, follow the below conventions
   - The `Dockerfile` should be nested under the `docker/` directory, a folder with a name for the image (in most cases the name of the primary tool), and finally a folder named after the version being built.
