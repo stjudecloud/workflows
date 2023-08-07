@@ -27,12 +27,12 @@
 
 version 1.1
 
-import "../../tools/fastqc.wdl" as fastqc_doc
+import "../../tools/fastqc.wdl" as fastqc_tasks
 import "../../tools/fq.wdl"
 import "../../tools/kraken2.wdl"
 import "../../tools/md5sum.wdl"
 import "../../tools/mosdepth.wdl"
-import "../../tools/multiqc.wdl" as multiqc_doc
+import "../../tools/multiqc.wdl" as multiqc_tasks
 import "../../tools/ngsderive.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/qualimap.wdl"
@@ -153,7 +153,7 @@ workflow quality_check {
         prefix=post_subsample_prefix + ".QualityScoreDistribution",
         max_retries=max_retries
     }
-    call fastqc_doc.fastqc { input:
+    call fastqc_tasks.fastqc { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".fastqc_results",
         use_all_cores=use_all_cores,
@@ -289,7 +289,7 @@ workflow quality_check {
         }
     }
     
-    call multiqc_doc.multiqc { input:
+    call multiqc_tasks.multiqc { input:
         input_files=select_all(flatten([
             [
                 validate_bam.validate_report,
