@@ -175,7 +175,7 @@ workflow quality_check {
         outfile_name=post_subsample_prefix + ".encoding.tsv",
         max_retries=max_retries
     }
-    call util.global_phred_scores as global_phred_scores_task { input:
+    call util.global_phred_scores { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix,
         max_retries=max_retries
@@ -309,7 +309,7 @@ workflow quality_check {
                 kraken.report,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
-                global_phred_scores_task.phred_scores,
+                global_phred_scores.phred_scores,
                 subsample.orig_read_count,
                 markdups_post.mosdepth_global_summary,
                 markdups_post.mosdepth_global_dist,
@@ -374,7 +374,7 @@ workflow quality_check {
             = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf
             = quality_score_distribution.quality_score_distribution_pdf
-        File global_phred_scores = global_phred_scores_task.phred_scores
+        File phred_scores = global_phred_scores.phred_scores
         File kraken_report = kraken.report
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
