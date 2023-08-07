@@ -27,18 +27,18 @@
 
 version 1.1
 
-import "../../tools/fastqc.wdl" as fqc
+import "../../tools/fastqc.wdl" as fastqc_tasks
 import "../../tools/fq.wdl"
-import "../../tools/kraken.wdl" as kraken2
+import "../../tools/kraken2.wdl"
 import "../../tools/md5sum.wdl"
 import "../../tools/mosdepth.wdl"
-import "../../tools/multiqc.wdl" as mqc
+import "../../tools/multiqc.wdl" as multiqc_tasks
 import "../../tools/ngsderive.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/qualimap.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
-import "./markdups-post.wdl" as mark_duplicates_post
+import "./markdups-post.wdl" as markdups_post_wf
 
 workflow quality_check {
     parameter_meta {
@@ -153,29 +153,29 @@ workflow quality_check {
         prefix=post_subsample_prefix + ".QualityScoreDistribution",
         max_retries=max_retries
     }
-    call fqc.fastqc { input:
+    call fastqc_tasks.fastqc { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".fastqc_results",
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
-    call ngsderive.instrument as ngsderive_instrument { input:
+    call ngsderive.instrument { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".instrument.tsv",
         max_retries=max_retries
     }
-    call ngsderive.read_length as ngsderive_read_length { input:
+    call ngsderive.read_length { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
         outfile_name=post_subsample_prefix + ".readlength.tsv",
         max_retries=max_retries
     }
-    call ngsderive.encoding as ngsderive_encoding { input:
+    call ngsderive.encoding { input:
         ngs_files=[post_subsample_bam],
         outfile_name=post_subsample_prefix + ".encoding.tsv",
         max_retries=max_retries
     }
-    call util.global_phred_scores as phred_scores { input:
+    call util.global_phred_scores { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix,
         max_retries=max_retries
@@ -235,7 +235,7 @@ workflow quality_check {
             prefix=post_subsample_prefix,
             max_retries=max_retries
         }
-        call ngsderive.infer_strandedness as ngsderive_strandedness { input:
+        call ngsderive.infer_strandedness { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gtf=select_first([gtf, "undefined"]),
@@ -259,7 +259,7 @@ workflow quality_check {
         max_retries=max_retries
     }
     if (mark_duplicates) {
-        call mark_duplicates_post.markdups_post { input:
+        call markdups_post_wf.markdups_post { input:
             markdups_bam=select_first([
                 markdups.duplicate_marked_bam,
                 "undefined"
@@ -282,23 +282,23 @@ workflow quality_check {
             prefix=post_subsample_prefix + ".CollectInsertSizeMetrics",
             max_retries=max_retries
         }
-        call samtools.flagstat as samtools_flagstat { input:
+        call samtools.flagstat { input:
             bam=post_subsample_bam,
             outfile_name=post_subsample_prefix + ".flagstat.txt",
             max_retries=max_retries
         }
     }
     
-    call mqc.multiqc { input:
+    call multiqc_tasks.multiqc { input:
         input_files=select_all(flatten([
             [
                 validate_bam.validate_report,
                 markdups.mark_duplicates_metrics,
-                samtools_flagstat.flagstat_report,
-                markdups_post.flagstat,
-                ngsderive_instrument.instrument_file,
-                ngsderive_read_length.read_length_file,
-                ngsderive_encoding.encoding_file,
+                flagstat.flagstat_report,
+                markdups_post.flagstat_report,
+                instrument.instrument_file,
+                read_length.read_length_file,
+                encoding.encoding_file,
                 fastqc.raw_data,
                 collect_alignment_summary_metrics.alignment_metrics,
                 collect_gc_bias_metrics.gc_bias_metrics,
@@ -309,11 +309,11 @@ workflow quality_check {
                 kraken.report,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
-                phred_scores.phred_scores,
+                global_phred_scores.phred_scores,
                 subsample.orig_read_count,
                 markdups_post.mosdepth_global_summary,
                 markdups_post.mosdepth_global_dist,
-                ngsderive_strandedness.strandedness_file,
+                infer_strandedness.strandedness_file,
                 junction_annotation.junction_summary,
                 qualimap_rnaseq.raw_summary,
                 qualimap_rnaseq.raw_coverage
@@ -348,14 +348,14 @@ workflow quality_check {
         File bam_checksum = compute_checksum.md5sum
         File validate_sam_file = validate_bam.validate_report
         File mark_duplicates_metrics = markdups.mark_duplicates_metrics
-        File flagstat = select_first([
-            markdups_post.flagstat,
-            samtools_flagstat.flagstat_report
+        File flagstat_report = select_first([
+            markdups_post.flagstat_report,
+            flagstat.flagstat_report
         ])
         File fastqc_results = fastqc.results
-        File instrument_file = ngsderive_instrument.instrument_file
-        File read_length_file = ngsderive_read_length.read_length_file
-        File inferred_encoding = ngsderive_encoding.encoding_file
+        File instrument_file = instrument.instrument_file
+        File read_length_file = read_length.read_length_file
+        File inferred_encoding = encoding.encoding_file
         File alignment_metrics = collect_alignment_summary_metrics.alignment_metrics
         File alignment_metrics_pdf
             = collect_alignment_summary_metrics.alignment_metrics_pdf
@@ -374,7 +374,7 @@ workflow quality_check {
             = quality_score_distribution.quality_score_distribution_txt
         File quality_score_distribution_pdf
             = quality_score_distribution.quality_score_distribution_pdf
-        File global_phred_scores = phred_scores.phred_scores
+        File phred_scores = global_phred_scores.phred_scores
         File kraken_report = kraken.report
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
@@ -389,7 +389,7 @@ workflow quality_check {
             = markdups_post.mosdepth_region_summary
         Array[File?]? mosdepth_dups_marked_region_dist
             = markdups_post.mosdepth_region_dist
-        File? inferred_strandedness = ngsderive_strandedness.strandedness_file
+        File? inferred_strandedness = infer_strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
         File? junctions = junction_annotation.junctions

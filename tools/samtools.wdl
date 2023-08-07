@@ -247,7 +247,7 @@ task subsample {
             # if not subsampled. Use ~{prefix} instead.
             {
                 echo -e "sample\toriginal read count"
-                echo -e "$sample_name\t-"
+                echo -e "~{prefix}\t-"
             } > ~{prefix}.orig_read_count.tsv
         fi
     >>>

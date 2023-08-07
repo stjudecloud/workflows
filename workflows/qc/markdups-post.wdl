@@ -18,7 +18,7 @@ workflow markdups_post {
         outputs: {
             insert_size_metrics: "`*.txt` output file of `picard collectInsertSizeMetrics`"
             insert_size_metrics_pdf: "`*.pdf` output file of `picard collectInsertSizeMetrics`"
-            flagstat: "`samtools flagstat` report"
+            flagstat_report: "`samtools flagstat` report"
             mosdepth_global_summary: "Summary of whole genome coverage produced by `mosdepth`"
             mosdepth_global_dist: "Distribution of whole genome coverage produced by `mosdepth`"
             mosdepth_region_summary: "Summaries of coverage corresponding to the regions defined by `coverage_beds` input, produced by `mosdepth`"
@@ -49,7 +49,7 @@ workflow markdups_post {
         prefix=prefix + ".CollectInsertSizeMetrics",
         max_retries=max_retries
     }
-    call samtools.flagstat as samtools_flagstat { input:
+    call samtools.flagstat { input:
         bam=markdups_bam,
         outfile_name=prefix + ".flagstat.txt",
         max_retries=max_retries
@@ -75,7 +75,7 @@ workflow markdups_post {
         File insert_size_metrics = collect_insert_size_metrics.insert_size_metrics
         File insert_size_metrics_pdf
             = collect_insert_size_metrics.insert_size_metrics_pdf
-        File flagstat = samtools_flagstat.flagstat_report
+        File flagstat_report = flagstat.flagstat_report
         File mosdepth_global_summary = wg_coverage.summary
         File mosdepth_global_dist = wg_coverage.global_dist
         Array[File] mosdepth_region_summary = regions_coverage.summary

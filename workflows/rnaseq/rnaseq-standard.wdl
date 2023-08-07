@@ -36,8 +36,8 @@ version 1.1
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
-import "../general/bam-to-fastqs.wdl" as b2fq
-import "./rnaseq-core.wdl" as rna_core
+import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
+import "./rnaseq-core.wdl" as rnaseq_core_wf
 
 workflow rnaseq_standard {
     parameter_meta {
@@ -112,14 +112,14 @@ workflow rnaseq_standard {
 
     call util.get_read_groups { input: bam=selected_bam, max_retries=max_retries }
     String read_groups = read_string(get_read_groups.read_groups_file)
-    call b2fq.bam_to_fastqs { input:
+    call bam_to_fastqs_wf.bam_to_fastqs { input:
         bam=selected_bam,
         paired_end=true,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
 
-    call rna_core.rnaseq_core { input:
+    call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs=bam_to_fastqs.read1s,
         read_two_fastqs=select_all(bam_to_fastqs.read2s),
         read_groups=read_groups,
