@@ -39,9 +39,9 @@ workflow calc_gene_lengths {
         Int? max_retries
     }
 
-    call util.calc_gene_lengths as calc { input: gtf=gtf, max_retries=max_retries }
+    call util.calc_gene_lengths { input: gtf=gtf, max_retries=max_retries }
 
     output {
-        File gene_lengths=calc.gene_lengths
+        File gene_lengths=calc_gene_lengths.gene_lengths
     }
 }

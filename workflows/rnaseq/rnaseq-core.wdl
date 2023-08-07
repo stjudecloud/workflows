@@ -4,7 +4,7 @@ import "../../tools/deeptools.wdl"
 import "../../tools/htseq.wdl"
 import "../../tools/ngsderive.wdl"
 import "../../tools/star.wdl"
-import "../general/alignment-post.wdl" as align_post
+import "../general/alignment-post.wdl" as alignment_post_wf
 
 workflow rnaseq_core {
     parameter_meta {
@@ -74,7 +74,7 @@ workflow rnaseq_core {
         max_retries=max_retries
     }
 
-    call align_post.alignment_post { input:
+    call alignment_post_wf.alignment_post { input:
         bam=alignment.star_bam,
         mark_duplicates=mark_duplicates,
         contaminant_db=contaminant_db,
@@ -91,7 +91,7 @@ workflow rnaseq_core {
         max_retries=max_retries
     }
 
-    call ngsderive.infer_strandedness as ngsderive_strandedness { input:
+    call ngsderive.infer_strandedness { input:
         bam=alignment_post.out_bam,
         bam_index=alignment_post.bam_index,
         gtf=gtf,
@@ -100,7 +100,7 @@ workflow rnaseq_core {
 
     String htseq_strandedness = if (provided_strandedness != "")
         then htseq_strandedness_map[provided_strandedness]
-        else htseq_strandedness_map[ngsderive_strandedness.strandedness]
+        else htseq_strandedness_map[infer_strandedness.strandedness]
 
     call htseq.count as htseq_count { input:
         bam=alignment_post.out_bam,
@@ -116,7 +116,7 @@ workflow rnaseq_core {
         File star_log = alignment.star_log
         File bigwig = deeptools_bam_coverage.bigwig
         File feature_counts = htseq_count.feature_counts
-        File inferred_strandedness = ngsderive_strandedness.strandedness_file
-        String inferred_strandedness_string = ngsderive_strandedness.strandedness
+        File inferred_strandedness = infer_strandedness.strandedness_file
+        String inferred_strandedness_string = infer_strandedness.strandedness
     }
 }
