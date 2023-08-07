@@ -45,6 +45,6 @@ workflow calculate_gene_lengths {
     }
 
     output {
-        File gene_lengths=calc_gene_lens.gene_lengths
+        File gene_lengths=calc_gene_lengths.gene_lengths
     }
 }
