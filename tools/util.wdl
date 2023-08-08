@@ -95,7 +95,8 @@ task get_read_groups {
 }
 
 task split_string {
-    # TODO check if there's a way to accomplish this in pure WDL. Delete task?
+    # Currently (v1.1) no way to do this using the WDL standard library.
+    # Revisit task in future version updates, can hopefully be replaced.
     input {
         String input_string
         String delimiter = " , "

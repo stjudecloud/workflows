@@ -205,7 +205,7 @@ task junction_annotation {
         Int min_mapq = 30
         Int min_reads = 2
         Int fuzzy_junction_match_range = 0
-        Int memory_gb = 35
+        Int memory_gb = 56  # TODO make this dynamic
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
@@ -232,7 +232,10 @@ task junction_annotation {
             -o ~{prefix}.junction_summary.tsv \
             "$CWD_BAM"
 
-        mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"  # TODO why are we renaming this?/can we update ngsderive to name things properly?
+        # junction-annotation accepts multiple BAMs, and allows for
+        # renaming the cohort level summary report, but not the BAM
+        # level junctions file. So we rename it here to match with prefix.
+        mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"
         gzip ~{prefix}.junctions.tsv
 
         rm "$CWD_BAM" "$CWD_BAM".bai

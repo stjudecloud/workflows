@@ -309,7 +309,7 @@ task kraken {
         File db
         String prefix = sub(
             basename(read_one_fastq_gz),
-            "([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
         Boolean store_sequences = false

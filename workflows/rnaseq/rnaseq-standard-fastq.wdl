@@ -29,7 +29,7 @@
 version 1.1
 
 import "../../tools/fq.wdl"
-import "./rnaseq-core.wdl" as rna_core
+import "./rnaseq-core.wdl" as rnaseq_core_wf
 import "./rnaseq-standard.wdl" as rnaseq_standard
 
 workflow rnaseq_standard_fastq {
@@ -61,7 +61,7 @@ workflow rnaseq_standard_fastq {
         },
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
-        validate_input: "TODO write this"
+        validate_input: "Ensure input FASTQs are well-formed before beginning harmonization?"
         use_all_cores: "Use all cores for multi-core steps?"
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
     }
@@ -93,8 +93,8 @@ workflow rnaseq_standard_fastq {
     if (validate_input){
         scatter (reads in zip(read_one_fastqs, read_two_fastqs)) {
             call fq.fqlint { input:
-                read_one_fastq_gz=reads.left,
-                read_two_fastq_gz=reads.right,
+                read_one_fastq=reads.left,
+                read_two_fastq=reads.right,
                 max_retries=max_retries
             }
         }
@@ -104,8 +104,8 @@ workflow rnaseq_standard_fastq {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs))
         scatter (reads in zip(read_one_fastqs, read_two_fastqs)) {
             call fq.subsample { input:
-                read_one_fastq_gz=reads.left,
-                read_two_fastq_gz=reads.right,
+                read_one_fastq=reads.left,
+                read_two_fastq=reads.right,
                 record_count=reads_per_pair,
                 max_retries=max_retries
             }
@@ -122,7 +122,7 @@ workflow rnaseq_standard_fastq {
         ])
     )
 
-    call rna_core.rnaseq_core { input:
+    call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs=selected_read_one_fastqs,
         read_two_fastqs=selected_read_two_fastqs,
         read_groups=read_groups,

@@ -27,7 +27,7 @@
 
 version 1.1
 
-import "../../tools/kraken.wdl"
+import "../../tools/kraken2.wdl"
 import "../../tools/util.wdl"
 
 workflow make_qc_reference {
@@ -109,10 +109,10 @@ workflow make_qc_reference {
         }
     }
 
-    call kraken.download_taxonomy { input: protein=protein, max_retries=max_retries }
+    call kraken2.download_taxonomy { input: protein=protein, max_retries=max_retries }
 
     scatter (lib in kraken_libraries) {
-        call kraken.download_library { input:
+        call kraken2.download_library { input:
             library_name=lib,
             protein=protein,
             max_retries=max_retries
@@ -120,22 +120,22 @@ workflow make_qc_reference {
     }
 
     Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.downloaded_file])
-    Array[File] empty_array = []  # this structure is required by the WDL v1 spec
+    Array[File] empty_array = []  # this structure is required by the WDL v1.1 spec
     if (custom_fastas != empty_array) {
-        call kraken.create_library_from_fastas { input:
+        call kraken2.create_library_from_fastas { input:
             fastas=custom_fastas,
             protein=protein,
             max_retries=max_retries
         }
     }
 
-    call kraken.build_db as kraken_build_db { input:
+    call kraken2.build_db as kraken_build_db { input:
         tarballs=flatten([
             [download_taxonomy.taxonomy],
             download_library.library,
             select_all([create_library_from_fastas.custom_library])
         ]),
-            protein=protein,
+        protein=protein,
         max_retries=max_retries
     }
 
