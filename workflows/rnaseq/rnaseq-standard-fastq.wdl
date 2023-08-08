@@ -61,7 +61,7 @@ workflow rnaseq_standard_fastq {
         },
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
-        validate_input: "TODO write this"
+        validate_input: "Ensure input FASTQs are well-formed before beginning harmonization?"
         use_all_cores: "Use all cores for multi-core steps?"
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
     }
