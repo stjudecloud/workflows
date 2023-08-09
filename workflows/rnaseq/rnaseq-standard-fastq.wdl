@@ -93,7 +93,9 @@ workflow rnaseq_standard_fastq {
     scatter (rg in read_groups) {
         call ReadGroup_to_string { input: read_group=rg, max_retries=max_retries }
     }
-    String stringified_read_groups = sep(' , ', ReadGroup_to_string.stringified_read_group)
+    String stringified_read_groups = sep(
+        ' , ', ReadGroup_to_string.stringified_read_group
+    )
 
     if (validate_input){
         scatter (reads in zip(read_one_fastqs, read_two_fastqs)) {

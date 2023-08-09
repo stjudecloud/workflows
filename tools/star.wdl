@@ -560,8 +560,8 @@ task alignment {
             --twopassMode ~{twopassMode} \
             --outSAMattrRGline "${read_group_args[@]}" \
             --outSJfilterIntronMaxVsReadN ~{
-                sep(' ', quote(outSJfilterIntronMaxVsReadN)
-            )} \
+                sep(' ', quote(outSJfilterIntronMaxVsReadN))
+            } \
             --outSJfilterOverhangMin ~{sep(' ', quote([
                 outSJfilterOverhangMin['noncanonical_motifs'],
                 outSJfilterOverhangMin['GT/AG_and_CT/AC_motif'],
