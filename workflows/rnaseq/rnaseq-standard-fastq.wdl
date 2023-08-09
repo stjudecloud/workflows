@@ -71,7 +71,7 @@ workflow rnaseq_standard_fastq {
         File star_db
         Array[File] read_one_fastqs
         Array[File] read_two_fastqs
-        String read_groups
+        Array[ReadGroup] read_groups
         String prefix
         File? contaminant_db
         Int? max_retries
@@ -89,6 +89,11 @@ workflow rnaseq_standard_fastq {
         cleanse_xenograft=cleanse_xenograft,
         contaminant_db=defined(contaminant_db)
     }
+
+    scatter (rg in read_groups) {
+        call ReadGroup_to_string { input: read_group=rg, max_retries=max_retries }
+    }
+    String stringified_read_groups = sep(' , ', ReadGroup_to_string.stringified_read_group)
 
     if (validate_input){
         scatter (reads in zip(read_one_fastqs, read_two_fastqs)) {
@@ -125,7 +130,7 @@ workflow rnaseq_standard_fastq {
     call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs=selected_read_one_fastqs,
         read_two_fastqs=selected_read_two_fastqs,
-        read_groups=read_groups,
+        read_groups=stringified_read_groups,
         prefix=prefix,
         gtf=gtf,
         star_db=star_db,
@@ -147,5 +152,61 @@ workflow rnaseq_standard_fastq {
         File inferred_strandedness = rnaseq_core.inferred_strandedness
         String inferred_strandedness_string = rnaseq_core.inferred_strandedness_string
         File bigwig = rnaseq_core.bigwig
+    }
+}
+
+struct ReadGroup {
+    String ID
+    String? BC
+    String? CN
+    String? DS
+    String? DT
+    String? FO
+    String? KS
+    String? LB
+    String? PG
+    String? PI
+    String? PL
+    String? PM
+    String? PU
+    String? SM
+}
+
+task ReadGroup_to_string {
+    input {
+        ReadGroup read_group
+        Int memory_gb = 4
+        Int disk_size_gb = 10
+        Int max_retries = 1
+    }
+
+    command <<<
+        {
+            echo -n ~{"ID:~{read_group.ID} "}
+            echo -n ~{"BC:~{read_group.BC} "}
+            echo -n ~{"CN:~{read_group.CN} "}
+            echo -n ~{"DS:~{read_group.DS} "}
+            echo -n ~{"DT:~{read_group.DT} "}
+            echo -n ~{"FO:~{read_group.FO} "}
+            echo -n ~{"KS:~{read_group.KS} "}
+            echo -n ~{"LB:~{read_group.LB} "}
+            echo -n ~{"PG:~{read_group.PG} "}
+            echo -n ~{"PI:~{read_group.PI} "}
+            echo -n ~{"PL:~{read_group.PL} "}
+            echo -n ~{"PM:~{read_group.PM} "}
+            echo -n ~{"PU:~{read_group.PU} "}
+            echo ~{"SM:~{read_group.SM} "}
+        } > out.txt
+    >>>
+
+    output {
+        String stringified_read_group = read_string("out.txt")
+    }
+
+    runtime {
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
+        maxRetries: max_retries
     }
 }
