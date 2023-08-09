@@ -509,9 +509,6 @@ task alignment {
     
     String star_db_dir = basename(star_db_tar_gz, ".tar.gz")
 
-    # Leave 2GB as system overhead
-    String memory_limit_bytes = "~{memory_gb - 2}000000000"
-
     Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
@@ -536,13 +533,13 @@ task alignment {
         # odd constructions a combination of needing white space properly parsed
         # and limitations of the WDL v1.0 spec
         python3 /home/sort_star_input.py \
-            --read-one-fastqs "~{sep=',' read_one_fastqs}" \
+            --read-one-fastqs "~{sep(',', read_one_fastqs)}" \
             ~{if (read_two_fastqs != empty_array) then "--read-two-fastqs" else ""} "~{
-                sep=',' (
+                sep(',', (
                     if (read_two_fastqs != empty_array)
                     then read_two_fastqs
                     else []
-                )
+                ))
             }" \
             ~{if defined(read_groups) then "--read-groups" else ""} "~{
                 if defined(read_groups)
@@ -562,47 +559,49 @@ task alignment {
             --outFileNamePrefix ~{prefix + "."} \
             --twopassMode ~{twopassMode} \
             --outSAMattrRGline "${read_group_args[@]}" \
-            --outSJfilterIntronMaxVsReadN ~{sep=' ' outSJfilterIntronMaxVsReadN} \
-            --outSJfilterOverhangMin ~{sep=' ' [
+            --outSJfilterIntronMaxVsReadN ~{
+                sep(' ', quote(outSJfilterIntronMaxVsReadN)
+            )} \
+            --outSJfilterOverhangMin ~{sep(' ', quote([
                 outSJfilterOverhangMin['noncanonical_motifs'],
                 outSJfilterOverhangMin['GT/AG_and_CT/AC_motif'],
                 outSJfilterOverhangMin['GC/AG_and_CT/GC_motif'],
                 outSJfilterOverhangMin['AT/AC_and_GT/AT_motif']
-            ]} \
-            --outSJfilterCountUniqueMin ~{sep=' ' [
+            ]))} \
+            --outSJfilterCountUniqueMin ~{sep(' ', quote([
                 outSJfilterCountUniqueMin['noncanonical_motifs'],
                 outSJfilterCountUniqueMin['GT/AG_and_CT/AC_motif'],
                 outSJfilterCountUniqueMin['GC/AG_and_CT/GC_motif'],
                 outSJfilterCountUniqueMin['AT/AC_and_GT/AT_motif']
-            ]} \
-            --outSJfilterCountTotalMin ~{sep=' ' [
+            ]))} \
+            --outSJfilterCountTotalMin ~{sep(' ', quote([
                 outSJfilterCountTotalMin['noncanonical_motifs'],
                 outSJfilterCountTotalMin['GT/AG_and_CT/AC_motif'],
                 outSJfilterCountTotalMin['GC/AG_and_CT/GC_motif'],
                 outSJfilterCountTotalMin['AT/AC_and_GT/AT_motif']
-            ]} \
-            --outSJfilterDistToOtherSJmin ~{sep=' ' [
+            ]))} \
+            --outSJfilterDistToOtherSJmin ~{sep(' ', quote([
                 outSJfilterDistToOtherSJmin['noncanonical_motifs'],
                 outSJfilterDistToOtherSJmin['GT/AG_and_CT/AC_motif'],
                 outSJfilterDistToOtherSJmin['GC/AG_and_CT/GC_motif'],
                 outSJfilterDistToOtherSJmin['AT/AC_and_GT/AT_motif']
-            ]} \
-            --alignSJstitchMismatchNmax ~{sep=' ' [
+            ]))} \
+            --alignSJstitchMismatchNmax ~{sep(' ', quote([
                 alignSJstitchMismatchNmax['noncanonical_motifs'],
                 alignSJstitchMismatchNmax['GT/AG_and_CT/AC_motif'],
                 alignSJstitchMismatchNmax['GC/AG_and_CT/GC_motif'],
                 alignSJstitchMismatchNmax['AT/AC_and_GT/AT_motif']
-            ]} \
+            ]))} \
             --clip3pAdapterSeq ~{clip3pAdapterSeq.left + ' ' + clip3pAdapterSeq.right} \
-            --clip3pAdapterMMp ~{clip3pAdapterMMp.left + ' ' + clip3pAdapterMMp.right} \
+            --clip3pAdapterMMp ~{'~{clip3pAdapterMMp.left} ~{clip3pAdapterMMp.right}'} \
             --alignEndsProtrude ~{
-                alignEndsProtrude.left + ' ' + alignEndsProtrude.right
+                '~{alignEndsProtrude.left} ~{alignEndsProtrude.right}'
             } \
-            --clip3pNbases ~{clip3pNbases.left + ' ' + clip3pNbases.right} \
+            --clip3pNbases ~{'~{clip3pNbases.left} ~{clip3pNbases.right}'} \
             --clip3pAfterAdapterNbases ~{
-                clip3pAfterAdapterNbases.left + ' ' + clip3pAfterAdapterNbases.right
+                '~{clip3pAfterAdapterNbases.left} ~{clip3pAfterAdapterNbases.right}'
             } \
-            --clip5pNbases ~{clip5pNbases.left + ' ' + clip5pNbases.right} \
+            --clip5pNbases ~{'~{clip5pNbases.left} ~{clip5pNbases.right}'} \
             --readNameSeparator ~{readNameSeparator} \
             --clipAdapterType ~{clipAdapterType} \
             --outSAMstrandField ~{outSAMstrandField} \
