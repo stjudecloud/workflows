@@ -3,15 +3,15 @@
 ## This WDL file wraps [BWA](https://github.com/lh3/bwa).
 ## BWA aligns sequencing reads to a reference genome.
 
-version 1.0
+version 1.1
 
 task bwa_aln {
     meta {
-        description: "This WDL task maps single-end FastQ files to BAM format using bwa aln."
+        description: "This WDL task maps single-end FASTQ files to BAM format using bwa aln."
     }
 
     parameter_meta {
-        fastq: "Input FastQ file to align with bwa"
+        fastq: "Input FASTQ file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 
@@ -20,7 +20,7 @@ task bwa_aln {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(fastq),
-            "([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
         String read_group = ""
@@ -70,8 +70,8 @@ task bwa_aln {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
@@ -79,12 +79,12 @@ task bwa_aln {
 
 task bwa_aln_pe {
     meta {
-        description: "This WDL task maps paired-end FastQ files to BAM format using bwa aln."
+        description: "This WDL task maps paired-end FASTQ files to BAM format using bwa aln."
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Input FastQ read 1 file to align with bwa"
-        read_two_fastq_gz: "Input FastQ read 2 file to align with bwa"
+        read_one_fastq_gz: "Input FASTQ read 1 file to align with bwa"
+        read_two_fastq_gz: "Input FASTQ read 2 file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 
@@ -94,7 +94,7 @@ task bwa_aln_pe {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(read_one_fastq_gz),
-            "([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
         String read_group = ""
@@ -147,8 +147,8 @@ task bwa_aln_pe {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
@@ -156,11 +156,11 @@ task bwa_aln_pe {
 
 task bwa_mem {
     meta {
-        description: "This WDL task maps FastQ files to BAM format using bwa mem."
+        description: "This WDL task maps FASTQ files to BAM format using bwa mem."
     }
 
     parameter_meta {
-        fastq: "Input FastQ file to align with bwa"
+        fastq: "Input FASTQ file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
     }
 
@@ -169,7 +169,7 @@ task bwa_mem {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(fastq),
-            "([_\.]R[12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
         String read_group = ""
@@ -202,7 +202,7 @@ task bwa_mem {
 
         bwa mem \
             -t "$n_cores" \
-            ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
+            ~{if read_group != "" then "-R '"+read_group+"'" else ""} \
             bwa_db/"$PREFIX" \
             ~{fastq} \
             | samtools view -@ "$n_cores" -hb - \
@@ -217,8 +217,8 @@ task bwa_mem {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
@@ -251,7 +251,7 @@ task build_bwa_db {
 
         ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c ~{reference_fasta} > "$ref_fasta" \
-            || ln -s ~{reference_fasta} "$ref_fasta"
+            || ln -sf ~{reference_fasta} "$ref_fasta"
 
         bwa index "$ref_fasta"
 
@@ -263,8 +263,8 @@ task build_bwa_db {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
@@ -295,9 +295,9 @@ task format_rg_for_bwa {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
-        docker: 'ghcr.io/stjudecloud/util:1.2.0'
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }

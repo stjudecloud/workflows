@@ -1,6 +1,6 @@
-"""Sort FastQ pairs and read group information prior to being passed to STAR.
+"""Sort FASTQ pairs and read group information prior to being passed to STAR.
 
-We discovered that when providing STAR with read group split FastQs and also
+We discovered that when providing STAR with read group split FASTQs and also
 supplying STAR with header information via the `--outSAMattrRGline` parameter,
 that the read group information for individual reads may become jumbled.
 
@@ -65,8 +65,8 @@ def validate(
     """Ensure that the final strings are ready to be passed to STAR.
 
     The first check is that there is the same number of read groups as
-    FastQ pairs. Next, it's checked that each read group ID is
-    present in a synced FastQ pair.
+    FASTQ pairs. Next, it's checked that each read group ID is
+    present in a synced FASTQ pair.
 
     Args:
         read_one_fastqs (list): list of file paths
@@ -108,12 +108,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--read-one-fastqs",
         required=True,
-        help="Comma delimited (without spaces) list of read one FastQ file paths",
+        help="Comma delimited (without spaces) list of read one FASTQ file paths",
     )
     parser.add_argument(
         "--read-two-fastqs",
         required=False,
-        help="Comma delimited (without spaces) list of read two FastQ file paths",
+        help="Comma delimited (without spaces) list of read two FASTQ file paths",
     )
     parser.add_argument(
         "--read-groups",

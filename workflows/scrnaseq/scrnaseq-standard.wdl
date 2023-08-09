@@ -2,7 +2,7 @@
 ##
 ## This WDL workflow runs the Cell Ranger scRNA-Seq alignment workflow for St. Jude Cloud.
 ##
-## The workflow takes an input BAM file and splits it into FastQ files for each read in the pair. 
+## The workflow takes an input BAM file and splits it into FASTQ files for each read in the pair. 
 ## The read pairs are then passed through Cell Ranger to generate a BAM file and perform
 ## quantification. Strandedness is inferred using ngsderive.
 ## File validation is performed at several steps, including immediately preceeding output.
@@ -28,14 +28,14 @@
 ## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-version 1.0
+version 1.1
 
-import "./10x-bam-to-fastqs.wdl" as b2fq
-import "../../tools/picard.wdl"
-import "../../tools/ngsderive.wdl"
-import "../../tools/samtools.wdl"
 import "../../tools/cellranger.wdl"
 import "../../tools/md5sum.wdl"
+import "../../tools/ngsderive.wdl"
+import "../../tools/picard.wdl"
+import "../../tools/samtools.wdl"
+import "./10x-bam-to-fastqs.wdl" as bam_to_fastqs
 
 workflow scrnaseq_standard {
     parameter_meta {
@@ -77,7 +77,7 @@ workflow scrnaseq_standard {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call b2fq.cell_ranger_bam_to_fastqs { input:
+    call bam_to_fastqs.cell_ranger_bam_to_fastqs { input:
         bam=selected_bam,
         use_all_cores=use_all_cores,
         max_retries=max_retries
@@ -91,7 +91,7 @@ workflow scrnaseq_standard {
         max_retries=max_retries
     }
     call picard.validate_bam { input: bam=count.bam, max_retries=max_retries }
-    call ngsderive.infer_strandedness as ngsderive_strandedness { input:
+    call ngsderive.infer_strandedness { input:
         bam=count.bam,
         bam_index=count.bam_index,
         gtf=gtf,
@@ -115,6 +115,6 @@ workflow scrnaseq_standard {
         File raw_matrix = count.raw_matrix
         File mol_info_h5 = count.mol_info_h5
         File web_summary = count.web_summary
-        File inferred_strandedness = ngsderive_strandedness.strandedness_file
+        File inferred_strandedness = infer_strandedness.strandedness_file
     }
 }

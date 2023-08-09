@@ -3,7 +3,7 @@
 ## This WDL file wrap the [10x Genomics Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) tool.
 ## Cell Ranger is a tool for handling scRNA-Seq data.
 
-version 1.0
+version 1.1
 
 task count {
     meta {
@@ -12,7 +12,7 @@ task count {
 
     parameter_meta {
         id: "A unique run ID"
-        fastqs_tar_gz: "Path to the FastQ folder archive in .tar.gz format"
+        fastqs_tar_gz: "Path to the FASTQ folder archive in .tar.gz format"
         transcriptome_tar_gz: "Path to Cell Ranger-compatible transcriptome reference in .tar.gz format"
         sample_id: "Sample name as used by cellranger mkfastq"
     }
@@ -53,7 +53,7 @@ task count {
 
         files=(fastqs/*.fastq.gz)
         # sample parameter to cellranger count must match
-        # the sample prefix contained in the FastQ file.
+        # the sample prefix contained in the FASTQ file.
         # So we infer it here by manipulating the file name.
         # expected sample name extension comes from:
         # https://support.illumina.com/content/dam/illumina-support/documents/documentation/software_documentation/bcl2fastq/bcl2fastq2-v2-20-software-guide-15051736-03.pdf
@@ -89,8 +89,8 @@ task count {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
         maxRetries: max_retries
     }
@@ -98,7 +98,7 @@ task count {
 
 task bamtofastq {
     meta {
-        description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FastQ files"
+        description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FASTQ files"
     }
 
     parameter_meta {
@@ -151,8 +151,8 @@ task bamtofastq {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: "ghcr.io/stjudecloud/cellranger:1.1.1"
         maxRetries: max_retries
     }

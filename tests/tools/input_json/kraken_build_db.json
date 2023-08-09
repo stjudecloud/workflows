@@ -1,0 +1,3 @@
+{
+    "tarballs": ["tests/tools/input/kraken2_taxonomy.tar.gz", "tests/tools/input/kraken2_custom_library.tar.gz"]
+}

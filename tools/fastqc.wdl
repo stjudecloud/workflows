@@ -3,7 +3,7 @@
 ## This WDL file wraps the [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) tool.
 ## FastQC generates quality control metrics for sequencing pipelines. 
 
-version 1.0
+version 1.1
 
 task fastqc {
     meta {
@@ -53,8 +53,8 @@ task fastqc {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/fastqc:0.11.9--hdfd78af_1'
         maxRetries: max_retries
     }

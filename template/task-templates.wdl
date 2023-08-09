@@ -1,6 +1,6 @@
 ## # WDL tool template
 
-version 1.0
+version 1.1
 
 task static_disk_and_ram_task {
     meta {
@@ -28,8 +28,8 @@ task static_disk_and_ram_task {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: ""
         maxRetries: max_retries
     }
@@ -66,8 +66,8 @@ task dynamic_disk_and_ram_task {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: ""
         maxRetries: max_retries
     }
@@ -109,8 +109,8 @@ task use_all_cores_task {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: ""
         maxRetries: max_retries
     }
@@ -159,8 +159,8 @@ task localize_files_task {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: ""
         maxRetries: max_retries
     }
@@ -194,8 +194,8 @@ task outfile_name_task {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: ""
         maxRetries: max_retries
     }
@@ -229,8 +229,8 @@ task prefix_task {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: ""
         maxRetries: max_retries
     }
@@ -271,8 +271,8 @@ task string_choices_task {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: ""
         maxRetries: max_retries
     }

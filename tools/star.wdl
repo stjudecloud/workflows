@@ -3,7 +3,7 @@
 ## This WDL file wraps the [STAR aligner](https://github.com/alexdobin/STAR).
 ## STAR is an RNA-Seq aligner.
 
-version 1.0
+version 1.1
 
 task build_star_db {
     meta {
@@ -63,7 +63,7 @@ task build_star_db {
     )
 
     # Leave 2GB as system overhead
-    String memory_limit_bytes = (memory_gb - 2) + "000000000"
+    String memory_limit_bytes = "~{memory_gb - 2}000000000"
 
     command <<<
         set -euo pipefail
@@ -74,11 +74,11 @@ task build_star_db {
         fi
 
         gtf_name=~{basename(gtf, ".gz")}
-        gunzip -c ~{gtf} > "$gtf_name" || ln -s ~{gtf} "$gtf_name"
+        gunzip -c ~{gtf} > "$gtf_name" || ln -sf ~{gtf} "$gtf_name"
 
         ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c ~{reference_fasta} > "$ref_fasta" \
-            || ln -s ~{reference_fasta} "$ref_fasta"
+            || ln -sf ~{reference_fasta} "$ref_fasta"
         
         mkdir ~{db_name};
         STAR --runMode genomeGenerate \
@@ -110,8 +110,8 @@ task build_star_db {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/star:2.7.10a-0'
         maxRetries: max_retries
     }
@@ -119,15 +119,15 @@ task build_star_db {
 
 task alignment {
     meta {
-        description: "This WDL task runs the STAR aligner on a set of RNA-Seq FastQ files."
+        description: "This WDL task runs the STAR aligner on a set of RNA-Seq FASTQ files."
     }
 
     parameter_meta {
+        read_one_fastqs: "An array of FASTQ files containing read one information"
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
-        read_one_fastqs_gz: "Array of gzipped FastQ files with 1st reads in pair"
         prefix: "Prefix for the BAM and log file. The extensions `.Aligned.out.bam` and `.Log.final.out` will be added."
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
-        read_two_fastqs_gz: "Array of gzipped FastQ files with 2nd reads in pair"
+        read_two_fastqs: "An array of FASTQ files containing read two information"
         outSJfilterIntronMaxVsReadN: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions."
         outSJfilterOverhangMin: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions."
         outSJfilterCountUniqueMin: "minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
@@ -372,10 +372,10 @@ task alignment {
 
     input {
         File star_db_tar_gz
-        Array[File] read_one_fastqs_gz
+        Array[File] read_one_fastqs
         String prefix
         String? read_groups
-        Array[File] read_two_fastqs_gz = []
+        Array[File] read_two_fastqs = []
         Array[Int] outSJfilterIntronMaxVsReadN = [50000, 100000, 200000]
         Map[String, Int] outSJfilterOverhangMin = {
             "noncanonical_motifs": 30,
@@ -509,8 +509,11 @@ task alignment {
     
     String star_db_dir = basename(star_db_tar_gz, ".tar.gz")
 
-    Float read_one_fastqs_size = size(read_one_fastqs_gz, "GiB")
-    Float read_two_fastqs_size = size(read_two_fastqs_gz, "GiB")
+    # Leave 2GB as system overhead
+    String memory_limit_bytes = "~{memory_gb - 2}000000000"
+
+    Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
+    Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
     Int disk_size_gb = (
         (
@@ -533,11 +536,11 @@ task alignment {
         # odd constructions a combination of needing white space properly parsed
         # and limitations of the WDL v1.0 spec
         python3 /home/sort_star_input.py \
-            --read-one-fastqs "~{sep=',' read_one_fastqs_gz}" \
-            ~{if (read_two_fastqs_gz != empty_array) then "--read-two-fastqs" else ""} "~{
+            --read-one-fastqs "~{sep=',' read_one_fastqs}" \
+            ~{if (read_two_fastqs != empty_array) then "--read-two-fastqs" else ""} "~{
                 sep=',' (
-                    if (read_two_fastqs_gz != empty_array)
-                    then read_two_fastqs_gz
+                    if (read_two_fastqs != empty_array)
+                    then read_two_fastqs
                     else []
                 )
             }" \
@@ -703,8 +706,8 @@ task alignment {
 
     runtime {
         cpu: ncpu
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/star:branch-star-2.7.10a-1'
         maxRetries: max_retries
     }

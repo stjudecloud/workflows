@@ -2,14 +2,14 @@
 ##
 ## This WDL file wraps the [ngsderive package](https://github.com/stjudecloud/ngsderive)
 
-version 1.0
+version 1.1
 
 task infer_strandedness {
     input {
         File bam
         File bam_index
         File gtf
-        String outfile_name = basename(bam, ".bam") + ".strandedness.txt"
+        String outfile_name = basename(bam, ".bam") + ".strandedness.tsv"
         Int min_reads_per_gene = 10
         Int num_genes = 1000
         Int min_mapq = 30
@@ -50,8 +50,8 @@ task infer_strandedness {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -60,7 +60,7 @@ task infer_strandedness {
 task instrument {
     input {
         File bam
-        String outfile_name = basename(bam, ".bam") + ".instrument.txt"
+        String outfile_name = basename(bam, ".bam") + ".instrument.tsv"
         Int num_samples = 10000
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
@@ -82,8 +82,8 @@ task instrument {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -93,7 +93,7 @@ task read_length {
     input {
         File bam
         File bam_index
-        String outfile_name = basename(bam, ".bam") + ".readlength.txt"
+        String outfile_name = basename(bam, ".bam") + ".readlength.tsv"
         Float majority_vote_cutoff = 0.7
         Int num_samples = -1
         Int memory_gb = 5
@@ -128,8 +128,8 @@ task read_length {
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -153,7 +153,7 @@ task encoding {
 
         ngsderive encoding --verbose \
             -n ~{num_samples} \
-            ~{sep=' ' ngs_files} \
+            ~{sep(" ", ngs_files)} \
             > ~{outfile_name}
         
         ENCODING_FILE="~{outfile_name}" python - <<END
@@ -188,8 +188,8 @@ END
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }
@@ -205,7 +205,7 @@ task junction_annotation {
         Int min_mapq = 30
         Int min_reads = 2
         Int fuzzy_junction_match_range = 0
-        Int memory_gb = 35
+        Int memory_gb = 56  # TODO make this dynamic
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
@@ -229,23 +229,26 @@ task junction_annotation {
             -q ~{min_mapq} \
             -m ~{min_reads} \
             -k ~{fuzzy_junction_match_range} \
-            -o ~{prefix}.junction_summary.txt \
+            -o ~{prefix}.junction_summary.tsv \
             "$CWD_BAM"
 
-        mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"  # TODO why are we renaming this?/can we update ngsderive to name things properly?
+        # junction-annotation accepts multiple BAMs, and allows for
+        # renaming the cohort level summary report, but not the BAM
+        # level junctions file. So we rename it here to match with prefix.
+        mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"
         gzip ~{prefix}.junctions.tsv
 
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
 
     output {
-        File junction_summary = "~{prefix}.junction_summary.txt"
+        File junction_summary = "~{prefix}.junction_summary.tsv"
         File junctions = "~{prefix}.junctions.tsv.gz"
     }
 
     runtime {
-        memory: memory_gb + " GB"
-        disk: disk_size_gb + " GB"
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'
         maxRetries: max_retries
     }

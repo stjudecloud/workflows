@@ -2,12 +2,12 @@
 ##
 ## TODO write something here
 
-version 1.0
+version 1.1
 
-import "../../tools/samtools.wdl"
-import "../../tools/picard.wdl"
 import "../../tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjude/XenoCP/4.0.0-alpha/wdl/workflows/xenocp.wdl" as xenocp_workflow
+import "../../tools/picard.wdl"
+import "../../tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjude/XenoCP/4.0.0-alpha/wdl/workflows/xenocp.wdl" as xenocp_wf
 
 workflow alignment_post {
     parameter_meta {
@@ -46,7 +46,7 @@ workflow alignment_post {
             max_retries=max_retries
         }
 
-        call xenocp_workflow.xenocp { input:
+        call xenocp_wf.xenocp { input:
             input_bam=picard_sort.sorted_bam,
             input_bai=pre_xenocp_index.bam_index,
             reference_tar_gz=select_first([contaminant_db, ""]),
