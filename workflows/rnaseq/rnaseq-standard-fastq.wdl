@@ -184,20 +184,20 @@ task ReadGroup_to_string {
 
     command <<<
         {
-            echo -n ~{"ID:~{read_group.ID} "}
-            echo -n ~{"BC:~{read_group.BC} "}
-            echo -n ~{"CN:~{read_group.CN} "}
-            echo -n ~{"DS:~{read_group.DS} "}
-            echo -n ~{"DT:~{read_group.DT} "}
-            echo -n ~{"FO:~{read_group.FO} "}
-            echo -n ~{"KS:~{read_group.KS} "}
-            echo -n ~{"LB:~{read_group.LB} "}
-            echo -n ~{"PG:~{read_group.PG} "}
-            echo -n ~{"PI:~{read_group.PI} "}
-            echo -n ~{"PL:~{read_group.PL} "}
-            echo -n ~{"PM:~{read_group.PM} "}
-            echo -n ~{"PU:~{read_group.PU} "}
-            echo ~{"SM:~{read_group.SM} "}
+            echo -n "~{'ID:~{read_group.ID} '}"
+            echo -n "~{'BC:~{read_group.BC} '}"
+            echo -n "~{'CN:~{read_group.CN} '}"
+            echo -n "~{'DS:~{read_group.DS} '}"
+            echo -n "~{'DT:~{read_group.DT} '}"
+            echo -n "~{'FO:~{read_group.FO} '}"
+            echo -n "~{'KS:~{read_group.KS} '}"
+            echo -n "~{'LB:~{read_group.LB} '}"
+            echo -n "~{'PG:~{read_group.PG} '}"
+            echo -n "~{'PI:~{read_group.PI} '}"
+            echo -n "~{'PL:~{read_group.PL} '}"
+            echo -n "~{'PM:~{read_group.PM} '}"
+            echo -n "~{'PU:~{read_group.PU} '}"
+            echo "~{'SM:~{read_group.SM} '}"
         } > out.txt
     >>>
 
