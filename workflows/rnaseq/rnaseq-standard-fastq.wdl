@@ -184,20 +184,20 @@ task ReadGroup_to_string {
 
     command <<<
         {
-            echo -n "~{'ID:~{read_group.ID} '}"
-            echo -n "~{'BC:~{read_group.BC} '}"
-            echo -n "~{'CN:~{read_group.CN} '}"
-            echo -n "~{'DS:~{read_group.DS} '}"
-            echo -n "~{'DT:~{read_group.DT} '}"
-            echo -n "~{'FO:~{read_group.FO} '}"
-            echo -n "~{'KS:~{read_group.KS} '}"
-            echo -n "~{'LB:~{read_group.LB} '}"
-            echo -n "~{'PG:~{read_group.PG} '}"
-            echo -n "~{'PI:~{read_group.PI} '}"
-            echo -n "~{'PL:~{read_group.PL} '}"
-            echo -n "~{'PM:~{read_group.PM} '}"
-            echo -n "~{'PU:~{read_group.PU} '}"
-            echo "~{'SM:~{read_group.SM} '}"
+            echo -n "~{'ID:~{read_group.ID} '}"  # required field. All others optional
+            echo -n "~{if defined(read_group.BC) then 'BC:~{read_group.BC} ' else ''}"
+            echo -n "~{if defined(read_group.CN) then 'CN:~{read_group.CN} ' else ''}"
+            echo -n "~{if defined(read_group.DS) then 'DS:~{read_group.DS} ' else ''}"
+            echo -n "~{if defined(read_group.DT) then 'DT:~{read_group.DT} ' else ''}"
+            echo -n "~{if defined(read_group.FO) then 'FO:~{read_group.FO} ' else ''}"
+            echo -n "~{if defined(read_group.KS) then 'KS:~{read_group.KS} ' else ''}"
+            echo -n "~{if defined(read_group.LB) then 'LB:~{read_group.LB} ' else ''}"
+            echo -n "~{if defined(read_group.PG) then 'PG:~{read_group.PG} ' else ''}"
+            echo -n "~{if defined(read_group.PI) then 'PI:~{read_group.PI} ' else ''}"
+            echo -n "~{if defined(read_group.PL) then 'PL:~{read_group.PL} ' else ''}"
+            echo -n "~{if defined(read_group.PM) then 'PM:~{read_group.PM} ' else ''}"
+            echo -n "~{if defined(read_group.PU) then 'PU:~{read_group.PU} ' else ''}"
+            echo "~{if defined(read_group.SM) then 'SM:~{read_group.SM} ' else ''}"
         } > out.txt
     >>>
 
