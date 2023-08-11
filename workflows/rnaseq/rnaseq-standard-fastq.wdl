@@ -197,7 +197,7 @@ task ReadGroup_to_string {
             echo -n "~{if defined(read_group.PL) then 'PL:~{read_group.PL} ' else ''}"
             echo -n "~{if defined(read_group.PM) then 'PM:~{read_group.PM} ' else ''}"
             echo -n "~{if defined(read_group.PU) then 'PU:~{read_group.PU} ' else ''}"
-            echo "~{if defined(read_group.SM) then 'SM:~{read_group.SM} ' else ''}"
+            echo "~{if defined(read_group.SM) then 'SM:~{read_group.SM}' else ''}"
         } > out.txt
     >>>
 
