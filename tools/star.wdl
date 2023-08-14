@@ -521,7 +521,7 @@ task alignment {
     Array[File] empty_array = []  # odd construction forced by WDL v1.0 spec
 
     command <<<
-        set -euo pipefail
+        set -euox pipefail  # TODO remove x used for debugging
 
         n_cores=~{ncpu}
         if ~{use_all_cores}; then
