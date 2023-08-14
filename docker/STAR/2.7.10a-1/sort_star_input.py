@@ -92,14 +92,17 @@ def write_outfiles(
     """Concatenate each element in each list and write results to files."""
     read_one_file = open("read_one_fastqs_sorted.txt", "w", encoding="utf-8")
     read_one_file.write(",".join(read_one_fastqs))
+    read_one_file.write("\n")
     read_one_file.close()
 
     read_two_file = open("read_two_fastqs_sorted.txt", "w", encoding="utf-8")
     read_two_file.write(",".join(read_two_fastqs))
+    read_two_file.write("\n")
     read_two_file.close()
 
     read_group_file = open("read_groups_sorted.txt", "w", encoding="utf-8")
     read_group_file.write(" , ".join(read_groups))
+    read_group_file.write("\n")
     read_group_file.close()
 
 
