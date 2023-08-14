@@ -547,9 +547,9 @@ task alignment {
                 else ''
             }"
 
-        read -ra read_one_args < <(cat read_one_fastqs_sorted.txt)
-        read -ra read_two_args < <(cat read_two_fastqs_sorted.txt)
-        read -ra read_group_args < <(cat read_groups_sorted.txt)
+        read -ra read_one_args < read_one_fastqs_sorted.txt
+        read -ra read_two_args < read_two_fastqs_sorted.txt
+        read -ra read_group_args < read_groups_sorted.txt
         STAR --readFilesIn "${read_one_args[@]}" "${read_two_args[@]}" \
             --readFilesCommand "gunzip -c" \
             --genomeDir ~{star_db_dir} \
