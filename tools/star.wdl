@@ -23,7 +23,7 @@ task build_star_db {
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         genomeChrBinNbits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
         genomeSAindexNbases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
-        genomeSAsparseD: "suffux array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction."
+        genomeSAsparseD: "suffix array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction."
         genomeSuffixLengthMax: "maximum length of the suffixes, has to be longer than read length. -1 = infinite."
         sjdbOverhang: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). **[STAR default]**: `100`. **[WDL default]**: `125`."
         ncpu: "Number of cores to allocate for task"
@@ -138,7 +138,7 @@ task alignment {
             description: "adapter sequences to clip from 3p of each mate. `left` applies to read one and `right` applies to read two.",
             choices: {
                 None: "No 3p adapter trimming will be performed",
-                sequence: "Any nucleotide sequence of any length, matching the regex `/[ATCG]+/`",
+                sequence: "A nucleotide sequence string of any length, matching the regex `/[ATCG]+/`",
                 polyA: "polyA sequence with the length equal to read length"
             }
         }
@@ -173,7 +173,7 @@ task alignment {
             description: "a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order. **[STAR defaults]**: `NH HI AS nM`. **[WDL default]**: `NH HI AS nM NM MD XS`.",
             choices: {
                 NH: "number of loci the reads maps to: =1 for unique mappers, >1 for multimappers. Standard SAM tag.",
-                HI: "ultiple alignment index, starts with --outSAMattrIHstart (=1 by default). Standard SAM tag.",
+                HI: "multiple alignment index, starts with --outSAMattrIHstart (=1 by default). Standard SAM tag.",
                 AS: "local alignment score, +1/-1 for matches/mismateches, score* penalties for indels and gaps. For PE reads, total score for two mates. Standard SAM tag.",
                 nM: "number of mismatches. For PE reads, sum over two mates.",
                 NM: "edit distance to the reference (number of mismatched + inserted + deleted bases) for each mate. Standard SAM tag.",
@@ -182,7 +182,7 @@ task alignment {
                 jI: "start and end of introns for all junctions (1-based).",
                 XS: "alignment strand according to --outSAMstrandField.",
                 MC: "mate's CIGAR string. Standard SAM tag.",
-                ch: "marks all segment of all chimeric alingments for --chimOutType WithinBAM output.",
+                ch: "marks all segments of all chimeric alignments for --chimOutType WithinBAM output.",
                 cN: "number of bases clipped from the read ends: 5' and 3'"
             }
         }
@@ -298,7 +298,7 @@ task alignment {
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         outFilterMismatchNoverLmax: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
         outFilterMismatchNoverReadLmax: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
-        outFilterScoreMinOverLread: "same as outFilterScoreMin, but  normalized to read length (sum of mates' lengths for paired-end reads)"
+        outFilterScoreMinOverLread: "same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for paired-end reads)"
         outFilterMatchNminOverLread: "same as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for paired-end reads)"
         scoreGenomicLengthLog2scale: "extra score logarithmically scaled with genomic length of the alignment: scoreGenomicLengthLog2scale*log2(genomicLength)"
         seedSearchStartLmaxOverLread: "seedSearchStartLmax normalized to read length (sum of mates' lengths for paired-end reads)"
@@ -324,7 +324,7 @@ task alignment {
         scoreGap: "splice junction penalty (independent on intron motif)"
         scoreGapNoncan: "non-canonical junction penalty (in addition to scoreGap)"
         scoreGapGCAG: "GC/AG and CT/GC junction penalty (in addition to scoreGap)"
-        scoreGapATAC: "AT/AC and GT/AT junction penalty  (in addition to scoreGap)"
+        scoreGapATAC: "AT/AC and GT/AT junction penalty (in addition to scoreGap)"
         scoreDelOpen: "deletion open penalty"
         scoreDelBase: "deletion extension penalty per base (in addition to scoreDelOpen)"
         scoreInsOpen: "insertion open penalty"
