@@ -377,35 +377,35 @@ task alignment {
         String? read_groups
         Array[File] read_two_fastqs = []
         Array[Int] outSJfilterIntronMaxVsReadN = [50000, 100000, 200000]
-        Map[String, Int] outSJfilterOverhangMin = {
-            "noncanonical_motifs": 30,
-            "GT/AG_and_CT/AC_motif": 12,
-            "GC/AG_and_CT/GC_motif": 12,
-            "AT/AC_and_GT/AT_motif": 12
+        SJ_motifs outSJfilterOverhangMin = SJ_motifs {
+            noncanonical_motifs: 30,
+            GT_AG_and_CT_AC_motif: 12,
+            GC_AG_and_CT_GC_motif: 12,
+            AT_AC_and_GT_AT_motif: 12
         }
-        Map[String, Int] outSJfilterCountUniqueMin = {
-            "noncanonical_motifs": 3,
-            "GT/AG_and_CT/AC_motif": 1,
-            "GC/AG_and_CT/GC_motif": 1,
-            "AT/AC_and_GT/AT_motif": 1
+        SJ_motifs outSJfilterCountUniqueMin = SJ_motifs {
+            noncanonical_motifs: 3,
+            GT_AG_and_CT_AC_motif: 1,
+            GC_AG_and_CT_GC_motif: 1,
+            AT_AC_and_GT_AT_motif: 1
         }
-        Map[String, Int] outSJfilterCountTotalMin = {
-            "noncanonical_motifs": 3,
-            "GT/AG_and_CT/AC_motif": 1,
-            "GC/AG_and_CT/GC_motif": 1,
-            "AT/AC_and_GT/AT_motif": 1
+        SJ_motifs outSJfilterCountTotalMin = SJ_motifs {
+            noncanonical_motifs: 3,
+            GT_AG_and_CT_AC_motif: 1,
+            GC_AG_and_CT_GC_motif: 1,
+            AT_AC_and_GT_AT_motif: 1
         }
-        Map[String, Int] outSJfilterDistToOtherSJmin = {
-            "noncanonical_motifs": 10,
-            "GT/AG_and_CT/AC_motif": 0,
-            "GC/AG_and_CT/GC_motif": 5,
-            "AT/AC_and_GT/AT_motif": 10
+        SJ_motifs outSJfilterDistToOtherSJmin = SJ_motifs {
+            noncanonical_motifs: 10,
+            GT_AG_and_CT_AC_motif: 0,
+            GC_AG_and_CT_GC_motif: 5,
+            AT_AC_and_GT_AT_motif: 10
         }
-        Map[String, Int] alignSJstitchMismatchNmax = {
-            "noncanonical_motifs": 0,
-            "GT/AG_and_CT/AC_motif": -1,
-            "GC/AG_and_CT/GC_motif": 0,
-            "AT/AC_and_GT/AT_motif": 0
+        SJ_motifs alignSJstitchMismatchNmax = SJ_motifs {
+            noncanonical_motifs: 0,
+            GT_AG_and_CT_AC_motif: -1,
+            GC_AG_and_CT_GC_motif: 0,
+            AT_AC_and_GT_AT_motif: 0
         }
         Pair[String, String] clip3pAdapterSeq = ("None", "None")
         Pair[Float, Float] clip3pAdapterMMp = (0.1, 0.1)
@@ -563,34 +563,34 @@ task alignment {
                 sep(' ', quote(outSJfilterIntronMaxVsReadN))
             } \
             --outSJfilterOverhangMin ~{sep(' ', quote([
-                outSJfilterOverhangMin['noncanonical_motifs'],
-                outSJfilterOverhangMin['GT/AG_and_CT/AC_motif'],
-                outSJfilterOverhangMin['GC/AG_and_CT/GC_motif'],
-                outSJfilterOverhangMin['AT/AC_and_GT/AT_motif']
+                outSJfilterOverhangMin.noncanonical_motifs,
+                outSJfilterOverhangMin.GT_AG_and_CT_AC_motif,
+                outSJfilterOverhangMin.GC_AG_and_CT_GC_motif,
+                outSJfilterOverhangMin.AT_AC_and_GT_AT_motif
             ]))} \
             --outSJfilterCountUniqueMin ~{sep(' ', quote([
-                outSJfilterCountUniqueMin['noncanonical_motifs'],
-                outSJfilterCountUniqueMin['GT/AG_and_CT/AC_motif'],
-                outSJfilterCountUniqueMin['GC/AG_and_CT/GC_motif'],
-                outSJfilterCountUniqueMin['AT/AC_and_GT/AT_motif']
+                outSJfilterCountUniqueMin.noncanonical_motifs,
+                outSJfilterCountUniqueMin.GT_AG_and_CT_AC_motif,
+                outSJfilterCountUniqueMin.GC_AG_and_CT_GC_motif,
+                outSJfilterCountUniqueMin.AT_AC_and_GT_AT_motif
             ]))} \
             --outSJfilterCountTotalMin ~{sep(' ', quote([
-                outSJfilterCountTotalMin['noncanonical_motifs'],
-                outSJfilterCountTotalMin['GT/AG_and_CT/AC_motif'],
-                outSJfilterCountTotalMin['GC/AG_and_CT/GC_motif'],
-                outSJfilterCountTotalMin['AT/AC_and_GT/AT_motif']
+                outSJfilterCountTotalMin.noncanonical_motifs,
+                outSJfilterCountTotalMin.GT_AG_and_CT_AC_motif,
+                outSJfilterCountTotalMin.GC_AG_and_CT_GC_motif,
+                outSJfilterCountTotalMin.AT_AC_and_GT_AT_motif
             ]))} \
             --outSJfilterDistToOtherSJmin ~{sep(' ', quote([
-                outSJfilterDistToOtherSJmin['noncanonical_motifs'],
-                outSJfilterDistToOtherSJmin['GT/AG_and_CT/AC_motif'],
-                outSJfilterDistToOtherSJmin['GC/AG_and_CT/GC_motif'],
-                outSJfilterDistToOtherSJmin['AT/AC_and_GT/AT_motif']
+                outSJfilterDistToOtherSJmin.noncanonical_motifs,
+                outSJfilterDistToOtherSJmin.GT_AG_and_CT_AC_motif,
+                outSJfilterDistToOtherSJmin.GC_AG_and_CT_GC_motif,
+                outSJfilterDistToOtherSJmin.AT_AC_and_GT_AT_motif
             ]))} \
             --alignSJstitchMismatchNmax ~{sep(' ', quote([
-                alignSJstitchMismatchNmax['noncanonical_motifs'],
-                alignSJstitchMismatchNmax['GT/AG_and_CT/AC_motif'],
-                alignSJstitchMismatchNmax['GC/AG_and_CT/GC_motif'],
-                alignSJstitchMismatchNmax['AT/AC_and_GT/AT_motif']
+                alignSJstitchMismatchNmax.noncanonical_motifs,
+                alignSJstitchMismatchNmax.GT_AG_and_CT_AC_motif,
+                alignSJstitchMismatchNmax.GC_AG_and_CT_GC_motif,
+                alignSJstitchMismatchNmax.AT_AC_and_GT_AT_motif
             ]))} \
             --clip3pAdapterSeq ~{clip3pAdapterSeq.left + ' ' + clip3pAdapterSeq.right} \
             --clip3pAdapterMMp ~{'~{clip3pAdapterMMp.left} ~{clip3pAdapterMMp.right}'} \
@@ -710,4 +710,11 @@ task alignment {
         docker: 'ghcr.io/stjudecloud/star:branch-star-2.7.10a-1'
         maxRetries: max_retries
     }
+}
+
+struct SJ_motifs {
+    Int noncanonical_motifs
+    Int GT_AG_and_CT_AC_motif
+    Int GC_AG_and_CT_GC_motif
+    Int AT_AC_and_GT_AT_motif
 }
