@@ -74,13 +74,13 @@ def validate(
         rgids (list): list of values to the 'ID' key
     """
     if len(read_one_fastqs) != len(rgids):
-        raise SystemExit("Must have same number of read groups as FastQ pairs")
+        raise SystemExit("Must have same number of read groups as FASTQ pairs")
 
     for i, rgid in enumerate(rgids):
         if (rgid not in read_one_fastqs[i]) or (rgid not in read_two_fastqs[i]):
             raise SystemExit(
                 "Error: There's a mismatch between "
-                + "read group IDs and FastQ file names"
+                + "read group IDs and FASTQ file names"
             )
 
 
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     if args.read_two_fastqs:
         if len(read1_fastqs) != len(read2_fastqs):
             raise SystemExit(
-                "Must have the same number of read one FastQs as read two FastQs"
+                "Must have the same number of read one FASTQs as read two FASTQs"
             )
 
     sorted_read1_fastqs = sort_fastqs(read1_fastqs)
