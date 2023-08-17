@@ -16,8 +16,8 @@ task build_star_db {
         db_name: "Name for output in compressed, archived format. The suffix `.tar.gz` will be added."
         sjdbGTFchrPrefix: "prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSMEBL annotations with UCSC genomes)"
         sjdbGTFfeatureExon: "feature type in GTF file to be used as exons for building transcripts"
-        sjdbGTFtagExonParentTranscript: "GTF attribute name for parent transcript ID (default 'transcript_id' works for GTF files)"
-        sjdbGTFtagExonParentGene: "GTF attribute name for parent gene ID (default 'gene_id' works for GTF files)"
+        sjdbGTFtagExonParentTranscript: "GTF attribute name for parent transcript ID"
+        sjdbGTFtagExonParentGene: "GTF attribute name for parent gene ID"
         sjdbGTFtagExonParentGeneName: "GTF attrbute name for parent gene name"
         sjdbGTFtagExonParentGeneType: "GTF attrbute name for parent gene type"
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
@@ -123,15 +123,15 @@ task alignment {
     }
 
     parameter_meta {
-        read_one_fastqs: "An array of FASTQ files containing read one information"
+        read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
         prefix: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added."
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
-        read_two_fastqs: "An array of FASTQ files containing read two information"
+        read_two_fastqs_gz: "An array of FASTQ files containing read two information"
         outSJfilterIntronMaxVsReadN: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions."
         outSJfilterOverhangMin: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions."
         outSJfilterCountUniqueMin: "minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
-        outSJfilterCountTotalMin: "minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin OR outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
+        outSJfilterCountTotalMin: "minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
         outSJfilterDistToOtherSJmin: "minimum allowed distance to other junctions' donor/acceptor for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. Does not apply to annotated junctions."
         alignSJstitchMismatchNmax: "maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif"
         clip3pAdapterSeq: {
@@ -372,10 +372,10 @@ task alignment {
 
     input {
         File star_db_tar_gz
-        Array[File] read_one_fastqs
+        Array[File] read_one_fastqs_gz
         String prefix
         String? read_groups
-        Array[File] read_two_fastqs = []
+        Array[File] read_two_fastqs_gz = []
         Array[Int] outSJfilterIntronMaxVsReadN = [50000, 100000, 200000]
         SJ_motifs outSJfilterOverhangMin = SJ_motifs {
             noncanonical_motifs: 30,
@@ -509,8 +509,8 @@ task alignment {
     
     String star_db_dir = basename(star_db_tar_gz, ".tar.gz")
 
-    Float read_one_fastqs_size = size(read_one_fastqs, "GiB")
-    Float read_two_fastqs_size = size(read_two_fastqs, "GiB")
+    Float read_one_fastqs_size = size(read_one_fastqs_gz, "GiB")
+    Float read_two_fastqs_size = size(read_two_fastqs_gz, "GiB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
     Int disk_size_gb = (
         (
@@ -518,7 +518,7 @@ task alignment {
         ) + 10 + modify_disk_size_gb
     )
 
-    Array[File] empty_array = []  # odd construction forced by WDL v1.0 spec
+    Array[File] empty_array = []  # odd construction forced by WDL v1.1 spec
 
     command <<<
         set -euo pipefail
@@ -531,13 +531,13 @@ task alignment {
         tar -xzf ~{star_db_tar_gz}
 
         # odd constructions a combination of needing white space properly parsed
-        # and limitations of the WDL v1.0 spec
+        # and limitations of the WDL v1.1 spec
         python3 /home/sort_star_input.py \
-            --read-one-fastqs "~{sep(',', read_one_fastqs)}" \
-            ~{if (read_two_fastqs != empty_array) then "--read-two-fastqs" else ""} "~{
+            --read-one-fastqs "~{sep(',', read_one_fastqs_gz)}" \
+            ~{if (read_two_fastqs_gz != empty_array) then "--read-two-fastqs" else ""} "~{
                 sep(',', (
-                    if (read_two_fastqs != empty_array)
-                    then read_two_fastqs
+                    if (read_two_fastqs_gz != empty_array)
+                    then read_two_fastqs_gz
                     else []
                 ))
             }" \
