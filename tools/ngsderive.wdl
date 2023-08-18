@@ -61,7 +61,7 @@ task instrument {
     input {
         File bam
         String outfile_name = basename(bam, ".bam") + ".instrument.tsv"
-        Int num_samples = 10000
+        Int num_reads = 10000
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -72,7 +72,7 @@ task instrument {
 
     command <<<
         ngsderive instrument --verbose \
-            -n ~{num_samples} \
+            -n ~{num_reads} \
             ~{bam} \
             > ~{outfile_name}
     >>>
@@ -95,7 +95,7 @@ task read_length {
         File bam_index
         String outfile_name = basename(bam, ".bam") + ".readlength.tsv"
         Float majority_vote_cutoff = 0.7
-        Int num_samples = -1
+        Int num_reads = -1
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -116,7 +116,7 @@ task read_length {
 
         ngsderive readlen --verbose \
             -c ~{majority_vote_cutoff} \
-            -n ~{num_samples} \
+            -n ~{num_reads} \
             "$CWD_BAM" \
             > ~{outfile_name}
 
@@ -139,7 +139,7 @@ task encoding {
     input {
         Array[File] ngs_files
         String outfile_name
-        Int num_samples = 1000000
+        Int num_reads = 1000000
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -152,7 +152,7 @@ task encoding {
         set -euo pipefail
 
         ngsderive encoding --verbose \
-            -n ~{num_samples} \
+            -n ~{num_reads} \
             ~{sep(" ", ngs_files)} \
             > ~{outfile_name}
         
