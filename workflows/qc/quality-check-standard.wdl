@@ -175,6 +175,13 @@ workflow quality_check {
         outfile_name=post_subsample_prefix + ".encoding.tsv",
         max_retries=max_retries
     }
+    call ngsderive.endedness { input:
+        bam=post_subsample_bam,
+        outfile_name=post_subsample_prefix + ".endedness.tsv",
+        lenient=true,
+        #calc_rpt=true,  # TODO should this be set?
+        max_retries=max_retries
+    }
     call util.global_phred_scores { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix,
