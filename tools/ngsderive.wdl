@@ -10,6 +10,7 @@ task strandedness {
         File bam_index
         File gtf
         String outfile_name = basename(bam, ".bam") + ".strandedness.tsv"
+        Boolean split_by_rg = false
         Int min_reads_per_gene = 10
         Int num_genes = 1000
         Int min_mapq = 30
@@ -32,6 +33,7 @@ task strandedness {
         ln -s ~{bam_index} "$CWD_BAM".bai
 
         ngsderive strandedness --verbose \
+            ~{if split_by_rg then "--split-by-rg" else ""}
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
             -q ~{min_mapq} \
