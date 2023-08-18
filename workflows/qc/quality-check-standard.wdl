@@ -306,6 +306,7 @@ workflow quality_check {
                 instrument.instrument_file,
                 read_length.read_length_file,
                 encoding.encoding_file,
+                endedness.endedness_file,
                 fastqc.raw_data,
                 collect_alignment_summary_metrics.alignment_metrics,
                 collect_gc_bias_metrics.gc_bias_metrics,
@@ -363,6 +364,7 @@ workflow quality_check {
         File instrument_file = instrument.instrument_file
         File read_length_file = read_length.read_length_file
         File inferred_encoding = encoding.encoding_file
+        File inferred_endedness = endedness.endedness_file
         File alignment_metrics = collect_alignment_summary_metrics.alignment_metrics
         File alignment_metrics_pdf
             = collect_alignment_summary_metrics.alignment_metrics_pdf
