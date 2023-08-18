@@ -33,7 +33,7 @@ task strandedness {
         ln -s ~{bam_index} "$CWD_BAM".bai
 
         ngsderive strandedness --verbose \
-            ~{if split_by_rg then "--split-by-rg" else ""}
+            ~{if split_by_rg then "--split-by-rg" else ""} \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
             -q ~{min_mapq} \
