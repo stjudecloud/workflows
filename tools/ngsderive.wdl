@@ -255,3 +255,66 @@ task junction_annotation {
         maxRetries: max_retries
     }
 }
+
+task endedness {
+    meta {
+        description: "This WDL task marks duplicate reads in the input BAM file using Picard."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to derive endedness from"
+        outfile_name: "Name for the endedness TSV file"
+        lenient: "Return a zero exit code on unknown results"
+        calc_rpt: "Calculate and output Reads-Per-Template. This will produce a more sophisticated estimate for endedness, but uses substantially more memory (can reach up to 60-70% of BAM size in memory consumption)."
+        round_rpt: "Round RPT to the nearest INT before comparing to expected values. Appropriate if using `--num-reads` > 0."
+        split_by_rg: "Contain one entry per read group"
+        paired_deviance: "Distance from 0.5 split between number of f+l- reads and f-l+ reads allowed to be called 'Paired-End'. Default of `0.0` only appropriate if the whole file is being processed."
+        num_reads: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file."
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by value of `calc_rpt` and the size of the input. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        File bam
+        String outfile_name = basename(bam, ".bam") + ".endedness.tsv"
+        Boolean lenient = false
+        Boolean calc_rpt = false
+        Boolean round_rpt = false
+        Boolean split_by_rg = false
+        Float paired_deviance = 0.0
+        Int num_reads = -1
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int memory_gb = if calc_rpt then (
+        ceil(bam_size * 0.8) + 4 + modify_memory_gb
+    ) else 4
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+
+    command <<<
+        ngsderive endedness --verbose \
+            ~{if lenient then "--lenient" else ""} \
+            ~{if calc_rpt then "-r" else ""} \
+            ~{if round_rpt then "--round-rpt" else ""} \
+            ~{if split_by_rg then "--split-by-rg" else ""} \
+            --paired-deviance ~{paired_deviance}
+            -n ~{num_reads} \
+            ~{bam} \
+            > ~{outfile_name}
+    >>>
+
+    output {
+        File endedness_file = outfile_name
+    }
+
+    runtime {
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        docker: 'quay.io/biocontainers/ngsderive:3.3.0--pyhdfd78af_0'
+        maxRetries: max_retries
+    }
+}
