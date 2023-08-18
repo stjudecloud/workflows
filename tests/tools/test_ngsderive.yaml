@@ -1,9 +1,9 @@
-- name: infer_strandedness
+- name: strandedness
   tags:
     - miniwdl
     - ngsderive
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task infer_strandedness tools/ngsderive.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" bam_index="tests/tools/input/test.bwa_aln_pe.bam.bai" gtf="tests/tools/input/genes.gtf.gz"
+    miniwdl run -d test-output/. --copy-input-files --task strandedness tools/ngsderive.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" bam_index="tests/tools/input/test.bwa_aln_pe.bam.bai" gtf="tests/tools/input/genes.gtf.gz"
   files:
     - path: test-output/out/strandedness_file/test.bwa_aln_pe.strandedness.txt
       contains:

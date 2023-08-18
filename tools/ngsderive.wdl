@@ -4,7 +4,7 @@
 
 version 1.1
 
-task infer_strandedness {
+task strandedness {
     input {
         File bam
         File bam_index

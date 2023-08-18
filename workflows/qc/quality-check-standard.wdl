@@ -235,7 +235,7 @@ workflow quality_check {
             prefix=post_subsample_prefix,
             max_retries=max_retries
         }
-        call ngsderive.infer_strandedness { input:
+        call ngsderive.strandedness { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gtf=select_first([gtf, "undefined"]),
@@ -313,7 +313,7 @@ workflow quality_check {
                 subsample.orig_read_count,
                 markdups_post.mosdepth_global_summary,
                 markdups_post.mosdepth_global_dist,
-                infer_strandedness.strandedness_file,
+                strandedness.strandedness_file,
                 junction_annotation.junction_summary,
                 qualimap_rnaseq.raw_summary,
                 qualimap_rnaseq.raw_coverage
@@ -389,7 +389,7 @@ workflow quality_check {
             = markdups_post.mosdepth_region_summary
         Array[File?]? mosdepth_dups_marked_region_dist
             = markdups_post.mosdepth_region_dist
-        File? inferred_strandedness = infer_strandedness.strandedness_file
+        File? inferred_strandedness = strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
         File? junctions = junction_annotation.junctions
