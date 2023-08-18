@@ -14,7 +14,7 @@ task strandedness {
         Int min_reads_per_gene = 10
         Int num_genes = 1000
         Int min_mapq = 30
-        Int memory_gb = 5
+        Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
@@ -98,7 +98,7 @@ task read_length {
         String outfile_name = basename(bam, ".bam") + ".readlength.tsv"
         Float majority_vote_cutoff = 0.7
         Int num_reads = -1
-        Int memory_gb = 5
+        Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
@@ -142,7 +142,7 @@ task encoding {
         Array[File] ngs_files
         String outfile_name
         Int num_reads = 1000000
-        Int memory_gb = 5
+        Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
