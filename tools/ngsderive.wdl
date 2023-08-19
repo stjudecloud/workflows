@@ -54,7 +54,7 @@ task strandedness {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/ngsderive:2.4.0--pyhdfd78af_0'  # TODO update once 3.3.1 is live
+        docker: 'quay.io/biocontainers/ngsderive:3.3.1--pyhdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -86,7 +86,7 @@ task instrument {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/ngsderive:3.3.0--pyhdfd78af_0'
+        docker: 'quay.io/biocontainers/ngsderive:3.3.1--pyhdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -132,7 +132,7 @@ task read_length {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/ngsderive:3.3.0--pyhdfd78af_0'
+        docker: 'quay.io/biocontainers/ngsderive:3.3.1--pyhdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -192,7 +192,7 @@ END
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/ngsderive:3.3.0--pyhdfd78af_0'
+        docker: 'quay.io/biocontainers/ngsderive:3.3.1--pyhdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -251,7 +251,7 @@ task junction_annotation {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/ngsderive:3.3.0--pyhdfd78af_0'
+        docker: 'quay.io/biocontainers/ngsderive:3.3.1--pyhdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -314,7 +314,7 @@ task endedness {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/ngsderive:3.3.0--pyhdfd78af_0'
+        docker: 'quay.io/biocontainers/ngsderive:3.3.1--pyhdfd78af_0'
         maxRetries: max_retries
     }
 }
