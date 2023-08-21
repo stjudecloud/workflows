@@ -15,7 +15,7 @@ PERMITTED META DESCRIPTIONS:
         bam_index: "BAM index file corresponding to the input BAM"
         reference_fasta_gz: "Gzipped reference genome in FASTA format"
         strandedness: {
-            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`."
+            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
             choices: [
                 '',
                 'Stranded-Reverse',
