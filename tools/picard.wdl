@@ -75,7 +75,7 @@ task validate_bam {
 
     parameter_meta {
         bam: "Input BAM format file to validate"
-        reference_fasta: "Reference genome in FASTA format"
+        reference_fasta: "Reference genome in FASTA format. Presence of the reference FASTA allows for `NM` tag validation."
         ignore_list: "List of Picard errors and warnings to ignore. Possible values can be found on the [GATK website](https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile)"
         outfile_name: "Name for the ValidateSamFile report file"
         succeed_on_errors: "Succeed the task even if errors *and/or* warnings are detected"
