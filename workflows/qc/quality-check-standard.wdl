@@ -131,6 +131,7 @@ workflow quality_check {
     call picard.validate_bam { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".ValidateSamFile.txt",
+        reference_fasta=reference_fasta,
         succeed_on_errors=true,
         ignore_list=[],
         summary_mode=true,
