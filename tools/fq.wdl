@@ -43,7 +43,7 @@ task fqlint {
                 "high"
             ]
         }
-        panic: "Panic on first error (true) or log all errors (false)"
+        panic: "Panic on first error (true) or log all errors (false)?"
     }
 
     input {
