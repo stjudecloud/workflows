@@ -75,12 +75,16 @@ task validate_bam {
 
     parameter_meta {
         bam: "Input BAM format file to validate"
+        ignore_list: "List of Picard errors and warnings to ignore. Possible values can be found on the [GATK website](https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile)"
+        outfile_name: "Name for the ValidateSamFile report file"
         succeed_on_errors: "Succeed the task even if errors *and/or* warnings are detected"
         succeed_on_warnings: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`"
-        ignore_list: "List of Picard errors and warnings to ignore. Possible values can be found on the [GATK website](https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile)"
-        summary_mode: "Boolean to enable SUMMARY mode of `picard ValidateSamFile`"
-        index_validation_stringency_less_exhaustive: "Boolean to set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE` for `picard ValidateSamFile`"
+        summary_mode: "Enable SUMMARY mode?"
+        index_validation_stringency_less_exhaustive: "Set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE`?"
         max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
