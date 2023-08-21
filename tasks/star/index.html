@@ -181,12 +181,23 @@ STAR is an RNA-Seq aligner.</p>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>db_name</code> (String, default="star_db")</li>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=50)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>db_name</code> (String, default="star_db"): Name for output in compressed, archived format. The suffix <code>.tar.gz</code> will be added.</li>
+<li><code>genomeChrBinNbits</code> (Int, default=18): =log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)]).</li>
+<li><code>genomeSAindexNbases</code> (Int, default=14): length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter <code>--genomeSAindexNbases</code> must be scaled down to <code>min(14, log2(GenomeLength)/2 - 1)</code>.</li>
+<li><code>genomeSAsparseD</code> (Int, default=1): suffix array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction.</li>
+<li><code>genomeSuffixLengthMax</code> (Int, default=-1): maximum length of the suffixes, has to be longer than read length. -1 = infinite.</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=50): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>sjdbGTFchrPrefix</code> (String, default="-"): prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSMEBL annotations with UCSC genomes)</li>
+<li><code>sjdbGTFfeatureExon</code> (String, default="exon"): feature type in GTF file to be used as exons for building transcripts</li>
+<li><code>sjdbGTFtagExonParentGene</code> (String, default="gene_id"): GTF attribute name for parent gene ID</li>
+<li><code>sjdbGTFtagExonParentGeneName</code> (String, default="gene_name"): GTF attrbute name for parent gene name</li>
+<li><code>sjdbGTFtagExonParentGeneType</code> (String, default="gene_type gene_biotype"): GTF attrbute name for parent gene type</li>
+<li><code>sjdbGTFtagExonParentTranscript</code> (String, default="transcript_id"): GTF attribute name for parent transcript ID</li>
+<li><code>sjdbOverhang</code> (Int, default=125): length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). <strong>[STAR default]</strong>: <code>100</code>. <strong>[WDL default]</strong>: <code>125</code>.</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -201,27 +212,128 @@ STAR is an RNA-Seq aligner.</p>
 <h4 id="required_1">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>prefix</code> (String, <strong>required</strong>)</li>
-<li><code>read_one_fastqs</code> (Array[File], <strong>required</strong>): An array of FASTQ files containing read one information</li>
+<li><code>prefix</code> (String, <strong>required</strong>): Prefix for the BAM and other STAR files. The extensions <code>.Aligned.out.bam</code>, <code>.Log.final.out</code>, <code>.SJ.out.tab</code>, and <code>.Chimeric.out.junction</code> will be added.</li>
+<li><code>read_one_fastqs_gz</code> (Array[File], <strong>required</strong>): An array of gzipped FASTQ files containing read one information</li>
 <li><code>star_db_tar_gz</code> (File, <strong>required</strong>): A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the <code>.tar.gz</code> extension.</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>read_groups</code> (String?): A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (e.g. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: <code>ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1</code></li>
+<li><code>read_groups</code> (String?): A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: <code>ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1</code></li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=50)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>read_two_fastqs</code> (Array[File], default=[]): An array of FASTQ files containing read two information</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>alignEndsProtrude</code> (Pair[Int,String], default=(0, "ConcordantPair")); <strong>description</strong>: allow protrusion of alignment ends, i.e. start (end) of the +strand mate downstream of the start (end) of the -strand mate. <code>left</code>: maximum number of protrusion bases allowed. <code>right</code>: see <code>choices</code> below.; <strong>choices</strong>: {'ConcordantPair': 'report alignments with non-zero protrusion as concordant pairs', 'DiscordantPair': 'report alignments with non-zero protrusion as discordant pairs'}</li>
+<li><code>alignEndsType</code> (String, default="Local"); <strong>description</strong>: type of read ends alignment; <strong>choices</strong>: {'Local': 'standard local alignment with soft-clipping allowed', 'EndToEnd': 'force end-to-end read alignment, do not soft-clip', 'Extend5pOfRead1': 'fully extend only the 5p of the read1, all other ends: local alignment', 'Extend5pOfReads12': 'fully extend only the 5p of the both read1 and read2, all other ends: local alignment'}</li>
+<li><code>alignInsertionFlush</code> (String, default="None"); <strong>description</strong>: how to flush ambiguous insertion positions; <strong>choices</strong>: {'None': 'insertions are not flushed', 'Right': 'insertions are flushed to the right'}</li>
+<li><code>alignIntronMax</code> (Int, default=500000): maximum intron size, if 0, max intron size will be determined by (2^winBinNbits)<em>winAnchorDistNbins. </em><em>[STAR default]</em><em>: <code>0</code>. </em><em>[WDL default]</em>*: <code>500000</code>.</li>
+<li><code>alignIntronMin</code> (Int, default=21): minimum intron size: genomic gap is considered intron if its length&gt;=alignIntronMin, otherwise it is considered Deletion</li>
+<li><code>alignMatesGapMax</code> (Int, default=1000000): maximum gap between two mates, if 0, max intron gap will be determined by (2^winBinNbits)<em>winAnchorDistNbins. </em><em>[STAR default]</em><em>: <code>0</code>. </em><em>[WDL default]</em>*: <code>1000000</code></li>
+<li><code>alignSJDBoverhangMin</code> (Int, default=1): minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments. <strong>[STAR default]</strong>: <code>3</code>. <strong>[WDL default]</strong>: <code>1</code>.</li>
+<li><code>alignSJoverhangMin</code> (Int, default=5): minimum overhang (i.e. block size) for spliced alignments</li>
+<li><code>alignSJstitchMismatchNmax</code> (SJ_motifs, default={"noncanonical_motifs": 0, "GT_AG_and_CT_AC_motif": -1, "GC_AG_and_CT_GC_motif": 0, "AT_AC_and_GT_AT_motif": 0}): maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif</li>
+<li><code>alignSoftClipAtReferenceEnds</code> (String, default="Yes"); <strong>description</strong>: allow the soft-clipping of the alignments past the end of the chromosomes; <strong>choices</strong>: {'Yes': 'allow', 'No': 'prohibit, useful for compatibility with Cufflinks'}</li>
+<li><code>alignSplicedMateMapLmin</code> (Int, default=0): minimum mapped length for a read mate that is spliced</li>
+<li><code>alignSplicedMateMapLminOverLmate</code> (Float, default=0.66): alignSplicedMateMapLmin normalized to mate length</li>
+<li><code>alignTranscriptsPerReadNmax</code> (Int, default=10000): max number of different alignments per read to consider</li>
+<li><code>alignTranscriptsPerWindowNmax</code> (Int, default=100): max number of transcripts per window</li>
+<li><code>alignWindowsPerReadNmax</code> (Int, default=10000): max number of windows per read</li>
+<li><code>chimFilter</code> (String, default="banGenomicN"); <strong>description</strong>: different filters for chimeric alignments; <strong>choices</strong>: {'None': 'no filtering', 'banGenomicN': 'Ns are not allowed in the genome sequence around the chimeric junction'}</li>
+<li><code>chimJunctionOverhangMin</code> (Int, default=20): minimum overhang for a chimeric junction</li>
+<li><code>chimMainSegmentMultNmax</code> (Int, default=10): maximum number of multi-alignments for the main chimeric segment. =1 will prohibit multimapping main segments.</li>
+<li><code>chimMultimapNmax</code> (Int, default=0): maximum number of chimeric multi-alignments. <code>0</code>: use the old scheme for chimeric detection which only considered unique alignments</li>
+<li><code>chimMultimapScoreRange</code> (Int, default=1): the score range for multi-mapping chimeras below the best chimeric score. Only works with --chimMultimapNmax &gt; 1.</li>
+<li><code>chimNonchimScoreDropMin</code> (Int, default=20): to trigger chimeric detection, the drop in the best non-chimeric alignment score with respect to the read length has to be greater than this value</li>
+<li><code>chimOutJunctionFormat</code> (String, default="plain"); <strong>description</strong>: formatting type for the Chimeric.out.junction file; <strong>choices</strong>: {'plain': 'no comment lines/headers', 'comments': 'comment lines at the end of the file: command line and Nreads: total, unique/multi-mapping'}</li>
+<li><code>chimOutType</code> (String, default="Junctions"); <strong>description</strong>: type of chimeric output; <strong>choices</strong>: {'Junctions': 'Chimeric.out.junction', 'WithinBAM_HardClip': 'output into main aligned BAM files (Aligned.<em>.bam). Hard-clipping in the CIGAR for supplemental chimeric alignments.', 'WithinBAM_SoftClip': 'output into main aligned BAM files (Aligned.</em>.bam). Soft-clipping in the CIGAR for supplemental chimeric alignments.'}</li>
+<li><code>chimScoreDropMax</code> (Int, default=20): max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length</li>
+<li><code>chimScoreJunctionNonGTAG</code> (Int, default=-1): penalty for a non-GT/AG chimeric junction</li>
+<li><code>chimScoreMin</code> (Int, default=0): minimum total (summed) score of the chimeric segments</li>
+<li><code>chimScoreSeparation</code> (Int, default=10): minimum difference (separation) between the best chimeric score and the next one</li>
+<li><code>chimSegmentMin</code> (Int, default=0): minimum length of chimeric segment length, if ==0, no chimeric output</li>
+<li><code>chimSegmentReadGapMax</code> (Int, default=0): maximum gap in the read sequence between chimeric segments</li>
+<li><code>clip3pAdapterMMp</code> (Pair[Float,Float], default=(0.1, 0.1)): max proportion of mismatches for 3p adapter clipping for each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.</li>
+<li><code>clip3pAdapterSeq</code> (Pair[String,String], default=("None", "None")); <strong>description</strong>: adapter sequences to clip from 3p of each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.; <strong>choices</strong>: {'None': 'No 3p adapter trimming will be performed', 'sequence': 'A nucleotide sequence string of any length, matching the regex <code>/[ATCG]+/</code>', 'polyA': 'polyA sequence with the length equal to read length'}</li>
+<li><code>clip3pAfterAdapterNbases</code> (Pair[Int,Int], default=(0, 0)): number of bases to clip from 3p of each mate after the adapter clipping. <code>left</code> applies to read one and <code>right</code> applies to read two.</li>
+<li><code>clip3pNbases</code> (Pair[Int,Int], default=(0, 0)): number of bases to clip from 3p of each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.</li>
+<li><code>clip5pNbases</code> (Pair[Int,Int], default=(0, 0)): number of bases to clip from 5p of each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.</li>
+<li><code>clipAdapterType</code> (String, default="Hamming"); <strong>description</strong>: adapter clipping type; <strong>choices</strong>: {'Hamming': 'adapter clipping based on Hamming distance, with the number of mismatches controlled by --clip5pAdapterMMp', 'CellRanger4': '5p and 3p adapter clipping similar to CellRanger4. Utilizes Opal package by Martin Šošić: https://github.com/Martinsos/opal', 'None': 'no adapter clipping, all other clip* parameters are disregarded'}</li>
+<li><code>limitOutSJcollapsed</code> (Int, default=1000000): max number of collapsed junctions</li>
+<li><code>limitOutSJoneRead</code> (Int, default=1000): max number of junctions for one read (including all multi-mappers)</li>
+<li><code>limitSjdbInsertNsj</code> (Int, default=1000000): maximum number of junction to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=50): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>outFilterIntronMotifs</code> (String, default="None"); <strong>description</strong>: filter alignment using their motifs; <strong>choices</strong>: {'None': 'no filtering', 'RemoveNoncanonical': 'filter out alignments that contain non-canonical junctions', 'RemoveNoncanonicalUnannotated': 'filter out alignments that contain non-canonical unannotated junctions when using annotated splice junctions database. The annotated non-canonical junctions will be kept.'}</li>
+<li><code>outFilterIntronStrands</code> (String, default="RemoveInconsistentStrands"); <strong>description</strong>: filter alignments; <strong>choices</strong>: {'None': 'no filtering', 'RemoveInconsistentStrands': 'remove alignments that have junctions with inconsistent strands'}</li>
+<li><code>outFilterMatchNmin</code> (Int, default=0): alignment will be output only if the number of matched bases is higher than or equal to this value</li>
+<li><code>outFilterMatchNminOverLread</code> (Float, default=0.66): same as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for paired-end reads)</li>
+<li><code>outFilterMismatchNmax</code> (Int, default=10): alignment will be output only if it has no more mismatches than this value</li>
+<li><code>outFilterMismatchNoverLmax</code> (Float, default=0.3): alignment will be output only if its ratio of mismatches to <em>mapped</em> length is less than or equal to this value</li>
+<li><code>outFilterMismatchNoverReadLmax</code> (Float, default=1.0): alignment will be output only if its ratio of mismatches to <em>read</em> length is less than or equal to this value</li>
+<li><code>outFilterMultimapNmax</code> (Int, default=20): maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. <strong>[STAR default]</strong>: <code>10</code>. <strong>[WDL default]</strong>: <code>20</code>.</li>
+<li><code>outFilterMultimapScoreRange</code> (Int, default=1): the score range below the maximum score for multimapping alignments</li>
+<li><code>outFilterScoreMin</code> (Int, default=0): alignment will be output only if its score is higher than or equal to this value</li>
+<li><code>outFilterScoreMinOverLread</code> (Float, default=0.66): same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for paired-end reads)</li>
+<li><code>outFilterType</code> (String, default="Normal"); <strong>description</strong>: type of filtering; <strong>choices</strong>: {'Normal': 'standard filtering using only current alignment', 'BySJout': 'keep only those reads that contain junctions that passed filtering into SJ.out.tab'}</li>
+<li><code>outQSconversionAdd</code> (Int, default=0): add this number to the quality score (e.g. to convert from Illumina to Sanger, use -31)</li>
+<li><code>outSAMattrIHstart</code> (Int, default=1): start value for the IH attribute. 0 may be required by some downstream software, such as Cufflinks or StringTie.</li>
+<li><code>outSAMattributes</code> (String, default="NH HI AS nM NM MD XS"); <strong>description</strong>: a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order. <strong>[STAR defaults]</strong>: <code>NH HI AS nM</code>. <strong>[WDL default]</strong>: <code>NH HI AS nM NM MD XS</code>.; <strong>choices</strong>: {'NH': 'number of loci the reads maps to: =1 for unique mappers, &gt;1 for multimappers. Standard SAM tag.', 'HI': 'multiple alignment index, starts with --outSAMattrIHstart (=1 by default). Standard SAM tag.', 'AS': 'local alignment score, +1/-1 for matches/mismateches, score* penalties for indels and gaps. For PE reads, total score for two mates. Standard SAM tag.', 'nM': 'number of mismatches. For PE reads, sum over two mates.', 'NM': 'edit distance to the reference (number of mismatched + inserted + deleted bases) for each mate. Standard SAM tag.', 'MD': 'string encoding mismatched and deleted reference bases (see standard SAM specifications). Standard SAM tag.', 'jM': 'intron motifs for all junctions (i.e. N in CIGAR): 0: non-canonical; 1: GT/AG, 2: CT/AC, 3: GC/AG, 4: CT/GC, 5: AT/AC, 6: GT/AT. If splice junctions database is used, and a junction is annotated, 20 is added to its motif value.', 'jI': 'start and end of introns for all junctions (1-based).', 'XS': 'alignment strand according to --outSAMstrandField.', 'MC': "mate's CIGAR string. Standard SAM tag.", 'ch': 'marks all segments of all chimeric alignments for --chimOutType WithinBAM output.', 'cN': "number of bases clipped from the read ends: 5' and 3'"}</li>
+<li><code>outSAMflagAND</code> (Int, default=65535): <code>0-65535</code>: sam FLAG will be bitwise AND'd with this value, i.e. FLAG=FLAG &amp; outSAMflagOR. This is applied after all flags have been set by STAR, but before outSAMflagOR. Can be used to unset specific bits that are not set otherwise.</li>
+<li><code>outSAMflagOR</code> (Int, default=0): <code>0-65535</code>: sam FLAG will be bitwise OR'd with this value, i.e. FLAG=FLAG | outSAMflagOR. This is applied after all flags have been set by STAR, and after outSAMflagAND. Can be used to set specific bits that are not set otherwise.</li>
+<li><code>outSAMmapqUnique</code> (Int, default=255): <code>0-255</code>: the MAPQ value for unique mappers</li>
+<li><code>outSAMorder</code> (String, default="Paired"); <strong>description</strong>: type of sorting for the SAM output; <strong>choices</strong>: {'Paired': 'one mate after the other for all paired alignments', 'PairedKeepInputOrder': 'one mate after the other for all paired alignments, the order is kept the same as in the input FASTQ files'}</li>
+<li><code>outSAMreadID</code> (String, default="Standard"); <strong>description</strong>: read ID record type; <strong>choices</strong>: {'Standard': 'first word (until space) from the FASTx read ID line, removing /1,/2 from the end', 'Number': 'read number (index) in the FASTx file'}</li>
+<li><code>outSAMstrandField</code> (String, default="intronMotif"); <strong>description</strong>: Cufflinks-like strand field flag; <strong>choices</strong>: {'None': 'not used', 'intronMotif': 'strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out.'}</li>
+<li><code>outSAMtlen</code> (String, default="left_plus"); <strong>description</strong>: calculation method for the TLEN field in the SAM/BAM files; <strong>choices</strong>: {'left_plus': 'leftmost base of the (+)strand mate to rightmost base of the (-)mate. (+)sign for the (+)strand mate', 'left_any': 'leftmost base of any mate to rightmost base of any mate. (+)sign for the mate with the leftmost base. This is different from <code>left_plus</code> for overlapping mates with protruding ends'}</li>
+<li><code>outSAMunmapped</code> (String, default="Within"); <strong>description</strong>: output of unmapped reads in the SAM format.; <strong>choices</strong>: {'None': 'no output <strong>[STAR default]</strong>', 'Within': 'output unmapped reads within the main SAM file (i.e. Aligned.out.sam) <strong>[WDL default]</strong>'}</li>
+<li><code>outSJfilterCountTotalMin</code> (SJ_motifs, default={"noncanonical_motifs": 3, "GT_AG_and_CT_AC_motif": 1, "GC_AG_and_CT_GC_motif": 1, "AT_AC_and_GT_AT_motif": 1}): minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin <em>OR</em> outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions.</li>
+<li><code>outSJfilterCountUniqueMin</code> (SJ_motifs, default={"noncanonical_motifs": 3, "GT_AG_and_CT_AC_motif": 1, "GC_AG_and_CT_GC_motif": 1, "AT_AC_and_GT_AT_motif": 1}): minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin <em>OR</em> outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions.</li>
+<li><code>outSJfilterDistToOtherSJmin</code> (SJ_motifs, default={"noncanonical_motifs": 10, "GT_AG_and_CT_AC_motif": 0, "GC_AG_and_CT_GC_motif": 5, "AT_AC_and_GT_AT_motif": 10}): minimum allowed distance to other junctions' donor/acceptor for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. Does not apply to annotated junctions.</li>
+<li><code>outSJfilterIntronMaxVsReadN</code> (Array[Int], default=[50000, 100000, 200000]): maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps &lt;=50000b, by 2 reads: &lt;=100000b, by 3 reads: &lt;=200000b. by &gt;=4 reads any gap &lt;=alignIntronMax. Does not apply to annotated junctions.</li>
+<li><code>outSJfilterOverhangMin</code> (SJ_motifs, default={"noncanonical_motifs": 30, "GT_AG_and_CT_AC_motif": 12, "GC_AG_and_CT_GC_motif": 12, "AT_AC_and_GT_AT_motif": 12}): minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions.</li>
+<li><code>outSJfilterReads</code> (String, default="All"); <strong>description</strong>: which reads to consider for collapsed splice junctions output; <strong>choices</strong>: {'All': 'all reads, unique- and multi-mappers', 'Unique': 'uniquely mapping reads only'}</li>
+<li><code>peOverlapMMp</code> (Float, default=0.01): maximum proportion of mismatched bases in the overlap area</li>
+<li><code>peOverlapNbasesMin</code> (Int, default=0): minimum number of overlap bases to trigger mates merging and realignment. Specify &gt;0 value to switch on the 'merging of overlapping mates' algorithm.</li>
+<li><code>readMapNumber</code> (Int, default=-1): number of reads to map from the beginning of the file. -1 to map all reads</li>
+<li><code>readNameSeparator</code> (String, default="/"): character(s) separating the part of the read names that will be trimmed in output (read name after space is always trimmed)</li>
+<li><code>readQualityScoreBase</code> (Int, default=33): number to be subtracted from the ASCII code to get Phred quality score</li>
+<li><code>read_two_fastqs_gz</code> (Array[File], default=[]): An array of gzipped FASTQ files containing read two information</li>
+<li><code>runRNGseed</code> (Int, default=777): random number generator seed</li>
+<li><code>scoreDelBase</code> (Int, default=-2): deletion extension penalty per base (in addition to scoreDelOpen)</li>
+<li><code>scoreDelOpen</code> (Int, default=-2): deletion open penalty</li>
+<li><code>scoreGap</code> (Int, default=0): splice junction penalty (independent on intron motif)</li>
+<li><code>scoreGapATAC</code> (Int, default=-8): AT/AC and GT/AT junction penalty (in addition to scoreGap)</li>
+<li><code>scoreGapGCAG</code> (Int, default=-4): GC/AG and CT/GC junction penalty (in addition to scoreGap)</li>
+<li><code>scoreGapNoncan</code> (Int, default=-8): non-canonical junction penalty (in addition to scoreGap)</li>
+<li><code>scoreGenomicLengthLog2scale</code> (Float, default=-0.25): extra score logarithmically scaled with genomic length of the alignment: scoreGenomicLengthLog2scale*log2(genomicLength)</li>
+<li><code>scoreInsBase</code> (Int, default=-2): insertion extension penalty per base (in addition to scoreInsOpen)</li>
+<li><code>scoreInsOpen</code> (Int, default=-2): insertion open penalty</li>
+<li><code>scoreStitchSJshift</code> (Int, default=1): maximum score reduction while searching for SJ boundaries in the stitching step</li>
+<li><code>seedMapMin</code> (Int, default=5): min length of seeds to be mapped</li>
+<li><code>seedMultimapNmax</code> (Int, default=10000): only pieces that map fewer than this value are utilized in the stitching procedure</li>
+<li><code>seedNoneLociPerWindow</code> (Int, default=10): max number of one seed loci per window</li>
+<li><code>seedPerReadNmax</code> (Int, default=1000): max number of seeds per read</li>
+<li><code>seedPerWindowNmax</code> (Int, default=50): max number of seeds per window</li>
+<li><code>seedSearchLmax</code> (Int, default=0): defines the maximum length of the seeds, if =0 seed length is not limited</li>
+<li><code>seedSearchStartLmax</code> (Int, default=50): defines the search start point through the read - the read is split into pieces no longer than this value</li>
+<li><code>seedSearchStartLmaxOverLread</code> (Float, default=1.0): seedSearchStartLmax normalized to read length (sum of mates' lengths for paired-end reads)</li>
+<li><code>seedSplitMin</code> (Int, default=12): min length of the seed sequences split by Ns or mate gap</li>
+<li><code>sjdbScore</code> (Int, default=2): extra alignment score for alignments that cross database junctions</li>
+<li><code>twopass1readsN</code> (Int, default=-1): number of reads to process for the 1st step. Use default (<code>-1</code>) to map all reads in the first step</li>
+<li><code>twopassMode</code> (String, default="Basic"); <strong>description</strong>: 2-pass mapping mode; <strong>choices</strong>: {'None': '1-pass mapping <strong>[STAR default]</strong>', 'Basic': 'basic 2-pass mapping, with all 1st pass junctions inserted into the genome indices on the fly <strong>[WDL default]</strong>'}</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
+<li><code>winAnchorDistNbins</code> (Int, default=9): max number of bins between two anchors that allows aggregation of anchors into one window</li>
+<li><code>winAnchorMultimapNmax</code> (Int, default=50): max number of loci anchors are allowed to map to</li>
+<li><code>winBinNbits</code> (Int, default=16): =log2(winBin), where winBin is the size of the bin for the windows/clustering, each window will occupy an integer number of bins</li>
+<li><code>winFlankNbins</code> (Int, default=4): =log2(winFlank), where winFlank is the size of the left and right flanking regions for each window</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
 <li><code>star_log</code> (File)</li>
 <li><code>star_bam</code> (File)</li>
+<li><code>star_junctions</code> (File)</li>
+<li><code>star_chimeric_junctions</code> (File?)</li>
 </ul>
               
             </div>
