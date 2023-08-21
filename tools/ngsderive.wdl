@@ -301,7 +301,7 @@ task endedness {
             ~{if calc_rpt then "-r" else ""} \
             ~{if round_rpt then "--round-rpt" else ""} \
             ~{if split_by_rg then "--split-by-rg" else ""} \
-            --paired-deviance ~{paired_deviance}
+            --paired-deviance ~{paired_deviance} \
             -n ~{num_reads} \
             ~{bam} \
             > ~{outfile_name}
