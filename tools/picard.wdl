@@ -75,16 +75,22 @@ task validate_bam {
 
     parameter_meta {
         bam: "Input BAM format file to validate"
+        reference_fasta: "Reference genome in FASTA format. Presence of the reference FASTA allows for `NM` tag validation."
+        ignore_list: "List of Picard errors and warnings to ignore. Possible values can be found on the [GATK website](https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile)"
+        outfile_name: "Name for the ValidateSamFile report file"
         succeed_on_errors: "Succeed the task even if errors *and/or* warnings are detected"
         succeed_on_warnings: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`"
-        ignore_list: "List of Picard errors and warnings to ignore. Possible values can be found on the [GATK website](https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile)"
-        summary_mode: "Boolean to enable SUMMARY mode of `picard ValidateSamFile`"
-        index_validation_stringency_less_exhaustive: "Boolean to set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE` for `picard ValidateSamFile`"
+        summary_mode: "Enable SUMMARY mode?"
+        index_validation_stringency_less_exhaustive: "Set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE`?"
         max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
+        File? reference_fasta
         Array[String] ignore_list = ["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"]
         String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
         Boolean succeed_on_errors = false
@@ -97,6 +103,9 @@ task validate_bam {
         Int max_retries = 1
     }
 
+    String reference_arg = if defined(reference_fasta)
+        then "-R ~{reference_fasta}"
+        else ""
     String mode_arg = if (summary_mode) then "MODE=SUMMARY" else ""
     String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
@@ -113,6 +122,7 @@ task validate_bam {
         rc=0
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             I=~{bam} \
+            ~{reference_arg} \
             ~{mode_arg} \
             ~{stringency_arg} \
             ~{ignore_prefix}~{sep(' IGNORE=', ignore_list)} \
