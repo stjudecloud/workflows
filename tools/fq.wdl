@@ -61,12 +61,9 @@ task fqlint {
     Float read1_size = size(read_one_fastq, "GiB")
     Float read2_size = size(read_two_fastq, "GiB")
 
-    Int memory_gb_calculation = (
-        ceil((read1_size + read2_size) * 0.2) + modify_memory_gb
+    Int memory_gb = (
+        ceil((read1_size + read2_size) * 0.12) + 4 + modify_memory_gb
     )
-    Int memory_gb = if memory_gb_calculation > 4
-        then memory_gb_calculation
-        else 4
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
