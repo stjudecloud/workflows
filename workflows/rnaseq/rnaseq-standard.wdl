@@ -120,8 +120,8 @@ workflow rnaseq_standard {
     }
 
     call rnaseq_core_wf.rnaseq_core { input:
-        read_one_fastqs=bam_to_fastqs.read1s,
-        read_two_fastqs=select_all(bam_to_fastqs.read2s),
+        read_one_fastqs_gz=bam_to_fastqs.read1s,
+        read_two_fastqs_gz=select_all(bam_to_fastqs.read2s),
         read_groups=read_groups,
         prefix=prefix,
         gtf=gtf,
