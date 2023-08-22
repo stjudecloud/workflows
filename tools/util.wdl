@@ -456,9 +456,15 @@ if not only_mid:
     tot_quals = defaultdict(lambda: 0)
     mapped_quals = defaultdict(lambda: 0)
     unmapped_quals = defaultdict(lambda: 0)
+first_tot_quals = defaultdict(lambda: 0)
+first_mapped_quals = defaultdict(lambda: 0)
+first_unmapped_quals = defaultdict(lambda: 0)
 middle_tot_quals = defaultdict(lambda: 0)
 middle_mapped_quals = defaultdict(lambda: 0)
 middle_unmapped_quals = defaultdict(lambda: 0)
+last_tot_quals = defaultdict(lambda: 0)
+last_mapped_quals = defaultdict(lambda: 0)
+last_unmapped_quals = defaultdict(lambda: 0)
 for read in bam:
     # only count primary alignments and unmapped reads
     if (read.is_secondary or read.is_supplementary) and not read.is_unmapped:
@@ -473,13 +479,24 @@ for read in bam:
             else:
                 mapped_quals[qual] += 1
 
+    first_score = cur_quals[0]
+    first_tot_quals[first_score] += 1
+
     middle_pos = len(cur_quals) // 2  # middle base of read
     middle_score = cur_quals[middle_pos]
     middle_tot_quals[middle_score] += 1
+
+    last_score = cur_quals[-1]
+    last_tot_quals[last_score] += 1
+
     if read.is_unmapped:
+        first_unmapped_quals[first_score] += 1
         middle_unmapped_quals[middle_score] += 1
+        last_unmapped_quals[last_score] += 1
     else:
+        first_mapped_quals[first_score] += 1
         middle_mapped_quals[middle_score] += 1
+        last_mapped_quals[last_score] += 1
 
 prefix = os.environ["PREFIX"]
 outfile = open(prefix + ".global_PHRED_scores.tsv", "w")
@@ -499,6 +516,15 @@ if not only_mid:
         "unmapped stdev",
     ]
 header += [
+    "first position total average",
+    "first position total median",
+    "first position total stdev",
+    "first position mapped average",
+    "first position mapped median",
+    "first position mapped stdev",
+    "first position unmapped average",
+    "first position unmapped median",
+    "first position unmapped stdev",
     "middle position total average",
     "middle position total median",
     "middle position total stdev",
@@ -508,6 +534,15 @@ header += [
     "middle position unmapped average",
     "middle position unmapped median",
     "middle position unmapped stdev",
+    "last position total average",
+    "last position total median",
+    "last position total stdev",
+    "last position mapped average",
+    "last position mapped median",
+    "last position mapped stdev",
+    "last position unmapped average",
+    "last position unmapped median",
+    "last position unmapped stdev",
 ]
 print(
     "\t".join(header),
@@ -562,6 +597,25 @@ if not only_mid:
     print(f"{unmapped_median}", file=outfile, end="\t")
     print(f"{unmapped_stdev}", file=outfile, end="\t")
 
+first_tot_avg, first_tot_median, first_tot_stdev = stats_from_dict(first_tot_quals)
+print(f"{first_tot_avg}", file=outfile, end="\t")
+print(f"{first_tot_median}", file=outfile, end="\t")
+print(f"{first_tot_stdev}", file=outfile, end="\t")
+
+first_mapped_avg, first_mapped_median, first_mapped_stdev = stats_from_dict(
+    first_mapped_quals
+)
+print(f"{first_mapped_avg}", file=outfile, end="\t")
+print(f"{first_mapped_median}", file=outfile, end="\t")
+print(f"{first_mapped_stdev}", file=outfile, end="\t")
+
+first_unmapped_avg, first_unmapped_median, first_unmapped_stdev = stats_from_dict(
+    first_unmapped_quals
+)
+print(f"{first_unmapped_avg}", file=outfile, end="\t")
+print(f"{first_unmapped_median}", file=outfile, end="\t")
+print(f"{first_unmapped_stdev}", file=outfile, end="\t")
+
 middle_tot_avg, middle_tot_median, middle_tot_stdev = stats_from_dict(middle_tot_quals)
 print(f"{middle_tot_avg}", file=outfile, end="\t")
 print(f"{middle_tot_median}", file=outfile, end="\t")
@@ -579,7 +633,26 @@ middle_unmapped_avg, middle_unmapped_median, middle_unmapped_stdev = stats_from_
 )
 print(f"{middle_unmapped_avg}", file=outfile, end="\t")
 print(f"{middle_unmapped_median}", file=outfile, end="\t")
-print(f"{middle_unmapped_stdev}", file=outfile)  # end="\n"
+print(f"{middle_unmapped_stdev}", file=outfile, end="\t")
+
+last_tot_avg, last_tot_median, last_tot_stdev = stats_from_dict(last_tot_quals)
+print(f"{last_tot_avg}", file=outfile, end="\t")
+print(f"{last_tot_median}", file=outfile, end="\t")
+print(f"{last_tot_stdev}", file=outfile, end="\t")
+
+last_mapped_avg, last_mapped_median, last_mapped_stdev = stats_from_dict(
+    last_mapped_quals
+)
+print(f"{last_mapped_avg}", file=outfile, end="\t")
+print(f"{last_mapped_median}", file=outfile, end="\t")
+print(f"{last_mapped_stdev}", file=outfile, end="\t")
+
+last_unmapped_avg, last_unmapped_median, last_unmapped_stdev = stats_from_dict(
+    last_unmapped_quals
+)
+print(f"{last_unmapped_avg}", file=outfile, end="\t")
+print(f"{last_unmapped_median}", file=outfile, end="\t")
+print(f"{last_unmapped_stdev}", file=outfile)  # end="\n"
 
 outfile.close()
 
