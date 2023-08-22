@@ -174,6 +174,7 @@ workflow quality_check {
     call ngsderive.encoding { input:
         ngs_files=[post_subsample_bam],
         outfile_name=post_subsample_prefix + ".encoding.tsv",
+        num_reads=-1,
         max_retries=max_retries
     }
     call ngsderive.endedness { input:
