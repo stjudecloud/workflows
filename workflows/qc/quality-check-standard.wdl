@@ -180,7 +180,6 @@ workflow quality_check {
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".endedness.tsv",
         lenient=true,
-        #calc_rpt=true,  # TODO should this be set?
         max_retries=max_retries
     }
     call util.global_phred_scores { input:
