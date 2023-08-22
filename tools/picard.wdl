@@ -2,6 +2,7 @@
 ##
 ## This WDL file wraps the [PicardTools library](https://broadinstitute.github.io/picard/).
 ## PicardTools is a set of Java tools for manipulating sequencing data.
+# TODO choose "new" or "legacy" style params and use consistently
 
 version 1.1
 
