@@ -106,11 +106,11 @@ task validate_bam {
     String reference_arg = if defined(reference_fasta)
         then "-R ~{reference_fasta}"
         else ""
-    String mode_arg = if (summary_mode) then "MODE=SUMMARY" else ""
+    String mode_arg = if (summary_mode) then "--MODE SUMMARY" else ""
     String stringency_arg = if (index_validation_stringency_less_exhaustive)
-        then "INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE"
+        then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
-    String ignore_prefix = if (length(ignore_list) != 0) then "IGNORE=" else ""
+    String ignore_prefix = if (length(ignore_list) != 0) then "--IGNORE " else ""
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
@@ -121,12 +121,12 @@ task validate_bam {
 
         rc=0
         picard -Xmx~{java_heap_size}g ValidateSamFile \
-            I=~{bam} \
+            -I ~{bam} \
             ~{reference_arg} \
             ~{mode_arg} \
             ~{stringency_arg} \
-            ~{ignore_prefix}~{sep(' IGNORE=', ignore_list)} \
-            MAX_OUTPUT=~{max_errors} \
+            ~{ignore_prefix}~{sep(' --IGNORE ', ignore_list)} \
+            --MAX_OUTPUT ~{max_errors} \
             > ~{outfile_name} \
             || rc=$?
 
