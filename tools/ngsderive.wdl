@@ -258,7 +258,7 @@ task junction_annotation {
 
 task endedness {
     meta {
-        description: "This WDL task marks duplicate reads in the input BAM file using Picard."
+        description: "This WDL task derives the endedness of the input BAM file"
     }
 
     parameter_meta {
