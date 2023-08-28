@@ -46,7 +46,7 @@ task download_taxonomy {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
+        docker: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
         maxRetries: max_retries
     }
 }
@@ -121,7 +121,7 @@ task download_library {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/kraken2:2.1.2-0'
+        docker: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
         maxRetries: max_retries
     }
 }
@@ -179,7 +179,7 @@ task create_library_from_fastas {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
+        docker: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
         maxRetries: max_retries
     }
 }
@@ -278,7 +278,7 @@ task build_db {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
+        docker: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
         maxRetries: max_retries
     }
 }
@@ -375,7 +375,7 @@ task kraken {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/kraken2:2.1.2--pl5321h9f5acd7_2'
+        docker: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
         maxRetries: max_retries
     }
 }
