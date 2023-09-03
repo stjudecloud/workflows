@@ -8,10 +8,21 @@ version 1.1
 task mark_duplicates {
     meta {
         description: "This WDL task marks duplicate reads in the input BAM file using Picard."
+        outputs: {
+            duplicate_marked_bam: "The input BAM with computationally determined duplicates marked."
+            duplicate_marked_bam_index: "The `.bai` BAM index file associated with `duplicate_marked_bam`"
+            duplicate_marked_bam_md5: "The md5sum of `duplicate_marked_bam`"
+            mark_duplicates_metrics: "The METRICS_FILE result of `picard MarkDuplicates`"
+        }
     }
 
     parameter_meta {
-        bam: "Input BAM format file to mark duplicates"
+        bam: "Input BAM format file in which to mark duplicates"
+        prefix: "Prefix for the MarkDuplicates result files. The extensions `.bam`, `.bam.bai`, `.bam.md5`, and `.metrics.txt` will be added."
+        create_bam: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -71,6 +82,10 @@ task validate_bam {
     #   e.g. `max_errors = 100`
     meta {
         description: "This WDL task validates the input BAM file for correct formatting using Picard."
+        outputs: {
+            validate_report: "STDOUT of `picard ValidateSamFile` redirected to a file"
+            validated_bam: "The unmodified input BAM after it has been succesfully validated"
+        }
     }
 
     parameter_meta {
@@ -166,63 +181,30 @@ task validate_bam {
     }
 }
 
-task bam_to_fastq {
-    meta {
-        description: "*[Deprecated]* This WDL task converts the input BAM file into FASTQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to convert to FASTQ"
-        paired: "Is the data paired-end (true) or single-end (false)?"
-        max_retries: "Number of times to retry failed steps"
-    }
-
-    input {
-        File bam
-        String prefix = basename(bam, ".bam")
-        Boolean paired = true
-        Int memory_gb = 56
-        Int modify_disk_size_gb = 0
-        Int max_retries = 1
-    }
-
-    Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
-    Int java_heap_size = ceil(memory_gb * 0.9)
-
-    command <<<
-        set -euo pipefail
-
-        picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
-            FASTQ=~{prefix}_R1.fastq \
-            ~{if paired then "SECOND_END_FASTQ="+prefix+"_R2.fastq" else ""} \
-            RE_REVERSE=true \
-            VALIDATION_STRINGENCY=SILENT
-        
-        gzip ~{prefix}_R1.fastq \
-            ~{if paired then prefix+"_R2.fastq" else ""}
-    >>>
-
-    output {
-        File read_one_fastq_gz = "~{prefix}_R1.fastq.gz"
-        File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
-    }
-
-    runtime{
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
-        maxRetries: max_retries
-    }
-}
-
 task sort {
     meta {
         description: "This WDL task sorts the input BAM file."
+        outputs: {
+            sorted_bam: "The input BAM after it has been sorted according to `sort_order`"
+            sorted_bam_index: "The `.bai` BAM index file associated with `sorted_bam`"
+            sorted_bam_md5: "The md5sum of `sorted_bam`"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file to sort"
+        sort_order: {
+            description: "Order by which to sort the input BAM"
+            choices: [
+                'queryname',
+                'coordinate',
+                'duplicate'
+            ]
+        }
+        prefix: "Prefix for the sorted BAM file. The extension `.bam` will be added."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -241,18 +223,24 @@ task sort {
     String outfile_name = prefix + ".bam"
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g SortSam \
             I=~{bam} \
             O=~{outfile_name} \
             SO=~{sort_order} \
-            CREATE_INDEX=false \
-            CREATE_MD5_FILE=false \
+            CREATE_INDEX=true \
+            CREATE_MD5_FILE=true \
             COMPRESSION_LEVEL=5 \
             VALIDATION_STRINGENCY=SILENT
+        
+        mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
 
     output {
         File sorted_bam = outfile_name
+        File sorted_bam_index = outfile_name + ".bai"
+        File sorted_bam_md5 = outfile_name + ".md5"
     }
 
     runtime {
@@ -265,12 +253,31 @@ task sort {
 
 task merge_sam_files {
     meta {
-        description: "This WDL task merges the input BAM files into a single BAM file."
+        description: "This WDL task merges the input BAM files into a single BAM file. All input BAMs are assumed to be sorted according to `sort_order`."
+        outputs: {
+            merged_bam: "The BAM resulting from merging all the input BAMs"
+            merged_bam_index: "The `.bai` BAM index file associated with `merged_bam`"
+            merged_bam_md5: "The md5sum of `merged_bam`"
+        }
     }
 
     parameter_meta {
-        bams: "Input BAMs to merge"
-        threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file."
+        bams: "Input BAMs to merge. All BAMs are assumed to be sorted according to `sort_order`."
+        prefix: "Prefix for the merged BAM file. The extension `.bam` will be added."
+        sort_order: {
+            description: "Sort order for the output merged BAM. It is assumed all input BAMs share this order as well."
+            choices: [
+                'unsorted',
+                'queryname',
+                'coordinate',
+                'duplicate',
+                'unknown'  # TODO what does this mean?
+            ]
+        }
+        threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file."  # TODO do we need >1 ncpu to enable this?
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -292,12 +299,19 @@ task merge_sam_files {
     String outfile_name = prefix + ".bam"
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g MergeSamFiles \
             ~{sep(" ", input_arg)} \
             OUTPUT=~{outfile_name} \
+            --ASSUME_SORTED \
             SORT_ORDER=~{sort_order} \
             USE_THREADING=~{threading} \
+            CREATE_INDEX=true \
+            CREATE_MD5_FILE=true \
             VALIDATION_STRINGENCY=SILENT
+        
+        mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
 
     runtime{
@@ -309,16 +323,27 @@ task merge_sam_files {
 
     output {
         File merged_bam = outfile_name
+        File merged_bam_index = outfile_name + ".bai"
+        File merged_bam_md5 = outfile_name + ".md5"
     }
 }
 
 task clean_sam {
     meta {
-        description: "This WDL task cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads"
+        description: "This WDL task cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads."
+        outputs: {
+            cleaned_bam: "A cleaned version of the input BAM"
+            cleaned_bam_index: "The `.bai` BAM index file associated with `cleaned_bam`"
+            cleaned_bam_md5: "The md5sum of `cleaned_bam`"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file to clean"
+        prefix: "Prefix for the cleaned BAM file. The extension `.bam` will be added."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -336,13 +361,21 @@ task clean_sam {
     String outfile_name = prefix + ".bam"
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g CleanSam \
             I=~{bam} \
+            CREATE_INDEX=true \
+            CREATE_MD5_FILE=true \
             O=~{outfile_name}
+        
+        mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
 
     output {
         File cleaned_bam = outfile_name
+        File cleaned_bam_index = outfile_name + ".bai"
+        File cleaned_bam_md5 = outfile_name + ".md5"
     }
 
     runtime {
@@ -354,12 +387,21 @@ task clean_sam {
 }
 
 task collect_wgs_metrics {
+    # TODO not all options exposed
     meta {
         description: "This WDL task runs `picard CollectWgsMetrics`  to collect metrics about the fractions of reads that pass base- and mapping-quality filters as well as coverage (read-depth) levels."
+        outputs: {
+            wgs_metrics: "Output report of `picard CollectWgsMetrics`"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate WGS metrics"
+        reference_fasta: "Gzipped reference genome in FASTA format"
+        outfile_name: "Name for the metrics result file"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -396,14 +438,21 @@ task collect_wgs_metrics {
 }
 
 task collect_alignment_summary_metrics {
+    # TODO check for other options
     meta {
-        author: "Andrew Frantz"
-        email: "andrew.frantz@stjude.org"
         description: "This WDL task runs `picard CollectAlignmentSummaryMetrics` to calculate metrics detailing the quality of the read alignments as well as the proportion of the reads that passed machine signal-to-noise threshold quality filters."
+        outputs: {
+            alignment_metrics: "The text file output of `CollectAlignmentSummaryMetrics`"
+            alignment_metrics_pdf: "The PDF file output of `CollectAlignmentSummaryMetrics`"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate alignment metrics"
+        prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -439,12 +488,23 @@ task collect_alignment_summary_metrics {
 }
 
 task collect_gc_bias_metrics {
+    # TODO check for other options
     meta {
         description: "This WDL task runs `picard CollectGcBiasMetrics` to collect information about the relative proportions of guanine (G) and cytosine (C) nucleotides."
+        outputs: {
+            gc_bias_metrics: "The full text file output of `CollectGcBiasMetrics`"  # TODO which is parsed by MultiQC?
+            gc_bias_metrics_summary: "The summary text file output of `CollectGcBiasMetrics`"
+            gc_bias_metrics_pdf: "The PDF file output of `CollectGcBiasMetrics`"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate GC bias metrics"
+        reference_fasta: ""
+        prefix: "Prefix for the output report files. The extensions `.txt`, `.summary.txt`, and `.pdf` will be added."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -484,12 +544,22 @@ task collect_gc_bias_metrics {
 }
 
 task collect_insert_size_metrics {
+    # TODO check for other options
+    # TODO what happens if a SE BAM is supplied?
     meta {
         description: "This WDL task runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction including the insert size distribution and read orientation of paired-end libraries."
+        outputs: {
+            insert_size_metrics: "The text file output of `CollectInsertSizeMetrics`"
+            insert_size_metrics_pdf: "The PDF file output of `CollectInsertSizeMetrics`"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate insert size metrics"
+        prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -525,12 +595,21 @@ task collect_insert_size_metrics {
 }
 
 task quality_score_distribution {
+    # TODO check for other options
     meta {
-        description: "This WDL task runs `picard QualityScoreDistribution` to calculate the range of quality scores and an accompanying chart."
+        description: "This WDL task runs `picard QualityScoreDistribution` to calculate the range of quality scores and creates an accompanying chart."
+        outputs: {
+            quality_score_distribution_txt: "The text file output of `QualityScoreDistribution`"
+            quality_score_distribution_pdf: "The PDF file output of `QualityScoreDistribution`"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate quality score distribution"
+        prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -558,6 +637,59 @@ task quality_score_distribution {
     }
 
     runtime {
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        maxRetries: max_retries
+    }
+}
+
+task bam_to_fastq {
+    meta {
+        description: "**[Deprecated]** This WDL task converts the input BAM file into FASTQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
+        deprecated: true
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to convert to FASTQ"
+        paired: "Is the data paired-end (true) or single-end (false)?"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        Boolean paired = true
+        Int memory_gb = 56
+        Int modify_disk_size_gb = 0
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command <<<
+        set -euo pipefail
+
+        picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
+            FASTQ=~{prefix}_R1.fastq \
+            ~{if paired then "SECOND_END_FASTQ="+prefix+"_R2.fastq" else ""} \
+            RE_REVERSE=true \
+            VALIDATION_STRINGENCY=SILENT
+        
+        gzip ~{prefix}_R1.fastq \
+            ~{if paired then prefix+"_R2.fastq" else ""}
+    >>>
+
+    output {
+        File read_one_fastq_gz = "~{prefix}_R1.fastq.gz"
+        File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
+    }
+
+    runtime{
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
