@@ -8,10 +8,16 @@ version 1.1
 task quickcheck {
     meta {
         description: "This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
+        outputs {
+            checked_bam: "The unmodfied input BAM after it has been successfully quickchecked"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file to quickcheck"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -47,7 +53,13 @@ task split {
 
     parameter_meta {
         bam: "Input BAM format file to split"
+        prefix: "Prefix for the split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
         reject_unaccounted: "If true, error if there are reads present that do not have read group information."
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -75,7 +87,7 @@ task split {
         samtools split \
             --threads "$n_cores" \
             -u ~{prefix}.unaccounted_reads.bam \
-            -f '%*_%!.%.' \
+            -f '~{prefix}_%!.bam' \
             ~{bam}
         
         samtools head \
@@ -86,7 +98,7 @@ task split {
             > first_unaccounted_read.bam
         
         if ~{reject_unaccounted} && [ -s first_unaccounted_read.bam ]; then
-            exit 1
+            exit 42
         else
             rm ~{prefix}.unaccounted_reads.bam
         fi 
@@ -109,25 +121,44 @@ task split {
 task flagstat {
     meta {
         description: "This WDL tool produces a `samtools flagstat` report containing statistics about the alignments based on the bit flags set in the BAM."
+        outputs {
+            flagstat_report: "`samtools flagstat` STDOUT redirected to a file"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file to generate flagstat for"
+        outfile_name: "Name for the flagstat report file"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
         String outfile_name = basename(bam, ".bam") + ".flagstat.txt"
+        Boolean use_all_cores = false
+        Int ncpu = 1
         Int memory_gb = 5
         Int modify_disk_size_gb = 0
         Int max_retries = 1
+        # TODO should we support alt formats? Will they break MultiQC?
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
-        samtools flagstat ~{bam} > ~{outfile_name}
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+
+        samtools flagstat --threads "$n_cores" ~{bam} > ~{outfile_name}
     >>>
 
     output { 
@@ -144,11 +175,19 @@ task flagstat {
 
 task index {
     meta {
-        description: "This WDL task runs samtools index on the input BAM file."
+        description: "Creates a `.bai` BAM index for the input BAM"
+        outputs {
+            bam_index: "A `.bai` BAM index associated with the input BAM. Filename will be `basename(bam) + '.bai'`."
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file to index"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -173,7 +212,7 @@ task index {
             n_cores=$(nproc)
         fi
 
-        samtools index -@ "$n_cores" ~{bam} ~{outfile_name}
+        samtools index --threads "$n_cores" ~{bam} ~{outfile_name}
     }
 
     output {
@@ -190,6 +229,25 @@ task index {
 }
 
 task subsample {
+    meta {
+        description: "Randomly subsamples the input BAM. Sampling is stochastic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
+        outputs: {
+            orig_read_count: "A TSV report containing the original read count before subsampling"
+            sampled_bam: "The subsampled input BAM."
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to subsample"
+        desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value."
+        prefix: "Prefix for the BAM file. The extension `.subsampled.bam` will be added."
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     input {
         File bam
         Int desired_reads
@@ -267,11 +325,37 @@ task subsample {
 }
 
 task merge {
+    meta {
+        description: "Merges multiple sorted BAMs into a single BAM"
+        outputs: {
+            merged_bam: "The BAM resulting from merging all the input BAMs"
+        }
+    }
+
+    parameter_meta {
+        bams: "An array of BAMs to merge into one combined BAM"
+        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
+        new_header: "Use the lines of FILE as `@` headers to be copied to the merged BAM, replacing any header lines that would otherwise be copied from the first BAM file in the list. (File may actually be in SAM format, though any alignment records it may contain are ignored.)"
+        region: "Merge files in the specified region"
+        attach_rg: "Attach an RG tag to each alignment. The tag value is inferred from file names."
+        name_sorted: "Are _all_ input BAMs name sorted (true)? Or are _all_ input BAMs position sorted (false)?"
+        combine_rg: "When several input files contain @RG headers with the same ID, emit only one of them (namely, the header line from the first file we find that ID in) to the merged output file. Combining these similar headers is usually the right thing to do when the files being merged originated from the same file. Without `-c`, all @RG headers appear in the output file, with random suffixes added to their IDs where necessary to differentiate them."
+        combine_pg: "Similarly to `combine_rg`: for each @PG ID in the set of files to merge, use the @PG line of the first file we find that ID in rather than adding a suffix to differentiate similar IDs."
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     input {
         Array[File] bams
         String prefix
         File? new_header
+        String region = ""
         Boolean attach_rg = true
+        Boolean name_sorted = false
+        Boolean combine_rg = true
         Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = 4
@@ -280,7 +364,8 @@ task merge {
     }
 
     Float bams_size = size(bams, "GiB")
-    Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
+    Float header_size = size(new_header, "GiB")
+    Int disk_size_gb = ceil(bams_size * 2 + header_size) + 10 + modify_disk_size_gb
     
     command <<<
         set -euo pipefail
@@ -293,7 +378,11 @@ task merge {
         samtools merge \
             --threads "$n_cores" \
             ~{if defined(new_header) then "-h " + new_header else ""} \
+            ~{if name_sorted then "-n" else ""} \
+            ~{if (region != "") then "-R" + region else ""} \
             ~{if attach_rg then "-r" else ""} \
+            ~{if combine_rg then "-c" else ""} \
+            ~{if combine_pg then "-p" else ""} \
             ~{prefix}.bam \
             ~{sep(" ", bams)}
     >>>
@@ -313,18 +402,33 @@ task merge {
 
 task addreplacerg {
     meta {
-        description: "This WDL task runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags."
+        description: "Adds or replaces read group tags"
+        outputs: {
+            tagged_bam: "The transformed input BAM after read group modifications have been applied"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file to add read group information"
-        read_group_id: "Existing read group ID in BAM to add to reads"
+        read_group_line: "Allows you to specify a read group line to append to (or replace in) the header and applies it to the reads specified by the `orphan_only` option. Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM. Only **one** read group line can be supplied per invokation of this task."
+        read_group_id: "Allows you to specify the read group ID of an existing @RG line and applies it to the reads specified by the `orphan_only` option"
+        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
+        orphan_only: "Only add RG tags to orphans (true)? Or _also_ overwrite all existing RG tags (including any in the header) (false)?"
+        overwrite_header_record: "Overwrite an existing @RG line, if a new one with the same ID value is provided?"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
-        String read_group_id
-        String prefix = basename(bam, ".bam") + ".read_group"  # TODO revisit this name
+        Array[String]? read_group_line
+        String? read_group_id
+        String prefix = basename(bam, ".bam") + ".addreplacerg"
+        Boolean orphan_only = true
+        Boolean overwrite_header_record = false
         Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = 4
@@ -347,7 +451,16 @@ task addreplacerg {
 
         samtools addreplacerg \
             --threads "$n_cores" \
-            -R ~{read_group_id} \
+            ~{if defined(read_group_line)
+                then sep(
+                    " ",
+                    prefix("-r ", squote(select_first([read_group_line, ["error"]])))
+                )
+                else ""
+            } \
+            ~{if defined(read_group_id) then "-R " + read_group_id else ""} \
+            -m ~{if orphan_only then "orphan_only" else "overwrite_all"} \
+            ~{if overwrite_header_record then "-w" else ""} \
             -o ~{outfile_name} \
             ~{bam}
     >>>
@@ -375,8 +488,8 @@ task collate {
 
     parameter_meta {
         bam: "Input BAM format file to collate"
-        prefix: "Prefix for the collated BAM file. The extension `.collated.bam` will be added."
-        f: "Fast mode (primary alignments only)"
+        prefix: "Prefix for the collated BAM file. The extension `.bam` will be added."
+        fast_mode: "Use fast mode (output primary alignments only)?"
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         ncpu: "Number of cores to allocate for task"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
@@ -387,7 +500,7 @@ task collate {
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".collated"
-        Boolean f = true
+        Boolean fast_mode = true
         Boolean use_all_cores = false
         Int ncpu = 1
         Int modify_memory_gb = 0
@@ -411,7 +524,7 @@ task collate {
 
         samtools collate \
             --threads "$n_cores" \
-            ~{if f then "-f" else ""} \
+            ~{if fast_mode then "-f" else ""} \
             -o ~{outfile_name} \
             ~{bam}
     >>>
@@ -445,10 +558,12 @@ task bam_to_fastq {
         prefix: "Prefix for output FASTQ(s). Extensions `[,_R1,_R2,.singleton].fastq.gz` will be added depending on other options."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
+        rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         paired_end: "Is the data paired-end?"
         interleaved: "Create an interleaved FASTQ file from paired-end data?"
         output_singletons: "Output singleton reads as their own FASTQ?"
+        fail_on_unexpected_reads: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?"
         ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -461,10 +576,12 @@ task bam_to_fastq {
         String prefix = basename(bam, ".bam")
         String f = "0"
         String F = "0x900"
+        String rf = "0"
         String G = "0"
         Boolean paired_end = true
         Boolean interleaved = false
         Boolean output_singletons = false
+        Boolean fail_on_unexpected_reads = false
         Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = 4
@@ -487,6 +604,7 @@ task bam_to_fastq {
             --threads "$n_cores" \
             -f ~{f} \
             -F ~{F} \
+            --rf ~{rf} \
             -G ~{G} \
             -1 ~{if interleaved
                 then prefix + ".fastq.gz"
@@ -496,15 +614,25 @@ task bam_to_fastq {
                 if paired_end then (
                     if interleaved then prefix + ".fastq.gz" else prefix + "_R2.fastq.gz"
                 )
-                else "/dev/null"
+                else "junk.read2.fastq"
             } \
             -s ~{
                 if output_singletons
                 then prefix+".singleton.fastq.gz"
-                else "/dev/null"
+                else "junk.singleton.fastq"
             } \
-            -0 /dev/null \
+            -0 junk.unknown_bit_setting.fastq \
             ~{bam}
+        
+        if ~{fail_on_unexpected_reads} \
+            && find . -name 'junk.*.fastq' ! -empty | grep -q .
+        then
+            >&2 echo "Discovered unexpected reads in:"
+            find . -name 'junk.*.fastq' ! -empty >&2
+            exit 42
+        else
+            rm junk.*.fastq
+        fi
     >>>
 
     output {
@@ -542,12 +670,17 @@ task collate_to_fastq {
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,_R1,_R2,.singleton].fastq.gz` will be added."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
+        rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         fast_mode: "Fast mode for `samtools collate` (primary alignments only)"
         store_collated_bam: "Save the collated BAM (true) or delete it after FASTQ split (false)?"
         paired_end: "Is the data paired-end?"
         interleaved: "Create an interleaved FASTQ file from paired-end data?"
         output_singletons: "Output singleton reads as their own FASTQ?"
+        fail_on_unexpected_reads: {
+            description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?"
+            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. In any case, reads that have neither or both `first` and `last` bits set are considered unexpected. If `paired_end` is `true` and `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `paired_end` is `false`, a read with only the `last` bit set is considered unexpected. This is because only reads with the `first` bit set should be present in a Single-End BAM. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded."
+        }
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         ncpu: "Number of cores to allocate for task"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
@@ -560,12 +693,14 @@ task collate_to_fastq {
         String prefix = basename(bam, ".bam")
         String f = "0"
         String F = "0x900"
+        String rf = "0"
         String G = "0"
         Boolean fast_mode = true
         Boolean store_collated_bam = false
         Boolean paired_end = true
         Boolean interleaved = false
         Boolean output_singletons = false
+        Boolean fail_on_unexpected_reads = false
         Boolean use_all_cores = false
         Int ncpu = 1
         Int modify_memory_gb = 0
@@ -598,6 +733,7 @@ task collate_to_fastq {
                 --threads "$n_cores" \
                 -f ~{f} \
                 -F ~{F} \
+                --rf ~{rf} \
                 -G ~{G} \
                 -1 ~{if interleaved
                     then prefix + ".fastq.gz"
@@ -609,14 +745,25 @@ task collate_to_fastq {
                         then prefix + ".fastq.gz"
                         else prefix + "_R2.fastq.gz"
                     )
-                    else "/dev/null"
+                    else "junk.read2.fastq"
                 } \
                 -s ~{
                     if output_singletons
-                    then prefix + ".singleton.fastq.gz"
-                    else "/dev/null"
+                    then prefix+".singleton.fastq.gz"
+                    else "junk.singleton.fastq"
                 } \
-                -0 /dev/null
+                -0 junk.unknown_bit_setting.fastq \
+                ~{bam}
+        
+        if ~{fail_on_unexpected_reads} \
+            && find . -name 'junk.*.fastq' ! -empty | grep -q .
+        then
+            >&2 echo "Discovered unexpected reads in:"
+            find . -name 'junk.*.fastq' ! -empty >&2
+            exit 42
+        else
+            rm junk.*.fastq
+        fi
     >>>
 
     output {
