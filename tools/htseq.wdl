@@ -8,13 +8,16 @@ version 1.1
 task count {
     meta {
         description: "This WDL task performs read counting for a set of features in the input BAM file."
+        outputs: {
+            feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts."
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file to generate coverage for"
         gtf: "Input genomic features in gzipped GTF format to count reads for"
         strandedness: {
-            description: "Strandedness protocol of the RNA-Seq experiment. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/release_0.11.1/count.html#cmdoption-htseq-count-s) for an explanation of what this parameter affects."
+            description: "Strandedness protocol of the RNA-Seq experiment. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/latest/htseqcount.html#cmdoption-htseq-count-s) for an explanation of what this parameter affects."
             choices: [
                 "yes",
                 "reverse",
@@ -25,7 +28,7 @@ task count {
         feature_type: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored"
         idattr: "GFF attribute to be used as feature ID"
         mode: {
-            description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/release_0.11.1/count.html#counting-reads-in-features-with-htseq-count) for an explanation of what this parameter affects."
+            description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/latest/htseqcount.html#htseq-count-counting-reads-within-features) for an explanation of what this parameter affects."
             choices: [
                 "union",
                 "intersection-strict",

@@ -8,6 +8,9 @@ version 1.1
 task multiqc {
     meta {
         description: "This WDL task generates a MultiQC quality control metrics report summary from input QC result files."
+        outputs: {
+            multiqc_report: "A gzipped tar archive of all MultiQC output files"
+        }
     }
 
     parameter_meta {
@@ -16,13 +19,14 @@ task multiqc {
         config: "YAML file for configuring generated report"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         Array[File] input_files
         String prefix
         File? config
-        Int memory_gb = 5
+        Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
