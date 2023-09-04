@@ -208,9 +208,9 @@ END
 
 task qc_summary {
     # TODO not sure why I implemented as a JSON. Wouldn't TSV be easier to work with? Talk to Delaram/David
-    # Delaram+David okayed a switch to TSV
+    #   Delaram+David okayed a switch to TSV
     meta {
-        description: "*[OUT OF DATE]* This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
+        description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
     }
 
     input {
@@ -378,6 +378,7 @@ task unpack_tarball {
 
 task make_coverage_regions_beds {
     # TODO should this be customizable?
+    #   Yes. Now to implement at some point.
     meta {
         description: "This WDL task takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
     }

@@ -492,7 +492,7 @@ task collect_gc_bias_metrics {
     meta {
         description: "This WDL task runs `picard CollectGcBiasMetrics` to collect information about the relative proportions of guanine (G) and cytosine (C) nucleotides."
         outputs: {
-            gc_bias_metrics: "The full text file output of `CollectGcBiasMetrics`"  # TODO which is parsed by MultiQC?
+            gc_bias_metrics: "The full text file output of `CollectGcBiasMetrics`"
             gc_bias_metrics_summary: "The summary text file output of `CollectGcBiasMetrics`"
             gc_bias_metrics_pdf: "The PDF file output of `CollectGcBiasMetrics`"
         }
