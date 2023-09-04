@@ -563,7 +563,10 @@ task bam_to_fastq {
         paired_end: "Is the data paired-end?"
         interleaved: "Create an interleaved FASTQ file from paired-end data?"
         output_singletons: "Output singleton reads as their own FASTQ?"
-        fail_on_unexpected_reads: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?"
+        fail_on_unexpected_reads: {
+            description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?"
+            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. In any case, reads that have neither or both `first` and `last` bits set are considered unexpected. If `paired_end` is `true` and `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `paired_end` is `false`, a read with only the `last` bit set is considered unexpected. This is because only reads with the `first` bit set should be present in a Single-End BAM. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded."
+        }
         ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
