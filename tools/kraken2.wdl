@@ -8,7 +8,7 @@ task download_taxonomy {
     meta {
         description: "This WDL task downloads the NCBI taxonomy which Kraken2 uses to create a tree and taxon map during the database build."
         outputs: {
-            taxonomy: "The NCBI taxonomy"
+            taxonomy: "The NCBI taxonomy, which is needed by the `build_db` task. This output is not human-readable or meant for anything other than building a Kraken2 database."
         }
     }
 
@@ -58,7 +58,7 @@ task download_library {
     meta {
         description: "This WDL task downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available at: https://ftp.ncbi.nlm.nih.gov/genomes/refseq/."
         outputs: {
-            library: "A library of reference genomes"
+            library: "A library of reference genomes, which is needed by the `build_db` task. This output is not human-readable or meant for anything other than building a Kraken2 database."
         }
     }
 
