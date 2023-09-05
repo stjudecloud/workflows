@@ -8,7 +8,7 @@ version 1.1
 task quickcheck {
     meta {
         description: "This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
-        outputs {
+        outputs: {
             checked_bam: "The unmodfied input BAM after it has been successfully quickchecked"
         }
     }
@@ -121,7 +121,7 @@ task split {
 task flagstat {
     meta {
         description: "This WDL tool produces a `samtools flagstat` report containing statistics about the alignments based on the bit flags set in the BAM."
-        outputs {
+        outputs: {
             flagstat_report: "`samtools flagstat` STDOUT redirected to a file"
         }
     }
@@ -176,7 +176,7 @@ task flagstat {
 task index {
     meta {
         description: "Creates a `.bai` BAM index for the input BAM"
-        outputs {
+        outputs: {
             bam_index: "A `.bai` BAM index associated with the input BAM. Filename will be `basename(bam) + '.bai'`."
         }
     }
