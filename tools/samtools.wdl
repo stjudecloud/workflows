@@ -338,7 +338,7 @@ task merge {
         new_header: "Use the lines of FILE as `@` headers to be copied to the merged BAM, replacing any header lines that would otherwise be copied from the first BAM file in the list. (File may actually be in SAM format, though any alignment records it may contain are ignored.)"
         region: "Merge files in the specified region"
         attach_rg: "Attach an RG tag to each alignment. The tag value is inferred from file names."
-        name_sorted: "Are _all_ input BAMs name sorted (true)? Or are _all_ input BAMs position sorted (false)?"
+        name_sorted: "Are _all_ input BAMs `queryname` sorted (true)? Or are _all_ input BAMs `coordinate` sorted (false)?"
         combine_rg: "When several input files contain @RG headers with the same ID, emit only one of them (namely, the header line from the first file we find that ID in) to the merged output file. Combining these similar headers is usually the right thing to do when the files being merged originated from the same file. Without `-c`, all @RG headers appear in the output file, with random suffixes added to their IDs where necessary to differentiate them."
         combine_pg: "Similarly to `combine_rg`: for each @PG ID in the set of files to merge, use the @PG line of the first file we find that ID in rather than adding a suffix to differentiate similar IDs."
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
@@ -411,7 +411,7 @@ task addreplacerg {
 
     parameter_meta {
         bam: "Input BAM format file to add read group information"
-        read_group_line: "Allows you to specify a read group line to append to (or replace in) the header and applies it to the reads specified by the `orphan_only` option. Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM. Only **one** read group line can be supplied per invokation of this task."
+        read_group_line: "Allows you to specify a read group line to append to (or replace in) the header and applies it to the reads specified by the `orphan_only` option. Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM. Only **one** read group line can be supplied per invocation of this task."
         read_group_id: "Allows you to specify the read group ID of an existing @RG line and applies it to the reads specified by the `orphan_only` option"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         orphan_only: "Only add RG tags to orphans (true)? Or _also_ overwrite all existing RG tags (including any in the header) (false)?"

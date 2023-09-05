@@ -83,7 +83,7 @@ task validate_bam {
     meta {
         description: "This WDL task validates the input BAM file for correct formatting using Picard."
         outputs: {
-            validate_report: "STDOUT of `picard ValidateSamFile` redirected to a file"
+            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are produced. "
             validated_bam: "The unmodified input BAM after it has been succesfully validated"
         }
     }
@@ -500,7 +500,7 @@ task collect_gc_bias_metrics {
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate GC bias metrics"
-        reference_fasta: ""
+        reference_fasta: "Reference sequences in FASTA format"
         prefix: "Prefix for the output report files. The extensions `.txt`, `.summary.txt`, and `.pdf` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
