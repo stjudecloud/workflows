@@ -239,14 +239,14 @@ workflow quality_check {
         call ngsderive.junction_annotation { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
-            gtf=select_first([gtf, "undefined"]),
+            gene_model=select_first([gtf, "undefined"]),
             prefix=post_subsample_prefix,
             max_retries=max_retries
         }
         call ngsderive.strandedness { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
-            gtf=select_first([gtf, "undefined"]),
+            gene_model=select_first([gtf, "undefined"]),
             outfile_name=post_subsample_prefix + ".strandedness.tsv",
             max_retries=max_retries
         }
