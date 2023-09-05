@@ -230,7 +230,7 @@ task index {
 
 task subsample {
     meta {
-        description: "Randomly subsamples the input BAM. Sampling is stochastic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
+        description: "Randomly subsamples the input BAM. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
             orig_read_count: "A TSV report containing the original read count before subsampling"
             sampled_bam: "The subsampled input BAM."
