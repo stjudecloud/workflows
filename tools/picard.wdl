@@ -201,7 +201,7 @@ task sort {
                 'duplicate'
             ]
         }
-        prefix: "Prefix for the sorted BAM file. The extension `.bam` will be added."
+        prefix: "Prefix for the sorted BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         max_retries: "Number of times to retry in case of failure"
@@ -263,9 +263,9 @@ task merge_sam_files {
 
     parameter_meta {
         bams: "Input BAMs to merge. All BAMs are assumed to be sorted according to `sort_order`."
-        prefix: "Prefix for the merged BAM file. The extension `.bam` will be added."
+        prefix: "Prefix for the merged BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
         sort_order: {
-            description: "Sort order for the output merged BAM. It is assumed all input BAMs share this order as well."
+            description: "Sort order for the output merged BAM. It is assumed all input BAMs share this order."
             choices: [
                 'unsorted',
                 'queryname',
@@ -340,7 +340,7 @@ task clean_sam {
 
     parameter_meta {
         bam: "Input BAM format file to clean"
-        prefix: "Prefix for the cleaned BAM file. The extension `.bam` will be added."
+        prefix: "Prefix for the cleaned BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         max_retries: "Number of times to retry in case of failure"
