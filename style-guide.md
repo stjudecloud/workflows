@@ -67,3 +67,6 @@ These rules might also be enforced by a yet-to-be-written linter.
 - WDL lines should be less than 90 characters wide whenever possible
   - Exceptions would be long strings that WDL doesn't allow to be broken up
   - This restriction applies to embedded code in the `command` block as well.
+- Any tasks which are deprecated should have a `deprecated = true` key in their `meta` section
+  - In addition, their `description` key should start with `**[DEPRECATED]**`
+- Deprecated tasks should be placed at the end of their file
