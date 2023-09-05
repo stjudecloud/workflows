@@ -633,8 +633,6 @@ task bam_to_fastq {
             >&2 echo "Discovered unexpected reads in:"
             find . -name 'junk.*.fastq' ! -empty >&2
             exit 42
-        else
-            rm junk.*.fastq
         fi
     >>>
 
@@ -764,8 +762,6 @@ task collate_to_fastq {
             >&2 echo "Discovered unexpected reads in:"
             find . -name 'junk.*.fastq' ! -empty >&2
             exit 42
-        else
-            rm junk.*.fastq
         fi
     >>>
 
