@@ -356,6 +356,7 @@ task merge {
         Boolean attach_rg = true
         Boolean name_sorted = false
         Boolean combine_rg = true
+        Boolean combine_pg = true
         Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = 4
