@@ -63,7 +63,11 @@ task strandedness {
             "$CWD_BAM" \
             > ~{outfile_name}
 
-        awk 'NR > 1' ~{outfile_name} | cut -d$'\t' -f5 > strandedness.txt  # TODO this is broken if `split_by_rg=true`
+        if split_by_rg; then
+            awk 'NR > 1' ~{outfile_name} | cut -d$'\t' -f6 > strandedness.txt
+        else
+            awk 'NR > 1' ~{outfile_name} | cut -d$'\t' -f5 > strandedness.txt
+        fi
 
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
