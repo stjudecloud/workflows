@@ -300,8 +300,14 @@ task kraken {
     meta {
         description: "This WDL tool runs Kraken2 on a pair of fastq files."
         outputs: {
-            report: "A Kraken2 summary report"
-            sequences: "Detailed Kraken2 output that has been gzipped"
+            report: {
+                description: "A Kraken2 summary report"
+                external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#sample-report-output-format"
+            }
+            sequences: {
+                description: "Detailed Kraken2 output that has been gzipped"
+                external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#standard-kraken-output-format"
+            }
         }
     }
 

@@ -17,7 +17,8 @@ task count {
         bam: "Input BAM format file to generate coverage for"
         gtf: "Input genomic features in gzipped GTF format to count reads for"
         strandedness: {
-            description: "Strandedness protocol of the RNA-Seq experiment. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/latest/htseqcount.html#cmdoption-htseq-count-s) for an explanation of what this parameter affects."
+            description: "Strandedness protocol of the RNA-Seq experiment"
+            external_help: "https://htseq.readthedocs.io/en/latest/htseqcount.html#cmdoption-htseq-count-s"
             choices: [
                 "yes",
                 "reverse",
@@ -28,7 +29,8 @@ task count {
         feature_type: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored"
         idattr: "GFF attribute to be used as feature ID"
         mode: {
-            description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases. Read the [HTSeq-count docs](https://htseq.readthedocs.io/en/latest/htseqcount.html#htseq-count-counting-reads-within-features) for an explanation of what this parameter affects."
+            description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases."
+            external_help: "https://htseq.readthedocs.io/en/latest/htseqcount.html#htseq-count-counting-reads-within-features"
             choices: [
                 "union",
                 "intersection-strict",
