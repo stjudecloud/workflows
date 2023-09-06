@@ -94,7 +94,7 @@ workflow rnaseq_core {
     call ngsderive.strandedness as ngsderive_strandedness { input:
         bam=alignment_post.out_bam,
         bam_index=alignment_post.bam_index,
-        gtf=gtf,
+        gene_model=gtf,
         max_retries=max_retries
     }
 
