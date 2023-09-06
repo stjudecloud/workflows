@@ -136,7 +136,7 @@ task create_library_from_fastas {
     meta {
         description: "This WDL task adds custom entries from FASTA files to a Kraken2 DB."
         outputs: {
-            custom_library: "Kraken2 compatible library"
+            custom_library: "Kraken2 compatible library, which is needed by the `build_db` task. This output is not human-readable or meant for anything other than building a Kraken2 database."
         }
     }
 
