@@ -94,7 +94,7 @@ workflow scrnaseq_standard {
     call ngsderive.strandedness { input:
         bam=count.bam,
         bam_index=count.bam_index,
-        gtf=gtf,
+        gene_model=gtf,
         max_retries=max_retries
     }
 
