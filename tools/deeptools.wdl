@@ -36,7 +36,7 @@ task bam_coverage {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb  # TODO is all this disk needed?
+    Int disk_size_gb = ceil(bam_size * 1.5) + 10 + modify_disk_size_gb
  
     command <<<
         set -euo pipefail
@@ -53,7 +53,11 @@ task bam_coverage {
         ln -s ~{bam} "$CWD_BAM"
         ln -s ~{bam_index} "$CWD_BAM".bai
  
-        bamCoverage --bam "$CWD_BAM" --outFileName ~{prefix}.bw --outFileFormat bigwig --numberOfProcessors "$n_cores"
+        bamCoverage \
+            --bam "$CWD_BAM" \
+            --outFileName ~{prefix}.bw \
+            --outFileFormat bigwig \
+            --numberOfProcessors "$n_cores"
 
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
