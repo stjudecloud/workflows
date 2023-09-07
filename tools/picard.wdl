@@ -48,13 +48,14 @@ task mark_duplicates {
     command <<<
         set -euo pipefail
 
-        picard -Xmx~{java_heap_size}g MarkDuplicates I=~{bam} \
-            O=~{if create_bam then prefix + ".bam" else "/dev/null"} \
-            VALIDATION_STRINGENCY=SILENT \
-            CREATE_INDEX=~{create_bam} \
-            CREATE_MD5_FILE=~{create_bam} \
-            COMPRESSION_LEVEL=5 \
-            METRICS_FILE=~{prefix}.metrics.txt
+        picard -Xmx~{java_heap_size}g MarkDuplicates \
+            -I ~{bam} \
+            -O ~{if create_bam then prefix + ".bam" else "/dev/null"} \
+            --VALIDATION_STRINGENCY SILENT \
+            --CREATE_INDEX ~{create_bam} \
+            --CREATE_MD5_FILE ~{create_bam} \
+            --COMPRESSION_LEVEL 5 \
+            --METRICS_FILE ~{prefix}.metrics.txt
         
         if ~{create_bam}; then
             mv ~{prefix}.bai ~{prefix}.bam.bai
@@ -71,7 +72,7 @@ task mark_duplicates {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        docker: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -176,7 +177,7 @@ task validate_bam {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        docker: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -226,13 +227,13 @@ task sort {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g SortSam \
-            I=~{bam} \
-            O=~{outfile_name} \
-            SO=~{sort_order} \
-            CREATE_INDEX=true \
-            CREATE_MD5_FILE=true \
-            COMPRESSION_LEVEL=5 \
-            VALIDATION_STRINGENCY=SILENT
+            -I ~{bam} \
+            -O ~{outfile_name} \
+            -SO ~{sort_order} \
+            --CREATE_INDEX true \
+            --CREATE_MD5_FILE true \
+            --COMPRESSION_LEVEL 5 \
+            --VALIDATION_STRINGENCY SILENT
         
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
@@ -246,7 +247,7 @@ task sort {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        docker: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -294,7 +295,7 @@ task merge_sam_files {
     Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    Array[String] input_arg = prefix("INPUT=", bams)
+    Array[String] input_arg = prefix("--INPUT ", bams)
 
     String outfile_name = prefix + ".bam"
 
@@ -303,13 +304,13 @@ task merge_sam_files {
 
         picard -Xmx~{java_heap_size}g MergeSamFiles \
             ~{sep(" ", input_arg)} \
-            OUTPUT=~{outfile_name} \
-            --ASSUME_SORTED \
-            SORT_ORDER=~{sort_order} \
-            USE_THREADING=~{threading} \
-            CREATE_INDEX=true \
-            CREATE_MD5_FILE=true \
-            VALIDATION_STRINGENCY=SILENT
+            --OUTPUT ~{outfile_name} \
+            --ASSUME_SORTED true \
+            --SORT_ORDER ~{sort_order} \
+            --USE_THREADING ~{threading} \
+            --CREATE_INDEX true \
+            --CREATE_MD5_FILE true \
+            --VALIDATION_STRINGENCY SILENT
         
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
@@ -317,7 +318,7 @@ task merge_sam_files {
     runtime{
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        docker: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: max_retries
     }
 
@@ -364,10 +365,10 @@ task clean_sam {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g CleanSam \
-            I=~{bam} \
-            CREATE_INDEX=true \
-            CREATE_MD5_FILE=true \
-            O=~{outfile_name}
+            -I ~{bam} \
+            --CREATE_INDEX true \
+            --CREATE_MD5_FILE true \
+            -O ~{outfile_name}
         
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
@@ -381,7 +382,7 @@ task clean_sam {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        docker: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -432,7 +433,7 @@ task collect_wgs_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        docker: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -482,7 +483,7 @@ task collect_alignment_summary_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        docker: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -538,7 +539,7 @@ task collect_gc_bias_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        docker: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -589,7 +590,7 @@ task collect_insert_size_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        docker: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: max_retries
     }
 }
@@ -639,7 +640,7 @@ task quality_score_distribution {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        docker: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: max_retries
     }
 }
