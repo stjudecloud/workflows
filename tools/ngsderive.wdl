@@ -64,9 +64,9 @@ task strandedness {
             > ~{outfile_name}
 
         if split_by_rg; then
-            awk 'NR > 1' ~{outfile_name} | cut -d$'\t' -f6 > strandedness.txt
+            awk 'NR > 1' ~{outfile_name} | grep 'overall' | cut -f6 > strandedness.txt # TODO broken until ngsderive v4 is released
         else
-            awk 'NR > 1' ~{outfile_name} | cut -d$'\t' -f5 > strandedness.txt
+            awk 'NR > 1' ~{outfile_name} | cut -f5 > strandedness.txt
         fi
 
         rm "$CWD_BAM" "$CWD_BAM".bai
