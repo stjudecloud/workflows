@@ -380,7 +380,7 @@ task merge {
             --threads "$n_cores" \
             ~{if defined(new_header) then "-h " + new_header else ""} \
             ~{if name_sorted then "-n" else ""} \
-            ~{if (region != "") then "-R" + region else ""} \
+            ~{if (region != "") then "-R " + region else ""} \
             ~{if attach_rg then "-r" else ""} \
             ~{if combine_rg then "-c" else ""} \
             ~{if combine_pg then "-p" else ""} \
