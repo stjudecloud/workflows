@@ -166,7 +166,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>transcriptome_tar_gz</code> (File, <strong>required</strong>): Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics.</li>
 <li><code>compute_checksum._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>count._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>infer_strandedness._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>strandedness._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>subsample._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>validate_bam._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>validate_input_bam._runtime</code> (Any, <strong>required</strong>)</li>
@@ -194,12 +194,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>count.memory_gb</code> (Int, default=16)</li>
 <li><code>count.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>count.ncpu</code> (Int, default=1)</li>
-<li><code>infer_strandedness.memory_gb</code> (Int, default=5)</li>
-<li><code>infer_strandedness.min_mapq</code> (Int, default=30)</li>
-<li><code>infer_strandedness.min_reads_per_gene</code> (Int, default=10)</li>
-<li><code>infer_strandedness.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>infer_strandedness.num_genes</code> (Int, default=1000)</li>
-<li><code>infer_strandedness.outfile_name</code> (String, default=basename(bam,".bam") + ".strandedness.tsv")</li>
+<li><code>strandedness.memory_gb</code> (Int, default=4)</li>
+<li><code>strandedness.min_mapq</code> (Int, default=30)</li>
+<li><code>strandedness.min_reads_per_gene</code> (Int, default=10)</li>
+<li><code>strandedness.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>strandedness.num_genes</code> (Int, default=1000)</li>
+<li><code>strandedness.outfile_name</code> (String, default=basename(bam,".bam") + ".strandedness.tsv")</li>
+<li><code>strandedness.split_by_rg</code> (Boolean, default=false)</li>
 <li><code>subsample.memory_gb</code> (Int, default=4)</li>
 <li><code>subsample.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>subsample.ncpu</code> (Int, default=1)</li>

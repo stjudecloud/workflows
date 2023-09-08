@@ -205,11 +205,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>compression_integrity._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>compute_checksum._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>encoding._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>endedness._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>fastqc._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>flagstat._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>fqlint._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>global_phred_scores._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>infer_strandedness._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>instrument._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>junction_annotation._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>kraken._runtime</code> (Any, <strong>required</strong>)</li>
@@ -221,6 +221,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>quickcheck._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>read_length._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>regions_coverage._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>strandedness._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>subsample._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>subsample_index._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>validate_bam._runtime</code> (Any, <strong>required</strong>)</li>
@@ -265,9 +266,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>compression_integrity.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>compute_checksum.memory_gb</code> (Int, default=5)</li>
 <li><code>compute_checksum.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>encoding.memory_gb</code> (Int, default=5)</li>
+<li><code>encoding.memory_gb</code> (Int, default=4)</li>
 <li><code>encoding.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>encoding.num_samples</code> (Int, default=1000000)</li>
+<li><code>endedness.calc_rpt</code> (Boolean, default=false)</li>
+<li><code>endedness.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>endedness.modify_memory_gb</code> (Int, default=0)</li>
+<li><code>endedness.num_reads</code> (Int, default=-1)</li>
+<li><code>endedness.paired_deviance</code> (Float, default=0.0)</li>
+<li><code>endedness.round_rpt</code> (Boolean, default=false)</li>
+<li><code>endedness.split_by_rg</code> (Boolean, default=false)</li>
 <li><code>fastqc.memory_gb</code> (Int, default=5)</li>
 <li><code>fastqc.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>fastqc.ncpu</code> (Int, default=1)</li>
@@ -282,14 +289,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>global_phred_scores.fast_mode</code> (Boolean, default=true)</li>
 <li><code>global_phred_scores.memory_gb</code> (Int, default=4)</li>
 <li><code>global_phred_scores.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>infer_strandedness.memory_gb</code> (Int, default=5)</li>
-<li><code>infer_strandedness.min_mapq</code> (Int, default=30)</li>
-<li><code>infer_strandedness.min_reads_per_gene</code> (Int, default=10)</li>
-<li><code>infer_strandedness.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>infer_strandedness.num_genes</code> (Int, default=1000)</li>
 <li><code>instrument.memory_gb</code> (Int, default=4)</li>
 <li><code>instrument.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>instrument.num_samples</code> (Int, default=10000)</li>
+<li><code>instrument.num_reads</code> (Int, default=10000)</li>
 <li><code>junction_annotation.fuzzy_junction_match_range</code> (Int, default=0)</li>
 <li><code>junction_annotation.memory_gb</code> (Int, default=56)</li>
 <li><code>junction_annotation.min_intron</code> (Int, default=50)</li>
@@ -315,13 +317,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>quickcheck.memory_gb</code> (Int, default=4)</li>
 <li><code>quickcheck.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>read_length.majority_vote_cutoff</code> (Float, default=0.7)</li>
-<li><code>read_length.memory_gb</code> (Int, default=5)</li>
+<li><code>read_length.memory_gb</code> (Int, default=4)</li>
 <li><code>read_length.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>read_length.num_samples</code> (Int, default=-1)</li>
+<li><code>read_length.num_reads</code> (Int, default=-1)</li>
 <li><code>regions_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>regions_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>regions_coverage.use_fast_mode</code> (Boolean, default=true)</li>
+<li><code>strandedness.memory_gb</code> (Int, default=4)</li>
+<li><code>strandedness.min_mapq</code> (Int, default=30)</li>
+<li><code>strandedness.min_reads_per_gene</code> (Int, default=10)</li>
+<li><code>strandedness.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>strandedness.num_genes</code> (Int, default=1000)</li>
+<li><code>strandedness.split_by_rg</code> (Boolean, default=false)</li>
 <li><code>subsample.memory_gb</code> (Int, default=4)</li>
 <li><code>subsample.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>subsample.ncpu</code> (Int, default=1)</li>
@@ -360,6 +368,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>instrument_file</code> (File)</li>
 <li><code>read_length_file</code> (File)</li>
 <li><code>inferred_encoding</code> (File)</li>
+<li><code>inferred_endedness</code> (File)</li>
 <li><code>alignment_metrics</code> (File)</li>
 <li><code>alignment_metrics_pdf</code> (File)</li>
 <li><code>gc_bias_metrics</code> (File)</li>
