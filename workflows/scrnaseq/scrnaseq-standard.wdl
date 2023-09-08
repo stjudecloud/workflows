@@ -91,10 +91,10 @@ workflow scrnaseq_standard {
         max_retries=max_retries
     }
     call picard.validate_bam { input: bam=count.bam, max_retries=max_retries }
-    call ngsderive.infer_strandedness { input:
+    call ngsderive.strandedness { input:
         bam=count.bam,
         bam_index=count.bam_index,
-        gtf=gtf,
+        gene_model=gtf,
         max_retries=max_retries
     }
 
@@ -115,6 +115,6 @@ workflow scrnaseq_standard {
         File raw_matrix = count.raw_matrix
         File mol_info_h5 = count.mol_info_h5
         File web_summary = count.web_summary
-        File inferred_strandedness = infer_strandedness.strandedness_file
+        File inferred_strandedness = strandedness.strandedness_file
     }
 }
