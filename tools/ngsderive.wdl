@@ -276,6 +276,7 @@ END
 task junction_annotation {
     meta {
         description: "Annotates junctions found in an RNA-Seq BAM as known, novel, or partially novel"
+        external_help: "https://stjudecloud.github.io/ngsderive/subcommands/junction_annotation/"
         outputs: {
             junction_summary: "TSV file containing the `ngsderive junction-annotation` summary"
             junctions: "TSV file containing a detailed list of annotated junctions"
