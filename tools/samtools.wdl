@@ -425,7 +425,7 @@ task addreplacerg {
 
     input {
         File bam
-        Array[String]? read_group_line
+        Array[String] read_group_line = []
         String? read_group_id
         String prefix = basename(bam, ".bam") + ".addreplacerg"
         Boolean orphan_only = true
@@ -452,13 +452,7 @@ task addreplacerg {
 
         samtools addreplacerg \
             --threads "$n_cores" \
-            ~{if defined(read_group_line)
-                then sep(
-                    " ",
-                    prefix("-r ", squote(select_first([read_group_line, ["error"]])))
-                )
-                else ""
-            } \
+            ~{sep(" ", prefix("-r ", squote(read_group_line)))} \
             ~{if defined(read_group_id) then "-R " + read_group_id else ""} \
             -m ~{if orphan_only then "orphan_only" else "overwrite_all"} \
             ~{if overwrite_header_record then "-w" else ""} \

@@ -127,7 +127,6 @@ task validate_bam {
     String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
-    String ignore_prefix = if (length(ignore_list) != 0) then "--IGNORE " else ""
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
@@ -142,7 +141,7 @@ task validate_bam {
             ~{reference_arg} \
             ~{mode_arg} \
             ~{stringency_arg} \
-            ~{ignore_prefix}~{sep(' --IGNORE ', ignore_list)} \
+            ~{sep(" ", prefix("--IGNORE ", ignore_list))} \
             --MAX_OUTPUT ~{max_errors} \
             > ~{outfile_name} \
             || rc=$?
