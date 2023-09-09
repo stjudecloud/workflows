@@ -602,7 +602,6 @@ task bam_to_fastq {
             --threads "$n_cores" \
             -f ~{f} \
             -F ~{F} \
-            # --rf ~{rf} \  # introduced in v1.18 no quay.io image yet
             -G ~{G} \
             -1 ~{if interleaved
                 then prefix + ".fastq.gz"
@@ -729,7 +728,6 @@ task collate_to_fastq {
                 --threads "$n_cores" \
                 -f ~{f} \
                 -F ~{F} \
-                # --rf ~{rf} \  # introduced in v1.18 no quay.io image yet
                 -G ~{G} \
                 -1 ~{if interleaved
                     then prefix + ".fastq.gz"
