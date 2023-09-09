@@ -553,7 +553,7 @@ task bam_to_fastq {
         prefix: "Prefix for output FASTQ(s). Extensions `[,_R1,_R2,.singleton].fastq.gz` will be added depending on other options."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
-        rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
+        # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."  # introduced in v1.18 no quay.io image yet
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         paired_end: "Is the data paired-end?"
         interleaved: "Create an interleaved FASTQ file from paired-end data?"
@@ -574,7 +574,7 @@ task bam_to_fastq {
         String prefix = basename(bam, ".bam")
         String f = "0"
         String F = "0x900"
-        String rf = "0"
+        # String rf = "0"  # introduced in v1.18 no quay.io image yet
         String G = "0"
         Boolean paired_end = true
         Boolean interleaved = false
@@ -602,7 +602,7 @@ task bam_to_fastq {
             --threads "$n_cores" \
             -f ~{f} \
             -F ~{F} \
-            --rf ~{rf} \
+            # --rf ~{rf} \  # introduced in v1.18 no quay.io image yet
             -G ~{G} \
             -1 ~{if interleaved
                 then prefix + ".fastq.gz"
@@ -666,7 +666,7 @@ task collate_to_fastq {
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,_R1,_R2,.singleton].fastq.gz` will be added."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
-        rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
+        # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."  # introduced in v1.18 no quay.io image yet
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         fast_mode: "Fast mode for `samtools collate` (primary alignments only)"
         store_collated_bam: "Save the collated BAM (true) or delete it after FASTQ split (false)?"
@@ -689,7 +689,7 @@ task collate_to_fastq {
         String prefix = basename(bam, ".bam")
         String f = "0"
         String F = "0x900"
-        String rf = "0"
+        # String rf = "0"  # introduced in v1.18 no quay.io image yet
         String G = "0"
         Boolean fast_mode = true
         Boolean store_collated_bam = false
@@ -729,7 +729,7 @@ task collate_to_fastq {
                 --threads "$n_cores" \
                 -f ~{f} \
                 -F ~{F} \
-                --rf ~{rf} \
+                # --rf ~{rf} \  # introduced in v1.18 no quay.io image yet
                 -G ~{G} \
                 -1 ~{if interleaved
                     then prefix + ".fastq.gz"
