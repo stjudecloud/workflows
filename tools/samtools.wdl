@@ -618,8 +618,7 @@ task bam_to_fastq {
                 then prefix+".singleton.fastq.gz"
                 else "junk.singleton.fastq"
             } \
-            -0 junk.unknown_bit_setting.fastq \
-            ~{bam}
+            -0 junk.unknown_bit_setting.fastq
         
         if ~{fail_on_unexpected_reads} \
             && find . -name 'junk.*.fastq' ! -empty | grep -q .
@@ -746,8 +745,7 @@ task collate_to_fastq {
                     then prefix+".singleton.fastq.gz"
                     else "junk.singleton.fastq"
                 } \
-                -0 junk.unknown_bit_setting.fastq \
-                ~{bam}
+                -0 junk.unknown_bit_setting.fastq
         
         if ~{fail_on_unexpected_reads} \
             && find . -name 'junk.*.fastq' ! -empty | grep -q .
