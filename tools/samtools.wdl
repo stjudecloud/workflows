@@ -611,20 +611,20 @@ task bam_to_fastq {
                 if paired_end then (
                     if interleaved then prefix + ".fastq.gz" else prefix + "_R2.fastq.gz"
                 )
-                else "junk.read2.fastq"
+                else "junk.read2.fastq.gz"
             } \
             -s ~{
                 if output_singletons
                 then prefix+".singleton.fastq.gz"
-                else "junk.singleton.fastq"
+                else "junk.singleton.fastq.gz"
             } \
-            -0 junk.unknown_bit_setting.fastq
+            -0 junk.unknown_bit_setting.fastq.gz
         
         if ~{fail_on_unexpected_reads} \
-            && find . -name 'junk.*.fastq' ! -empty | grep -q .
+            && find . -name 'junk.*.fastq.gz' ! -empty | grep -q .
         then
             >&2 echo "Discovered unexpected reads in:"
-            find . -name 'junk.*.fastq' ! -empty >&2
+            find . -name 'junk.*.fastq.gz' ! -empty >&2
             exit 42
         fi
     >>>
@@ -738,20 +738,20 @@ task collate_to_fastq {
                         then prefix + ".fastq.gz"
                         else prefix + "_R2.fastq.gz"
                     )
-                    else "junk.read2.fastq"
+                    else "junk.read2.fastq.gz"
                 } \
                 -s ~{
                     if output_singletons
                     then prefix+".singleton.fastq.gz"
-                    else "junk.singleton.fastq"
+                    else "junk.singleton.fastq.gz"
                 } \
-                -0 junk.unknown_bit_setting.fastq
+                -0 junk.unknown_bit_setting.fastq.gz
         
         if ~{fail_on_unexpected_reads} \
-            && find . -name 'junk.*.fastq' ! -empty | grep -q .
+            && find . -name 'junk.*.fastq.gz' ! -empty | grep -q .
         then
             >&2 echo "Discovered unexpected reads in:"
-            find . -name 'junk.*.fastq' ! -empty >&2
+            find . -name 'junk.*.fastq.gz' ! -empty >&2
             exit 42
         fi
     >>>
