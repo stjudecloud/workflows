@@ -2,18 +2,21 @@
 ##
 ## This WDL file wraps the [PicardTools library](https://broadinstitute.github.io/picard/).
 ## PicardTools is a set of Java tools for manipulating sequencing data.
-# TODO choose "new" or "legacy" style params and use consistently
 
 version 1.1
 
 task mark_duplicates {
     meta {
         description: "This WDL task marks duplicate reads in the input BAM file using Picard."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-"
         outputs: {
             duplicate_marked_bam: "The input BAM with computationally determined duplicates marked."
             duplicate_marked_bam_index: "The `.bai` BAM index file associated with `duplicate_marked_bam`"
             duplicate_marked_bam_md5: "The md5sum of `duplicate_marked_bam`"
-            mark_duplicates_metrics: "The METRICS_FILE result of `picard MarkDuplicates`"
+            mark_duplicates_metrics: {
+                description: "The METRICS_FILE result of `picard MarkDuplicates`"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics"
+            }
         }
     }
 
@@ -84,8 +87,9 @@ task validate_bam {
     #   e.g. `max_errors = 100`
     meta {
         description: "This WDL task validates the input BAM file for correct formatting using Picard."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360057440611-ValidateSamFile-Picard-"
         outputs: {
-            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are produced. "
+            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are produced."
             validated_bam: "The unmodified input BAM after it has been succesfully validated"
         }
     }
@@ -93,7 +97,10 @@ task validate_bam {
     parameter_meta {
         bam: "Input BAM format file to validate"
         reference_fasta: "Reference genome in FASTA format. Presence of the reference FASTA allows for `NM` tag validation."
-        ignore_list: "List of Picard errors and warnings to ignore. Possible values can be found on the [GATK website](https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile)"
+        ignore_list: {
+            description: "List of Picard errors and warnings to ignore. Possible values can be found on the GATK website (see `external_help`)."
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile"
+        }
         outfile_name: "Name for the ValidateSamFile report file"
         succeed_on_errors: "Succeed the task even if errors *and/or* warnings are detected"
         succeed_on_warnings: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`"
@@ -185,6 +192,7 @@ task validate_bam {
 task sort {
     meta {
         description: "This WDL task sorts the input BAM file."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036510732-SortSam-Picard-"
         outputs: {
             sorted_bam: "The input BAM after it has been sorted according to `sort_order`"
             sorted_bam_index: "The `.bai` BAM index file associated with `sorted_bam`"
@@ -255,6 +263,7 @@ task sort {
 task merge_sam_files {
     meta {
         description: "This WDL task merges the input BAM files into a single BAM file. All input BAMs are assumed to be sorted according to `sort_order`."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360057440751-MergeSamFiles-Picard-"
         outputs: {
             merged_bam: "The BAM resulting from merging all the input BAMs"
             merged_bam_index: "The `.bai` BAM index file associated with `merged_bam`"
@@ -332,6 +341,7 @@ task merge_sam_files {
 task clean_sam {
     meta {
         description: "This WDL task cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036885571-CleanSam-Picard-"
         outputs: {
             cleaned_bam: "A cleaned version of the input BAM"
             cleaned_bam_index: "The `.bai` BAM index file associated with `cleaned_bam`"
@@ -391,8 +401,12 @@ task collect_wgs_metrics {
     # TODO not all options exposed
     meta {
         description: "This WDL task runs `picard CollectWgsMetrics`  to collect metrics about the fractions of reads that pass base- and mapping-quality filters as well as coverage (read-depth) levels."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037226132-CollectWgsMetrics-Picard-"
         outputs: {
-            wgs_metrics: "Output report of `picard CollectWgsMetrics`"
+            wgs_metrics: {
+                description: "Output report of `picard CollectWgsMetrics`"
+                external_help: "https://broadinstitute.github.io/picard/picard-metric-definitions.html#CollectWgsMetrics.WgsMetrics"
+            }
         }
     }
 
@@ -442,8 +456,12 @@ task collect_alignment_summary_metrics {
     # TODO check for other options
     meta {
         description: "This WDL task runs `picard CollectAlignmentSummaryMetrics` to calculate metrics detailing the quality of the read alignments as well as the proportion of the reads that passed machine signal-to-noise threshold quality filters."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360040507751-CollectAlignmentSummaryMetrics-Picard-"
         outputs: {
-            alignment_metrics: "The text file output of `CollectAlignmentSummaryMetrics`"
+            alignment_metrics: {
+                description: "The text file output of `CollectAlignmentSummaryMetrics`"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics"
+            }
             alignment_metrics_pdf: "The PDF file output of `CollectAlignmentSummaryMetrics`"
         }
     }
@@ -492,9 +510,16 @@ task collect_gc_bias_metrics {
     # TODO check for other options
     meta {
         description: "This WDL task runs `picard CollectGcBiasMetrics` to collect information about the relative proportions of guanine (G) and cytosine (C) nucleotides."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037593931-CollectGcBiasMetrics-Picard-"
         outputs: {
-            gc_bias_metrics: "The full text file output of `CollectGcBiasMetrics`"
-            gc_bias_metrics_summary: "The summary text file output of `CollectGcBiasMetrics`"
+            gc_bias_metrics: {
+                description: "The full text file output of `CollectGcBiasMetrics`"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasDetailMetrics"
+            }
+            gc_bias_metrics_summary: {
+                description: "The summary text file output of `CollectGcBiasMetrics`"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasSummaryMetrics"
+            }
             gc_bias_metrics_pdf: "The PDF file output of `CollectGcBiasMetrics`"
         }
     }
@@ -549,8 +574,12 @@ task collect_insert_size_metrics {
     # TODO what happens if a SE BAM is supplied?
     meta {
         description: "This WDL task runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction including the insert size distribution and read orientation of paired-end libraries."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037055772-CollectInsertSizeMetrics-Picard-"
         outputs: {
-            insert_size_metrics: "The text file output of `CollectInsertSizeMetrics`"
+            insert_size_metrics: {
+                description: "The text file output of `CollectInsertSizeMetrics`"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics"
+            }
             insert_size_metrics_pdf: "The PDF file output of `CollectInsertSizeMetrics`"
         }
     }
@@ -599,6 +628,7 @@ task quality_score_distribution {
     # TODO check for other options
     meta {
         description: "This WDL task runs `picard QualityScoreDistribution` to calculate the range of quality scores and creates an accompanying chart."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037057312-QualityScoreDistribution-Picard-"
         outputs: {
             quality_score_distribution_txt: "The text file output of `QualityScoreDistribution`"
             quality_score_distribution_pdf: "The PDF file output of `QualityScoreDistribution`"
