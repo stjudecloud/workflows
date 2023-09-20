@@ -53,3 +53,12 @@
   files:
     - path: test-output/out/junction_summary/test.bwa_aln_pe.junction_summary.tsv
     - path: test-output/out/junctions/test.bwa_aln_pe.junctions.tsv.gz
+
+- name: endedness
+  tags:
+    - miniwdl
+    - ngsderive
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task endedness tools/ngsderive.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: test-output/out/endedness_file/test.bwa_aln_pe.endedness.tsv

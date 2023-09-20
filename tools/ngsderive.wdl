@@ -367,7 +367,7 @@ task endedness {
         bam: "Input BAM format file to derive endedness from"
         outfile_name: "Name for the endedness TSV file"
         lenient: "Return a zero exit code on unknown results"
-        calc_rpt: "Calculate and output Reads-Per-Template. This will produce a more sophisticated estimate for endedness, but uses substantially more memory (can reach up to 60-70% of BAM size in memory consumption)."
+        calc_rpt: "Calculate and output Reads-Per-Template. This will produce a more sophisticated estimate for endedness, but uses substantially more memory (can reach up to 200% of BAM size in memory consumption for some inputs)."
         round_rpt: "Round RPT to the nearest INT before comparing to expected values. Appropriate if using `--num-reads` > 0."
         split_by_rg: "Contain one entry per read group"
         paired_deviance: "Distance from 0.5 split between number of f+l- reads and f-l+ reads allowed to be called 'Paired-End'. Default of `0.0` only appropriate if the whole file is being processed."

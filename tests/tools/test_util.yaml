@@ -104,3 +104,12 @@
     - path: "test-output/out/bed/genes.gtf.bed"
     - path: "test-output/out/exon_bed/genes.gtf.exon.bed"
     - path: "test-output/out/CDS_bed/genes.gtf.CDS.bed"
+
+- name: global_phred_scores
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run -d test-output/. --task global_phred_scores --copy-input-files tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: "test-output/out/phred_scores/test.bwa_aln_pe.global_PHRED_scores.tsv"
