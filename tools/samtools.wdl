@@ -212,6 +212,8 @@ task index {
             n_cores=$(nproc)
         fi
 
+        # For some reason, index doesn't support '--threads',
+        # so we use '-@' here
         samtools index -@ "$n_cores" ~{bam} ~{outfile_name}
     }
 
