@@ -431,7 +431,7 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "This WDL task runs `samtools fastq` on the input BAM file. Splits the BAM into FASTQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
+        description: "This WDL task runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. If paired-end = false, then all reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
         outputs: {
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
             read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
@@ -446,9 +446,10 @@ task bam_to_fastq {
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        paired_end: "Is the data paired-end?"
+        append_read_number: "Append /1 and /2 suffixes to read names"
         interleaved: "Create an interleaved FASTQ file from paired-end data?"
         output_singletons: "Output singleton reads as their own FASTQ?"
+        paired_end: "Is the data paired-end?"
         ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -462,11 +463,11 @@ task bam_to_fastq {
         String f = "0"
         String F = "0x900"
         String G = "0"
-        Boolean paired_end = true
+        Boolean append_read_number = true
         Boolean interleaved = false
         Boolean output_singletons = false
+        Boolean paired_end = true
         Boolean use_all_cores = false
-        Boolean append_read_number = true
         Int ncpu = 1
         Int memory_gb = 4
         Int modify_disk_size_gb = 0

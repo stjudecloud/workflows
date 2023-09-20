@@ -36,7 +36,7 @@ import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as b2fq
-import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl" as seaseq_map
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/workflows/mapping.wdl" as seaseq_map
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 
@@ -165,7 +165,12 @@ workflow chipseq_standard {
     }
     call picard.validate_bam { input: 
         bam=markdup.mkdupbam,
-        ignore_list=["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY", "MATES_ARE_SAME_END", "MISMATCH_FLAG_MATE_NEG_STRAND", "MISMATCH_MATE_ALIGNMENT_START"],
+        ignore_list=["MISSING_PLATFORM_VALUE",
+                    "INVALID_PLATFORM_VALUE",
+                    "INVALID_MAPPING_QUALITY",
+                    "MATES_ARE_SAME_END",
+                    "MISMATCH_FLAG_MATE_NEG_STRAND",
+                    "MISMATCH_MATE_ALIGNMENT_START"],
         max_retries=max_retries
     }
 
