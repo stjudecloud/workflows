@@ -44,6 +44,7 @@ workflow chipseq_standard {
     parameter_meta {
         bam: "Input BAM format file to realign with bowtie"
         bowtie_indexes: "Database of v1 reference files for the bowtie aligner. Can be generated with https://github.com/stjude/seaseq/blob/master/workflows/tasks/bowtie.wdl. [*.ebwt]"
+        paired_end: "Is the data paired-end (true) or single-end (false)?"
         excludelist: "Optional list of regions that will be excluded after reference alignment"
         prefix: "Prefix for output files"
         validate_input: "Run Picard ValidateSamFile on the input BAM"
@@ -55,6 +56,7 @@ workflow chipseq_standard {
     input {
         File bam
         Array[File] bowtie_indexes
+        Boolean paired_end = false
         File? excludelist
         String prefix = basename(bam, ".bam")
         Boolean validate_input = true
@@ -89,7 +91,7 @@ workflow chipseq_standard {
 
     call b2fq.bam_to_fastqs { input:
         bam=selected_bam,
-        paired_end=false,
+        paired_end=paired_end,
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
@@ -105,15 +107,17 @@ workflow chipseq_standard {
         max_retries=max_retries
     }
 
-    scatter (pair in zip(bam_to_fastqs.read1s, read_groups)){
+    scatter (tuple in zip(zip(bam_to_fastqs.read1s, bam_to_fastqs.read2s), read_groups)){
         call seaseq_util.basicfastqstats as basic_stats { input:
-            fastqfile=pair.left
+            fastqfile=tuple.left.left
         }
         call seaseq_map.mapping as bowtie_single_end_mapping { input:
-            fastqfile=pair.left,
+            fastqfile=tuple.left.left, # the FASTQ pair is the left of the first pair, then it is R1 = left, R2 = right in the nested pair
+            fastqfile_R2=tuple.left.right,
             index_files=bowtie_indexes,
             metricsfile=basic_stats.metrics_out,
-            blacklist=excludelist
+            blacklist=excludelist,
+            paired_end=paired_end
         }
         File chosen_bam = select_first(
             [
@@ -124,10 +128,10 @@ workflow chipseq_standard {
         )
         call util.add_to_bam_header { input:
             bam=chosen_bam,
-            additional_header=pair.right,
+            additional_header=tuple.right,
             max_retries=max_retries
         }
-        String rg_id_field = sub(sub(pair.right, ".*ID:", "ID:"), "\t.*", "") 
+        String rg_id_field = sub(sub(tuple.right, ".*ID:", "ID:"), "\t.*", "") 
         String rg_id = sub(rg_id_field, "ID:", "")
         call samtools.addreplacerg as single_end { input:
             bam=add_to_bam_header.reheadered_bam,
@@ -159,7 +163,11 @@ workflow chipseq_standard {
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
-    call picard.validate_bam { input: bam=markdup.mkdupbam, max_retries=max_retries }
+    call picard.validate_bam { input: 
+        bam=markdup.mkdupbam,
+        ignore_list=["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY", "MATES_ARE_SAME_END", "MISMATCH_FLAG_MATE_NEG_STRAND", "MISMATCH_MATE_ALIGNMENT_START"],
+        max_retries=max_retries
+    }
 
     call md5sum.compute_checksum { input:
         file=markdup.mkdupbam,

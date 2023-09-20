@@ -488,22 +488,35 @@ task bam_to_fastq {
             -f ~{f} \
             -F ~{F} \
             -G ~{G} \
-            -1 ~{if interleaved
-                then prefix + ".fastq.gz"
-                else prefix + "_R1.fastq.gz"
+            ~{if append_read_number
+                then "-N"
+                else "-n"
+            } \
+            -1 ~{
+                if paired_end then (
+                    if interleaved then prefix + ".fastq.gz" else prefix + "_R1.fastq.gz"
+                )
+                else prefix + ".fastq.gz"
             } \
             -2 ~{
                 if paired_end then (
                     if interleaved then prefix + ".fastq.gz" else prefix + "_R2.fastq.gz"
                 )
-                else "/dev/null"
+                else prefix + ".fastq.gz"
             } \
-            -s ~{
-                if output_singletons
-                then prefix+".singleton.fastq.gz"
-                else "/dev/null"
+            ~{
+                if paired_end then (
+                    if output_singletons
+                    then "-s " + prefix+".singleton.fastq.gz"
+                    else "-s junk.singleton.fastq.gz"
+                )
+                else ""
             } \
-            -0 /dev/null \
+            -0 ~{
+                if paired_end
+                then "junk.unknown_bit_setting.fastq.gz"
+                else prefix + ".fastq.gz"
+            } \
             ~{bam}
     >>>
 

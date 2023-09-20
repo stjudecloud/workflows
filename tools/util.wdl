@@ -322,7 +322,8 @@ task add_to_bam_header {
     String outfile_name = prefix + ".bam"
 
     command <<<
-        samtools view -H ~{bam} > header.sam
+        set -euo pipefail
+        samtools view --no-PG -H ~{bam} | sed 's/\t$//' > header.sam
         echo "~{additional_header}" >> header.sam
         samtools reheader -P header.sam ~{bam} > ~{outfile_name}
     >>>
