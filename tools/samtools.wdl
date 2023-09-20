@@ -466,6 +466,7 @@ task bam_to_fastq {
         Boolean interleaved = false
         Boolean output_singletons = false
         Boolean use_all_cores = false
+        Boolean append_read_number = true
         Int ncpu = 1
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
