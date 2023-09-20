@@ -47,10 +47,10 @@ task multiqc {
 
         multiqc -v \
             --no-ansi \
-            -c ~{config} \
+            ~{if defined(config) then "-c " + config else ""} \
             --file-list file_list.txt \
             -o ~{prefix}
-        
+
         if [ ! -d ~{prefix} ]; then
             >&2 echo "MultiQC didn't find any valid files!"
             exit 1

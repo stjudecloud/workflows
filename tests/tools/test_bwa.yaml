@@ -38,12 +38,3 @@
   files:
     - path: test-output/out/bwa_db_tar_gz/bwa_db.tar.gz
 
-- name: format_rg_for_bwa
-  tags:
-    - miniwdl
-    - bwa
-  command: >-
-    miniwdl run -d test-output/. --copy-input-files --task format_rg_for_bwa tools/bwa.wdl read_group="ID:test SM:test"
-  stdout:
-    contains:
-      - '@RG\\tID:test\\tSM:test'

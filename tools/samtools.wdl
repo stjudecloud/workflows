@@ -212,7 +212,7 @@ task index {
             n_cores=$(nproc)
         fi
 
-        samtools index --threads "$n_cores" ~{bam} ~{outfile_name}
+        samtools index -@ "$n_cores" ~{bam} ~{outfile_name}
     }
 
     output {
@@ -292,7 +292,7 @@ task subsample {
                 )
             samtools view --threads "$n_cores" -hb -s "$frac" ~{bam} \
                 > ~{suffixed}.bam
-            
+
             {
                 echo -e "sample\toriginal read count"
                 echo -e "~{prefix}\t$read_count"
@@ -367,7 +367,7 @@ task merge {
     Float bams_size = size(bams, "GiB")
     Float header_size = size(new_header, "GiB")
     Int disk_size_gb = ceil(bams_size * 2 + header_size) + 10 + modify_disk_size_gb
-    
+
     command <<<
         set -euo pipefail
 
@@ -618,8 +618,9 @@ task bam_to_fastq {
                 then prefix+".singleton.fastq.gz"
                 else "junk.singleton.fastq.gz"
             } \
-            -0 junk.unknown_bit_setting.fastq.gz
-        
+            -0 junk.unknown_bit_setting.fastq.gz \
+            ~{bam}
+
         if ~{fail_on_unexpected_reads} \
             && find . -name 'junk.*.fastq.gz' ! -empty | grep -q .
         then
