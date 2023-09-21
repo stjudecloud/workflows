@@ -662,10 +662,10 @@ task fixmate {
         bam: "Input BAM format file to add mate information. Must be name-sorted or name-collated."
         prefix: "Prefix for the output file. The extension will be added."
         extension: "File format extension to use for output file. Allowable types: [.sam, .bam, .cram]"
-        remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
-        disable_proper_pair_check: "Disable FR proper pair check"
         add_cigar: "Add template cigar ct tag"
         add_mate_score: "Add mate score tags. These are used by markdup to select the best reads to keep."
+        disable_proper_pair_check: "Disable FR proper pair check"
+        remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
         ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -676,10 +676,10 @@ task fixmate {
         File bam
         String prefix = basename(bam, ".bam") + ".fixmate"
         String extension = ".bam"
-        Boolean remove_unaligned_and_secondary = false
-        Boolean disable_proper_pair_check = false
         Boolean add_cigar = true
         Boolean add_mate_score = true
+        Boolean disable_proper_pair_check = false
+        Boolean remove_unaligned_and_secondary = false
         Int ncpu = 1
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
