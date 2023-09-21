@@ -18,7 +18,7 @@ task download {
     input {
         String url
         String outfile_name
-        Int disk_size_gb 
+        Int disk_size_gb
         String? md5sum
         Int memory_gb = 4
         Int max_retries = 1
@@ -49,7 +49,7 @@ task download {
 
 task get_read_groups {
     meta {
-        description: "This WDL task is a utility to get read group information from a BAM file and write it out to as a string" 
+        description: "This WDL task is a utility to get read group information from a BAM file and write it out to as a string"
     }
 
     parameter_meta {
@@ -82,7 +82,7 @@ task get_read_groups {
         fi
     >>>
 
-    output { 
+    output {
         File read_groups_file = "read_groups.txt"
     }
 
@@ -167,16 +167,16 @@ for (index, value) in only_genes.iterrows():
     start = value['start']
     end = value['end']
     size = end - start
-    
+
     if size <= 0:
         raise RuntimeError("Size of gene is negative!")
-        
+
     gene_start_offset[gene_name] = start
     gene_end_offset[gene_name] = end
     gene_exon_intersection[gene_name] = np.zeros(size)
     gene_total_exon_size[gene_name] = 0
     gene_length[gene_name] = end - start
-    
+
 for (index, value) in only_exons.iterrows():
     gene_name = value['gene_name']
     offset = gene_start_offset[gene_name]
@@ -561,6 +561,8 @@ def stats_from_dict(score_dict):
         total_freq += freq
         freq_table.append((score, freq))
 
+    if total_freq == 0:
+        return -1, -1, -1
     avg = total_score / total_freq
 
     freq_table.sort(key=lambda entry: entry[0])
