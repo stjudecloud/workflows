@@ -338,7 +338,7 @@ task merge {
         bams: "An array of BAMs to merge into one combined BAM"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         new_header: "Use the lines of FILE as `@` headers to be copied to the merged BAM, replacing any header lines that would otherwise be copied from the first BAM file in the list. (File may actually be in SAM format, though any alignment records it may contain are ignored.)"
-        region: "Merge files in the specified region"
+        region: "Merge files in the specified region (Format: `chr:start-end`)"
         attach_rg: "Attach an RG tag to each alignment. The tag value is inferred from file names."
         name_sorted: "Are _all_ input BAMs `queryname` sorted (true)? Or are _all_ input BAMs `coordinate` sorted (false)?"
         combine_rg: "When several input files contain @RG headers with the same ID, emit only one of them (namely, the header line from the first file we find that ID in) to the merged output file. Combining these similar headers is usually the right thing to do when the files being merged originated from the same file. Without `-c`, all @RG headers appear in the output file, with random suffixes added to their IDs where necessary to differentiate them."
