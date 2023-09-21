@@ -652,3 +652,61 @@ task collate_to_fastq {
         maxRetries: max_retries
     }
 }
+
+task fixmate {
+    meta {
+        description: "This WDL task runs Samtools fixmate on the input BAM file. This fills in mate coordinates and insert size fields."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to add mate information. Must be name-sorted or name-collated."
+        prefix: "Prefix for the output file. The extension will be added."
+        extension: "File format extension to use for output file. Allowable types: [.sam, .bam, .cram]"
+        remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
+        disable_proper_pair_check: "Disable FR proper pair check"
+        add_cigar: "Add template cigar ct tag"
+        add_mate_score: "Add mate score tags. These are used by markdup to select the best reads to keep."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam") + ".fixmate"
+        String extension = ".bam"
+        Boolean remove_unaligned_and_secondary = false
+        Boolean disable_proper_pair_check = false
+        Boolean add_cigar = true
+        Boolean add_mate_score = true
+        Int ncpu = 1
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+
+    command <<<
+        samtools fixmate \
+            ~{if remove_unaligned_and_secondary then "-r" else ""} \
+            ~{if disable_proper_pair_check then "-p" else ""} \
+            ~{if add_cigar then "-c" else ""} \
+            ~{if add_mate_score then "-m" else ""} \
+            ~{bam} ~{prefix}~{extension}
+    >>>
+
+    output {
+        File fixmate_bam = "~{prefix}~{extension}"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
+        maxRetries: max_retries
+    }
+}
