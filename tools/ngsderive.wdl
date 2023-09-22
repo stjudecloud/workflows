@@ -393,7 +393,7 @@ task endedness {
 
     Float bam_size = size(bam, "GiB")
     Int memory_gb = if calc_rpt then (
-        ceil(bam_size * 2.1) + 4 + modify_memory_gb
+        ceil(bam_size * 2.5) + 4 + modify_memory_gb
     ) else 4
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
