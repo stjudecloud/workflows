@@ -111,7 +111,7 @@ workflow chipseq_standard {
         call seaseq_util.basicfastqstats as basic_stats { input:
             fastqfile=tuple.left.left
         }
-        call seaseq_map.mapping as bowtie_single_end_mapping { input:
+        call seaseq_map.mapping as bowtie_mapping { input:
             fastqfile=tuple.left.left, # the FASTQ pair is the left of the first pair, then it is R1 = left, R2 = right in the nested pair
             fastqfile_R2=tuple.left.right,
             index_files=bowtie_indexes,
@@ -121,9 +121,9 @@ workflow chipseq_standard {
         }
         File chosen_bam = select_first(
             [
-                bowtie_single_end_mapping.bklist_bam,
-                bowtie_single_end_mapping.mkdup_bam,
-                bowtie_single_end_mapping.sorted_bam
+                bowtie_mapping.bklist_bam,
+                bowtie_mapping.mkdup_bam,
+                bowtie_mapping.sorted_bam
             ]
         )
         call util.add_to_bam_header { input:

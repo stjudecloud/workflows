@@ -660,11 +660,18 @@ task fixmate {
 
     parameter_meta {
         bam: "Input BAM format file to add mate information. Must be name-sorted or name-collated."
-        prefix: "Prefix for the output file. The extension will be added."
-        extension: "File format extension to use for output file. Allowable types: [.sam, .bam, .cram]"
+        prefix: "Prefix for the output file. The extension specified with the `extension` parameter will be added."
+        extension: {
+            description: "File format extension to use for output file.",
+            choices: [
+                ".sam",
+                ".bam",
+                ".cram"
+            ]
+        }
         add_cigar: "Add template cigar ct tag"
         add_mate_score: "Add mate score tags. These are used by markdup to select the best reads to keep."
-        disable_proper_pair_check: "Disable FR proper pair check"
+        disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]"
         remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
         ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
