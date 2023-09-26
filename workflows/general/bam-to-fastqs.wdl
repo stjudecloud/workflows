@@ -54,18 +54,39 @@ workflow bam_to_fastqs {
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
     call samtools.split { input: bam=bam, use_all_cores=use_all_cores, max_retries=max_retries }
-    scatter (split_bam in split.split_bams) {
-        call samtools.collate_to_fastq as bam_to_fastq { input:
-            bam=split_bam,
-            paired_end=paired_end,
-            interleaved=false,  # matches default but prevents user from overriding
-            use_all_cores=use_all_cores,
-            max_retries=max_retries
+
+    if (paired_end){
+        scatter (split_bam in split.split_bams) {
+            call samtools.collate_to_fastq as bam_to_fastq { input:
+                bam=split_bam,
+                paired_end=paired_end,
+                interleaved=false,  # matches default but prevents user from overriding
+                use_all_cores=use_all_cores,
+                max_retries=max_retries
+            }
         }
     }
 
-    scatter (reads in 
-        zip(bam_to_fastq.read_one_fastq_gz, bam_to_fastq.read_two_fastq_gz)
+    if (!paired_end){
+        scatter (split_bam in split.split_bams) {
+            call samtools.bam_to_fastq as bam_to_fastq_se { input:
+                bam=split_bam,
+                paired_end=paired_end,
+                interleaved=false,  # matches default but prevents user from overriding
+                output_singletons=true,
+                use_all_cores=use_all_cores,
+                max_retries=max_retries
+            }
+        }
+    }
+
+    Array[File?] r1 = select_first([bam_to_fastq.read_one_fastq_gz, bam_to_fastq_se.interleaved_reads_fastq_gz])
+    Array[File] read1s_ = select_all(r1)
+
+    Array[File?] read2s_ = select_first([bam_to_fastq.read_two_fastq_gz, bam_to_fastq_se.read_two_fastq_gz])
+
+     scatter (reads in 
+        zip(read1s_, read2s_)
     ) {
         call fq.fqlint { input:
             read_one_fastq=select_first([reads.left, "undefined"]),
@@ -75,7 +96,7 @@ workflow bam_to_fastqs {
     }
 
     output {
-        Array[File] read1s = select_all(bam_to_fastq.read_one_fastq_gz)
-        Array[File?] read2s = bam_to_fastq.read_two_fastq_gz
+        Array[File] read1s = read1s_
+        Array[File?] read2s = read2s_
     }
 }

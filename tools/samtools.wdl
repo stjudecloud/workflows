@@ -431,7 +431,7 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "This WDL task runs `samtools fastq` on the input BAM file. Splits the BAM into FASTQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
+        description: "This WDL task runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. If paired-end = false, then all reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
         outputs: {
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
             read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
@@ -446,9 +446,10 @@ task bam_to_fastq {
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        paired_end: "Is the data paired-end?"
+        append_read_number: "Append /1 and /2 suffixes to read names"
         interleaved: "Create an interleaved FASTQ file from paired-end data?"
         output_singletons: "Output singleton reads as their own FASTQ?"
+        paired_end: "Is the data paired-end?"
         ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -462,9 +463,10 @@ task bam_to_fastq {
         String f = "0"
         String F = "0x900"
         String G = "0"
-        Boolean paired_end = true
+        Boolean append_read_number = true
         Boolean interleaved = false
         Boolean output_singletons = false
+        Boolean paired_end = true
         Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = 4
@@ -488,22 +490,35 @@ task bam_to_fastq {
             -f ~{f} \
             -F ~{F} \
             -G ~{G} \
-            -1 ~{if interleaved
-                then prefix + ".fastq.gz"
-                else prefix + "_R1.fastq.gz"
+            ~{if append_read_number
+                then "-N"
+                else "-n"
+            } \
+            -1 ~{
+                if paired_end then (
+                    if interleaved then prefix + ".fastq.gz" else prefix + "_R1.fastq.gz"
+                )
+                else prefix + ".fastq.gz"
             } \
             -2 ~{
                 if paired_end then (
                     if interleaved then prefix + ".fastq.gz" else prefix + "_R2.fastq.gz"
                 )
-                else "/dev/null"
+                else prefix + ".fastq.gz"
             } \
-            -s ~{
-                if output_singletons
-                then prefix+".singleton.fastq.gz"
-                else "/dev/null"
+            ~{
+                if paired_end then (
+                    if output_singletons
+                    then "-s " + prefix+".singleton.fastq.gz"
+                    else "-s junk.singleton.fastq.gz"
+                )
+                else ""
             } \
-            -0 /dev/null \
+            -0 ~{
+                if paired_end
+                then "junk.unknown_bit_setting.fastq.gz"
+                else prefix + ".fastq.gz"
+            } \
             ~{bam}
     >>>
 
@@ -634,6 +649,71 @@ task collate_to_fastq {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        maxRetries: max_retries
+    }
+}
+
+task fixmate {
+    meta {
+        description: "This WDL task runs Samtools fixmate on the input BAM file. This fills in mate coordinates and insert size fields."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to add mate information. Must be name-sorted or name-collated."
+        prefix: "Prefix for the output file. The extension specified with the `extension` parameter will be added."
+        extension: {
+            description: "File format extension to use for output file.",
+            choices: [
+                ".sam",
+                ".bam",
+                ".cram"
+            ]
+        }
+        add_cigar: "Add template cigar ct tag"
+        add_mate_score: "Add mate score tags. These are used by markdup to select the best reads to keep."
+        disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]"
+        remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam") + ".fixmate"
+        String extension = ".bam"
+        Boolean add_cigar = true
+        Boolean add_mate_score = true
+        Boolean disable_proper_pair_check = false
+        Boolean remove_unaligned_and_secondary = false
+        Int ncpu = 1
+        Int memory_gb = 4
+        Int modify_disk_size_gb = 0
+        Int max_retries = 1
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+
+    command <<<
+        samtools fixmate \
+            ~{if remove_unaligned_and_secondary then "-r" else ""} \
+            ~{if disable_proper_pair_check then "-p" else ""} \
+            ~{if add_cigar then "-c" else ""} \
+            ~{if add_mate_score then "-m" else ""} \
+            ~{bam} ~{prefix}~{extension}
+    >>>
+
+    output {
+        File fixmate_bam = "~{prefix}~{extension}"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
         maxRetries: max_retries
     }
 }
