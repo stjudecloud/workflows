@@ -9,6 +9,10 @@ version 1.1
 task fqlint {
     meta {
         description: "This WDL task performs quality control on the input FASTQs to ensure proper formatting."
+        outputs: {
+            validated_read1: "The unmodified input read one FASTQ after it has been successfully validated"
+            validated_read2: "The unmodified input read two FASTQ after it has been successfully validated"
+        }
     }
 
     parameter_meta {
@@ -44,6 +48,9 @@ task fqlint {
             ]
         }
         panic: "Panic on first error (true) or log all errors (false)?"
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -85,7 +92,7 @@ task fqlint {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/fq:0.9.1--h9ee0642_0'
+        docker: 'quay.io/biocontainers/fq:0.11.0--h9ee0642_0'
         maxRetries: max_retries
     }
 }
@@ -159,7 +166,7 @@ task subsample {
     runtime {
         disk: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
-        docker: 'quay.io/biocontainers/fq:0.10.0--h9ee0642_0'
+        docker: 'quay.io/biocontainers/fq:0.11.0--h9ee0642_0'
         maxRetries: max_retries
     }
 }

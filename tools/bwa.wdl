@@ -2,17 +2,28 @@
 ##
 ## This WDL file wraps [BWA](https://github.com/lh3/bwa).
 ## BWA aligns sequencing reads to a reference genome.
+# TODO there are probably BWA params we can expose. Have not checked
 
 version 1.1
 
 task bwa_aln {
     meta {
         description: "This WDL task maps single-end FASTQ files to BAM format using bwa aln."
+        outputs: {
+            bam: "Aligned BAM format file"
+        }
     }
 
     parameter_meta {
-        fastq: "Input FASTQ file to align with bwa"
+        fastq: "Input FASTQ file to align with bwa"  # TODO verify can be gzipped or compressed
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
+        read_group: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -80,12 +91,22 @@ task bwa_aln {
 task bwa_aln_pe {
     meta {
         description: "This WDL task maps paired-end FASTQ files to BAM format using bwa aln."
+        outputs: {
+            bam: "Aligned BAM format file"
+        }
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Input FASTQ read 1 file to align with bwa"
-        read_two_fastq_gz: "Input FASTQ read 2 file to align with bwa"
+        read_one_fastq_gz: "Input gzipped FASTQ read one file to align with bwa"  # TODO verify can be gzipped or compressed
+        read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
+        read_group: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -157,11 +178,21 @@ task bwa_aln_pe {
 task bwa_mem {
     meta {
         description: "This WDL task maps FASTQ files to BAM format using bwa mem."
+        outputs: {
+            bam: "Aligned BAM format file"
+        }
     }
 
     parameter_meta {
-        fastq: "Input FASTQ file to align with bwa"
+        fastq: "Input FASTQ file to align with bwa"  # TODO verify can be gzipped or compressed
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
+        read_group: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -227,11 +258,17 @@ task bwa_mem {
 task build_bwa_db {
     meta {
         description: "This WDL task creates a BWA index and returns it as a compressed tar archive."
+        outputs: {
+            bwa_db_tar_gz: "Tarballed bwa reference files"
+        }
     }
 
     parameter_meta {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
-        db_name: "Name of the output gzipped tar archive of the bwa reference files."
+        db_name: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -266,38 +303,6 @@ task build_bwa_db {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
-        maxRetries: max_retries
-    }
-}
-
-task format_rg_for_bwa {
-    meta {
-        description: "This WDL task converts read group records from the BAM-formatted strings to strings expected by bwa."
-    }
-
-    parameter_meta {
-        read_group: "Read group string"
-    }
-
-    input {
-        String read_group
-        Int memory_gb = 4
-        Int disk_size_gb = 10
-        Int max_retries = 1
-    }
-
-    command <<<
-        echo "@RG\t~{read_group}" | sed 's/ /\\t/g' > output.txt
-    >>>
-
-    output {
-        String formatted_rg = read_string("output.txt")
-    }
-
-    runtime {
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }

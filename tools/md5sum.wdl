@@ -8,15 +8,21 @@ version 1.1
 task compute_checksum {
     meta {
         description: "This WDL task generates an MD5 checksum for the input file."
+        outputs: {
+            md5sum: "STDOUT of the `md5sum` command that has been redirected to a file"
+        }
     }
 
     parameter_meta {
         file: "Input file to generate MD5 checksum for"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File file
-        Int memory_gb = 5
+        Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }

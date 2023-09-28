@@ -3,8 +3,8 @@ PERMITTED META DESCRIPTIONS:
         disk_size_gb: "Disk space to allocate for task, specified in GB"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        ncpu: "Number of cores to allocate for task"
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
         max_retries: "<for a task> Number of times to retry in case of failure"
         max_retries: "<for a workflow> Number of times to retry failed steps. Overrides task level defaults."
         outfile_name: "Name for the <type of file> file"
@@ -15,7 +15,7 @@ PERMITTED META DESCRIPTIONS:
         bam_index: "BAM index file corresponding to the input BAM"
         reference_fasta_gz: "Gzipped reference genome in FASTA format"
         strandedness: {
-            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
+            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`."
             choices: [
                 '',
                 'Stranded-Reverse',

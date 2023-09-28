@@ -8,10 +8,20 @@ version 1.1
 task fastqc {
     meta {
         description: "This WDL task generates a FastQC quality control metrics report for the input BAM file."
+        outputs: {
+            raw_data: "A zip archive of raw FastQC data. Can be parsed by MultiQC."
+            results: "A gzipped tar archive of all FastQC output files"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file to run FastQC on"
+        prefix: "Prefix for the FastQC results directory. The extension `.tar.gz` will be added."
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -19,7 +29,7 @@ task fastqc {
         String prefix = basename(bam, ".bam") + ".fastqc_results"
         Boolean use_all_cores = false
         Int ncpu = 1
-        Int memory_gb = 5
+        Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
