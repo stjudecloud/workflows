@@ -158,8 +158,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Workflows &raquo;</li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Workflows</li>
       <li class="breadcrumb-item active">Quality Check Standard</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/quality-check-standard.md" class="icon icon-github"> Edit on GitHub</a>
@@ -252,6 +252,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>collate_to_fastq.F</code> (String, default="0x900")</li>
 <li><code>collate_to_fastq.G</code> (String, default="0")</li>
 <li><code>collate_to_fastq.f</code> (String, default="0")</li>
+<li><code>collate_to_fastq.fail_on_unexpected_reads</code> (Boolean, default=false)</li>
 <li><code>collate_to_fastq.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>collate_to_fastq.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>collate_to_fastq.ncpu</code> (Int, default=1)</li>
@@ -264,7 +265,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>collect_insert_size_metrics.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>compression_integrity.memory_gb</code> (Int, default=4)</li>
 <li><code>compression_integrity.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>compute_checksum.memory_gb</code> (Int, default=5)</li>
+<li><code>compute_checksum.memory_gb</code> (Int, default=4)</li>
 <li><code>compute_checksum.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>encoding.memory_gb</code> (Int, default=4)</li>
 <li><code>encoding.modify_disk_size_gb</code> (Int, default=0)</li>
@@ -275,11 +276,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>endedness.paired_deviance</code> (Float, default=0.0)</li>
 <li><code>endedness.round_rpt</code> (Boolean, default=false)</li>
 <li><code>endedness.split_by_rg</code> (Boolean, default=false)</li>
-<li><code>fastqc.memory_gb</code> (Int, default=5)</li>
+<li><code>fastqc.memory_gb</code> (Int, default=4)</li>
 <li><code>fastqc.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>fastqc.ncpu</code> (Int, default=1)</li>
 <li><code>flagstat.memory_gb</code> (Int, default=5)</li>
 <li><code>flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>flagstat.ncpu</code> (Int, default=1)</li>
+<li><code>flagstat.use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>fqlint.disable_validator_codes</code> (Array[String], default=[])</li>
 <li><code>fqlint.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>fqlint.modify_memory_gb</code> (Int, default=0)</li>
@@ -306,7 +309,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>kraken.use_names</code> (Boolean, default=true)</li>
 <li><code>markdups.memory_gb</code> (Int, default=50)</li>
 <li><code>markdups.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>multiqc.memory_gb</code> (Int, default=5)</li>
+<li><code>multiqc.memory_gb</code> (Int, default=4)</li>
 <li><code>multiqc.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>parse_input.disk_size_gb</code> (Int, default=10)</li>
 <li><code>parse_input.memory_gb</code> (Int, default=4)</li>
@@ -349,6 +352,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>markdups_post.collect_insert_size_metrics.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>markdups_post.flagstat.memory_gb</code> (Int, default=5)</li>
 <li><code>markdups_post.flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>markdups_post.flagstat.ncpu</code> (Int, default=1)</li>
+<li><code>markdups_post.flagstat.use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>markdups_post.regions_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>markdups_post.regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>markdups_post.regions_coverage.modify_disk_size_gb</code> (Int, default=0)</li>

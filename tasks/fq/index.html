@@ -154,8 +154,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Tasks &raquo;</li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tasks</li>
       <li class="breadcrumb-item active">FQ</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/fq.md" class="icon icon-github"> Edit on GitHub</a>
@@ -174,6 +174,8 @@ FASTQ files.</p>
 <dl>
 <dt>description</dt>
 <dd>This WDL task performs quality control on the input FASTQs to ensure proper formatting.</dd>
+<dt>outputs</dt>
+<dd>{'validated_read1': 'The unmodified input read one FASTQ after it has been successfully validated', 'validated_read2': 'The unmodified input read two FASTQ after it has been successfully validated'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -188,9 +190,9 @@ FASTQ files.</p>
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>disable_validator_codes</code> (Array[String], default=[]); <strong>description</strong>: Array of codes to disable specific validators; <strong>choices</strong>: {'S001': "Plus line starts with a '+'", 'S002': "All characters in sequence line are one of 'ACGTN', case-insensitive", 'S003': "Name line starts with an '@'", 'S004': 'All four record lines (name, sequence, plus line, and quality) are present', 'S005': 'Sequence and quality lengths are the same', 'S006': "All characters in quality line are between '!' and '~' (ordinal values)", 'S007': 'All record names are unique', 'P001': 'Each paired read name is the same, excluding interleave'}</li>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>modify_memory_gb</code> (Int, default=0)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>paired_read_validation_level</code> (String, default="high"); <strong>description</strong>: Only use paired read validators up to a given level; <strong>choices</strong>: ['low', 'medium', 'high']</li>
 <li><code>panic</code> (Boolean, default=true): Panic on first error (true) or log all errors (false)?</li>
 <li><code>single_read_validation_level</code> (String, default="high"); <strong>description</strong>: Only use single read validators up to a given level; <strong>choices</strong>: ['low', 'medium', 'high']</li>

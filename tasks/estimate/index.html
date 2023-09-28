@@ -150,8 +150,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Tasks &raquo;</li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tasks</li>
       <li class="breadcrumb-item active">ESTIMATE</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/estimate.md" class="icon icon-github"> Edit on GitHub</a>
@@ -165,6 +165,12 @@
                 <h1 id="estimate">ESTIMATE</h1>
 <p>This WDL file wraps the <a href="https://bioinformatics.mdanderson.org/estimate/">ESTIMATE software package</a>.</p>
 <h2 id="calc_tpm">calc_tpm</h2>
+<dl>
+<dt>description</dt>
+<dd>Given a gene counts file and a gene lengths file, calculate Transcripts Per Million (TPM)</dd>
+<dt>outputs</dt>
+<dd>{'tpm_file': 'Transcripts Per Million (TPM) file. A two column headered TSV file.'}</dd>
+</dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
@@ -177,13 +183,19 @@
 <li><code>disk_size_gb</code> (Int, default=10): Disk space to allocate for task, specified in GB</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
-<li><code>outfile_name</code> (String, default=basename(counts,".feature-counts.txt") + ".TPM.txt"): Name of the TPM file</li>
+<li><code>prefix</code> (String, default=basename(counts,".feature-counts.txt")): Prefix for the TPM file. The extension <code>.TPM.txt</code> will be added.</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>tpm_file</code> (File)</li>
 </ul>
 <h2 id="run_estimate">run_ESTIMATE</h2>
+<dl>
+<dt>description</dt>
+<dd>Given a gene expression file, run the ESTIMATE software package</dd>
+<dt>outputs</dt>
+<dd>{'estimate_file': 'The results file of the ESTIMATE software package'}</dd>
+</dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>

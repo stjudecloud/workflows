@@ -136,8 +136,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Tasks &raquo;</li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tasks</li>
       <li class="breadcrumb-item active">HTSeq</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/htseq.md" class="icon icon-github"> Edit on GitHub</a>
@@ -155,6 +155,8 @@ HTSeq is a Python library for analyzing sequencing data.</p>
 <dl>
 <dt>description</dt>
 <dd>This WDL task performs read counting for a set of features in the input BAM file.</dd>
+<dt>outputs</dt>
+<dd>{'feature_counts': 'A two column headerless TSV file. First column is feature names and second column is counts.'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -162,7 +164,7 @@ HTSeq is a Python library for analyzing sequencing data.</p>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to generate coverage for</li>
 <li><code>gtf</code> (File, <strong>required</strong>): Input genomic features in gzipped GTF format to count reads for</li>
-<li><code>strandedness</code> (String, <strong>required</strong>); <strong>description</strong>: Strandedness protocol of the RNA-Seq experiment. Read the <a href="https://htseq.readthedocs.io/en/release_0.11.1/count.html#cmdoption-htseq-count-s">HTSeq-count docs</a> for an explanation of what this parameter affects.; <strong>choices</strong>: ['yes', 'reverse', 'no']</li>
+<li><code>strandedness</code> (String, <strong>required</strong>); <strong>description</strong>: Strandedness protocol of the RNA-Seq experiment; <strong>external_help</strong>: https://htseq.readthedocs.io/en/latest/htseqcount.html#cmdoption-htseq-count-s; <strong>choices</strong>: ['yes', 'reverse', 'no']</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
@@ -170,7 +172,7 @@ HTSeq is a Python library for analyzing sequencing data.</p>
 <li><code>idattr</code> (String, default="gene_name"): GFF attribute to be used as feature ID</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>minaqual</code> (Int, default=10): Skip all reads with alignment quality lower than the given minimum value</li>
-<li><code>mode</code> (String, default="union"); <strong>description</strong>: Mode to handle reads overlapping more than one feature. <code>union</code> is recommended for most use-cases. Read the <a href="https://htseq.readthedocs.io/en/release_0.11.1/count.html#counting-reads-in-features-with-htseq-count">HTSeq-count docs</a> for an explanation of what this parameter affects.; <strong>choices</strong>: ['union', 'intersection-strict', 'intersection-nonempty']</li>
+<li><code>mode</code> (String, default="union"); <strong>description</strong>: Mode to handle reads overlapping more than one feature. <code>union</code> is recommended for most use-cases.; <strong>external_help</strong>: https://htseq.readthedocs.io/en/latest/htseqcount.html#htseq-count-counting-reads-within-features; <strong>choices</strong>: ['union', 'intersection-strict', 'intersection-nonempty']</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>nonunique</code> (Boolean, default=false): Score reads that align to or are assigned to more than one feature?</li>

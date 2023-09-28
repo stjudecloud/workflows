@@ -138,8 +138,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Tasks &raquo;</li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tasks</li>
       <li class="breadcrumb-item active">MultiQC</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/multiqc.md" class="icon icon-github"> Edit on GitHub</a>
@@ -157,6 +157,8 @@ MultiQC aggregates quality control results for bioinformatics.</p>
 <dl>
 <dt>description</dt>
 <dd>This WDL task generates a MultiQC quality control metrics report summary from input QC result files.</dd>
+<dt>outputs</dt>
+<dd>{'multiqc_report': 'A gzipped tar archive of all MultiQC output files'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -171,8 +173,8 @@ MultiQC aggregates quality control results for bioinformatics.</p>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5): RAM to allocate for task, specified in GB</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 </ul>
 <h3 id="outputs">Outputs</h3>

@@ -136,8 +136,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Tasks &raquo;</li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tasks</li>
       <li class="breadcrumb-item active">Deeptools</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/deeptools.md" class="icon icon-github"> Edit on GitHub</a>
@@ -155,6 +155,8 @@ DeepTools is a suite of Python tools for analysis of high throughput sequencing 
 <dl>
 <dt>description</dt>
 <dd>This WDL task generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html).</dd>
+<dt>outputs</dt>
+<dd>{'bigwig': 'BigWig format coverage file'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -165,12 +167,12 @@ DeepTools is a suite of Python tools for analysis of high throughput sequencing 
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the BigWig file. The extension <code>.bw</code> will be added.</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>

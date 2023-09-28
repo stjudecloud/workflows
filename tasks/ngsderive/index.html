@@ -206,8 +206,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Tasks &raquo;</li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tasks</li>
       <li class="breadcrumb-item active">ngsderive</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/ngsderive.md" class="icon icon-github"> Edit on GitHub</a>
@@ -377,7 +377,7 @@
 </ul>
 <h4 id="defaults_5">Defaults</h4>
 <ul>
-<li><code>calc_rpt</code> (Boolean, default=false): Calculate and output Reads-Per-Template. This will produce a more sophisticated estimate for endedness, but uses substantially more memory (can reach up to 60-70% of BAM size in memory consumption).</li>
+<li><code>calc_rpt</code> (Boolean, default=false): Calculate and output Reads-Per-Template. This will produce a more sophisticated estimate for endedness, but uses substantially more memory (can reach up to 200% of BAM size in memory consumption for some inputs).</li>
 <li><code>lenient</code> (Boolean, default=false): Return a zero exit code on unknown results</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>

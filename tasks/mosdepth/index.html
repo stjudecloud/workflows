@@ -138,8 +138,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Tasks &raquo;</li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tasks</li>
       <li class="breadcrumb-item active">Mosdepth</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/mosdepth.md" class="icon icon-github"> Edit on GitHub</a>
@@ -156,26 +156,28 @@
 <dl>
 <dt>description</dt>
 <dd>This WDL task wraps the Mosdepth tool for calculating coverage</dd>
+<dt>outputs</dt>
+<dd>{'summary': 'A summary of mean depths per chromosome and within specified regions per chromosome', 'global_dist': 'The <code>$prefix.mosdepth.global.dist.txt</code> file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome.', 'region_dist': 'The <code>$prefix.mosdepth.region.dist.txt</code> file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by <code>coverage_bed</code> that were covered for at least a given coverage value'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>)</li>
-<li><code>bam_index</code> (File, <strong>required</strong>)</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to calculate coverage for</li>
+<li><code>bam_index</code> (File, <strong>required</strong>): BAM index file corresponding to the input BAM</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>coverage_bed</code> (File?)</li>
+<li><code>coverage_bed</code> (File?): BED file to pass to the <code>-b</code> flag of <code>mosdepth</code>. This will restrict coverage analysis to regions defined by the BED file.</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=8)</li>
-<li><code>min_mapping_quality</code> (Int, default=20)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>prefix</code> (String, default=basename(bam,'.bam'))</li>
-<li><code>use_fast_mode</code> (Boolean, default=true)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=8): RAM to allocate for task, specified in GB</li>
+<li><code>min_mapping_quality</code> (Int, default=20): Minimum mapping quality to pass to the <code>-Q</code> flag of <code>mosdepth</code></li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>prefix</code> (String, default=basename(bam,'.bam')): Prefix for the <code>mosdepth</code> report files. The extensions <code>.mosdepth.summary.txt</code>, <code>.mosdepth.global.dist.txt</code> and <code>.mosdepth.region.dist.txt</code> will be added.</li>
+<li><code>use_fast_mode</code> (Boolean, default=true): Use Mosdepth's 'fast mode'? This enables the <code>-x</code> flag.</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>

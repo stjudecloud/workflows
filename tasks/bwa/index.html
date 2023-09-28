@@ -107,20 +107,6 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#format_rg_for_bwa">format_rg_for_bwa</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_4">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_4">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_4">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_4">Outputs</a>
-    </li>
-        </ul>
-    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../cellranger/">Cellranger</a>
@@ -192,8 +178,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Tasks &raquo;</li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tasks</li>
       <li class="breadcrumb-item active">BWA</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/bwa.md" class="icon icon-github"> Edit on GitHub</a>
@@ -211,6 +197,8 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dl>
 <dt>description</dt>
 <dd>This WDL task maps single-end FASTQ files to BAM format using bwa aln.</dd>
+<dt>outputs</dt>
+<dd>{'bam': 'Aligned BAM format file'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -221,13 +209,13 @@ BWA aligns sequencing reads to a reference genome.</p>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=sub(basename(fastq),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$",""))</li>
-<li><code>read_group</code> (String, default="")</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=5): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>prefix</code> (String, default=sub(basename(fastq),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
+<li><code>read_group</code> (String, default=""): Read group information for BWA to insert into the header. BWA format: '@RG   ID:foo  SM:bar'</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -237,24 +225,26 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dl>
 <dt>description</dt>
 <dd>This WDL task maps paired-end FASTQ files to BAM format using bwa aln.</dd>
+<dt>outputs</dt>
+<dd>{'bam': 'Aligned BAM format file'}</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bwa_db_tar_gz</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
-<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Input FASTQ read 1 file to align with bwa</li>
-<li><code>read_two_fastq_gz</code> (File, <strong>required</strong>): Input FASTQ read 2 file to align with bwa</li>
+<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Input gzipped FASTQ read one file to align with bwa</li>
+<li><code>read_two_fastq_gz</code> (File, <strong>required</strong>): Input gzipped FASTQ read two file to align with bwa</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$",""))</li>
-<li><code>read_group</code> (String, default="")</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=5): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
+<li><code>read_group</code> (String, default=""): Read group information for BWA to insert into the header. BWA format: '@RG   ID:foo  SM:bar'</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
@@ -264,6 +254,8 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dl>
 <dt>description</dt>
 <dd>This WDL task maps FASTQ files to BAM format using bwa mem.</dd>
+<dt>outputs</dt>
+<dd>{'bam': 'Aligned BAM format file'}</dd>
 </dl>
 <h3 id="inputs_2">Inputs</h3>
 <h4 id="required_2">Required</h4>
@@ -274,13 +266,13 @@ BWA aligns sequencing reads to a reference genome.</p>
 </ul>
 <h4 id="defaults_2">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=sub(basename(fastq),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$",""))</li>
-<li><code>read_group</code> (String, default="")</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=5): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>prefix</code> (String, default=sub(basename(fastq),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
+<li><code>read_group</code> (String, default=""): Read group information for BWA to insert into the header. BWA format: '@RG   ID:foo  SM:bar'</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
 <ul>
@@ -290,6 +282,8 @@ BWA aligns sequencing reads to a reference genome.</p>
 <dl>
 <dt>description</dt>
 <dd>This WDL task creates a BWA index and returns it as a compressed tar archive.</dd>
+<dt>outputs</dt>
+<dd>{'bwa_db_tar_gz': 'Tarballed bwa reference files'}</dd>
 </dl>
 <h3 id="inputs_3">Inputs</h3>
 <h4 id="required_3">Required</h4>
@@ -299,35 +293,14 @@ BWA aligns sequencing reads to a reference genome.</p>
 </ul>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
-<li><code>db_name</code> (String, default="bwa_db"): Name of the output gzipped tar archive of the bwa reference files.</li>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>db_name</code> (String, default="bwa_db"): Name of the output gzipped tar archive of the bwa reference files. The extension <code>.tar.gz</code> will be added.</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=5): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
 <ul>
 <li><code>bwa_db_tar_gz</code> (File)</li>
-</ul>
-<h2 id="format_rg_for_bwa">format_rg_for_bwa</h2>
-<dl>
-<dt>description</dt>
-<dd>This WDL task converts read group records from the BAM-formatted strings to strings expected by bwa.</dd>
-</dl>
-<h3 id="inputs_4">Inputs</h3>
-<h4 id="required_4">Required</h4>
-<ul>
-<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>read_group</code> (String, <strong>required</strong>): Read group string</li>
-</ul>
-<h4 id="defaults_4">Defaults</h4>
-<ul>
-<li><code>disk_size_gb</code> (Int, default=10)</li>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-</ul>
-<h3 id="outputs_4">Outputs</h3>
-<ul>
-<li><code>formatted_rg</code> (String)</li>
 </ul>
               
             </div>

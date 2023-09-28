@@ -171,6 +171,8 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_6">Required</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#optional_1">Optional</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#defaults_6">Defaults</a>
     </li>
         </ul>
@@ -264,8 +266,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Tasks &raquo;</li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tasks</li>
       <li class="breadcrumb-item active">SAMtools</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/samtools.md" class="icon icon-github"> Edit on GitHub</a>
@@ -283,6 +285,8 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <dl>
 <dt>description</dt>
 <dd>This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists.</dd>
+<dt>outputs</dt>
+<dd>{'checked_bam': 'The unmodfied input BAM after it has been successfully quickchecked'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -292,9 +296,9 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -313,13 +317,13 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the split BAM files. The extensions will contain read group IDs, and will end in <code>.bam</code>.</li>
 <li><code>reject_unaccounted</code> (Boolean, default=true): If true, error if there are reads present that do not have read group information.</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
@@ -329,6 +333,8 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <dl>
 <dt>description</dt>
 <dd>This WDL tool produces a <code>samtools flagstat</code> report containing statistics about the alignments based on the bit flags set in the BAM.</dd>
+<dt>outputs</dt>
+<dd>{'flagstat_report': '<code>samtools flagstat</code> STDOUT redirected to a file'}</dd>
 </dl>
 <h3 id="inputs_2">Inputs</h3>
 <h4 id="required_2">Required</h4>
@@ -338,10 +344,12 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 </ul>
 <h4 id="defaults_2">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=5)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".flagstat.txt")</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=5): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".flagstat.txt"): Name for the flagstat report file</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
 <ul>
@@ -350,7 +358,9 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h2 id="index">index</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task runs samtools index on the input BAM file.</dd>
+<dd>Creates a <code>.bai</code> BAM index for the input BAM</dd>
+<dt>outputs</dt>
+<dd>{'bam_index': "A <code>.bai</code> BAM index associated with the input BAM. Filename will be <code>basename(bam) + '.bai'</code>."}</dd>
 </dl>
 <h3 id="inputs_3">Inputs</h3>
 <h4 id="required_3">Required</h4>
@@ -360,32 +370,38 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 </ul>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
 <ul>
 <li><code>bam_index</code> (File)</li>
 </ul>
 <h2 id="subsample">subsample</h2>
+<dl>
+<dt>description</dt>
+<dd>Randomly subsamples the input BAM. Sampling is probabalistic and will be approximate to <code>desired_reads</code>. Read count will not be exact. A <code>sampled_bam</code> will not be produced if the input BAM read count is less than or equal to <code>desired_reads</code>.</dd>
+<dt>outputs</dt>
+<dd>{'orig_read_count': 'A TSV report containing the original read count before subsampling', 'sampled_bam': 'The subsampled input BAM.'}</dd>
+</dl>
 <h3 id="inputs_4">Inputs</h3>
 <h4 id="required_4">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>)</li>
-<li><code>desired_reads</code> (Int, <strong>required</strong>)</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to subsample</li>
+<li><code>desired_reads</code> (Int, <strong>required</strong>): How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value.</li>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.subsampled.bam</code> will be added.</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
 <ul>
@@ -393,25 +409,35 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <li><code>sampled_bam</code> (File?)</li>
 </ul>
 <h2 id="merge">merge</h2>
+<dl>
+<dt>description</dt>
+<dd>Merges multiple sorted BAMs into a single BAM</dd>
+<dt>outputs</dt>
+<dd>{'merged_bam': 'The BAM resulting from merging all the input BAMs'}</dd>
+</dl>
 <h3 id="inputs_5">Inputs</h3>
 <h4 id="required_5">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bams</code> (Array[File], <strong>required</strong>)</li>
-<li><code>prefix</code> (String, <strong>required</strong>)</li>
+<li><code>bams</code> (Array[File], <strong>required</strong>): An array of BAMs to merge into one combined BAM</li>
+<li><code>prefix</code> (String, <strong>required</strong>): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>new_header</code> (File?)</li>
+<li><code>new_header</code> (File?): Use the lines of FILE as <code>@</code> headers to be copied to the merged BAM, replacing any header lines that would otherwise be copied from the first BAM file in the list. (File may actually be in SAM format, though any alignment records it may contain are ignored.)</li>
 </ul>
 <h4 id="defaults_5">Defaults</h4>
 <ul>
-<li><code>attach_rg</code> (Boolean, default=true)</li>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>attach_rg</code> (Boolean, default=true): Attach an RG tag to each alignment. The tag value is inferred from file names.</li>
+<li><code>combine_pg</code> (Boolean, default=true): Similarly to <code>combine_rg</code>: for each @PG ID in the set of files to merge, use the @PG line of the first file we find that ID in rather than adding a suffix to differentiate similar IDs.</li>
+<li><code>combine_rg</code> (Boolean, default=true): When several input files contain @RG headers with the same ID, emit only one of them (namely, the header line from the first file we find that ID in) to the merged output file. Combining these similar headers is usually the right thing to do when the files being merged originated from the same file. Without <code>-c</code>, all @RG headers appear in the output file, with random suffixes added to their IDs where necessary to differentiate them.</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>name_sorted</code> (Boolean, default=false): Are <em>all</em> input BAMs <code>queryname</code> sorted (true)? Or are <em>all</em> input BAMs <code>coordinate</code> sorted (false)?</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>region</code> (String, default=""): Merge files in the specified region (Format: <code>chr:start-end</code>)</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_5">Outputs</h3>
 <ul>
@@ -420,23 +446,31 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h2 id="addreplacerg">addreplacerg</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task runs Samtools addreplacerg on the input BAM file. This adds an existing read group record to reads in the BAM lacking read group tags.</dd>
+<dd>Adds or replaces read group tags</dd>
+<dt>outputs</dt>
+<dd>{'tagged_bam': 'The transformed input BAM after read group modifications have been applied'}</dd>
 </dl>
 <h3 id="inputs_6">Inputs</h3>
 <h4 id="required_6">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to add read group information</li>
-<li><code>read_group_id</code> (String, <strong>required</strong>): Existing read group ID in BAM to add to reads</li>
+</ul>
+<h4 id="optional_1">Optional</h4>
+<ul>
+<li><code>read_group_id</code> (String?): Allows you to specify the read group ID of an existing @RG line and applies it to the reads specified by the <code>orphan_only</code> option</li>
 </ul>
 <h4 id="defaults_6">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam") + ".read_group")</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>orphan_only</code> (Boolean, default=true): Only add RG tags to orphans (true)? Or <em>also</em> overwrite all existing RG tags (including any in the header) (false)?</li>
+<li><code>overwrite_header_record</code> (Boolean, default=false): Overwrite an existing @RG line, if a new one with the same ID value is provided?</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam") + ".addreplacerg"): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
+<li><code>read_group_line</code> (Array[String], default=[]): Allows you to specify a read group line to append to (or replace in) the header and applies it to the reads specified by the <code>orphan_only</code> option. Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM. Only <strong>one</strong> read group line can be supplied per invocation of this task.</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_6">Outputs</h3>
 <ul>
@@ -457,12 +491,12 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 </ul>
 <h4 id="defaults_7">Defaults</h4>
 <ul>
-<li><code>f</code> (Boolean, default=true): Fast mode (primary alignments only)</li>
+<li><code>fast_mode</code> (Boolean, default=true): Use fast mode (output primary alignments only)?</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam") + ".collated"): Prefix for the collated BAM file. The extension <code>.collated.bam</code> will be added.</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam") + ".collated"): Prefix for the collated BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>
 <h3 id="outputs_7">Outputs</h3>
@@ -487,6 +521,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <li><code>F</code> (String, default="0x900"): Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments.</li>
 <li><code>G</code> (String, default="0"): Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
 <li><code>f</code> (String, default="0"): Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
+<li><code>fail_on_unexpected_reads</code> (Boolean, default=false): The definition of 'unexpected' depends on whether the values of <code>paired_end</code> and <code>output_singletons</code> are true or false. In any case, reads that have neither or both <code>first</code> and <code>last</code> bits set are considered unexpected. If <code>paired_end</code> is <code>true</code> and <code>output_singletons</code> is <code>false</code>, singleton reads are considered unexpected. A singleton read is a read with either the <code>first</code> or the <code>last</code> bit set and that possesses a <em>unique</em> QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if <code>output_singletons</code> is <code>true</code>, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If <code>paired_end</code> is <code>false</code>, a read with only the <code>last</code> bit set is considered unexpected. This is because only reads with the <code>first</code> bit set should be present in a Single-End BAM. If <code>fail_on_unexpected_reads</code> is <code>false</code>, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.; <strong>description</strong>: Should the task fail if reads with an unexpected <code>first</code>/<code>last</code> bit setting are discovered?</li>
 <li><code>interleaved</code> (Boolean, default=false): Create an interleaved FASTQ file from paired-end data?</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
@@ -522,6 +557,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <li><code>F</code> (String, default="0x900"): Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments.</li>
 <li><code>G</code> (String, default="0"): Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
 <li><code>f</code> (String, default="0"): Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
+<li><code>fail_on_unexpected_reads</code> (Boolean, default=false): The definition of 'unexpected' depends on whether the values of <code>paired_end</code> and <code>output_singletons</code> are true or false. In any case, reads that have neither or both <code>first</code> and <code>last</code> bits set are considered unexpected. If <code>paired_end</code> is <code>true</code> and <code>output_singletons</code> is <code>false</code>, singleton reads are considered unexpected. A singleton read is a read with either the <code>first</code> or the <code>last</code> bit set and that possesses a <em>unique</em> QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if <code>output_singletons</code> is <code>true</code>, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If <code>paired_end</code> is <code>false</code>, a read with only the <code>last</code> bit set is considered unexpected. This is because only reads with the <code>first</code> bit set should be present in a Single-End BAM. If <code>fail_on_unexpected_reads</code> is <code>false</code>, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.; <strong>description</strong>: Should the task fail if reads with an unexpected <code>first</code>/<code>last</code> bit setting are discovered?</li>
 <li><code>fast_mode</code> (Boolean, default=true): Fast mode for <code>samtools collate</code> (primary alignments only)</li>
 <li><code>interleaved</code> (Boolean, default=false): Create an interleaved FASTQ file from paired-end data?</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
