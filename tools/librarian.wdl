@@ -23,7 +23,7 @@ task librarian {
     )
 
     command <<<
-        RUST_LOG=trace /app/librarian --local -o ~{prefix} ~{read_one_fastq} ~{read_two_fastq}
+        RUST_BACKTRACE=full /app/librarian --local -o ~{prefix} ~{read_one_fastq} ~{read_two_fastq}
     >>>
 
     # output {
