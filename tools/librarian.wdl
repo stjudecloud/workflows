@@ -21,7 +21,7 @@ task librarian {
     )
 
     command <<<
-        librarian --local -o ~{prefix} ~{read_one_fastq} ~{read_two_fastq}
+        /app/librarian --local -o ~{prefix} ~{read_one_fastq} ~{read_two_fastq}
     >>>
 
     # output {
