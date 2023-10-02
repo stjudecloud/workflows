@@ -27,7 +27,7 @@ task librarian {
     # output {
     #     File report = 
     # }
- 
+
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
