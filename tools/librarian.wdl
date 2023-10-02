@@ -1,5 +1,7 @@
 ## # librarian
 
+version 1.1
+
 task librarian {
     input {
         File read_one_fastq
@@ -9,7 +11,7 @@ task librarian {
             "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
-        # Int memory_gb = 4
+        Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
@@ -29,7 +31,7 @@ task librarian {
     # }
 
     runtime {
-        memory: "4 GB"
+        memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/desmondwillowbrook/librarian:latest'
         maxRetries: max_retries
