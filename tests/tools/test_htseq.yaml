@@ -1,0 +1,8 @@
+- name: htseq_count
+  tags:
+    - miniwdl
+    - htseq
+  command: >-
+    miniwdl run -d test-output/. --copy-input-files --task count tools/htseq.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" gtf="tests/tools/input/genes.gtf.gz" strandedness="no"
+  files:
+    - path: test-output/out/feature_counts/test.bwa_aln_pe.feature-counts.txt

@@ -1,26 +1,20 @@
-version 1.0
+## # Alignment Post
+##
+## TODO write something here
 
-import "../../tools/samtools.wdl"
-import "../../tools/picard.wdl"
+version 1.1
+
 import "../../tools/md5sum.wdl"
-import "https://raw.githubusercontent.com/stjude/XenoCP/4.0.0-alpha/wdl/workflows/xenocp.wdl" as xenocp_workflow
+import "../../tools/picard.wdl"
+import "../../tools/samtools.wdl"
+import "https://raw.githubusercontent.com/stjude/XenoCP/4.0.0-alpha/wdl/workflows/xenocp.wdl" as xenocp_wf
 
 workflow alignment_post {
-    input {
-        File bam
-        Boolean mark_duplicates
-        File? contaminant_db
-        Boolean cleanse_xenograft = false
-        String xenocp_aligner = ""
-        Boolean use_all_cores = false
-        Int? max_retries
-    }
-
     parameter_meta {
         bam: "Input BAM format file to process"
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
-        cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
+        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination"
             choices: [
@@ -29,8 +23,18 @@ workflow alignment_post {
                 'star'
             ]
         },
+        cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
         use_all_cores: "Use all cores for multi-core steps?"
-        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+    }
+
+    input {
+        File bam
+        Boolean mark_duplicates
+        File? contaminant_db
+        Int? max_retries
+        String xenocp_aligner = ""
+        Boolean cleanse_xenograft = false
+        Boolean use_all_cores = false
     }
 
     call picard.sort as picard_sort { input: bam=bam, max_retries=max_retries }
@@ -42,7 +46,7 @@ workflow alignment_post {
             max_retries=max_retries
         }
 
-        call xenocp_workflow.xenocp { input:
+        call xenocp_wf.xenocp { input:
             input_bam=picard_sort.sorted_bam,
             input_bai=pre_xenocp_index.bam_index,
             reference_tar_gz=select_first([contaminant_db, ""]),
@@ -72,7 +76,7 @@ workflow alignment_post {
 
     call picard.validate_bam { input: bam=aligned_bam, max_retries=max_retries }
 
-    call md5sum.compute_checksum { input: infile=aligned_bam, max_retries=max_retries }
+    call md5sum.compute_checksum { input: file=aligned_bam, max_retries=max_retries }
 
     output {
         File out_bam = aligned_bam

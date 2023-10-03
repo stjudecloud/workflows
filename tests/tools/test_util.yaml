@@ -1,0 +1,115 @@
+- name: download
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run -d test-output/. -i tests/tools/input_json/util_download.json --task download tools/util.wdl
+  stdout:
+    contains_regex:
+      - '"download.downloaded_file": ".*test-output/out/downloaded_file/license.txt"'
+  files:
+    - path: test-output/out/downloaded_file/license.txt
+      md5sum: cf3575bd84ab3151c7e9700b5f1a9746
+      contains:
+        - "MIT License"
+
+- name: get_read_groups
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_get_read_groups.json --task get_read_groups --copy-input-files tools/util.wdl
+  files:
+    - path: test-output/out/read_groups_file/read_groups.txt
+      contains:
+        - "@RG	ID:1"
+        - "@RG	ID:2"
+      must_not_contain:
+        - "@RG	ID:3"
+
+- name: split_string
+  tags:
+    - miniwdl
+    - util
+  command: >-
+        miniwdl run -d test-output/. --task split_string tools/util.wdl input_string="rg1 , rg2"
+  stdout:
+    contains:
+      - "rg1"
+      - "rg2"
+    must_not_contain:
+      - "rg1 , rg2"
+
+- name: calc_gene_lengths
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
+  files:
+    - path: test-output/out/gene_lengths/genes.genelengths.txt
+      contains:
+        - "AL954722.1"
+
+# TODO: This fails, but the underlying task will be updated.
+- name: qc_summary
+  tags:
+   - miniwdl
+   - util
+  command: >-
+   miniwdl run -d test-output/. --task qc_summary --copy-input-files tools/util.wdl multiqc_tar_gz="tests/tools/input/SJBT031344_D1.Exome.multiqc.tar.gz"
+  files:
+    - path: "test-output/out/summary/SJBT031344_D1.Exome.qc_summary.json"
+
+- name: compression_integrity
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run -d test-output/. --task compression_integrity --copy-input-files tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  stdout:
+    contains:
+      - "passed"
+
+- name: add_to_bam_header
+  tags:
+    - miniwdl
+    - util
+  command: >-
+      miniwdl run -d test-output/. --task add_to_bam_header --copy-input-files tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" additional_header="@RG	ID:3"
+  files:
+    - path: "test-output/out/reheadered_bam/test.bwa_aln_pe.reheader.bam"
+  stdout:
+    contains:
+      - "@RG\\tID:3"
+
+  # TODO write custom test that handles random array indices created by `find`
+- name: unpack_tarball
+  tags:
+    - miniwdl
+    - util
+  command: >-
+      miniwdl run -d test-output/. --task unpack_tarball --copy-input-files tools/util.wdl tarball="tests/tools/input/test.tar.gz"
+  files:
+    - path: "test-output/out/tarball_contents/1/a"
+    - path: "test-output/out/tarball_contents/0/b"
+
+- name: make_coverage_regions_beds
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run -d test-output/. --task make_coverage_regions_beds --copy-input-files tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
+  files:
+    - path: "test-output/out/bed/genes.gtf.bed"
+    - path: "test-output/out/exon_bed/genes.gtf.exon.bed"
+    - path: "test-output/out/CDS_bed/genes.gtf.CDS.bed"
+
+- name: global_phred_scores
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run -d test-output/. --task global_phred_scores --copy-input-files tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: "test-output/out/phred_scores/test.bwa_aln_pe.global_PHRED_scores.tsv"

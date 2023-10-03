@@ -1,0 +1,2 @@
+File	Evidence	MajorityPctDetected	ConsensusReadLength
+test.bwa_aln_pe.bam	150=20000	1.0	150

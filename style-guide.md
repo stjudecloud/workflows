@@ -14,15 +14,20 @@ These rules might also be enforced by a yet-to-be-written linter.
   - The linter would autogenerate these fields for the user to fill in
     - or they could be filled in automatically if specified in the configuration/parameters
     - This behavior could be disabled
-- The following sections must be present and in this order for all workflows: `meta`, `parameter_meta`, `input`, `output`
+- All import statements should follow the WDL version declaration (with one empty line between the version and the first import statement)
+- Import statements should be sorted by the lexicographical ordering of each entire line
+  - No extra white space allowed between symbols or lines
+- For workflows, the following sections must be present and in this order: `meta`, `parameter_meta`, `input`, `output`
   - `input`, `parameter_meta`, and `output` are technically optional in the WDL spec, though it is discouraged to write workflows in this manner.
     - The linter will not enforce the presence of these sections
       - If `input` is present, the linter will enforce the presence of `parameter_meta`
-- The following sections must be present and in this order for all tasks: `meta`, `parameter_meta`, `input`, `command`, `output`, `runtime`
+- For tasks, the following sections must be present and in this order: `meta`, `parameter_meta`, `input`, `command`, `output`, `runtime`
   - `input`, `parameter_meta`, and `output` are technically optional in the WDL spec, though it is discouraged to write tasks in this manner.
     - The linter will not enforce the presence of these sections
       - If `input` is present, the linter will enforce the presence of `parameter_meta`
 - The `meta` section should have a `description` of the task or workflow
+  - The `description` should be in active voice, beginning the first sentence with a verb
+    - Each task/workflow is _doing_ something. The first sentence should be a succinct description of what that "something" is.
 - The `meta` section should have an `outputs` key and keys with descriptions for each output of the task/workflow
 - Additional `meta` entries are allowed (such as `author` or `email` keys)
 - All inputs must have a corresponding `parameter_meta` entry
@@ -64,3 +69,7 @@ These rules might also be enforced by a yet-to-be-written linter.
 - WDL lines should be less than 90 characters wide whenever possible
   - Exceptions would be long strings that WDL doesn't allow to be broken up
   - This restriction applies to embedded code in the `command` block as well.
+- Any tasks which are deprecated should have a `deprecated: true` key in their `meta` section
+  - It is allowed (but redundant and discouraged) to include a `deprecated: false` key in any production tasks
+  - In addition, the `description` key of deprecated tasks should start with `**[DEPRECATED]**`
+- Deprecated tasks should be placed at the end of their file
