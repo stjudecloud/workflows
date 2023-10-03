@@ -91,16 +91,16 @@ workflow rnaseq_core {
         max_retries=max_retries
     }
 
-    call ngsderive.infer_strandedness { input:
+    call ngsderive.strandedness as ngsderive_strandedness { input:
         bam=alignment_post.out_bam,
         bam_index=alignment_post.bam_index,
-        gtf=gtf,
+        gene_model=gtf,
         max_retries=max_retries
     }
 
     String htseq_strandedness = if (provided_strandedness != "")
         then htseq_strandedness_map[provided_strandedness]
-        else htseq_strandedness_map[infer_strandedness.strandedness]
+        else htseq_strandedness_map[ngsderive_strandedness.strandedness]
 
     call htseq.count as htseq_count { input:
         bam=alignment_post.out_bam,
@@ -116,7 +116,7 @@ workflow rnaseq_core {
         File star_log = alignment.star_log
         File bigwig = deeptools_bam_coverage.bigwig
         File feature_counts = htseq_count.feature_counts
-        File inferred_strandedness = infer_strandedness.strandedness_file
-        String inferred_strandedness_string = infer_strandedness.strandedness
+        File inferred_strandedness = ngsderive_strandedness.strandedness_file
+        String inferred_strandedness_string = ngsderive_strandedness.strandedness
     }
 }

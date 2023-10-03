@@ -123,7 +123,7 @@ workflow make_qc_reference {
     Array[File] empty_array = []  # this structure is required by the WDL v1.1 spec
     if (custom_fastas != empty_array) {
         call kraken2.create_library_from_fastas { input:
-            fastas=custom_fastas,
+            fastas_gz=custom_fastas,
             protein=protein,
             max_retries=max_retries
         }

@@ -1,4 +1,3 @@
-
 - name: build_star_db
   tags:
     - miniwdl

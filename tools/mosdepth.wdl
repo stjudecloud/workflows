@@ -5,8 +5,26 @@
 version 1.1
 
 task coverage {
+    # TODO not all options exposed
     meta {
         description: "This WDL task wraps the Mosdepth tool for calculating coverage"
+        outputs: {
+            summary: "A summary of mean depths per chromosome and within specified regions per chromosome"
+            global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome."
+            region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by `coverage_bed` that were covered for at least a given coverage value"
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to calculate coverage for"
+        bam_index: "BAM index file corresponding to the input BAM"
+        coverage_bed: "BED file to pass to the `-b` flag of `mosdepth`. This will restrict coverage analysis to regions defined by the BED file."
+        prefix: "Prefix for the `mosdepth` report files. The extensions `.mosdepth.summary.txt`, `.mosdepth.global.dist.txt` and `.mosdepth.region.dist.txt` will be added."
+        use_fast_mode: "Use Mosdepth's 'fast mode'? This enables the `-x` flag."
+        min_mapping_quality: "Minimum mapping quality to pass to the `-Q` flag of `mosdepth`"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {

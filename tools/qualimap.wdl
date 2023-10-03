@@ -5,78 +5,21 @@
 
 version 1.1
 
-task bamqc {
-    meta {
-        description: "*[Deprecated]* This WDL task runs QualiMap's bamqc tool on the input BAM file. This task has been deprecated due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to run qualimap bamqc on"
-    }
-
-    input {
-        File bam
-        String prefix = basename(bam, ".bam")
-        Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 32
-        Int modify_disk_size_gb = 0
-        Int max_retries = 1
-    }
-
-    String out_directory = prefix + '.qualimap_bamqc_results'
-    String out_tar_gz = out_directory + ".tar.gz"
-
-    Int java_heap_size = ceil(memory_gb * 0.9)
-
-    Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
-
-    command <<<
-        set -euo pipefail
-        
-        n_cores=~{ncpu}
-        if ~{use_all_cores}; then
-            n_cores=$(nproc)
-        fi
-        
-        qualimap bamqc -bam ~{bam} \
-            -outdir ~{out_directory} \
-            -nt "$n_cores" \
-            -nw 400 \
-            --java-mem-size=~{java_heap_size}g
-        
-        # Check if qualimap succeeded
-        if [ ! -d "~{out_directory}/raw_data_qualimapReport/" ]; then
-            exit 42
-        fi
-
-        tar -czf ~{out_tar_gz} ~{out_directory}
-    >>>
-
-    output {
-        File results = out_tar_gz
-    }
-
-    runtime {
-        cpu: ncpu
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
-        maxRetries: max_retries
-    }
-}
-
 task rnaseq {
     meta {
         description: "This WDL task generates runs QualiMap's rnaseq tool on the input BAM file. Note that we don't expose the `-p` parameter. This is used to set strandedness protocol of the sample, however in practice it only disables certain calculations. We do not expose the parameter so that the full suite of calculations is always performed."
+        outputs: {
+            raw_summary: "Raw text summary of QualiMap's results. Can be parsed by MultiQC."
+            raw_coverage: "Raw text of QualiMap's coverage analysis results. Can be parsed by MultiQC."
+            results: "Gzipped tar archive of all QualiMap output files"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file to run qualimap rnaseq on"
         gtf: "GTF features file. Gzipped or uncompressed."
         prefix: "Prefix for the results directory and output tarball. The extension `.qualimap_rnaseq_results.tar.gz` will be added."
-        name_sorted: "Is the BAM name sorted? Qualimap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before Qualimap and setting this parameter to true."
+        name_sorted: "Is the BAM name sorted? QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to true."
         paired_end: "Is the BAM paired end?"
         memory_gb: "RAM to allocate for task"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -139,6 +82,69 @@ task rnaseq {
     }
 
     runtime {
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        docker: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
+        maxRetries: max_retries
+    }
+}
+
+task bamqc {
+    meta {
+        description: "**[Deprecated]** This WDL task runs QualiMap's bamqc tool on the input BAM file. This task has been deprecated due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
+        deprecated: true
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to run qualimap bamqc on"
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        Boolean use_all_cores = false
+        Int ncpu = 1
+        Int memory_gb = 32
+        Int modify_disk_size_gb = 0
+        Int max_retries = 1
+    }
+
+    String out_directory = prefix + '.qualimap_bamqc_results'
+    String out_tar_gz = out_directory + ".tar.gz"
+
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+        
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+        
+        qualimap bamqc -bam ~{bam} \
+            -outdir ~{out_directory} \
+            -nt "$n_cores" \
+            -nw 400 \
+            --java-mem-size=~{java_heap_size}g
+        
+        # Check if qualimap succeeded
+        if [ ! -d "~{out_directory}/raw_data_qualimapReport/" ]; then
+            exit 42
+        fi
+
+        tar -czf ~{out_tar_gz} ~{out_directory}
+    >>>
+
+    output {
+        File results = out_tar_gz
+    }
+
+    runtime {
+        cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         docker: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'

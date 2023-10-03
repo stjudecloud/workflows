@@ -1,6 +1,6 @@
 {
-    "read_one_fastqs": ["tests/tools/input/test_R1.fq.gz"],
-    "read_two_fastqs": ["tests/tools/input/test_R2.fq.gz"],
+    "read_one_fastqs_gz": ["tests/tools/input/test_R1.fq.gz"],
+    "read_two_fastqs_gz": ["tests/tools/input/test_R2.fq.gz"],
     "star_db_tar_gz": "tests/tools/input/star_db.tar.gz",
     "prefix": "test",
     "read_groups": "ID:test"
