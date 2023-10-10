@@ -8,7 +8,7 @@ The simplest solution for this was to first pass exactly what would be passed
 to STAR into this program, sort it correctly, and write the reordered
 arguments out to files which can be supplied to STAR via the `cat` command.
 """
-
+# TODO relax checks if only 1 RG passed
 import argparse
 import os
 from typing import List, Tuple
