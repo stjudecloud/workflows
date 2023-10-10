@@ -7,12 +7,19 @@ version 1.1
 
 task download {
     meta {
-        description: "This WDL task uses wget to download a file from a remote URL to the local filesystem" 
+        description: "Uses wget to download a file from a remote URL to the local filesystem"
+        outputs: {
+            downloaded_file: "File downloaded from provided URL"
+        }
     }
 
     parameter_meta {
         url: "URL of the file to download"
         outfile_name: "Name of the output file"
+        disk_size_gb: "Disk space to allocate for task, specified in GB"
+        md5sum: "Optional md5sum to check against downloaded file. Recommended to use in order to catch corruption or an unintentional file swap."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -49,18 +56,25 @@ task download {
 
 task get_read_groups {
     meta {
-        description: "This WDL task is a utility to get read group information from a BAM file and write it out to as a string"
+        description: "Gets read group information from a BAM file and writes it out to as a string"
+        outputs: {
+            read_groups_file: "File containing parsed read group information"
+        }
     }
 
     parameter_meta {
         bam: "Input BAM format file to get read groups from"
+        format_for_star: "Format read group information for the STAR aligner (true) or just output @RG lines of the header without further processing (false)?"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
+        Boolean format_for_star = true
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Boolean format_for_star = true
         Int max_retries = 1
     }
 
@@ -83,13 +97,13 @@ task get_read_groups {
     >>>
 
     output {
-        File read_groups_file = "read_groups.txt"
+        File read_groups_file = "read_groups.txt"  # TODO change output to String type (or Array[String])
     }
 
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
+        docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
 }
@@ -97,6 +111,21 @@ task get_read_groups {
 task split_string {
     # Currently (v1.1) no way to do this using the WDL standard library.
     # Revisit task in future version updates, can hopefully be replaced.
+    meta {
+        description: "Split a string into an array of strings based on a delimiter"
+        outputs: {
+            split_string: "Split string as an array"
+        }
+    }
+
+    parameter_meta: {
+        input_string: "String to split on occurences of `delimiter`"
+        delimiter: "Delimiter on which to split `input_string`"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        disk_size_gb: "Disk space to allocate for task, specified in GB"
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     input {
         String input_string
         String delimiter = " , "
@@ -124,9 +153,18 @@ task split_string {
 }
 
 task calc_gene_lengths {
+    meta {
+        description: "Calculate gene lengths from a GTF feature file"  # TODO explain algorithm
+        outputs: {
+            gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
+        }
+    }
+
     parameter_meta {
         gtf: "GTF feature file"
         outfile_name: "Name of the gene lengths file"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         max_retries: "Number of times to retry in case of failure"
     }
 
@@ -206,92 +244,33 @@ END
     }
 }
 
-task qc_summary {
-    # TODO not sure why I implemented as a JSON. Wouldn't TSV be easier to work with? Talk to Delaram/David
-    #   Delaram+David okayed a switch to TSV
-    meta {
-        description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
-    }
-
-    input {
-        File multiqc_tar_gz
-        String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
-        Int memory_gb = 4
-        Int disk_size_gb = 10
-        Int max_retries = 1
-    }
-
-    String sample_name = basename(multiqc_tar_gz, ".multiqc.tar.gz")
-
-    command <<<
-        set -euo pipefail
-
-        tar -xzf "~{multiqc_tar_gz}" --no-same-owner
-        gen_stats_file=~{sample_name}.multiqc/multiqc_data/multiqc_general_stats.txt
-
-        TOTAL_READS=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-total_reads $gen_stats_file | tail -n 1 | awk '{ printf("%.0f", $1) }')
-        PERCENT_ALIGNED=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-percentage_aligned $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
-        MEAN_COVERAGE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-mean_coverage $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
-        INSERT_SIZE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-median_insert_size $gen_stats_file | tail -n 1)
-        MEAN_GC_CONTENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-avg_gc $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
-        READ_LENGTH=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-consensusreadlength $gen_stats_file | tail -n 1)
-        PLATFORM=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-instrument $gen_stats_file | tail -n 1)
-
-        THIRTYX_PERCENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-30_x_pc $gen_stats_file | tail -n 1)
-        DUP_PERCENT=$(csvcut -t -c FastQC_mqc-generalstats-fastqc-percent_duplicates $gen_stats_file | tail -n 1)
-
-        STRANDEDNESS=$({ csvcut -t -c ngsderive_mqc-generalstats-ngsderive-predicted $gen_stats_file || echo "Not Applicable" ; } | tail -n 1)
-
-        jq -n \
-            --arg TOTAL_READS "$TOTAL_READS" \
-            --arg PERCENT_ALIGNED "$PERCENT_ALIGNED" \
-            --arg MEAN_COVERAGE "$MEAN_COVERAGE" \
-            --arg INSERT_SIZE "$INSERT_SIZE" \
-            --arg MEAN_GC_CONTENT "$MEAN_GC_CONTENT" \
-            --arg READ_LENGTH "$READ_LENGTH" \
-            --arg PLATFORM "$PLATFORM" \
-            --arg THIRTYX_PERCENT "$THIRTYX_PERCENT" \
-            --arg DUP_PERCENT "$DUP_PERCENT" \
-            --arg STRANDEDNESS "$STRANDEDNESS" \
-            '{
-                total_reads: ($TOTAL_READS | tonumber),
-                percent_aligned: ($PERCENT_ALIGNED | tonumber),
-                mean_coverage: ($MEAN_COVERAGE | tonumber),
-                median_insert_size: ($INSERT_SIZE | tonumber),
-                mean_percent_GC: ($MEAN_GC_CONTENT | tonumber),
-                inferred_read_length: ($READ_LENGTH | tonumber),
-                inferred_sequencing_platform: $PLATFORM,
-                percent_thirtyX_coverage: ($THIRTYX_PERCENT | tonumber),
-                percent_duplicate: ($DUP_PERCENT | tonumber),
-                inferred_strandedness: $STRANDEDNESS 
-            }' > ~{outfile_name}
-    >>>
-
-    output {
-        File summary = "~{outfile_name}"
-    }
-
-    runtime {
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
-    }
-}
-
 task compression_integrity {
+    meta {
+        description: "Checks the compression integrity of a bgzipped file"
+        outputs: {
+            check: "Dummy output to indicate success and to enable call-caching"
+        }
+    }
+
+    parameter_meta {
+        bgzipped_file: "Input bgzipped file to check integrity of"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     input {
-        File bam
+        File bgzipped_file
         Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
 
-    Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Float file_size = size(bgzipped_file, "GiB")
+    Int disk_size_gb = ceil(file_size) + 10 + modify_disk_size_gb
 
     command <<<
-        bgzip -t ~{bam}
+        bgzip -t ~{bgzipped_file}
     >>>
 
     output {
@@ -301,12 +280,30 @@ task compression_integrity {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
+        docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
 }
 
 task add_to_bam_header {
+    # Should this be in samtools.wdl instead of util.wdl?
+    meta {
+        description: "Adds another line of text to the bottom of a BAM header"
+        outputs: {
+            updated_header: "The new header after modifications"  # TODO is this a lie? It would be missing a PG line from `reheader`. Why do we need this output?
+            header_lines: "Each line of the header is an entry in this array"  # Same question about needing this output
+            reheadered_bam: "The BAM after its header has been modified"
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file which will have its header added to"
+        additional_header: "A string to add as a new line in the BAM header. No format checking is done, so please ensure you do not invalidate your BAM with this task. Add only spec compliant entries to the header."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     input {
         File bam
         String additional_header
@@ -322,6 +319,7 @@ task add_to_bam_header {
     String outfile_name = prefix + ".bam"
 
     command <<<
+        # TODO isn't there a builtin samtools command for this?
         samtools view -H ~{bam} > header.sam
         echo "~{additional_header}" >> header.sam
         samtools reheader -P header.sam ~{bam} > ~{outfile_name}
@@ -336,7 +334,7 @@ task add_to_bam_header {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/samtools:1.16.1--h6899075_1'
+        docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
 }
@@ -344,6 +342,16 @@ task add_to_bam_header {
 task unpack_tarball {
     meta {
         description: "Accepts a `.tar.gz` archive and converts it into a flat array of files. Any directory structure of the archive is ignored."
+        outputs: {
+            tarball_contents: "An array of files found in the input tarball"
+        }
+    }
+
+    parameter_meta {
+        tarball: "A `.tar.gz` archive to unpack into individual files"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -377,10 +385,21 @@ task unpack_tarball {
 }
 
 task make_coverage_regions_beds {
-    # TODO should this be customizable?
-    #   Yes. Now to implement at some point.
+    # TODO make this customizable
     meta {
         description: "This WDL task takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
+        outputs: {
+            bed: "Input GTF converted into BED format using the `gtf2bed` program"
+            exon_bed: "3 column BED file corresponding to all 'exons' found in the input GTF"
+            CDS_bed: "3 column BED file corresponding to all 'CDS' regions found in the input GTF"
+        }
+    }
+
+    parameter_meta {
+        gtf: "GTF feature file from which to derive coverage regions BED files"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -422,7 +441,19 @@ task make_coverage_regions_beds {
 
 task global_phred_scores {
     meta {
-        description: "Calculates statistics about PHRED scores of the input BAM."
+        description: "Calculates statistics about PHRED scores of the input BAM"
+        outputs: {
+            phred_scores: "Headered TSV file containing PHRED score statistics"
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to calculate PHRED score statistics for"
+        prefix: "Prefix for the output TSV file. The extension `.global_PHRED_scores.tsv` will be added."
+        fast_mode: "Enable fast mode (true) or calculate statistics for *_every_* base in the BAM (false)?"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -451,9 +482,9 @@ import pysam  # lint-check: ignore
 bam_path = os.environ["BAM"]
 bam = pysam.AlignmentFile(bam_path, "rb")
 
-only_mid = os.environ["FAST_MODE"] == "true"
+fast_mode = os.environ["FAST_MODE"] == "true"
 
-if not only_mid:
+if not fast_mode:
     tot_quals = defaultdict(lambda: 0)
     mapped_quals = defaultdict(lambda: 0)
     unmapped_quals = defaultdict(lambda: 0)
@@ -472,7 +503,7 @@ for read in bam:
         continue
 
     cur_quals = read.query_alignment_qualities  # array of phred scores
-    if not only_mid:
+    if not fast_mode:
         for qual in cur_quals:
             tot_quals[qual] += 1
             if read.is_unmapped:
@@ -504,7 +535,7 @@ outfile = open(prefix + ".global_PHRED_scores.tsv", "w")
 
 # print header
 header = ["sample"]
-if not only_mid:
+if not fast_mode:
     header += [
         "total average",
         "total median",
@@ -584,7 +615,7 @@ def stats_from_dict(score_dict):
     return avg, median, stdev
 
 
-if not only_mid:
+if not fast_mode:
     tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
     print(f"{tot_avg}", file=outfile, end="\t")
     print(f"{tot_median}", file=outfile, end="\t")
@@ -664,6 +695,79 @@ END
 
     output {
         File phred_scores = "~{outfile_name}"
+    }
+
+    runtime {
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        docker: 'ghcr.io/stjudecloud/util:1.3.0'
+        maxRetries: max_retries
+    }
+}
+
+task qc_summary {
+    # TODO not sure why I implemented as a JSON. Wouldn't TSV be easier to work with? Talk to Delaram/David
+    #   Delaram+David okayed a switch to TSV
+    meta {
+        description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
+    }
+
+    input {
+        File multiqc_tar_gz
+        String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
+        Int memory_gb = 4
+        Int disk_size_gb = 10
+        Int max_retries = 1
+    }
+
+    String sample_name = basename(multiqc_tar_gz, ".multiqc.tar.gz")
+
+    command <<<
+        set -euo pipefail
+
+        tar -xzf "~{multiqc_tar_gz}" --no-same-owner
+        gen_stats_file=~{sample_name}.multiqc/multiqc_data/multiqc_general_stats.txt
+
+        TOTAL_READS=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-total_reads $gen_stats_file | tail -n 1 | awk '{ printf("%.0f", $1) }')
+        PERCENT_ALIGNED=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-percentage_aligned $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
+        MEAN_COVERAGE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-mean_coverage $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
+        INSERT_SIZE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-median_insert_size $gen_stats_file | tail -n 1)
+        MEAN_GC_CONTENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-avg_gc $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
+        READ_LENGTH=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-consensusreadlength $gen_stats_file | tail -n 1)
+        PLATFORM=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-instrument $gen_stats_file | tail -n 1)
+
+        THIRTYX_PERCENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-30_x_pc $gen_stats_file | tail -n 1)
+        DUP_PERCENT=$(csvcut -t -c FastQC_mqc-generalstats-fastqc-percent_duplicates $gen_stats_file | tail -n 1)
+
+        STRANDEDNESS=$({ csvcut -t -c ngsderive_mqc-generalstats-ngsderive-predicted $gen_stats_file || echo "Not Applicable" ; } | tail -n 1)
+
+        jq -n \
+            --arg TOTAL_READS "$TOTAL_READS" \
+            --arg PERCENT_ALIGNED "$PERCENT_ALIGNED" \
+            --arg MEAN_COVERAGE "$MEAN_COVERAGE" \
+            --arg INSERT_SIZE "$INSERT_SIZE" \
+            --arg MEAN_GC_CONTENT "$MEAN_GC_CONTENT" \
+            --arg READ_LENGTH "$READ_LENGTH" \
+            --arg PLATFORM "$PLATFORM" \
+            --arg THIRTYX_PERCENT "$THIRTYX_PERCENT" \
+            --arg DUP_PERCENT "$DUP_PERCENT" \
+            --arg STRANDEDNESS "$STRANDEDNESS" \
+            '{
+                total_reads: ($TOTAL_READS | tonumber),
+                percent_aligned: ($PERCENT_ALIGNED | tonumber),
+                mean_coverage: ($MEAN_COVERAGE | tonumber),
+                median_insert_size: ($INSERT_SIZE | tonumber),
+                mean_percent_GC: ($MEAN_GC_CONTENT | tonumber),
+                inferred_read_length: ($READ_LENGTH | tonumber),
+                inferred_sequencing_platform: $PLATFORM,
+                percent_thirtyX_coverage: ($THIRTYX_PERCENT | tonumber),
+                percent_duplicate: ($DUP_PERCENT | tonumber),
+                inferred_strandedness: $STRANDEDNESS 
+            }' > ~{outfile_name}
+    >>>
+
+    output {
+        File summary = "~{outfile_name}"
     }
 
     runtime {

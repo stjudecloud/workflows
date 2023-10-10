@@ -29,6 +29,13 @@ version 1.1
 import "../../tools/util.wdl"
 
 workflow calculate_gene_lengths {
+    meta {
+        description: "Calculate gene lengths from a GTF feature file"  # TODO explain algorithm
+        outputs: {
+            gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
+        }
+    }
+
     parameter_meta {
         gtf: "GTF feature file"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."

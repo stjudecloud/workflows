@@ -41,6 +41,68 @@ import "../../tools/util.wdl"
 import "./markdups-post.wdl" as markdups_post_wf
 
 workflow quality_check {
+    meta {
+        description: "Performs comprehensive quality checks, aggregating all analyses and metrics into a final MultiQC report."
+        outputs: {
+            bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file"
+            validate_sam_file: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged."
+            mark_duplicates_metrics: {
+                description: "The METRICS_FILE result of `picard MarkDuplicates`"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics"
+            }
+            flagstat_report: "`samtools flagstat` STDOUT redirected to a file. If `mark_duplicates` is `true`, then this result will be generated from the duplicate marked BAM."
+            fastqc_results: "A gzipped tar archive of all FastQC output files"
+            instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file"
+            read_length_file: "TSV file containing the `ngsderive readlen` report for the input BAM file"
+            inferred_encoding: "TSV file containing the `ngsderive encoding` report for the input BAM file"
+            alignment_metrics: {
+                description: "The text file output of `picard CollectAlignmentSummaryMetrics`"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics"
+            }
+            alignment_metrics_pdf: "The PDF file output of `picard CollectAlignmentSummaryMetrics`"
+            gc_bias_metrics: {
+                description: "The full text file output of `picard CollectGcBiasMetrics`"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasDetailMetrics"
+            }
+            gc_bias_metrics_summary: {
+                description: "The summary text file output of `picard CollectGcBiasMetrics`"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasSummaryMetrics"
+            }
+            gc_bias_metrics_pdf: "The PDF file output of `picard CollectGcBiasMetrics`"
+            insert_size_metrics: {
+                description: "The text file output of `picard CollectInsertSizeMetrics`. If `mark_duplicates` is `true`, then this result will be generated from the duplicate marked BAM."
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics"
+            }
+            insert_size_metrics_pdf: "The PDF file output of `picard CollectInsertSizeMetrics`. If `mark_duplicates` is `true`, then this result will be generated from the duplicate marked BAM."
+            quality_score_distribution_txt: "The text file output of `picard QualityScoreDistribution`"
+            quality_score_distribution_pdf: "The PDF file output of `picard QualityScoreDistribution`"
+            phred_scores: "Headered TSV file containing PHRED score statistics"
+            kraken_report: {
+                description: "A Kraken2 summary report"
+                external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#sample-report-output-format"
+            }
+            mosdepth_global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome."
+            mosdepth_global_summary: "A summary of mean depths per chromosome"
+            mosdepth_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file."
+            mosdepth_region_summary: "A summary of mean depths per chromosome and within specified regions per chromosome. There will be one file in this array for each `coverage_beds` input file."
+            multiqc_report: "A gzipped tar archive of all MultiQC output files"
+            orig_read_count: "A TSV report containing the original read count before subsampling"
+            kraken_sequences: {
+                description: "Detailed Kraken2 output that has been gzipped"
+                external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#standard-kraken-output-format"
+            }
+            mosdepth_dups_marked_global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`)."
+            mosdepth_dups_marked_global_summary: "A summary of mean depths per chromosome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`)."
+            mosdepth_dups_marked_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`)."
+            mosdepth_dups_marked_region_summary: "A summary of mean depths per chromosome and within specified regions per chromosome. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`)."
+            inferred_strandedness: "TSV file containing the `ngsderive strandedness` report"
+            qualimap_rnaseq_results: "Gzipped tar archive of all QualiMap output files"
+            junction_summary: "TSV file containing the `ngsderive junction-annotation` summary"
+            junctions: "TSV file containing a detailed list of annotated junctions"
+            IntermediateFiles: "Any and all files produced as intermediate during pipeline processing. Only output if `output_intermediate_files = true`."
+        }
+    }
+
     parameter_meta {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
@@ -96,7 +158,7 @@ workflow quality_check {
     call md5sum.compute_checksum { input: file=bam, max_retries=max_retries }
 
     call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call util.compression_integrity { input: bam=bam, max_retries=max_retries }
+    call util.compression_integrity { input: bgzipped_file=bam, max_retries=max_retries }
 
     if (subsample_n_reads > 0) {
         call samtools.subsample { input:
@@ -408,6 +470,24 @@ workflow quality_check {
 }
 
 task parse_input {
+    meta {
+        description: "Parses and validates the `quality_check` workflow's provided inputs"
+        outputs: {
+            check: "Dummy output to indicate success and to enable call-caching"
+            labels: "An array of labels to use on th result coverage files associated with each coverage BED"
+        }
+    }
+
+    parameter_meta {
+        coverage_labels: "An array of equal length to `coverage_beds_len` which determines the prefix label applied to coverage output files. If an empty array is supplied, defaults of `regions1`, `regions2`, etc. will be used."
+        input_molecule: "Must be `DNA` or `RNA`"
+        gtf_provided: "Was a GTF supplied by the user? Must be `true` if `input_molecule = RNA`."
+        coverage_beds_len: "Length of the provided `coverage_beds` array"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        disk_size_gb: "Disk space to allocate for task, specified in GB"
+        max_retries: "Number of times to retry in case of failure"
+    }
+
     input {
         Array[String] coverage_labels
         String input_molecule
@@ -469,7 +549,7 @@ struct IntermediateFiles {
     File? read_one_fastq_gz
     File? read_two_fastq_gz
     File? singleton_reads_fastq_gz
-    File? interleaved_reads_fastq_gz
+    File? interleaved_reads_fastq_gz  # TODO this will always be empty? Verify and delete
     File? duplicate_marked_bam
     File? duplicate_marked_bam_index
     File? duplicate_marked_bam_md5

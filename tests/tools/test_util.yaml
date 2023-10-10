@@ -66,7 +66,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run -d test-output/. --task compression_integrity --copy-input-files tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task compression_integrity --copy-input-files tools/util.wdl bgzipped_file="tests/tools/input/test.bwa_aln_pe.bam"
   stdout:
     contains:
       - "passed"

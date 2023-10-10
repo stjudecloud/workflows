@@ -1,6 +1,6 @@
 ## # BWA DB build
 ##
-## This WDL workflow generates a set of genome reference files usable by the BWA aligner from an input reference file in FASTA format.  
+## This WDL workflow generates a set of genome reference files usable by the BWA aligner from an input reference file in FASTA format.
 ##
 ## ### Output
 ##
@@ -37,6 +37,14 @@ import "../../tools/bwa.wdl"
 import "../../tools/util.wdl"
 
 workflow bwa_db_build {
+    meta {
+        description: "Generates a set of genome reference files usable by the BWA aligner from an input reference file in FASTA format."
+        outputs: {
+            reference_fa: "FASTA format reference file used to generate `bwa_db_tar_gz`"
+            bwa_db_tar_gz: "Gzipped tar archive of the BWA reference files. Files are at the root of the archive."
+        }
+    }
+
     parameter_meta {
         reference_fa_url: "URL to retrieve the reference FASTA file from."
         reference_fa_name: "Name of output reference FASTA file"

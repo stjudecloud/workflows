@@ -89,7 +89,7 @@ task validate_bam {
         description: "This WDL task validates the input BAM file for correct formatting using Picard."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360057440611-ValidateSamFile-Picard-"
         outputs: {
-            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are produced."
+            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged."
             validated_bam: "The unmodified input BAM after it has been succesfully validated"
         }
     }

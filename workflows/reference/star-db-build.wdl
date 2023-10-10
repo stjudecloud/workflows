@@ -40,6 +40,15 @@ import "../../tools/star.wdl"
 import "../../tools/util.wdl"
 
 workflow star_db_build {
+    meta {
+        description: "Builds a database suitable for running the STAR alignment program"
+        outputs: {
+            reference_fa: "FASTA format reference file"
+            gtf: "GTF feature file"
+            star_db_tar_gz: "A gzipped TAR file containing the STAR reference files"
+        }
+    }
+
     parameter_meta {
         reference_fa_url: "URL to retrieve the reference FASTA file from"
         reference_fa_name: "Name of output reference FASTA file"
@@ -48,6 +57,8 @@ workflow star_db_build {
         reference_fa_md5: "Expected md5sum of reference FASTA file"
         gtf_md5: "Expected md5sum of GTF file"
         max_retries: "Number of times to retry failed steps. Overrides task level defaults."
+        reference_fa_disk_size_gb: "Disk space to allocate the FASTA download task"
+        gtf_disk_size_gb: "Disk space to allocate the GTF download task"
     }
 
     input {
@@ -57,9 +68,9 @@ workflow star_db_build {
         String gtf_name
         String? reference_fa_md5
         String? gtf_md5
+        Int? max_retries
         Int reference_fa_disk_size_gb = 10
         Int gtf_disk_size_gb = 10
-        Int? max_retries
     }
 
     call util.download as reference_download { input:

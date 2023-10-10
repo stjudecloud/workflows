@@ -10,6 +10,15 @@ import "../../tools/samtools.wdl"
 import "https://raw.githubusercontent.com/stjude/XenoCP/4.0.0-alpha/wdl/workflows/xenocp.wdl" as xenocp_wf
 
 workflow alignment_post {
+    meta {
+        description: "Runs a series of standard processing tools that should immediately follow alignment, regardless of data-type"
+        outputs: {
+            processed_bam: "Input BAM after being transformed by standard processing"
+            bam_index: "BAI index associated with `processed_bam`"
+            bam_checksum:  "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file"
+        }
+    }
+
     parameter_meta {
         bam: "Input BAM format file to process"
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
@@ -79,7 +88,7 @@ workflow alignment_post {
     call md5sum.compute_checksum { input: file=aligned_bam, max_retries=max_retries }
 
     output {
-        File out_bam = aligned_bam
+        File processed_bam = aligned_bam
         File bam_index = aligned_bam_index
         File bam_checksum = compute_checksum.md5sum
     }

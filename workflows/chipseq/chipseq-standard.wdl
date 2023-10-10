@@ -1,6 +1,6 @@
 ## # ChIP-Seq Standard
 ##
-## This WDL workflow runs the BWA ChIP-seq alignment workflow for St. Jude Cloud.
+## This WDL workflow runs the BWA ChIP-Seq alignment workflow for St. Jude Cloud.
 ##
 ## The workflow takes an input BAM file and splits it into FASTQ files for each read in the pair.
 ## The read pairs are then passed through BWA alignment to generate a BAM file.
@@ -40,7 +40,18 @@ import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 
+# TODO can we use `alignment-post.wdl`?
 workflow chipseq_standard {
+    meta {
+        description: "Runs the BWA ChIP-Seq alignment workflow for St. Jude Cloud."
+        outputs: {
+            harmonized_bam: "A harmonized BWA aligned ChIP-Seq BAM file"
+            bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file"
+            bam_index: "BAI index file associated with `harmonized_bam`"
+            bigwig: "BigWig format coverage file"
+        }
+    }
+
     parameter_meta {
         bam: "Input BAM format file to realign with bowtie"
         bowtie_indexes: "Database of v1 reference files for the bowtie aligner. Can be generated with https://github.com/stjude/seaseq/blob/master/workflows/tasks/bowtie.wdl. [*.ebwt]"
