@@ -1,7 +1,5 @@
-## # SAMtools
-##
-## This WDL file wraps the [SAMtools package](http://samtools.sourceforge.net/).
-## SAMtools provides utlities for manipulating SAM format sequence alignments.
+## [Homepage](http://samtools.sourceforge.net/).
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

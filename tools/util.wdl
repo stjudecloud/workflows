@@ -1,7 +1,5 @@
 ## # Utilities
-##
-## This WDL file includes custom scripts to parse and reformat 
-## task output as part of a workflow as well as generic tasks.
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

@@ -1,6 +1,5 @@
-## # ngsderive
-##
-## This WDL file wraps the [ngsderive package](https://github.com/stjudecloud/ngsderive)
+## [Homepage](https://github.com/stjudecloud/ngsderive)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

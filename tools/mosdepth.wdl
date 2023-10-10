@@ -1,6 +1,5 @@
-## # Mosdepth
-##
-## This WDL file wraps the [mosdepth tool](https://github.com/brentp/mosdepth).
+## [Homepage](https://github.com/brentp/mosdepth)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

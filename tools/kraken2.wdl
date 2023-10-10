@@ -1,6 +1,5 @@
-## # Kraken2
-##
-## Methods for bootstrapping and running [Kraken2](https://github.com/DerrickWood/kraken2)
+## [Homepage](https://github.com/DerrickWood/kraken2)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

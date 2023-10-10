@@ -1,6 +1,4 @@
-## # Alignment Post
-##
-## TODO write something here
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

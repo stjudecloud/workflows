@@ -1,7 +1,5 @@
-## # STAR
-##
-## This WDL file wraps the [STAR aligner](https://github.com/alexdobin/STAR).
-## STAR is an RNA-Seq aligner.
+## [Homepage](https://github.com/alexdobin/STAR).
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

@@ -1,7 +1,5 @@
-## # QualiMap
-##
-## This WDL file wraps the [QualiMap](http://qualimap.bioinfo.cipf.es/) tool.
-## QualiMap computes metrics to facilitate evaluation of sequencing data. 
+## [Homepage](http://qualimap.bioinfo.cipf.es/)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

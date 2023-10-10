@@ -1,7 +1,5 @@
-## # FastQC
-##
-## This WDL file wraps the [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) tool.
-## FastQC generates quality control metrics for sequencing pipelines. 
+## [Homepage](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

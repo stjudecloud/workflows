@@ -1,7 +1,5 @@
-## # HTSeq
-##
-## This WDL file wraps the [htseq](https://github.com/htseq/htseq) tool.
-## HTSeq is a Python library for analyzing sequencing data.
+## [Homepage](https://github.com/htseq/htseq)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

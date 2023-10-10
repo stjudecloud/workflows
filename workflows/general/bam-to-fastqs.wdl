@@ -1,36 +1,4 @@
-## # BAM to FASTQs
-##
-## This WDL workflow converts an input BAM file to a set of FASTQ files for read 1 and read 2.
-## It performs QC checks along the way to validate the input and output.
-##
-## ### Output:
-##
-## read1s
-## : an array of files with the first read in the pair
-##
-## read2s
-## : an array of files with the second read in the pair
-##
-## ## LICENSING:
-## 
-## #### MIT License
-##
-## Copyright 2020-Present St. Jude Children's Research Hospital
-##
-## Permission is hereby granted, free of charge, to any person obtaining a copy of this
-## software and associated documentation files (the "Software"), to deal in the Software
-## without restriction, including without limitation the rights to use, copy, modify, merge,
-## publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
-## to whom the Software is furnished to do so, subject to the following conditions:
-##
-## The above copyright notice and this permission notice shall be included in all copies or
-## substantial portions of the Software.
-##
-## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-## BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-## NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

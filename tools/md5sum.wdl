@@ -1,7 +1,6 @@
-## Description:
-##
-## This WDL file wraps the md5sum tool from the [GNU core utilities](https://github.com/coreutils/coreutils).
-## md5sum is a utility for generating and verifying MD5 hashes.
+## [Homepage](https://github.com/coreutils/coreutils)
+# SPDX-License-Identifier: MIT
+# TODO why isn't this in util?
 
 version 1.1
 

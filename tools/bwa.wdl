@@ -1,7 +1,5 @@
-## # BWA
-##
-## This WDL file wraps [BWA](https://github.com/lh3/bwa).
-## BWA aligns sequencing reads to a reference genome.
+## [Homepage](https://github.com/lh3/bwa)
+# SPDX-License-Identifier: MIT
 # TODO there are probably BWA params we can expose. Have not checked
 
 version 1.1

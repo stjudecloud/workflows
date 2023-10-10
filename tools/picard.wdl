@@ -1,7 +1,5 @@
-## # Picard
-##
-## This WDL file wraps the [PicardTools library](https://broadinstitute.github.io/picard/).
-## PicardTools is a set of Java tools for manipulating sequencing data.
+## [Homepage](https://broadinstitute.github.io/picard/)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

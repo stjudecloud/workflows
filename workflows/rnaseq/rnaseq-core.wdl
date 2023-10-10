@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 version 1.1
 
 import "../../tools/deeptools.wdl"

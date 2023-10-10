@@ -1,7 +1,5 @@
-## # MultiQC
-##
-## This WDL file wraps the [MultiQC](https://multiqc.info/) tool.
-## MultiQC aggregates quality control results for bioinformatics.
+## [Homepage](https://multiqc.info/)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

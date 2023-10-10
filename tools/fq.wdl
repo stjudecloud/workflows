@@ -1,8 +1,5 @@
-## # FQ
-##
-## This WDL file wraps the [fq tool](https://github.com/stjude/fqlib).
-## The fq library provides methods for manipulating Illumina generated 
-## FASTQ files.
+## [Homepage](https://github.com/stjude-rust-labs/fq)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

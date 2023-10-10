@@ -1,6 +1,5 @@
-## # ESTIMATE
-##
-## This WDL file wraps the [ESTIMATE software package](https://bioinformatics.mdanderson.org/estimate/).
+## [Homepage](https://bioinformatics.mdanderson.org/estimate/)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 

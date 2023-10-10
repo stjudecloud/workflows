@@ -1,7 +1,5 @@
-## # Deeptools
-##
-## This WDL file wraps the [DeepTools](https://deeptools.readthedocs.io/en/develop/index.html) tool.
-## DeepTools is a suite of Python tools for analysis of high throughput sequencing analysis.
+## [Homepage](https://deeptools.readthedocs.io/en/develop/index.html)
+# SPDX-License-Identifier: MIT
 
 version 1.1
 
