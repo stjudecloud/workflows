@@ -5,7 +5,15 @@
 ## The read pairs are then passed through STAR alignment to generate a BAM file. The BAM is run
 ## through several QC steps. Quantification is done using htseq-count. 
 ##
-## TODO formatting help for array of structs
+## An example entry for `read_groups` might look like this:
+##    "rnaseq_standard_fastq.read_groups": [
+##        {
+##            "ID": "rg1",
+##            "PL": "ILLUMINA",
+##            "SM": "Sample",
+##            "LB": "Sample"
+##        }
+##    ],
 ##
 ## ## LICENSING
 ##
