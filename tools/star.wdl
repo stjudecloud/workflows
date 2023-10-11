@@ -7,7 +7,7 @@ version 1.1
 task build_star_db {
     meta {
         description: "This WDL task runs STAR's build command to generate a STAR format reference for alignment."
-        outputs {
+        outputs: {
             star_db: "A gzipped TAR file containing the STAR reference files. Suitable as the `star_db_tar_gz` input to the `alignment` task."
         }
     }
