@@ -1,14 +1,20 @@
 ## # RNA-Seq Standard from FASTQ
 ##
-## An example entry for `read_groups` might look like this:
-##    "rnaseq_standard_fastq.read_groups": [
-##        {
-##            "ID": "rg1",
-##            "PL": "ILLUMINA",
-##            "SM": "Sample",
-##            "LB": "Sample"
-##        }
-##    ],
+## An example input JSON entry for `read_groups` might look like this:
+## {
+##     ...
+##     "rnaseq_standard_fastq.read_groups": [
+##         {
+##             "ID": "rg1",
+##             "PI": 150,
+##             "PL": "ILLUMINA",
+##             "SM": "Sample",
+##             "LB": "Sample"
+##         }
+##     ],
+##     ...
+## }
+#
 # SPDX-License-Identifier: MIT
 # Copyright St. Jude Children's Research Hospital
 version 1.1
@@ -38,8 +44,9 @@ workflow rnaseq_standard_fastq {
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
         read_groups: {
-            description: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz` if non-zero. See top of file for help formatting your input JSON."  # TODO handle unknown RG case
-            tags {
+            description: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz` if non-zero. Only the `ID` field is required, and it must be unique for each read group defined. See top of file for help formatting your input JSON."  # TODO handle unknown RG case
+            external_help: "https://samtools.github.io/hts-specs/SAMv1.pdf"
+            fields: {
                 ID: "Read group identifier. Each Read Group must have a unique ID. The value of ID is used in the RG tags of alignment records."
                 BC: "Barcode sequence identifying the sample or library. This value is the expected barcode bases as read by the sequencing machine in the absence of errors. If there are several barcodes for the sample/library (e.g., one on each end of the template), the recommended implementation concatenates all the barcodes separating them with hyphens (`-`)."
                 CN: "Name of sequencing center producing the read."
@@ -174,7 +181,7 @@ workflow rnaseq_standard_fastq {
     }
 }
 
-# See https://samtools.github.io/hts-specs/SAMv1.pdf for definitions of each tag
+# See the `read_groups` `parameter_meta` for definitions of each field
 struct ReadGroup {
     String ID
     String? BC
@@ -185,7 +192,7 @@ struct ReadGroup {
     String? KS
     String? LB
     String? PG
-    String? PI
+    Int? PI
     String? PL
     String? PM
     String? PU
