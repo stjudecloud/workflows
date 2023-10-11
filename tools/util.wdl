@@ -117,7 +117,7 @@ task split_string {
         }
     }
 
-    parameter_meta: {
+    parameter_meta {
         input_string: "String to split on occurences of `delimiter`"
         delimiter: "Delimiter on which to split `input_string`"
         memory_gb: "RAM to allocate for task, specified in GB"

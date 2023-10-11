@@ -518,6 +518,7 @@ task parse_input {
     }
 }
 
+# TODO does this need documentation?
 struct IntermediateFiles {
     File? subsampled_bam
     File? subsampled_bam_index

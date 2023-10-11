@@ -727,6 +727,7 @@ task alignment {
     }
 }
 
+# TODO does this need documentation?
 struct SJ_motifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif
