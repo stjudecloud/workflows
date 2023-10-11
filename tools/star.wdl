@@ -727,7 +727,9 @@ task alignment {
     }
 }
 
-# TODO does this need documentation?
+# There are multiple Splice Junction motif arguments for STAR
+# that are all formatted the same. Use this struct for consistency.
+# See https://github.com/alexdobin/STAR/blob/2.7.10a/doc/STARmanual.pdf
 struct SJ_motifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif
