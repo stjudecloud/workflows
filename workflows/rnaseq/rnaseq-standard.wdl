@@ -94,7 +94,7 @@ workflow rnaseq_standard {
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
     call util.get_read_groups { input: bam=selected_bam, max_retries=max_retries }
-    String read_groups = read_string(get_read_groups.read_groups_file)
+    String read_groups = read_string(get_read_groups.read_groups_file)  # TODO what happens if no RG records?
     call bam_to_fastqs_wf.bam_to_fastqs { input:
         bam=selected_bam,
         paired_end=true,  # matches default but prevents user from overriding
