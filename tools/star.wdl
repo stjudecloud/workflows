@@ -392,31 +392,31 @@ task alignment {
         String? read_groups
         Array[File] read_two_fastqs_gz = []
         Array[Int] outSJfilterIntronMaxVsReadN = [50000, 100000, 200000]
-        SJ_motifs outSJfilterOverhangMin = SJ_motifs {
+        SJ_Motifs outSJfilterOverhangMin = SJ_Motifs {
             noncanonical_motifs: 30,
             GT_AG_and_CT_AC_motif: 12,
             GC_AG_and_CT_GC_motif: 12,
             AT_AC_and_GT_AT_motif: 12
         }
-        SJ_motifs outSJfilterCountUniqueMin = SJ_motifs {
+        SJ_Motifs outSJfilterCountUniqueMin = SJ_Motifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
             AT_AC_and_GT_AT_motif: 1
         }
-        SJ_motifs outSJfilterCountTotalMin = SJ_motifs {
+        SJ_Motifs outSJfilterCountTotalMin = SJ_Motifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
             AT_AC_and_GT_AT_motif: 1
         }
-        SJ_motifs outSJfilterDistToOtherSJmin = SJ_motifs {
+        SJ_Motifs outSJfilterDistToOtherSJmin = SJ_Motifs {
             noncanonical_motifs: 10,
             GT_AG_and_CT_AC_motif: 0,
             GC_AG_and_CT_GC_motif: 5,
             AT_AC_and_GT_AT_motif: 10
         }
-        SJ_motifs alignSJstitchMismatchNmax = SJ_motifs {
+        SJ_Motifs alignSJstitchMismatchNmax = SJ_Motifs {
             noncanonical_motifs: 0,
             GT_AG_and_CT_AC_motif: -1,
             GC_AG_and_CT_GC_motif: 0,
@@ -730,7 +730,7 @@ task alignment {
 # There are multiple Splice Junction motif arguments for STAR
 # that are all formatted the same. Use this struct for consistency.
 # See https://github.com/alexdobin/STAR/blob/2.7.10a/doc/STARmanual.pdf
-struct SJ_motifs {
+struct SJ_Motifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif
     Int GC_AG_and_CT_GC_motif
