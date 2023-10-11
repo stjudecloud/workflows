@@ -6,7 +6,7 @@
 ## But the tasks called below produce different results depending on whether the
 ## input BAM has been duplicate marked or not.
 # SPDX-License-Identifier: MIT
-
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/mosdepth.wdl"

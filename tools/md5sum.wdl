@@ -1,8 +1,10 @@
 ## [Homepage](https://github.com/coreutils/coreutils)
+#
 # SPDX-License-Identifier: MIT
-# TODO why isn't this in util?
-
+# Copyright St. Jude Children's Research Hospital
 version 1.1
+
+# TODO why isn't this in util?
 
 task compute_checksum {
     meta {

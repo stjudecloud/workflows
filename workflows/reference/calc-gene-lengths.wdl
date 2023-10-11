@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
+version 1.1
 
 # TODO should explain algorithm somewhere. Lots of different ways to calculate gene lengths
-
-version 1.1
 
 import "../../tools/util.wdl"
 
