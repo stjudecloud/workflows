@@ -25,7 +25,6 @@ def sort_fastqs(fastq_files: List[str]) -> Tuple[str, ...]:
     return sorted_filepaths
 
 
-# TODO handle 'ID:*' wildcard case
 def sort_read_groups(
     read_groups_string: str,
 ) -> Tuple[Tuple[str, ...], Tuple[str, ...]]:

@@ -11,7 +11,7 @@ import "./rnaseq-core.wdl" as rnaseq_core_wf
 workflow rnaseq_standard {
     meta {
         description: "Runs the STAR RNA-Seq alignment workflow for St. Jude Cloud"
-        outputs {
+        outputs: {
             harmonized_bam: "Harmonized RNA-Seq BAM"
             bam_index: "BAI index file associated with `bam`"
             bam_checksum: "STDOUT of the `md5sum` command run on the harmonized BAM that has been redirected to a file"
