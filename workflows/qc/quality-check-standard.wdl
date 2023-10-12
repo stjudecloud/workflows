@@ -44,7 +44,6 @@ workflow quality_check {
     parameter_meta {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
-        reference_fasta: "Reference genome in FASTA format"  # TODO gzipped or uncompressed?
         kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
         molecule: {
             description: "Data type"
@@ -69,7 +68,6 @@ workflow quality_check {
     input {
         File bam
         File bam_index
-        File reference_fasta
         File kraken_db
         String molecule
         File? gtf
@@ -131,7 +129,6 @@ workflow quality_check {
     call picard.validate_bam { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".ValidateSamFile.txt",
-        reference_fasta=reference_fasta,
         succeed_on_errors=true,
         ignore_list=[],
         summary_mode=true,
@@ -141,12 +138,6 @@ workflow quality_check {
     call picard.collect_alignment_summary_metrics { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".CollectAlignmentSummaryMetrics",
-        max_retries=max_retries
-    }
-    call picard.collect_gc_bias_metrics { input:
-        bam=post_subsample_bam,
-        reference_fasta=reference_fasta,
-        prefix=post_subsample_prefix + ".CollectGcBiasMetrics",
         max_retries=max_retries
     }
     call picard.quality_score_distribution { input:
