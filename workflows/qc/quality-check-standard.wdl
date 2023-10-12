@@ -36,15 +36,6 @@ workflow quality_check {
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics"
             }
             alignment_metrics_pdf: "The PDF file output of `picard CollectAlignmentSummaryMetrics`"
-            gc_bias_metrics: {
-                description: "The full text file output of `picard CollectGcBiasMetrics`"
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasDetailMetrics"
-            }
-            gc_bias_metrics_summary: {
-                description: "The summary text file output of `picard CollectGcBiasMetrics`"
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasSummaryMetrics"
-            }
-            gc_bias_metrics_pdf: "The PDF file output of `picard CollectGcBiasMetrics`"
             insert_size_metrics: {
                 description: "The text file output of `picard CollectInsertSizeMetrics`. If `mark_duplicates` is `true`, then this result will be generated from the duplicate marked BAM."
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics"
