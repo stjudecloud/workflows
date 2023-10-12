@@ -301,8 +301,6 @@ workflow quality_check {
                 endedness.endedness_file,
                 fastqc.raw_data,
                 collect_alignment_summary_metrics.alignment_metrics,
-                collect_gc_bias_metrics.gc_bias_metrics,
-                collect_gc_bias_metrics.gc_bias_metrics_summary,
                 collect_insert_size_metrics.insert_size_metrics,
                 markdups_post.insert_size_metrics,
                 quality_score_distribution.quality_score_distribution_txt,
@@ -360,9 +358,6 @@ workflow quality_check {
         File alignment_metrics = collect_alignment_summary_metrics.alignment_metrics
         File alignment_metrics_pdf
             = collect_alignment_summary_metrics.alignment_metrics_pdf
-        File gc_bias_metrics = collect_gc_bias_metrics.gc_bias_metrics
-        File gc_bias_metrics_summary = collect_gc_bias_metrics.gc_bias_metrics_summary
-        File gc_bias_metrics_pdf = collect_gc_bias_metrics.gc_bias_metrics_pdf
         File insert_size_metrics = select_first([
             markdups_post.insert_size_metrics,
             collect_insert_size_metrics.insert_size_metrics
