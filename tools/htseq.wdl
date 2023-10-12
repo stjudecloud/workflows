@@ -6,7 +6,7 @@ version 1.1
 
 task count {
     meta {
-        description: "This WDL task performs read counting for a set of features in the input BAM file."
+        description: "Performs read counting for a set of features in the input BAM file"
         outputs: {
             feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts."
         }

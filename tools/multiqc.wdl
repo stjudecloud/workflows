@@ -6,7 +6,7 @@ version 1.1
 
 task multiqc {
     meta {
-        description: "This WDL task generates a MultiQC quality control metrics report summary from input QC result files."
+        description: "Generates a MultiQC quality control metrics report summary from input QC result files"
         outputs: {
             multiqc_report: "A gzipped tar archive of all MultiQC output files"
         }

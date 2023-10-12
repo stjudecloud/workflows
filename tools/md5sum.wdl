@@ -8,7 +8,7 @@ version 1.1
 
 task compute_checksum {
     meta {
-        description: "This WDL task generates an MD5 checksum for the input file."
+        description: "Generates an MD5 checksum for the input file"
         outputs: {
             md5sum: "STDOUT of the `md5sum` command that has been redirected to a file"
         }

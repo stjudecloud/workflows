@@ -6,7 +6,7 @@ version 1.1
 
 task fastqc {
     meta {
-        description: "This WDL task generates a FastQC quality control metrics report for the input BAM file."
+        description: "Generates a FastQC quality control metrics report for the input BAM file"
         outputs: {
             raw_data: "A zip archive of raw FastQC data. Can be parsed by MultiQC."
             results: "A gzipped tar archive of all FastQC output files"

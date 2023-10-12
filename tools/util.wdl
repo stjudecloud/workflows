@@ -386,7 +386,7 @@ task unpack_tarball {
 task make_coverage_regions_beds {
     # TODO make this customizable
     meta {
-        description: "This WDL task takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
+        description: "Takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
         outputs: {
             bed: "Input GTF converted into BED format using the `gtf2bed` program"
             exon_bed: "3 column BED file corresponding to all 'exons' found in the input GTF"

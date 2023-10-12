@@ -7,7 +7,7 @@ version 1.1
 task coverage {
     # TODO not all options exposed
     meta {
-        description: "This WDL task wraps the Mosdepth tool for calculating coverage"
+        description: "Runs the Mosdepth tool for calculating coverage"
         outputs: {
             summary: "A summary of mean depths per chromosome and within specified regions per chromosome"
             global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome."

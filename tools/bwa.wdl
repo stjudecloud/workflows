@@ -8,7 +8,7 @@ version 1.1
 
 task bwa_aln {
     meta {
-        description: "This WDL task maps single-end FASTQ files to BAM format using bwa aln."
+        description: "Maps single-end FASTQ files to BAM format using bwa aln"
         outputs: {
             bam: "Aligned BAM format file"
         }
@@ -90,7 +90,7 @@ task bwa_aln {
 
 task bwa_aln_pe {
     meta {
-        description: "This WDL task maps paired-end FASTQ files to BAM format using bwa aln."
+        description: "Maps paired-end FASTQ files to BAM format using bwa aln"
         outputs: {
             bam: "Aligned BAM format file"
         }
@@ -177,7 +177,7 @@ task bwa_aln_pe {
 
 task bwa_mem {
     meta {
-        description: "This WDL task maps FASTQ files to BAM format using bwa mem."
+        description: "Maps FASTQ files to BAM format using bwa mem"
         outputs: {
             bam: "Aligned BAM format file"
         }
@@ -257,7 +257,7 @@ task bwa_mem {
 
 task build_bwa_db {
     meta {
-        description: "This WDL task creates a BWA index and returns it as a compressed tar archive."
+        description: "Creates a BWA index and returns it as a compressed tar archive"
         outputs: {
             bwa_db_tar_gz: "Tarballed bwa reference files"
         }
