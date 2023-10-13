@@ -57,13 +57,13 @@ task get_read_groups {
     meta {
         description: "Gets read group information from a BAM file and writes it out to as a string"
         outputs: {
-            read_groups_file: "File containing parsed read group information"
+            read_groups: "An array of strings containing read group information. If `format_for_star = true`, all found read groups are contained in one string (`read_groups[0]`). If `format_for_star = false`, each found @RG line will be its own entry in output array `read_groups`."
         }
     }
 
     parameter_meta {
         bam: "Input BAM format file to get read groups from"
-        format_for_star: "Format read group information for the STAR aligner (true) or just output @RG lines of the header without further processing (false)?"
+        format_for_star: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         max_retries: "Number of times to retry in case of failure"
@@ -96,7 +96,7 @@ task get_read_groups {
     >>>
 
     output {
-        File read_groups_file = "read_groups.txt"  # TODO change output to String type (or Array[String])
+        Array[String] read_groups = read_lines("read_groups.txt")
     }
 
     runtime {
@@ -285,12 +285,10 @@ task compression_integrity {
 }
 
 task add_to_bam_header {
-    # Should this be in samtools.wdl instead of util.wdl?
+    # TODO consider moving to samtools.wdl
     meta {
         description: "Adds another line of text to the bottom of a BAM header"
         outputs: {
-            updated_header: "The new header after modifications"  # TODO is this a lie? It would be missing a PG line from `reheader`. Why do we need this output?
-            header_lines: "Each line of the header is an entry in this array"  # Same question about needing this output
             reheadered_bam: "The BAM after its header has been modified"
         }
     }
@@ -298,6 +296,7 @@ task add_to_bam_header {
     parameter_meta {
         bam: "Input BAM format file which will have its header added to"
         additional_header: "A string to add as a new line in the BAM header. No format checking is done, so please ensure you do not invalidate your BAM with this task. Add only spec compliant entries to the header."
+        prefix: "Prefix for the reheadered BAM. The extension `.bam` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         max_retries: "Number of times to retry in case of failure"
@@ -325,8 +324,6 @@ task add_to_bam_header {
     >>>
 
     output {
-        File updated_header = "header.sam"
-        Array[String] header_lines = read_lines("header.sam")
         File reheadered_bam = outfile_name
     }
 

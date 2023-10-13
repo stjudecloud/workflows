@@ -69,7 +69,6 @@ workflow chipseq_standard {
         format_for_star=false,
         max_retries=max_retries
     }
-    Array[String] read_groups = read_lines(get_read_groups.read_groups_file)
 
     call b2fq.bam_to_fastqs { input:
         bam=selected_bam,
@@ -89,7 +88,7 @@ workflow chipseq_standard {
         max_retries=max_retries
     }
 
-    scatter (pair in zip(bam_to_fastqs.read1s, read_groups)){
+    scatter (pair in zip(bam_to_fastqs.read1s, get_read_groups.read_groups)){
         call seaseq_util.basicfastqstats as basic_stats { input:
             fastqfile=pair.left
         }

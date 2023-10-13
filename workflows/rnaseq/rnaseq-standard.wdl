@@ -93,8 +93,7 @@ workflow rnaseq_standard {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call util.get_read_groups { input: bam=selected_bam, max_retries=max_retries }
-    String read_groups = read_string(get_read_groups.read_groups_file)  # TODO what happens if no RG records?
+    call util.get_read_groups { input: bam=selected_bam, max_retries=max_retries }  # TODO what happens if no RG records?
     call bam_to_fastqs_wf.bam_to_fastqs { input:
         bam=selected_bam,
         paired_end=true,  # matches default but prevents user from overriding
@@ -105,7 +104,7 @@ workflow rnaseq_standard {
     call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs_gz=bam_to_fastqs.read1s,
         read_two_fastqs_gz=select_all(bam_to_fastqs.read2s),
-        read_groups=read_groups,
+        read_groups=get_read_groups.read_groups,
         prefix=prefix,
         gtf=gtf,
         star_db=star_db,

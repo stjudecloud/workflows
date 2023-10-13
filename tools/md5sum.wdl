@@ -4,7 +4,8 @@
 # Copyright St. Jude Children's Research Hospital
 version 1.1
 
-# TODO why isn't this in util?
+# TODO consider consolidating this file with util
+#   or renaming to `coreutils.wdl` and moving some of util here
 
 task compute_checksum {
     meta {
