@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Quality Check Standard - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Quality check standard - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Quality Check Standard";
+        var mkdocs_page_name = "Quality check standard";
         var mkdocs_page_input_path = "workflows/quality-check-standard.md";
         var mkdocs_page_url = null;
       </script>
@@ -49,19 +49,19 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/bwa/">BWA</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/bwa/">Bwa</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/cellranger/">Cellranger</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/deeptools/">Deeptools</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/estimate/">ESTIMATE</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/estimate/">Estimate</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastqc/">FastQC</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/fastqc/">Fastqc</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/fq/">FQ</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/fq/">Fq</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/htseq/">HTSeq</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/htseq/">Htseq</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/kraken2/">Kraken2</a>
                   </li>
@@ -69,17 +69,17 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/mosdepth/">Mosdepth</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/multiqc/">MultiQC</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/multiqc/">Multiqc</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/ngsderive/">ngsderive</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/ngsderive/">Ngsderive</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/picard/">Picard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/qualimap/">QualiMap</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/qualimap/">Qualimap</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/samtools/">SAMtools</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/samtools/">Samtools</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/star/">STAR</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tasks/star/">Star</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../tasks/util/">Utilities</a>
                   </li>
@@ -90,59 +90,35 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">BAM to FASTQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to fastqs</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">BWA DB build</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">Bwa db build</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calculate Gene Lengths</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calc gene lengths</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make QC Reference</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make qc reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../markdups-post/">MarkDuplicates Post</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Quality Check Standard</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Quality check standard</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING</a>
+    <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#mit-license">MIT License</a>
+    <li class="toctree-l3"><a class="reference internal" href="#required">Required</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional">Optional</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#quality_check">quality_check</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#parse_input">parse_input</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_1">Outputs</a>
-    </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
     </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../scrnaseq-standard/">Scrnaseq standard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../star-db-build/">STAR DB build</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../star-db-build/">Star db build</a>
                   </li>
               </ul>
       </div>
@@ -160,7 +136,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Workflows</li>
-      <li class="breadcrumb-item active">Quality Check Standard</li>
+      <li class="breadcrumb-item active">Quality check standard</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/quality-check-standard.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -170,26 +146,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="quality-check-standard">Quality Check Standard</h1>
-<p>This workflow runs a variety of quality checking software on any BAM file.
-It can be WGS, WES, or Transcriptome data. The results are aggregated and
-run through <a href="https://multiqc.info/">MultiQC</a>.</p>
-<h2 id="licensing">LICENSING</h2>
-<h4 id="mit-license">MIT License</h4>
-<p>Copyright 2020-Present St. Jude Children's Research Hospital</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
-software and associated documentation files (the "Software"), to deal in the Software
-without restriction, including without limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
-to whom the Software is furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="quality_check">quality_check</h2>
+                <h2 id="quality_check">quality_check</h2>
+<dl>
+<dt>description</dt>
+<dd>Performs comprehensive quality checks, aggregating all analyses and metrics into a final MultiQC report.</dd>
+<dt>external_help</dt>
+<dd>https://multiqc.info/</dd>
+<dt>outputs</dt>
+<dd>{'bam_checksum': 'STDOUT of the <code>md5sum</code> command run on the input BAM that has been redirected to a file', 'validate_sam_file': 'Validation report produced by <code>picard ValidateSamFile</code>. Validation warnings and errors are logged.', 'mark_duplicates_metrics': {'description': 'The METRICS_FILE result of <code>picard MarkDuplicates</code>', 'external_help': 'http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics'}, 'flagstat_report': '<code>samtools flagstat</code> STDOUT redirected to a file. If <code>mark_duplicates</code> is <code>true</code>, then this result will be generated from the duplicate marked BAM.', 'fastqc_results': 'A gzipped tar archive of all FastQC output files', 'instrument_file': 'TSV file containing the <code>ngsderive isntrument</code> report for the input BAM file', 'read_length_file': 'TSV file containing the <code>ngsderive readlen</code> report for the input BAM file', 'inferred_encoding': 'TSV file containing the <code>ngsderive encoding</code> report for the input BAM file', 'alignment_metrics': {'description': 'The text file output of <code>picard CollectAlignmentSummaryMetrics</code>', 'external_help': 'http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics'}, 'alignment_metrics_pdf': 'The PDF file output of <code>picard CollectAlignmentSummaryMetrics</code>', 'insert_size_metrics': {'description': 'The text file output of <code>picard CollectInsertSizeMetrics</code>. If <code>mark_duplicates</code> is <code>true</code>, then this result will be generated from the duplicate marked BAM.', 'external_help': 'http://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics'}, 'insert_size_metrics_pdf': 'The PDF file output of <code>picard CollectInsertSizeMetrics</code>. If <code>mark_duplicates</code> is <code>true</code>, then this result will be generated from the duplicate marked BAM.', 'quality_score_distribution_txt': 'The text file output of <code>picard QualityScoreDistribution</code>', 'quality_score_distribution_pdf': 'The PDF file output of <code>picard QualityScoreDistribution</code>', 'phred_scores': 'Headered TSV file containing PHRED score statistics', 'kraken_report': {'description': 'A Kraken2 summary report', 'external_help': 'https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#sample-report-output-format'}, 'mosdepth_global_dist': 'The <code>$prefix.mosdepth.global.dist.txt</code> file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome.', 'mosdepth_global_summary': 'A summary of mean depths per chromosome', 'mosdepth_region_dist': 'The <code>$prefix.mosdepth.region.dist.txt</code> file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the <code>coverage_bed</code> that were covered for at least a given coverage value. There will be one file in this array for each <code>coverage_beds</code> input file.', 'mosdepth_region_summary': 'A summary of mean depths per chromosome and within specified regions per chromosome. There will be one file in this array for each <code>coverage_beds</code> input file.', 'multiqc_report': 'A gzipped tar archive of all MultiQC output files', 'orig_read_count': 'A TSV report containing the original read count before subsampling', 'kraken_sequences': {'description': 'Detailed Kraken2 output that has been gzipped', 'external_help': 'https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#standard-kraken-output-format'}, 'mosdepth_dups_marked_global_dist': 'The <code>$prefix.mosdepth.global.dist.txt</code> file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome. This file is produced from analyzing the duplicate marked BAM (only present if <code>mark_duplicates = true</code>).', 'mosdepth_dups_marked_global_summary': 'A summary of mean depths per chromosome. This file is produced from analyzing the duplicate marked BAM (only present if <code>mark_duplicates = true</code>).', 'mosdepth_dups_marked_region_dist': 'The <code>$prefix.mosdepth.region.dist.txt</code> file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the <code>coverage_bed</code> that were covered for at least a given coverage value. There will be one file in this array for each <code>coverage_beds</code> input file. This file is produced from analyzing the duplicate marked BAM (only present if <code>mark_duplicates = true</code>).', 'mosdepth_dups_marked_region_summary': 'A summary of mean depths per chromosome and within specified regions per chromosome. There will be one file in this array for each <code>coverage_beds</code> input file. This file is produced from analyzing the duplicate marked BAM (only present if <code>mark_duplicates = true</code>).', 'inferred_strandedness': 'TSV file containing the <code>ngsderive strandedness</code> report', 'qualimap_rnaseq_results': 'Gzipped tar archive of all QualiMap output files', 'junction_summary': 'TSV file containing the <code>ngsderive junction-annotation</code> summary', 'junctions': 'TSV file containing a detailed list of annotated junctions', 'IntermediateFiles': 'Any and all files produced as intermediate during pipeline processing. Only output if <code>output_intermediate_files = true</code>.'}</dd>
+</dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
@@ -397,20 +362,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>intermediate_files</code> (IntermediateFiles?)</li>
 </ul>
 <h2 id="parse_input">parse_input</h2>
+<dl>
+<dt>description</dt>
+<dd>Parses and validates the <code>quality_check</code> workflow's provided inputs</dd>
+<dt>outputs</dt>
+<dd>{'check': 'Dummy output to indicate success and to enable call-caching', 'labels': 'An array of labels to use on the result coverage files associated with each coverage BED'}</dd>
+</dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>coverage_beds_len</code> (Int, <strong>required</strong>)</li>
-<li><code>coverage_labels</code> (Array[String], <strong>required</strong>)</li>
-<li><code>gtf_provided</code> (Boolean, <strong>required</strong>)</li>
-<li><code>input_molecule</code> (String, <strong>required</strong>)</li>
+<li><code>coverage_beds_len</code> (Int, <strong>required</strong>): Length of the provided <code>coverage_beds</code> array</li>
+<li><code>coverage_labels</code> (Array[String], <strong>required</strong>): An array of equal length to <code>coverage_beds_len</code> which determines the prefix label applied to coverage output files. If an empty array is supplied, defaults of <code>regions1</code>, <code>regions2</code>, etc. will be used.</li>
+<li><code>gtf_provided</code> (Boolean, <strong>required</strong>): Was a GTF supplied by the user? Must be <code>true</code> if <code>input_molecule = RNA</code>.</li>
+<li><code>input_molecule</code> (String, <strong>required</strong>): Must be <code>DNA</code> or <code>RNA</code></li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
-<li><code>disk_size_gb</code> (Int, default=10)</li>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
+<li><code>disk_size_gb</code> (Int, default=10): Disk space to allocate for task, specified in GB</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>

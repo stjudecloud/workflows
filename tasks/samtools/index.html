@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>SAMtools - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Samtools - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "SAMtools";
+        var mkdocs_page_name = "Samtools";
         var mkdocs_page_input_path = "tasks/samtools.md";
         var mkdocs_page_url = null;
       </script>
@@ -49,19 +49,19 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../bwa/">BWA</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa/">Bwa</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../cellranger/">Cellranger</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../deeptools/">Deeptools</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../estimate/">ESTIMATE</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../estimate/">Estimate</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fastqc/">FastQC</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../fastqc/">Fastqc</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fq/">FQ</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../fq/">Fq</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../htseq/">HTSeq</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../htseq/">Htseq</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../kraken2/">Kraken2</a>
                   </li>
@@ -69,163 +69,29 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../mosdepth/">Mosdepth</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../multiqc/">MultiQC</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../multiqc/">Multiqc</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../ngsderive/">ngsderive</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../ngsderive/">Ngsderive</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../picard/">Picard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../qualimap/">QualiMap</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../qualimap/">Qualimap</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">SAMtools</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Samtools</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#quickcheck">quickcheck</a>
+    <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
+    <li class="toctree-l3"><a class="reference internal" href="#required">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
+    <li class="toctree-l3"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#split">split</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_1">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#flagstat">flagstat</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_2">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_2">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_2">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_2">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#index">index</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_3">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_3">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_3">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#subsample">subsample</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_4">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_4">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_4">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_4">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#merge">merge</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_5">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_5">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_5">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_5">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#addreplacerg">addreplacerg</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_6">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_6">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#optional_1">Optional</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_6">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_6">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#collate">collate</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_7">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_7">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_7">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_7">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bam_to_fastq">bam_to_fastq</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_8">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_8">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_8">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_8">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#collate_to_fastq">collate_to_fastq</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_9">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_9">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_9">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_9">Outputs</a>
-    </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
     </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../star/">STAR</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../star/">Star</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../util/">Utilities</a>
                   </li>
@@ -236,21 +102,21 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">BAM to FASTQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to fastqs</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">Bwa db build</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calc gene lengths</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make qc reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality check standard</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/scrnaseq-standard/">Scrnaseq standard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">STAR DB build</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">Star db build</a>
                   </li>
               </ul>
       </div>
@@ -268,7 +134,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Tasks</li>
-      <li class="breadcrumb-item active">SAMtools</li>
+      <li class="breadcrumb-item active">Samtools</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/samtools.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -278,13 +144,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="samtools">SAMtools</h1>
-<p>This WDL file wraps the <a href="http://samtools.sourceforge.net/">SAMtools package</a>.
-SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
+                <p><a href="http://samtools.sourceforge.net/">Homepage</a></p>
 <h2 id="quickcheck">quickcheck</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists.</dd>
+<dd>Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists.</dd>
 <dt>outputs</dt>
 <dd>{'checked_bam': 'The unmodfied input BAM after it has been successfully quickchecked'}</dd>
 </dl>
@@ -307,7 +171,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h2 id="split">split</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group.</dd>
+<dd>Runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group.</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
@@ -332,7 +196,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h2 id="flagstat">flagstat</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL tool produces a <code>samtools flagstat</code> report containing statistics about the alignments based on the bit flags set in the BAM.</dd>
+<dd>Produces a <code>samtools flagstat</code> report containing statistics about the alignments based on the bit flags set in the BAM</dd>
 <dt>outputs</dt>
 <dd>{'flagstat_report': '<code>samtools flagstat</code> STDOUT redirected to a file'}</dd>
 </dl>
@@ -479,7 +343,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h2 id="collate">collate</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task runs <code>samtools collate</code> on the input BAM file. Shuffles and groups reads together by their names.</dd>
+<dd>Runs <code>samtools collate</code> on the input BAM file. Shuffles and groups reads together by their names.</dd>
 <dt>outputs</dt>
 <dd>{'collated_bam': 'A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)'}</dd>
 </dl>
@@ -506,7 +370,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h2 id="bam_to_fastq">bam_to_fastq</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task runs <code>samtools fastq</code> on the input BAM file. Splits the BAM into FASTQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see <code>collate_to_fastq</code>.</dd>
+<dd>Runs <code>samtools fastq</code> on the input BAM file. Splits the BAM into FASTQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see <code>collate_to_fastq</code>.</dd>
 <dt>outputs</dt>
 <dd>{'read_one_fastq_gz': 'Gzipped FASTQ file with 1st reads in pair', 'read_two_fastq_gz': 'Gzipped FASTQ file with 2nd reads in pair', 'singleton_reads_fastq_gz': 'A gzipped FASTQ containing singleton reads', 'interleaved_reads_fastq_gz': 'An interleaved gzipped paired-end FASTQ'}</dd>
 </dl>
@@ -542,7 +406,7 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
 <h2 id="collate_to_fastq">collate_to_fastq</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task runs <code>samtools collate</code> on the input BAM file then converts it into FASTQ(s) using <code>samtools fastq</code>.</dd>
+<dd>Runs <code>samtools collate</code> on the input BAM file then converts it into FASTQ(s) using <code>samtools fastq</code></dd>
 <dt>outputs</dt>
 <dd>{'collated_bam': 'A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)', 'read_one_fastq_gz': 'Gzipped FASTQ file with 1st reads in pair', 'read_two_fastq_gz': 'Gzipped FASTQ file with 2nd reads in pair', 'singleton_reads_fastq_gz': 'Gzipped FASTQ containing singleton reads', 'interleaved_reads_fastq_gz': 'Interleaved gzipped paired-end FASTQ'}</dd>
 </dl>
@@ -582,8 +446,8 @@ SAMtools provides utlities for manipulating SAM format sequence alignments.</p>
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../qualimap/" class="btn btn-neutral float-left" title="QualiMap"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../star/" class="btn btn-neutral float-right" title="STAR">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../qualimap/" class="btn btn-neutral float-left" title="Qualimap"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../star/" class="btn btn-neutral float-right" title="Star">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>

@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>BWA - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Bwa - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "BWA";
+        var mkdocs_page_name = "Bwa";
         var mkdocs_page_input_path = "tasks/bwa.md";
         var mkdocs_page_url = null;
       </script>
@@ -49,63 +49,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">BWA</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Bwa</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#bwa_aln">bwa_aln</a>
+    <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
+    <li class="toctree-l3"><a class="reference internal" href="#required">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
+    <li class="toctree-l3"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bwa_aln_pe">bwa_aln_pe</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_1">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bwa_mem">bwa_mem</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_2">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_2">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_2">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_2">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#build_bwa_db">build_bwa_db</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_3">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_3">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_3">Outputs</a>
-    </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
     </li>
     </ul>
                   </li>
@@ -113,13 +67,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../deeptools/">Deeptools</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../estimate/">ESTIMATE</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../estimate/">Estimate</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fastqc/">FastQC</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../fastqc/">Fastqc</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../fq/">FQ</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../fq/">Fq</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../htseq/">HTSeq</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../htseq/">Htseq</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../kraken2/">Kraken2</a>
                   </li>
@@ -127,17 +81,17 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../mosdepth/">Mosdepth</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../multiqc/">MultiQC</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../multiqc/">Multiqc</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../ngsderive/">ngsderive</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../ngsderive/">Ngsderive</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../picard/">Picard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../qualimap/">QualiMap</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../qualimap/">Qualimap</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../samtools/">SAMtools</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../samtools/">Samtools</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../star/">STAR</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../star/">Star</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../util/">Utilities</a>
                   </li>
@@ -148,21 +102,21 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/ESTIMATE/">ESTIMATE</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">BAM to FASTQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bam-to-fastqs/">Bam to fastqs</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">BWA DB build</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">Bwa db build</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calculate Gene Lengths</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calc gene lengths</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make QC Reference</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make qc reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality Check Standard</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality check standard</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/scrnaseq-standard/">Scrnaseq standard</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">STAR DB build</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/star-db-build/">Star db build</a>
                   </li>
               </ul>
       </div>
@@ -180,7 +134,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Tasks</li>
-      <li class="breadcrumb-item active">BWA</li>
+      <li class="breadcrumb-item active">Bwa</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/bwa.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -190,13 +144,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="bwa">BWA</h1>
-<p>This WDL file wraps <a href="https://github.com/lh3/bwa">BWA</a>.
-BWA aligns sequencing reads to a reference genome.</p>
+                <p><a href="https://github.com/lh3/bwa">Homepage</a></p>
 <h2 id="bwa_aln">bwa_aln</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task maps single-end FASTQ files to BAM format using bwa aln.</dd>
+<dd>Maps single-end FASTQ files to BAM format using bwa aln</dd>
 <dt>outputs</dt>
 <dd>{'bam': 'Aligned BAM format file'}</dd>
 </dl>
@@ -224,7 +176,7 @@ BWA aligns sequencing reads to a reference genome.</p>
 <h2 id="bwa_aln_pe">bwa_aln_pe</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task maps paired-end FASTQ files to BAM format using bwa aln.</dd>
+<dd>Maps paired-end FASTQ files to BAM format using bwa aln</dd>
 <dt>outputs</dt>
 <dd>{'bam': 'Aligned BAM format file'}</dd>
 </dl>
@@ -253,7 +205,7 @@ BWA aligns sequencing reads to a reference genome.</p>
 <h2 id="bwa_mem">bwa_mem</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task maps FASTQ files to BAM format using bwa mem.</dd>
+<dd>Maps FASTQ files to BAM format using bwa mem</dd>
 <dt>outputs</dt>
 <dd>{'bam': 'Aligned BAM format file'}</dd>
 </dl>
@@ -281,7 +233,7 @@ BWA aligns sequencing reads to a reference genome.</p>
 <h2 id="build_bwa_db">build_bwa_db</h2>
 <dl>
 <dt>description</dt>
-<dd>This WDL task creates a BWA index and returns it as a compressed tar archive.</dd>
+<dd>Creates a BWA index and returns it as a compressed tar archive</dd>
 <dt>outputs</dt>
 <dd>{'bwa_db_tar_gz': 'Tarballed bwa reference files'}</dd>
 </dl>
