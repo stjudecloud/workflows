@@ -5,7 +5,9 @@
 ## whether a read is a duplicate or not.
 ## But the tasks called below produce different results depending on whether the
 ## input BAM has been duplicate marked or not.
-
+#
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/mosdepth.wdl"
@@ -14,7 +16,7 @@ import "../../tools/samtools.wdl"
 
 workflow markdups_post {
     meta {
-        description: "This workflow runs QC analyses which are impacted by duplicate marking."
+        description: "Runs QC analyses which are impacted by duplicate marking"
         outputs: {
             insert_size_metrics: "`*.txt` output file of `picard collectInsertSizeMetrics`"
             insert_size_metrics_pdf: "`*.pdf` output file of `picard collectInsertSizeMetrics`"

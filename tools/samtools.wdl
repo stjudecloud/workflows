@@ -1,13 +1,12 @@
-## # SAMtools
-##
-## This WDL file wraps the [SAMtools package](http://samtools.sourceforge.net/).
-## SAMtools provides utlities for manipulating SAM format sequence alignments.
-
+## [Homepage](http://samtools.sourceforge.net/)
+#
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 task quickcheck {
     meta {
-        description: "This WDL task runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
+        description: "Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
         outputs: {
             checked_bam: "The unmodfied input BAM after it has been successfully quickchecked"
         }
@@ -48,7 +47,7 @@ task quickcheck {
 
 task split {
     meta {
-        description: "This WDL task runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
+        description: "Runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
     }
 
     parameter_meta {
@@ -120,7 +119,7 @@ task split {
 
 task flagstat {
     meta {
-        description: "This WDL tool produces a `samtools flagstat` report containing statistics about the alignments based on the bit flags set in the BAM."
+        description: "Produces a `samtools flagstat` report containing statistics about the alignments based on the bit flags set in the BAM"
         outputs: {
             flagstat_report: "`samtools flagstat` STDOUT redirected to a file"
         }
@@ -477,7 +476,7 @@ task addreplacerg {
 
 task collate {
     meta {
-        description: "This WDL task runs `samtools collate` on the input BAM file. Shuffles and groups reads together by their names."
+        description: "Runs `samtools collate` on the input BAM file. Shuffles and groups reads together by their names."
         outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)"
         }
@@ -541,7 +540,7 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "This WDL task runs `samtools fastq` on the input BAM file. Splits the BAM into FASTQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
+        description: "Runs `samtools fastq` on the input BAM file. Splits the BAM into FASTQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
         outputs: {
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
             read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
@@ -652,7 +651,7 @@ task bam_to_fastq {
 
 task collate_to_fastq {
     meta {
-        description: "This WDL task runs `samtools collate` on the input BAM file then converts it into FASTQ(s) using `samtools fastq`."
+        description: "Runs `samtools collate` on the input BAM file then converts it into FASTQ(s) using `samtools fastq`"
         outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)"
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"

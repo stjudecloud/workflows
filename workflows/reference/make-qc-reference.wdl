@@ -1,36 +1,22 @@
-## # Make QC Reference
-##
-## Download/create all the reference files needed for `quality-check-standard.wdl`.
-## This includes: a reference FASTA, a GTF, the database used by Kraken2, and exonic/coding regions BEDs
-## for use in restricting mosdepth coverage analysis to selected regions.
-##
-## ## LICENSING:
-## 
-## #### MIT License
-##
-## Copyright 2020-Present St. Jude Children's Research Hospital
-##
-## Permission is hereby granted, free of charge, to any person obtaining a copy of this
-## software and associated documentation files (the "Software"), to deal in the Software
-## without restriction, including without limitation the rights to use, copy, modify, merge,
-## publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
-## to whom the Software is furnished to do so, subject to the following conditions:
-##
-## The above copyright notice and this permission notice shall be included in all copies or
-## substantial portions of the Software.
-##
-## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-## BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-## NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/kraken2.wdl"
 import "../../tools/util.wdl"
 
 workflow make_qc_reference {
+    meta {
+        description: "Downloads and creates all reference files needed to run the `quality_check` workflow"
+        outputs: {
+            reference_fa: "FASTA format reference file"
+            gtf: "GTF feature file"
+            exon_bed: "3 column BED file defining the regions of the exome. Derived from `gtf`."
+            CDS_bed: "3 column BED file defining the regions of the coding domain. Derived from `gtf`."
+            kraken_db: "A complete Kraken2 database"
+        }
+    }
+
     parameter_meta {
         kraken_fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         kraken_libraries: {

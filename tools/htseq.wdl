@@ -1,13 +1,12 @@
-## # HTSeq
-##
-## This WDL file wraps the [htseq](https://github.com/htseq/htseq) tool.
-## HTSeq is a Python library for analyzing sequencing data.
-
+## [Homepage](https://github.com/htseq/htseq)
+#
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 task count {
     meta {
-        description: "This WDL task performs read counting for a set of features in the input BAM file."
+        description: "Performs read counting for a set of features in the input BAM file"
         outputs: {
             feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts."
         }

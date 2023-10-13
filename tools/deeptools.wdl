@@ -1,13 +1,12 @@
-## # Deeptools
-##
-## This WDL file wraps the [DeepTools](https://deeptools.readthedocs.io/en/develop/index.html) tool.
-## DeepTools is a suite of Python tools for analysis of high throughput sequencing analysis.
-
+## [Homepage](https://deeptools.readthedocs.io/en/develop/index.html)
+#
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 task bam_coverage {
     meta {
-        description: "This WDL task generates a BigWig coverage track using bamCoverage from DeepTools (https://deeptools.readthedocs.io/en/develop/index.html)."
+        description: "Generates a BigWig coverage track using bamCoverage from DeepTools"
         outputs: {
             bigwig: "BigWig format coverage file"
         }

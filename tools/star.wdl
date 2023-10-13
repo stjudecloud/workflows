@@ -1,13 +1,15 @@
-## # STAR
-##
-## This WDL file wraps the [STAR aligner](https://github.com/alexdobin/STAR).
-## STAR is an RNA-Seq aligner.
-
+## [Homepage](https://github.com/alexdobin/STAR)
+#
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 task build_star_db {
     meta {
-        description: "This WDL task runs STAR's build command to generate a STAR format reference for alignment." 
+        description: "Runs STAR's build command to generate a STAR format reference for alignment"
+        outputs: {
+            star_db: "A gzipped TAR file containing the STAR reference files. Suitable as the `star_db_tar_gz` input to the `alignment` task."
+        }
     }
 
     parameter_meta {
@@ -119,14 +121,25 @@ task build_star_db {
 
 task alignment {
     meta {
-        description: "This WDL task runs the STAR aligner on a set of RNA-Seq FASTQ files."
+        description: "Runs the STAR aligner on a set of RNA-Seq FASTQ files"
+        external_help: "https://github.com/alexdobin/STAR/blob/2.7.10a/doc/STARmanual.pdf"  # TODO keep this up to date with container updates
+        outputs: {
+            star_log: "Summary mapping statistics after mapping job is complete. The statistics are calculated for each read (single- or paired-end) and then summed or averaged over all reads. Note that STAR counts a paired-end read as one read. Most of the information is collected about the UNIQUE mappers. Each splicing is counted in the numbers of splices, which would correspond to summing the counts in SJ.out.tab. The mismatch/indel error rates are calculated on a per base basis, i.e. as total number of mismatches/indels in all unique mappers divided by the total number of mapped bases."
+            star_bam: "STAR aligned BAM"
+            star_junctions: {
+                description:"File contains high confidence collapsed splice junctions in tab-delimited format. Note that STAR defines the junction start/end as intronic bases, while many other software define them as exonic bases. See `meta.external_help` for file specification."
+            }
+            star_chimeric_junctions: {
+                description: "Tab delimited file containing chimeric reads and associated metadata. See `meta.external_help` for file specification."
+            }
+        }
     }
 
     parameter_meta {
         read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
         prefix: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added."
-        read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must match the basename of a fastq file (up to the first period). Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`"
+        read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`. These two read groups could be associated with the following four FASTQs: `sample1.rg1_R1.fastq,sample1.rg2_R1.fastq` and `sample1.rg1_R2.fastq,sample1.rg2_R2.fastq`"
         read_two_fastqs_gz: "An array of gzipped FASTQ files containing read two information"
         outSJfilterIntronMaxVsReadN: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions."
         outSJfilterOverhangMin: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions."
@@ -377,31 +390,31 @@ task alignment {
         String? read_groups
         Array[File] read_two_fastqs_gz = []
         Array[Int] outSJfilterIntronMaxVsReadN = [50000, 100000, 200000]
-        SJ_motifs outSJfilterOverhangMin = SJ_motifs {
+        SJ_Motifs outSJfilterOverhangMin = SJ_Motifs {
             noncanonical_motifs: 30,
             GT_AG_and_CT_AC_motif: 12,
             GC_AG_and_CT_GC_motif: 12,
             AT_AC_and_GT_AT_motif: 12
         }
-        SJ_motifs outSJfilterCountUniqueMin = SJ_motifs {
+        SJ_Motifs outSJfilterCountUniqueMin = SJ_Motifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
             AT_AC_and_GT_AT_motif: 1
         }
-        SJ_motifs outSJfilterCountTotalMin = SJ_motifs {
+        SJ_Motifs outSJfilterCountTotalMin = SJ_Motifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
             AT_AC_and_GT_AT_motif: 1
         }
-        SJ_motifs outSJfilterDistToOtherSJmin = SJ_motifs {
+        SJ_Motifs outSJfilterDistToOtherSJmin = SJ_Motifs {
             noncanonical_motifs: 10,
             GT_AG_and_CT_AC_motif: 0,
             GC_AG_and_CT_GC_motif: 5,
             AT_AC_and_GT_AT_motif: 10
         }
-        SJ_motifs alignSJstitchMismatchNmax = SJ_motifs {
+        SJ_Motifs alignSJstitchMismatchNmax = SJ_Motifs {
             noncanonical_motifs: 0,
             GT_AG_and_CT_AC_motif: -1,
             GC_AG_and_CT_GC_motif: 0,
@@ -712,7 +725,10 @@ task alignment {
     }
 }
 
-struct SJ_motifs {
+# There are multiple Splice Junction motif arguments for STAR
+# that are all formatted the same. Use this struct for consistency.
+# See https://github.com/alexdobin/STAR/blob/2.7.10a/doc/STARmanual.pdf
+struct SJ_Motifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif
     Int GC_AG_and_CT_GC_motif

@@ -1,32 +1,5 @@
-## # ChIP-Seq Standard
-##
-## This WDL workflow runs the BWA ChIP-seq alignment workflow for St. Jude Cloud.
-##
-## The workflow takes an input BAM file and splits it into FASTQ files for each read in the pair.
-## The read pairs are then passed through BWA alignment to generate a BAM file.
-## File validation is performed at several steps, including immediately preceeding output.
-##
-## ## LICENSING
-##
-## #### MIT License
-##
-## Copyright 2021-Present St. Jude Children's Research Hospital
-##
-## Permission is hereby granted, free of charge, to any person obtaining a copy of this
-## software and associated documentation files (the "Software"), to deal in the Software
-## without restriction, including without limitation the rights to use, copy, modify, merge,
-## publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
-## to whom the Software is furnished to do so, subject to the following conditions:
-##
-## The above copyright notice and this permission notice shall be included in all copies or
-## substantial portions of the Software.
-##
-## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-## BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-## NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-## DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/deeptools.wdl"
@@ -40,7 +13,18 @@ import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 
+# TODO can we use `alignment-post.wdl`?
 workflow chipseq_standard {
+    meta {
+        description: "Runs the BWA ChIP-Seq alignment workflow for St. Jude Cloud."
+        outputs: {
+            harmonized_bam: "A harmonized BWA aligned ChIP-Seq BAM file"
+            bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file"
+            bam_index: "BAI index file associated with `harmonized_bam`"
+            bigwig: "BigWig format coverage file"
+        }
+    }
+
     parameter_meta {
         bam: "Input BAM format file to realign with bowtie"
         bowtie_indexes: "Database of v1 reference files for the bowtie aligner. Can be generated with https://github.com/stjude/seaseq/blob/master/workflows/tasks/bowtie.wdl. [*.ebwt]"
@@ -85,7 +69,6 @@ workflow chipseq_standard {
         format_for_star=false,
         max_retries=max_retries
     }
-    Array[String] read_groups = read_lines(get_read_groups.read_groups_file)
 
     call b2fq.bam_to_fastqs { input:
         bam=selected_bam,
@@ -105,7 +88,7 @@ workflow chipseq_standard {
         max_retries=max_retries
     }
 
-    scatter (pair in zip(bam_to_fastqs.read1s, read_groups)){
+    scatter (pair in zip(bam_to_fastqs.read1s, get_read_groups.read_groups)){
         call seaseq_util.basicfastqstats as basic_stats { input:
             fastqfile=pair.left
         }

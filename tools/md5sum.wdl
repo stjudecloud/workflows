@@ -1,13 +1,15 @@
-## Description:
-##
-## This WDL file wraps the md5sum tool from the [GNU core utilities](https://github.com/coreutils/coreutils).
-## md5sum is a utility for generating and verifying MD5 hashes.
-
+## [Homepage](https://github.com/coreutils/coreutils)
+#
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
+
+# TODO consider consolidating this file with util
+#   or renaming to `coreutils.wdl` and moving some of util here
 
 task compute_checksum {
     meta {
-        description: "This WDL task generates an MD5 checksum for the input file."
+        description: "Generates an MD5 checksum for the input file"
         outputs: {
             md5sum: "STDOUT of the `md5sum` command that has been redirected to a file"
         }

@@ -1,12 +1,12 @@
-## # Kraken2
-##
-## Methods for bootstrapping and running [Kraken2](https://github.com/DerrickWood/kraken2)
-
+## [Homepage](https://github.com/DerrickWood/kraken2)
+#
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 task download_taxonomy {
     meta {
-        description: "This WDL task downloads the NCBI taxonomy which Kraken2 uses to create a tree and taxon map during the database build."
+        description: "Downloads the NCBI taxonomy which Kraken2 uses to create a tree and taxon map during the database build"
         outputs: {
             taxonomy: "The NCBI taxonomy, which is needed by the `build_db` task. This output is not human-readable or meant for anything other than building a Kraken2 database."
         }
@@ -56,7 +56,7 @@ task download_taxonomy {
 
 task download_library {
     meta {
-        description: "This WDL task downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available at: https://ftp.ncbi.nlm.nih.gov/genomes/refseq/."
+        description: "Downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available [here](https://ftp.ncbi.nlm.nih.gov/genomes/refseq/)"
         outputs: {
             library: "A library of reference genomes, which is needed by the `build_db` task. This output is not human-readable or meant for anything other than building a Kraken2 database."
         }
@@ -134,7 +134,7 @@ task download_library {
 
 task create_library_from_fastas {
     meta {
-        description: "This WDL task adds custom entries from FASTA files to a Kraken2 DB."
+        description: "Adds custom entries from FASTA files to a Kraken2 DB"
         outputs: {
             custom_library: "Kraken2 compatible library, which is needed by the `build_db` task. This output is not human-readable or meant for anything other than building a Kraken2 database."
         }
@@ -195,7 +195,7 @@ task create_library_from_fastas {
 
 task build_db {
     meta {
-        description: "This WDL task builds a custom Kraken2 database."
+        description: "Builds a custom Kraken2 database"
         outputs: {
             built_db: "A complete Kraken2 database"
         }
@@ -298,7 +298,7 @@ task build_db {
 task kraken {
     # TODO allow Single-End FASTQs
     meta {
-        description: "This WDL tool runs Kraken2 on a pair of fastq files."
+        description: "Runs Kraken2 on a pair of fastq files"
         outputs: {
             report: {
                 description: "A Kraken2 summary report"

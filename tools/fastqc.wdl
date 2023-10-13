@@ -1,13 +1,12 @@
-## # FastQC
-##
-## This WDL file wraps the [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) tool.
-## FastQC generates quality control metrics for sequencing pipelines. 
-
+## [Homepage](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+#
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 task fastqc {
     meta {
-        description: "This WDL task generates a FastQC quality control metrics report for the input BAM file."
+        description: "Generates a FastQC quality control metrics report for the input BAM file"
         outputs: {
             raw_data: "A zip archive of raw FastQC data. Can be parsed by MultiQC."
             results: "A gzipped tar archive of all FastQC output files"

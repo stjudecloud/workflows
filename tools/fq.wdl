@@ -1,14 +1,12 @@
-## # FQ
-##
-## This WDL file wraps the [fq tool](https://github.com/stjude/fqlib).
-## The fq library provides methods for manipulating Illumina generated 
-## FASTQ files.
-
+## [Homepage](https://github.com/stjude-rust-labs/fq)
+#
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 task fqlint {
     meta {
-        description: "This WDL task performs quality control on the input FASTQs to ensure proper formatting."
+        description: "Performs quality control on the input FASTQs to ensure proper formatting"
         outputs: {
             validated_read1: "The unmodified input read one FASTQ after it has been successfully validated"
             validated_read2: "The unmodified input read two FASTQ after it has been successfully validated"
@@ -99,7 +97,7 @@ task fqlint {
 
 task subsample {
     meta {
-        description: "This WDL task subsamples input FASTQs"
+        description: "Subsamples the input FASTQ(s)"
         outputs: {
             subsampled_read1: "Gzipped FASTQ file containing subsampled read1"
             subsampled_read2: "Gzipped FASTQ file containing subsampled read2"

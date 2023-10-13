@@ -19,8 +19,7 @@
     - util
   command: >-
     miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_get_read_groups.json --task get_read_groups --copy-input-files tools/util.wdl
-  files:
-    - path: test-output/out/read_groups_file/read_groups.txt
+  stdout:
       contains:
         - "@RG	ID:1"
         - "@RG	ID:2"
@@ -66,7 +65,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run -d test-output/. --task compression_integrity --copy-input-files tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task compression_integrity --copy-input-files tools/util.wdl bgzipped_file="tests/tools/input/test.bwa_aln_pe.bam"
   stdout:
     contains:
       - "passed"
