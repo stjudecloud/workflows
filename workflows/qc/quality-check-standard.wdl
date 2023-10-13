@@ -427,7 +427,7 @@ task parse_input {
         description: "Parses and validates the `quality_check` workflow's provided inputs"
         outputs: {
             check: "Dummy output to indicate success and to enable call-caching"
-            labels: "An array of labels to use on th result coverage files associated with each coverage BED"
+            labels: "An array of labels to use on the result coverage files associated with each coverage BED"
         }
     }
 
