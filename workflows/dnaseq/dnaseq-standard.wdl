@@ -12,6 +12,7 @@ workflow rnaseq_standard {
     input {
         File bam
         File bwa_db
+        Int? max_retries
         Boolean validate_input = true
     }
 
