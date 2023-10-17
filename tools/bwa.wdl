@@ -184,8 +184,9 @@ task bwa_mem {
     }
 
     parameter_meta {
-        fastq: "Input FASTQ file to align with bwa"  # TODO verify can be gzipped or compressed
+        read_one_fastq_gz: "Input gzipped FASTQ read one file to align with bwa"  # TODO verify can be gzipped or compressed
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+        read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
@@ -196,10 +197,11 @@ task bwa_mem {
     }
 
     input {
-        File fastq
+        File read_one_fastq_gz
         File bwa_db_tar_gz
+        File? read_two_fastq_gz
         String prefix = sub(
-            basename(fastq),
+            basename(read_one_fastq_gz),
             "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
@@ -213,7 +215,7 @@ task bwa_mem {
 
     String output_bam = prefix + ".bam"
 
-    Float input_fastq_size = size(fastq, "GiB")
+    Float input_fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = (
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
@@ -235,7 +237,8 @@ task bwa_mem {
             -t "$n_cores" \
             ~{if read_group != "" then "-R '"+read_group+"'" else ""} \
             bwa_db/"$PREFIX" \
-            ~{fastq} \
+            ~{read_one_fastq_gz} \
+            ~{read_two_fastq_gz} \
             | samtools view -@ "$n_cores" -hb - \
             > ~{output_bam}
 
