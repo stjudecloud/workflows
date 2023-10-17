@@ -36,7 +36,7 @@ workflow rnaseq_standard {
 
     scatter (tuple in zip(
         zip(bam_to_fastqs.read1s, bam_to_fastqs.read2s),
-        read_groups
+        get_read_groups.read_groups
     )) {
         call bwa.bwa_mem { input:
             read_one_fastq_gz=tuple.left.left,
