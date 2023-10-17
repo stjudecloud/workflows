@@ -14,6 +14,7 @@ workflow rnaseq_standard {
         File bwa_db
         Int? max_retries
         Boolean validate_input = true
+        Boolean use_all_cores = false
     }
 
     if (validate_input) {
