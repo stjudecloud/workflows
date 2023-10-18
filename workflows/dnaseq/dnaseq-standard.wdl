@@ -44,7 +44,7 @@ workflow rnaseq_standard {
             read_one_fastq_gz=tuple.left.left,
             read_two_fastq_gz=tuple.left.right,
             bwa_db_tar_gz=bwa_db,
-            read_group=tuple.right,
+            read_group=sub(tuple.right, "\t", "\\t"),
             max_retries=max_retries
         }
     }
