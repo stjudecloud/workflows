@@ -8,11 +8,12 @@ import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 
-workflow rnaseq_standard {
+workflow dnaseq_standard {
     input {
         File bam
         File bwa_db
         Int? max_retries
+        String prefix = basename(bam, ".bam")
         Boolean validate_input = true
         Boolean use_all_cores = false
     }
@@ -44,9 +45,11 @@ workflow rnaseq_standard {
             read_one_fastq_gz=tuple.left.left,
             read_two_fastq_gz=tuple.left.right,
             bwa_db_tar_gz=bwa_db,
-            read_group=sub(tuple.right, "\t", "\\t"),
+            # find tab literals, replace with '\\t'
+            # '\\t' is subbed into command blocks as '\t'
+            read_group=sub(tuple.right, "\t", "\\\\t"),
             max_retries=max_retries
         }
     }
-    call samtools.merge { input: bams=bwa_mem.bam }
+    call samtools.merge { input: bams=bwa_mem.bam, prefix=prefix }
 }
