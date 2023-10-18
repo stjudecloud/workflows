@@ -50,6 +50,14 @@ workflow dnaseq_standard {
             read_group=sub(tuple.right, "\t", "\\\\t"),
             max_retries=max_retries
         }
+        call picard.sort { input:
+            bam=bwa_mem.bam,
+            max_retries=max_retries
+        }
     }
-    call samtools.merge { input: bams=bwa_mem.bam, prefix=prefix }
+    call samtools.merge { input:
+        bams=sort.sorted_bam,
+        prefix=prefix,
+        max_retries=max_retries
+    }
 }
