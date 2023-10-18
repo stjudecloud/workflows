@@ -45,7 +45,7 @@ workflow dnaseq_standard {
             read_one_fastq_gz=tuple.left.left,
             read_two_fastq_gz=tuple.left.right,
             bwa_db_tar_gz=bwa_db,
-            # find tab literals, replace with '\\t'
+            # find tab literals, replace with '\\t' (which must be written as '\\\\t')
             # '\\t' is subbed into command blocks as '\t'
             read_group=sub(tuple.right, "\t", "\\\\t"),
             max_retries=max_retries

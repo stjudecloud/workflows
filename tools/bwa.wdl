@@ -208,7 +208,7 @@ task bwa_mem {
         String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 1
-        Int memory_gb = 5
+        Int memory_gb = 10
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
