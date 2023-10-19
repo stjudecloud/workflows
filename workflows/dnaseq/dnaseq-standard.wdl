@@ -58,6 +58,8 @@ workflow dnaseq_standard {
     call samtools.merge { input:
         bams=sort.sorted_bam,
         prefix=prefix,
+        combine_pg=false,
+        use_all_cores=use_all_cores,
         max_retries=max_retries
     }
 }
