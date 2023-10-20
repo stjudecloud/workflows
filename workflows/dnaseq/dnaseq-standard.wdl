@@ -48,6 +48,7 @@ workflow dnaseq_standard {
             # find tab literals, replace with '\\t' (which must be written as '\\\\t')
             # '\\t' is subbed into command blocks as '\t'
             read_group=sub(tuple.right, "\t", "\\\\t"),
+            use_all_cores=use_all_cores,
             max_retries=max_retries
         }
         call picard.sort { input:
