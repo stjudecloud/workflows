@@ -146,7 +146,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="estimate">ESTIMATE</h2>
+                <h2 id="estimate">estimate</h2>
 <dl>
 <dt>description</dt>
 <dd>Runs the ESTIMATE software package on a feature counts file</dd>
@@ -161,7 +161,7 @@
 <li><code>counts_file</code> (File, <strong>required</strong>): A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with <code>htseq.wdl</code>.</li>
 <li><code>gene_lengths_file</code> (File, <strong>required</strong>): A two column headered TSV file with gene names (matching those in the <code>counts</code> file) in the first column and feature lengths (as integers) in the second column. Can be generated with <code>calc-gene-lengths.wdl</code>.</li>
 <li><code>calc_tpm._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>run_ESTIMATE._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>run_estimate._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -172,9 +172,9 @@
 <li><code>calc_tpm.disk_size_gb</code> (Int, default=10)</li>
 <li><code>calc_tpm.memory_gb</code> (Int, default=4)</li>
 <li><code>calc_tpm.prefix</code> (String, default=basename(counts,".feature-counts.txt"))</li>
-<li><code>run_ESTIMATE.disk_size_gb</code> (Int, default=10)</li>
-<li><code>run_ESTIMATE.memory_gb</code> (Int, default=4)</li>
-<li><code>run_ESTIMATE.outfile_name</code> (String, default=basename(gene_expression_file,".TPM.txt") + ".ESTIMATE.gct")</li>
+<li><code>run_estimate.disk_size_gb</code> (Int, default=10)</li>
+<li><code>run_estimate.memory_gb</code> (Int, default=4)</li>
+<li><code>run_estimate.outfile_name</code> (String, default=basename(gene_expression_file,".TPM.txt") + ".ESTIMATE.gct")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
