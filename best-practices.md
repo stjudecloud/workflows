@@ -4,10 +4,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
 
 ## Rules
 
-- All WDL should be written in v1.0
-  - This is to enable the broadest base of support of your workflows
-  - This recommendation is subject to change come broader support for WDL v1.1
-- Variables should be in "snake_case"
+- All WDL should be written in v1.1
 - See `template/common-parameter-meta.txt` for common description strings.
   - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
 - Check all assumptions made about workflow inputs before beginning long running executions
@@ -25,7 +22,6 @@ All rules below should be followed by contributors to this repo. Contributors sh
     - Contributors can mix and match the available templates, copy and pasting subsections as appropriate
     - It is allowed to have one resource allocated dynamically, and another allocated statically in the same task.
     - It is *not* allowed to have a resource which can be allocated *either* statically or dynamically.
-      - This is technically feasible, but is too complicated for maintenance and end-users.
       - e.g. `memory_gb` and `modify_memory_gb` cannot be present in the same task.
 - All tasks and workflows should have a `max_retries` input.
   - This should be defaulted to `1` for nearly all tasks
