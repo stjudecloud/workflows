@@ -83,7 +83,7 @@ task bwa_aln {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
 }
@@ -170,7 +170,7 @@ task bwa_aln_pe {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
 }
@@ -250,7 +250,7 @@ task bwa_mem {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
 }
@@ -302,7 +302,7 @@ task build_bwa_db {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: max_retries
     }
 }

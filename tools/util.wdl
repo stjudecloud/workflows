@@ -48,7 +48,7 @@ task download {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }
@@ -102,7 +102,7 @@ task get_read_groups {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
 }
@@ -146,7 +146,7 @@ task split_string {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }
@@ -238,7 +238,7 @@ END
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
+        container: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
         maxRetries: max_retries
     }
 }
@@ -279,7 +279,7 @@ task compression_integrity {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
 }
@@ -330,7 +330,7 @@ task add_to_bam_header {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: max_retries
     }
 }
@@ -375,7 +375,7 @@ task unpack_tarball {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }
@@ -430,7 +430,7 @@ task make_coverage_regions_beds {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
+        container: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
         maxRetries: max_retries
     }
 }
@@ -696,7 +696,7 @@ END
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }
@@ -769,7 +769,7 @@ task qc_summary {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }

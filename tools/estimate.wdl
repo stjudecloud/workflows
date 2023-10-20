@@ -75,12 +75,12 @@ END
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: max_retries
     }
 }
 
-task run_ESTIMATE {
+task run_estimate {
     meta {
         description: "Given a gene expression file, run the ESTIMATE software package"
         outputs:  {
@@ -127,7 +127,7 @@ END
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/stjudecloud/estimate:1.0.0'
+        container: 'ghcr.io/stjudecloud/estimate:1.0.0'
         maxRetries: max_retries
     }
 }

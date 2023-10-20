@@ -46,8 +46,6 @@ task coverage {
         set -euo pipefail
 
         # localize BAM and BAI to CWD
-        # some backends prevent writing to the inputs directories
-        # to accomodate this, create symlinks in CWD
         CWD_BAM=~{basename(bam)}
         ln -s ~{bam} "$CWD_BAM"
         ln -s ~{bam_index} "$CWD_BAM".bai
@@ -72,7 +70,7 @@ task coverage {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/mosdepth:0.3.3--h37c5b7d_2'
+        container: 'quay.io/biocontainers/mosdepth:0.3.3--h37c5b7d_2'
         maxRetries: max_retries
     }
 }

@@ -1,5 +1,5 @@
-## # WDL tool template
-
+# SPDX-License-Identifier: MIT
+# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 task static_disk_and_ram_task {
@@ -30,7 +30,7 @@ task static_disk_and_ram_task {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: ""
+        container: ""
         maxRetries: max_retries
     }
 }
@@ -68,7 +68,7 @@ task dynamic_disk_and_ram_task {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: ""
+        container: ""
         maxRetries: max_retries
     }
 }
@@ -79,18 +79,18 @@ task use_all_cores_task {
     }
 
     parameter_meta {
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         ncpu: "Number of cores to allocate for task"
         memory_gb: "RAM to allocate for task, specified in GB"
         disk_size_gb: "Disk space to allocate for task, specified in GB"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
         max_retries: "Number of times to retry in case of failure"
     }
 
     input {
+        Boolean use_all_cores = false
         Int ncpu = 1
         Int memory_gb = <>
         Int disk_size_gb = <>
-        Boolean use_all_cores = false
         Int max_retries = 1
     }
 
@@ -111,7 +111,7 @@ task use_all_cores_task {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: ""
+        container: ""
         maxRetries: max_retries
     }
 }
@@ -141,8 +141,6 @@ task localize_files_task {
         set -euo pipefail
 
         # localize BAM and BAI to CWD
-        # some backends prevent writing to the inputs directories
-        # to accomodate this, create symlinks in CWD
         CWD_BAM=~{basename(bam)}
         ln -s ~{bam} "$CWD_BAM"
         ln -s ~{bam_index} "$CWD_BAM".bai
@@ -161,7 +159,7 @@ task localize_files_task {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: ""
+        container: ""
         maxRetries: max_retries
     }
 }
@@ -196,7 +194,7 @@ task outfile_name_task {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: ""
+        container: ""
         maxRetries: max_retries
     }
 }
@@ -225,13 +223,13 @@ task prefix_task {
     >>>
 
     output {
-        File <output name> = prefix + ".<extension>"
+        File <output name> = prefix + ".<new extension>"
     }
 
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: ""
+        container: ""
         maxRetries: max_retries
     }
 }
@@ -242,13 +240,21 @@ task string_choices_task {
     }
 
     parameter_meta {
-        <choice_input>: {
+        <choice_input1>: {
             description: "Description of the parameter"
             choices: [
                 'foo',
                 'bar',
                 'baz'
             ]
+        }
+        <choice_input2>: {
+            description: "Description of the parameter",
+            choices: {
+                foo: "foo needs a very detailed description",
+                bar: "bar needs a very detailed description",
+                baz: "baz needs a very detailed description"
+            }
         }
         memory_gb: "RAM to allocate for task, specified in GB"
         disk_size_gb: "Disk space to allocate for task, specified in GB"
@@ -273,7 +279,7 @@ task string_choices_task {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: ""
+        container: ""
         maxRetries: max_retries
     }
 }

@@ -65,7 +65,7 @@ task multiqc {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/multiqc:1.15--pyhdfd78af_0'
+        container: 'quay.io/biocontainers/multiqc:1.15--pyhdfd78af_0'
         maxRetries: max_retries
     }
 }

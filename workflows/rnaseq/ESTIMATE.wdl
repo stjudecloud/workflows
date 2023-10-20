@@ -4,7 +4,7 @@ version 1.1
 
 import "../../tools/estimate.wdl"
 
-workflow ESTIMATE {
+workflow estimate {
     meta {
         description: "Runs the ESTIMATE software package on a feature counts file"
         external_help: "https://bioinformatics.mdanderson.org/estimate/"
@@ -31,13 +31,13 @@ workflow ESTIMATE {
         gene_lengths=gene_lengths_file,
         max_retries=max_retries
     }
-    call estimate.run_ESTIMATE { input:
+    call estimate.run_estimate { input:
         gene_expression_file=calc_tpm.tpm_file,
         max_retries=max_retries
     }
 
     output {
         File tpm=calc_tpm.tpm_file
-        File estimate_result=run_ESTIMATE.estimate_file
+        File estimate_result=run_estimate.estimate_file
     }
 }

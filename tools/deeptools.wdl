@@ -46,8 +46,6 @@ task bam_coverage {
         fi
 
         # localize BAM and BAI to CWD
-        # some backends prevent writing to the inputs directories
-        # to accomodate this, create symlinks in CWD
         CWD_BAM=~{basename(bam)}
         ln -s ~{bam} "$CWD_BAM"
         ln -s ~{bam_index} "$CWD_BAM".bai
@@ -69,7 +67,7 @@ task bam_coverage {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/deeptools:3.5.1--pyhdfd78af_1'
+        container: 'quay.io/biocontainers/deeptools:3.5.1--pyhdfd78af_1'
         maxRetries: max_retries
     }
 } 
