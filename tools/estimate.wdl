@@ -80,7 +80,7 @@ END
     }
 }
 
-task run_ESTIMATE {
+task run_estimate {
     meta {
         description: "Given a gene expression file, run the ESTIMATE software package"
         outputs:  {
