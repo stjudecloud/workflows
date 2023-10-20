@@ -4,7 +4,7 @@ version 1.1
 
 import "../../tools/estimate.wdl"
 
-workflow run_estimate {
+workflow estimate {
     meta {
         description: "Runs the ESTIMATE software package on a feature counts file"
         external_help: "https://bioinformatics.mdanderson.org/estimate/"
