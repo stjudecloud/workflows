@@ -108,6 +108,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calc gene lengths</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/dnaseq-standard/">Dnaseq standard</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make qc reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
@@ -214,15 +216,19 @@
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bwa_db_tar_gz</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
-<li><code>fastq</code> (File, <strong>required</strong>): Input FASTQ file to align with bwa</li>
+<li><code>read_one_fastq_gz</code> (File, <strong>required</strong>): Input gzipped FASTQ read one file to align with bwa</li>
+</ul>
+<h4 id="optional">Optional</h4>
+<ul>
+<li><code>read_two_fastq_gz</code> (File?): Input gzipped FASTQ read two file to align with bwa</li>
 </ul>
 <h4 id="defaults_2">Defaults</h4>
 <ul>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=5): RAM to allocate for task, specified in GB</li>
+<li><code>memory_gb</code> (Int, default=10): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
-<li><code>prefix</code> (String, default=sub(basename(fastq),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
+<li><code>prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>read_group</code> (String, default=""): Read group information for BWA to insert into the header. BWA format: '@RG   ID:foo  SM:bar'</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 </ul>

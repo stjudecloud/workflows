@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>ESTIMATE - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Dnaseq standard - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "ESTIMATE";
-        var mkdocs_page_input_path = "workflows/ESTIMATE.md";
+        var mkdocs_page_name = "Dnaseq standard";
+        var mkdocs_page_input_path = "workflows/dnaseq-standard.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -88,7 +88,15 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">ESTIMATE</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to fastqs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">Bwa db build</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calc gene lengths</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Dnaseq standard</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -103,14 +111,6 @@
     <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
     </li>
     </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../bam-to-fastqs/">Bam to fastqs</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../bwa-db-build/">Bwa db build</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../calc-gene-lengths/">Calc gene lengths</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../dnaseq-standard/">Dnaseq standard</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make qc reference</a>
                   </li>
@@ -138,9 +138,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Workflows</li>
-      <li class="breadcrumb-item active">ESTIMATE</li>
+      <li class="breadcrumb-item active">Dnaseq standard</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/ESTIMATE.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/dnaseq-standard.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -148,47 +148,104 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="estimate">estimate</h2>
-<dl>
-<dt>description</dt>
-<dd>Runs the ESTIMATE software package on a feature counts file</dd>
-<dt>external_help</dt>
-<dd>https://bioinformatics.mdanderson.org/estimate/</dd>
-<dt>outputs</dt>
-<dd>{'tpm': 'Transcripts Per Million file', 'estimate_result': 'Final output of ESTIMATE'}</dd>
-</dl>
+                <p><strong>WARNING:</strong> this workflow is experimental! Use at your own risk!</p>
+<h2 id="dnaseq_standard_experimental">dnaseq_standard_experimental</h2>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>counts_file</code> (File, <strong>required</strong>): A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with <code>htseq.wdl</code>.</li>
-<li><code>gene_lengths_file</code> (File, <strong>required</strong>): A two column headered TSV file with gene names (matching those in the <code>counts</code> file) in the first column and feature lengths (as integers) in the second column. Can be generated with <code>calc-gene-lengths.wdl</code>.</li>
-<li><code>calc_tpm._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>run_estimate._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>bam</code> (File, <strong>required</strong>)</li>
+<li><code>bwa_db</code> (File, <strong>required</strong>)</li>
+<li><code>bwa_mem._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>get_read_groups._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>merge._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>sort._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>validate_input_bam._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>bam_to_fastqs.bam_to_fastq._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>bam_to_fastqs.fqlint._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>bam_to_fastqs.quickcheck._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>bam_to_fastqs.split._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
+<li><code>max_retries</code> (Int?)</li>
+<li><code>merge.new_header</code> (File?)</li>
+<li><code>validate_input_bam.reference_fasta</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>calc_tpm.disk_size_gb</code> (Int, default=10)</li>
-<li><code>calc_tpm.memory_gb</code> (Int, default=4)</li>
-<li><code>calc_tpm.prefix</code> (String, default=basename(counts,".feature-counts.txt"))</li>
-<li><code>run_estimate.disk_size_gb</code> (Int, default=10)</li>
-<li><code>run_estimate.memory_gb</code> (Int, default=4)</li>
-<li><code>run_estimate.outfile_name</code> (String, default=basename(gene_expression_file,".TPM.txt") + ".ESTIMATE.gct")</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>validate_input</code> (Boolean, default=true)</li>
+<li><code>bwa_mem.memory_gb</code> (Int, default=10)</li>
+<li><code>bwa_mem.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>bwa_mem.ncpu</code> (Int, default=1)</li>
+<li><code>bwa_mem.prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$",""))</li>
+<li><code>get_read_groups.memory_gb</code> (Int, default=4)</li>
+<li><code>get_read_groups.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>merge.attach_rg</code> (Boolean, default=true)</li>
+<li><code>merge.combine_rg</code> (Boolean, default=true)</li>
+<li><code>merge.memory_gb</code> (Int, default=4)</li>
+<li><code>merge.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>merge.name_sorted</code> (Boolean, default=false)</li>
+<li><code>merge.ncpu</code> (Int, default=1)</li>
+<li><code>merge.region</code> (String, default="")</li>
+<li><code>sort.memory_gb</code> (Int, default=25)</li>
+<li><code>sort.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>sort.prefix</code> (String, default=basename(bam,".bam") + ".sorted")</li>
+<li><code>sort.sort_order</code> (String, default="coordinate")</li>
+<li><code>validate_input_bam.ignore_list</code> (Array[String], default=["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"])</li>
+<li><code>validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
+<li><code>validate_input_bam.max_errors</code> (Int, default=2147483647)</li>
+<li><code>validate_input_bam.memory_gb</code> (Int, default=16)</li>
+<li><code>validate_input_bam.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>validate_input_bam.outfile_name</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
+<li><code>validate_input_bam.succeed_on_errors</code> (Boolean, default=false)</li>
+<li><code>validate_input_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
+<li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.F</code> (String, default="0x900")</li>
+<li><code>bam_to_fastqs.bam_to_fastq.G</code> (String, default="0")</li>
+<li><code>bam_to_fastqs.bam_to_fastq.f</code> (String, default="0")</li>
+<li><code>bam_to_fastqs.bam_to_fastq.fail_on_unexpected_reads</code> (Boolean, default=false)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.fast_mode</code> (Boolean, default=true)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.modify_memory_gb</code> (Int, default=0)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.ncpu</code> (Int, default=1)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.output_singletons</code> (Boolean, default=false)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>bam_to_fastqs.bam_to_fastq.store_collated_bam</code> (Boolean, default=false)</li>
+<li><code>bam_to_fastqs.fqlint.disable_validator_codes</code> (Array[String], default=[])</li>
+<li><code>bam_to_fastqs.fqlint.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>bam_to_fastqs.fqlint.modify_memory_gb</code> (Int, default=0)</li>
+<li><code>bam_to_fastqs.fqlint.paired_read_validation_level</code> (String, default="high")</li>
+<li><code>bam_to_fastqs.fqlint.panic</code> (Boolean, default=true)</li>
+<li><code>bam_to_fastqs.fqlint.single_read_validation_level</code> (String, default="high")</li>
+<li><code>bam_to_fastqs.quickcheck.memory_gb</code> (Int, default=4)</li>
+<li><code>bam_to_fastqs.quickcheck.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>bam_to_fastqs.split.memory_gb</code> (Int, default=4)</li>
+<li><code>bam_to_fastqs.split.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>bam_to_fastqs.split.ncpu</code> (Int, default=1)</li>
+<li><code>bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam"))</li>
+<li><code>bam_to_fastqs.split.reject_unaccounted</code> (Boolean, default=true)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>tpm</code> (File)</li>
-<li><code>estimate_result</code> (File)</li>
+<li><code>validate_input_bam.validate_report</code> (File?)</li>
+<li><code>validate_input_bam.validated_bam</code> (File?)</li>
+<li><code>get_read_groups.read_groups</code> (Array[String])</li>
+<li><code>bam_to_fastqs.read1s</code> (Array[File])</li>
+<li><code>bam_to_fastqs.read2s</code> (Array[File?])</li>
+<li><code>sort.sorted_bam</code> (Array[File])</li>
+<li><code>sort.sorted_bam_index</code> (Array[File])</li>
+<li><code>sort.sorted_bam_md5</code> (Array[File])</li>
+<li><code>bwa_mem.bam</code> (Array[File])</li>
+<li><code>merge.merged_bam</code> (File)</li>
 </ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../10x-bam-to-fastqs/" class="btn btn-neutral float-left" title="Cell Ranger BAM to FASTQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../bam-to-fastqs/" class="btn btn-neutral float-right" title="Bam to fastqs">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../calc-gene-lengths/" class="btn btn-neutral float-left" title="Calc gene lengths"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../make-qc-reference/" class="btn btn-neutral float-right" title="Make qc reference">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -216,10 +273,10 @@
         </span>
     
     
-      <span><a href="../10x-bam-to-fastqs/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../calc-gene-lengths/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../bam-to-fastqs/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../make-qc-reference/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
