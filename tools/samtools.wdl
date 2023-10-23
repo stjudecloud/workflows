@@ -86,7 +86,7 @@ task split {
         samtools split \
             --threads "$n_cores" \
             -u ~{prefix}.unaccounted_reads.bam \
-            -f '~{prefix}_%!.bam' \
+            -f '~{prefix}.%!.bam' \
             ~{bam}
         
         samtools head \
@@ -551,7 +551,7 @@ task bam_to_fastq {
 
     parameter_meta {
         bam: "Input name sorted or collated BAM format file to convert into FASTQ(s)"
-        prefix: "Prefix for output FASTQ(s). Extensions `[,_R1,_R2,.singleton].fastq.gz` will be added depending on other options."
+        prefix: "Prefix for output FASTQ(s). Extensions `[,.R1,.R2,.singleton].fastq.gz` will be added depending on other options."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
         # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."  # introduced in v1.18 no quay.io image yet
@@ -606,11 +606,11 @@ task bam_to_fastq {
             -G ~{G} \
             -1 ~{if interleaved
                 then prefix + ".fastq.gz"
-                else prefix + "_R1.fastq.gz"
+                else prefix + ".R1.fastq.gz"
             } \
             -2 ~{
                 if paired_end then (
-                    if interleaved then prefix + ".fastq.gz" else prefix + "_R2.fastq.gz"
+                    if interleaved then prefix + ".fastq.gz" else prefix + ".R2.fastq.gz"
                 )
                 else "junk.read2.fastq.gz"
             } \
@@ -634,8 +634,8 @@ task bam_to_fastq {
     output {
         # one of `read_one_fastq_gz` or `interleaved_reads_fastq_gz` is
         # guaranteed to exist at the end of execution
-        File? read_one_fastq_gz = "~{prefix}_R1.fastq.gz"
-        File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
+        File? read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
+        File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
         File? singleton_reads_fastq_gz = "~{prefix}.singleton.fastq.gz"
         File? interleaved_reads_fastq_gz = "~{prefix}.fastq.gz"
     }
@@ -663,7 +663,7 @@ task collate_to_fastq {
 
     parameter_meta {
         bam: "Input BAM format file to collate and convert to FASTQ(s)"
-        prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,_R1,_R2,.singleton].fastq.gz` will be added."
+        prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
         # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."  # introduced in v1.18 no quay.io image yet
@@ -732,13 +732,13 @@ task collate_to_fastq {
                 -G ~{G} \
                 -1 ~{if interleaved
                     then prefix + ".fastq.gz"
-                    else prefix + "_R1.fastq.gz"
+                    else prefix + ".R1.fastq.gz"
                 } \
                 -2 ~{
                     if paired_end then (
                         if interleaved
                         then prefix + ".fastq.gz"
-                        else prefix + "_R2.fastq.gz"
+                        else prefix + ".R2.fastq.gz"
                     )
                     else "junk.read2.fastq.gz"
                 } \
@@ -762,8 +762,8 @@ task collate_to_fastq {
         # one of `read_one_fastq_gz` or `interleaved_reads_fastq_gz` is
         # guaranteed to exist at the end of execution
         File? collated_bam = "~{prefix}.collated.bam"
-        File? read_one_fastq_gz = "~{prefix}_R1.fastq.gz"
-        File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
+        File? read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
+        File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
         File? singleton_reads_fastq_gz = "~{prefix}.singleton.fastq.gz"
         File? interleaved_reads_fastq_gz = "~{prefix}.fastq.gz"
     }
