@@ -9,6 +9,7 @@ import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
+import "../general/samtools_merge.wdl" as samtools_merge_wf
 
 workflow dnaseq_standard_experimental {
     input {
@@ -58,10 +59,9 @@ workflow dnaseq_standard_experimental {
             max_retries=max_retries
         }
     }
-    call samtools.merge { input:
+    call samtools_merge_wf.samtools_merge { input:
         bams=sort.sorted_bam,
         prefix=prefix,
-        combine_pg=false,
         use_all_cores=use_all_cores,
         max_retries=max_retries
     }
