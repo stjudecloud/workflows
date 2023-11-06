@@ -7,6 +7,17 @@ version 1.1
 import "../../tools/samtools.wdl"
 
 workflow samtools_merge {
+    meta{
+        description: "Runs `samtools merge`, with optional iteration to avoid maximum command line argument length"
+    }
+    parameter_meta{
+        bams: "BAMs to merge into a final BAM"
+        max_length: "Maximum number of BAMs to merge before using iteration"
+        max_retries: "Number of times to retry in case of failure"
+        prefix: "Prefix for output BAM."
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+
+    }
     input {
         Array[File] bams
         Int max_length = 100

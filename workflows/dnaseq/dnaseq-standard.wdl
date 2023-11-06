@@ -12,6 +12,17 @@ import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "../general/samtools_merge.wdl" as samtools_merge_wf
 
 workflow dnaseq_standard_experimental {
+    meta{
+        description: "Aligns DNA reads using bwa mem"
+    }
+    parameter_meta{
+        bam: "Input BAM to realign"
+        bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+        max_retries: "Number of times to retry in case of failure"
+        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
+        validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
+        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+    }
     input {
         File bam
         File bwa_db
@@ -64,5 +75,9 @@ workflow dnaseq_standard_experimental {
         prefix=prefix,
         use_all_cores=use_all_cores,
         max_retries=max_retries
+    }
+
+    output {
+        File harmonized_bam = samtools_merge.merged_bam
     }
 }
