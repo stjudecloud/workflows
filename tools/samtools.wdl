@@ -647,12 +647,11 @@ task bam_to_fastq {
     >>>
 
     output {
-        # one of `read_one_fastq_gz` or `interleaved_reads_fastq_gz` is
-        # guaranteed to exist at the end of execution
         File? read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
         File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
         File? singleton_reads_fastq_gz = "~{prefix}.singleton.fastq.gz"
         File? interleaved_reads_fastq_gz = "~{prefix}.fastq.gz"
+        File? single_end_reads_fastq_gz = "~{prefix}.fastq.gz"
     }
 
     runtime {
@@ -686,6 +685,7 @@ task collate_to_fastq {
         fast_mode: "Fast mode for `samtools collate` (primary alignments only)"
         store_collated_bam: "Save the collated BAM (true) or delete it after FASTQ split (false)?"
         paired_end: "Is the data paired-end?"
+        append_read_number: "Append /1 and /2 suffixes to read names"
         interleaved: "Create an interleaved FASTQ file from paired-end data?"
         output_singletons: "Output singleton reads as their own FASTQ?"
         fail_on_unexpected_reads: {
@@ -709,6 +709,7 @@ task collate_to_fastq {
         Boolean fast_mode = true
         Boolean store_collated_bam = false
         Boolean paired_end = true
+        Boolean append_read_number = true
         Boolean interleaved = false
         Boolean output_singletons = false
         Boolean fail_on_unexpected_reads = false
@@ -745,24 +746,35 @@ task collate_to_fastq {
                 -f ~{f} \
                 -F ~{F} \
                 -G ~{G} \
-                -1 ~{if interleaved
-                    then prefix + ".fastq.gz"
-                    else prefix + ".R1.fastq.gz"
+                ~{if append_read_number
+                    then "-N"
+                    else "-n"
+                } \
+                -1 ~{
+                    if paired_end then (
+                        if interleaved then prefix + ".fastq.gz" else prefix + "_R1.fastq.gz"
+                    )
+                    else prefix + ".fastq.gz"
                 } \
                 -2 ~{
                     if paired_end then (
-                        if interleaved
-                        then prefix + ".fastq.gz"
-                        else prefix + ".R2.fastq.gz"
+                        if interleaved then prefix + ".fastq.gz" else prefix + ".R2.fastq.gz"
                     )
-                    else "junk.read2.fastq.gz"
+                    else prefix + ".fastq.gz"
                 } \
-                -s ~{
-                    if output_singletons
-                    then prefix+".singleton.fastq.gz"
-                    else "junk.singleton.fastq.gz"
+                ~{
+                    if paired_end then (
+                        if output_singletons
+                        then "-s " + prefix+".singleton.fastq.gz"
+                        else "-s junk.singleton.fastq.gz"
+                    )
+                    else ""
                 } \
-                -0 junk.unknown_bit_setting.fastq.gz
+                -0 ~{
+                    if paired_end
+                    then "junk.unknown_bit_setting.fastq.gz"
+                    else prefix + ".fastq.gz"
+                }
         
         if ~{fail_on_unexpected_reads} \
             && find . -name 'junk.*.fastq.gz' ! -empty | grep -q .
@@ -774,13 +786,12 @@ task collate_to_fastq {
     >>>
 
     output {
-        # one of `read_one_fastq_gz` or `interleaved_reads_fastq_gz` is
-        # guaranteed to exist at the end of execution
         File? collated_bam = "~{prefix}.collated.bam"
         File? read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
         File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
         File? singleton_reads_fastq_gz = "~{prefix}.singleton.fastq.gz"
         File? interleaved_reads_fastq_gz = "~{prefix}.fastq.gz"
+        File? single_end_reads_fastq_gz = "~{prefix}.fastq.gz"
     }
 
     runtime {
