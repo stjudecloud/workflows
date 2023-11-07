@@ -372,7 +372,7 @@
 <h2 id="bam_to_fastq">bam_to_fastq</h2>
 <dl>
 <dt>description</dt>
-<dd>Runs <code>samtools fastq</code> on the input BAM file. Splits the BAM into FASTQ files. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see <code>collate_to_fastq</code>.</dd>
+<dd>Runs <code>samtools fastq</code> on the input BAM file. Converts the BAM into FASTQ files. If paired-end = false, then all reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see <code>collate_to_fastq</code>.</dd>
 <dt>outputs</dt>
 <dd>{'read_one_fastq_gz': 'Gzipped FASTQ file with 1st reads in pair', 'read_two_fastq_gz': 'Gzipped FASTQ file with 2nd reads in pair', 'singleton_reads_fastq_gz': 'A gzipped FASTQ containing singleton reads', 'interleaved_reads_fastq_gz': 'An interleaved gzipped paired-end FASTQ'}</dd>
 </dl>
@@ -386,6 +386,7 @@
 <ul>
 <li><code>F</code> (String, default="0x900"): Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments.</li>
 <li><code>G</code> (String, default="0"): Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
+<li><code>append_read_number</code> (Boolean, default=true): Append /1 and /2 suffixes to read names</li>
 <li><code>f</code> (String, default="0"): Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
 <li><code>fail_on_unexpected_reads</code> (Boolean, default=false): The definition of 'unexpected' depends on whether the values of <code>paired_end</code> and <code>output_singletons</code> are true or false. In any case, reads that have neither or both <code>first</code> and <code>last</code> bits set are considered unexpected. If <code>paired_end</code> is <code>true</code> and <code>output_singletons</code> is <code>false</code>, singleton reads are considered unexpected. A singleton read is a read with either the <code>first</code> or the <code>last</code> bit set and that possesses a <em>unique</em> QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if <code>output_singletons</code> is <code>true</code>, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If <code>paired_end</code> is <code>false</code>, a read with only the <code>last</code> bit set is considered unexpected. This is because only reads with the <code>first</code> bit set should be present in a Single-End BAM. If <code>fail_on_unexpected_reads</code> is <code>false</code>, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.; <strong>description</strong>: Should the task fail if reads with an unexpected <code>first</code>/<code>last</code> bit setting are discovered?</li>
 <li><code>interleaved</code> (Boolean, default=false): Create an interleaved FASTQ file from paired-end data?</li>
@@ -404,6 +405,7 @@
 <li><code>read_two_fastq_gz</code> (File?)</li>
 <li><code>singleton_reads_fastq_gz</code> (File?)</li>
 <li><code>interleaved_reads_fastq_gz</code> (File?)</li>
+<li><code>single_end_reads_fastq_gz</code> (File?)</li>
 </ul>
 <h2 id="collate_to_fastq">collate_to_fastq</h2>
 <dl>
@@ -422,6 +424,7 @@
 <ul>
 <li><code>F</code> (String, default="0x900"): Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments.</li>
 <li><code>G</code> (String, default="0"): Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
+<li><code>append_read_number</code> (Boolean, default=true): Append /1 and /2 suffixes to read names</li>
 <li><code>f</code> (String, default="0"): Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
 <li><code>fail_on_unexpected_reads</code> (Boolean, default=false): The definition of 'unexpected' depends on whether the values of <code>paired_end</code> and <code>output_singletons</code> are true or false. In any case, reads that have neither or both <code>first</code> and <code>last</code> bits set are considered unexpected. If <code>paired_end</code> is <code>true</code> and <code>output_singletons</code> is <code>false</code>, singleton reads are considered unexpected. A singleton read is a read with either the <code>first</code> or the <code>last</code> bit set and that possesses a <em>unique</em> QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if <code>output_singletons</code> is <code>true</code>, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If <code>paired_end</code> is <code>false</code>, a read with only the <code>last</code> bit set is considered unexpected. This is because only reads with the <code>first</code> bit set should be present in a Single-End BAM. If <code>fail_on_unexpected_reads</code> is <code>false</code>, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.; <strong>description</strong>: Should the task fail if reads with an unexpected <code>first</code>/<code>last</code> bit setting are discovered?</li>
 <li><code>fast_mode</code> (Boolean, default=true): Fast mode for <code>samtools collate</code> (primary alignments only)</li>
@@ -443,6 +446,35 @@
 <li><code>read_two_fastq_gz</code> (File?)</li>
 <li><code>singleton_reads_fastq_gz</code> (File?)</li>
 <li><code>interleaved_reads_fastq_gz</code> (File?)</li>
+<li><code>single_end_reads_fastq_gz</code> (File?)</li>
+</ul>
+<h2 id="fixmate">fixmate</h2>
+<dl>
+<dt>description</dt>
+<dd>Runs <code>samtools fixmate</code> on the input BAM file. This fills in mate coordinates and insert size fields.</dd>
+</dl>
+<h3 id="inputs_10">Inputs</h3>
+<h4 id="required_10">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to add mate information. Must be name-sorted or name-collated.</li>
+</ul>
+<h4 id="defaults_10">Defaults</h4>
+<ul>
+<li><code>add_cigar</code> (Boolean, default=true): Add template cigar ct tag</li>
+<li><code>add_mate_score</code> (Boolean, default=true): Add mate score tags. These are used by markdup to select the best reads to keep.</li>
+<li><code>disable_proper_pair_check</code> (Boolean, default=false): Disable proper pair check [ensure one forward and one reverse read in each pair]</li>
+<li><code>extension</code> (String, default=".bam"); <strong>description</strong>: File format extension to use for output file.; <strong>choices</strong>: ['.sam', '.bam', '.cram']</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam") + ".fixmate"): Prefix for the output file. The extension specified with the <code>extension</code> parameter will be added.</li>
+<li><code>remove_unaligned_and_secondary</code> (Boolean, default=false): Remove unmapped and secondary reads</li>
+</ul>
+<h3 id="outputs_10">Outputs</h3>
+<ul>
+<li><code>fixmate_bam</code> (File)</li>
 </ul>
               
             </div>
