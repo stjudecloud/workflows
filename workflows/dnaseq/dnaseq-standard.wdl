@@ -14,6 +14,9 @@ import "../general/samtools_merge.wdl" as samtools_merge_wf
 workflow dnaseq_standard_experimental {
     meta{
         description: "Aligns DNA reads using bwa mem"
+        output: {
+            harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa mem"
+        }
     }
     parameter_meta{
         bam: "Input BAM to realign"
