@@ -9,12 +9,12 @@ import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
-import "../general/samtools_merge.wdl" as samtools_merge_wf
+import "../general/samtools-merge.wdl" as samtools_merge_wf
 
 workflow dnaseq_standard_experimental {
     meta{
         description: "Aligns DNA reads using bwa mem"
-        output: {
+        outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa mem"
         }
     }
