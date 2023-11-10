@@ -153,7 +153,8 @@ task split_string {
 
 task calc_gene_lengths {
     meta {
-        description: "Calculate gene lengths from a GTF feature file"  # TODO explain algorithm
+        description: "Calculate gene lengths from a GTF feature file using the \"sum of lengths of nonoverlapping exons\" algorithm"
+        help: "The \"sum of lengths of nonoverlapping exons\" algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
         outputs: {
             gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
         }

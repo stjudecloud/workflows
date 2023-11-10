@@ -46,7 +46,7 @@ for line in counts_file:
 counts_file.close()
 
 lengths_file = open(os.environ['GENE_LENGTHS'], 'r')
-rpks = {}
+rpks = {}  # Reads Per Kilobase
 tot_rpk = 0
 lengths_file.readline()  # discard header
 for line in lengths_file:
@@ -56,13 +56,13 @@ for line in lengths_file:
     rpks[gene.strip()] = rpk
 lengths_file.close()
 
-sf = tot_rpk / 1000000
+scaling_factor = tot_rpk / 1000000
 
 sample_name = '.'.join(os.environ['OUTFILE'].split('.')[:-2])  # equivalent to ~{prefix}
 outfile = open(os.environ['OUTFILE'], 'w')
 print(f"Gene name\t{sample_name}", file=outfile)
 for gene, rpk in sorted(rpks.items()):
-    tpm = rpk / sf
+    tpm = rpk / scaling_factor
     print(f"{gene}\t{tpm:.3f}", file=outfile)
 outfile.close()
 END
