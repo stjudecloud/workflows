@@ -153,8 +153,8 @@ task split_string {
 
 task calc_gene_lengths {
     meta {
-        description: "Calculate gene lengths from a GTF feature file using the \"sum of lengths of nonoverlapping exons\" algorithm"
-        help: "The \"sum of lengths of nonoverlapping exons\" algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
+        description: "Calculate gene lengths from a GTF feature file using the \"non-overlapping exonic length\" algorithm"
+        help: "The \"non-overlapping exonic length\" algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
         outputs: {
             gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
         }
@@ -185,49 +185,50 @@ task calc_gene_lengths {
         GTF="~{gtf}" OUTFILE="~{outfile_name}" python - <<END
 import os  # lint-check: ignore
 import gtfparse  # lint-check: ignore
-import numpy as np  # lint-check: ignore
+from collections import defaultdict  # lint-check: ignore
 
 gtf_name = os.environ['GTF']
 outfile = open(os.environ['OUTFILE'], 'w')
 
 gtf = gtfparse.read_gtf(gtf_name)
 
-only_genes = gtf[gtf['feature'] == 'gene']
 only_exons = gtf[gtf['feature'] == 'exon']
+exon_starts = defaultdict(lambda: [])
+exon_ends = defaultdict(lambda: [])
 gene_start_offset = {}
 gene_end_offset = {}
 gene_exon_intersection = {}
-gene_total_exon_size = {}
 gene_length = {}
 
-for (index, value) in only_genes.iterrows():
+for (_index, value) in only_exons.iterrows():
     gene_name = value['gene_name']
     start = value['start']
     end = value['end']
-    size = end - start
+    exon_starts[gene_name].append(start)
+    exon_ends[gene_name].append(end)
+    if gene_name not in gene_start_offset:
+        gene_start_offset[gene_name] = start
+        gene_end_offset[gene_name] = end
+    else:
+        gene_start_offset[gene_name] = min(gene_start_offset[gene_name], start)
+        gene_end_offset[gene_name] = max(gene_end_offset[gene_name], end)
 
-    if size <= 0:
-        raise RuntimeError("Size of gene is negative!")
+for gene_name in exon_starts:
+    exon_starts[gene_name].sort()
+    exon_ends[gene_name].sort()
 
-    gene_start_offset[gene_name] = start
-    gene_end_offset[gene_name] = end
-    gene_exon_intersection[gene_name] = np.zeros(size)
-    gene_total_exon_size[gene_name] = 0
-    gene_length[gene_name] = end - start
+    gene_exon_intersection[gene_name] = [
+        False for _ in range(gene_end_offset[gene_name] - gene_start_offset[gene_name] + 1)
+    ]
 
-for (index, value) in only_exons.iterrows():
-    gene_name = value['gene_name']
-    offset = gene_start_offset[gene_name]
-    start = value['start'] - offset
-    end = value['end'] - offset
-    exon_length = end - start
-    gene_exon_intersection[gene_name][start:end] = 1
-    gene_total_exon_size[gene_name] += exon_length
+    for (start, end) in zip(exon_starts[gene_name], exon_ends[gene_name]):
+        gene_exon_intersection[gene_name][
+            start - gene_start_offset[gene_name] : end - gene_start_offset[gene_name] + 1
+        ] = True
 
-results = []
 print("Gene name\tlength", file=outfile)
 for (gene, exonic_intersection) in sorted(gene_exon_intersection.items()):
-    length = np.sum(exonic_intersection).astype(int)
+    length = sum(exonic_intersection)
     print(f"{gene}\t{length}", file=outfile)
 END
     >>>
@@ -706,7 +707,7 @@ task qc_summary {
     # TODO not sure why I implemented as a JSON. Wouldn't TSV be easier to work with? Talk to Delaram/David
     #   Delaram+David okayed a switch to TSV
     meta {
-        description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
+        description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive."
     }
 
     input {
@@ -759,7 +760,7 @@ task qc_summary {
                 inferred_sequencing_platform: $PLATFORM,
                 percent_thirtyX_coverage: ($THIRTYX_PERCENT | tonumber),
                 percent_duplicate: ($DUP_PERCENT | tonumber),
-                inferred_strandedness: $STRANDEDNESS 
+                inferred_strandedness: $STRANDEDNESS
             }' > ~{outfile_name}
     >>>
 
