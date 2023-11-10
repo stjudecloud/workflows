@@ -224,12 +224,15 @@ for gene_name in exon_starts:
     for (start, end) in zip(exon_starts[gene_name], exon_ends[gene_name]):
         gene_exon_intersection[gene_name][
             start - gene_start_offset[gene_name] : end - gene_start_offset[gene_name] + 1
-        ] = True
+        ] = [True for _ in range(start - end - 1)]
 
 print("Gene name\tlength", file=outfile)
 for (gene, exonic_intersection) in sorted(gene_exon_intersection.items()):
     length = sum(exonic_intersection)
     print(f"{gene}\t{length}", file=outfile)
+
+outfile.close()
+
 END
     >>>
 
