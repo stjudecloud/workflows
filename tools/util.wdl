@@ -185,25 +185,25 @@ task calc_gene_lengths {
         GTF="~{gtf}" OUTFILE="~{outfile_name}" python - <<END
 import os  # lint-check: ignore
 import gtfparse  # lint-check: ignore
+import numpy as np  # lint-check: ignore
 from collections import defaultdict  # lint-check: ignore
 
-gtf_name = os.environ['GTF']
-outfile = open(os.environ['OUTFILE'], 'w')
+gtf_name = os.environ["GTF"]
+outfile = open(os.environ["OUTFILE"], "w")
 
 gtf = gtfparse.read_gtf(gtf_name)
 
-only_exons = gtf[gtf['feature'] == 'exon']
+only_exons = gtf[gtf["feature"] == "exon"]
 exon_starts = defaultdict(lambda: [])
 exon_ends = defaultdict(lambda: [])
 gene_start_offset = {}
 gene_end_offset = {}
 gene_exon_intersection = {}
-gene_length = {}
 
-for (_index, value) in only_exons.iterrows():
-    gene_name = value['gene_name']
-    start = value['start']
-    end = value['end']
+for _index, value in only_exons.iterrows():
+    gene_name = value["gene_name"]
+    start = value["start"]
+    end = value["end"]
     exon_starts[gene_name].append(start)
     exon_ends[gene_name].append(end)
     if gene_name not in gene_start_offset:
@@ -217,17 +217,20 @@ for gene_name in exon_starts:
     exon_starts[gene_name].sort()
     exon_ends[gene_name].sort()
 
-    gene_exon_intersection[gene_name] = [
-        False for _ in range(gene_end_offset[gene_name] - gene_start_offset[gene_name] + 1)
-    ]
+    gene_exon_intersection[gene_name] = np.zeros_like(
+        gene_end_offset[gene_name] - gene_start_offset[gene_name], dtype=bool
+    )
 
-    for (start, end) in zip(exon_starts[gene_name], exon_ends[gene_name]):
+    for start, end in zip(exon_starts[gene_name], exon_ends[gene_name]):
         gene_exon_intersection[gene_name][
-            start - gene_start_offset[gene_name] : end - gene_start_offset[gene_name] + 1
-        ] = [True for _ in range(end - start + 1)]
+            start
+            - gene_start_offset[gene_name] : end
+            - gene_start_offset[gene_name]
+            + 1
+        ] = True
 
 print("Gene name\tlength", file=outfile)
-for (gene, exonic_intersection) in sorted(gene_exon_intersection.items()):
+for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
     length = sum(exonic_intersection)
     print(f"{gene}\t{length}", file=outfile)
 
