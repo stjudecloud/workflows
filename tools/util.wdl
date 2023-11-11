@@ -231,7 +231,7 @@ for gene_name in exon_starts:
 
 print("Gene name\tlength", file=outfile)
 for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
-    length = sum(exonic_intersection)
+    length = np.count_nonzero(exonic_intersection)
     print(f"{gene}\t{length}", file=outfile)
 
 outfile.close()
