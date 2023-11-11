@@ -203,7 +203,7 @@ gene_exon_intersection = {}
 for _index, value in only_exons.iterrows():
     gene_name = value["gene_name"]
     start = value["start"]
-    end = value["end"]
+    end = value["end"] + 1  # end is inclusive in GTF
     exon_starts[gene_name].append(start)
     exon_ends[gene_name].append(end)
     if gene_name not in gene_start_offset:
@@ -226,7 +226,6 @@ for gene_name in exon_starts:
             start
             - gene_start_offset[gene_name] : end
             - gene_start_offset[gene_name]
-            + 1
         ] = True
 
 print("Gene name\tlength", file=outfile)
