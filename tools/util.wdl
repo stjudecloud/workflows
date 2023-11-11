@@ -218,7 +218,7 @@ for gene_name in exon_starts:
     exon_ends[gene_name].sort()
 
     gene_exon_intersection[gene_name] = np.zeros_like(
-        gene_end_offset[gene_name] - gene_start_offset[gene_name], dtype=bool
+        np.arange(gene_end_offset[gene_name] - gene_start_offset[gene_name], dtype=bool)
     )
 
     for start, end in zip(exon_starts[gene_name], exon_ends[gene_name]):
