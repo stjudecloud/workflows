@@ -24,7 +24,7 @@ task count {
                 "no"
             ]
         }
-        outfile_name: "Name of the feature count file"
+        prefix: "Prefix for the feature counts file. The extension `.feature-counts.txt` will be added."
         feature_type: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored"
         idattr: "GFF attribute to be used as feature ID"
         mode: {
@@ -36,6 +36,7 @@ task count {
                 "intersection-nonempty"
             ]
         }
+        include_custom_header: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `feature\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format."
         pos_sorted: "Is the BAM position sorted (true) or name sorted (false)?"
         nonunique: "Score reads that align to or are assigned to more than one feature?"
         secondary_alignments: "Score secondary alignments (SAM flag 0x100)?"
@@ -50,10 +51,11 @@ task count {
         File bam
         File gtf
         String strandedness
-        String outfile_name = basename(bam, ".bam") + ".feature-counts.txt"
+        String prefix = basename(bam, ".bam")
         String feature_type = "exon"
         String idattr = "gene_name"
         String mode = "union"
+        Boolean include_custom_header = false
         Boolean pos_sorted = true
         Boolean nonunique = false
         Boolean secondary_alignments = false
@@ -64,6 +66,8 @@ task count {
         Int max_retries = 1
     }
 
+    String outfile_name = prefix + ".feature-counts.txt"
+
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
 
@@ -72,6 +76,14 @@ task count {
     Int disk_size_gb = ceil((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb  # TODO why would htseq need this much disk?
 
     command <<<
+        set -euo pipefail
+
+        if ~{include_custom_header}; then
+            echo -e "feature\t~{prefix}" > ~{outfile_name}
+        else
+            > ~{outfile_name}  # ensure file is empty
+        fi
+
         # 9223372036854776000 == max 64 bit Float
         htseq-count -f bam \
             --max-reads-in-buffer 9223372036854776000 \
@@ -86,7 +98,7 @@ task count {
             --supplementary-alignments ~{if supplementary_alignments then "score" else "ignore"} \
             ~{bam} \
             ~{gtf} \
-            > ~{outfile_name}
+            >> ~{outfile_name}
     >>>
 
     output {
