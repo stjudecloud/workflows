@@ -96,7 +96,7 @@ task count {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/htseq:2.0.2--py310ha14a713_0'
+        container: 'quay.io/biocontainers/htseq:2.0.3--py310h5aa3a86_1'
         maxRetries: max_retries
     }
 }
