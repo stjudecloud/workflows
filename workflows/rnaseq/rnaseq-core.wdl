@@ -123,7 +123,11 @@ workflow rnaseq_core {
         gtf=gtf,
         strandedness=htseq_strandedness,
         prefix=basename(alignment_post.processed_bam, "bam")
-            + (if provided_strandedness == "" then ngsderive_strandedness.strandedness else provided_strandedness)
+            + (
+                if provided_strandedness == ""
+                then ngsderive_strandedness.strandedness
+                else provided_strandedness
+            ),
         max_retries=max_retries
     }
 
