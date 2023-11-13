@@ -214,22 +214,21 @@ for _index, value in only_exons.iterrows():
         gene_end_offset[gene_name] = max(gene_end_offset[gene_name], end)
 
 for gene_name in exon_starts:
-    exon_starts[gene_name].sort()
-    exon_ends[gene_name].sort()
-
     gene_exon_intersection[gene_name] = np.full(
         gene_end_offset[gene_name] - gene_start_offset[gene_name], False
     )
 
     for start, end in zip(exon_starts[gene_name], exon_ends[gene_name]):
         gene_exon_intersection[gene_name][
-            start
-            - gene_start_offset[gene_name] : end
-            - gene_start_offset[gene_name]
+            start - gene_start_offset[gene_name]
+            : end - gene_start_offset[gene_name]
         ] = True
 
 print("Gene name\tlength", file=outfile)
 for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
+    # np.count_nonzero() is faster than sum
+    # np.count_nonzero() evaluates the "truthfulness" of
+    # of all elements (by calling their `.__bool__()` method)
     length = np.count_nonzero(exonic_intersection)
     print(f"{gene}\t{length}", file=outfile)
 
