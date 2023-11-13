@@ -3,6 +3,7 @@
 version 1.1
 
 import "../../tools/estimate.wdl"
+import "../../tools/htseq.wdl"
 
 workflow estimate {
     meta {
@@ -27,7 +28,7 @@ workflow estimate {
         Int? max_retries
     }
 
-    call estimate.calc_tpm { input:
+    call htseq.calc_tpm { input:
         counts=counts_file,
         gene_lengths=gene_lengths_file,
         max_retries=max_retries
