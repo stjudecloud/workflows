@@ -163,6 +163,7 @@ task calc_gene_lengths {
     parameter_meta {
         gtf: "GTF feature file"
         outfile_name: "Name of the gene lengths file"
+        idattr: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         max_retries: "Number of times to retry in case of failure"
@@ -171,6 +172,7 @@ task calc_gene_lengths {
     input {
         File gtf
         String outfile_name = basename(gtf, ".gtf.gz") + ".genelengths.txt"
+        String idattr = "gene_name"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -182,7 +184,7 @@ task calc_gene_lengths {
     command <<<
         set -euo pipefail
 
-        GTF="~{gtf}" OUTFILE="~{outfile_name}" python - <<END
+        GTF="~{gtf}" OUTFILE="~{outfile_name}" IDATTR="~{idattr}" python - <<END
 import os  # lint-check: ignore
 import gtfparse  # lint-check: ignore
 import numpy as np  # lint-check: ignore
@@ -190,6 +192,7 @@ from collections import defaultdict  # lint-check: ignore
 
 gtf_name = os.environ["GTF"]
 outfile = open(os.environ["OUTFILE"], "w")
+id_attr = os.environ["IDATTR"]
 
 gtf = gtfparse.read_gtf(gtf_name)
 
@@ -201,30 +204,30 @@ gene_end_offset = {}
 gene_exon_intersection = {}
 
 for _index, value in only_exons.iterrows():
-    gene_name = value["gene_name"]
+    feature_id = value[id_attr]
     start = value["start"]
     end = value["end"] + 1  # end is inclusive in GTF
-    exon_starts[gene_name].append(start)
-    exon_ends[gene_name].append(end)
-    if gene_name not in gene_start_offset:
-        gene_start_offset[gene_name] = start
-        gene_end_offset[gene_name] = end
+    exon_starts[feature_id].append(start)
+    exon_ends[feature_id].append(end)
+    if feature_id not in gene_start_offset:
+        gene_start_offset[feature_id] = start
+        gene_end_offset[feature_id] = end
     else:
-        gene_start_offset[gene_name] = min(gene_start_offset[gene_name], start)
-        gene_end_offset[gene_name] = max(gene_end_offset[gene_name], end)
+        gene_start_offset[feature_id] = min(gene_start_offset[feature_id], start)
+        gene_end_offset[feature_id] = max(gene_end_offset[feature_id], end)
 
-for gene_name in exon_starts:
-    gene_exon_intersection[gene_name] = np.full(
-        gene_end_offset[gene_name] - gene_start_offset[gene_name], False
+for feature_id in exon_starts:
+    gene_exon_intersection[feature_id] = np.full(
+        gene_end_offset[feature_id] - gene_start_offset[feature_id], False
     )
 
-    for start, end in zip(exon_starts[gene_name], exon_ends[gene_name]):
-        gene_exon_intersection[gene_name][
-            start - gene_start_offset[gene_name]
-            : end - gene_start_offset[gene_name]
+    for start, end in zip(exon_starts[feature_id], exon_ends[feature_id]):
+        gene_exon_intersection[feature_id][
+            start - gene_start_offset[feature_id]
+            : end - gene_start_offset[feature_id]
         ] = True
 
-print("Gene name\tlength", file=outfile)
+print("feature\tlength", file=outfile)
 for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
     # np.count_nonzero() is faster than sum
     # np.count_nonzero() evaluates the "truthfulness" of
