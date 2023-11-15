@@ -4,88 +4,13 @@
 # Copyright St. Jude Children's Research Hospital
 version 1.1
 
-task calc_tpm {
-    meta {
-        description: "Given a gene counts file and a gene lengths file, calculate Transcripts Per Million (TPM)"
-        outputs: {
-            tpm_file: "Transcripts Per Million (TPM) file. A two column headered TSV file."
-        }
-    }
-
-    parameter_meta {
-        counts: "A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with `htseq.wdl`."
-        gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with `calc-gene-lengths.wdl`."
-        prefix: "Prefix for the TPM file. The extension `.TPM.txt` will be added."
-        memory_gb: "RAM to allocate for task, specified in GB"
-        disk_size_gb: "Disk space to allocate for task, specified in GB"
-        max_retries: "Number of times to retry in case of failure"
-    }
-
-    input {
-        File counts
-        File gene_lengths
-        String prefix = basename(counts, ".feature-counts.txt")
-        Int memory_gb = 4
-        Int disk_size_gb = 10
-        Int max_retries = 1
-    }
-
-    String outfile_name = prefix + ".TPM.txt"
-
-    command <<<
-        COUNTS="~{counts}" GENE_LENGTHS="~{gene_lengths}" OUTFILE="~{outfile_name}" python3 - <<END
-import os  # lint-check: ignore
-
-counts_file = open(os.environ['COUNTS'], 'r')
-counts = {}
-for line in counts_file:
-    gene, count = line.split('\t')
-    if gene[0:2] == '__':
-        break
-    counts[gene.strip()] = int(count.strip())
-counts_file.close()
-
-lengths_file = open(os.environ['GENE_LENGTHS'], 'r')
-rpks = {}
-tot_rpk = 0
-lengths_file.readline()  # discard header
-for line in lengths_file:
-    gene, length = line.split('\t')
-    rpk = counts[gene.strip()] / int(length.strip()) * 1000
-    tot_rpk += rpk
-    rpks[gene.strip()] = rpk
-lengths_file.close()
-
-sf = tot_rpk / 1000000
-
-sample_name = '.'.join(os.environ['OUTFILE'].split('.')[:-2])  # equivalent to ~{prefix}
-outfile = open(os.environ['OUTFILE'], 'w')
-print(f"Gene name\t{sample_name}", file=outfile)
-for gene, rpk in sorted(rpks.items()):
-    tpm = rpk / sf
-    print(f"{gene}\t{tpm:.3f}", file=outfile)
-outfile.close()
-END
-    >>>
-
-    output {
-        File tpm_file = "~{outfile_name}"
-    }
-
-    runtime {
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
-    }
-}
-
 task run_estimate {
     meta {
-        description: "Given a gene expression file, run the ESTIMATE software package"
+        description: "**[DEPRECATED]** Given a gene expression file, run the ESTIMATE software package"
         outputs:  {
             estimate_file: "The results file of the ESTIMATE software package"  # TODO actually run and see what format it is.
         }
+        deprecated: true
     }
 
     parameter_meta {

@@ -122,9 +122,12 @@ workflow rnaseq_core {
         bam=alignment_post.processed_bam,
         gtf=gtf,
         strandedness=htseq_strandedness,
-        outfile_name=basename(alignment_post.processed_bam, "bam")
-            + (if provided_strandedness == "" then ngsderive_strandedness.strandedness else provided_strandedness)
-            + ".feature-counts.txt",
+        prefix=basename(alignment_post.processed_bam, "bam")
+            + (
+                if provided_strandedness == ""
+                then ngsderive_strandedness.strandedness
+                else provided_strandedness
+            ),
         max_retries=max_retries
     }
 

@@ -3,15 +3,17 @@
 version 1.1
 
 import "../../tools/estimate.wdl"
+import "../../tools/htseq.wdl"
 
 workflow estimate {
     meta {
-        description: "Runs the ESTIMATE software package on a feature counts file"
+        description: "**[DEPRECATED]** Runs the ESTIMATE software package on a feature counts file"
         external_help: "https://bioinformatics.mdanderson.org/estimate/"
         outputs: {
             tpm: "Transcripts Per Million file"
             estimate_result: "Final output of ESTIMATE"
         }
+        deprecated: true
     }
 
     parameter_meta {
@@ -26,7 +28,7 @@ workflow estimate {
         Int? max_retries
     }
 
-    call estimate.calc_tpm { input:
+    call htseq.calc_tpm { input:
         counts=counts_file,
         gene_lengths=gene_lengths_file,
         max_retries=max_retries

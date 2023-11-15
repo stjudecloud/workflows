@@ -153,7 +153,8 @@ task split_string {
 
 task calc_gene_lengths {
     meta {
-        description: "Calculate gene lengths from a GTF feature file"  # TODO explain algorithm
+        description: "Calculate gene lengths from a GTF feature file using the \"non-overlapping exonic length\" algorithm"
+        help: "The \"non-overlapping exonic length\" algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
         outputs: {
             gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
         }
@@ -162,6 +163,7 @@ task calc_gene_lengths {
     parameter_meta {
         gtf: "GTF feature file"
         outfile_name: "Name of the gene lengths file"
+        idattr: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         max_retries: "Number of times to retry in case of failure"
@@ -170,6 +172,7 @@ task calc_gene_lengths {
     input {
         File gtf
         String outfile_name = basename(gtf, ".gtf.gz") + ".genelengths.txt"
+        String idattr = "gene_name"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
         Int max_retries = 1
@@ -181,53 +184,59 @@ task calc_gene_lengths {
     command <<<
         set -euo pipefail
 
-        GTF="~{gtf}" OUTFILE="~{outfile_name}" python - <<END
+        GTF="~{gtf}" OUTFILE="~{outfile_name}" IDATTR="~{idattr}" python - <<END
 import os  # lint-check: ignore
 import gtfparse  # lint-check: ignore
 import numpy as np  # lint-check: ignore
+from collections import defaultdict  # lint-check: ignore
 
-gtf_name = os.environ['GTF']
-outfile = open(os.environ['OUTFILE'], 'w')
+gtf_name = os.environ["GTF"]
+outfile = open(os.environ["OUTFILE"], "w")
+id_attr = os.environ["IDATTR"]
 
 gtf = gtfparse.read_gtf(gtf_name)
 
-only_genes = gtf[gtf['feature'] == 'gene']
-only_exons = gtf[gtf['feature'] == 'exon']
+only_exons = gtf[gtf["feature"] == "exon"]
+exon_starts = defaultdict(lambda: [])
+exon_ends = defaultdict(lambda: [])
 gene_start_offset = {}
 gene_end_offset = {}
 gene_exon_intersection = {}
-gene_total_exon_size = {}
-gene_length = {}
 
-for (index, value) in only_genes.iterrows():
-    gene_name = value['gene_name']
-    start = value['start']
-    end = value['end']
-    size = end - start
+for _index, value in only_exons.iterrows():
+    feature_id = value[id_attr]
+    start = value["start"]
+    end = value["end"] + 1  # end is inclusive in GTF
+    exon_starts[feature_id].append(start)
+    exon_ends[feature_id].append(end)
+    if feature_id not in gene_start_offset:
+        gene_start_offset[feature_id] = start
+        gene_end_offset[feature_id] = end
+    else:
+        gene_start_offset[feature_id] = min(gene_start_offset[feature_id], start)
+        gene_end_offset[feature_id] = max(gene_end_offset[feature_id], end)
 
-    if size <= 0:
-        raise RuntimeError("Size of gene is negative!")
+for feature_id in exon_starts:
+    gene_exon_intersection[feature_id] = np.full(
+        gene_end_offset[feature_id] - gene_start_offset[feature_id], False
+    )
 
-    gene_start_offset[gene_name] = start
-    gene_end_offset[gene_name] = end
-    gene_exon_intersection[gene_name] = np.zeros(size)
-    gene_total_exon_size[gene_name] = 0
-    gene_length[gene_name] = end - start
+    for start, end in zip(exon_starts[feature_id], exon_ends[feature_id]):
+        gene_exon_intersection[feature_id][
+            start - gene_start_offset[feature_id]
+            : end - gene_start_offset[feature_id]
+        ] = True
 
-for (index, value) in only_exons.iterrows():
-    gene_name = value['gene_name']
-    offset = gene_start_offset[gene_name]
-    start = value['start'] - offset
-    end = value['end'] - offset
-    exon_length = end - start
-    gene_exon_intersection[gene_name][start:end] = 1
-    gene_total_exon_size[gene_name] += exon_length
-
-results = []
-print("Gene name\tlength", file=outfile)
-for (gene, exonic_intersection) in sorted(gene_exon_intersection.items()):
-    length = np.sum(exonic_intersection).astype(int)
+print("feature\tlength", file=outfile)
+for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
+    # np.count_nonzero() is faster than sum
+    # np.count_nonzero() evaluates the "truthfulness" of
+    # of all elements (by calling their `.__bool__()` method)
+    length = np.count_nonzero(exonic_intersection)
     print(f"{gene}\t{length}", file=outfile)
+
+outfile.close()
+
 END
     >>>
 
@@ -705,7 +714,7 @@ task qc_summary {
     # TODO not sure why I implemented as a JSON. Wouldn't TSV be easier to work with? Talk to Delaram/David
     #   Delaram+David okayed a switch to TSV
     meta {
-        description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive." 
+        description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive."
     }
 
     input {
@@ -758,7 +767,7 @@ task qc_summary {
                 inferred_sequencing_platform: $PLATFORM,
                 percent_thirtyX_coverage: ($THIRTYX_PERCENT | tonumber),
                 percent_duplicate: ($DUP_PERCENT | tonumber),
-                inferred_strandedness: $STRANDEDNESS 
+                inferred_strandedness: $STRANDEDNESS
             }' > ~{outfile_name}
     >>>
 
