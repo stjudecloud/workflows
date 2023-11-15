@@ -106,8 +106,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">Bwa db build</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/calc-gene-lengths/">Calc gene lengths</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/dnaseq-standard/">Dnaseq standard</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make qc reference</a>
@@ -168,20 +166,46 @@
 <ul>
 <li><code>feature_type</code> (String, default="exon"): Feature type (3rd column in GTF file) to be used, all features of other type are ignored</li>
 <li><code>idattr</code> (String, default="gene_name"): GFF attribute to be used as feature ID</li>
+<li><code>include_custom_header</code> (Boolean, default=false): Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be <code>feature    ~{prefix}</code>. This may break downstream tools that expect the typical headerless HTSeq output format.</li>
 <li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>minaqual</code> (Int, default=10): Skip all reads with alignment quality lower than the given minimum value</li>
 <li><code>mode</code> (String, default="union"); <strong>description</strong>: Mode to handle reads overlapping more than one feature. <code>union</code> is recommended for most use-cases.; <strong>external_help</strong>: https://htseq.readthedocs.io/en/latest/htseqcount.html#htseq-count-counting-reads-within-features; <strong>choices</strong>: ['union', 'intersection-strict', 'intersection-nonempty']</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>nonunique</code> (Boolean, default=false): Score reads that align to or are assigned to more than one feature?</li>
-<li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".feature-counts.txt"): Name of the feature count file</li>
 <li><code>pos_sorted</code> (Boolean, default=true): Is the BAM position sorted (true) or name sorted (false)?</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the feature counts file. The extension <code>.feature-counts.txt</code> will be added.</li>
 <li><code>secondary_alignments</code> (Boolean, default=false): Score secondary alignments (SAM flag 0x100)?</li>
 <li><code>supplementary_alignments</code> (Boolean, default=false): Score supplementary/chimeric alignments (SAM flag 0x800)?</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>feature_counts</code> (File)</li>
+</ul>
+<h2 id="calc_tpm">calc_tpm</h2>
+<dl>
+<dt>description</dt>
+<dd>Given a gene counts file and a gene lengths file, calculate Transcripts Per Million (TPM)</dd>
+<dt>outputs</dt>
+<dd>{'tpm_file': 'Transcripts Per Million (TPM) file. A two column headered TSV file.'}</dd>
+</dl>
+<h3 id="inputs_1">Inputs</h3>
+<h4 id="required_1">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>counts</code> (File, <strong>required</strong>): A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the <code>count</code> task.</li>
+<li><code>gene_lengths</code> (File, <strong>required</strong>): A two column headered TSV file with gene names (matching those in the <code>counts</code> file) in the first column and feature lengths (as integers) in the second column. Can be generated with <code>calc-gene-lengths.wdl</code>.</li>
+</ul>
+<h4 id="defaults_1">Defaults</h4>
+<ul>
+<li><code>disk_size_gb</code> (Int, default=10): Disk space to allocate for task, specified in GB</li>
+<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
+<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>prefix</code> (String, default=basename(counts,".feature-counts.txt")): Prefix for the TPM file. The extension <code>.TPM.txt</code> will be added.</li>
+</ul>
+<h3 id="outputs_1">Outputs</h3>
+<ul>
+<li><code>tpm_file</code> (File)</li>
 </ul>
               
             </div>
