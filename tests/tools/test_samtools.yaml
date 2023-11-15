@@ -14,8 +14,8 @@
   command: >-
     miniwdl run -d test-output/. --copy-input-files --task split tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
   files:
-    - path: test-output/out/split_bams/0/test_1.bam
-    - path: test-output/out/split_bams/1/test_2.bam
+    - path: test-output/out/split_bams/0/test.1.bam
+    - path: test-output/out/split_bams/1/test.2.bam
 
 - name: samtools_flagstat
   tags:
@@ -78,8 +78,8 @@
   command: >-
     miniwdl run -d test-output/. --copy-input-files --task bam_to_fastq tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
-    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz
-    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz
+    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.R1.fastq.gz
+    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe.R2.fastq.gz
 
 - name: samtools_collate_to_fastq
   tags:
@@ -89,5 +89,5 @@
     miniwdl run -d test-output/. --copy-input-files --task collate_to_fastq tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" store_collated_bam=true
   files:
     - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
-    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz
-    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz
+    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.R1.fastq.gz
+    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe.R2.fastq.gz
