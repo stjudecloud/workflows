@@ -293,9 +293,7 @@ task add_to_bam_header {
         bam: "Input BAM format file which will have its header added to"
         additional_header: "A string to add as a new line in the BAM header. No format checking is done, so please ensure you do not invalidate your BAM with this task. Add only spec compliant entries to the header."
         prefix: "Prefix for the reheadered BAM. The extension `.bam` will be added."
-        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -433,9 +431,7 @@ task global_phred_scores {
         bam: "Input BAM format file to calculate PHRED score statistics for"
         prefix: "Prefix for the output TSV file. The extension `.global_PHRED_scores.tsv` will be added."
         fast_mode: "Enable fast mode (true) or calculate statistics for *_every_* base in the BAM (false)?"
-        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {

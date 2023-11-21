@@ -42,7 +42,7 @@ workflow alignment_post {
         Boolean use_all_cores = false
     }
 
-    call picard.sort as picard_sort { input: bam=bam, max_retries=max_retries }
+    call picard.sort as picard_sort { input: bam=bam }
 
     if (cleanse_xenograft) {
         call samtools.index as pre_xenocp_index { input:

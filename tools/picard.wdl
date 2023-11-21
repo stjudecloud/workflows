@@ -531,7 +531,6 @@ task collect_gc_bias_metrics {
         prefix: "Prefix for the output report files. The extensions `.txt`, `.summary.txt`, and `.pdf` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -589,7 +588,6 @@ task collect_insert_size_metrics {
         prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -639,7 +637,6 @@ task quality_score_distribution {
         prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
