@@ -103,7 +103,7 @@ task count {
         if ~{include_custom_header}; then
             echo -e "feature\t~{prefix}" > ~{outfile_name}
         else
-            > ~{outfile_name}  # ensure file is empty
+            true > ~{outfile_name}  # ensure file is empty
         fi
 
         # 9223372036854776000 == max 64 bit Float
