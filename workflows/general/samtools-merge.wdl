@@ -12,13 +12,13 @@ workflow samtools_merge {
         outputs: {
             merged_bam: "The BAM resulting from merging all the input BAMs"
         }
+        allowNestedInputs: true
     }
     parameter_meta{
         bams: "BAMs to merge into a final BAM"
         max_length: "Maximum number of BAMs to merge before using iteration"
         prefix: "Prefix for output BAM."
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-
     }
     input {
         Array[File] bams

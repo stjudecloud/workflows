@@ -15,6 +15,7 @@ workflow alignment_post {
             bam_index: "BAI index associated with `processed_bam`"
             bam_checksum:  "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file"
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {

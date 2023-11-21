@@ -12,13 +12,14 @@ import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "../general/samtools-merge.wdl" as samtools_merge_wf
 
 workflow dnaseq_standard_experimental {
-    meta{
+    meta {
         description: "Aligns DNA reads using bwa mem"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa mem"
         }
+        allowNestedInputs: true
     }
-    parameter_meta{
+    parameter_meta {
         bam: "Input BAM to realign"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."

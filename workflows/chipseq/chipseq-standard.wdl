@@ -23,6 +23,7 @@ workflow chipseq_standard {
             bam_index: "BAI index file associated with `harmonized_bam`"
             bigwig: "BigWig format coverage file"
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {

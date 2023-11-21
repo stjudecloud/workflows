@@ -13,6 +13,7 @@ workflow bam_to_fastqs {
             read1s: "Array of FASTQ files corresponding to either `first` reads (if `paired_end = true`) or all reads (if `paired_end = false`)"
             read2s: "Array of FASTQ files corresponding to `last` reads (if `paired_end = true`)"
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {

@@ -26,6 +26,7 @@ workflow markdups_post {
             mosdepth_region_summary: "Summaries of coverage corresponding to the regions defined by `coverage_beds` input, produced by `mosdepth`"
             mosdepth_region_dist: "Distributions of coverage corresponding to the regions defined by `coverage_beds` input, produced by `mosdepth`"
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {

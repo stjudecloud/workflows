@@ -36,6 +36,7 @@ workflow rnaseq_standard_fastq {
             inferred_strandedness: "TSV file containing the `ngsderive strandedness` report"
             inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`"
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {

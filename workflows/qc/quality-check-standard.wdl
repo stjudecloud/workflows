@@ -68,6 +68,7 @@ workflow quality_check {
             junctions: "TSV file containing a detailed list of annotated junctions"
             IntermediateFiles: "Any and all files produced as intermediate during pipeline processing. Only output if `output_intermediate_files = true`."
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {

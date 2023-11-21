@@ -13,6 +13,7 @@ workflow star_db_build {
             gtf: "GTF feature file"
             star_db_tar_gz: "A gzipped TAR file containing the STAR reference files"
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {

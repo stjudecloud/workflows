@@ -15,6 +15,7 @@ workflow make_qc_reference {
             CDS_bed: "3 column BED file defining the regions of the coding domain. Derived from `gtf`."
             kraken_db: "A complete Kraken2 database"
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {

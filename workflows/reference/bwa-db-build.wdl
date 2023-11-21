@@ -12,6 +12,7 @@ workflow bwa_db_build {
             reference_fa: "FASTA format reference file used to generate `bwa_db_tar_gz`"
             bwa_db_tar_gz: "Gzipped tar archive of the BWA reference files. Files are at the root of the archive."
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {
