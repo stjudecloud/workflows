@@ -111,7 +111,7 @@ task split {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: 1
