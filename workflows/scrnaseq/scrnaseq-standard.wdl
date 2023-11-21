@@ -2,7 +2,7 @@
 ##
 ## This WDL workflow runs the Cell Ranger scRNA-Seq alignment workflow for St. Jude Cloud.
 ##
-## The workflow takes an input BAM file and splits it into FASTQ files for each read in the pair. 
+## The workflow takes an input BAM file and splits it into FASTQ files for each read in the pair.
 ## The read pairs are then passed through Cell Ranger to generate a BAM file and perform
 ## quantification. Strandedness is inferred using ngsderive.
 ## File validation is performed at several steps, including immediately preceeding output.
@@ -42,7 +42,6 @@ workflow scrnaseq_standard {
         bam: "Input BAM format file to quality check"
         gtf: "Gzipped GTF feature file"
         transcriptome_tar_gz: "Database of reference files for Cell Ranger. Can be downloaded from 10x Genomics."
-        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
         prefix: "Prefix for output files"
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores for multi-core steps?"
@@ -53,7 +52,6 @@ workflow scrnaseq_standard {
         File bam
         File gtf
         File transcriptome_tar_gz
-        Int? max_retries
         String prefix = basename(bam, ".bam")
         Boolean validate_input = true
         Boolean use_all_cores = false
@@ -63,7 +61,6 @@ workflow scrnaseq_standard {
     if (validate_input) {
         call picard.validate_bam as validate_input_bam { input:
             bam=bam,
-            max_retries=max_retries
         }
     }
 
@@ -72,7 +69,6 @@ workflow scrnaseq_standard {
             bam=bam,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
-            max_retries=max_retries
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
@@ -80,7 +76,6 @@ workflow scrnaseq_standard {
     call bam_to_fastqs.cell_ranger_bam_to_fastqs { input:
         bam=selected_bam,
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
 
     call cellranger.count { input:
@@ -88,17 +83,15 @@ workflow scrnaseq_standard {
         transcriptome_tar_gz=transcriptome_tar_gz,
         id=prefix,
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
-    call picard.validate_bam { input: bam=count.bam, max_retries=max_retries }
+    call picard.validate_bam { input: bam=count.bam }
     call ngsderive.strandedness { input:
         bam=count.bam,
         bam_index=count.bam_index,
         gene_model=gtf,
-        max_retries=max_retries
     }
 
-    call md5sum.compute_checksum { input: file=count.bam, max_retries=max_retries }
+    call md5sum.compute_checksum { input: file=count.bam }
 
     output {
         File harmonized_bam = count.bam
