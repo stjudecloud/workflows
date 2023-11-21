@@ -111,7 +111,7 @@ workflow rnaseq_core {
 
     String htseq_strandedness = if (provided_strandedness != "")
         then htseq_strandedness_map[provided_strandedness]
-        else htseq_strandedness_map[ngsderive_strandedness.strandedness]
+        else htseq_strandedness_map[ngsderive_strandedness.strandedness_string]
 
     call htseq.count as htseq_count { input:
         bam=alignment_post.processed_bam,
@@ -120,7 +120,7 @@ workflow rnaseq_core {
         prefix=basename(alignment_post.processed_bam, "bam")
             + (
                 if provided_strandedness == ""
-                then ngsderive_strandedness.strandedness
+                then ngsderive_strandedness.strandedness_string
                 else provided_strandedness
             ),
     }
@@ -133,6 +133,6 @@ workflow rnaseq_core {
         File bigwig = deeptools_bam_coverage.bigwig
         File feature_counts = htseq_count.feature_counts
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
-        String inferred_strandedness_string = ngsderive_strandedness.strandedness
+        String inferred_strandedness_string = ngsderive_strandedness.strandedness_string
     }
 }

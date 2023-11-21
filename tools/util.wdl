@@ -222,7 +222,7 @@ print("feature\tlength", file=outfile)
 for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
     # np.count_nonzero() is faster than sum
     # np.count_nonzero() evaluates the "truthfulness" of
-    # of all elements (by calling their `.__bool__()` method)
+    # of all elements (by calling their '.__bool__()' method)
     length = np.count_nonzero(exonic_intersection)
     print(f"{gene}\t{length}", file=outfile)
 

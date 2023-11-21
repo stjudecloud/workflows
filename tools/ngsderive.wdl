@@ -79,7 +79,7 @@ task strandedness {
     >>>
 
     output {
-        String strandedness = read_string("strandedness.txt")
+        String strandedness_string = read_string("strandedness.txt")
         File strandedness_file = outfile_name
     }
 
