@@ -14,16 +14,12 @@ task quickcheck {
 
     parameter_meta {
         bam: "Input BAM format file to quickcheck"
-        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -38,10 +34,10 @@ task quickcheck {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -53,12 +49,19 @@ task split {
     parameter_meta {
         bam: "Input BAM format file to split"
         prefix: "Prefix for the split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
-        reject_unaccounted: "If true, error if there are reads present that do not have read group information."
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        reject_unaccounted: {
+            description: "If true, error if there are reads present that do not have read group information."
+            common: true
+        }
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -66,10 +69,8 @@ task split {
         String prefix = basename(bam, ".bam")
         Boolean reject_unaccounted = true
         Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 4
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -88,32 +89,32 @@ task split {
             -u ~{prefix}.unaccounted_reads.bam \
             -f '~{prefix}.%!.bam' \
             ~{bam}
-        
+
         samtools head \
             --threads "$n_cores" \
             -h 0 \
             -n 1 \
             ~{prefix}.unaccounted_reads.bam \
             > first_unaccounted_read.bam
-        
+
         if ~{reject_unaccounted} && [ -s first_unaccounted_read.bam ]; then
             exit 42
         else
             rm ~{prefix}.unaccounted_reads.bam
-        fi 
+        fi
         rm first_unaccounted_read.bam
     >>>
 
     output {
        Array[File] split_bams = glob("*.bam")
     }
- 
+
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -128,21 +129,23 @@ task flagstat {
     parameter_meta {
         bam: "Input BAM format file to generate flagstat for"
         outfile_name: "Name for the flagstat report file"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
         String outfile_name = basename(bam, ".bam") + ".flagstat.txt"
         Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 5
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
         # TODO should we support alt formats? Will they break MultiQC?
     }
 
@@ -160,15 +163,15 @@ task flagstat {
         samtools flagstat --threads "$n_cores" ~{bam} > ~{outfile_name}
     >>>
 
-    output { 
+    output {
        File flagstat_report = outfile_name
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "5 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -182,20 +185,22 @@ task index {
 
     parameter_meta {
         bam: "Input BAM format file to index"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
         Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 4
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -203,7 +208,7 @@ task index {
 
     String outfile_name = basename(bam) + ".bai"
 
-    command {
+    command <<<
         set -euo pipefail
 
         n_cores=~{ncpu}
@@ -214,7 +219,7 @@ task index {
         # For some reason, index doesn't support '--threads',
         # so we use '-@' here
         samtools index -@ "$n_cores" ~{bam} ~{outfile_name}
-    }
+    >>>
 
     output {
         File bam_index = outfile_name
@@ -222,10 +227,10 @@ task index {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -242,11 +247,15 @@ task subsample {
         bam: "Input BAM format file to subsample"
         desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value."
         prefix: "Prefix for the BAM file. The extension `.subsampled.bam` will be added."
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -254,10 +263,8 @@ task subsample {
         Int desired_reads
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 4
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     String suffixed = prefix + ".subsampled"
@@ -318,10 +325,10 @@ task subsample {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -338,15 +345,31 @@ task merge {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         new_header: "Use the lines of FILE as `@` headers to be copied to the merged BAM, replacing any header lines that would otherwise be copied from the first BAM file in the list. (File may actually be in SAM format, though any alignment records it may contain are ignored.)"
         region: "Merge files in the specified region (Format: `chr:start-end`)"
-        attach_rg: "Attach an RG tag to each alignment. The tag value is inferred from file names."
-        name_sorted: "Are _all_ input BAMs `queryname` sorted (true)? Or are _all_ input BAMs `coordinate` sorted (false)?"
-        combine_rg: "When several input files contain @RG headers with the same ID, emit only one of them (namely, the header line from the first file we find that ID in) to the merged output file. Combining these similar headers is usually the right thing to do when the files being merged originated from the same file. Without `-c`, all @RG headers appear in the output file, with random suffixes added to their IDs where necessary to differentiate them."
-        combine_pg: "Similarly to `combine_rg`: for each @PG ID in the set of files to merge, use the @PG line of the first file we find that ID in rather than adding a suffix to differentiate similar IDs."
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        attach_rg: {
+            description: "Attach an RG tag to each alignment. The tag value is inferred from file names."
+            common: true
+        }
+        name_sorted: {
+            description: "Are _all_ input BAMs `queryname` sorted (true)? Or are _all_ input BAMs `coordinate` sorted (false)?"
+            common: true
+        }
+        combine_rg: {
+            description: "When several input files contain @RG headers with the same ID, emit only one of them (namely, the header line from the first file we find that ID in) to the merged output file. Combining these similar headers is usually the right thing to do when the files being merged originated from the same file. Without `-c`, all @RG headers appear in the output file, with random suffixes added to their IDs where necessary to differentiate them."
+            common: true
+        }
+        combine_pg: {
+            description: "Similarly to `combine_rg`: for each @PG ID in the set of files to merge, use the @PG line of the first file we find that ID in rather than adding a suffix to differentiate similar IDs."
+            common: true
+        }
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -359,10 +382,8 @@ task merge {
         Boolean combine_rg = true
         Boolean combine_pg = true
         Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 4
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bams_size = size(bams, "GiB")
@@ -395,10 +416,10 @@ task merge {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -412,30 +433,41 @@ task addreplacerg {
 
     parameter_meta {
         bam: "Input BAM format file to add read group information"
-        read_group_line: "Allows you to specify a read group line to append to (or replace in) the header and applies it to the reads specified by the `orphan_only` option. Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM. Only **one** read group line can be supplied per invocation of this task."
         read_group_id: "Allows you to specify the read group ID of an existing @RG line and applies it to the reads specified by the `orphan_only` option"
+        read_group_line: {
+            description: "Allows you to specify a read group line to append to (or replace in) the header and applies it to the reads specified by the `orphan_only` option. Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM. Only **one** read group line can be supplied per invocation of this task."
+            common: true
+        }
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
-        orphan_only: "Only add RG tags to orphans (true)? Or _also_ overwrite all existing RG tags (including any in the header) (false)?"
-        overwrite_header_record: "Overwrite an existing @RG line, if a new one with the same ID value is provided?"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        orphan_only: {
+            description: "Only add RG tags to orphans (true)? Or _also_ overwrite all existing RG tags (including any in the header) (false)?"
+            common: true
+        }
+        overwrite_header_record: {
+            description: "Overwrite an existing @RG line, if a new one with the same ID value is provided?"
+            common: true
+        }
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
-        Array[String] read_group_line = []
         String? read_group_id
+        Array[String] read_group_line = []
         String prefix = basename(bam, ".bam") + ".addreplacerg"
         Boolean orphan_only = true
         Boolean overwrite_header_record = false
         Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 4
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -467,10 +499,10 @@ task addreplacerg {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -485,12 +517,20 @@ task collate {
     parameter_meta {
         bam: "Input BAM format file to collate"
         prefix: "Prefix for the collated BAM file. The extension `.bam` will be added."
-        fast_mode: "Use fast mode (output primary alignments only)?"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
+        fast_mode: {
+            description: "Use fast mode (output primary alignments only)?"
+            common: true
+        }
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -498,10 +538,9 @@ task collate {
         String prefix = basename(bam, ".bam") + ".collated"
         Boolean fast_mode = true
         Boolean use_all_cores = false
-        Int ncpu = 1
+        Int ncpu = 2
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -534,18 +573,19 @@ task collate {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
 task bam_to_fastq {
     meta {
-        description: "Runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. If paired-end = false, then all reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
+        description: "Runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
         outputs: {
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
             read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
             singleton_reads_fastq_gz: "A gzipped FASTQ containing singleton reads"
             interleaved_reads_fastq_gz: "An interleaved gzipped paired-end FASTQ"
+            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads"
         }
     }
 
@@ -556,19 +596,33 @@ task bam_to_fastq {
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
         # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."  # introduced in v1.18 no quay.io image yet
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        paired_end: "Is the data paired-end?"
-        append_read_number: "Append /1 and /2 suffixes to read names"
-        interleaved: "Create an interleaved FASTQ file from paired-end data?"
+        paired_end: {
+            description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads."
+            common: true
+        }
+        append_read_number: {
+            description: "Append /1 and /2 suffixes to read names"
+            common: true
+        }
+        interleaved: {
+            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end = false`."
+            common: true
+        }
         output_singletons: "Output singleton reads as their own FASTQ?"
         fail_on_unexpected_reads: {
             description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?"
-            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. In any case, reads that have neither or both `first` and `last` bits set are considered unexpected. If `paired_end` is `true` and `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `paired_end` is `false`, a read with only the `last` bit set is considered unexpected. This is because only reads with the `first` bit set should be present in a Single-End BAM. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded."
+            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. In any case, reads that have neither or both `first` and `last` bits set are considered unexpected. If `paired_end` is `true` and `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read will be present in the resulting FASTQ regardless of bit settings."
+            common: true
         }
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        use_all_cores: "Use all available cores? Recommended for cloud environments. Not recommended for cluster environments."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -584,10 +638,8 @@ task bam_to_fastq {
         Boolean output_singletons = false
         Boolean fail_on_unexpected_reads = false
         Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 4
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -656,10 +708,10 @@ task bam_to_fastq {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -672,6 +724,7 @@ task collate_to_fastq {
 	        read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
             singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads"
             interleaved_reads_fastq_gz: "Interleaved gzipped paired-end FASTQ"
+            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads"
         }
     }
 
@@ -682,21 +735,42 @@ task collate_to_fastq {
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
         # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."  # introduced in v1.18 no quay.io image yet
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        fast_mode: "Fast mode for `samtools collate` (primary alignments only)"
-        store_collated_bam: "Save the collated BAM (true) or delete it after FASTQ split (false)?"
-        paired_end: "Is the data paired-end?"
-        append_read_number: "Append /1 and /2 suffixes to read names"
-        interleaved: "Create an interleaved FASTQ file from paired-end data?"
+        fast_mode: {
+            description: "Fast mode for `samtools collate` (primary alignments only)"
+            common: true
+        }
+        store_collated_bam: {
+            description: "Save the collated BAM to disk and output it (true)?"
+            common: true
+        }
+        paired_end: {
+            description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads."
+            common: true
+        }
+        append_read_number: {
+            description: "Append /1 and /2 suffixes to read names"
+            common: true
+        }
+        interleaved: {
+            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end = false`."
+            common: true
+        }
         output_singletons: "Output singleton reads as their own FASTQ?"
         fail_on_unexpected_reads: {
             description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?"
-            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. In any case, reads that have neither or both `first` and `last` bits set are considered unexpected. If `paired_end` is `true` and `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `paired_end` is `false`, a read with only the `last` bit set is considered unexpected. This is because only reads with the `first` bit set should be present in a Single-End BAM. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded."
+            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. In any case, reads that have neither or both `first` and `last` bits set are considered unexpected. If `paired_end` is `true` and `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read will be present in the resulting FASTQ regardless of bit settings."
+            common: true
         }
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -714,10 +788,9 @@ task collate_to_fastq {
         Boolean output_singletons = false
         Boolean fail_on_unexpected_reads = false
         Boolean use_all_cores = false
-        Int ncpu = 1
+        Int ncpu = 2
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -775,7 +848,7 @@ task collate_to_fastq {
                     then "junk.unknown_bit_setting.fastq.gz"
                     else prefix + ".fastq.gz"
                 }
-        
+
         if ~{fail_on_unexpected_reads} \
             && find . -name 'junk.*.fastq.gz' ! -empty | grep -q .
         then
@@ -799,7 +872,7 @@ task collate_to_fastq {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -814,19 +887,25 @@ task fixmate {
         extension: {
             description: "File format extension to use for output file.",
             choices: [
-                ".sam",
+                ".sam",  # TODO are we sure we want to encourage the use of .sam?
                 ".bam",
                 ".cram"
             ]
+            common: true
         }
         add_cigar: "Add template cigar ct tag"
         add_mate_score: "Add mate score tags. These are used by markdup to select the best reads to keep."
         disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]"
         remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -837,17 +916,24 @@ task fixmate {
         Boolean add_mate_score = true
         Boolean disable_proper_pair_check = false
         Boolean remove_unaligned_and_secondary = false
-        Int ncpu = 1
-        Int memory_gb = 4
+        Boolean use_all_cores = false
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+
         samtools fixmate \
+            --threads "$n_cores" \
             ~{if remove_unaligned_and_secondary then "-r" else ""} \
             ~{if disable_proper_pair_check then "-p" else ""} \
             ~{if add_cigar then "-c" else ""} \
@@ -861,9 +947,9 @@ task fixmate {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }

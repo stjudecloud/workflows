@@ -22,10 +22,12 @@ task mark_duplicates {
     parameter_meta {
         bam: "Input BAM format file in which to mark duplicates"
         prefix: "Prefix for the MarkDuplicates result files. The extensions `.bam`, `.bam.bai`, `.bam.md5`, and `.metrics.txt` will be added."
-        create_bam: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?"
+        create_bam: {
+            description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?"
+            common: true
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -34,7 +36,6 @@ task mark_duplicates {
         Boolean create_bam = true
         Int memory_gb = 50
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -45,7 +46,7 @@ task mark_duplicates {
             else ceil(bam_size + 10)
         ) + modify_disk_size_gb
     )
-    
+
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -59,7 +60,7 @@ task mark_duplicates {
             --CREATE_MD5_FILE ~{create_bam} \
             --COMPRESSION_LEVEL 5 \
             --METRICS_FILE ~{prefix}.metrics.txt
-        
+
         if ~{create_bam}; then
             mv ~{prefix}.bai ~{prefix}.bam.bai
         fi
@@ -76,7 +77,7 @@ task mark_duplicates {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -99,22 +100,31 @@ task validate_bam {
         ignore_list: {
             description: "List of Picard errors and warnings to ignore. Possible values can be found on the GATK website (see `external_help`)."
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile"
+            common: true
         }
         outfile_name: "Name for the ValidateSamFile report file"
-        succeed_on_errors: "Succeed the task even if errors *and/or* warnings are detected"
-        succeed_on_warnings: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`"
-        summary_mode: "Enable SUMMARY mode?"
+        succeed_on_errors: {
+            description: "Succeed the task even if errors *and/or* warnings are detected"
+            common: true
+        }
+        succeed_on_warnings: {
+            description: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`"
+            common: true
+        }
+        summary_mode: {
+            description: "Enable SUMMARY mode?"
+            common: true
+        }
         index_validation_stringency_less_exhaustive: "Set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE`?"
         max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
         File? reference_fasta
-        Array[String] ignore_list = ["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"]
+        Array[String] ignore_list = []
         String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
         Boolean succeed_on_errors = false
         Boolean succeed_on_warnings = true
@@ -123,7 +133,6 @@ task validate_bam {
         Int max_errors = 2147483647  # max 32-bit INT
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     String reference_arg = if defined(reference_fasta)
@@ -137,7 +146,7 @@ task validate_bam {
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
-    
+
     command <<<
         set -euo pipefail
 
@@ -184,7 +193,7 @@ task validate_bam {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -208,11 +217,11 @@ task sort {
                 'coordinate',
                 'duplicate'
             ]
+            common: true
         }
         prefix: "Prefix for the sorted BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -221,7 +230,6 @@ task sort {
         String prefix = basename(bam, ".bam") + ".sorted"
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -241,7 +249,7 @@ task sort {
             --CREATE_MD5_FILE true \
             --COMPRESSION_LEVEL 5 \
             --VALIDATION_STRINGENCY SILENT
-        
+
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
 
@@ -255,7 +263,7 @@ task sort {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -282,11 +290,11 @@ task merge_sam_files {
                 'duplicate',
                 'unknown'  # TODO what does this mean?
             ]
+            common: true
         }
-        threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file."  # TODO do we need >1 ncpu to enable this?
+        threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file. **Sets `runtime.cpu = 2` if `true`. `runtime.cpu = 1` if `false`.**"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -296,7 +304,6 @@ task merge_sam_files {
         Boolean threading = true
         Int memory_gb = 40
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bams_size = size(bams, "GiB")
@@ -319,15 +326,16 @@ task merge_sam_files {
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY SILENT
-        
+
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
 
     runtime{
+        cpu: if threading then 2 else 1
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 
     output {
@@ -353,7 +361,6 @@ task clean_sam {
         prefix: "Prefix for the cleaned BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -361,7 +368,6 @@ task clean_sam {
         String prefix = basename(bam, ".bam") + ".cleaned"
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -378,7 +384,7 @@ task clean_sam {
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
             -O ~{outfile_name}
-        
+
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
 
@@ -392,7 +398,7 @@ task clean_sam {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -415,7 +421,6 @@ task collect_wgs_metrics {
         outfile_name: "Name for the metrics result file"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -424,7 +429,6 @@ task collect_wgs_metrics {
         String outfile_name = basename(bam, ".bam") + ".CollectWgsMetrics.txt"
         Int memory_gb = 12
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -436,7 +440,7 @@ task collect_wgs_metrics {
             -I ~{bam} \
             -R ~{reference_fasta} \
             -O ~{outfile_name} \
-            --INCLUDE_BQ_HISTOGRAM true 
+            --INCLUDE_BQ_HISTOGRAM true
     >>>
 
     output {
@@ -447,7 +451,7 @@ task collect_wgs_metrics {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -470,7 +474,6 @@ task collect_alignment_summary_metrics {
         prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -478,7 +481,6 @@ task collect_alignment_summary_metrics {
         String prefix = basename(bam, ".bam") + ".CollectAlignmentSummaryMetrics"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -501,7 +503,7 @@ task collect_alignment_summary_metrics {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -538,7 +540,6 @@ task collect_gc_bias_metrics {
         String prefix = basename(bam, ".bam") + ".CollectGcBiasMetrics"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -564,7 +565,7 @@ task collect_gc_bias_metrics {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -596,7 +597,6 @@ task collect_insert_size_metrics {
         String prefix = basename(bam, ".bam") + ".CollectInsertSizeMetrics"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -619,7 +619,7 @@ task collect_insert_size_metrics {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -647,7 +647,6 @@ task quality_score_distribution {
         String prefix = basename(bam, ".bam") + ".QualityScoreDistribution"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -670,7 +669,7 @@ task quality_score_distribution {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -682,10 +681,12 @@ task bam_to_fastq {
 
     parameter_meta {
         bam: "Input BAM format file to convert to FASTQ"
-        paired: "Is the data paired-end (true) or single-end (false)?"
+        paired: {
+            description: "Is the data paired-end (true) or single-end (false)?"
+            common: true
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -694,7 +695,6 @@ task bam_to_fastq {
         Boolean paired = true
         Int memory_gb = 56
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -709,7 +709,7 @@ task bam_to_fastq {
             ~{if paired then "SECOND_END_FASTQ="+prefix+"_R2.fastq" else ""} \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
-        
+
         gzip ~{prefix}_R1.fastq \
             ~{if paired then prefix+"_R2.fastq" else ""}
     >>>
@@ -723,6 +723,6 @@ task bam_to_fastq {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }

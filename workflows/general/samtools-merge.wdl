@@ -16,7 +16,6 @@ workflow samtools_merge {
     parameter_meta{
         bams: "BAMs to merge into a final BAM"
         max_length: "Maximum number of BAMs to merge before using iteration"
-        max_retries: "Number of times to retry in case of failure"
         prefix: "Prefix for output BAM."
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
 
@@ -24,8 +23,7 @@ workflow samtools_merge {
     input {
         Array[File] bams
         Int max_length = 100
-        Int? max_retries
-        String prefix = basename(bams[0], ".bam")
+        String prefix = basename(bams[0], ".bam")  # TODO is this a sane default? Or should be required?
         Boolean use_all_cores = false
     }
 
@@ -48,8 +46,7 @@ workflow samtools_merge {
                 prefix=prefix,
                 combine_pg=false,
                 use_all_cores=use_all_cores,
-                max_retries=max_retries
-            }        
+            }
         }
         call samtools.merge as final_merge { input:
             bams=inner_merge.merged_bam,
@@ -58,7 +55,6 @@ workflow samtools_merge {
             combine_pg=true,
             combine_rg=true,
             use_all_cores=use_all_cores,
-            max_retries=max_retries
         }
     }
 
@@ -68,7 +64,6 @@ workflow samtools_merge {
             prefix=prefix,
             combine_pg=false,
             use_all_cores=use_all_cores,
-            max_retries=max_retries
         }
     }
 

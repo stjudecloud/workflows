@@ -17,8 +17,6 @@ task download {
         outfile_name: "Name of the output file"
         disk_size_gb: "Disk space to allocate for task, specified in GB"
         md5sum: "Optional md5sum to check against downloaded file. Recommended to use in order to catch corruption or an unintentional file swap."
-        memory_gb: "RAM to allocate for task, specified in GB"
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -26,8 +24,6 @@ task download {
         String outfile_name
         Int disk_size_gb
         String? md5sum
-        Int memory_gb = 4
-        Int max_retries = 1
     }
 
     command <<<
@@ -46,10 +42,10 @@ task download {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -63,18 +59,17 @@ task get_read_groups {
 
     parameter_meta {
         bam: "Input BAM format file to get read groups from"
-        format_for_star: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`."
-        memory_gb: "RAM to allocate for task, specified in GB"
+        format_for_star: {
+            description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`."
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bam
         Boolean format_for_star = true
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -100,10 +95,10 @@ task get_read_groups {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -119,18 +114,15 @@ task split_string {
 
     parameter_meta {
         input_string: "String to split on occurences of `delimiter`"
-        delimiter: "Delimiter on which to split `input_string`"
-        memory_gb: "RAM to allocate for task, specified in GB"
-        disk_size_gb: "Disk space to allocate for task, specified in GB"
-        max_retries: "Number of times to retry in case of failure"
+        delimiter: {
+            description: "Delimiter on which to split `input_string`"
+            common: true
+        }
     }
 
     input {
         String input_string
         String delimiter = " , "
-        Int memory_gb = 4
-        Int disk_size_gb = 10
-        Int max_retries = 1
     }
 
     command <<<
@@ -144,10 +136,10 @@ task split_string {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -163,19 +155,18 @@ task calc_gene_lengths {
     parameter_meta {
         gtf: "GTF feature file"
         outfile_name: "Name of the gene lengths file"
-        idattr: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file."
-        memory_gb: "RAM to allocate for task, specified in GB"
+        idattr: {
+            description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file."
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File gtf
         String outfile_name = basename(gtf, ".gtf.gz") + ".genelengths.txt"
         String idattr = "gene_name"
-        Int memory_gb = 8
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float gtf_size = size(gtf, "GiB")
@@ -245,10 +236,10 @@ END
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "8 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -262,16 +253,12 @@ task compression_integrity {
 
     parameter_meta {
         bgzipped_file: "Input bgzipped file to check integrity of"
-        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File bgzipped_file
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float file_size = size(bgzipped_file, "GiB")
@@ -286,10 +273,10 @@ task compression_integrity {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -315,9 +302,7 @@ task add_to_bam_header {
         File bam
         String additional_header
         String prefix = basename(bam, ".bam") + ".reheader"
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -337,10 +322,10 @@ task add_to_bam_header {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -354,16 +339,12 @@ task unpack_tarball {
 
     parameter_meta {
         tarball: "A `.tar.gz` archive to unpack into individual files"
-        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File tarball
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float tarball_size = size(tarball, "GiB")
@@ -382,10 +363,10 @@ task unpack_tarball {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -402,16 +383,12 @@ task make_coverage_regions_beds {
 
     parameter_meta {
         gtf: "GTF feature file from which to derive coverage regions BED files"
-        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File gtf
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float gtf_size = size(gtf, "GiB")
@@ -437,10 +414,10 @@ task make_coverage_regions_beds {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -465,9 +442,7 @@ task global_phred_scores {
         File bam
         String prefix = basename(bam, ".bam")
         Boolean fast_mode = true
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -703,10 +678,10 @@ END
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -720,9 +695,6 @@ task qc_summary {
     input {
         File multiqc_tar_gz
         String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
-        Int memory_gb = 4
-        Int disk_size_gb = 10
-        Int max_retries = 1
     }
 
     String sample_name = basename(multiqc_tar_gz, ".multiqc.tar.gz")
@@ -776,9 +748,9 @@ task qc_summary {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }

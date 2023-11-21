@@ -22,7 +22,6 @@ workflow star_db_build {
         gtf_name: "Name of output GTF file"
         reference_fa_md5: "Expected md5sum of reference FASTA file"
         gtf_md5: "Expected md5sum of GTF file"
-        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
         reference_fa_disk_size_gb: "Disk space to allocate the FASTA download task"
         gtf_disk_size_gb: "Disk space to allocate the GTF download task"
     }
@@ -34,7 +33,6 @@ workflow star_db_build {
         String gtf_name
         String? reference_fa_md5
         String? gtf_md5
-        Int? max_retries
         Int reference_fa_disk_size_gb = 10
         Int gtf_disk_size_gb = 10
     }
@@ -44,19 +42,16 @@ workflow star_db_build {
         outfile_name=reference_fa_name,
         md5sum=reference_fa_md5,
         disk_size_gb=reference_fa_disk_size_gb,
-        max_retries=max_retries
     }
     call util.download as gtf_download { input:
         url=gtf_url,
         outfile_name=gtf_name,
         md5sum=gtf_md5,
         disk_size_gb=gtf_disk_size_gb,
-        max_retries=max_retries
     }
     call star.build_star_db { input:
         reference_fasta=reference_download.downloaded_file,
         gtf=gtf_download.downloaded_file,
-        max_retries=max_retries
     }
 
     output {

@@ -21,7 +21,6 @@ workflow alignment_post {
         bam: "Input BAM format file to process"
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
-        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination"
             choices: [
@@ -38,7 +37,6 @@ workflow alignment_post {
         File bam
         Boolean mark_duplicates
         File? contaminant_db
-        Int? max_retries
         String xenocp_aligner = ""
         Boolean cleanse_xenograft = false
         Boolean use_all_cores = false
@@ -50,7 +48,6 @@ workflow alignment_post {
         call samtools.index as pre_xenocp_index { input:
             bam=picard_sort.sorted_bam,
             use_all_cores=use_all_cores,
-            max_retries=max_retries
         }
 
         call xenocp_wf.xenocp { input:
@@ -64,10 +61,9 @@ workflow alignment_post {
     if (mark_duplicates) {
         call picard.mark_duplicates as picard_markdup { input:
             bam=select_first([xenocp.bam, picard_sort.sorted_bam]),
-            max_retries=max_retries
         }
     }
-    
+
     File aligned_bam = select_first([
         picard_markdup.duplicate_marked_bam,
         xenocp.bam,
@@ -77,13 +73,12 @@ workflow alignment_post {
     call samtools.index as samtools_index { input:
         bam=aligned_bam,
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
     File aligned_bam_index = samtools_index.bam_index
 
-    call picard.validate_bam { input: bam=aligned_bam, max_retries=max_retries }
+    call picard.validate_bam { input: bam=aligned_bam }
 
-    call md5sum.compute_checksum { input: file=aligned_bam, max_retries=max_retries }
+    call md5sum.compute_checksum { input: file=aligned_bam }
 
     output {
         File processed_bam = aligned_bam

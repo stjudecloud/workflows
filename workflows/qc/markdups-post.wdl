@@ -40,7 +40,6 @@ workflow markdups_post {
     input {
         File markdups_bam
         File markdups_bam_index
-        Int? max_retries
         Array[File] coverage_beds = []
         Array[String] coverage_labels = []
         String prefix = basename(markdups_bam, ".bam")
@@ -49,19 +48,16 @@ workflow markdups_post {
     call picard.collect_insert_size_metrics { input:
         bam=markdups_bam,
         prefix=prefix + ".CollectInsertSizeMetrics",
-        max_retries=max_retries
     }
     call samtools.flagstat { input:
         bam=markdups_bam,
         outfile_name=prefix + ".flagstat.txt",
-        max_retries=max_retries
     }
 
     call mosdepth.coverage as wg_coverage { input:
         bam=markdups_bam,
         bam_index=markdups_bam_index,
         prefix=prefix + "." + "whole_genome",
-        max_retries=max_retries
     }
     scatter(coverage_pair in zip(coverage_beds, coverage_labels)) {
         call mosdepth.coverage as regions_coverage { input:
@@ -69,7 +65,6 @@ workflow markdups_post {
             bam_index=markdups_bam_index,
             coverage_bed=coverage_pair.left,
             prefix=prefix + "." + coverage_pair.right,
-            max_retries=max_retries
         }
     }
 

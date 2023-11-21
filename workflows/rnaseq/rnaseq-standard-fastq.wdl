@@ -65,7 +65,6 @@ workflow rnaseq_standard_fastq {
         }
         prefix: "Prefix for output files"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
-        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination"
             choices: [
@@ -98,7 +97,6 @@ workflow rnaseq_standard_fastq {
         Array[ReadGroup] read_groups
         String prefix
         File? contaminant_db
-        Int? max_retries
         String xenocp_aligner = "star"
         String strandedness = ""
         Boolean mark_duplicates = false
@@ -115,7 +113,7 @@ workflow rnaseq_standard_fastq {
     }
 
     scatter (rg in read_groups) {
-        call ReadGroup_to_string { input: read_group=rg, max_retries=max_retries }
+        call ReadGroup_to_string { input: read_group=rg }
     }
     String stringified_read_groups = sep(
         ' , ', ReadGroup_to_string.stringified_read_group
@@ -126,7 +124,6 @@ workflow rnaseq_standard_fastq {
             call fq.fqlint { input:
                 read_one_fastq=reads.left,
                 read_two_fastq=reads.right,
-                max_retries=max_retries
             }
         }
     }
@@ -138,7 +135,6 @@ workflow rnaseq_standard_fastq {
                 read_one_fastq=reads.left,
                 read_two_fastq=reads.right,
                 record_count=reads_per_pair,
-                max_retries=max_retries
             }
         }
     }
@@ -166,7 +162,6 @@ workflow rnaseq_standard_fastq {
         xenocp_aligner=xenocp_aligner,
         strandedness=strandedness,
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
 
     output {
@@ -209,16 +204,10 @@ task ReadGroup_to_string {
 
     parameter_meta {
         read_group: "ReadGroup struct to stringify"
-        memory_gb: "RAM to allocate for task, specified in GB"
-        disk_size_gb: "Disk space to allocate for task, specified in GB"
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         ReadGroup read_group
-        Int memory_gb = 4
-        Int disk_size_gb = 10
-        Int max_retries = 1
     }
 
     command <<<
@@ -245,9 +234,9 @@ task ReadGroup_to_string {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }

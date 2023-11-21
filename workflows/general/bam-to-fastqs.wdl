@@ -19,35 +19,31 @@ workflow bam_to_fastqs {
         bam: "BAM file to split into FASTQs"
         paired_end: "Is the data paired-end (true) or single-end (false)?"
         use_all_cores: "Use all cores for multi-core steps?"
-        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     input {
         File bam
         Boolean paired_end = true
         Boolean use_all_cores = false
-        Int? max_retries
     }
 
-    call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call samtools.split { input: bam=bam, use_all_cores=use_all_cores, max_retries=max_retries }
+    call samtools.quickcheck { input: bam=bam }
+    call samtools.split { input: bam=bam, use_all_cores=use_all_cores }
     scatter (split_bam in split.split_bams) {
         call samtools.collate_to_fastq as bam_to_fastq { input:
             bam=split_bam,
             paired_end=paired_end,
             interleaved=false,  # matches default but prevents user from overriding
             use_all_cores=use_all_cores,
-            max_retries=max_retries
         }
     }
 
-    scatter (reads in 
+    scatter (reads in
         zip(bam_to_fastq.read_one_fastq_gz, bam_to_fastq.read_two_fastq_gz)
     ) {
         call fq.fqlint { input:
             read_one_fastq=select_first([reads.left, "undefined"]),
             read_two_fastq=reads.right,
-            max_retries=max_retries
         }
     }
 

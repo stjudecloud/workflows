@@ -45,10 +45,12 @@ task fqlint {
                 "high"
             ]
         }
-        panic: "Panic on first error (true) or log all errors (false)?"
+        panic: {
+            description: "Panic on first error (true) or log all errors (false)?",
+            common: true
+        }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -60,7 +62,6 @@ task fqlint {
         Boolean panic = true
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float read1_size = size(read_one_fastq, "GiB")
@@ -91,7 +92,7 @@ task fqlint {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/fq:0.11.0--h9ee0642_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -108,11 +109,15 @@ task subsample {
         read_one_fastq: "Input FASTQ with read one. Can be gzipped or uncompressed."
         read_two_fastq: "Input FASTQ with read two. Can be gzipped or uncompressed."
         prefix: "Prefix for the output FASTQ file(s). The extension `_R1.subsampled.fastq.gz` and `_R2.subsampled.fastq.gz` will be added."
-        probability: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable."
-        record_count: "The exact number of records to keep. Cannot be used with `probability`. Any `record_count<=0` to disable."
-        memory_gb: "RAM to allocate for task, specified in GB"
+        probability: {
+            description: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable."
+            common: true
+        }
+        record_count: {
+            description: "The exact number of records to keep. Cannot be used with `probability`. Any `record_count<=0` to disable."
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -125,9 +130,7 @@ task subsample {
         )
         Float probability = 1.0
         Int record_count = -1
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float read1_size = size(read_one_fastq, "GiB")
@@ -162,9 +165,9 @@ task subsample {
     }
 
     runtime {
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        memory: "~{memory_gb} GB"
         container: 'quay.io/biocontainers/fq:0.11.0--h9ee0642_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }

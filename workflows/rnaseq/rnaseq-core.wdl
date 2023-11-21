@@ -31,7 +31,6 @@ workflow rnaseq_core {
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`. These two read groups could be associated with the following four FASTQs: `sample1.rg1_R1.fastq,sample1.rg2_R1.fastq` and `sample1.rg1_R2.fastq,sample1.rg2_R2.fastq`"
         prefix: "Prefix for output files"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
-        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination"
             choices: [
@@ -62,7 +61,6 @@ workflow rnaseq_core {
         String read_groups
         String prefix
         File? contaminant_db
-        Int? max_retries
         String xenocp_aligner = "star"
         String strandedness = ""
         Boolean mark_duplicates = false
@@ -87,7 +85,6 @@ workflow rnaseq_core {
         prefix=prefix,
         read_groups=read_groups,
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
 
     call alignment_post_wf.alignment_post { input:
@@ -97,21 +94,18 @@ workflow rnaseq_core {
         cleanse_xenograft=cleanse_xenograft,
         xenocp_aligner=xenocp_aligner,
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
 
     call deeptools.bam_coverage as deeptools_bam_coverage { input:
         bam=alignment_post.processed_bam,
         bam_index=alignment_post.bam_index,
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
 
     call ngsderive.strandedness as ngsderive_strandedness { input:
         bam=alignment_post.processed_bam,
         bam_index=alignment_post.bam_index,
         gene_model=gtf,
-        max_retries=max_retries
     }
 
     String htseq_strandedness = if (provided_strandedness != "")
@@ -128,7 +122,6 @@ workflow rnaseq_core {
                 then ngsderive_strandedness.strandedness
                 else provided_strandedness
             ),
-        max_retries=max_retries
     }
 
     output {
