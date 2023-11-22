@@ -10,7 +10,6 @@ task librarian {
             "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
             ""
         )
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
         Int max_retries = 1
     }
@@ -33,7 +32,7 @@ task librarian {
     # }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         docker: 'ghcr.io/desmondwillowbrook/librarian:latest'
         maxRetries: max_retries
