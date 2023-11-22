@@ -169,9 +169,7 @@
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=8): RAM to allocate for task, specified in GB</li>
-<li><code>min_mapping_quality</code> (Int, default=20): Minimum mapping quality to pass to the <code>-Q</code> flag of <code>mosdepth</code></li>
+<li><code>min_mapping_quality</code> (Int, default=20); <strong>description</strong>: Minimum mapping quality to pass to the <code>-Q</code> flag of <code>mosdepth</code>; <strong>common</strong>: true</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>prefix</code> (String, default=basename(bam,'.bam')): Prefix for the <code>mosdepth</code> report files. The extensions <code>.mosdepth.summary.txt</code>, <code>.mosdepth.global.dist.txt</code> and <code>.mosdepth.region.dist.txt</code> will be added.</li>
 <li><code>use_fast_mode</code> (Boolean, default=true): Use Mosdepth's 'fast mode'? This enables the <code>-x</code> flag.</li>

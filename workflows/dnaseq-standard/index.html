@@ -155,6 +155,8 @@
 <dd>Aligns DNA reads using bwa mem</dd>
 <dt>outputs</dt>
 <dd>{'harmonized_bam': 'Harmonized DNA-Seq BAM, aligned with bwa mem'}</dd>
+<dt>allowNestedInputs</dt>
+<dd>true</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -175,7 +177,6 @@
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>max_retries</code> (Int?): Number of times to retry in case of failure</li>
 <li><code>validate_input_bam.reference_fasta</code> (File?)</li>
 <li><code>samtools_merge.basic_merge.new_header</code> (File?)</li>
 <li><code>samtools_merge.final_merge.new_header</code> (File?)</li>
@@ -186,18 +187,16 @@
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>validate_input</code> (Boolean, default=true): Ensure input BAM is well-formed before beginning harmonization?</li>
-<li><code>bwa_mem.memory_gb</code> (Int, default=10)</li>
 <li><code>bwa_mem.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>bwa_mem.ncpu</code> (Int, default=1)</li>
+<li><code>bwa_mem.ncpu</code> (Int, default=2)</li>
 <li><code>bwa_mem.prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
-<li><code>get_read_groups.memory_gb</code> (Int, default=4)</li>
 <li><code>get_read_groups.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>samtools_merge.max_length</code> (Int, default=100)</li>
 <li><code>sort.memory_gb</code> (Int, default=25)</li>
 <li><code>sort.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>sort.prefix</code> (String, default=basename(bam,".bam") + ".sorted"): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>sort.sort_order</code> (String, default="coordinate")</li>
-<li><code>validate_input_bam.ignore_list</code> (Array[String], default=["MISSING_PLATFORM_VALUE", "INVALID_PLATFORM_VALUE", "INVALID_MAPPING_QUALITY"])</li>
+<li><code>validate_input_bam.ignore_list</code> (Array[String], default=[])</li>
 <li><code>validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
 <li><code>validate_input_bam.max_errors</code> (Int, default=2147483647)</li>
 <li><code>validate_input_bam.memory_gb</code> (Int, default=16)</li>
@@ -214,7 +213,7 @@
 <li><code>bam_to_fastqs.bam_to_fastq.fast_mode</code> (Boolean, default=true)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.modify_memory_gb</code> (Int, default=0)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.ncpu</code> (Int, default=1)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.ncpu</code> (Int, default=2)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.output_singletons</code> (Boolean, default=false)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>bam_to_fastqs.bam_to_fastq.store_collated_bam</code> (Boolean, default=false)</li>
@@ -224,31 +223,26 @@
 <li><code>bam_to_fastqs.fqlint.paired_read_validation_level</code> (String, default="high")</li>
 <li><code>bam_to_fastqs.fqlint.panic</code> (Boolean, default=true)</li>
 <li><code>bam_to_fastqs.fqlint.single_read_validation_level</code> (String, default="high")</li>
-<li><code>bam_to_fastqs.quickcheck.memory_gb</code> (Int, default=4)</li>
 <li><code>bam_to_fastqs.quickcheck.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>bam_to_fastqs.split.memory_gb</code> (Int, default=4)</li>
 <li><code>bam_to_fastqs.split.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>bam_to_fastqs.split.ncpu</code> (Int, default=1)</li>
+<li><code>bam_to_fastqs.split.ncpu</code> (Int, default=2)</li>
 <li><code>bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>bam_to_fastqs.split.reject_unaccounted</code> (Boolean, default=true)</li>
 <li><code>samtools_merge.basic_merge.attach_rg</code> (Boolean, default=true)</li>
 <li><code>samtools_merge.basic_merge.combine_rg</code> (Boolean, default=true)</li>
-<li><code>samtools_merge.basic_merge.memory_gb</code> (Int, default=4)</li>
 <li><code>samtools_merge.basic_merge.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>samtools_merge.basic_merge.name_sorted</code> (Boolean, default=false)</li>
-<li><code>samtools_merge.basic_merge.ncpu</code> (Int, default=1)</li>
+<li><code>samtools_merge.basic_merge.ncpu</code> (Int, default=2)</li>
 <li><code>samtools_merge.basic_merge.region</code> (String, default="")</li>
-<li><code>samtools_merge.final_merge.memory_gb</code> (Int, default=4)</li>
 <li><code>samtools_merge.final_merge.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>samtools_merge.final_merge.name_sorted</code> (Boolean, default=false)</li>
-<li><code>samtools_merge.final_merge.ncpu</code> (Int, default=1)</li>
+<li><code>samtools_merge.final_merge.ncpu</code> (Int, default=2)</li>
 <li><code>samtools_merge.final_merge.region</code> (String, default="")</li>
 <li><code>samtools_merge.inner_merge.attach_rg</code> (Boolean, default=true)</li>
 <li><code>samtools_merge.inner_merge.combine_rg</code> (Boolean, default=true)</li>
-<li><code>samtools_merge.inner_merge.memory_gb</code> (Int, default=4)</li>
 <li><code>samtools_merge.inner_merge.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>samtools_merge.inner_merge.name_sorted</code> (Boolean, default=false)</li>
-<li><code>samtools_merge.inner_merge.ncpu</code> (Int, default=1)</li>
+<li><code>samtools_merge.inner_merge.ncpu</code> (Int, default=2)</li>
 <li><code>samtools_merge.inner_merge.region</code> (String, default="")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>

@@ -164,6 +164,8 @@ input BAM has been duplicate marked or not.</p>
 <dd>Runs QC analyses which are impacted by duplicate marking</dd>
 <dt>outputs</dt>
 <dd>{'insert_size_metrics': '<code>*.txt</code> output file of <code>picard collectInsertSizeMetrics</code>', 'insert_size_metrics_pdf': '<code>*.pdf</code> output file of <code>picard collectInsertSizeMetrics</code>', 'flagstat_report': '<code>samtools flagstat</code> report', 'mosdepth_global_summary': 'Summary of whole genome coverage produced by <code>mosdepth</code>', 'mosdepth_global_dist': 'Distribution of whole genome coverage produced by <code>mosdepth</code>', 'mosdepth_region_summary': 'Summaries of coverage corresponding to the regions defined by <code>coverage_beds</code> input, produced by <code>mosdepth</code>', 'mosdepth_region_dist': 'Distributions of coverage corresponding to the regions defined by <code>coverage_beds</code> input, produced by <code>mosdepth</code>'}</dd>
+<dt>allowNestedInputs</dt>
+<dd>true</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -177,7 +179,6 @@ input BAM has been duplicate marked or not.</p>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
 <li><code>wg_coverage.coverage_bed</code> (File?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
@@ -187,15 +188,12 @@ input BAM has been duplicate marked or not.</p>
 <li><code>prefix</code> (String, default=basename(markdups_bam,".bam")): Prefix for all results files</li>
 <li><code>collect_insert_size_metrics.memory_gb</code> (Int, default=8)</li>
 <li><code>collect_insert_size_metrics.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>flagstat.memory_gb</code> (Int, default=5)</li>
 <li><code>flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>flagstat.ncpu</code> (Int, default=1)</li>
+<li><code>flagstat.ncpu</code> (Int, default=2)</li>
 <li><code>flagstat.use_all_cores</code> (Boolean, default=false)</li>
-<li><code>regions_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>regions_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>regions_coverage.use_fast_mode</code> (Boolean, default=true)</li>
-<li><code>wg_coverage.memory_gb</code> (Int, default=8)</li>
 <li><code>wg_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>wg_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>wg_coverage.use_fast_mode</code> (Boolean, default=true)</li>

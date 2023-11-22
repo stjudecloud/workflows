@@ -154,6 +154,8 @@
 <dd>Builds a database suitable for running the STAR alignment program</dd>
 <dt>outputs</dt>
 <dd>{'reference_fa': 'FASTA format reference file', 'gtf': 'GTF feature file', 'star_db_tar_gz': 'A gzipped TAR file containing the STAR reference files'}</dd>
+<dt>allowNestedInputs</dt>
+<dd>true</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -169,7 +171,6 @@
 <h4 id="optional">Optional</h4>
 <ul>
 <li><code>gtf_md5</code> (String?): Expected md5sum of GTF file</li>
-<li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
 <li><code>reference_fa_md5</code> (String?): Expected md5sum of reference FASTA file</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
@@ -183,7 +184,7 @@
 <li><code>build_star_db.genomeSuffixLengthMax</code> (Int, default=-1)</li>
 <li><code>build_star_db.memory_gb</code> (Int, default=50)</li>
 <li><code>build_star_db.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>build_star_db.ncpu</code> (Int, default=1)</li>
+<li><code>build_star_db.ncpu</code> (Int, default=8)</li>
 <li><code>build_star_db.sjdbGTFchrPrefix</code> (String, default="-")</li>
 <li><code>build_star_db.sjdbGTFfeatureExon</code> (String, default="exon")</li>
 <li><code>build_star_db.sjdbGTFtagExonParentGene</code> (String, default="gene_id")</li>
@@ -192,8 +193,6 @@
 <li><code>build_star_db.sjdbGTFtagExonParentTranscript</code> (String, default="transcript_id")</li>
 <li><code>build_star_db.sjdbOverhang</code> (Int, default=125)</li>
 <li><code>build_star_db.use_all_cores</code> (Boolean, default=false)</li>
-<li><code>gtf_download.memory_gb</code> (Int, default=4)</li>
-<li><code>reference_download.memory_gb</code> (Int, default=4)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>

@@ -163,11 +163,10 @@
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>memory_gb</code> (Int, default=16): RAM to allocate for task</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
-<li><code>name_sorted</code> (Boolean, default=false): Is the BAM name sorted? QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to true.</li>
-<li><code>paired_end</code> (Boolean, default=true): Is the BAM paired end?</li>
+<li><code>name_sorted</code> (Boolean, default=false); <strong>description</strong>: Is the BAM name sorted? QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to true.; <strong>common</strong>: true</li>
+<li><code>paired_end</code> (Boolean, default=true); <strong>description</strong>: Is the BAM paired end?; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".qualimap_rnaseq_results"): Prefix for the results directory and output tarball. The extension <code>.qualimap_rnaseq_results.tar.gz</code> will be added.</li>
 </ul>
 <h3 id="outputs">Outputs</h3>

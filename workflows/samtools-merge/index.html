@@ -155,6 +155,8 @@
 <dd>Runs <code>samtools merge</code>, with optional iteration to avoid maximum command line argument length</dd>
 <dt>outputs</dt>
 <dd>{'merged_bam': 'The BAM resulting from merging all the input BAMs'}</dd>
+<dt>allowNestedInputs</dt>
+<dd>true</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -166,7 +168,6 @@
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>max_retries</code> (Int?): Number of times to retry in case of failure</li>
 <li><code>basic_merge.new_header</code> (File?)</li>
 <li><code>final_merge.new_header</code> (File?)</li>
 <li><code>inner_merge.new_header</code> (File?)</li>
@@ -178,22 +179,19 @@
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
 <li><code>basic_merge.attach_rg</code> (Boolean, default=true)</li>
 <li><code>basic_merge.combine_rg</code> (Boolean, default=true)</li>
-<li><code>basic_merge.memory_gb</code> (Int, default=4)</li>
 <li><code>basic_merge.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>basic_merge.name_sorted</code> (Boolean, default=false)</li>
-<li><code>basic_merge.ncpu</code> (Int, default=1)</li>
+<li><code>basic_merge.ncpu</code> (Int, default=2)</li>
 <li><code>basic_merge.region</code> (String, default="")</li>
-<li><code>final_merge.memory_gb</code> (Int, default=4)</li>
 <li><code>final_merge.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>final_merge.name_sorted</code> (Boolean, default=false)</li>
-<li><code>final_merge.ncpu</code> (Int, default=1)</li>
+<li><code>final_merge.ncpu</code> (Int, default=2)</li>
 <li><code>final_merge.region</code> (String, default="")</li>
 <li><code>inner_merge.attach_rg</code> (Boolean, default=true)</li>
 <li><code>inner_merge.combine_rg</code> (Boolean, default=true)</li>
-<li><code>inner_merge.memory_gb</code> (Int, default=4)</li>
 <li><code>inner_merge.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>inner_merge.name_sorted</code> (Boolean, default=false)</li>
-<li><code>inner_merge.ncpu</code> (Int, default=1)</li>
+<li><code>inner_merge.ncpu</code> (Int, default=2)</li>
 <li><code>inner_merge.region</code> (String, default="")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>

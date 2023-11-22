@@ -161,9 +161,6 @@
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>disk_size_gb</code> (Int, default=60): Disk space to allocate for task</li>
-<li><code>max_retries</code> (Int, default=3): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task</li>
 <li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
@@ -185,8 +182,6 @@
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=3): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation, specified in GB. Default disk size is determined dynamically based on <code>library_name</code>. Note that the default sizes are adequate as of April 2023, but new genomes are constantly being added to the NCBI database. More disk space may be required depending on when in the future this task is run.</li>
 <li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
 </ul>
@@ -209,8 +204,6 @@
 </ul>
 <h4 id="defaults_2">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
 </ul>
@@ -233,17 +226,16 @@
 </ul>
 <h4 id="defaults_3">Defaults</h4>
 <ul>
-<li><code>db_name</code> (String, default="kraken2_db"): Name for output in compressed, archived format. The suffix <code>.tar.gz</code> will be added.</li>
+<li><code>db_name</code> (String, default="kraken2_db"); <strong>description</strong>: Name for output in compressed, archived format. The suffix <code>.tar.gz</code> will be added.; <strong>common</strong>: true</li>
 <li><code>kmer_len</code> (Int, default=if protein then 15 else 35): K-mer length in bp that will be used to build the database</li>
 <li><code>max_db_size_gb</code> (Int, default=-1): Maximum number of GBs for Kraken 2 hash table; if the Kraken 2 estimator determines more would normally be needed, the reference library will be downsampled to fit.</li>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>minimizer_len</code> (Int, default=if protein then 12 else 31): Minimizer length in bp that will be used to build the database</li>
 <li><code>minimizer_spaces</code> (Int, default=if protein then 0 else 7): Number of characters in minimizer that are ignored in comparisons</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
-<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>ncpu</code> (Int, default=4); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
 <li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
-<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
 <ul>
@@ -266,14 +258,13 @@
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
 <li><code>min_base_quality</code> (Int, default=0): Minimum base quality used in classification</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
-<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>ncpu</code> (Int, default=4); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the Kraken2 output files. The extensions <code>.kraken2.txt</code> and <code>.kraken2.sequences.txt.gz</code> will be added.</li>
-<li><code>store_sequences</code> (Boolean, default=false): Store and output main Kraken2 output in addition to the summary report?</li>
-<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
+<li><code>store_sequences</code> (Boolean, default=false); <strong>description</strong>: Store and output main Kraken2 output in addition to the summary report?; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
 <li><code>use_names</code> (Boolean, default=true): Print scientific names instead of just taxids?</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>

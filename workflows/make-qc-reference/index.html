@@ -154,6 +154,8 @@
 <dd>Downloads and creates all reference files needed to run the <code>quality_check</code> workflow</dd>
 <dt>outputs</dt>
 <dd>{'reference_fa': 'FASTA format reference file', 'gtf': 'GTF feature file', 'exon_bed': '3 column BED file defining the regions of the exome. Derived from <code>gtf</code>.', 'CDS_bed': '3 column BED file defining the regions of the coding domain. Derived from <code>gtf</code>.', 'kraken_db': 'A complete Kraken2 database'}</dd>
+<dt>allowNestedInputs</dt>
+<dd>true</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -173,28 +175,21 @@
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
 <li><code>fastas_download.md5sum</code> (String?)</li>
 <li><code>gtf_download.md5sum</code> (String?)</li>
 <li><code>reference_download.md5sum</code> (String?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>gtf_disk_size_gb</code> (Int, default=10)</li>
+<li><code>gtf_disk_size_gb</code> (Int, default=10): Disk size (in GB) to allocate for downloading the GTF file</li>
 <li><code>kraken_fasta_urls</code> (Array[String], default=[]): URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database. This allows the addition of individual genomes (or other sequences) of interest.</li>
 <li><code>kraken_fastas</code> (Array[File], default=[]): Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using <code>kraken:taxid</code></li>
-<li><code>kraken_fastas_disk_size_gb</code> (Int, default=10)</li>
+<li><code>kraken_fastas_disk_size_gb</code> (Int, default=10): Disk size (in GB) to allocate for downloading the FASTA files</li>
 <li><code>kraken_libraries</code> (Array[String], default=["archaea", "bacteria", "plasmid", "viral", "human", "fungi", "protozoa", "UniVec_Core"]); <strong>description</strong>: List of kraken libraries to download; <strong>choices</strong>: ['archaea', 'bacteria', 'plasmid', 'viral', 'human', 'fungi', 'plant', 'protozoa', 'nt', 'UniVec', 'UniVec_Core']</li>
 <li><code>protein</code> (Boolean, default=false): Construct a protein database?</li>
-<li><code>reference_fa_disk_size_gb</code> (Int, default=10)</li>
-<li><code>create_library_from_fastas.memory_gb</code> (Int, default=4)</li>
+<li><code>reference_fa_disk_size_gb</code> (Int, default=10): Disk size (in GB) to allocate for downloading the reference FASTA file</li>
 <li><code>create_library_from_fastas.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>download_library.memory_gb</code> (Int, default=4)</li>
 <li><code>download_library.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>download_taxonomy.disk_size_gb</code> (Int, default=60)</li>
-<li><code>download_taxonomy.memory_gb</code> (Int, default=4)</li>
-<li><code>fastas_download.memory_gb</code> (Int, default=4)</li>
-<li><code>gtf_download.memory_gb</code> (Int, default=4)</li>
 <li><code>kraken_build_db.db_name</code> (String, default="kraken2_db")</li>
 <li><code>kraken_build_db.kmer_len</code> (Int, default=if protein then 15 else 35)</li>
 <li><code>kraken_build_db.max_db_size_gb</code> (Int, default=-1)</li>
@@ -202,11 +197,9 @@
 <li><code>kraken_build_db.minimizer_spaces</code> (Int, default=if protein then 0 else 7)</li>
 <li><code>kraken_build_db.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>kraken_build_db.modify_memory_gb</code> (Int, default=0)</li>
-<li><code>kraken_build_db.ncpu</code> (Int, default=1)</li>
+<li><code>kraken_build_db.ncpu</code> (Int, default=4)</li>
 <li><code>kraken_build_db.use_all_cores</code> (Boolean, default=false)</li>
-<li><code>make_coverage_regions_beds.memory_gb</code> (Int, default=4)</li>
 <li><code>make_coverage_regions_beds.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>reference_download.memory_gb</code> (Int, default=4)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>

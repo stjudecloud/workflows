@@ -91,8 +91,6 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#optional">Optional</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
-    </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
@@ -105,7 +103,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
     </li>
@@ -119,7 +117,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_2">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_2">Defaults</a>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_1">Defaults</a>
     </li>
         </ul>
     </li>
@@ -133,7 +131,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_3">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_3">Defaults</a>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_2">Defaults</a>
     </li>
         </ul>
     </li>
@@ -147,7 +145,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_4">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_4">Defaults</a>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_3">Defaults</a>
     </li>
         </ul>
     </li>
@@ -161,7 +159,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_5">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_5">Defaults</a>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_4">Defaults</a>
     </li>
         </ul>
     </li>
@@ -175,7 +173,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_6">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_6">Defaults</a>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_5">Defaults</a>
     </li>
         </ul>
     </li>
@@ -189,7 +187,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_7">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_7">Defaults</a>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_6">Defaults</a>
     </li>
         </ul>
     </li>
@@ -203,7 +201,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_8">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_8">Defaults</a>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_7">Defaults</a>
     </li>
         </ul>
     </li>
@@ -217,7 +215,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#required_9">Required</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults_9">Defaults</a>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_8">Defaults</a>
     </li>
         </ul>
     </li>
@@ -298,11 +296,6 @@
 <ul>
 <li><code>md5sum</code> (String?): Optional md5sum to check against downloaded file. Recommended to use in order to catch corruption or an unintentional file swap.</li>
 </ul>
-<h4 id="defaults">Defaults</h4>
-<ul>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
-</ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>downloaded_file</code> (File)</li>
@@ -320,11 +313,9 @@
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to get read groups from</li>
 </ul>
-<h4 id="defaults_1">Defaults</h4>
+<h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>format_for_star</code> (Boolean, default=true): Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (<code>read_groups[0]</code>). If no processing is selected, each found @RG line will be its own entry in output array <code>read_groups</code>.</li>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>format_for_star</code> (Boolean, default=true); <strong>description</strong>: Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (<code>read_groups[0]</code>). If no processing is selected, each found @RG line will be its own entry in output array <code>read_groups</code>.; <strong>common</strong>: true</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
@@ -344,12 +335,9 @@
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>input_string</code> (String, <strong>required</strong>): String to split on occurences of <code>delimiter</code></li>
 </ul>
-<h4 id="defaults_2">Defaults</h4>
+<h4 id="defaults_1">Defaults</h4>
 <ul>
-<li><code>delimiter</code> (String, default=" , "): Delimiter on which to split <code>input_string</code></li>
-<li><code>disk_size_gb</code> (Int, default=10): Disk space to allocate for task, specified in GB</li>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
+<li><code>delimiter</code> (String, default=" , "); <strong>description</strong>: Delimiter on which to split <code>input_string</code>; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
 <ul>
@@ -370,11 +358,9 @@
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>gtf</code> (File, <strong>required</strong>): GTF feature file</li>
 </ul>
-<h4 id="defaults_3">Defaults</h4>
+<h4 id="defaults_2">Defaults</h4>
 <ul>
-<li><code>idattr</code> (String, default="gene_name"): GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.</li>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=8): RAM to allocate for task, specified in GB</li>
+<li><code>idattr</code> (String, default="gene_name"); <strong>description</strong>: GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.; <strong>common</strong>: true</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>outfile_name</code> (String, default=basename(gtf,".gtf.gz") + ".genelengths.txt"): Name of the gene lengths file</li>
 </ul>
@@ -395,10 +381,8 @@
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bgzipped_file</code> (File, <strong>required</strong>): Input bgzipped file to check integrity of</li>
 </ul>
-<h4 id="defaults_4">Defaults</h4>
+<h4 id="defaults_3">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
@@ -419,10 +403,8 @@
 <li><code>additional_header</code> (String, <strong>required</strong>): A string to add as a new line in the BAM header. No format checking is done, so please ensure you do not invalidate your BAM with this task. Add only spec compliant entries to the header.</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file which will have its header added to</li>
 </ul>
-<h4 id="defaults_5">Defaults</h4>
+<h4 id="defaults_4">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".reheader"): Prefix for the reheadered BAM. The extension <code>.bam</code> will be added.</li>
 </ul>
@@ -443,10 +425,8 @@
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>tarball</code> (File, <strong>required</strong>): A <code>.tar.gz</code> archive to unpack into individual files</li>
 </ul>
-<h4 id="defaults_6">Defaults</h4>
+<h4 id="defaults_5">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 </ul>
 <h3 id="outputs_6">Outputs</h3>
@@ -466,10 +446,8 @@
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>gtf</code> (File, <strong>required</strong>): GTF feature file from which to derive coverage regions BED files</li>
 </ul>
-<h4 id="defaults_7">Defaults</h4>
+<h4 id="defaults_6">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 </ul>
 <h3 id="outputs_7">Outputs</h3>
@@ -491,11 +469,9 @@
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to calculate PHRED score statistics for</li>
 </ul>
-<h4 id="defaults_8">Defaults</h4>
+<h4 id="defaults_7">Defaults</h4>
 <ul>
 <li><code>fast_mode</code> (Boolean, default=true): Enable fast mode (true) or calculate statistics for <em><em>every</em></em> base in the BAM (false)?</li>
-<li><code>max_retries</code> (Int, default=1): Number of times to retry in case of failure</li>
-<li><code>memory_gb</code> (Int, default=4): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the output TSV file. The extension <code>.global_PHRED_scores.tsv</code> will be added.</li>
 </ul>
@@ -514,11 +490,8 @@
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>multiqc_tar_gz</code> (File, <strong>required</strong>)</li>
 </ul>
-<h4 id="defaults_9">Defaults</h4>
+<h4 id="defaults_8">Defaults</h4>
 <ul>
-<li><code>disk_size_gb</code> (Int, default=10)</li>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=4)</li>
 <li><code>outfile_name</code> (String, default=basename(multiqc_tar_gz,".multiqc.tar.gz") + ".qc_summary.json")</li>
 </ul>
 <h3 id="outputs_9">Outputs</h3>

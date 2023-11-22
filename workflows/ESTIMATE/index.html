@@ -94,8 +94,6 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required">Required</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#optional">Optional</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
@@ -167,16 +165,11 @@
 <li><code>calc_tpm._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>run_estimate._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
-<h4 id="optional">Optional</h4>
-<ul>
-<li><code>max_retries</code> (Int?): Number of times to retry failed steps. Overrides task level defaults.</li>
-</ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>calc_tpm.disk_size_gb</code> (Int, default=10)</li>
-<li><code>calc_tpm.memory_gb</code> (Int, default=4)</li>
 <li><code>calc_tpm.prefix</code> (String, default=basename(counts,".feature-counts.txt"))</li>
 <li><code>run_estimate.disk_size_gb</code> (Int, default=10)</li>
+<li><code>run_estimate.max_retries</code> (Int, default=1)</li>
 <li><code>run_estimate.memory_gb</code> (Int, default=4)</li>
 <li><code>run_estimate.outfile_name</code> (String, default=basename(gene_expression_file,".TPM.txt") + ".ESTIMATE.gct")</li>
 </ul>
