@@ -885,9 +885,8 @@ task fixmate {
         bam: "Input BAM format file to add mate information. Must be name-sorted or name-collated."
         prefix: "Prefix for the output file. The extension specified with the `extension` parameter will be added."
         extension: {
-            description: "File format extension to use for output file.",
+            description: "File format extension to use for output file."
             choices: [
-                ".sam",  # TODO are we sure we want to encourage the use of .sam?
                 ".bam",
                 ".cram"
             ]
