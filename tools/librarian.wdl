@@ -16,9 +16,8 @@ task librarian {
     }
 
     Float read1_size = size(read_one_fastq, "GiB")
-    Float read2_size = size(read_two_fastq, "GiB")
     Int disk_size_gb = (
-        ceil(read1_size + read2_size) + 10 + modify_disk_size_gb
+        ceil(read1_size) + 10 + modify_disk_size_gb
     )
 
     command <<<
