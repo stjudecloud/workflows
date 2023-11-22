@@ -17,16 +17,12 @@ task compute_checksum {
 
     parameter_meta {
         file: "Input file to generate MD5 checksum for"
-        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File file
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float file_size = size(file, "GiB")
@@ -43,9 +39,9 @@ task compute_checksum {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }

@@ -18,7 +18,7 @@
 ## : a compressed archive containing the array of FASTQ files
 ##
 ## ## LICENSING:
-## 
+##
 ## #### MIT License
 ##
 ## Copyright 2020-Present St. Jude Children's Research Hospital
@@ -52,7 +52,6 @@ workflow cell_ranger_bam_to_fastqs {
         longranger20: "Convert a BAM produced by Longranger 2.0"
         gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
         use_all_cores: "Use all cores for multi-core steps?"
-        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
     }
 
     input {
@@ -61,23 +60,20 @@ workflow cell_ranger_bam_to_fastqs {
         Boolean longranger20 = false
         Boolean gemcode = false
         Boolean use_all_cores = false
-        Int? max_retries
     }
 
-    call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
+    call samtools.quickcheck { input: bam=bam }
     call cellranger.bamtofastq { input:
         bam=bam,
         cellranger11=cellranger11,
         longranger20=longranger20,
         gemcode=gemcode,
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
     scatter (reads in zip(bamtofastq.read_one_fastq_gz, bamtofastq.read_two_fastq_gz)) {
         call fq.fqlint { input:
             read_one_fastq=reads.left,
             read_two_fastq=reads.right,
-            max_retries=max_retries
         }
     }
 
@@ -96,7 +92,6 @@ task parse_input {
         Boolean gemcode
         Int memory_gb = 4
         Int disk_size_gb = 10
-        Int max_retries = 1
     }
 
     Int exclusive_arg = (if cellranger11 then 1 else 0)
@@ -118,6 +113,6 @@ task parse_input {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }

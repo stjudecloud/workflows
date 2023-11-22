@@ -18,11 +18,16 @@ task rnaseq {
         bam: "Input BAM format file to run qualimap rnaseq on"
         gtf: "GTF features file. Gzipped or uncompressed."
         prefix: "Prefix for the results directory and output tarball. The extension `.qualimap_rnaseq_results.tar.gz` will be added."
-        name_sorted: "Is the BAM name sorted? QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to true."
-        paired_end: "Is the BAM paired end?"
         memory_gb: "RAM to allocate for task"
+        name_sorted: {
+            description: "Is the BAM name sorted? QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to true."
+            common: true
+        }
+        paired_end: {
+            description: "Is the BAM paired end?"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -33,7 +38,6 @@ task rnaseq {
         Boolean paired_end = true
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     String out_tar_gz = prefix + ".tar.gz"
@@ -53,7 +57,7 @@ task rnaseq {
             else ceil(((bam_size + gtf_size) * 12) + 10)
         ) + modify_disk_size_gb
     )
- 
+
     command <<<
         set -euo pipefail
 
@@ -84,7 +88,7 @@ task rnaseq {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -118,18 +122,18 @@ task bamqc {
 
     command <<<
         set -euo pipefail
-        
+
         n_cores=~{ncpu}
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
-        
+
         qualimap bamqc -bam ~{bam} \
             -outdir ~{out_directory} \
             -nt "$n_cores" \
             -nw 400 \
             --java-mem-size=~{java_heap_size}g
-        
+
         # Check if qualimap succeeded
         if [ ! -d "~{out_directory}/raw_data_qualimapReport/" ]; then
             exit 42

@@ -68,6 +68,7 @@ workflow quality_check {
             junctions: "TSV file containing a detailed list of annotated junctions"
             IntermediateFiles: "Any and all files produced as intermediate during pipeline processing. Only output if `output_intermediate_files = true`."
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {
@@ -82,7 +83,6 @@ workflow quality_check {
             ]
         }
         gtf: "GTF features file. Gzipped or uncompressed. **Required** for RNA-Seq data."
-        max_retries: "Number of times to retry failed steps. Overrides task level defaults."
         multiqc_config: "YAML file for configuring MultiQC"
         extra_multiqc_inputs: "An array of additional files to pass directly into MultiQC"
         coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions"
@@ -100,7 +100,6 @@ workflow quality_check {
         File kraken_db
         String molecule
         File? gtf
-        Int? max_retries
         File multiqc_config = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
         Array[File] extra_multiqc_inputs = []
         Array[File] coverage_beds = []
@@ -117,13 +116,12 @@ workflow quality_check {
         input_molecule=molecule,
         coverage_beds_len=length(coverage_beds),
         coverage_labels=coverage_labels,
-        max_retries=max_retries
     }
 
-    call md5sum.compute_checksum { input: file=bam, max_retries=max_retries }
+    call md5sum.compute_checksum { input: file=bam }
 
-    call samtools.quickcheck { input: bam=bam, max_retries=max_retries }
-    call util.compression_integrity { input: bgzipped_file=bam, max_retries=max_retries }
+    call samtools.quickcheck { input: bam=bam }
+    call util.compression_integrity { input: bgzipped_file=bam }
 
     if (subsample_n_reads > 0) {
         call samtools.subsample { input:
@@ -131,13 +129,11 @@ workflow quality_check {
             prefix=prefix,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
-            max_retries=max_retries
         }
         if (defined(subsample.sampled_bam)) {
             call samtools.index as subsample_index { input:
                 bam=select_first([subsample.sampled_bam, "undefined"]),
                 use_all_cores=use_all_cores,
-                max_retries=max_retries
             }
         }
     }
@@ -161,52 +157,43 @@ workflow quality_check {
         succeed_on_errors=true,
         ignore_list=[],
         summary_mode=true,
-        max_retries=max_retries
     }
 
     call picard.collect_alignment_summary_metrics { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".CollectAlignmentSummaryMetrics",
-        max_retries=max_retries
     }
     call picard.quality_score_distribution { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".QualityScoreDistribution",
-        max_retries=max_retries
     }
     call fastqc_tasks.fastqc { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".fastqc_results",
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
     call ngsderive.instrument { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".instrument.tsv",
-        max_retries=max_retries
     }
     call ngsderive.read_length { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
         outfile_name=post_subsample_prefix + ".readlength.tsv",
-        max_retries=max_retries
     }
     call ngsderive.encoding { input:
         ngs_files=[post_subsample_bam],
         outfile_name=post_subsample_prefix + ".encoding.tsv",
         num_reads=-1,
-        max_retries=max_retries
     }
     call ngsderive.endedness { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".endedness.tsv",
         lenient=true,
-        max_retries=max_retries
     }
     call util.global_phred_scores { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix,
-        max_retries=max_retries
     }
 
     call samtools.collate_to_fastq { input:
@@ -222,13 +209,11 @@ workflow quality_check {
         paired_end=true,  # matches default but prevents user from overriding
         interleaved=false,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
 
     call fq.fqlint { input:
         read_one_fastq=select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
         read_two_fastq=collate_to_fastq.read_two_fastq_gz,
-        max_retries=max_retries
     }
     call kraken2.kraken { input:
         read_one_fastq_gz=fqlint.validated_read1,
@@ -236,14 +221,12 @@ workflow quality_check {
         db=kraken_db,
         prefix=post_subsample_prefix,
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
 
     call mosdepth.coverage as wg_coverage { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
         prefix=post_subsample_prefix + ".whole_genome",
-        max_retries=max_retries
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
         call mosdepth.coverage as regions_coverage { input:
@@ -251,7 +234,6 @@ workflow quality_check {
             bam_index=post_subsample_bam_index,
             coverage_bed=coverage_pair.left,
             prefix=post_subsample_prefix + "." + coverage_pair.right,
-            max_retries=max_retries
         }
     }
 
@@ -261,14 +243,12 @@ workflow quality_check {
             bam_index=post_subsample_bam_index,
             gene_model=select_first([gtf, "undefined"]),
             prefix=post_subsample_prefix,
-            max_retries=max_retries
         }
         call ngsderive.strandedness { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gene_model=select_first([gtf, "undefined"]),
             outfile_name=post_subsample_prefix + ".strandedness.tsv",
-            max_retries=max_retries
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
             bam=select_first([collate_to_fastq.collated_bam, "undefined"]),
@@ -276,7 +256,6 @@ workflow quality_check {
             gtf=select_first([gtf, "undefined"]),
             name_sorted=true,
             paired_end=true,  # matches default but prevents user from overriding
-            max_retries=max_retries
         }
     }
 
@@ -284,7 +263,6 @@ workflow quality_check {
         bam=post_subsample_bam,
         create_bam=mark_duplicates,
         prefix=post_subsample_prefix + ".MarkDuplicates",
-        max_retries=max_retries
     }
     if (mark_duplicates) {
         call markdups_post_wf.markdups_post { input:
@@ -299,7 +277,6 @@ workflow quality_check {
             coverage_beds=coverage_beds,
             coverage_labels=parse_input.labels,
             prefix=post_subsample_prefix + ".MarkDuplicates",
-            max_retries=max_retries
         }
     }
     if (! mark_duplicates) {
@@ -308,15 +285,13 @@ workflow quality_check {
         call picard.collect_insert_size_metrics { input:
             bam=post_subsample_bam,
             prefix=post_subsample_prefix + ".CollectInsertSizeMetrics",
-            max_retries=max_retries
         }
         call samtools.flagstat { input:
             bam=post_subsample_bam,
             outfile_name=post_subsample_prefix + ".flagstat.txt",
-            max_retries=max_retries
         }
     }
-    
+
     call multiqc_tasks.multiqc { input:
         input_files=select_all(flatten([
             [
@@ -353,7 +328,6 @@ workflow quality_check {
         ])),
         config=multiqc_config,
         prefix=post_subsample_prefix + ".multiqc",
-        max_retries=max_retries
     }
 
     if (output_intermediate_files) {
@@ -436,9 +410,6 @@ task parse_input {
         input_molecule: "Must be `DNA` or `RNA`"
         gtf_provided: "Was a GTF supplied by the user? Must be `true` if `input_molecule = RNA`."
         coverage_beds_len: "Length of the provided `coverage_beds` array"
-        memory_gb: "RAM to allocate for task, specified in GB"
-        disk_size_gb: "Disk space to allocate for task, specified in GB"
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -446,9 +417,6 @@ task parse_input {
         String input_molecule
         Boolean gtf_provided
         Int coverage_beds_len
-        Int memory_gb = 4
-        Int disk_size_gb = 10
-        Int max_retries = 1
     }
 
     Int coverage_labels_len = length(coverage_labels)
@@ -488,10 +456,10 @@ task parse_input {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 

@@ -25,8 +25,14 @@ task count {
             ]
         }
         prefix: "Prefix for the feature counts file. The extension `.feature-counts.txt` will be added."
-        feature_type: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored"
-        idattr: "GFF attribute to be used as feature ID"
+        feature_type: {
+            description: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored"
+            common: true
+        }
+        idattr: {
+            description: "GFF attribute to be used as feature ID"
+            common: true
+        }
         mode: {
             description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases."
             external_help: "https://htseq.readthedocs.io/en/latest/htseqcount.html#htseq-count-counting-reads-within-features"
@@ -36,15 +42,32 @@ task count {
                 "intersection-nonempty"
             ]
         }
-        include_custom_header: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `feature\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format."
-        pos_sorted: "Is the BAM position sorted (true) or name sorted (false)?"
-        nonunique: "Score reads that align to or are assigned to more than one feature?"
-        secondary_alignments: "Score secondary alignments (SAM flag 0x100)?"
-        supplementary_alignments: "Score supplementary/chimeric alignments (SAM flag 0x800)?"
-        minaqual: "Skip all reads with alignment quality lower than the given minimum value"
+        include_custom_header: {
+            description: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `feature\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format."
+            common: true
+        }
+        pos_sorted: {
+            description: "Is the BAM position sorted (true) or name sorted (false)?"
+            common: true
+        }
+        nonunique: {
+            description: "Score reads that align to or are assigned to more than one feature?"
+            common: true
+        }
+        secondary_alignments: {
+            description: "Score secondary alignments (SAM flag 0x100)?"
+            common: true
+        }
+        supplementary_alignments: {
+            description: "Score supplementary/chimeric alignments (SAM flag 0x800)?"
+            common: true
+        }
+        minaqual: {
+            description: "Skip all reads with alignment quality lower than the given minimum value"
+            common: true
+        }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -63,7 +86,6 @@ task count {
         Int minaqual = 10
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     String outfile_name = prefix + ".feature-counts.txt"
@@ -81,7 +103,7 @@ task count {
         if ~{include_custom_header}; then
             echo -e "feature\t~{prefix}" > ~{outfile_name}
         else
-            > ~{outfile_name}  # ensure file is empty
+            true > ~{outfile_name}  # ensure file is empty
         fi
 
         # 9223372036854776000 == max 64 bit Float
@@ -109,7 +131,7 @@ task count {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/htseq:2.0.3--py310h5aa3a86_1'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -125,18 +147,12 @@ task calc_tpm {
         counts: "A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the `count` task."
         gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with `calc-gene-lengths.wdl`."
         prefix: "Prefix for the TPM file. The extension `.TPM.txt` will be added."
-        memory_gb: "RAM to allocate for task, specified in GB"
-        disk_size_gb: "Disk space to allocate for task, specified in GB"
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File counts
         File gene_lengths
         String prefix = basename(counts, ".feature-counts.txt")
-        Int memory_gb = 4
-        Int disk_size_gb = 10
-        Int max_retries = 1
     }
 
     String outfile_name = prefix + ".TPM.txt"
@@ -182,9 +198,9 @@ END
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }

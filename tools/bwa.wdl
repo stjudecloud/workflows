@@ -18,12 +18,19 @@ task bwa_aln {
         fastq: "Input FASTQ file to align with bwa"  # TODO verify can be gzipped or compressed
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
-        read_group: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        read_group: {
+            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+            common: true
+        }
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -36,10 +43,8 @@ task bwa_aln {
         )
         String read_group = ""
         Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 5
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     String output_bam = prefix + ".bam"
@@ -81,10 +86,10 @@ task bwa_aln {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "5 GB"
         disk: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -101,12 +106,19 @@ task bwa_aln_pe {
         read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
-        read_group: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        read_group: {
+            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+            common: true
+        }
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -120,10 +132,8 @@ task bwa_aln_pe {
         )
         String read_group = ""
         Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 5
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     String output_bam = prefix + ".bam"
@@ -168,10 +178,10 @@ task bwa_aln_pe {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "5 GB"
         disk: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -188,12 +198,19 @@ task bwa_mem {
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
-        read_group: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        ncpu: "Number of cores to allocate for task"
-        memory_gb: "RAM to allocate for task, specified in GB"
+        read_group: {
+            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+            common: true
+        }
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task"
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
@@ -207,10 +224,8 @@ task bwa_mem {
         )
         String read_group = ""
         Boolean use_all_cores = false
-        Int ncpu = 1
-        Int memory_gb = 10
+        Int ncpu = 2
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     String output_bam = prefix + ".bam"
@@ -251,10 +266,10 @@ task bwa_mem {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "10 GB"
         disk: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }
 
@@ -268,18 +283,17 @@ task build_bwa_db {
 
     parameter_meta {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
-        db_name: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added."
-        memory_gb: "RAM to allocate for task, specified in GB"
+        db_name: {
+            description: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added."
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         File reference_fasta
         String db_name = "bwa_db"
-        Int memory_gb = 5
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float input_fasta_size = size(reference_fasta, "GiB")
@@ -303,9 +317,9 @@ task build_bwa_db {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "5 GB"
         disk: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }

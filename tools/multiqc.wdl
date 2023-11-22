@@ -16,18 +16,14 @@ task multiqc {
         input_files: "An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
         prefix: "A string for the MultiQC output directory: <prefix>/ and <prefix>.tar.gz"
         config: "YAML file for configuring generated report"
-        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        max_retries: "Number of times to retry in case of failure"
     }
 
     input {
         Array[File] input_files
         String prefix
         File? config
-        Int memory_gb = 4
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float input_size = size(input_files, "GiB")
@@ -63,9 +59,9 @@ task multiqc {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/multiqc:1.15--pyhdfd78af_0'
-        maxRetries: max_retries
+        maxRetries: 1
     }
 }

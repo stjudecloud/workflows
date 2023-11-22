@@ -12,16 +12,16 @@ import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "../general/samtools-merge.wdl" as samtools_merge_wf
 
 workflow dnaseq_standard_experimental {
-    meta{
+    meta {
         description: "Aligns DNA reads using bwa mem"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa mem"
         }
+        allowNestedInputs: true
     }
-    parameter_meta{
+    parameter_meta {
         bam: "Input BAM to realign"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-        max_retries: "Number of times to retry in case of failure"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
@@ -29,7 +29,6 @@ workflow dnaseq_standard_experimental {
     input {
         File bam
         File bwa_db
-        Int? max_retries
         String prefix = basename(bam, ".bam")
         Boolean validate_input = true
         Boolean use_all_cores = false
@@ -38,20 +37,17 @@ workflow dnaseq_standard_experimental {
     if (validate_input) {
         call picard.validate_bam as validate_input_bam { input:
             bam=bam,
-            max_retries=max_retries
         }
     }
 
     call util.get_read_groups { input:
         bam=bam,
         format_for_star=false,
-        max_retries=max_retries
     }  # TODO what happens if no RG records?
     call bam_to_fastqs_wf.bam_to_fastqs { input:
         bam=bam,
         paired_end=true,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
 
     scatter (tuple in zip(
@@ -66,18 +62,15 @@ workflow dnaseq_standard_experimental {
             # '\\t' is subbed into command blocks as '\t'
             read_group=sub(tuple.right, "\t", "\\\\t"),
             use_all_cores=use_all_cores,
-            max_retries=max_retries
         }
         call picard.sort { input:
             bam=bwa_mem.bam,
-            max_retries=max_retries
         }
     }
     call samtools_merge_wf.samtools_merge { input:
         bams=sort.sorted_bam,
         prefix=prefix,
         use_all_cores=use_all_cores,
-        max_retries=max_retries
     }
 
     output {
