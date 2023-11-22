@@ -24,7 +24,7 @@ task librarian {
 
         mkdir tmp
         export TMPDIR=$(pwd)/tmp
-        RUST_LOG=trace librarian --local -o ~{prefix} ~{read_one_fastq}
+        RUST_LOG=trace /app/librarian --local -o ~{prefix} ~{read_one_fastq}
     >>>
 
     # output {
