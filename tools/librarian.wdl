@@ -5,7 +5,6 @@ version 1.1
 task librarian {
     input {
         File read_one_fastq
-        File read_two_fastq
         String prefix = sub(
             basename(read_one_fastq),
             "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
@@ -23,11 +22,15 @@ task librarian {
     )
 
     command <<<
-        RUST_LOG=trace /app/librarian --local -o ~{prefix} ~{read_one_fastq} ~{read_two_fastq}
+        set -euo pipefail
+
+        mkdir tmp
+        export TMPDIR=$(pwd)/tmp
+        RUST_LOG=trace librarian --local -o ~{prefix} ~{read_one_fastq}
     >>>
 
     # output {
-    #     File report = 
+    #     File report =
     # }
 
     runtime {
