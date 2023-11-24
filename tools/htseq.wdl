@@ -145,7 +145,7 @@ task calc_tpm {
 
     parameter_meta {
         counts: "A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the `count` task."
-        gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with `calc-gene-lengths.wdl`."
+        gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with the `calc_gene_lengths` task in `util.wdl`."
         prefix: "Prefix for the TPM file. The extension `.TPM.txt` will be added."
     }
 
