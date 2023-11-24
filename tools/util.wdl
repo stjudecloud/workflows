@@ -236,7 +236,7 @@ END
     }
 
     runtime {
-        memory: "10 GB"
+        memory: "16 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
         maxRetries: 1
