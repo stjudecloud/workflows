@@ -193,7 +193,7 @@
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>counts</code> (File, <strong>required</strong>): A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the <code>count</code> task.</li>
-<li><code>gene_lengths</code> (File, <strong>required</strong>): A two column headered TSV file with gene names (matching those in the <code>counts</code> file) in the first column and feature lengths (as integers) in the second column. Can be generated with <code>calc-gene-lengths.wdl</code>.</li>
+<li><code>gene_lengths</code> (File, <strong>required</strong>): A two column headered TSV file with gene names (matching those in the <code>counts</code> file) in the first column and feature lengths (as integers) in the second column. Can be generated with the <code>calc_gene_lengths</code> task in <code>util.wdl</code>.</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
