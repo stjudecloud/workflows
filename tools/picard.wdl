@@ -723,3 +723,97 @@ task bam_to_fastq {
         maxRetries: 1
     }
 }
+
+task merge_vcfs {
+    meta {
+
+    }
+
+    parameter_meta {
+
+    }
+
+    input {
+        Array[File] vcfs
+        Array[File] vcfs_indexes
+        String output_vcf_name
+        Int modify_disk_size_gb = 0
+    }
+
+    Int disk_size_gb = ceil(size(vcfs, "GiB") * 2) + 10 + modify_disk_size_gb
+
+    command <<<
+        picard --java-options "-Xms2000m"  \
+            MergeVcfs \
+            ~{sep(' ', prefix('--INPUT=', vcfs))} \
+            --OUTPUT ~{output_vcf_name}
+    >>>
+
+    output {
+        File output_vcf = output_vcf_name
+        File output_vcf_index = "~{output_vcf_name}.tbi"
+    }
+
+    runtime {
+        memory: "3 GB"
+        disk: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
+        maxRetries: 1
+    }
+}
+
+task scatter_interval_list {
+    meta {
+
+    }
+
+    parameter_meta  {
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File interval_list
+        String subdivision_mode = "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW"
+        Boolean unique = true
+        Boolean sort = true
+        Int scatter_count
+        Int modify_disk_size_gb = 0
+    }
+
+    Int disk_size_gb = 1 + modify_disk_size_gb
+
+    command <<<
+        set -e
+        mkdir out
+        picard -Xms1g \
+            IntervalListTools \
+            SCATTER_COUNT=~{scatter_count} \
+            SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
+            UNIQUE=~{unique} \
+            SORT=~{sort} \
+            INPUT=~{interval_list} \
+            OUTPUT=out
+
+        python3 <<CODE
+        import glob, os
+        intervals = sorted(glob.glob("out/*/*.interval_list"))
+        for i, interval in enumerate(intervals):
+          (directory, filename) = os.path.split(interval)
+          newName = os.path.join(directory, str(i + 1) + filename)
+          os.rename(interval, newName)
+        print(len(intervals))
+        CODE
+    >>>
+
+    output {
+        Array[File] out = glob("out/*/*.interval_list")
+        Int interval_count = read_int(stdout())
+    }
+
+    runtime {
+        memory: "2 GB"
+        disk: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
+        maxRetries: 1
+    }
+}
