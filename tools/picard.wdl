@@ -757,7 +757,7 @@ task merge_vcfs {
     runtime {
         memory: "3 GB"
         disk: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
+        container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -813,7 +813,7 @@ task scatter_interval_list {
     runtime {
         memory: "2 GB"
         disk: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
+        container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
         maxRetries: 1
     }
 }
