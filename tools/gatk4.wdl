@@ -40,6 +40,8 @@ task split_n_cigar_reads {
             -I ~{bam} \
             -O ~{prefix}.bam \
             -OBM true
+       # GATK is unreasonable and uses the plain ".bai" suffix.
+       mv ~{prefix}.bai ~{prefix}.bam.bai
     >>>
 
     output {
@@ -95,7 +97,6 @@ task base_recalibrator {
 
     command <<<
         gatk --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -XX:+PrintFlagsFinal \
-            -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCDetails \
             -Xloggc:gc_log.log -Xms4000m" \
             BaseRecalibrator \
             -R ~{fasta} \
@@ -143,7 +144,7 @@ task apply_bqsr {
 
     command <<<
         gatk \
-            --java-options "-XX:+PrintFlagsFinal -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps \
+            --java-options "-XX:+PrintFlagsFinal \
             -XX:+PrintGCDetails -Xloggc:gc_log.log \
             -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m" \
             ApplyBQSR \
@@ -153,11 +154,13 @@ task apply_bqsr {
             ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
             -O ~{prefix}.bam \
             --bqsr-recal-file ~{recalibration_report}
+       # GATK is unreasonable and uses the plain ".bai" suffix.
+       mv ~{prefix}.bai ~{prefix}.bam.bai
     >>>
 
     output {
         File recalibrated_bam = "~{prefix}.bam"
-        File recalibrated_bam_index = "~{prefix}.bai"
+        File recalibrated_bam_index = "~{prefix}.bam.bai"
     }
 
     runtime {

@@ -794,20 +794,22 @@ task scatter_interval_list {
             INPUT=~{interval_list} \
             OUTPUT=out
 
-        python3 <<CODE
-        import glob, os
-        intervals = sorted(glob.glob("out/*/*.interval_list"))
-        for i, interval in enumerate(intervals):
-          (directory, filename) = os.path.split(interval)
-          newName = os.path.join(directory, str(i + 1) + filename)
-          os.rename(interval, newName)
-        print(len(intervals))
+        bash <<CODE
+        I=0
+        for list in \$(ls out/*/*.interval_list)
+        do
+           I=\$((I+1))
+           dir=\$(dirname \$list)
+           name=\$(basename \$list)
+           mv \$list \${dir}/\${I}\${name}
+        done
+        echo \$I > interval_count.txt
         CODE
     >>>
 
     output {
         Array[File] out = glob("out/*/*.interval_list")
-        Int interval_count = read_int(stdout())
+        Int interval_count = read_int("interval_count.txt")
     }
 
     runtime {
