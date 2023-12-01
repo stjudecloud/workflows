@@ -819,3 +819,58 @@ task scatter_interval_list {
         maxRetries: 1
     }
 }
+
+task create_sequence_dictionary {
+    meta {
+        description: "Creates a sequence dictionary for the input FASTA file using Picard"
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832748622491-CreateSequenceDictionary-Picard-"
+        outputs: {
+            dictionary: "Sequence dictionary produced by `picard CreateSequenceDictionary`."
+        }
+    }
+
+    parameter_meta {
+        fasta: "Input FASTA format file from which to create dictionary"
+        outfile_name: "Name for the CreateSequenceDictionary dictionary file"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fasta
+        String outfile_name = basename(fasta, ".fa") + ".dict"
+        String? assembly_name
+        String? fasta_url
+        String? species
+        Int memory_gb = 16
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fasta_size = size(fasta, "GiB")
+    Int disk_size_gb = ceil(fasta_size * 2) + 10 + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command <<<
+        set -euo pipefail
+
+        rc=0
+        picard -Xmx~{java_heap_size}g CreateSequenceDictionary \
+            -R ~{fasta} \
+            ~{if defined(assembly_name) then "--GENOME_ASSEMBLY " + assembly_name else ""} \
+            ~{if defined(fasta_url) then "--URI " + fasta_url else ""} \
+            ~{if defined(species) then "--SPECIES " + species else ""} \
+            > ~{outfile_name} \
+    >>>
+
+    output {
+        File dictionary = outfile_name
+    }
+
+    runtime {
+        cpu: 1
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        maxRetries: 1
+    }
+}
