@@ -51,7 +51,8 @@ task split_n_cigar_reads {
     }
 
     runtime {
-        memory: "4 GB"
+        cpu: 8
+        memory: "24 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
@@ -96,15 +97,17 @@ task base_recalibrator {
     Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
 
     command <<<
-        gatk --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -XX:+PrintFlagsFinal \
+        gatk \
+            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -XX:+PrintFlagsFinal \
             -Xloggc:gc_log.log -Xms4000m" \
-            BaseRecalibrator \
+            BaseRecalibratorSpark \
             -R ~{fasta} \
             -I ~{bam} \
             ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
             -O ~{prefix}.txt \
             -known-sites ~{dbSNP_vcf} \
-            -known-sites ~{sep=" --known-sites " known_indels_sites_VCFs}
+            -known-sites ~{sep=" --known-sites " known_indels_sites_VCFs} \
+            --spark-master local[4]
     >>>
 
     output {
@@ -112,7 +115,8 @@ task base_recalibrator {
     }
 
     runtime {
-        memory: "6 GB"
+        cpu: 4
+        memory: "16 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
@@ -132,30 +136,25 @@ task apply_bqsr {
         File bam
         File bam_index
         File recalibration_report
-        File dict
-        File fasta
-        File fasta_index
         String prefix = basename(bam, ".bam") + ".bqsr"
         Int modify_disk_size_gb = 0
         Boolean use_original_quality_scores = true
     }
 
-    Int disk_size_gb = ceil(size(bam, "GB") * 4) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(bam, "GB") * 4) + 30 + modify_disk_size_gb
 
     command <<<
         gatk \
             --java-options "-XX:+PrintFlagsFinal \
-            -XX:+PrintGCDetails -Xloggc:gc_log.log \
             -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m" \
-            ApplyBQSR \
-            --add-output-sam-program-record \
-            -R ~{fasta} \
+            ApplyBQSRSpark \
+            --spark-master local[4] \
             -I ~{bam} \
             ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
             -O ~{prefix}.bam \
             --bqsr-recal-file ~{recalibration_report}
        # GATK is unreasonable and uses the plain ".bai" suffix.
-       mv ~{prefix}.bai ~{prefix}.bam.bai
+       #mv ~{prefix}.bai ~{prefix}.bam.bai
     >>>
 
     output {
@@ -164,14 +163,13 @@ task apply_bqsr {
     }
 
     runtime {
-        memory: "3.5 GB"
+        cpu: 4
+        memory: "20 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
     }
 }
-
-
 
 task haplotype_caller {
     meta {
@@ -200,15 +198,17 @@ task haplotype_caller {
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
 
     command <<<
-		gatk --java-options "-Xms6000m -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
-            HaplotypeCaller \
+		    gatk \
+           --java-options "-Xms6000m -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
+            HaplotypeCallerSpark \
             -R ~{fasta} \
             -I ~{bam} \
             -L ~{interval_list} \
             -O ~{prefix}.vcf.gz \
             ~{if use_soft_clipped_bases then "" else "--dont-use-soft-clipped-bases"} \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
-            --dbsnp ~{dbSNP_vcf}
+            #--dbsnp ~{dbSNP_vcf} \
+           --spark-master local[4]
     >>>
 
     output {
@@ -217,6 +217,7 @@ task haplotype_caller {
     }
 
     runtime {
+        cpu: 4
         memory: "6.5 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
@@ -250,15 +251,15 @@ task variant_filtration {
     Int disk_size_gb = ceil(size(vcf, "GB") * 2) + 30 + modify_disk_size_gb
 
     command <<<
-		 gatk \
-		    VariantFiltration \
-			--R ~{fasta} \
-			--V ~{vcf} \
-			--window ~{window} \
-			--cluster ~{cluster} \
-            ~{sep(' ', prefix('--filter-name ', filter_name))} \
-            ~{sep(' ', prefix('--filter-expression ', filter_expression))} \
-			-O ~{prefix}.vcf.gz
+		    gatk \
+		        VariantFiltration \
+			      --R ~{fasta} \
+		      	--V ~{vcf} \
+			       --window ~{window} \
+			       --cluster ~{cluster} \
+             ~{sep(' ', prefix('--filter-name ', filter_name))} \
+             ~{sep(' ', prefix('--filter-expression ', filter_expression))} \
+			       -O ~{prefix}.vcf.gz
     >>>
 
     output {
@@ -267,6 +268,7 @@ task variant_filtration {
     }
 
     runtime {
+        cpu: 1
         memory: "3 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"

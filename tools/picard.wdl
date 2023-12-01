@@ -743,7 +743,7 @@ task merge_vcfs {
     Int disk_size_gb = ceil(size(vcfs, "GiB") * 2) + 10 + modify_disk_size_gb
 
     command <<<
-        picard --java-options "-Xms2000m"  \
+        picard -Xms2000m \
             MergeVcfs \
             ~{sep(' ', prefix('--INPUT=', vcfs))} \
             --OUTPUT ~{output_vcf_name}

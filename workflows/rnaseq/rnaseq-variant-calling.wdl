@@ -62,9 +62,6 @@ workflow rnaseq_variant_calling {
         input:
             bam = split_n_cigar_reads.split_bam,
             bam_index = split_n_cigar_reads.split_bam_index,
-            fasta = fasta,
-            fasta_index = fasta_index,
-            dict = dict,
             recalibration_report = base_recalibrator.recalibration_report
     }
 
