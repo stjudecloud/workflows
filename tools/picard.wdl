@@ -783,7 +783,8 @@ task scatter_interval_list {
     Int disk_size_gb = 1 + modify_disk_size_gb
 
     command <<<
-        set -e
+        set -euo pipefail
+
         mkdir out
         picard -Xms1g \
             IntervalListTools \

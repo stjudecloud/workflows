@@ -34,6 +34,8 @@ task split_n_cigar_reads {
     Int disk_size_gb = ceil(size(bam, "GB") + 1) * 5 + ceil(size(fasta, "GB")) + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         gatk \
             SplitNCigarReads \
             -R ~{fasta} \
@@ -144,6 +146,8 @@ task apply_bqsr {
     Int disk_size_gb = ceil(size(bam, "GB") * 4) + 30 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         gatk \
             --java-options "-XX:+PrintFlagsFinal \
             -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m" \
@@ -251,15 +255,15 @@ task variant_filtration {
     Int disk_size_gb = ceil(size(vcf, "GB") * 2) + 30 + modify_disk_size_gb
 
     command <<<
-		    gatk \
-		        VariantFiltration \
-			      --R ~{fasta} \
-		      	--V ~{vcf} \
-			       --window ~{window} \
-			       --cluster ~{cluster} \
-             ~{sep(' ', prefix('--filter-name ', filter_name))} \
-             ~{sep(' ', prefix('--filter-expression ', squote(filter_expression)))} \
-			       -O ~{prefix}.vcf.gz
+        gatk \
+            VariantFiltration \
+                --R ~{fasta} \
+                --V ~{vcf} \
+                --window ~{window} \
+                --cluster ~{cluster} \
+                 ~{sep(' ', prefix('--filter-name ', filter_name))} \
+                 ~{sep(' ', prefix('--filter-expression ', squote(filter_expression)))} \
+                -O ~{prefix}.vcf.gz
     >>>
 
     output {

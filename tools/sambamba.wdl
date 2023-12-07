@@ -104,7 +104,6 @@ task merge {
 
         sambamba merge \
             --nthreads "$n_cores" \
-            ~{if name_sorted then "-n" else ""} \
             ~{prefix}.bam \
             ~{sep(" ", bams)}
     >>>
@@ -164,7 +163,7 @@ task sort {
 
         sambamba sort \
             --nthreads ~{ncpu} \
-            -0 ~{outfile_name} \
+            -o ~{outfile_name} \
             ~{if (sort_order == 'queryname') then '-n' else ''} \
             ~{bam}
     >>>
@@ -217,19 +216,21 @@ task markdup {
             --nthreads ~{ncpu} \
             ~{if remove_duplicates then '--remove-duplicates' else ''} \
             ~{bam} \
-            ~{prefix}.bam
+            ~{prefix}.bam \
+            > sambamba_markdup_log.txt
     >>>
 
     output {
         File duplicate_marked_bam = "~{prefix}.bam"
-        File mark_duplicates_metrics = "~{prefix}.metrics.txt"
+        File duplicate_marked_bam_index = "~{prefix}.bam.bai"
+        File markdup_log = "sambamba_markdup_log.txt"
     }
 
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/sambamba:1.0--h98b6b92_0'
         maxRetries: 1
     }
 }
@@ -286,7 +287,7 @@ task flagstat {
         cpu: ncpu
         memory: "5 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/sambamba:1.0--h98b6b92_0'
         maxRetries: 1
     }
 }

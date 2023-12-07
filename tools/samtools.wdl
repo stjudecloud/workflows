@@ -996,7 +996,6 @@ task faidx {
     >>>
 
     output {
-        File indexed_fasta = "~{basename(fasta, '.gz')}"
         File fasta_index = outfile_name
     }
 

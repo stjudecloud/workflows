@@ -47,7 +47,7 @@ workflow gatk_reference {
 
     call picard.create_sequence_dictionary {
         input:
-            fasta = faidx.indexed_fasta
+            fasta = fasta_download.downloaded_file
     }
 
     call util.download as dbsnp {
@@ -81,7 +81,7 @@ workflow gatk_reference {
     }
 
     output {
-        File fasta = faidx.indexed_fasta
+        File fasta = fasta_download.downloaded_file
         File fasta_index = faidx.fasta_index
         File fasta_dict = create_sequence_dictionary.dictionary
         File? dbSNP_vcf = dbsnp.downloaded_file
