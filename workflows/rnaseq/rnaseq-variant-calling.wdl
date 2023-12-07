@@ -26,7 +26,7 @@ workflow rnaseq_variant_calling {
         File dbSNP_vcf
         File dbSNP_vcf_index
         Int scatterCount = 6
-
+        String output_vcf_name = basename(bam, '.bam') + '.vcf.gz'
     }
     
     call picard.mark_duplicates {
@@ -88,7 +88,8 @@ workflow rnaseq_variant_calling {
     call picard.merge_vcfs {
         input:
             vcfs = haplotype_caller.vcf,
-            vcfs_indexes = haplotype_caller.vcf_index
+            vcfs_indexes = haplotype_caller.vcf_index,
+            output_vcf_name = output_vcf_name
     }
 
     call gatk.variant_filtration {
@@ -109,3 +110,4 @@ workflow rnaseq_variant_calling {
         File variant_filtered_vcf_index = variant_filtration.vcf_filtered_index
     }
 }
+

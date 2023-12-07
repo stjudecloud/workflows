@@ -116,7 +116,7 @@ task base_recalibrator {
 
     runtime {
         cpu: 4
-        memory: "16 GB"
+        memory: "25 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
@@ -164,7 +164,7 @@ task apply_bqsr {
 
     runtime {
         cpu: 4
-        memory: "20 GB"
+        memory: "25 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
@@ -207,8 +207,8 @@ task haplotype_caller {
             -O ~{prefix}.vcf.gz \
             ~{if use_soft_clipped_bases then "" else "--dont-use-soft-clipped-bases"} \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
-            #--dbsnp ~{dbSNP_vcf} \
            --spark-master local[4]
+            #--dbsnp ~{dbSNP_vcf} \
     >>>
 
     output {
@@ -218,7 +218,7 @@ task haplotype_caller {
 
     runtime {
         cpu: 4
-        memory: "6.5 GB"
+        memory: "25 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
@@ -258,7 +258,7 @@ task variant_filtration {
 			       --window ~{window} \
 			       --cluster ~{cluster} \
              ~{sep(' ', prefix('--filter-name ', filter_name))} \
-             ~{sep(' ', prefix('--filter-expression ', filter_expression))} \
+             ~{sep(' ', prefix('--filter-expression ', squote(filter_expression)))} \
 			       -O ~{prefix}.vcf.gz
     >>>
 
@@ -269,7 +269,7 @@ task variant_filtration {
 
     runtime {
         cpu: 1
-        memory: "3 GB"
+        memory: "15 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1

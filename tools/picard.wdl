@@ -745,7 +745,7 @@ task merge_vcfs {
     command <<<
         picard -Xms2000m \
             MergeVcfs \
-            ~{sep(' ', prefix('--INPUT=', vcfs))} \
+            ~{sep(' ', prefix('--INPUT ', vcfs))} \
             --OUTPUT ~{output_vcf_name}
     >>>
 
