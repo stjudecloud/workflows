@@ -1,5 +1,5 @@
 {
-    "gatk_reference.reference_fa": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz",
+    "gatk_reference.reference_fa_url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz",
     "gatk_reference.reference_fa_name": "GRCh38_no_alt.fa.gz",
     "gatk_reference.reference_fa_md5": "a08035b6a6e31780e96a34008ff21bd6",
     "gatk_reference.dbSNP_vcf_url": "https://storage.googleapis.com/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf",

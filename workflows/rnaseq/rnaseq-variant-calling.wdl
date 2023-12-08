@@ -7,11 +7,30 @@ import "../../tools/gatk4.wdl" as gatk
 
 workflow rnaseq_variant_calling {
     meta {
-
+        description: "Call variants from RNA-Seq data. Produces a VCF file of variants. Based on GATK RNA-Seq short variant calling best practices pipeline."
+        outputs: {
+            recalibrated_bam: "BAM that has undergone recalibration of base quality scores"
+            recalibrated_bam_index: "Index file for recalibrated BAM file"
+            merged_vcf: "VCF of raw RNA-Seq variant calls"
+            merged_vcf_index: "Index for merged VCF file"
+            variant_filtered_vcf: "VCF file after variant filters have been applied"
+            variant_filtered_vcf_index: "Index for filtered variant VCF file"
+        }
     }
 
     parameter_meta {
-
+        bam: "BAM file of aligned RNA-Seq reads"
+        bam_index: "Index file for BAM file"
+        fasta: "Reference FASTA file"
+        fasta_index: "Index file for reference FASTA file"
+        dict: "Sequence dictionary for reference FASTA file"
+        callingIntervalList: "Interval list of regions from which to call variants. Used for parallelization."
+        knownVcfs: "Array of known indels VCF files"
+        knownVcfIndexes: "Array of index files for known indels VCF files"
+        dbSNP_vcf: "dbSNP VCF file"
+        dbSNP_vcf_index: "Index file for dbSNP VCF file"
+        scatterCount: "Number of intervals to scatter over"
+        output_vcf_name: "Name of output VCF file"
     }
 
     input {
@@ -20,7 +39,7 @@ workflow rnaseq_variant_calling {
         File fasta
         File fasta_index
         File dict
-        File wgsCallingIntervalList
+        File callingIntervalList
         Array[File] knownVcfs
         Array[File] knownVcfIndexes
         File dbSNP_vcf
@@ -42,7 +61,7 @@ workflow rnaseq_variant_calling {
             fasta = fasta,
             fasta_index = fasta_index,
             dict = dict,
-            interval_list = wgsCallingIntervalList
+            interval_list = callingIntervalList
     }
 
     call gatk.base_recalibrator {
@@ -67,7 +86,7 @@ workflow rnaseq_variant_calling {
 
     call picard.scatter_interval_list {
         input:
-            interval_list = wgsCallingIntervalList,
+            interval_list = callingIntervalList,
             scatter_count = scatterCount
     }
 

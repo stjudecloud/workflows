@@ -10,17 +10,33 @@ workflow gatk_reference {
     meta {
         description: "Fetches reference files for GATK."
         outputs: {
-            
+            fasta: "FASTA file for the reference genome."
+            fasta_index: "Index for the FASTA file for the reference genome."
+            fasta_dict: "Picard Sequence Dictionary for the reference genome."
+            dbSNP_vcf: "dbSNP VCF file for the reference genome."
+            dbSNP_vcf_index: "Index for the dbSNP VCF file for the reference genome."
+            interval_list: "List of intervals that will be used when computing variants."
+            knownVCFs: "VCF files with known variants to use with variant calling."
         }
         allowNestedInputs: true
     }
 
     parameter_meta {
-
+        reference_fa_url: "URL from which to retrieve the reference FASTA file."
+        reference_fa_name: "Name of the output reference FASTA file."
+        reference_fa_md5: "MD5 checksum for the reference FASTA file."
+        dbSNP_vcf_url: "URL from which to retrieve the dbSNP VCF file."
+        dbSNP_vcf_name: "Name of the dbSNP VCF file."
+        dbSNP_vcf_index_url: "URL from which to retrieve the index for the dbSNP VCF file."
+        dbSNP_vcf_index_name: "Name of the index for the dbSNP VCF file."
+        knownVCF_urls: "URLs from which to retrieve VCF files with known variants."
+        knownVCF_names: "Names of the VCF files with known variants. Order should match that of `knownVCF_urls`."
+        interval_list_url: "URL from which to retrieve the list of intervals to use when computing variants."
+        interval_list_name: "Name of the list of intervals to use when computing variants."
     }
 
     input {
-        String reference_fa
+        String reference_fa_url
         String reference_fa_name
         String reference_fa_md5
         String dbSNP_vcf_url
@@ -35,7 +51,7 @@ workflow gatk_reference {
 
     call util.download as fasta_download {
         input:
-            url = reference_fa,
+            url = reference_fa_url,
             outfile_name = reference_fa_name,
             md5sum = reference_fa_md5
     }
