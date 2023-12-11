@@ -18,7 +18,7 @@ workflow samtools_merge {
         bams: "BAMs to merge into a final BAM"
         max_length: "Maximum number of BAMs to merge before using iteration"
         prefix: "Prefix for output BAM."
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        use_all_cores: "Use all cores? Recommended for cloud environments."
     }
     input {
         Array[File] bams

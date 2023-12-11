@@ -17,7 +17,7 @@ task fastqc {
         bam: "Input BAM format file to run FastQC on"
         prefix: "Prefix for the FastQC results directory. The extension `.tar.gz` will be added."
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {

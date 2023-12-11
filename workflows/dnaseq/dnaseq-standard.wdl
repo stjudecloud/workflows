@@ -24,7 +24,7 @@ workflow dnaseq_standard_experimental {
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+        use_all_cores: "Use all cores? Recommended for cloud environments."
     }
     input {
         File bam

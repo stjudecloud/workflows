@@ -23,7 +23,7 @@ task bwa_aln {
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -111,7 +111,7 @@ task bwa_aln_pe {
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -203,7 +203,7 @@ task bwa_mem {
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {

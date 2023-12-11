@@ -23,13 +23,6 @@ All rules below should be followed by contributors to this repo. Contributors sh
     - It is allowed to have one resource allocated dynamically, and another allocated statically in the same task.
     - It is *not* allowed to have a resource which can be allocated *either* statically or dynamically.
       - e.g. `memory_gb` and `modify_memory_gb` cannot be present in the same task.
-- All tasks and workflows should have a `max_retries` input.
-  - This should be defaulted to `1` for nearly all tasks
-  - Some tasks are particularly error prone and can have a higher default `max_retries`
-  - **rule specific to workflows:** `max_retries` should be an optional `Int?`
-    - This allows each task to have it's own specific default `max_retries`
-      - If a user does not supply `max_retries`, those task level defaults will get used
-      - If a user does supply `max_retries`, it should override the default for *every* task called
 - multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-templates.wdl`)
   - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter
 - Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-templates.wdl`)
@@ -42,6 +35,8 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - If present, `use_all_cores` should be the last `Boolean` in its block
   - the `ncpu` parameter comes before inputs that allocate memory, which come before inputs that allocate disk space, which come before `max_retries`
     - This block of 3-4 inputs should come after all other inputs.
+- Most tasks should have a default `maxRetries` of 1
+  - Certain tasks are prone to intermittent failure (often if an internet connection is involved) and can have a higher default `maxRetries`. This value should not exceed 3.
 - All tasks should have an output
   - This may be a hardcoded "dummy" output such as `String check = "passed"`
   - This ensures the task can be cached by runners. Tasks without outputs may be required to rerun on the same input due to a cache miss.
