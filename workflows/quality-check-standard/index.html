@@ -215,7 +215,7 @@
 <li><code>output_intermediate_files</code> (Boolean, default=false): Output intermediate files? FASTQs, if RNA a collated BAM, if <code>mark_duplicates==true</code> a duplicate marked BAM with an index and MD5. <em>WARNING</em> these files can be large.</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for all results files</li>
 <li><code>subsample_n_reads</code> (Int, default=-1): Only process a random sampling of <code>n</code> reads. Any <code>n</code>&lt;=<code>0</code> for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation.</li>
-<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments.</li>
 <li><code>collate_to_fastq.F</code> (String, default="0x900")</li>
 <li><code>collate_to_fastq.G</code> (String, default="0")</li>
 <li><code>collate_to_fastq.append_read_number</code> (Boolean, default=true)</li>
@@ -243,7 +243,7 @@
 <li><code>fastqc.ncpu</code> (Int, default=4)</li>
 <li><code>flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>flagstat.ncpu</code> (Int, default=2)</li>
-<li><code>flagstat.use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
+<li><code>flagstat.use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments.</li>
 <li><code>fqlint.disable_validator_codes</code> (Array[String], default=[])</li>
 <li><code>fqlint.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>fqlint.modify_memory_gb</code> (Int, default=0)</li>
@@ -300,7 +300,7 @@
 <li><code>markdups_post.collect_insert_size_metrics.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>markdups_post.flagstat.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>markdups_post.flagstat.ncpu</code> (Int, default=2)</li>
-<li><code>markdups_post.flagstat.use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments. Not recommended for cluster environments.</li>
+<li><code>markdups_post.flagstat.use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments.</li>
 <li><code>markdups_post.regions_coverage.min_mapping_quality</code> (Int, default=20)</li>
 <li><code>markdups_post.regions_coverage.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>markdups_post.regions_coverage.use_fast_mode</code> (Boolean, default=true)</li>

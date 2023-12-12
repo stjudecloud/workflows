@@ -185,7 +185,7 @@
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the split BAM files. The extensions will contain read group IDs, and will end in <code>.bam</code>.</li>
 <li><code>reject_unaccounted</code> (Boolean, default=true); <strong>description</strong>: If true, error if there are reads present that do not have read group information.; <strong>common</strong>: true</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
@@ -209,7 +209,7 @@
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
 <li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".flagstat.txt"): Name for the flagstat report file</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
 <ul>
@@ -232,7 +232,7 @@
 <ul>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
 <ul>
@@ -257,7 +257,7 @@
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.subsampled.bam</code> will be added.</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
 <ul>
@@ -291,7 +291,7 @@
 <li><code>name_sorted</code> (Boolean, default=false); <strong>description</strong>: Are <em>all</em> input BAMs <code>queryname</code> sorted (true)? Or are <em>all</em> input BAMs <code>coordinate</code> sorted (false)?; <strong>common</strong>: true</li>
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
 <li><code>region</code> (String, default=""): Merge files in the specified region (Format: <code>chr:start-end</code>)</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_5">Outputs</h3>
 <ul>
@@ -322,7 +322,7 @@
 <li><code>overwrite_header_record</code> (Boolean, default=false); <strong>description</strong>: Overwrite an existing @RG line, if a new one with the same ID value is provided?; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".addreplacerg"): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>read_group_line</code> (Array[String], default=[]); <strong>description</strong>: Allows you to specify a read group line to append to (or replace in) the header and applies it to the reads specified by the <code>orphan_only</code> option. Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM. Only <strong>one</strong> read group line can be supplied per invocation of this task.; <strong>common</strong>: true</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_6">Outputs</h3>
 <ul>
@@ -348,7 +348,7 @@
 <li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".collated"): Prefix for the collated BAM file. The extension <code>.bam</code> will be added.</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_7">Outputs</h3>
 <ul>
@@ -380,7 +380,7 @@
 <li><code>output_singletons</code> (Boolean, default=false): Output singleton reads as their own FASTQ?</li>
 <li><code>paired_end</code> (Boolean, default=true); <strong>description</strong>: Is the data Paired-End? If <code>paired_end = false</code>, then <em>all</em> reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for output FASTQ(s). Extensions <code>[,.R1,.R2,.singleton].fastq.gz</code> will be added depending on other options.</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_8">Outputs</h3>
 <ul>
@@ -419,7 +419,7 @@
 <li><code>paired_end</code> (Boolean, default=true); <strong>description</strong>: Is the data Paired-End? If <code>paired_end = false</code>, then <em>all</em> reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the collated BAM and FASTQ files. The extensions <code>.collated.bam</code> and <code>[,.R1,.R2,.singleton].fastq.gz</code> will be added.</li>
 <li><code>store_collated_bam</code> (Boolean, default=false); <strong>description</strong>: Save the collated BAM to disk and output it (true)?; <strong>common</strong>: true</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_9">Outputs</h3>
 <ul>
@@ -451,7 +451,7 @@
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".fixmate"): Prefix for the output file. The extension specified with the <code>extension</code> parameter will be added.</li>
 <li><code>remove_unaligned_and_secondary</code> (Boolean, default=false): Remove unmapped and secondary reads</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_10">Outputs</h3>
 <ul>

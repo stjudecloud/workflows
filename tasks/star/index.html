@@ -178,7 +178,7 @@
 <li><code>sjdbGTFtagExonParentGeneType</code> (String, default="gene_type gene_biotype"): GTF attrbute name for parent gene type</li>
 <li><code>sjdbGTFtagExonParentTranscript</code> (String, default="transcript_id"): GTF attribute name for parent transcript ID</li>
 <li><code>sjdbOverhang</code> (Int, default=125); <strong>description</strong>: length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). <strong>[STAR default]</strong>: <code>100</code>. <strong>[WDL default]</strong>: <code>125</code>.; <strong>common</strong>: true</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -305,7 +305,7 @@
 <li><code>sjdbScore</code> (Int, default=2); <strong>description</strong>: extra alignment score for alignments that cross database junctions; <strong>common</strong>: true</li>
 <li><code>twopass1readsN</code> (Int, default=-1); <strong>description</strong>: number of reads to process for the 1st step. Use default (<code>-1</code>) to map all reads in the first step; <strong>common</strong>: true</li>
 <li><code>twopassMode</code> (String, default="Basic"); <strong>description</strong>: 2-pass mapping mode; <strong>choices</strong>: {'None': '1-pass mapping <strong>[STAR default]</strong>', 'Basic': 'basic 2-pass mapping, with all 1st pass junctions inserted into the genome indices on the fly <strong>[WDL default]</strong>'}; <strong>common</strong>: true</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 <li><code>winAnchorDistNbins</code> (Int, default=9): max number of bins between two anchors that allows aggregation of anchors into one window</li>
 <li><code>winAnchorMultimapNmax</code> (Int, default=50): max number of loci anchors are allowed to map to</li>
 <li><code>winBinNbits</code> (Int, default=16): =log2(winBin), where winBin is the size of the bin for the windows/clustering, each window will occupy an integer number of bins</li>
