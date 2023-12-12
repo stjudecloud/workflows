@@ -189,7 +189,7 @@
 <li><code>validate_input</code> (Boolean, default=true): Ensure input BAM is well-formed before beginning harmonization?</li>
 <li><code>bwa_mem.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>bwa_mem.ncpu</code> (Int, default=2)</li>
-<li><code>bwa_mem.prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_.][rR][12])?(.subsampled)?.(fastq|fq)(.gz)?$","")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
+<li><code>bwa_mem.prefix</code> (String, default=sub(basename(read_one_fastq_gz),"([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$","")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>get_read_groups.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>samtools_merge.max_length</code> (Int, default=100)</li>
 <li><code>sort.memory_gb</code> (Int, default=25)</li>
