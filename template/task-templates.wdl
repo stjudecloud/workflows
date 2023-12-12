@@ -24,8 +24,8 @@ task static_disk_and_ram_task {
     }
 
     runtime {
-        memory: "<> GB"
-        disk: "<> GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -79,7 +79,7 @@ task use_all_cores_task {
 
     input {
         Boolean use_all_cores = false
-        Int ncpu = <>
+        Int ncpu = 2
     }
 
     command <<<
@@ -97,8 +97,8 @@ task use_all_cores_task {
 
     runtime {
         cpu: ncpu
-        memory: "<> GB"
-        disk: "<> GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -139,8 +139,8 @@ task localize_files_task {
     }
 
     runtime {
-        memory: "<> GB"
-        disk: "<> GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -168,8 +168,8 @@ task outfile_name_task {
     }
 
     runtime {
-        memory: "<> GB"
-        disk: "<> GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -197,8 +197,8 @@ task prefix_task {
     }
 
     runtime {
-        memory: "<> GB"
-        disk: "<> GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -242,8 +242,8 @@ task string_choices_task {
     }
 
     runtime {
-        memory: "<> GB"
-        disk: "<> GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: ""
         maxRetries: 1
     }

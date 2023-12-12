@@ -67,7 +67,7 @@ All rules below should be followed by contributors to this repo. Pull Requests w
   - Exceptions would be long strings that WDL doesn't allow to be broken up
   - This restriction applies to embedded code in the `command` block as well.
 - Any tasks which are deprecated should have a `deprecated: true` key in their `meta` section
-  - It is allowed (but redundant and discouraged) to include a `deprecated: false` key in any production tasks
+  - It is allowed (but redundant and discouraged) to include a `deprecated: false` key in any production tasks. All tasks are assumed to not be deprecated unless otherwise noted.
   - In addition, the `description` key of deprecated tasks should start with `**[DEPRECATED]**`
     - These two rules allow for a task's deprecated status to be communicated in multiple ways, ensuring no user misses the notice
 - Deprecated tasks should be placed at the end of their file
