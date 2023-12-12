@@ -8,7 +8,7 @@ task strandedness {
     meta {
         description: "Derives the experimental strandedness protocol used to generate the input RNA-Seq BAM file. Reports evidence supporting final results."
         outputs: {
-            strandedness_file: "TSV file containing the `ngsderive strandedness` report"
+            strandedness_file: "TSV file containing the `ngsderive strandedness` report",
             strandedness: "The derived strandedness, in string format"
         }
     }
@@ -19,19 +19,19 @@ task strandedness {
         gene_model: "Gene model as a GFF/GTF file"
         outfile_name: "Name for the strandedness TSV file"
         split_by_rg: {
-            description: "Contain one entry in the output TSV per read group, in addition to an `overall` entry"
+            description: "Contain one entry in the output TSV per read group, in addition to an `overall` entry",
             common: true
         }
         min_reads_per_gene: {
-            description: "Filter any genes that don't have at least `min_reads_per_gene` reads mapping to them"
+            description: "Filter any genes that don't have at least `min_reads_per_gene` reads mapping to them",
             common: true
         }
         num_genes: {
-            description: "How many genes to sample"
+            description: "How many genes to sample",
             common: true
         }
         min_mapq: {
-            description: "Minimum MAPQ to consider for supporting reads"
+            description: "Minimum MAPQ to consider for supporting reads",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -103,7 +103,7 @@ task instrument {
         bam: "Input BAM format file to derive instrument for"
         outfile_name: "Name for the instrument TSV file"
         num_reads: {
-            description: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file."
+            description: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file.",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -148,13 +148,14 @@ task read_length {
 
     parameter_meta {
         bam: "Input BAM format file to derive read length for"
+        bam_index: "BAM index file corresponding to the input BAM"
         outfile_name: "Name for the readlen TSV file"
         majority_vote_cutoff: {
-            description: "To call a majority readlen, the maximum read length must have at least `majority-vote-cutoff`% reads in support"
+            description: "To call a majority readlen, the maximum read length must have at least `majority-vote-cutoff`% reads in support",
             common: true
         }
         num_reads: {
-            description: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file."
+            description: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file.",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -205,7 +206,7 @@ task encoding {
     meta {
         description: "Derives the encoding of the input NGS file(s). Reports evidence supporting final results."
         outputs: {
-            encoding_file: "TSV file containing the `ngsderive encoding` report for all input files"
+            encoding_file: "TSV file containing the `ngsderive encoding` report for all input files",
             inferred_encoding: "The most permissive encoding found among the input files, in string format"
         }
     }
@@ -214,7 +215,7 @@ task encoding {
         ngs_files: "An array of FASTQs and/or BAMs for which to derive encoding"
         outfile_name: "Name for the encoding TSV file"
         num_reads: {
-            description: "How many reads to analyze from the start of the file(s). Any n < 1 to parse whole file(s)."
+            description: "How many reads to analyze from the start of the file(s). Any n < 1 to parse whole file(s).",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -282,7 +283,7 @@ task junction_annotation {
         description: "Annotates junctions found in an RNA-Seq BAM as known, novel, or partially novel"
         external_help: "https://stjudecloud.github.io/ngsderive/subcommands/junction_annotation/"
         outputs: {
-            junction_summary: "TSV file containing the `ngsderive junction-annotation` summary"
+            junction_summary: "TSV file containing the `ngsderive junction-annotation` summary",
             junctions: "TSV file containing a detailed list of annotated junctions"
         }
     }
@@ -293,19 +294,19 @@ task junction_annotation {
         gene_model: "Gene model as a GFF/GTF file"
         prefix: "Prefix for the summary TSV and junction files. The extensions `.junction_summary.tsv` and `.junctions.tsv` will be added."
         min_intron: {
-            description: "Minimum size of intron to be considered a splice"
+            description: "Minimum size of intron to be considered a splice",
             common: true
         }
         min_mapq: {
-            description: "Minimum MAPQ to consider for supporting reads"
+            description: "Minimum MAPQ to consider for supporting reads",
             common: true
         }
         min_reads: {
-            description: "Filter any junctions that don't have at least `min_reads` reads supporting them"
+            description: "Filter any junctions that don't have at least `min_reads` reads supporting them",
             common: true
         }
         fuzzy_junction_match_range: {
-            description: "Consider found splices within `+-k` bases of a known splice event annotated"
+            description: "Consider found splices within `+-k` bases of a known splice event annotated",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -377,27 +378,27 @@ task endedness {
         bam: "Input BAM format file to derive endedness from"
         outfile_name: "Name for the endedness TSV file"
         lenient: {
-            description: "Return a zero exit code on unknown results"
+            description: "Return a zero exit code on unknown results",
             common: true
         }
         calc_rpt: {
-            description: "Calculate and output Reads-Per-Template. This will produce a more sophisticated estimate for endedness, but uses substantially more memory (can reach up to 200% of BAM size in memory consumption for some inputs)."
+            description: "Calculate and output Reads-Per-Template. This will produce a more sophisticated estimate for endedness, but uses substantially more memory (can reach up to 200% of BAM size in memory consumption for some inputs).",
             common: true
         }
         round_rpt: {
-            description: "Round RPT to the nearest INT before comparing to expected values. Appropriate if using `--num-reads` > 0."
+            description: "Round RPT to the nearest INT before comparing to expected values. Appropriate if using `--num-reads` > 0.",
             common: true
         }
         split_by_rg: {
-            description: "Contain one entry per read group"
+            description: "Contain one entry per read group",
             common: true
         }
         paired_deviance: {
-            description: "Distance from 0.5 split between number of f+l- reads and f-l+ reads allowed to be called 'Paired-End'. Default of `0.0` only appropriate if the whole file is being processed."
+            description: "Distance from 0.5 split between number of f+l- reads and f-l+ reads allowed to be called 'Paired-End'. Default of `0.0` only appropriate if the whole file is being processed.",
             common: true
         }
         num_reads: {
-            description: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file."
+            description: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file.",
             common: true
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by value of `calc_rpt` and the size of the input. Specified in GB."

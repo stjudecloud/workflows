@@ -18,11 +18,11 @@ task bam_coverage {
         bam_index: "BAM index file corresponding to the input BAM"
         prefix: "Prefix for the BigWig file. The extension `.bw` will be added."
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments."
+            description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."

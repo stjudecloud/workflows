@@ -19,15 +19,15 @@ task bwa_aln {
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
-            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments."
+            description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -38,7 +38,7 @@ task bwa_aln {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(fastq),
-            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
         String read_group = ""
@@ -107,15 +107,15 @@ task bwa_aln_pe {
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
-            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments."
+            description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -127,7 +127,7 @@ task bwa_aln_pe {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(read_one_fastq_gz),
-            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
         String read_group = ""
@@ -199,15 +199,15 @@ task bwa_mem {
         read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
-            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments."
+            description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -219,7 +219,7 @@ task bwa_mem {
         File? read_two_fastq_gz
         String prefix = sub(
             basename(read_one_fastq_gz),
-            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
         String read_group = ""
@@ -284,7 +284,7 @@ task build_bwa_db {
     parameter_meta {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
         db_name: {
-            description: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added."
+            description: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added.",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."

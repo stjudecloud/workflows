@@ -11,8 +11,8 @@ workflow alignment_post {
     meta {
         description: "Runs a series of standard processing tools that should immediately follow alignment, regardless of data-type"
         outputs: {
-            processed_bam: "Input BAM after being transformed by standard processing"
-            bam_index: "BAI index associated with `processed_bam`"
+            processed_bam: "Input BAM after being transformed by standard processing",
+            bam_index: "BAI index associated with `processed_bam`",
             bam_checksum:  "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file"
         }
         allowNestedInputs: true
@@ -23,13 +23,13 @@ workflow alignment_post {
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         xenocp_aligner: {
-            description: "Aligner to use to map reads to the host genome for detecting contamination"
+            description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
                 'bwa aln',
                 'bwa mem',
                 'star'
             ]
-        },
+        }
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
         use_all_cores: "Use all cores for multi-core steps?"
     }

@@ -10,7 +10,7 @@ workflow estimate {
         description: "**[DEPRECATED]** Runs the ESTIMATE software package on a feature counts file"
         external_help: "https://bioinformatics.mdanderson.org/estimate/"
         outputs: {
-            tpm: "Transcripts Per Million file"
+            tpm: "Transcripts Per Million file",
             estimate_result: "Final output of ESTIMATE"
         }
         deprecated: true

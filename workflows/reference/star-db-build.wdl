@@ -9,8 +9,8 @@ workflow star_db_build {
     meta {
         description: "Builds a database suitable for running the STAR alignment program"
         outputs: {
-            reference_fa: "FASTA format reference file"
-            gtf: "GTF feature file"
+            reference_fa: "FASTA format reference file",
+            gtf: "GTF feature file",
             star_db_tar_gz: "A gzipped TAR file containing the STAR reference files"
         }
         allowNestedInputs: true

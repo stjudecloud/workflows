@@ -9,11 +9,11 @@ task mark_duplicates {
         description: "Marks duplicate reads in the input BAM file using Picard"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-"
         outputs: {
-            duplicate_marked_bam: "The input BAM with computationally determined duplicates marked."
-            duplicate_marked_bam_index: "The `.bai` BAM index file associated with `duplicate_marked_bam`"
-            duplicate_marked_bam_md5: "The md5sum of `duplicate_marked_bam`"
+            duplicate_marked_bam: "The input BAM with computationally determined duplicates marked.",
+            duplicate_marked_bam_index: "The `.bai` BAM index file associated with `duplicate_marked_bam`",
+            duplicate_marked_bam_md5: "The md5sum of `duplicate_marked_bam`",
             mark_duplicates_metrics: {
-                description: "The METRICS_FILE result of `picard MarkDuplicates`"
+                description: "The METRICS_FILE result of `picard MarkDuplicates`",
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics"
             }
         }
@@ -23,7 +23,7 @@ task mark_duplicates {
         bam: "Input BAM format file in which to mark duplicates"
         prefix: "Prefix for the MarkDuplicates result files. The extensions `.bam`, `.bam.bai`, `.bam.md5`, and `.metrics.txt` will be added."
         create_bam: {
-            description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?"
+            description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?",
             common: true
         }
         memory_gb: "RAM to allocate for task, specified in GB"
@@ -89,7 +89,7 @@ task validate_bam {
         description: "Validates the input BAM file for correct formatting using Picard"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360057440611-ValidateSamFile-Picard-"
         outputs: {
-            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged."
+            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
             validated_bam: "The unmodified input BAM after it has been succesfully validated"
         }
     }
@@ -98,21 +98,21 @@ task validate_bam {
         bam: "Input BAM format file to validate"
         reference_fasta: "Reference genome in FASTA format. Presence of the reference FASTA allows for `NM` tag validation."
         ignore_list: {
-            description: "List of Picard errors and warnings to ignore. Possible values can be found on the GATK website (see `external_help`)."
-            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile"
+            description: "List of Picard errors and warnings to ignore. Possible values can be found on the GATK website (see `external_help`).",
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile",
             common: true
         }
         outfile_name: "Name for the ValidateSamFile report file"
         succeed_on_errors: {
-            description: "Succeed the task even if errors *and/or* warnings are detected"
+            description: "Succeed the task even if errors *and/or* warnings are detected",
             common: true
         }
         succeed_on_warnings: {
-            description: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`"
+            description: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`",
             common: true
         }
         summary_mode: {
-            description: "Enable SUMMARY mode?"
+            description: "Enable SUMMARY mode?",
             common: true
         }
         index_validation_stringency_less_exhaustive: "Set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE`?"
@@ -202,8 +202,8 @@ task sort {
         description: "Sorts the input BAM file"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036510732-SortSam-Picard-"
         outputs: {
-            sorted_bam: "The input BAM after it has been sorted according to `sort_order`"
-            sorted_bam_index: "The `.bai` BAM index file associated with `sorted_bam`"
+            sorted_bam: "The input BAM after it has been sorted according to `sort_order`",
+            sorted_bam_index: "The `.bai` BAM index file associated with `sorted_bam`",
             sorted_bam_md5: "The md5sum of `sorted_bam`"
         }
     }
@@ -211,12 +211,12 @@ task sort {
     parameter_meta {
         bam: "Input BAM format file to sort"
         sort_order: {
-            description: "Order by which to sort the input BAM"
+            description: "Order by which to sort the input BAM",
             choices: [
                 'queryname',
                 'coordinate',
                 'duplicate'
-            ]
+            ],
             common: true
         }
         prefix: "Prefix for the sorted BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
@@ -272,8 +272,8 @@ task merge_sam_files {
         description: "Merges the input BAM files into a single BAM file. All input BAMs are assumed to be sorted according to `sort_order`."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360057440751-MergeSamFiles-Picard-"
         outputs: {
-            merged_bam: "The BAM resulting from merging all the input BAMs"
-            merged_bam_index: "The `.bai` BAM index file associated with `merged_bam`"
+            merged_bam: "The BAM resulting from merging all the input BAMs",
+            merged_bam_index: "The `.bai` BAM index file associated with `merged_bam`",
             merged_bam_md5: "The md5sum of `merged_bam`"
         }
     }
@@ -282,14 +282,14 @@ task merge_sam_files {
         bams: "Input BAMs to merge. All BAMs are assumed to be sorted according to `sort_order`."
         prefix: "Prefix for the merged BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
         sort_order: {
-            description: "Sort order for the output merged BAM. It is assumed all input BAMs share this order."
+            description: "Sort order for the output merged BAM. It is assumed all input BAMs share this order.",
             choices: [
                 'unsorted',
                 'queryname',
                 'coordinate',
                 'duplicate',
                 'unknown'  # TODO what does this mean?
-            ]
+            ],
             common: true
         }
         threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file. **Sets `runtime.cpu = 2` if `true`. `runtime.cpu = 1` if `false`.**"
@@ -350,8 +350,8 @@ task clean_sam {
         description: "Cleans the input BAM file. Cleans soft-clipping beyond end-of-reference, sets MAPQ=0 for unmapped reads."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036885571-CleanSam-Picard-"
         outputs: {
-            cleaned_bam: "A cleaned version of the input BAM"
-            cleaned_bam_index: "The `.bai` BAM index file associated with `cleaned_bam`"
+            cleaned_bam: "A cleaned version of the input BAM",
+            cleaned_bam_index: "The `.bai` BAM index file associated with `cleaned_bam`",
             cleaned_bam_md5: "The md5sum of `cleaned_bam`"
         }
     }
@@ -409,7 +409,7 @@ task collect_wgs_metrics {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037226132-CollectWgsMetrics-Picard-"
         outputs: {
             wgs_metrics: {
-                description: "Output report of `picard CollectWgsMetrics`"
+                description: "Output report of `picard CollectWgsMetrics`",
                 external_help: "https://broadinstitute.github.io/picard/picard-metric-definitions.html#CollectWgsMetrics.WgsMetrics"
             }
         }
@@ -462,9 +462,9 @@ task collect_alignment_summary_metrics {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360040507751-CollectAlignmentSummaryMetrics-Picard-"
         outputs: {
             alignment_metrics: {
-                description: "The text file output of `CollectAlignmentSummaryMetrics`"
+                description: "The text file output of `CollectAlignmentSummaryMetrics`",
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics"
-            }
+            },
             alignment_metrics_pdf: "The PDF file output of `CollectAlignmentSummaryMetrics`"
         }
     }
@@ -514,13 +514,13 @@ task collect_gc_bias_metrics {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037593931-CollectGcBiasMetrics-Picard-"
         outputs: {
             gc_bias_metrics: {
-                description: "The full text file output of `CollectGcBiasMetrics`"
+                description: "The full text file output of `CollectGcBiasMetrics`",
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasDetailMetrics"
-            }
+            },
             gc_bias_metrics_summary: {
-                description: "The summary text file output of `CollectGcBiasMetrics`"
+                description: "The summary text file output of `CollectGcBiasMetrics`",
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasSummaryMetrics"
-            }
+            },
             gc_bias_metrics_pdf: "The PDF file output of `CollectGcBiasMetrics`"
         }
     }
@@ -576,9 +576,9 @@ task collect_insert_size_metrics {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037055772-CollectInsertSizeMetrics-Picard-"
         outputs: {
             insert_size_metrics: {
-                description: "The text file output of `CollectInsertSizeMetrics`"
+                description: "The text file output of `CollectInsertSizeMetrics`",
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics"
-            }
+            },
             insert_size_metrics_pdf: "The PDF file output of `CollectInsertSizeMetrics`"
         }
     }
@@ -627,7 +627,7 @@ task quality_score_distribution {
         description: "Runs `picard QualityScoreDistribution` to calculate the range of quality scores and creates an accompanying chart"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037057312-QualityScoreDistribution-Picard-"
         outputs: {
-            quality_score_distribution_txt: "The text file output of `QualityScoreDistribution`"
+            quality_score_distribution_txt: "The text file output of `QualityScoreDistribution`",
             quality_score_distribution_pdf: "The PDF file output of `QualityScoreDistribution`"
         }
     }
@@ -679,7 +679,7 @@ task bam_to_fastq {
     parameter_meta {
         bam: "Input BAM format file to convert to FASTQ"
         paired: {
-            description: "Is the data paired-end (true) or single-end (false)?"
+            description: "Is the data paired-end (true) or single-end (false)?",
             common: true
         }
         memory_gb: "RAM to allocate for task, specified in GB"

@@ -60,7 +60,7 @@ task get_read_groups {
     parameter_meta {
         bam: "Input BAM format file to get read groups from"
         format_for_star: {
-            description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`."
+            description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`.",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -115,7 +115,7 @@ task split_string {
     parameter_meta {
         input_string: "String to split on occurences of `delimiter`"
         delimiter: {
-            description: "Delimiter on which to split `input_string`"
+            description: "Delimiter on which to split `input_string`",
             common: true
         }
     }
@@ -156,7 +156,7 @@ task calc_gene_lengths {
         gtf: "GTF feature file"
         outfile_name: "Name of the gene lengths file"
         idattr: {
-            description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file."
+            description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -373,8 +373,8 @@ task make_coverage_regions_beds {
     meta {
         description: "Takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
         outputs: {
-            bed: "Input GTF converted into BED format using the `gtf2bed` program"
-            exon_bed: "3 column BED file corresponding to all 'exons' found in the input GTF"
+            bed: "Input GTF converted into BED format using the `gtf2bed` program",
+            exon_bed: "3 column BED file corresponding to all 'exons' found in the input GTF",
             CDS_bed: "3 column BED file corresponding to all 'CDS' regions found in the input GTF"
         }
     }

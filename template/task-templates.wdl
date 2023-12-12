@@ -211,7 +211,7 @@ task string_choices_task {
 
     parameter_meta {
         <choice_input1>: {
-            description: "Description of the parameter"
+            description: "Description of the parameter",
             choices: [
                 "foo",
                 "bar",
