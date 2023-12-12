@@ -721,7 +721,7 @@ task collate_to_fastq {
         outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)",
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
-	        read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair",
+            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair",
             singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads",
             interleaved_reads_fastq_gz: "Interleaved gzipped paired-end FASTQ",
             single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads"
