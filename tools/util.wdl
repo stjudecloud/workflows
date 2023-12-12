@@ -44,7 +44,7 @@ task download {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }
@@ -60,7 +60,7 @@ task get_read_groups {
     parameter_meta {
         bam: "Input BAM format file to get read groups from"
         format_for_star: {
-            description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`."
+            description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`.",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -97,7 +97,7 @@ task get_read_groups {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'docker://quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: 1
     }
 }
@@ -115,7 +115,7 @@ task split_string {
     parameter_meta {
         input_string: "String to split on occurences of `delimiter`"
         delimiter: {
-            description: "Delimiter on which to split `input_string`"
+            description: "Delimiter on which to split `input_string`",
             common: true
         }
     }
@@ -138,7 +138,7 @@ task split_string {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }
@@ -156,7 +156,7 @@ task calc_gene_lengths {
         gtf: "GTF feature file"
         outfile_name: "Name of the gene lengths file"
         idattr: {
-            description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file."
+            description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -238,7 +238,7 @@ END
     runtime {
         memory: "16 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
+        container: 'docker://quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
         maxRetries: 1
     }
 }
@@ -275,7 +275,7 @@ task compression_integrity {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'docker://quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: 1
     }
 }
@@ -322,7 +322,7 @@ task add_to_bam_header {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'docker://quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: 1
     }
 }
@@ -363,7 +363,7 @@ task unpack_tarball {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }
@@ -373,8 +373,8 @@ task make_coverage_regions_beds {
     meta {
         description: "Takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
         outputs: {
-            bed: "Input GTF converted into BED format using the `gtf2bed` program"
-            exon_bed: "3 column BED file corresponding to all 'exons' found in the input GTF"
+            bed: "Input GTF converted into BED format using the `gtf2bed` program",
+            exon_bed: "3 column BED file corresponding to all 'exons' found in the input GTF",
             CDS_bed: "3 column BED file corresponding to all 'CDS' regions found in the input GTF"
         }
     }
@@ -414,7 +414,7 @@ task make_coverage_regions_beds {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
+        container: 'docker://quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
         maxRetries: 1
     }
 }
@@ -676,7 +676,7 @@ END
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }
@@ -746,7 +746,7 @@ task qc_summary {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }

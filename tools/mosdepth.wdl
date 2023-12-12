@@ -9,8 +9,8 @@ task coverage {
     meta {
         description: "Runs the Mosdepth tool for calculating coverage"
         outputs: {
-            summary: "A summary of mean depths per chromosome and within specified regions per chromosome"
-            global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome."
+            summary: "A summary of mean depths per chromosome and within specified regions per chromosome",
+            global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome.",
             region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by `coverage_bed` that were covered for at least a given coverage value"
         }
     }
@@ -22,7 +22,7 @@ task coverage {
         prefix: "Prefix for the `mosdepth` report files. The extensions `.mosdepth.summary.txt`, `.mosdepth.global.dist.txt` and `.mosdepth.region.dist.txt` will be added."
         use_fast_mode: "Use Mosdepth's 'fast mode'? This enables the `-x` flag."
         min_mapping_quality: {
-            description: "Minimum mapping quality to pass to the `-Q` flag of `mosdepth`"
+            description: "Minimum mapping quality to pass to the `-Q` flag of `mosdepth`",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -69,7 +69,7 @@ task coverage {
     runtime {
         memory: "8 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/mosdepth:0.3.3--h37c5b7d_2'
+        container: 'docker://quay.io/biocontainers/mosdepth:0.3.3--h37c5b7d_2'
         maxRetries: 1
     }
 }

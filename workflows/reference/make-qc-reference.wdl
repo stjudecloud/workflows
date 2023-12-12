@@ -9,10 +9,10 @@ workflow make_qc_reference {
     meta {
         description: "Downloads and creates all reference files needed to run the `quality_check` workflow"
         outputs: {
-            reference_fa: "FASTA format reference file"
-            gtf: "GTF feature file"
-            exon_bed: "3 column BED file defining the regions of the exome. Derived from `gtf`."
-            CDS_bed: "3 column BED file defining the regions of the coding domain. Derived from `gtf`."
+            reference_fa: "FASTA format reference file",
+            gtf: "GTF feature file",
+            exon_bed: "3 column BED file defining the regions of the exome. Derived from `gtf`.",
+            CDS_bed: "3 column BED file defining the regions of the coding domain. Derived from `gtf`.",
             kraken_db: "A complete Kraken2 database"
         }
         allowNestedInputs: true
@@ -25,7 +25,7 @@ workflow make_qc_reference {
         gtf_name: "Name of output GTF file"
         kraken_fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         kraken_libraries: {
-            description: "List of kraken libraries to download"
+            description: "List of kraken libraries to download",
             choices: [
                 'archaea',
                 'bacteria',

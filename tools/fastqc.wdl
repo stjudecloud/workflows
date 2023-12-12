@@ -8,7 +8,7 @@ task fastqc {
     meta {
         description: "Generates a FastQC quality control metrics report for the input BAM file"
         outputs: {
-            raw_data: "A zip archive of raw FastQC data. Can be parsed by MultiQC."
+            raw_data: "A zip archive of raw FastQC data. Can be parsed by MultiQC.",
             results: "A gzipped tar archive of all FastQC output files"
         }
     }
@@ -17,11 +17,11 @@ task fastqc {
         bam: "Input BAM format file to run FastQC on"
         prefix: "Prefix for the FastQC results directory. The extension `.tar.gz` will be added."
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments."
+            description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -66,7 +66,7 @@ task fastqc {
         cpu: ncpu
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/fastqc:0.11.9--hdfd78af_1'
+        container: 'docker://quay.io/biocontainers/fastqc:0.11.9--hdfd78af_1'
         maxRetries: 1
     }
 }
