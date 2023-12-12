@@ -195,7 +195,7 @@ task build_db {
         }
         protein: "Construct a protein database?"
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         kmer_len: "K-mer length in bp that will be used to build the database"
@@ -315,7 +315,7 @@ task kraken {
         }
         use_names: "Print scientific names instead of just taxids?"
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         min_base_quality: "Minimum base quality used in classification"

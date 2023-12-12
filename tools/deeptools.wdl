@@ -18,7 +18,7 @@ task bam_coverage {
         bam_index: "BAM index file corresponding to the input BAM"
         prefix: "Prefix for the BigWig file. The extension `.bw` will be added."
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {

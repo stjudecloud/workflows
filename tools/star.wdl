@@ -29,7 +29,7 @@ task build_star_db {
         sjdbGTFtagExonParentGeneName: "GTF attrbute name for parent gene name"
         sjdbGTFtagExonParentGeneType: "GTF attrbute name for parent gene type"
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         genomeChrBinNbits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
@@ -337,7 +337,7 @@ task alignment {
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         outFilterMismatchNoverLmax: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"

@@ -54,7 +54,7 @@ task split {
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -130,7 +130,7 @@ task flagstat {
         bam: "Input BAM format file to generate flagstat for"
         outfile_name: "Name for the flagstat report file"
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -186,7 +186,7 @@ task index {
     parameter_meta {
         bam: "Input BAM format file to index"
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -248,7 +248,7 @@ task subsample {
         desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value."
         prefix: "Prefix for the BAM file. The extension `.subsampled.bam` will be added."
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -362,7 +362,7 @@ task merge {
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -448,7 +448,7 @@ task addreplacerg {
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -522,7 +522,7 @@ task collate {
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -615,7 +615,7 @@ task bam_to_fastq {
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -762,7 +762,7 @@ task collate_to_fastq {
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
@@ -897,7 +897,7 @@ task fixmate {
         disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]"
         remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments."
             common: true
         }
         ncpu: {
