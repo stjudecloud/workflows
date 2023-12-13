@@ -34,7 +34,7 @@ task librarian {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'docker://ghcr.io/desmondwillowbrook/librarian:1.2'
+        docker: 'ghcr.io/desmondwillowbrook/librarian:1.2'
         maxRetries: max_retries
     }
 }
