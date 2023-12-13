@@ -7,7 +7,7 @@ task librarian {
         File read_one_fastq
         String prefix = sub(
             basename(read_one_fastq),
-            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
         Int modify_disk_size_gb = 0
@@ -24,7 +24,7 @@ task librarian {
 
         mkdir tmp
         export TMPDIR=$(pwd)/tmp
-        RUST_LOG=trace /app/librarian --local -o ~{prefix} ~{read_one_fastq}
+        RUST_LOG=trace /app/librarian --local --raw -o ~{prefix} ~{read_one_fastq}
     >>>
 
     # output {
@@ -34,7 +34,7 @@ task librarian {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        docker: 'ghcr.io/desmondwillowbrook/librarian:1.2'
+        docker: 'docker://ghcr.io/desmondwillowbrook/librarian:1.2'
         maxRetries: max_retries
     }
 }
