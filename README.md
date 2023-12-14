@@ -42,10 +42,18 @@ The repository is laid out as follows:
 ## Tests
 
 Every task in this repository is covered by at least one test (see all of our tests in `tests/tools/`). These are run using [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/).
+The command for running our tests should be executed at the root of the repo: `python -m pytest --kwdof --git-aware`
 
 ## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
+
+## Links worth checking out
+
+[The OpenWDL GitHub](https://github.com/openwdl)
+Our preferred WDL runner: [miniwdl](https://github.com/chanzuckerberg/miniwdl)
+Most of our tasks are run inside a [BioContainers image](https://github.com/BioContainers/containers)
+Our tasks are validated using [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/)
 
 ## 📝 License
 
