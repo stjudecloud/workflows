@@ -18,51 +18,18 @@ Resources requirements have been optimized to minimize failures in our computing
 
 ### 🏠 [Homepage](https://stjude.cloud)
 
-## Getting Started
-
-At the time of writing, all workflows are written in [WDL][wdl] and are tested
-using [Cromwell][cromwell]. We use [Oliver][oliver] to easily interact with the
-Cromwell server to perform various tasks. Although we do not test outside of Cromwell, we
-expect that the workflows will work just as well using other runners.
-
-The easiest way to get started is to install [bioconda][bioconda] and the run the following commands:
-
-```bash
-conda create -n workflows-dev -c conda-forge cromwell -y
-conda activate workflows-dev
-git clone git@github.com:stjudecloud/workflows.git
-cd workflows
-```
-
-Any of the workflows in [the workflows](https://github.com/stjudecloud/workflows/tree/master/workflows) folder is a good place to start, e.g.
-
-```bash
-cromwell run workflows/qc/make-qc-reference.wdl
-```
+Please excuse the state of our documentation. We are working on some big changes around here, and with those changes will come much improved documentation.
 
 ## Repository Structure
 
 The repository is laid out as follows:
 
-* `bin` - Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations in `conf` with Cromwell.
-* `conf` - Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
-* `docker` - Dockerfiles used in our workflows. All docker images are published to the [GitHub Container Registy](https://github.com/orgs/stjudecloud/packages?repo_name=workflows) as a part of our CI and are versioned.
-* `tools` - All tools we have wrapped as individual WDL tasks.
-* `workflows` - Directory containing all end-to-end bioinformatics workflows.
-
-## Workflows Available
-
-The current workflows exist in this repo with the following statuses:
-
-| Name                   | Version         | Description                                                                                                               | Specification                                                                                         | Workflow                                                                                                                       | Status                                                                                                              |
-| ---------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| RNA-Seq Standard       | v2.0.0          | Standard RNA-Seq harmonization pipeline.                                                                                  | [Specification](https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.html)                    | [Realign BAM Workflow](./workflows/rnaseq/rnaseq-standard.wdl), [FASTQ Workflow](./workflows/rnaseq/rnaseq-standard-fastq.wdl) | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
-| Build STAR References  | N/A             | Build [STAR aligner](https://github.com/alexdobin/STAR) reference files used in RNA-Seq Standard harmonization pipelines. | None                                                                                                  | [Workflow](./workflows/rnaseq/rnaseq-star-db-build.wdl)                                                                        | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
-| Quality Check Standard | v1.0.0          | Perform ~10 different QC analyses on a BAM file and compile the results using [MultiQC](https://multiqc.info/).           | [Specification](https://rfcs.stjude.cloud/branches/rfcs/qc-workflow/0002-quality-check-workflow.html) | [Workflow](./workflows/qc/quality-check-standard.wdl)                                                                          | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
-| ESTIMATE               | v1.0.0 (*beta*) | Runs the [ESTIMATE software package](https://bioinformatics.mdanderson.org/estimate/) on a feature counts file.           | None                                                                                                  | [Workflow](./workflows/rnaseq/ESTIMATE.wdl)                                                                                    | ![In Development](https://img.shields.io/static/v1?label=Status&message=Development&color=orange&style=flat-square) |
-| Calculate Gene Lengths | N/A             | Produces a gene length file from a GTF.                                                                                   | None                                                                                                  | [Workflow](./workflows/rnaseq/calc-gene-lengths.wdl)                                                                           | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
-| Build BWA References   | N/A             | Builds reference files used by the [BWA aligner](https://github.com/lh3/bwa).                                             | None                                                                                                  | [Workflow](./workflows/general/bwa-db-build.wdl)                                                                               | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
-| BAM to FASTQs          | v1.0.0          | Split a BAM file into read groups, then read 1 FASTQs and  read 2 FASTQs.                                                 | None                                                                                                  | [Workflow](./workflows/general/bam-to-fastqs.wdl)                                                                              | ![In Production](https://img.shields.io/static/v1?label=Status&message=Production&color=green&style=flat-square)    |
+* `workflows/` - Directory containing all end-to-end bioinformatics workflows.
+* `tools/` - All tools we have wrapped as individual WDL tasks.
+* `docker/` - Dockerfiles used in our workflows. All docker images are published to the [GitHub Container Registy](https://github.com/orgs/stjudecloud/packages?repo_name=workflows) as a part of our CI and are versioned.
+* `tests/tools/` - Home to all of our testing infrastructure. We use [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/) for validating our code.
+* `bin/` - **no longer in use** Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations in `conf` with Cromwell.
+* `conf/` - **no longer in use** Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
 
 ## Author
 
@@ -74,18 +41,21 @@ The current workflows exist in this repo with the following statuses:
 
 ## Tests
 
-Given that this repo is still new, there are no tests. When we add tests, we will update the README.
+Every task in this repository is covered by at least one test (see all of our tests in `tests/tools/`). These are run using [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/).
+The command for running our tests should be executed at the root of the repo: `python -m pytest --kwdof --git-aware`
 
 ## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
 
+## Links worth checking out
+
+[The OpenWDL GitHub](https://github.com/openwdl)
+Our preferred WDL runner: [miniwdl](https://github.com/chanzuckerberg/miniwdl)
+Most of our tasks are run inside a [BioContainers image](https://github.com/BioContainers/containers)
+Our tasks are validated using [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/)
+
 ## 📝 License
 
 Copyright © 2020-Present [St. Jude Cloud Team](https://github.com/stjudecloud).<br />
 This project is [MIT](https://github.com/stjudecloud/workflows/blob/master/LICENSE.md) licensed.
-
-[wdl]: http://openwdl.org/
-[cromwell]: https://github.com/broadinstitute/cromwell
-[bioconda]: https://bioconda.github.io/
-[oliver]: https://github.com/stjudecloud/oliver
