@@ -154,101 +154,17 @@
 </blockquote>
 <p>Resources requirements have been optimized to minimize failures in our computing environment, but they may not reflect the best settings for your use case. Please ensure that you tailor these parameters to fit your needs.</p>
 <h3 id="homepage">🏠 <a href="https://stjude.cloud">Homepage</a></h3>
-<h2 id="getting-started">Getting Started</h2>
-<p>At the time of writing, all workflows are written in <a href="http://openwdl.org/">WDL</a> and are tested
-using <a href="https://github.com/broadinstitute/cromwell">Cromwell</a>. We use <a href="https://github.com/stjudecloud/oliver">Oliver</a> to easily interact with the
-Cromwell server to perform various tasks. Although we do not test outside of Cromwell, we
-expect that the workflows will work just as well using other runners.</p>
-<p>The easiest way to get started is to install <a href="https://bioconda.github.io/">bioconda</a> and the run the following commands:</p>
-<pre><code class="language-bash">conda create -n workflows-dev -c conda-forge cromwell -y
-conda activate workflows-dev
-git clone git@github.com:stjudecloud/workflows.git
-cd workflows
-</code></pre>
-<p>Any of the workflows in <a href="https://github.com/stjudecloud/workflows/tree/master/workflows">the workflows</a> folder is a good place to start, e.g.</p>
-<pre><code class="language-bash">cromwell run workflows/qc/make-qc-reference.wdl
-</code></pre>
+<p>Please excuse the state of our documentation. We are working on some big changes around here, and with those changes will come much improved documentation.</p>
 <h2 id="repository-structure">Repository Structure</h2>
 <p>The repository is laid out as follows:</p>
 <ul>
-<li><code>bin</code> - Scripts used by Cromwell configuration settings. Add this to <code>$PATH</code> prior to using configurations in <code>conf</code> with Cromwell.</li>
-<li><code>conf</code> - Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.</li>
-<li><code>docker</code> - Dockerfiles used in our workflows. All docker images are published to the <a href="https://github.com/orgs/stjudecloud/packages?repo_name=workflows">GitHub Container Registy</a> as a part of our CI and are versioned.</li>
-<li><code>tools</code> - All tools we have wrapped as individual WDL tasks.</li>
-<li><code>workflows</code> - Directory containing all end-to-end bioinformatics workflows.</li>
+<li><code>workflows/</code> - Directory containing all end-to-end bioinformatics workflows.</li>
+<li><code>tools/</code> - All tools we have wrapped as individual WDL tasks.</li>
+<li><code>docker/</code> - Dockerfiles used in our workflows. All docker images are published to the <a href="https://github.com/orgs/stjudecloud/packages?repo_name=workflows">GitHub Container Registy</a> as a part of our CI and are versioned.</li>
+<li><code>tests/tools/</code> - Home to all of our testing infrastructure. We use <a href="https://pytest-workflow.readthedocs.io/en/stable/">pytest-workflow</a> for validating our code.</li>
+<li><code>bin/</code> - <strong>no longer in use</strong> Scripts used by Cromwell configuration settings. Add this to <code>$PATH</code> prior to using configurations in <code>conf</code> with Cromwell.</li>
+<li><code>conf/</code> - <strong>no longer in use</strong> Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.</li>
 </ul>
-<h2 id="workflows-available">Workflows Available</h2>
-<p>The current workflows exist in this repo with the following statuses:</p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Version</th>
-<th>Description</th>
-<th>Specification</th>
-<th>Workflow</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>RNA-Seq Standard</td>
-<td>v2.0.0</td>
-<td>Standard RNA-Seq harmonization pipeline.</td>
-<td><a href="https://stjudecloud.github.io/rfcs/0001-rnaseq-workflow-v2.0.html">Specification</a></td>
-<td><a href="./workflows/rnaseq/rnaseq-standard.wdl">Realign BAM Workflow</a>, <a href="./workflows/rnaseq/rnaseq-standard-fastq.wdl">FASTQ Workflow</a></td>
-<td><img alt="In Production" src="https://img.shields.io/static/v1?label=Status&amp;message=Production&amp;color=green&amp;style=flat-square" /></td>
-</tr>
-<tr>
-<td>Build STAR References</td>
-<td>N/A</td>
-<td>Build <a href="https://github.com/alexdobin/STAR">STAR aligner</a> reference files used in RNA-Seq Standard harmonization pipelines.</td>
-<td>None</td>
-<td><a href="./workflows/rnaseq/rnaseq-star-db-build.wdl">Workflow</a></td>
-<td><img alt="In Production" src="https://img.shields.io/static/v1?label=Status&amp;message=Production&amp;color=green&amp;style=flat-square" /></td>
-</tr>
-<tr>
-<td>Quality Check Standard</td>
-<td>v1.0.0</td>
-<td>Perform ~10 different QC analyses on a BAM file and compile the results using <a href="https://multiqc.info/">MultiQC</a>.</td>
-<td><a href="https://rfcs.stjude.cloud/branches/rfcs/qc-workflow/0002-quality-check-workflow.html">Specification</a></td>
-<td><a href="./workflows/qc/quality-check-standard.wdl">Workflow</a></td>
-<td><img alt="In Production" src="https://img.shields.io/static/v1?label=Status&amp;message=Production&amp;color=green&amp;style=flat-square" /></td>
-</tr>
-<tr>
-<td>ESTIMATE</td>
-<td>v1.0.0 (<em>beta</em>)</td>
-<td>Runs the <a href="https://bioinformatics.mdanderson.org/estimate/">ESTIMATE software package</a> on a feature counts file.</td>
-<td>None</td>
-<td><a href="./workflows/rnaseq/ESTIMATE.wdl">Workflow</a></td>
-<td><img alt="In Development" src="https://img.shields.io/static/v1?label=Status&amp;message=Development&amp;color=orange&amp;style=flat-square" /></td>
-</tr>
-<tr>
-<td>Calculate Gene Lengths</td>
-<td>N/A</td>
-<td>Produces a gene length file from a GTF.</td>
-<td>None</td>
-<td><a href="./workflows/rnaseq/calc-gene-lengths.wdl">Workflow</a></td>
-<td><img alt="In Production" src="https://img.shields.io/static/v1?label=Status&amp;message=Production&amp;color=green&amp;style=flat-square" /></td>
-</tr>
-<tr>
-<td>Build BWA References</td>
-<td>N/A</td>
-<td>Builds reference files used by the <a href="https://github.com/lh3/bwa">BWA aligner</a>.</td>
-<td>None</td>
-<td><a href="./workflows/general/bwa-db-build.wdl">Workflow</a></td>
-<td><img alt="In Production" src="https://img.shields.io/static/v1?label=Status&amp;message=Production&amp;color=green&amp;style=flat-square" /></td>
-</tr>
-<tr>
-<td>BAM to FASTQs</td>
-<td>v1.0.0</td>
-<td>Split a BAM file into read groups, then read 1 FASTQs and  read 2 FASTQs.</td>
-<td>None</td>
-<td><a href="./workflows/general/bam-to-fastqs.wdl">Workflow</a></td>
-<td><img alt="In Production" src="https://img.shields.io/static/v1?label=Status&amp;message=Production&amp;color=green&amp;style=flat-square" /></td>
-</tr>
-</tbody>
-</table>
 <h2 id="author">Author</h2>
 <p>👤 <strong>St. Jude Cloud Team</strong></p>
 <ul>
@@ -257,9 +173,15 @@ cd workflows
 <li>Twitter: <a href="https://twitter.com/StJudeResearch">@StJudeResearch</a></li>
 </ul>
 <h2 id="tests">Tests</h2>
-<p>Given that this repo is still new, there are no tests. When we add tests, we will update the README.</p>
+<p>Every task in this repository is covered by at least one test (see all of our tests in <code>tests/tools/</code>). These are run using <a href="https://pytest-workflow.readthedocs.io/en/stable/">pytest-workflow</a>.
+The command for running our tests should be executed at the root of the repo: <code>python -m pytest --kwdof --git-aware</code></p>
 <h2 id="contributing">🤝 Contributing</h2>
 <p>Contributions, issues and feature requests are welcome!<br />Feel free to check <a href="https://github.com/stjudecloud/workflows/issues">issues page</a>. You can also take a look at the <a href="https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md">contributing guide</a>.</p>
+<h2 id="links-worth-checking-out">Links worth checking out</h2>
+<p><a href="https://github.com/openwdl">The OpenWDL GitHub</a>
+Our preferred WDL runner: <a href="https://github.com/chanzuckerberg/miniwdl">miniwdl</a>
+Most of our tasks are run inside a <a href="https://github.com/BioContainers/containers">BioContainers image</a>
+Our tasks are validated using <a href="https://pytest-workflow.readthedocs.io/en/stable/">pytest-workflow</a></p>
 <h2 id="license">📝 License</h2>
 <p>Copyright © 2020-Present <a href="https://github.com/stjudecloud">St. Jude Cloud Team</a>.<br />
 This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md">MIT</a> licensed.</p>
@@ -316,5 +238,5 @@ This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LI
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2023-12-12 21:10:50.549354+00:00
+Build Date UTC : 2023-12-14 14:46:42.413843+00:00
 -->
