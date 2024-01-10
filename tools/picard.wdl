@@ -723,3 +723,155 @@ task bam_to_fastq {
         maxRetries: 1
     }
 }
+
+task merge_vcfs {
+    meta {
+
+    }
+
+    parameter_meta {
+
+    }
+
+    input {
+        Array[File] vcfs
+        Array[File] vcfs_indexes
+        String output_vcf_name
+        Int modify_disk_size_gb = 0
+    }
+
+    Int disk_size_gb = ceil(size(vcfs, "GiB") * 2) + 10 + modify_disk_size_gb
+
+    command <<<
+        picard -Xms2000m \
+            MergeVcfs \
+            ~{sep(' ', prefix('--INPUT ', vcfs))} \
+            --OUTPUT ~{output_vcf_name}
+    >>>
+
+    output {
+        File output_vcf = output_vcf_name
+        File output_vcf_index = "~{output_vcf_name}.tbi"
+    }
+
+    runtime {
+        memory: "3 GB"
+        disk: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
+        maxRetries: 1
+    }
+}
+
+task scatter_interval_list {
+    meta {
+
+    }
+
+    parameter_meta  {
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File interval_list
+        String subdivision_mode = "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW"
+        Boolean unique = true
+        Boolean sort = true
+        Int scatter_count
+        Int modify_disk_size_gb = 0
+    }
+
+    Int disk_size_gb = 1 + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        mkdir out
+        picard -Xms1g \
+            IntervalListTools \
+            SCATTER_COUNT=~{scatter_count} \
+            SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
+            UNIQUE=~{unique} \
+            SORT=~{sort} \
+            INPUT=~{interval_list} \
+            OUTPUT=out
+
+        bash <<CODE
+        I=0
+        for list in \$(ls out/*/*.interval_list)
+        do
+           I=\$((I+1))
+           dir=\$(dirname \$list)
+           name=\$(basename \$list)
+           mv \$list \${dir}/\${I}\${name}
+        done
+        echo \$I > interval_count.txt
+        CODE
+    >>>
+
+    output {
+        Array[File] out = glob("out/*/*.interval_list")
+        Int interval_count = read_int("interval_count.txt")
+    }
+
+    runtime {
+        memory: "2 GB"
+        disk: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
+        maxRetries: 1
+    }
+}
+
+task create_sequence_dictionary {
+    meta {
+        description: "Creates a sequence dictionary for the input FASTA file using Picard"
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832748622491-CreateSequenceDictionary-Picard-"
+        outputs: {
+            dictionary: "Sequence dictionary produced by `picard CreateSequenceDictionary`."
+        }
+    }
+
+    parameter_meta {
+        fasta: "Input FASTA format file from which to create dictionary"
+        outfile_name: "Name for the CreateSequenceDictionary dictionary file"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fasta
+        String outfile_name = basename(fasta, ".fa") + ".dict"
+        String? assembly_name
+        String? fasta_url
+        String? species
+        Int memory_gb = 16
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fasta_size = size(fasta, "GiB")
+    Int disk_size_gb = ceil(fasta_size * 2) + 10 + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command <<<
+        set -euo pipefail
+
+        rc=0
+        picard -Xmx~{java_heap_size}g CreateSequenceDictionary \
+            -R ~{fasta} \
+            ~{if defined(assembly_name) then "--GENOME_ASSEMBLY " + assembly_name else ""} \
+            ~{if defined(fasta_url) then "--URI " + fasta_url else ""} \
+            ~{if defined(species) then "--SPECIES " + species else ""} \
+            > ~{outfile_name} \
+    >>>
+
+    output {
+        File dictionary = outfile_name
+    }
+
+    runtime {
+        cpu: 1
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        maxRetries: 1
+    }
+}
