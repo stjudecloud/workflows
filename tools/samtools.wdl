@@ -825,7 +825,7 @@ task collate_to_fastq {
                 } \
                 -1 ~{
                     if paired_end then (
-                        if interleaved then prefix + ".fastq.gz" else prefix + "_R1.fastq.gz"
+                        if interleaved then prefix + ".fastq.gz" else prefix + ".R1.fastq.gz"
                     )
                     else prefix + ".fastq.gz"
                 } \
