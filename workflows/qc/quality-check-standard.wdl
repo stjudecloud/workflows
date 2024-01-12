@@ -343,7 +343,6 @@ workflow quality_check {
             "read_one_fastq_gz": collate_to_fastq.read_one_fastq_gz,
             "read_two_fastq_gz": collate_to_fastq.read_two_fastq_gz,
             "singleton_reads_fastq_gz": collate_to_fastq.singleton_reads_fastq_gz,
-            "interleaved_reads_fastq_gz": collate_to_fastq.interleaved_reads_fastq_gz,
             "duplicate_marked_bam": markdups.duplicate_marked_bam,
             "duplicate_marked_bam_index": markdups.duplicate_marked_bam_index,
             "duplicate_marked_bam_md5": markdups.duplicate_marked_bam_md5
@@ -380,6 +379,7 @@ workflow quality_check {
             = quality_score_distribution.quality_score_distribution_pdf
         File phred_scores = global_phred_scores.phred_scores
         File kraken_report = kraken.report
+        File librarian_report = librarian.report
         File mosdepth_global_dist = wg_coverage.global_dist
         File mosdepth_global_summary = wg_coverage.summary
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
@@ -476,7 +476,6 @@ struct IntermediateFiles {
     File? read_one_fastq_gz
     File? read_two_fastq_gz
     File? singleton_reads_fastq_gz
-    File? interleaved_reads_fastq_gz  # TODO this will always be empty? Verify and delete
     File? duplicate_marked_bam
     File? duplicate_marked_bam_index
     File? duplicate_marked_bam_md5
