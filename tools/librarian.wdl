@@ -22,8 +22,8 @@ task librarian {
     command <<<
         set -euo pipefail
 
-        mkdir tmp
-        TMPDIR=$(pwd)/tmp RUST_LOG=trace /app/librarian --local -o ~{prefix} ~{read_one_fastq}
+        mkdir ~{prefix}
+        RUST_LOG=trace /app/librarian --local -o ~{prefix} ~{read_one_fastq}
     >>>
 
     # output {
