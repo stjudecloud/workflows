@@ -5,6 +5,7 @@ version 1.1
 import "../../tools/fastqc.wdl" as fastqc_tasks
 import "../../tools/fq.wdl"
 import "../../tools/kraken2.wdl"
+import "../../tools/librarian.wdl" as libraran_tasks
 import "../../tools/md5sum.wdl"
 import "../../tools/mosdepth.wdl"
 import "../../tools/multiqc.wdl" as multiqc_tasks
@@ -222,6 +223,9 @@ workflow quality_check {
         prefix=post_subsample_prefix,
         use_all_cores=use_all_cores,
     }
+    call libraran_tasks.librarian { input:
+        read_one_fastq = fqlint.validated_read1,
+    }
 
     call mosdepth.coverage as wg_coverage { input:
         bam=post_subsample_bam,
@@ -309,6 +313,7 @@ workflow quality_check {
                 markdups_post.insert_size_metrics,
                 quality_score_distribution.quality_score_distribution_txt,
                 kraken.report,
+                librarian.raw_data,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
                 global_phred_scores.phred_scores,

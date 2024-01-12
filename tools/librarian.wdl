@@ -30,6 +30,7 @@ task librarian {
 
     output {
         File report = "~{prefix}.tar.gz"
+        File raw_data = "~{prefix}/librarian_heatmap.txt"
     }
 
     runtime {
