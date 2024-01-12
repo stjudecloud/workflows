@@ -24,11 +24,13 @@ task librarian {
 
         mkdir ~{prefix}
         RUST_LOG=trace /app/librarian --local --raw -o ~{prefix} ~{read_one_fastq}
+
+        tar -czf ~{prefix}.tar.gz ~{prefix}
     >>>
 
-    # output {
-    #     File report =
-    # }
+    output {
+        File report = "~{prefix}.tar.gz"
+    }
 
     runtime {
         memory: "4 GB"
