@@ -17,7 +17,7 @@ jobs:
         pip install miniwdl pytest-workflow
     - name: filter tests
       run: | 
-        find tests -name '*.yaml' -exec yq -i '. - map(select(.tags[] | contains ("reference") or contains ("deprecated") or contains ("cellranger")))' {} \;
+        find tests -name '*.yaml' -exec yq -y -i '. - map(select(.tags[] | contains ("reference") or contains ("deprecated") or contains ("cellranger")))' {} \;
     - name: Run pytest-workflow
       run: |
         pytest --git-aware --workflow-threads 4
