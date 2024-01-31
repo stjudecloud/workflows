@@ -26,4 +26,4 @@ jobs:
         miniwdl --version
         pip show pytest-workflow
         python --version
-        pytest --git-aware --workflow-threads 2
+        PYTEST_DEBUG=1 pytest --git-aware
