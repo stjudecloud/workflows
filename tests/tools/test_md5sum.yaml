@@ -7,4 +7,4 @@
   files:
     - path: test-output/out/md5sum/test.bwa_aln_pe.bam.md5
       contains:
-        - "3d7f3b18dd97d02a3fba7c7cccb4245c"
+        - "77fa2f59b0083202c73b0c80b60b24f6"
