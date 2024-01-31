@@ -15,6 +15,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install miniwdl pytest-workflow
+        yq --version
+        pip install yq jq
+        yq --version
     - name: filter tests
       run: | 
         find tests -name '*.yaml' -exec yq --output-format yaml -i '. - map(select(.tags[] | contains ("reference") or contains ("deprecated") or contains ("cellranger")))' {} \;
