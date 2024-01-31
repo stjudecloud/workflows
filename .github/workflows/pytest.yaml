@@ -27,4 +27,4 @@ jobs:
         miniwdl --version
         pip show pytest-workflow
         python --version
-        pytest --git-aware --basetemp /mnt/pytest --symlink
+        pytest --git-aware --basetemp /home/runner/work/pytest --symlink
