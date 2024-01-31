@@ -22,9 +22,4 @@ jobs:
         find tests -name '*.yaml' -exec yq --output-format yaml -i 'del(.[] | select(.tags[] | test("reference|deprecated|cellranger") ) )' {} \;
     - name: Run pytest-workflow
       run: |
-        df -h
-        pytest --version
-        miniwdl --version
-        pip show pytest-workflow
-        python --version
         pytest --git-aware --basetemp /home/runner/work/pytest --symlink
