@@ -353,7 +353,7 @@ task unpack_tarball {
 
         mkdir unpacked_tarball
         tar -C unpacked_tarball -xzf ~{tarball} --no-same-owner
-        find unpacked_tarball/ -type f > file_list.txt
+        find unpacked_tarball/ -type f | LC_ALL=C sort > file_list.txt
     >>>
 
     output {
