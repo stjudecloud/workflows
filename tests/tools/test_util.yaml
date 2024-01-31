@@ -55,6 +55,7 @@
   tags:
    - miniwdl
    - util
+   - deprecated
   command: >-
    miniwdl run -d test-output/. --task qc_summary --copy-input-files tools/util.wdl multiqc_tar_gz="tests/tools/input/SJBT031344_D1.Exome.multiqc.tar.gz"
   files:
@@ -88,8 +89,8 @@
   command: >-
       miniwdl run -d test-output/. --task unpack_tarball --copy-input-files tools/util.wdl tarball="tests/tools/input/test.tar.gz"
   files:
-    - path: "test-output/out/tarball_contents/1/a"
-    - path: "test-output/out/tarball_contents/0/b"
+    - path: "test-output/out/tarball_contents/0/a"
+    - path: "test-output/out/tarball_contents/1/b"
 
 - name: make_coverage_regions_beds
   tags:
