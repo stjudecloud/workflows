@@ -4,7 +4,7 @@
     - star
     - reference
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task build_star_db tools/star.wdl reference_fasta=tests/tools/input/GRCh38.chrY_chrM.fa.gz gtf=tests/tools/input/genes.gtf.gz
+    miniwdl run -d test-output/. --task build_star_db tools/star.wdl reference_fasta=tests/tools/input/GRCh38.chrY_chrM.fa.gz gtf=tests/tools/input/genes.gtf.gz
   files:
     - path: test-output/out/star_db/star_db.tar.gz
 
@@ -13,7 +13,7 @@
     - miniwdl
     - star
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task alignment -i tests/tools/input_json/star_alignment.json tools/star.wdl
+    miniwdl run -d test-output/. --task alignment -i tests/tools/input_json/star_alignment.json tools/star.wdl
   files:
     - path: test-output/out/star_log/test.Log.final.out
     - path: test-output/out/star_bam/test.Aligned.out.bam
