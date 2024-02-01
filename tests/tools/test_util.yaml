@@ -81,7 +81,6 @@
   files:
     - path: "test-output/out/reheadered_bam/test.bwa_aln_pe.reheader.bam"
 
-  # TODO write custom test that handles random array indices created by `find`
 - name: unpack_tarball
   tags:
     - miniwdl
