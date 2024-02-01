@@ -3,7 +3,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task mark_duplicates tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" memory_gb=16
+    miniwdl run -d test-output/. --task mark_duplicates tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" memory_gb=16
   files:
     - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.MarkDuplicates.bam
     - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.MarkDuplicates.bam.bai
@@ -15,7 +15,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task validate_bam tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task validate_bam tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/validated_bam/test.bwa_aln_pe.bam
     - path: test-output/out/validate_report/test.bwa_aln_pe.ValidateSamFile.txt
@@ -25,7 +25,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task bam_to_fastq tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task bam_to_fastq tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz
     - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz
@@ -35,7 +35,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task sort tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" memory_gb=16
+    miniwdl run -d test-output/. --task sort tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" memory_gb=16
   files:
     - path: test-output/out/sorted_bam/test.bwa_aln_pe.sorted.bam
 
@@ -44,7 +44,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task merge_sam_files -i tests/tools/input_json/picard_merge_sam_files.json tools/picard.wdl
+    miniwdl run -d test-output/. --task merge_sam_files -i tests/tools/input_json/picard_merge_sam_files.json tools/picard.wdl
   files:
     - path: test-output/out/merged_bam/test.bam
 
@@ -53,7 +53,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task clean_sam tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task clean_sam tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/cleaned_bam/test.bwa_aln_pe.cleaned.bam
 
@@ -62,7 +62,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task collect_wgs_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" reference_fasta="tests/tools/input/GRCh38.chrY_chrM.fa.gz"
+    miniwdl run -d test-output/. --task collect_wgs_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" reference_fasta="tests/tools/input/GRCh38.chrY_chrM.fa.gz"
   files:
     - path: test-output/out/wgs_metrics/test.bwa_aln_pe.CollectWgsMetrics.txt
 
@@ -71,7 +71,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task collect_alignment_summary_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task collect_alignment_summary_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/alignment_metrics/test.bwa_aln_pe.CollectAlignmentSummaryMetrics.txt
     - path: test-output/out/alignment_metrics_pdf/test.bwa_aln_pe.CollectAlignmentSummaryMetrics.pdf
@@ -81,7 +81,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task collect_gc_bias_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" reference_fasta=tests/tools/input/GRCh38.chrY_chrM.fa.gz
+    miniwdl run -d test-output/. --task collect_gc_bias_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" reference_fasta=tests/tools/input/GRCh38.chrY_chrM.fa.gz
   files:
     - path: test-output/out/gc_bias_metrics/test.bwa_aln_pe.CollectGcBiasMetrics.txt
     - path: test-output/out/gc_bias_metrics_summary/test.bwa_aln_pe.CollectGcBiasMetrics.summary.txt
@@ -92,7 +92,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task collect_insert_size_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task collect_insert_size_metrics tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/insert_size_metrics/test.bwa_aln_pe.CollectInsertSizeMetrics.txt
     - path: test-output/out/insert_size_metrics_pdf/test.bwa_aln_pe.CollectInsertSizeMetrics.pdf
@@ -102,7 +102,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task quality_score_distribution tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task quality_score_distribution tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/quality_score_distribution_txt/test.bwa_aln_pe.QualityScoreDistribution.txt
     - path: test-output/out/quality_score_distribution_pdf/test.bwa_aln_pe.QualityScoreDistribution.pdf

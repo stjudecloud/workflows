@@ -3,7 +3,7 @@
     - miniwdl
     - qualimap
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task bamqc tools/qualimap.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task bamqc tools/qualimap.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/results/test.bwa_aln_pe.qualimap_bamqc_results.tar.gz
 
@@ -12,7 +12,7 @@
     - miniwdl
     - qualimap
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task rnaseq tools/qualimap.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" gtf="tests/tools/input/genes.gtf.gz"
+    miniwdl run -d test-output/. --task rnaseq tools/qualimap.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" gtf="tests/tools/input/genes.gtf.gz"
   files:
     - path: test-output/out/results/test.bwa_aln_pe.qualimap_rnaseq_results.tar.gz
     - path: test-output/out/raw_summary/rnaseq_qc_results.txt

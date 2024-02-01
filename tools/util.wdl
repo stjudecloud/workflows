@@ -44,7 +44,7 @@ task download {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }
@@ -97,7 +97,7 @@ task get_read_groups {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: 1
     }
 }
@@ -138,7 +138,7 @@ task split_string {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }
@@ -238,7 +238,7 @@ END
     runtime {
         memory: "16 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
+        container: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
         maxRetries: 1
     }
 }
@@ -275,7 +275,7 @@ task compression_integrity {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: 1
     }
 }
@@ -322,7 +322,7 @@ task add_to_bam_header {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
         maxRetries: 1
     }
 }
@@ -353,7 +353,8 @@ task unpack_tarball {
 
         mkdir unpacked_tarball
         tar -C unpacked_tarball -xzf ~{tarball} --no-same-owner
-        find unpacked_tarball/ -type f > file_list.txt
+        # pipe through sort because otherwise order is random (dependent on filesystem)
+        find unpacked_tarball/ -type f | LC_ALL=C sort > file_list.txt
     >>>
 
     output {
@@ -363,7 +364,7 @@ task unpack_tarball {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }
@@ -414,7 +415,7 @@ task make_coverage_regions_beds {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
+        container: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
         maxRetries: 1
     }
 }
@@ -676,7 +677,7 @@ END
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }
@@ -746,7 +747,7 @@ task qc_summary {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }

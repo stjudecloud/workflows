@@ -76,7 +76,7 @@ task mark_duplicates {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: 1
     }
 }
@@ -192,7 +192,7 @@ task validate_bam {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: 1
     }
 }
@@ -262,7 +262,7 @@ task sort {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: 1
     }
 }
@@ -334,7 +334,7 @@ task merge_sam_files {
         cpu: if threading then 2 else 1
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: 1
     }
 
@@ -397,7 +397,7 @@ task clean_sam {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: 1
     }
 }
@@ -450,7 +450,7 @@ task collect_wgs_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: 1
     }
 }
@@ -502,7 +502,7 @@ task collect_alignment_summary_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: 1
     }
 }
@@ -563,7 +563,7 @@ task collect_gc_bias_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: 1
     }
 }
@@ -616,7 +616,7 @@ task collect_insert_size_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: 1
     }
 }
@@ -665,7 +665,7 @@ task quality_score_distribution {
     runtime {
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
         maxRetries: 1
     }
 }
@@ -719,7 +719,7 @@ task bam_to_fastq {
     runtime{
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'docker://quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        container: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: 1
     }
 }

@@ -24,7 +24,7 @@
     - kraken
     - reference
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task create_library_from_fastas -i tests/tools/input_json/kraken_create_library_from_fastas.json tools/kraken2.wdl
+    miniwdl run -d test-output/. --task create_library_from_fastas -i tests/tools/input_json/kraken_create_library_from_fastas.json tools/kraken2.wdl
   files:
     - path: test-output/out/custom_library/kraken2_custom_library.tar.gz
 
@@ -34,7 +34,7 @@
     - kraken
     - reference
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task build_db -i tests/tools/input_json/kraken_build_db.json tools/kraken2.wdl
+    miniwdl run -d test-output/. --task build_db -i tests/tools/input_json/kraken_build_db.json tools/kraken2.wdl
   files:
     - path: test-output/out/built_db/kraken2_db.tar.gz
 
@@ -43,6 +43,6 @@
     - miniwdl
     - kraken
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task kraken tools/kraken2.wdl read_one_fastq_gz="tests/tools/input/test_R1.fq.gz" read_two_fastq_gz="tests/tools/input/test_R2.fq.gz" db="tests/tools/input/kraken2_db.tar.gz"
+    miniwdl run -d test-output/. --task kraken tools/kraken2.wdl read_one_fastq_gz="tests/tools/input/test_R1.fq.gz" read_two_fastq_gz="tests/tools/input/test_R2.fq.gz" db="tests/tools/input/kraken2_db.tar.gz"
   files:
     - path: test-output/out/report/test.kraken2.txt
