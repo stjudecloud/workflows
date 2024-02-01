@@ -353,6 +353,7 @@ task unpack_tarball {
 
         mkdir unpacked_tarball
         tar -C unpacked_tarball -xzf ~{tarball} --no-same-owner
+        # pipe through sort because otherwise order is random (dependent on filesystem)
         find unpacked_tarball/ -type f | LC_ALL=C sort > file_list.txt
     >>>
 
