@@ -16,6 +16,7 @@ extra_fn_clean_exts:
   - '.MarkDuplicates'
   - '.collated'
   - '.qualimap_rnaseq_results'
+  - '.librarian'
   - type: remove
     pattern: 'sample_'
 log_filesize_limit: 1000000000
