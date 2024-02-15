@@ -479,7 +479,7 @@ for read in bam:
     if (read.is_secondary or read.is_supplementary) and not read.is_unmapped:
         continue
 
-    cur_quals = read.query_alignment_qualities  # array of phred scores
+    cur_quals = read.query_qualities  # array of phred scores
     if not fast_mode:
         for qual in cur_quals:
             tot_quals[qual] += 1
