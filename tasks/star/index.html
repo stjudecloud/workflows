@@ -189,7 +189,7 @@
 <dt>description</dt>
 <dd>Runs the STAR aligner on a set of RNA-Seq FASTQ files</dd>
 <dt>external_help</dt>
-<dd>https://github.com/alexdobin/STAR/blob/2.7.10a/doc/STARmanual.pdf</dd>
+<dd>https://github.com/alexdobin/STAR/blob/2.7.11b/doc/STARmanual.pdf</dd>
 <dt>outputs</dt>
 <dd>{'star_log': 'Summary mapping statistics after mapping job is complete. The statistics are calculated for each read (single- or paired-end) and then summed or averaged over all reads. Note that STAR counts a paired-end read as one read. Most of the information is collected about the UNIQUE mappers. Each splicing is counted in the numbers of splices, which would correspond to summing the counts in SJ.out.tab. The mismatch/indel error rates are calculated on a per base basis, i.e. as total number of mismatches/indels in all unique mappers divided by the total number of mapped bases.', 'star_bam': 'STAR aligned BAM', 'star_junctions': 'File contains high confidence collapsed splice junctions in tab-delimited format. Note that STAR defines the junction start/end as intronic bases, while many other software define them as exonic bases. See <code>meta.external_help</code> for file specification.', 'star_chimeric_junctions': 'Tab delimited file containing chimeric reads and associated metadata. See <code>meta.external_help</code> for file specification.'}</dd>
 </dl>
