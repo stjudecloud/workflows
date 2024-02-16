@@ -127,7 +127,7 @@ task build_star_db {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/star:2.7.10a-1'
+        container: 'ghcr.io/stjudecloud/star:branch-update-versions-2.7.11b-0'
         maxRetries: 1
     }
 }
@@ -135,7 +135,7 @@ task build_star_db {
 task alignment {
     meta {
         description: "Runs the STAR aligner on a set of RNA-Seq FASTQ files"
-        external_help: "https://github.com/alexdobin/STAR/blob/2.7.10a/doc/STARmanual.pdf"  # TODO keep this up to date with container updates
+        external_help: "https://github.com/alexdobin/STAR/blob/2.7.11b/doc/STARmanual.pdf"  # TODO keep this up to date with container updates
         outputs: {
             star_log: "Summary mapping statistics after mapping job is complete. The statistics are calculated for each read (single- or paired-end) and then summed or averaged over all reads. Note that STAR counts a paired-end read as one read. Most of the information is collected about the UNIQUE mappers. Each splicing is counted in the numbers of splices, which would correspond to summing the counts in SJ.out.tab. The mismatch/indel error rates are calculated on a per base basis, i.e. as total number of mismatches/indels in all unique mappers divided by the total number of mapped bases.",
             star_bam: "STAR aligned BAM",
@@ -806,14 +806,13 @@ task alignment {
         cpu: ncpu
         memory: "50 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/star:2.7.10a-1'
+        container: 'ghcr.io/stjudecloud/star:branch-update-versions-2.7.11b-0'
         maxRetries: 1
     }
 }
 
 # There are multiple Splice Junction Motif arguments for STAR
 # that are all formatted the same. Use this struct for consistency.
-# See https://github.com/alexdobin/STAR/blob/2.7.10a/doc/STARmanual.pdf
 struct SJ_Motifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif
