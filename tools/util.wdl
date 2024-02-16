@@ -97,7 +97,7 @@ task get_read_groups {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -275,7 +275,7 @@ task compression_integrity {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -322,7 +322,7 @@ task add_to_bam_header {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }

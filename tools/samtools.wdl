@@ -36,7 +36,7 @@ task quickcheck {
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -113,7 +113,7 @@ task split {
         cpu: ncpu
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -170,7 +170,7 @@ task flagstat {
     runtime {
         memory: "5 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -229,7 +229,7 @@ task index {
         cpu: ncpu
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -327,7 +327,7 @@ task subsample {
         cpu: ncpu
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -418,7 +418,7 @@ task merge {
         cpu: ncpu
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -501,7 +501,7 @@ task addreplacerg {
         cpu: ncpu
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -572,7 +572,7 @@ task collate {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -594,7 +594,7 @@ task bam_to_fastq {
         prefix: "Prefix for output FASTQ(s). Extensions `[,.R1,.R2,.singleton].fastq.gz` will be added depending on other options."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
-        # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."  # introduced in v1.18 no quay.io image yet
+        rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         paired_end: {
             description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.",
@@ -630,7 +630,7 @@ task bam_to_fastq {
         String prefix = basename(bam, ".bam")
         String f = "0"
         String F = "0x900"
-        # String rf = "0"  # introduced in v1.18 no quay.io image yet
+        String rf = "0"
         String G = "0"
         Boolean paired_end = true
         Boolean append_read_number = true
@@ -657,6 +657,7 @@ task bam_to_fastq {
             --threads "$n_cores" \
             -f ~{f} \
             -F ~{F} \
+            --rf ~{rf} \
             -G ~{G} \
             ~{if append_read_number
                 then "-N"
@@ -710,7 +711,7 @@ task bam_to_fastq {
         cpu: ncpu
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -733,7 +734,7 @@ task collate_to_fastq {
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
-        # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."  # introduced in v1.18 no quay.io image yet
+        rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         fast_mode: {
             description: "Fast mode for `samtools collate` (primary alignments only)",
@@ -778,7 +779,7 @@ task collate_to_fastq {
         String prefix = basename(bam, ".bam")
         String f = "0"
         String F = "0x900"
-        # String rf = "0"  # introduced in v1.18 no quay.io image yet
+        String rf = "0"
         String G = "0"
         Boolean fast_mode = true
         Boolean store_collated_bam = false
@@ -818,6 +819,7 @@ task collate_to_fastq {
                 --threads "$n_cores" \
                 -f ~{f} \
                 -F ~{F} \
+                --rf ~{rf} \
                 -G ~{G} \
                 ~{if append_read_number
                     then "-N"
@@ -871,7 +873,7 @@ task collate_to_fastq {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
@@ -948,7 +950,7 @@ task fixmate {
         cpu: ncpu
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
 }
