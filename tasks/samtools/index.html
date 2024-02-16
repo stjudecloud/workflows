@@ -380,7 +380,6 @@
 <li><code>output_singletons</code> (Boolean, default=false): Output singleton reads as their own FASTQ?</li>
 <li><code>paired_end</code> (Boolean, default=true); <strong>description</strong>: Is the data Paired-End? If <code>paired_end = false</code>, then <em>all</em> reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for output FASTQ(s). Extensions <code>[,.R1,.R2,.singleton].fastq.gz</code> will be added depending on other options.</li>
-<li><code>rf</code> (String, default="0"): Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/), in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
 <li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_8">Outputs</h3>
@@ -419,7 +418,6 @@
 <li><code>output_singletons</code> (Boolean, default=false): Output singleton reads as their own FASTQ?</li>
 <li><code>paired_end</code> (Boolean, default=true); <strong>description</strong>: Is the data Paired-End? If <code>paired_end = false</code>, then <em>all</em> reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the collated BAM and FASTQ files. The extensions <code>.collated.bam</code> and <code>[,.R1,.R2,.singleton].fastq.gz</code> will be added.</li>
-<li><code>rf</code> (String, default="0"): Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/), in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
 <li><code>store_collated_bam</code> (Boolean, default=false); <strong>description</strong>: Save the collated BAM to disk and output it (true)?; <strong>common</strong>: true</li>
 <li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
