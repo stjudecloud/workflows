@@ -19,7 +19,7 @@ workflow quality_check {
     meta {
         description: "Performs comprehensive quality checks, aggregating all analyses and metrics into a final MultiQC report."
         external_help: "https://multiqc.info/"
-        outputs: {
+        outputs: {  # TODO: mapped_reads_kraken outputs
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
             validate_sam_file: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
             mark_duplicates_metrics: {
@@ -89,6 +89,7 @@ workflow quality_check {
         coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used."
         prefix: "Prefix for all results files"
         mark_duplicates: "Mark duplicates before analyses? Note that regardless of this setting, `picard MarkDuplicates` will be run in order to generate a `*.MarkDuplicates.metrics.txt` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses."
+        run_kraken_on_only_mapped_reads: "Run Kraken2 on only the mapped reads (in addition to running Kraken2 on all reads)? If `true`, Kraken2 will be run **twice**, once on _all_ reads in the BAM, and once on only the _mapped_ reads in the BAM. If `false`, Kraken2 will only be run on once, on all reads."
         output_intermediate_files: "Output intermediate files? FASTQs, if RNA a collated BAM, if `mark_duplicates==true` a duplicate marked BAM with an index and MD5. *WARNING* these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
@@ -106,6 +107,7 @@ workflow quality_check {
         Array[String] coverage_labels = []
         String prefix = basename(bam, ".bam")
         Boolean mark_duplicates = molecule == "RNA"
+        Boolean run_kraken_on_only_mapped_reads = false
         Boolean output_intermediate_files = false
         Boolean use_all_cores = false
         Int subsample_n_reads = -1
@@ -223,6 +225,33 @@ workflow quality_check {
         use_all_cores=use_all_cores,
     }
 
+    if (run_kraken_on_only_mapped_reads) {
+        call samtools.collate_to_fastq as mapped_reads_to_fastq { input:
+            bam=post_subsample_bam,
+            prefix=post_subsample_prefix + ".only_mapped_reads",
+            # 0x4 (unmapped)
+            # | 0x100 (not primary alignment)
+            # | 0x800 (supplementary alignment)
+            F = "0x904",
+            paired_end=true,  # matches default but prevents user from overriding
+            interleaved=false,  # matches default but prevents user from overriding
+            use_all_cores=use_all_cores,
+        }
+        call fq.fqlint as mapped_reads_fqlint { input:
+            read_one_fastq
+                = select_first([mapped_reads_to_fastq.read_one_fastq_gz, "undefined"]),
+            read_two_fastq=mapped_reads_to_fastq.read_two_fastq_gz,
+        }
+        call kraken2.kraken as mapped_reads_kraken { input:
+            read_one_fastq_gz=mapped_reads_fqlint.validated_read1,
+            read_two_fastq_gz
+                = select_first([mapped_reads_fqlint.validated_read2, "undefined"]),
+            db=kraken_db,
+            prefix=post_subsample_prefix + ".only_mapped_reads",
+            use_all_cores=use_all_cores,
+        }
+    }
+
     call mosdepth.coverage as wg_coverage { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
@@ -309,6 +338,7 @@ workflow quality_check {
                 markdups_post.insert_size_metrics,
                 quality_score_distribution.quality_score_distribution_txt,
                 kraken.report,
+                mapped_reads_kraken.report,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
                 global_phred_scores.phred_scores,
@@ -382,6 +412,8 @@ workflow quality_check {
         File multiqc_report = multiqc.multiqc_report
         File? orig_read_count = subsample.orig_read_count
         File? kraken_sequences = kraken.sequences
+        File? mapped_kraken_report = mapped_reads_kraken.report
+        File? mapped_kraken_sequences = mapped_reads_kraken.sequences
         File? mosdepth_dups_marked_global_dist = markdups_post.mosdepth_global_dist
         File? mosdepth_dups_marked_global_summary = markdups_post.mosdepth_global_summary
         Array[File]? mosdepth_dups_marked_region_summary
