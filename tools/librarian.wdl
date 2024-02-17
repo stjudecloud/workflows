@@ -7,8 +7,8 @@ task librarian {
         description: "Runs the Librarian tool to derive the likely Illumina library preparation protocol used to generate a read one FASTQ file."
         help: "This version of Librarian has been trained on \"read one\" data of Paired-End sequencing data. It is not intended for use with Single-End data, even though it only accepts a single FASTQ."
         output: {
-            File report = "A tar archive containing the Librarian report and raw data."
-            File raw_data = "The raw data that can be passed to MultiQC."
+            report: "A tar archive containing the Librarian report and raw data."
+            raw_data: "The raw data that can be processed by MultiQC."
         }
     }
 
