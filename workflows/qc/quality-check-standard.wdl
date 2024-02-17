@@ -118,14 +118,14 @@ workflow quality_check {
         coverage_labels=coverage_labels,
     }
 
-    call md5sum.compute_checksum { input: file=bam }
+    call md5sum.compute_checksum after parse_input { input: file=bam }
 
-    call samtools.quickcheck { input: bam=bam }
-    call util.compression_integrity { input: bgzipped_file=bam }
+    call samtools.quickcheck after parse_input { input: bam=bam }
+    call util.compression_integrity after parse_input { input: bgzipped_file=bam }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample { input:
-            bam=quickcheck.checked_bam,
+        call samtools.subsample after quickcheck { input:
+            bam=bam,
             prefix=prefix,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
@@ -137,11 +137,11 @@ workflow quality_check {
             }
         }
     }
-    # If subsampling is disabled or input BAM has fewer reads than `subsample_n_reads`
-    # this will be `quickcheck.checked_bam`
+    # If subsampling is disabled **or** input BAM has fewer reads than
+    # `subsample_n_reads` this will be `bam`
     File post_subsample_bam = select_first([
         subsample.sampled_bam,
-        quickcheck.checked_bam
+        bam
     ])
     File post_subsample_bam_index = select_first([
         subsample_index.bam_index,
