@@ -215,9 +215,11 @@ workflow quality_check {
         read_one_fastq=select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
         read_two_fastq=collate_to_fastq.read_two_fastq_gz,
     }
-    call kraken2.kraken { input:
-        read_one_fastq_gz=fqlint.validated_read1,
-        read_two_fastq_gz=select_first([fqlint.validated_read2, "undefined"]),
+    call kraken2.kraken after fqlint { input:
+        read_one_fastq_gz
+            = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+        read_two_fastq_gz  # select_first is unnecessary here
+            = select_first([collate_to_fastq.read_two_fastq_gz, "undefined"]),
         db=kraken_db,
         prefix=post_subsample_prefix,
         use_all_cores=use_all_cores,
