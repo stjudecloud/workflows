@@ -40,8 +40,14 @@ task multiqc {
 
         echo "~{sep('\n', input_files)}" > file_list.txt
 
+        # --strict might be too strict?
+        # --require-logs might be useful at some point, but as of now,
+        # it would cause errors. It could replace the check currently
+        # run after multiqc is finished.
+        # TODO: lots of other options to consider supporting.
         multiqc -v \
             --no-ansi \
+            --strict \
             ~{if defined(config) then "-c " + config else ""} \
             --file-list file_list.txt \
             -o ~{prefix}
