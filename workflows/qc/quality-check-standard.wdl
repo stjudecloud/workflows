@@ -67,6 +67,7 @@ workflow quality_check {
             qualimap_rnaseq_results: "Gzipped tar archive of all QualiMap output files",
             junction_summary: "TSV file containing the `ngsderive junction-annotation` summary",
             junctions: "TSV file containing a detailed list of annotated junctions",
+            librarian_report: "A tar archive containing the `librarian` report and raw data.",
             IntermediateFiles: "Any and all files produced as intermediate during pipeline processing. Only output if `output_intermediate_files = true`."
         }
         allowNestedInputs: true
