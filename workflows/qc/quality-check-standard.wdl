@@ -151,7 +151,7 @@ workflow quality_check {
         then prefix + ".subsampled"
         else prefix
 
-    call picard.validate_bam { input:
+    call picard.validate_bam after quickcheck { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".ValidateSamFile.txt",
         succeed_on_errors=true,
@@ -159,44 +159,44 @@ workflow quality_check {
         summary_mode=true,
     }
 
-    call picard.collect_alignment_summary_metrics { input:
+    call picard.collect_alignment_summary_metrics after quickcheck { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".CollectAlignmentSummaryMetrics",
     }
-    call picard.quality_score_distribution { input:
+    call picard.quality_score_distribution after quickcheck { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".QualityScoreDistribution",
     }
-    call fastqc_tasks.fastqc { input:
+    call fastqc_tasks.fastqc after quickcheck { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".fastqc_results",
         use_all_cores=use_all_cores,
     }
-    call ngsderive.instrument { input:
+    call ngsderive.instrument after quickcheck { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".instrument.tsv",
     }
-    call ngsderive.read_length { input:
+    call ngsderive.read_length after quickcheck { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
         outfile_name=post_subsample_prefix + ".readlength.tsv",
     }
-    call ngsderive.encoding { input:
+    call ngsderive.encoding after quickcheck { input:
         ngs_files=[post_subsample_bam],
         outfile_name=post_subsample_prefix + ".encoding.tsv",
         num_reads=-1,
     }
-    call ngsderive.endedness { input:
+    call ngsderive.endedness after quickcheck { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".endedness.tsv",
         lenient=true,
     }
-    call util.global_phred_scores { input:
+    call util.global_phred_scores after quickcheck { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix,
     }
 
-    call samtools.collate_to_fastq { input:
+    call samtools.collate_to_fastq after quickcheck { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix,
         # RNA needs a collated BAM for Qualimap
@@ -225,13 +225,13 @@ workflow quality_check {
         use_all_cores=use_all_cores,
     }
 
-    call mosdepth.coverage as wg_coverage { input:
+    call mosdepth.coverage as wg_coverage after quickcheck { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
         prefix=post_subsample_prefix + ".whole_genome",
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
-        call mosdepth.coverage as regions_coverage { input:
+        call mosdepth.coverage as regions_coverage after quickcheck  { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             coverage_bed=coverage_pair.left,
@@ -240,13 +240,13 @@ workflow quality_check {
     }
 
     if (molecule == "RNA") {
-        call ngsderive.junction_annotation { input:
+        call ngsderive.junction_annotation after quickcheck { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gene_model=select_first([gtf, "undefined"]),
             prefix=post_subsample_prefix,
         }
-        call ngsderive.strandedness { input:
+        call ngsderive.strandedness after quickcheck { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gene_model=select_first([gtf, "undefined"]),
@@ -261,7 +261,7 @@ workflow quality_check {
         }
     }
 
-    call picard.mark_duplicates as markdups { input:
+    call picard.mark_duplicates as markdups after quickcheck { input:
         bam=post_subsample_bam,
         create_bam=mark_duplicates,
         prefix=post_subsample_prefix + ".MarkDuplicates",
@@ -284,11 +284,11 @@ workflow quality_check {
     if (! mark_duplicates) {
         # These analyses are called in the markdups_post workflow.
         # They should still be run if duplicates were not marked.
-        call picard.collect_insert_size_metrics { input:
+        call picard.collect_insert_size_metrics after quickcheck { input:
             bam=post_subsample_bam,
             prefix=post_subsample_prefix + ".CollectInsertSizeMetrics",
         }
-        call samtools.flagstat { input:
+        call samtools.flagstat after quickcheck { input:
             bam=post_subsample_bam,
             outfile_name=post_subsample_prefix + ".flagstat.txt",
         }
