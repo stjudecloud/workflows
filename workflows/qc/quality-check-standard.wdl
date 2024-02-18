@@ -19,7 +19,7 @@ workflow quality_check {
     meta {
         description: "Performs comprehensive quality checks, aggregating all analyses and metrics into a final MultiQC report."
         external_help: "https://multiqc.info/"
-        outputs: {  # TODO: mapped_reads_kraken outputs
+        outputs: {
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
             validate_sam_file: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
             mark_duplicates_metrics: {
@@ -58,6 +58,8 @@ workflow quality_check {
                 description: "Detailed Kraken2 output that has been gzipped",
                 external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#standard-kraken-output-format"
             },
+            mapped_kraken_report: "Kraken2 summary report for only the mapped reads",
+            mapped_kraken_sequences: "Detailed Kraken2 output for only the mapped reads",
             mosdepth_dups_marked_global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
             mosdepth_dups_marked_global_summary: "A summary of mean depths per chromosome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
             mosdepth_dups_marked_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
