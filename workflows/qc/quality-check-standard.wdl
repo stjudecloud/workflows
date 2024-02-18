@@ -413,7 +413,7 @@ task parse_input {
 
     parameter_meta {
         coverage_labels: "An array of equal length to `coverage_beds_len` which determines the prefix label applied to coverage output files. If an empty array is supplied, defaults of `regions1`, `regions2`, etc. will be used."
-        rna: "Is the input molecule rna?"
+        rna: "Is the input molecule RNA?"
         gtf_provided: "Was a GTF supplied by the user? Must be `true` if `rna == true`."
         coverage_beds_len: "Length of the provided `coverage_beds` array"
     }
