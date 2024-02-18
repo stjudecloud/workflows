@@ -240,12 +240,14 @@ workflow quality_check {
         call fq.fqlint as mapped_reads_fqlint { input:
             read_one_fastq
                 = select_first([mapped_reads_to_fastq.read_one_fastq_gz, "undefined"]),
-            read_two_fastq=mapped_reads_to_fastq.read_two_fastq_gz,
+            read_two_fastq
+                = select_first([mapped_reads_to_fastq.read_two_fastq_gz, "undefined"]),
         }
-        call kraken2.kraken as mapped_reads_kraken { input:
-            read_one_fastq_gz=mapped_reads_fqlint.validated_read1,
+        call kraken2.kraken as mapped_reads_kraken after mapped_reads_fqlint { input:
+            read_one_fastq_gz
+                = select_first([mapped_reads_to_fastq.read_one_fastq_gz, "undefined"]),
             read_two_fastq_gz
-                = select_first([mapped_reads_fqlint.validated_read2, "undefined"]),
+                = select_first([mapped_reads_to_fastq.read_two_fastq_gz, "undefined"]),
             db=kraken_db,
             prefix=post_subsample_prefix + ".only_mapped_reads",
             use_all_cores=use_all_cores,
@@ -368,7 +370,9 @@ workflow quality_check {
             "read_one_fastq_gz": collate_to_fastq.read_one_fastq_gz,
             "read_two_fastq_gz": collate_to_fastq.read_two_fastq_gz,
             "singleton_reads_fastq_gz": collate_to_fastq.singleton_reads_fastq_gz,
-            "interleaved_reads_fastq_gz": collate_to_fastq.interleaved_reads_fastq_gz,
+            "only_mapped_read_one_fastq_gz": mapped_reads_to_fastq.read_one_fastq_gz,
+            "only_mapped_read_two_fastq_gz": mapped_reads_to_fastq.read_two_fastq_gz,
+            "only_mapped_singleton_reads_fastq_gz": mapped_reads_to_fastq.singleton_reads_fastq_gz,
             "duplicate_marked_bam": markdups.duplicate_marked_bam,
             "duplicate_marked_bam_index": markdups.duplicate_marked_bam_index,
             "duplicate_marked_bam_md5": markdups.duplicate_marked_bam_md5
@@ -503,7 +507,9 @@ struct IntermediateFiles {
     File? read_one_fastq_gz
     File? read_two_fastq_gz
     File? singleton_reads_fastq_gz
-    File? interleaved_reads_fastq_gz  # TODO this will always be empty? Verify and delete
+    File? only_mapped_read_one_fastq_gz
+    File? only_mapped_read_two_fastq_gz
+    File? only_mapped_singleton_reads_fastq_gz
     File? duplicate_marked_bam
     File? duplicate_marked_bam_index
     File? duplicate_marked_bam_md5
