@@ -8,7 +8,7 @@ version 1.1
 
 task bwa_aln {
     meta {
-        description: "Maps single-end FASTQ files to BAM format using bwa aln"
+        description: "Maps Single-End FASTQ files to BAM format using bwa aln"
         outputs: {
             bam: "Aligned BAM format file"
         }
@@ -95,7 +95,7 @@ task bwa_aln {
 
 task bwa_aln_pe {
     meta {
-        description: "Maps paired-end FASTQ files to BAM format using bwa aln"
+        description: "Maps Paired-End FASTQ files to BAM format using bwa aln"
         outputs: {
             bam: "Aligned BAM format file"
         }

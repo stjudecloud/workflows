@@ -572,7 +572,7 @@ task collect_insert_size_metrics {
     # TODO check for other options
     # TODO what happens if a SE BAM is supplied?
     meta {
-        description: "Runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction including the insert size distribution and read orientation of paired-end libraries"
+        description: "Runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction including the insert size distribution and read orientation of Paired-End libraries"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037055772-CollectInsertSizeMetrics-Picard-"
         outputs: {
             insert_size_metrics: {
@@ -679,7 +679,7 @@ task bam_to_fastq {
     parameter_meta {
         bam: "Input BAM format file to convert to FASTQ"
         paired: {
-            description: "Is the data paired-end (true) or single-end (false)?",
+            description: "Is the data Paired-End (true) or Single-End (false)?",
             common: true
         }
         memory_gb: "RAM to allocate for task, specified in GB"
