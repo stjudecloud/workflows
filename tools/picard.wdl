@@ -186,7 +186,6 @@ task validate_bam {
 
     output {
         File validate_report = outfile_name
-        File validated_bam = bam
     }
 
     runtime {

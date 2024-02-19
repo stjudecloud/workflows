@@ -30,7 +30,7 @@ task quickcheck {
     >>>
 
     output {
-        File checked_bam = bam
+        String check = "passed"
     }
 
     runtime {

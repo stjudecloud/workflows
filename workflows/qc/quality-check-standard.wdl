@@ -453,7 +453,6 @@ task parse_input {
     >>>
 
     output {
-        String check = "passed"
         Array[String] labels = read_lines("labels.txt")
     }
 
