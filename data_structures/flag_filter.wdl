@@ -46,7 +46,7 @@ task from_BAMFlagsExplicit_to_String {
     }
 
     command <<<
-        BINARY_NUM={
+        BINARY_NUM=$(
             echo -n "~{if flags.supplementary then 1 else 0}"
             echo -n "~{if flags.duplicate then 1 else 0}"
             echo -n "~{if flags.qcfail then 1 else 0}"
@@ -59,7 +59,7 @@ task from_BAMFlagsExplicit_to_String {
             echo -n "~{if flags.unmapped then 1 else 0}"
             echo -n "~{if flags.segments_properly_aligned then 1 else 0}"
             echo "~{if flags.segmented then 1 else 0}"
-        }
+        )
         echo "$((2#$BINARY_NUM))" > out.txt
     >>>
 
