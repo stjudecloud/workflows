@@ -1,6 +1,6 @@
 version 1.1
 
-import "flag_filter.wdl"
+import "./flag_filter.wdl"
 
 struct BAMFlagsExplicit {
     Boolean segmented  # 0x1
