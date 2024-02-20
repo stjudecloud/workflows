@@ -83,6 +83,10 @@ task validate_string_is_dec_oct_or_hex {
         }
     }
 
+    parameter_meta {
+        number: "The number to validate. See task description for accepted formats."
+    }
+
     input {
         String number
     }
@@ -124,20 +128,56 @@ task validate_string_is_dec_oct_or_hex {
 }
 
 workflow from_FlagFilterExplicit_to_FlagFilter {
-    input {
-        FlagFilterExplicit flags
+    meta {
+        description: "Converts a FlagFilterExplicit struct to a FlagFilter struct."
+        output: {
+            flag_filter: "FlagFilter struct"
+        }
     }
 
-    call from_BAMFlagsExplicit_to_String as include_if_any { input: flags = flags.include_if_any }
-    call from_BAMFlagsExplicit_to_String as include_if_all { input: flags = flags.include_if_all }
-    call from_BAMFlagsExplicit_to_String as exclude_if_any { input: flags = flags.exclude_if_any }
-    call from_BAMFlagsExplicit_to_String as exclude_if_all { input: flags = flags.exclude_if_all }
+    parameter_meta {
+        flags: "FlagFilterExplicit struct to convert"
+        validate_output: "If true, validate the output. This option is just for debugging purposes, and should be unnecassry in a production workflow."
+    }
+
+    input {
+        FlagFilterExplicit flags
+        Boolean validate_output = false
+    }
+
+    call from_BAMFlagsExplicit_to_String as include_if_any { input:
+        flags = flags.include_if_any
+    }
+    call from_BAMFlagsExplicit_to_String as include_if_all { input:
+        flags = flags.include_if_all
+    }
+    call from_BAMFlagsExplicit_to_String as exclude_if_any { input:
+        flags = flags.exclude_if_any
+    }
+    call from_BAMFlagsExplicit_to_String as exclude_if_all { input:
+        flags = flags.exclude_if_all
+    }
+
+    if (validate_output) {
+        call validate_string_is_dec_oct_or_hex as validate_include_if_any { input:
+            number = include_if_any.int_as_string
+        }
+        call validate_string_is_dec_oct_or_hex as validate_include_if_all { input:
+            number = include_if_all.int_as_string
+        }
+        call validate_string_is_dec_oct_or_hex as validate_exclude_if_any { input:
+            number = exclude_if_any.int_as_string
+        }
+        call validate_string_is_dec_oct_or_hex as validate_exclude_if_all { input:
+            number = exclude_if_all.int_as_string
+        }
+    }
 
     FlagFilter result = FlagFilter {
         include_if_any: include_if_any.int_as_string,
         include_if_all: include_if_all.int_as_string,
         exclude_if_any: exclude_if_any.int_as_string,
-        exclude_if_all: exclude_if_all.int_as_string
+        exclude_if_all: exclude_if_all.int_as_string,
     }
 
     output {
