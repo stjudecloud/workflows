@@ -166,7 +166,7 @@
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>checked_bam</code> (File)</li>
+<li><code>check</code> (String)</li>
 </ul>
 <h2 id="split">split</h2>
 <dl>
@@ -359,7 +359,7 @@
 <dt>description</dt>
 <dd>Runs <code>samtools fastq</code> on the input BAM file. Converts the BAM into FASTQ files. If <code>paired_end = false</code>, then <em>all</em> reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see <code>collate_to_fastq</code>.</dd>
 <dt>outputs</dt>
-<dd>{'read_one_fastq_gz': 'Gzipped FASTQ file with 1st reads in pair', 'read_two_fastq_gz': 'Gzipped FASTQ file with 2nd reads in pair', 'singleton_reads_fastq_gz': 'A gzipped FASTQ containing singleton reads', 'interleaved_reads_fastq_gz': 'An interleaved gzipped paired-end FASTQ', 'single_end_reads_fastq_gz': 'A gzipped FASTQ containing all reads'}</dd>
+<dd>{'read_one_fastq_gz': 'Gzipped FASTQ file with 1st reads in pair', 'read_two_fastq_gz': 'Gzipped FASTQ file with 2nd reads in pair', 'singleton_reads_fastq_gz': 'A gzipped FASTQ containing singleton reads', 'interleaved_reads_fastq_gz': 'An interleaved gzipped Paired-End FASTQ', 'single_end_reads_fastq_gz': 'A gzipped FASTQ containing all reads'}</dd>
 </dl>
 <h3 id="inputs_8">Inputs</h3>
 <h4 id="required_8">Required</h4>
@@ -396,7 +396,7 @@
 <dt>description</dt>
 <dd>Runs <code>samtools collate</code> on the input BAM file then converts it into FASTQ(s) using <code>samtools fastq</code></dd>
 <dt>outputs</dt>
-<dd>{'collated_bam': 'A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)', 'read_one_fastq_gz': 'Gzipped FASTQ file with 1st reads in pair', 'read_two_fastq_gz': 'Gzipped FASTQ file with 2nd reads in pair', 'singleton_reads_fastq_gz': 'Gzipped FASTQ containing singleton reads', 'interleaved_reads_fastq_gz': 'Interleaved gzipped paired-end FASTQ', 'single_end_reads_fastq_gz': 'A gzipped FASTQ containing all reads'}</dd>
+<dd>{'collated_bam': 'A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)', 'read_one_fastq_gz': 'Gzipped FASTQ file with 1st reads in pair', 'read_two_fastq_gz': 'Gzipped FASTQ file with 2nd reads in pair', 'singleton_reads_fastq_gz': 'Gzipped FASTQ containing singleton reads', 'interleaved_reads_fastq_gz': 'Interleaved gzipped Paired-End FASTQ', 'single_end_reads_fastq_gz': 'A gzipped FASTQ containing all reads'}</dd>
 </dl>
 <h3 id="inputs_9">Inputs</h3>
 <h4 id="required_9">Required</h4>
