@@ -88,18 +88,31 @@ task validate_string_is_dec_oct_or_hex {
     }
 
     command <<<
-        if [[ "~{number}" =~ ^[1-9][0-9]+$ ]] \
-            || [[ "~{number}" =~ ^0[0-7]+$ ]] \
-            || [[ "~{number}" =~ ^0x[0-9A-F]+$ ]]
+        if [[ "~{number}" =~ ^[1-9][0-9]+$ ]]; then
+            # number is in decimal
+            if [ "~{number}" -lt 4096 ]; then
+                echo "Input number (~{number}) is valid" >> /dev/stderr
+            else
+                echo "Input number (~{number}) interpreted as decimal" >> /dev/stderr
+                echo "But number must be less than 4096!" >> /dev/stderr
+                exit 42
+            fi
+        elif [[ "~{number}" =~ ^0[0-7]{0,4}$ ]] \
+            || [[ "~{number}" =~ ^0x[0-9A-F]{1,3}$ ]]
         then
-            echo "true" > out.txt
+            # number is in octal or hexadecimal
+            # and number is less than 4096(decimal)
+            echo "Input number (~{number}) is valid" >> /dev/stderr
         else
-            echo "false" > out.txt
+            # malformed for any reason
+            echo "Input number (~{number}) is invalid" >> /dev/stderr
+            echo "See task description for valid formats" >> /dev/stderr
+            exit 42
         fi
     >>>
 
     output {
-        Boolean is_valid = read_string("out.txt") == "true"
+        String check = "passed"
     }
 
     runtime {
