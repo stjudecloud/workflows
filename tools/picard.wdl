@@ -718,7 +718,7 @@ task bam_to_fastq {
 
     runtime{
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
         maxRetries: 1
     }
