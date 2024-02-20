@@ -18,15 +18,15 @@ struct BAMFlagsExplicit {
 struct FlagFilterExplicit {
     BAMFlagsExplicit include_if_any
     BAMFlagsExplicit include_if_all
-    BAMFlagsExplicit remove_if_any
-    BAMFlagsExplicit remove_if_all
+    BAMFlagsExplicit exclude_if_any
+    BAMFlagsExplicit exclude_if_all
 }
 
 struct FlagFilter {
     String include_if_any
     String include_if_all
-    String remove_if_any
-    String remove_if_all
+    String exclude_if_any
+    String exclude_if_all
 }
 
 task from_BAMFlagsExplicit_to_String {
@@ -47,18 +47,18 @@ task from_BAMFlagsExplicit_to_String {
 
     command <<<
         BINARY_NUM=$(
-            echo -n "~{if flags.supplementary then 1 else 0}"
-            echo -n "~{if flags.duplicate then 1 else 0}"
-            echo -n "~{if flags.qcfail then 1 else 0}"
-            echo -n "~{if flags.secondary then 1 else 0}"
-            echo -n "~{if flags.last then 1 else 0}"
-            echo -n "~{if flags.first then 1 else 0}"
-            echo -n "~{if flags.mate_reverse_complimented then 1 else 0}"
-            echo -n "~{if flags.reverse_complimented then 1 else 0}"
-            echo -n "~{if flags.mate_unmapped then 1 else 0}"
-            echo -n "~{if flags.unmapped then 1 else 0}"
-            echo -n "~{if flags.segments_properly_aligned then 1 else 0}"
-            echo "~{if flags.segmented then 1 else 0}"
+            echo -n "~{if flags.supplementary then 1 else 0}"  # 0x800
+            echo -n "~{if flags.duplicate then 1 else 0}"  # 0x400
+            echo -n "~{if flags.qcfail then 1 else 0}"  # 0x200
+            echo -n "~{if flags.secondary then 1 else 0}"  # 0x100
+            echo -n "~{if flags.last then 1 else 0}"  # 0x80
+            echo -n "~{if flags.first then 1 else 0}"  # 0x40
+            echo -n "~{if flags.mate_reverse_complimented then 1 else 0}"  # 0x20
+            echo -n "~{if flags.reverse_complimented then 1 else 0}"  # 0x10
+            echo -n "~{if flags.mate_unmapped then 1 else 0}"  # 0x8
+            echo -n "~{if flags.unmapped then 1 else 0}"  # 0x4
+            echo -n "~{if flags.segments_properly_aligned then 1 else 0}"  # 0x2
+            echo "~{if flags.segmented then 1 else 0}"  # 0x1
         )
         echo "$((2#$BINARY_NUM))" > out.txt
     >>>
@@ -82,14 +82,14 @@ workflow from_FlagFilterExplicit_to_FlagFilter {
 
     call from_BAMFlagsExplicit_to_String as include_if_any { input: flags = flags.include_if_any }
     call from_BAMFlagsExplicit_to_String as include_if_all { input: flags = flags.include_if_all }
-    call from_BAMFlagsExplicit_to_String as remove_if_any { input: flags = flags.remove_if_any }
-    call from_BAMFlagsExplicit_to_String as remove_if_all { input: flags = flags.remove_if_all }
+    call from_BAMFlagsExplicit_to_String as exclude_if_any { input: flags = flags.exclude_if_any }
+    call from_BAMFlagsExplicit_to_String as exclude_if_all { input: flags = flags.exclude_if_all }
 
     FlagFilter result = FlagFilter {
         include_if_any: include_if_any.int_as_string,
         include_if_all: include_if_all.int_as_string,
-        remove_if_any: remove_if_any.int_as_string,
-        remove_if_all: remove_if_all.int_as_string
+        exclude_if_any: exclude_if_any.int_as_string,
+        exclude_if_all: exclude_if_all.int_as_string
     }
 
     output {
