@@ -4,6 +4,8 @@
 # Copyright St. Jude Children's Research Hospital
 version 1.1
 
+import "../data_structures/flag_filter.wdl"
+
 task quickcheck {
     meta {
         description: "Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
@@ -591,11 +593,12 @@ task bam_to_fastq {
 
     parameter_meta {
         bam: "Input name sorted or collated BAM format file to convert into FASTQ(s)"
+        filter: "TODO Filtering options for `samtools fastq`"
         prefix: "Prefix for output FASTQ(s). Extensions `[,.R1,.R2,.singleton].fastq.gz` will be added depending on other options."
-        f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
-        rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
+        # f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
+        # F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
+        # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
+        # G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         paired_end: {
             description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.",
             common: true
@@ -627,11 +630,13 @@ task bam_to_fastq {
 
     input {
         File bam
+        FlagFilter filter = {
+            "include_if_any": "0x0",
+            "include_if_all": "0x0",
+            "exclude_if_any": "0x900",
+            "exclude_if_all": "0x0",
+        }
         String prefix = basename(bam, ".bam")
-        String f = "0"
-        String F = "0x900"
-        String rf = "0"
-        String G = "0"
         Boolean paired_end = true
         Boolean append_read_number = true
         Boolean interleaved = false
@@ -655,10 +660,10 @@ task bam_to_fastq {
 
         samtools fastq \
             --threads "$n_cores" \
-            -f ~{f} \
-            -F ~{F} \
-            --rf ~{rf} \
-            -G ~{G} \
+            -f ~{filter.include_if_all} \
+            -F ~{filter.exclude_if_any} \
+            --rf ~{filter.include_if_any} \
+            -G ~{filter.exclude_if_all} \
             ~{if append_read_number
                 then "-N"
                 else "-n"
@@ -731,11 +736,12 @@ task collate_to_fastq {
 
     parameter_meta {
         bam: "Input BAM format file to collate and convert to FASTQ(s)"
+        filter: "TODO Filtering options for `samtools fastq`"
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
-        f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
-        rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
+        # f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
+        # F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
+        # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
+        # G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         fast_mode: {
             description: "Fast mode for `samtools collate` (primary alignments only)",
             common: true
@@ -776,11 +782,13 @@ task collate_to_fastq {
 
     input {
         File bam
+        FlagFilter filter = {
+            "include_if_any": "0x0",
+            "include_if_all": "0x0",
+            "exclude_if_any": "0x900",
+            "exclude_if_all": "0x0",
+        }
         String prefix = basename(bam, ".bam")
-        String f = "0"
-        String F = "0x900"
-        String rf = "0"
-        String G = "0"
         Boolean fast_mode = true
         Boolean store_collated_bam = false
         Boolean paired_end = true
@@ -817,10 +825,10 @@ task collate_to_fastq {
             | tee ~{if store_collated_bam then prefix + ".collated.bam" else ""} \
             | samtools fastq \
                 --threads "$n_cores" \
-                -f ~{f} \
-                -F ~{F} \
-                --rf ~{rf} \
-                -G ~{G} \
+                -f ~{filter.include_if_all} \
+                -F ~{filter.exclude_if_any} \
+                --rf ~{filter.include_if_any} \
+                -G ~{filter.exclude_if_all} \
                 ~{if append_read_number
                     then "-N"
                     else "-n"
