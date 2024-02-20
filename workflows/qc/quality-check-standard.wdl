@@ -2,6 +2,7 @@
 # Copyright St. Jude Children's Research Hospital
 version 1.1
 
+import "../../data_structures/flag_filter.wdl"
 import "../../tools/fastqc.wdl" as fastqc_tasks
 import "../../tools/fq.wdl"
 import "../../tools/kraken2.wdl"
@@ -77,6 +78,8 @@ workflow quality_check {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
         kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
+        kraken_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will remove secondary and supplementary reads from the downstream FASTQs."
+        comparative_kraken_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will remove unmapped, secondary, and supplementary reads from the downstream FASTQs."
         molecule: {
             description: "Data type",
             choices: [
@@ -91,8 +94,8 @@ workflow quality_check {
         coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used."
         prefix: "Prefix for all results files"
         mark_duplicates: "Mark duplicates before analyses? Note that regardless of this setting, `picard MarkDuplicates` will be run in order to generate a `*.MarkDuplicates.metrics.txt` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses."
-        # run_kraken_on_only_mapped_reads: "Run Kraken2 on only the mapped reads (in addition to running Kraken2 on all reads)? If `true`, Kraken2 will be run **twice**, once on _all_ reads in the BAM, and once on only the _mapped_ reads in the BAM. If `false`, Kraken2 will only be run on once, on all reads."
-        output_intermediate_files: "Output intermediate files? FASTQs, if RNA a collated BAM, if `mark_duplicates==true` a duplicate marked BAM with an index and MD5. *WARNING* these files can be large."
+        run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering?"
+        output_intermediate_files: "Output intermediate files? FASTQs, if RNA a collated BAM, if `mark_duplicates==true` a duplicate marked BAM with an index and MD5. **WARNING** these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
     }
@@ -132,6 +135,14 @@ workflow quality_check {
         input_molecule=molecule,
         coverage_beds_len=length(coverage_beds),
         coverage_labels=coverage_labels,
+    }
+    call flag_filter.validate_FlagFilter as kraken_filter_validator { input:
+        flags = kraken_filter
+    }
+    if (run_comparative_kraken) {
+        call flag_filter.validate_FlagFilter as comparative_kraken_filter_validator { input:
+            flags = comparative_kraken_filter
+        }
     }
 
     call md5sum.compute_checksum { input: file=bam }
