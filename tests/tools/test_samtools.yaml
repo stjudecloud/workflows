@@ -4,6 +4,9 @@
     - samtools
   command: >-
     miniwdl run -d test-output/. --task quickcheck tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  stdout:
+    contains_regex:
+      - "passed"
 
 - name: samtools_split
   tags:
