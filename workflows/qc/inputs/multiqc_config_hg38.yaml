@@ -15,7 +15,7 @@ extra_fn_clean_exts:
   - '.MarkDuplicates'
   - '.collated'
   - '.qualimap_rnaseq_results'
-  - '.only_mapped_reads'
+  - '.alt_filtered'
 log_filesize_limit: 1000000000
 fastqc_config:
   fastqc_theoretical_gc: "hg38_genome"
@@ -51,15 +51,15 @@ top_modules:
       path_filters:
         - "*.MarkDuplicates.CDS.mosdepth.*"
   - kraken:
-      name: "kraken2 (only mapped reads)"
-      path_filters:
-        - "*.only_mapped_reads.kraken2.txt"
-  - kraken:
-      name: "kraken2 (all reads)"
+      name: "kraken2 (original)"
       path_filters:
         - "*.kraken2.txt"
       path_filters_exclude:
-        - "*.only_mapped_reads.kraken2.txt"
+        - "*.alt_filtered.kraken2.txt"
+  - kraken:
+      name: "kraken2 (comparative)"
+      path_filters:
+        - "*.alt_filtered.kraken2.txt"
 custom_data:
   global_PHRED_scores:
     file_format: "tsv"
