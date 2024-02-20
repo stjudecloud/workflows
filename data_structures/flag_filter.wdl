@@ -7,7 +7,7 @@ struct FlagFilter {
     String exclude_if_all
 }
 
-task validate_string_is_dec_oct_or_hex {
+task validate_string_is_oct_dec_or_hex {
     meta {
         description: "Validates that a string is a decimal, octal, or hexadecimal number. **[WARNING]** Hexadecimal numbers must be prefixed with '0x' and only contain the characters [0-9A-F] to be valid (i.e. [a-f] is not allowed). Octal number must start with '0' and only contain the characters [0-7] to be valid. And decimal numbers must start with a digit between 1-9 and only contain the characters [0-9] to be valid."
         outputs: {
@@ -75,16 +75,16 @@ workflow validate_FlagFilter {
         FlagFilter flags
     }
 
-    call validate_string_is_dec_oct_or_hex as validate_include_if_any { input:
+    call validate_string_is_oct_dec_or_hex as validate_include_if_any { input:
         number = flags.include_if_any
     }
-    call validate_string_is_dec_oct_or_hex as validate_include_if_all { input:
+    call validate_string_is_oct_dec_or_hex as validate_include_if_all { input:
         number = flags.include_if_all
     }
-    call validate_string_is_dec_oct_or_hex as validate_exclude_if_any { input:
+    call validate_string_is_oct_dec_or_hex as validate_exclude_if_any { input:
         number = flags.exclude_if_any
     }
-    call validate_string_is_dec_oct_or_hex as validate_exclude_if_all { input:
+    call validate_string_is_oct_dec_or_hex as validate_exclude_if_all { input:
         number = flags.exclude_if_all
     }
 

@@ -2,7 +2,7 @@ version 1.1
 
 import "./flag_filter.wdl"
 
-struct BAMFlagsExplicit {
+struct SAMFlag {
     Boolean segmented  # 0x1
     Boolean segments_properly_aligned  # 0x2
     Boolean unmapped  # 0x4
@@ -17,27 +17,27 @@ struct BAMFlagsExplicit {
     Boolean supplementary  # 0x800
 }
 
-struct FlagFilterExplicit {
-    BAMFlagsExplicit include_if_any
-    BAMFlagsExplicit include_if_all
-    BAMFlagsExplicit exclude_if_any
-    BAMFlagsExplicit exclude_if_all
+struct SAMFlagFilter {
+    SAMFlag include_if_any
+    SAMFlag include_if_all
+    SAMFlag exclude_if_any
+    SAMFlag exclude_if_all
 }
 
-task from_BAMFlagsExplicit_to_String {
+task from_SAMFlag_to_String {
     meta {
-        description: "Converts a BAMFlagsExplicit struct to an integer and stores it in a string"
+        description: "Converts a SAMFlag struct to an integer and stores it in a string"
         outputs: {
-            int_as_string: "Input BAMFlagsExplicit as a string"
+            int_as_string: "Input SAMFlag as a string"
         }
     }
 
     parameter_meta {
-        flags: "BAMFlagsExplicit struct to stringify"
+        flags: "SAMFlag struct to stringify"
     }
 
     input {
-        BAMFlagsExplicit flags
+        SAMFlag flags
     }
 
     command <<<
@@ -70,34 +70,34 @@ task from_BAMFlagsExplicit_to_String {
     }
 }
 
-workflow from_FlagFilterExplicit_to_FlagFilter {
+workflow from_SAMFlagFilter_to_FlagFilter {
     meta {
-        description: "Converts a FlagFilterExplicit struct to a FlagFilter struct."
+        description: "Converts a SAMFlagFilter struct to a FlagFilter struct."
         output: {
             flag_filter: "FlagFilter struct"
         }
     }
 
     parameter_meta {
-        flags: "FlagFilterExplicit struct to convert"
+        flags: "SAMFlagFilter struct to convert"
         validate_output: "If true, validate the output. This option is just for debugging purposes, and should be unnecassry in a production workflow."
     }
 
     input {
-        FlagFilterExplicit flags
+        SAMFlagFilter flags
         Boolean validate_output = false
     }
 
-    call from_BAMFlagsExplicit_to_String as include_if_any { input:
+    call from_SAMFlag_to_String as include_if_any { input:
         flags = flags.include_if_any
     }
-    call from_BAMFlagsExplicit_to_String as include_if_all { input:
+    call from_SAMFlag_to_String as include_if_all { input:
         flags = flags.include_if_all
     }
-    call from_BAMFlagsExplicit_to_String as exclude_if_any { input:
+    call from_SAMFlag_to_String as exclude_if_any { input:
         flags = flags.exclude_if_any
     }
-    call from_BAMFlagsExplicit_to_String as exclude_if_all { input:
+    call from_SAMFlag_to_String as exclude_if_all { input:
         flags = flags.exclude_if_all
     }
 
