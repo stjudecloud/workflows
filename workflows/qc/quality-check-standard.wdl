@@ -59,8 +59,8 @@ workflow quality_check {
                 description: "Detailed Kraken2 output that has been gzipped",
                 external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#standard-kraken-output-format"
             },
-            mapped_kraken_report: "Kraken2 summary report for only the mapped reads",
-            mapped_kraken_sequences: "Detailed Kraken2 output for only the mapped reads",
+            comparative_kraken_report: "Kraken2 summary report for only the mapped reads",
+            comparative_kraken_sequences: "Detailed Kraken2 output for only the mapped reads",
             mosdepth_dups_marked_global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
             mosdepth_dups_marked_global_summary: "A summary of mean depths per chromosome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
             mosdepth_dups_marked_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
@@ -78,8 +78,8 @@ workflow quality_check {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
         kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
-        kraken_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will remove secondary and supplementary reads from the downstream FASTQs."
-        comparative_kraken_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will remove unmapped, secondary, and supplementary reads from the downstream FASTQs."
+        kraken_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the downstream FASTQs."
+        comparative_kraken_filter: "Filter to apply to the input BAM while performing a second FASTQ conversion, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove unmapped, secondary, and supplementary reads** from the downstream FASTQs."
         molecule: {
             description: "Data type",
             choices: [
@@ -93,8 +93,8 @@ workflow quality_check {
         coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions"
         coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used."
         prefix: "Prefix for all results files"
-        mark_duplicates: "Mark duplicates before analyses? Note that regardless of this setting, `picard MarkDuplicates` will be run in order to generate a `*.MarkDuplicates.metrics.txt` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses."
-        run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering?"
+        mark_duplicates: "Mark duplicates before analyses? Note that regardless of this setting, `picard MarkDuplicates` will be run in order to generate a `*.MarkDuplicates.metrics.txt` file. However if `mark_duplicates` is `false`, no BAM will be generated. If `true`, a BAM will be generated and passed to selected downstream analyses."
+        run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_kraken_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_kraken_filter` is ignored."
         output_intermediate_files: "Output intermediate files? FASTQs, if RNA a collated BAM, if `mark_duplicates==true` a duplicate marked BAM with an index and MD5. **WARNING** these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
@@ -252,7 +252,7 @@ workflow quality_check {
     }
 
     if (run_comparative_kraken) {
-        call samtools.collate_to_fastq as comparative_fastq { input:
+        call samtools.collate_to_fastq as alt_filtered_fastq { input:
             bam = post_subsample_bam,
             filter = comparative_kraken_filter,
             prefix = post_subsample_prefix + ".alt_filtered",
@@ -260,17 +260,17 @@ workflow quality_check {
             interleaved = false,  # matches default but prevents user from overriding
             use_all_cores = use_all_cores,
         }
-        call fq.fqlint as comparative_fqlint { input:
+        call fq.fqlint as alt_filtered_fqlint { input:
             read_one_fastq
-                = select_first([comparative_fastq.read_one_fastq_gz, "undefined"]),
+                = select_first([alt_filtered_fastq.read_one_fastq_gz, "undefined"]),
             read_two_fastq
-                = select_first([comparative_fastq.read_two_fastq_gz, "undefined"]),
+                = select_first([alt_filtered_fastq.read_two_fastq_gz, "undefined"]),
         }
-        call kraken2.kraken as comparative_kraken after comparative_fqlint { input:
+        call kraken2.kraken as comparative_kraken after alt_filtered_fqlint { input:
             read_one_fastq_gz
-                = select_first([comparative_fastq.read_one_fastq_gz, "undefined"]),
+                = select_first([alt_filtered_fastq.read_one_fastq_gz, "undefined"]),
             read_two_fastq_gz
-                = select_first([comparative_fastq.read_two_fastq_gz, "undefined"]),
+                = select_first([alt_filtered_fastq.read_two_fastq_gz, "undefined"]),
             db = kraken_db,
             prefix = post_subsample_prefix + ".alt_filtered",
             use_all_cores = use_all_cores,
@@ -393,9 +393,9 @@ workflow quality_check {
             "read_one_fastq_gz": collate_to_fastq.read_one_fastq_gz,
             "read_two_fastq_gz": collate_to_fastq.read_two_fastq_gz,
             "singleton_reads_fastq_gz": collate_to_fastq.singleton_reads_fastq_gz,
-            "only_mapped_read_one_fastq_gz": comparative_fastq.read_one_fastq_gz,
-            "only_mapped_read_two_fastq_gz": comparative_fastq.read_two_fastq_gz,
-            "only_mapped_singleton_reads_fastq_gz": comparative_fastq.singleton_reads_fastq_gz,
+            "alt_filtered_read_one_fastq_gz": alt_filtered_fastq.read_one_fastq_gz,
+            "alt_filtered_read_two_fastq_gz": alt_filtered_fastq.read_two_fastq_gz,
+            "alt_filtered_singleton_reads_fastq_gz": alt_filtered_fastq.singleton_reads_fastq_gz,
             "duplicate_marked_bam": markdups.duplicate_marked_bam,
             "duplicate_marked_bam_index": markdups.duplicate_marked_bam_index,
             "duplicate_marked_bam_md5": markdups.duplicate_marked_bam_md5
@@ -530,9 +530,9 @@ struct IntermediateFiles {
     File? read_one_fastq_gz
     File? read_two_fastq_gz
     File? singleton_reads_fastq_gz
-    File? only_mapped_read_one_fastq_gz
-    File? only_mapped_read_two_fastq_gz
-    File? only_mapped_singleton_reads_fastq_gz
+    File? alt_filtered_read_one_fastq_gz
+    File? alt_filtered_read_two_fastq_gz
+    File? alt_filtered_singleton_reads_fastq_gz
     File? duplicate_marked_bam
     File? duplicate_marked_bam_index
     File? duplicate_marked_bam_md5
