@@ -114,7 +114,7 @@ workflow rnaseq_standard_fastq {
     }
 
     scatter (rg in read_groups) {
-        call ReadGroup_to_string { input: read_group=rg }
+        call ReadGroup_to_string after parse_input { input: read_group=rg }
     }
     String stringified_read_groups = sep(
         ' , ', ReadGroup_to_string.stringified_read_group
@@ -132,7 +132,7 @@ workflow rnaseq_standard_fastq {
     if (subsample_n_reads > 0) {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-            call fq.subsample { input:
+            call fq.subsample after parse_input { input:
                 read_one_fastq=reads.left,
                 read_two_fastq=reads.right,
                 record_count=reads_per_pair,
@@ -213,6 +213,7 @@ task ReadGroup_to_string {
 
     command <<<
         {
+            # TODO: I think this can be simplified by dropping the `if defined` checks?
             echo -n "~{'ID:~{read_group.ID}'}"  # required field. All others optional
             echo -n "~{if defined(read_group.BC) then ' BC:~{read_group.BC}' else ''}"
             echo -n "~{if defined(read_group.CN) then ' CN:~{read_group.CN}' else ''}"

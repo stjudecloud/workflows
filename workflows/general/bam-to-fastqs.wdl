@@ -18,7 +18,7 @@ workflow bam_to_fastqs {
 
     parameter_meta {
         bam: "BAM file to split into FASTQs"
-        paired_end: "Is the data paired-end (true) or single-end (false)?"
+        paired_end: "Is the data Paired-End (true) or Single-End (false)?"
         use_all_cores: "Use all cores for multi-core steps?"
     }
 
