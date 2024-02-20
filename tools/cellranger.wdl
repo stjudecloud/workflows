@@ -90,7 +90,7 @@ task count {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/cellranger:1.1.1'
         maxRetries: max_retries
     }
@@ -152,7 +152,7 @@ task bamtofastq {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/cellranger:1.1.1'
         maxRetries: max_retries
     }

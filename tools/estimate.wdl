@@ -51,7 +51,7 @@ END
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/estimate:1.0.0'
         maxRetries: max_retries
     }

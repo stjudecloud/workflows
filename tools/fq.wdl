@@ -90,7 +90,7 @@ task fqlint {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/fq:0.11.0--h9ee0642_0'
         maxRetries: 1
     }

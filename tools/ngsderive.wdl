@@ -85,7 +85,7 @@ task strandedness {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
         maxRetries: 1
     }
@@ -132,7 +132,7 @@ task instrument {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
         maxRetries: 1
     }
@@ -196,7 +196,7 @@ task read_length {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
         maxRetries: 1
     }
@@ -272,7 +272,7 @@ END
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
         maxRetries: 1
     }
@@ -360,7 +360,7 @@ task junction_annotation {
 
     runtime {
         memory: "56 GB"  # TODO make this dynamic
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
         maxRetries: 1
     }
@@ -442,7 +442,7 @@ task endedness {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
         maxRetries: 1
     }
