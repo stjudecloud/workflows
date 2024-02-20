@@ -751,3 +751,63 @@ task qc_summary {
         maxRetries: 1
     }
 }
+
+task split_fastq {
+    meta {
+        description: "Splits a FASTQ into multiple files based on the number of reads per file"
+        outputs: {
+            fastqs: "Array of FASTQ files, each containing a subset of the input FASTQ"
+        }
+    }
+
+    parameter_meta {
+        fastq: "Gzipped FASTQ file to split"
+        reads_per_file: "Number of reads to include in each output FASTQ file"
+        prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        md5sum: "Optional md5sum to check against downloaded file. Recommended to use in order to catch corruption or an unintentional file swap."
+    }
+
+    input {
+        File fastq
+        String prefix = basename(fastq, ".fastq.gz")
+        Int reads_per_file = 2000000
+        Int modify_disk_size_gb = 0
+        String? md5sum
+    }
+
+    Float fastq_size = size(fastq, "GiB")
+    Int disk_size_gb = ceil(fastq_size * 2) + 10 + modify_disk_size_gb
+
+
+    command <<<
+        set -euo pipefail
+
+        let "lines = ~{reads_per_file} * 4"
+        zcat -f ~{fastq} | awk -v lines=$lines -v prefix=~{prefix} '
+        BEGIN {
+            n = 0
+            remaining = 0
+        }
+        remaining == 0 {
+            if(outcmd) close(outcmd)
+            outcmd = "gzip -c > " prefix sprintf("%04i", ++n) ".fq.gz"
+            remaining = lines
+        }
+        {
+            print | outcmd
+            --remaining
+        }'
+    >>>
+
+    output {
+        Array[File] fastqs = glob("*.fq.gz")
+    }
+
+    runtime {
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        maxRetries: 1
+    }
+}
