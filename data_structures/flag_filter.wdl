@@ -75,6 +75,41 @@ task from_BAMFlagsExplicit_to_String {
     }
 }
 
+task validate_string_is_dec_oct_or_hex {
+    meta {
+        description: "Validates that a string is a decimal, octal, or hexadecimal number. **[WARNING]** Hexadecimal numbers must be prefixed with '0x' and only contain the characters [0-9A-F] to be valid (i.e. [a-f] is not allowed). Octal number must start with '0' and only contain the characters [0-7] to be valid. And decimal numbers must start with a digit between 1-9 and only contain the characters [0-9] to be valid."
+        outputs: {
+            is_valid: "True if the string is a decimal, octal, or hexadecimal number"
+        }
+    }
+
+    input {
+        String number
+    }
+
+    command <<<
+        if [[ "~{number}" =~ ^[1-9][0-9]+$ ]] \
+            || [[ "~{number}" =~ ^0[0-7]+$ ]] \
+            || [[ "~{number}" =~ ^0x[0-9A-F]+$ ]]
+        then
+            echo "true" > out.txt
+        else
+            echo "false" > out.txt
+        fi
+    >>>
+
+    output {
+        Boolean is_valid = read_string("out.txt") == "true"
+    }
+
+    runtime {
+        memory: "4 GB"
+        disk: "10 GB"
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        maxRetries: 1
+    }
+}
+
 workflow from_FlagFilterExplicit_to_FlagFilter {
     input {
         FlagFilterExplicit flags
