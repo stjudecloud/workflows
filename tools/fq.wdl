@@ -166,7 +166,7 @@ task subsample {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/fq:0.11.0--h9ee0642_0'
         maxRetries: 1
     }
