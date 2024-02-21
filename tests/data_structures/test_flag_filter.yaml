@@ -50,3 +50,12 @@
   command: >-
     miniwdl run -d test-output/. --task validate_string_is_oct_dec_or_hex data_structures/flag_filter.wdl number="string"
   exit_code: 42
+
+- name: flag_filter_empty_string
+  tags:
+    - miniwdl
+    - flag_filter
+  command: >-
+    miniwdl run -d test-output/. --task validate_string_is_oct_dec_or_hex data_structures/flag_filter.wdl number=""
+  exit_code: 42
+
