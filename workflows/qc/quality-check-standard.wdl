@@ -83,7 +83,7 @@ workflow quality_check {
         coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions"
         coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used."
         prefix: "Prefix for all results files"
-        rna: "Is the input molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
+        rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
         mark_duplicates: "Mark duplicates before analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. Note that regardless of this setting, `picard MarkDuplicates` will be run in order to generate a `*.MarkDuplicates.metrics.txt` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
         run_librarian: {
             description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database. By default, this tool is run when `rna == true`.",
@@ -416,7 +416,7 @@ task parse_input {
 
     parameter_meta {
         coverage_labels: "An array of equal length to `coverage_beds_len` which determines the prefix label applied to coverage output files. If an empty array is supplied, defaults of `regions1`, `regions2`, etc. will be used."
-        rna: "Is the input molecule RNA?"
+        rna: "Is the sequenced molecule RNA?"
         gtf_provided: "Was a GTF supplied by the user? Must be `true` if `rna == true`."
         coverage_beds_len: "Length of the provided `coverage_beds` array"
     }
