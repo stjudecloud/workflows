@@ -225,7 +225,7 @@ workflow quality_check {
         prefix=post_subsample_prefix,
     }
 
-    call samtools.collate_to_fast after quickchecq { input:
+    call samtools.collate_to_fast after quickcheck { input:
         bam = post_subsample_bam,
         filter = kraken_filter,
         prefix = post_subsample_prefix,
