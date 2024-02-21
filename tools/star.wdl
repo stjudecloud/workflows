@@ -137,7 +137,7 @@ task alignment {
         description: "Runs the STAR aligner on a set of RNA-Seq FASTQ files"
         external_help: "https://github.com/alexdobin/STAR/blob/2.7.11b/doc/STARmanual.pdf"  # TODO keep this up to date with container updates
         outputs: {
-            star_log: "Summary mapping statistics after mapping job is complete. The statistics are calculated for each read (single- or paired-end) and then summed or averaged over all reads. Note that STAR counts a paired-end read as one read. Most of the information is collected about the UNIQUE mappers. Each splicing is counted in the numbers of splices, which would correspond to summing the counts in SJ.out.tab. The mismatch/indel error rates are calculated on a per base basis, i.e. as total number of mismatches/indels in all unique mappers divided by the total number of mapped bases.",
+            star_log: "Summary mapping statistics after mapping job is complete. The statistics are calculated for each read (Single- or Paired-End) and then summed or averaged over all reads. Note that STAR counts a Paired-End read as one read. Most of the information is collected about the UNIQUE mappers. Each splicing is counted in the numbers of splices, which would correspond to summing the counts in SJ.out.tab. The mismatch/indel error rates are calculated on a per base basis, i.e. as total number of mismatches/indels in all unique mappers divided by the total number of mapped bases.",
             star_bam: "STAR aligned BAM",
             star_junctions: "File contains high confidence collapsed splice junctions in tab-delimited format. Note that STAR defines the junction start/end as intronic bases, while many other software define them as exonic bases. See `meta.external_help` for file specification.",
             star_chimeric_junctions: "Tab delimited file containing chimeric reads and associated metadata. See `meta.external_help` for file specification.",
@@ -338,10 +338,10 @@ task alignment {
         }
         outFilterMismatchNoverLmax: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
         outFilterMismatchNoverReadLmax: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
-        outFilterScoreMinOverLread: "same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for paired-end reads)"
-        outFilterMatchNminOverLread: "same as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for paired-end reads)"
+        outFilterScoreMinOverLread: "same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for Paired-End reads)"
+        outFilterMatchNminOverLread: "same as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for Paired-End reads)"
         scoreGenomicLengthLog2scale: "extra score logarithmically scaled with genomic length of the alignment: scoreGenomicLengthLog2scale*log2(genomicLength)"
-        seedSearchStartLmaxOverLread: "seedSearchStartLmax normalized to read length (sum of mates' lengths for paired-end reads)"
+        seedSearchStartLmaxOverLread: "seedSearchStartLmax normalized to read length (sum of mates' lengths for Paired-End reads)"
         alignSplicedMateMapLminOverLmate: "alignSplicedMateMapLmin normalized to mate length"
         peOverlapMMp: "maximum proportion of mismatched bases in the overlap area"
         runRNGseed: {
@@ -362,7 +362,7 @@ task alignment {
         limitSjdbInsertNsj: "maximum number of junction to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run"
         outQSconversionAdd: "add this number to the quality score (e.g. to convert from Illumina to Sanger, use -31)"
         outSAMattrIHstart: "start value for the IH attribute. 0 may be required by some downstream software, such as Cufflinks or StringTie."
-        outSAMmapqUnique: "`0-255`: the MAPQ value for unique mappers"
+        outSAMmapqUnique: "`0-255`: the MAPQ value for unique mappers. Please note the STAR default (255) produces errors downstream, as a MAPQ value of 255 is reserved to indicate a missing value. The default of this task is 254, which is the highest _valid_ MAPQ value, and possibly what the author of STAR intended. **[STAR default]**: `255`. **[WDL default]**: `254`.",
         outSAMflagOR: "`0-65535`: sam FLAG will be bitwise OR'd with this value, i.e. FLAG=FLAG | outSAMflagOR. This is applied after all flags have been set by STAR, and after outSAMflagAND. Can be used to set specific bits that are not set otherwise."
         outSAMflagAND: "`0-65535`: sam FLAG will be bitwise AND'd with this value, i.e. FLAG=FLAG & outSAMflagOR. This is applied after all flags have been set by STAR, but before outSAMflagOR. Can be used to unset specific bits that are not set otherwise."
         outFilterMultimapScoreRange: "the score range below the maximum score for multimapping alignments"
@@ -551,7 +551,7 @@ task alignment {
         Int limitSjdbInsertNsj = 1000000
         Int outQSconversionAdd = 0
         Int outSAMattrIHstart = 1
-        Int outSAMmapqUnique = 255
+        Int outSAMmapqUnique = 254
         Int outSAMflagOR = 0
         Int outSAMflagAND = 65535
         Int outFilterMultimapScoreRange = 1

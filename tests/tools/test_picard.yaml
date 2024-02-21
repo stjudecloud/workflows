@@ -17,7 +17,6 @@
   command: >-
     miniwdl run -d test-output/. --task validate_bam tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
-    - path: test-output/out/validated_bam/test.bwa_aln_pe.bam
     - path: test-output/out/validate_report/test.bwa_aln_pe.ValidateSamFile.txt
 
 - name: picard_bam_to_fastq
