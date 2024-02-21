@@ -226,8 +226,8 @@ workflow quality_check {
         use_all_cores=use_all_cores,
     }
     if (run_librarian) {
-        call libraran_tasks.librarian { input:
-            read_one_fastq = fqlint.validated_read1,
+        call libraran_tasks.librarian after fqlint { input:
+            read_one_fastq = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
         }
     }
 
