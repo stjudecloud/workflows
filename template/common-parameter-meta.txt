@@ -25,7 +25,7 @@ PERMITTED META DESCRIPTIONS:
         read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
         read_one_fastqs_gz: "Array of gzipped FASTQ files with 1st reads in pair"
         read_two_fastqs_gz: "Array of gzipped FASTQ files with 2nd reads in pair"
-        paired_end: "Is the data paired-end?"
+        paired_end: "Is the data Paired-End?"
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
 
 BANNED META DESCRIPTIONS:

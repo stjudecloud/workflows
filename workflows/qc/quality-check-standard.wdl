@@ -6,6 +6,7 @@ import "../../data_structures/flag_filter.wdl"
 import "../../tools/fastqc.wdl" as fastqc_tasks
 import "../../tools/fq.wdl"
 import "../../tools/kraken2.wdl"
+import "../../tools/librarian.wdl" as libraran_tasks
 import "../../tools/md5sum.wdl"
 import "../../tools/mosdepth.wdl"
 import "../../tools/multiqc.wdl" as multiqc_tasks
@@ -69,6 +70,7 @@ workflow quality_check {
             qualimap_rnaseq_results: "Gzipped tar archive of all QualiMap output files",
             junction_summary: "TSV file containing the `ngsderive junction-annotation` summary",
             junctions: "TSV file containing a detailed list of annotated junctions",
+            librarian_report: "A tar archive containing the `librarian` report and raw data.",
             IntermediateFiles: "Any and all files produced as intermediate during pipeline processing. Only output if `output_intermediate_files = true`."
         }
         allowNestedInputs: true
@@ -80,22 +82,21 @@ workflow quality_check {
         kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
         kraken_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the downstream FASTQs."
         comparative_kraken_filter: "Filter to apply to the input BAM while performing a second FASTQ conversion, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove unmapped, secondary, and supplementary reads** from the downstream FASTQs."
-        molecule: {
-            description: "Data type",
-            choices: [
-                'DNA',
-                'RNA'
-            ]
-        }
+
         gtf: "GTF features file. Gzipped or uncompressed. **Required** for RNA-Seq data."
         multiqc_config: "YAML file for configuring MultiQC"
         extra_multiqc_inputs: "An array of additional files to pass directly into MultiQC"
         coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions"
         coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used."
         prefix: "Prefix for all results files"
-        mark_duplicates: "Mark duplicates before analyses? Note that regardless of this setting, `picard MarkDuplicates` will be run in order to generate a `*.MarkDuplicates.metrics.txt` file. However if `mark_duplicates` is `false`, no BAM will be generated. If `true`, a BAM will be generated and passed to selected downstream analyses."
+        rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
+        mark_duplicates: "Mark duplicates before analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. Note that regardless of this setting, `picard MarkDuplicates` will be run in order to generate a `*.MarkDuplicates.metrics.txt` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
+        run_librarian: {
+            description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database. By default, this tool is run when `rna == true`.",
+            external_help: "https://f1000research.com/articles/11-1122/v2",
+        }
         run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_kraken_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_kraken_filter` is ignored."
-        output_intermediate_files: "Output intermediate files? FASTQs, if RNA a collated BAM, if `mark_duplicates==true` a duplicate marked BAM with an index and MD5. **WARNING** these files can be large."
+        output_intermediate_files: "Output intermediate files? FASTQs, if `rna == true` a collated BAM, if `mark_duplicates == true` a duplicate marked BAM, various accessory files like indexes and md5sums. **WARNING** these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
     }
@@ -116,14 +117,15 @@ workflow quality_check {
             "exclude_if_any": "0x904",  # 0x4 (unmapped) || 0x100 (secondary) || 0x800 (supplementary)
             "exclude_if_all": "0x0",
         }
-        String molecule
         File? gtf
         File multiqc_config = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
         Array[File] extra_multiqc_inputs = []
         Array[File] coverage_beds = []
         Array[String] coverage_labels = []
         String prefix = basename(bam, ".bam")
-        Boolean mark_duplicates = molecule == "RNA"
+        Boolean rna = false
+        Boolean mark_duplicates = rna
+        Boolean run_librarian = rna
         Boolean run_comparative_kraken = false
         Boolean output_intermediate_files = false
         Boolean use_all_cores = false
@@ -132,7 +134,7 @@ workflow quality_check {
 
     call parse_input { input:
         gtf_provided=defined(gtf),
-        input_molecule=molecule,
+        rna,
         coverage_beds_len=length(coverage_beds),
         coverage_labels=coverage_labels,
     }
@@ -145,14 +147,14 @@ workflow quality_check {
         }
     }
 
-    call md5sum.compute_checksum { input: file=bam }
+    call md5sum.compute_checksum after parse_input { input: file=bam }
 
-    call samtools.quickcheck { input: bam=bam }
-    call util.compression_integrity { input: bgzipped_file=bam }
+    call samtools.quickcheck after parse_input { input: bam=bam }
+    call util.compression_integrity after parse_input { input: bgzipped_file=bam }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample { input:
-            bam=quickcheck.checked_bam,
+        call samtools.subsample after quickcheck { input:
+            bam=bam,
             prefix=prefix,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
@@ -164,11 +166,11 @@ workflow quality_check {
             }
         }
     }
-    # If subsampling is disabled or input BAM has fewer reads than `subsample_n_reads`
-    # this will be `quickcheck.checked_bam`
+    # If subsampling is disabled **or** input BAM has fewer reads than
+    # `subsample_n_reads` this will be `bam`
     File post_subsample_bam = select_first([
         subsample.sampled_bam,
-        quickcheck.checked_bam
+        bam
     ])
     File post_subsample_bam_index = select_first([
         subsample_index.bam_index,
@@ -178,7 +180,7 @@ workflow quality_check {
         then prefix + ".subsampled"
         else prefix
 
-    call picard.validate_bam { input:
+    call picard.validate_bam after quickcheck { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".ValidateSamFile.txt",
         succeed_on_errors=true,
@@ -186,69 +188,76 @@ workflow quality_check {
         summary_mode=true,
     }
 
-    call picard.collect_alignment_summary_metrics { input:
+    call picard.collect_alignment_summary_metrics after quickcheck { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".CollectAlignmentSummaryMetrics",
     }
-    call picard.quality_score_distribution { input:
+    call picard.quality_score_distribution after quickcheck { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".QualityScoreDistribution",
     }
-    call fastqc_tasks.fastqc { input:
+    call fastqc_tasks.fastqc after quickcheck { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix + ".fastqc_results",
         use_all_cores=use_all_cores,
     }
-    call ngsderive.instrument { input:
+    call ngsderive.instrument after quickcheck { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".instrument.tsv",
     }
-    call ngsderive.read_length { input:
+    call ngsderive.read_length after quickcheck { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
         outfile_name=post_subsample_prefix + ".readlength.tsv",
     }
-    call ngsderive.encoding { input:
+    call ngsderive.encoding after quickcheck { input:
         ngs_files=[post_subsample_bam],
         outfile_name=post_subsample_prefix + ".encoding.tsv",
         num_reads=-1,
     }
-    call ngsderive.endedness { input:
+    call ngsderive.endedness after quickcheck { input:
         bam=post_subsample_bam,
         outfile_name=post_subsample_prefix + ".endedness.tsv",
         lenient=true,
     }
-    call util.global_phred_scores { input:
+    call util.global_phred_scores after quickcheck { input:
         bam=post_subsample_bam,
         prefix=post_subsample_prefix,
     }
 
-    call samtools.collate_to_fastq { input:
+    call samtools.collate_to_fast after quickchecq { input:
         bam = post_subsample_bam,
         filter = kraken_filter,
         prefix = post_subsample_prefix,
         # RNA needs a collated BAM for Qualimap
         # DNA can skip the associated storage costs
-        store_collated_bam = (molecule == "RNA"),
+        store_collated_bam = rna,
         # disabling fast_mode enables writing of secondary and supplementary alignments
         # to the collated BAM when processing RNA.
         # Those alignments are used downstream by Qualimap.
-        fast_mode = (molecule != "RNA"),
+        fast_mode = (!rna),
         paired_end = true,  # matches default but prevents user from overriding
         interleaved = false,  # matches default but prevents user from overriding
         use_all_cores = use_all_cores,
     }
 
     call fq.fqlint { input:
-        read_one_fastq=select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
-        read_two_fastq=collate_to_fastq.read_two_fastq_gz,
+        read_one_fastq = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+        read_two_fastq = select_first([collate_to_fastq.read_two_fastq_gz, "undefined"]),
     }
-    call kraken2.kraken { input:
-        read_one_fastq_gz=fqlint.validated_read1,
-        read_two_fastq_gz=select_first([fqlint.validated_read2, "undefined"]),
+    call kraken2.kraken after fqlint { input:
+        read_one_fastq_gz
+            = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+        read_two_fastq_gz
+            = select_first([collate_to_fastq.read_two_fastq_gz, "undefined"]),
         db=kraken_db,
         prefix=post_subsample_prefix,
         use_all_cores=use_all_cores,
+    }
+    if (run_librarian) {
+        call libraran_tasks.librarian after fqlint { input:
+            read_one_fastq = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+        }
     }
 
     if (run_comparative_kraken) {
@@ -277,13 +286,13 @@ workflow quality_check {
         }
     }
 
-    call mosdepth.coverage as wg_coverage { input:
+    call mosdepth.coverage as wg_coverage after quickcheck { input:
         bam=post_subsample_bam,
         bam_index=post_subsample_bam_index,
         prefix=post_subsample_prefix + ".whole_genome",
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
-        call mosdepth.coverage as regions_coverage { input:
+        call mosdepth.coverage as regions_coverage after quickcheck  { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             coverage_bed=coverage_pair.left,
@@ -291,14 +300,14 @@ workflow quality_check {
         }
     }
 
-    if (molecule == "RNA") {
-        call ngsderive.junction_annotation { input:
+    if (rna) {
+        call ngsderive.junction_annotation after quickcheck { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gene_model=select_first([gtf, "undefined"]),
             prefix=post_subsample_prefix,
         }
-        call ngsderive.strandedness { input:
+        call ngsderive.strandedness after quickcheck { input:
             bam=post_subsample_bam,
             bam_index=post_subsample_bam_index,
             gene_model=select_first([gtf, "undefined"]),
@@ -313,7 +322,7 @@ workflow quality_check {
         }
     }
 
-    call picard.mark_duplicates as markdups { input:
+    call picard.mark_duplicates as markdups after quickcheck { input:
         bam=post_subsample_bam,
         create_bam=mark_duplicates,
         prefix=post_subsample_prefix + ".MarkDuplicates",
@@ -333,14 +342,14 @@ workflow quality_check {
             prefix=post_subsample_prefix + ".MarkDuplicates",
         }
     }
-    if (! mark_duplicates) {
+    if (!mark_duplicates) {
         # These analyses are called in the markdups_post workflow.
         # They should still be run if duplicates were not marked.
-        call picard.collect_insert_size_metrics { input:
+        call picard.collect_insert_size_metrics after quickcheck { input:
             bam=post_subsample_bam,
             prefix=post_subsample_prefix + ".CollectInsertSizeMetrics",
         }
-        call samtools.flagstat { input:
+        call samtools.flagstat after quickcheck { input:
             bam=post_subsample_bam,
             outfile_name=post_subsample_prefix + ".flagstat.txt",
         }
@@ -363,6 +372,7 @@ workflow quality_check {
                 markdups_post.insert_size_metrics,
                 quality_score_distribution.quality_score_distribution_txt,
                 kraken.report,
+                librarian.raw_data,
                 comparative_kraken.report,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
@@ -451,6 +461,7 @@ workflow quality_check {
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
         File? junctions = junction_annotation.junctions
+        File? librarian_report = librarian.report
         IntermediateFiles? intermediate_files = optional_files
     }
 }
@@ -459,21 +470,21 @@ task parse_input {
     meta {
         description: "Parses and validates the `quality_check` workflow's provided inputs"
         outputs: {
-            check: "Dummy output to indicate success and to enable call-caching",
+            check: "Dummy output to indicate success and to enable call-caching",  # TODO: is this still needed with labels?
             labels: "An array of labels to use on the result coverage files associated with each coverage BED"
         }
     }
 
     parameter_meta {
         coverage_labels: "An array of equal length to `coverage_beds_len` which determines the prefix label applied to coverage output files. If an empty array is supplied, defaults of `regions1`, `regions2`, etc. will be used."
-        input_molecule: "Must be `DNA` or `RNA`"
-        gtf_provided: "Was a GTF supplied by the user? Must be `true` if `input_molecule = RNA`."
+        rna: "Is the sequenced molecule RNA?"
+        gtf_provided: "Was a GTF supplied by the user? Must be `true` if `rna == true`."
         coverage_beds_len: "Length of the provided `coverage_beds` array"
     }
 
     input {
         Array[String] coverage_labels
-        String input_molecule
+        Boolean rna
         Boolean gtf_provided
         Int coverage_beds_len
     }
@@ -483,13 +494,8 @@ task parse_input {
     command <<<
         EXITCODE=0
 
-        if [ "~{input_molecule}" != "DNA" ] && [ "~{input_molecule}" != "RNA" ]; then
-            >&2 echo "molecule input must be 'DNA' or 'RNA'"
-            EXITCODE=1
-        fi
-
-        if [ "~{input_molecule}" = "RNA" ] && ! ~{gtf_provided}; then
-            >&2 echo "Must supply a GTF if molecule = 'RNA'"
+        if ~{rna} && ! ~{gtf_provided}; then
+            >&2 echo "Must supply a GTF if 'rna == true'"
             EXITCODE=1
         fi
 
@@ -510,7 +516,6 @@ task parse_input {
     >>>
 
     output {
-        String check = "passed"
         Array[String] labels = read_lines("labels.txt")
     }
 

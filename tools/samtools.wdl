@@ -32,7 +32,7 @@ task quickcheck {
     >>>
 
     output {
-        File checked_bam = bam
+        String check = "passed"
     }
 
     runtime {
@@ -586,7 +586,7 @@ task bam_to_fastq {
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
             read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair",
             singleton_reads_fastq_gz: "A gzipped FASTQ containing singleton reads",
-            interleaved_reads_fastq_gz: "An interleaved gzipped paired-end FASTQ",
+            interleaved_reads_fastq_gz: "An interleaved gzipped Paired-End FASTQ",
             single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads"
         }
     }
@@ -729,7 +729,7 @@ task collate_to_fastq {
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
             read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair",
             singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads",
-            interleaved_reads_fastq_gz: "Interleaved gzipped paired-end FASTQ",
+            interleaved_reads_fastq_gz: "Interleaved gzipped Paired-End FASTQ",
             single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads"
         }
     }
