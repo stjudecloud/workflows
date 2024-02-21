@@ -439,8 +439,8 @@ workflow quality_check {
         File multiqc_report = multiqc.multiqc_report
         File? orig_read_count = subsample.orig_read_count
         File? kraken_sequences = kraken.sequences
-        File? mapped_kraken_report = comparative_kraken.report
-        File? mapped_kraken_sequences = comparative_kraken.sequences
+        File? comparative_kraken_report = comparative_kraken.report
+        File? comparative_kraken_sequences = comparative_kraken.sequences
         File? mosdepth_dups_marked_global_dist = markdups_post.mosdepth_global_dist
         File? mosdepth_dups_marked_global_summary = markdups_post.mosdepth_global_summary
         Array[File]? mosdepth_dups_marked_region_summary
