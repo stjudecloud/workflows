@@ -244,7 +244,7 @@ workflow quality_check {
             prefix=post_subsample_prefix + "." + coverage_pair.right,
         }
     }
-    
+
     if (rna) {
         call ngsderive.junction_annotation after quickcheck { input:
             bam=post_subsample_bam,
