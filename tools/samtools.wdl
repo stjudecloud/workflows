@@ -723,6 +723,7 @@ task bam_to_fastq {
 
 task collate_to_fastq {
     meta {
+        # TODO doc special exit codes
         description: "Runs `samtools collate` on the input BAM file then converts it into FASTQ(s) using `samtools fastq`"
         outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)",
@@ -859,12 +860,36 @@ task collate_to_fastq {
                     else prefix + ".fastq.gz"
                 }
 
+        # The basis of the below checks is the output of `gzip -l`.
+        # An example output from the command:
+        # $ gzip -l junk.*.fastq.gz
+        # compressed        uncompressed  ratio uncompressed_name
+        #         28                   0   0.0% junk.singleton.fastq
+        #         28                   0   0.0% junk.unknown_bit_setting.fastq
+
+        # Check that some output is non-empty
+        RC=0
+        gzip -l "~{prefix}*.fastq.gz" | awk 'NR>1 && $2!=0 {exit(42)}' || RC=$?
+        if [ "$RC" -eq 42 ]; then
+            # TODO delete these debug print statements
+            >&2 echo "At least one read is in at least one FASTQ"
+            >&2 echo "Command successful!"
+        elif [ "$RC" -eq 0 ]; then
+            >&2 echo "No reads are in any output FASTQ"
+            >&2 echo "Command failed!"
+            exit 42
+        else
+            >&2 echo "Unhandled error! Exiting!"
+            exit $RC
+        fi
+
+        # Check that there weren't any unexpected reads in the input BAM
         if ~{fail_on_unexpected_reads} \
-            && find . -name 'junk.*.fastq.gz' ! -empty | grep -q .
+            && gzip -l "junk.*.fastq.gz" | awk 'NR>1 && $2!=0 {exit(42)}'
         then
             >&2 echo "Discovered unexpected reads in:"
-            find . -name 'junk.*.fastq.gz' ! -empty >&2
-            exit 42
+            >&2 gzip -l "junk.*.fastq.gz" | awk 'NR>1 && $2!=0 {print $4}'
+            exit 43
         fi
     >>>
 
