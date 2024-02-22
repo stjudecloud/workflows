@@ -107,9 +107,8 @@ task arriba {
     }
 
     Int input_size_gb = ceil(size(bam, "GiB"))
-
-    Int memory_gb = ceil(input_size_gb) + modify_memory_gb
     Int disk_size_gb = ceil(input_size_gb ) + ceil(size(gtf, "GiB")) + ceil(size(reference_fasta_gz, "GiB")) + modify_disk_size_gb
+    Int memory_gb = ceil(input_size_gb) + modify_memory_gb
 
     command <<<
         arriba \
@@ -162,6 +161,157 @@ task arriba {
     runtime {
         cpu: 1
         memory: "~{memory_gb} GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/arriba:2.4.0--h0033a41_2"
+        maxRetries: 1
+    }
+}
+
+task arriba_tsv_to_vcf {
+    meta {
+        description: "Convert Arriba TSV format fusions to VCF format."
+        outputs: {
+            fusions_vcf: "Output file of fusions in VCF format"
+        }
+    }
+
+    parameter_meta {
+        fusions: "Input fusions in TSV format to convert to VCF"
+        reference_fasta_gz: "Gzipped reference genome in FASTA format"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fusions
+        File reference_fasta_gz
+        String vcf = basename(fusions, ".tsv") + ".vcf"
+        Int modify_disk_size_gb = 0
+    }
+
+    Int input_size_gb = ceil(size(fusions, "GiB"))
+    Int disk_size_gb = ceil(input_size_gb) + (ceil(size(reference_fasta_gz, "GiB")) * 3) + modify_disk_size_gb
+
+    String fa = basename(reference_fasta_gz, ".gz")
+
+    command <<<
+        gunzip -dc ~{reference_fasta_gz} > ~{fa}
+        convert_fusions_to_vcf.sh \
+            ~{fa} \
+            ~{fusions} \
+            ~{vcf}
+    >>>
+
+    output {
+        File fusions_vcf = vcf
+    }
+
+    runtime {
+        cpu: 1
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/arriba:2.4.0--h0033a41_2"
+        maxRetries: 1
+    }
+}
+
+task arriba_extract_fusion_supporting_alignments {
+    meta {
+        description: "Extract alignments that support fusions."
+        outputs: {
+            fusion_bams: "Array of BAM files corresponding with fusions in the input file"
+            fusion_bam_indexes: "Array of BAM indexes corresponding with the BAMs in the 'fusion_bams'"
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file on which to call fusions"
+        bam_index: "BAM index file corresponding to the input BAM"
+        fusions: "Input fusions in TSV format to convert to VCF"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        File bam_index
+        File fusions
+        String prefix = basename(fusions, ".tsv")
+        Int modify_disk_size_gb = 0
+    }
+
+    Int input_size_gb = ceil(size(bam, "GiB"))
+    Int disk_size_gb = ceil(input_size_gb) + 5 + modify_disk_size_gb
+
+    command <<<
+        CWD_BAM=~{basename(bam)}
+        ln -s ~{bam} "$CWD_BAM"
+        ln -s ~{bam_index} "$CWD_BAM".bai
+
+        extract_fusion-supporting_alignments.sh \
+            ~{fusions} \
+            ~{bam} \
+            ~{prefix}
+    >>>
+
+    output {
+        Array[File] fusion_bams = glob("~{prefix}_*.bam")
+        Array[File] fusion_bam_indexes = glob("~{prefix}_*.bam.bai")
+    }
+
+    runtime {
+        cpu: 1
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/arriba:2.4.0--h0033a41_2"
+        maxRetries: 1
+    }
+}
+
+task arriba_annotate_exon_numbers {
+    meta {
+        description: "Annotate fusions with exon numbers."
+        outputs: {
+            fusion_bams: "Array of BAM files corresponding with fusions in the input file"
+            fusion_bam_indexes: "Array of BAM indexes corresponding with the BAMs in the 'fusion_bams'"
+        }
+    }
+
+    parameter_meta {
+        fusions: "Input fusions in TSV format to convert to VCF"
+        gtf: "GTF features file. Gzipped or uncompressed."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fusions
+        File gtf
+        String prefix = basename(fusions, ".tsv") + ".annotated.tsv"
+        Int modify_disk_size_gb = 0
+    }
+
+    Int input_size_gb = ceil(size(gtf, "GiB"))
+    Int disk_size_gb = ceil(input_size_gb) + 5 + modify_disk_size_gb
+
+    String gene_model = basename(gtf, ".gz")
+
+    command <<<
+        if [ "~{gene_model}" != "~{gtf}" ]
+        then
+            gunzip -dc ~{gtf} > ~{gene_model}
+        fi
+
+        annotate_exon_numbers.sh \
+            ~{fusions} \
+            ~{gene_model} \
+            ~{prefix}
+    >>>
+
+    output {
+        File fusion_tsv = prefix
+    }
+
+    runtime {
+        cpu: 1
+        memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/arriba:2.4.0--h0033a41_2"
         maxRetries: 1
