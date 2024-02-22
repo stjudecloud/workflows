@@ -242,10 +242,6 @@ task arriba_extract_fusion_supporting_alignments {
     Int disk_size_gb = ceil(input_size_gb) + 5 + modify_disk_size_gb
 
     command <<<
-        CWD_BAM=~{basename(bam)}
-        ln -s ~{bam} "$CWD_BAM"
-        ln -s ~{bam_index} "$CWD_BAM".bai
-
         extract_fusion-supporting_alignments.sh \
             ~{fusions} \
             ~{bam} \
