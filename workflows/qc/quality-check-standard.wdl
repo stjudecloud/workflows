@@ -269,6 +269,15 @@ workflow quality_check {
             bam = post_subsample_bam,
             filter = comparative_kraken_filter,
             prefix = post_subsample_prefix + ".alt_filtered",
+            # matches default but prevents user from overriding
+            # If the user wants a collated BAM, they should save the one
+            # from the first collate_to_fastq call.
+            store_collated_bam = false,
+            # matches default but prevents user from overriding
+            # Since the only output here is FASTQs, we can disable fast mode.
+            # This discards secondary and supplementary alignments, which should not
+            # be converted to FASTQs.
+            fast_mode = true,
             paired_end = true,  # matches default but prevents user from overriding
             interleaved = false,  # matches default but prevents user from overriding
             use_all_cores = use_all_cores,

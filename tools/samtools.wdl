@@ -861,11 +861,7 @@ task collate_to_fastq {
                 }
 
         # Check that some output is non-empty
-        if [ -n "$(gunzip -c ~{prefix}*.fastq.gz | head -c 1 | tr '\0\n' __)" ]; then
-            # TODO delete these debug print statements
-            >&2 echo "At least one read is in at least one FASTQ"
-            >&2 echo "Command successful!"
-        else
+        if [ -z "$(gunzip -c ~{prefix}*.fastq.gz | head -c 1 | tr '\0\n' __)" ]; then
             >&2 echo "No reads are in any output FASTQ"
             >&2 echo "Command failed!"
             exit 42
