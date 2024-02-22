@@ -225,7 +225,9 @@ workflow quality_check {
         prefix=post_subsample_prefix,
     }
 
-    call samtools.collate_to_fastq after quickcheck { input:
+    call samtools.collate_to_fastq after quickcheck
+        after kraken_filter_validator
+    { input:
         bam = post_subsample_bam,
         filter = kraken_filter,
         prefix = post_subsample_prefix,
@@ -261,7 +263,9 @@ workflow quality_check {
     }
 
     if (run_comparative_kraken) {
-        call samtools.collate_to_fastq as alt_filtered_fastq { input:
+        call samtools.collate_to_fastq as alt_filtered_fastq
+            after comparative_kraken_filter_validator
+        { input:
             bam = post_subsample_bam,
             filter = comparative_kraken_filter,
             prefix = post_subsample_prefix + ".alt_filtered",
