@@ -500,11 +500,11 @@ task alignment {
             GC_AG_and_CT_GC_motif: 5,
             AT_AC_and_GT_AT_motif: 10
         }
-        SJMotifs align_sj_stitch_mismatch_n_max = SJMotifs {
-            noncanonical_motifs: 0,
+        SJ_Motifs align_sj_stitch_mismatch_n_max = SJ_Motifs {
+            noncanonical_motifs: 5,
             GT_AG_and_CT_AC_motif: -1,
-            GC_AG_and_CT_GC_motif: 0,
-            AT_AC_and_GT_AT_motif: 0
+            GC_AG_and_CT_GC_motif: 5,
+            AT_AC_and_GT_AT_motif: 5
         }
         Pair[String, String] clip_3p_adapter_seq = ("None", "None")
         Pair[Float, Float] clip_3p_adapter_mmp = (0.1, 0.1)
@@ -527,7 +527,7 @@ task alignment {
         String align_ends_type = "Local"
         String align_soft_clip_at_reference_ends = "Yes"
         String align_insertion_flush = "None"
-        String chim_out_type = "Junctions"
+        String chim_out_type = "WithinBAM HardClip"
         String chim_filter = "banGenomicN"
         String chim_out_junction_format = "plain"
         String twopass_mode = "Basic"
@@ -538,7 +538,7 @@ task alignment {
         Float out_filter_match_n_min_over_l_read = 0.66
         Float score_genomic_length_log2_scale = -0.25
         Float seed_search_start_l_max_over_l_read = 1.0
-        Float align_spliced_mate_map_l_min_over_l_mate = 0.66
+        Float align_spliced_mate_map_l_min_over_l_mate = 0.5
         Float pe_overlap_mmp = 0.01
         Int run_rng_seed = 777
         Int sjdb_score = 2
@@ -553,7 +553,7 @@ task alignment {
         Int out_sam_flag_OR = 0
         Int out_sam_flag_AND = 65535
         Int out_filter_multimap_score_range = 1
-        Int out_filter_multimap_n_max = 20
+        Int out_filter_multimap_n_max = 50
         Int out_filter_mismatch_n_max = 10
         Int out_filter_score_min = 0
         Int out_filter_match_n_min = 0
@@ -583,20 +583,20 @@ task alignment {
         Int align_windows_per_read_n_max = 10000
         Int align_transcripts_per_window_n_max = 100
         Int align_transcripts_per_read_n_max = 10000
-        Int pe_overlap_n_bases_min = 0
+        Int pe_overlap_n_bases_min = 10
         Int win_anchor_multimap_n_max = 50
         Int win_bin_n_bits = 16
         Int win_anchor_dist_n_bins = 9
         Int win_flank_n_bins = 4
-        Int chim_segment_min = 0
+        Int chim_segment_min = 10
         Int chim_score_min = 0
-        Int chim_score_drop_max = 20
-        Int chim_score_separation = 10
-        Int chim_score_junction_nonGTAG = -1
-        Int chim_junction_overhang_min = 20
-        Int chim_segment_read_gap_max = 0
+        Int chim_score_drop_max = 30
+        Int chim_score_separation = 1
+        Int chim_score_junction_nonGTAG = 0
+        Int chim_junction_overhang_min = 10
+        Int chim_segment_read_gap_max = 3
         Int chim_main_segment_multi_n_max = 10
-        Int chim_multimap_n_max = 0
+        Int chim_multimap_n_max = 50
         Int chim_multimap_score_range = 1
         Int chim_nonchim_score_drop_min = 20
         Int twopass1_reads_n = -1
