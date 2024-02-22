@@ -503,10 +503,10 @@ task alignment {
             AT_AC_and_GT_AT_motif: 10
         }
         SJ_Motifs alignSJstitchMismatchNmax = SJ_Motifs {
-            noncanonical_motifs: 0,
+            noncanonical_motifs: 5,
             GT_AG_and_CT_AC_motif: -1,
-            GC_AG_and_CT_GC_motif: 0,
-            AT_AC_and_GT_AT_motif: 0
+            GC_AG_and_CT_GC_motif: 5,
+            AT_AC_and_GT_AT_motif: 5
         }
         Pair[String, String] clip3pAdapterSeq = ("None", "None")
         Pair[Float, Float] clip3pAdapterMMp = (0.1, 0.1)
@@ -529,7 +529,7 @@ task alignment {
         String alignEndsType = "Local"
         String alignSoftClipAtReferenceEnds = "Yes"
         String alignInsertionFlush = "None"
-        String chimOutType = "Junctions"
+        String chimOutType = "WithinBAM HardClip"
         String chimFilter = "banGenomicN"
         String chimOutJunctionFormat = "plain"
         String twopassMode = "Basic"
@@ -540,7 +540,7 @@ task alignment {
         Float outFilterMatchNminOverLread = 0.66
         Float scoreGenomicLengthLog2scale = -0.25
         Float seedSearchStartLmaxOverLread = 1.0
-        Float alignSplicedMateMapLminOverLmate = 0.66
+        Float alignSplicedMateMapLminOverLmate = 0.5
         Float peOverlapMMp = 0.01
         Int runRNGseed = 777
         Int sjdbScore = 2
@@ -555,7 +555,7 @@ task alignment {
         Int outSAMflagOR = 0
         Int outSAMflagAND = 65535
         Int outFilterMultimapScoreRange = 1
-        Int outFilterMultimapNmax = 20
+        Int outFilterMultimapNmax = 50
         Int outFilterMismatchNmax = 10
         Int outFilterScoreMin = 0
         Int outFilterMatchNmin = 0
@@ -585,20 +585,20 @@ task alignment {
         Int alignWindowsPerReadNmax = 10000
         Int alignTranscriptsPerWindowNmax = 100
         Int alignTranscriptsPerReadNmax = 10000
-        Int peOverlapNbasesMin = 0
+        Int peOverlapNbasesMin = 10
         Int winAnchorMultimapNmax = 50
         Int winBinNbits = 16
         Int winAnchorDistNbins = 9
         Int winFlankNbins = 4
-        Int chimSegmentMin = 0
+        Int chimSegmentMin = 10
         Int chimScoreMin = 0
-        Int chimScoreDropMax = 20
-        Int chimScoreSeparation = 10
-        Int chimScoreJunctionNonGTAG = -1
-        Int chimJunctionOverhangMin = 20
-        Int chimSegmentReadGapMax = 0
+        Int chimScoreDropMax = 30
+        Int chimScoreSeparation = 1
+        Int chimScoreJunctionNonGTAG = 0
+        Int chimJunctionOverhangMin = 10
+        Int chimSegmentReadGapMax = 3
         Int chimMainSegmentMultNmax = 10
-        Int chimMultimapNmax = 0
+        Int chimMultimapNmax = 50
         Int chimMultimapScoreRange = 1
         Int chimNonchimScoreDropMin = 20
         Int twopass1readsN = -1
