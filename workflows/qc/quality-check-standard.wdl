@@ -80,9 +80,8 @@ workflow quality_check {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
         kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
-        kraken_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the downstream FASTQs."
-        comparative_kraken_filter: "Filter to apply to the input BAM while performing a second FASTQ conversion, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove unmapped, secondary, and supplementary reads** from the downstream FASTQs."
-
+        kraken_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the downstream FASTQs. **WARNING** this filter is not applied to the second run of Kraken2 if `run_comparative_kraken = true`. **WARNING** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults."
+        comparative_kraken_filter: "Filter to apply to the input BAM while performing a second FASTQ conversion, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove unmapped, secondary, and supplementary reads** from the downstream FASTQs. **WARNING** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults."
         gtf: "GTF features file. Gzipped or uncompressed. **Required** for RNA-Seq data."
         multiqc_config: "YAML file for configuring MultiQC"
         extra_multiqc_inputs: "An array of additional files to pass directly into MultiQC"
@@ -106,19 +105,22 @@ workflow quality_check {
         File bam_index
         File kraken_db
         FlagFilter kraken_filter = {
-            "include_if_any": "0x0",
             "include_if_all": "0x0",
             "exclude_if_any": "0x900",  # 0x100 (secondary) || 0x800 (supplementary)
+            "include_if_any": "0x0",
             "exclude_if_all": "0x0",
         }
+        # TODO: consider making this an array of FlagFilters similar to coverage_beds
         FlagFilter comparative_kraken_filter =  {
-            "include_if_any": "0x0",
             "include_if_all": "0x0",
-            "exclude_if_any": "0x904",  # 0x4 (unmapped) || 0x100 (secondary) || 0x800 (supplementary)
+            # 0x4 (unmapped) || 0x100 (secondary) || 0x800 (supplementary)
+            "exclude_if_any": "0x904",
+            "include_if_any": "0x0",
             "exclude_if_all": "0x0",
         }
         File? gtf
-        File multiqc_config = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
+        File multiqc_config
+            = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
         Array[File] extra_multiqc_inputs = []
         Array[File] coverage_beds = []
         Array[String] coverage_labels = []
