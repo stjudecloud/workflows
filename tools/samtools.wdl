@@ -581,7 +581,8 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "Runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
+        description: "Runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. Use `filter` argument to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
+        help: "An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
         outputs: {
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
             read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair",
@@ -593,12 +594,8 @@ task bam_to_fastq {
 
     parameter_meta {
         bam: "Input name sorted or collated BAM format file to convert into FASTQ(s)"
-        filter: "TODO Filtering options for `samtools fastq`"
+        filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
         prefix: "Prefix for output FASTQ(s). Extensions `[,.R1,.R2,.singleton].fastq.gz` will be added depending on other options."
-        # f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        # F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
-        # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        # G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         paired_end: {
             description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.",
             common: true
@@ -695,12 +692,20 @@ task bam_to_fastq {
             } \
             ~{bam}
 
+        # Check that some output is non-empty
+        if [ -z "$(gunzip -c ~{prefix}*.fastq.gz | head -c 1 | tr '\0\n' __)" ]; then
+            >&2 echo "No reads are in any output FASTQ"
+            >&2 echo "Command failed!"
+            exit 42
+        fi
+
+        # Check that there weren't any unexpected reads in the input BAM
         if ~{fail_on_unexpected_reads} \
-            && find . -name 'junk.*.fastq.gz' ! -empty | grep -q .
+            && [ -n "$(gunzip -c junk.*.fastq.gz | head -c 1 | tr '\0\n' __)" ]
         then
             >&2 echo "Discovered unexpected reads in:"
-            find . -name 'junk.*.fastq.gz' ! -empty >&2
-            exit 42
+            >&2 echo "TODO print the names of the unexpected FASTQs"
+            exit 43
         fi
     >>>
 
@@ -723,8 +728,8 @@ task bam_to_fastq {
 
 task collate_to_fastq {
     meta {
-        # TODO doc special exit codes
         description: "Runs `samtools collate` on the input BAM file then converts it into FASTQ(s) using `samtools fastq`"
+        help: "This task is useful for converting a position sorted BAM into FASTQs. It is not suitable for name sorted or collated BAMs. If you have a name sorted or collated BAM, use `bam_to_fastq` instead. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
         outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)",
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
@@ -737,12 +742,8 @@ task collate_to_fastq {
 
     parameter_meta {
         bam: "Input BAM format file to collate and convert to FASTQ(s)"
-        filter: "TODO Filtering options for `samtools fastq`"
+        filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
-        # f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        # F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
-        # rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        # G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         fast_mode: {
             description: "Fast mode for `samtools collate` (primary alignments only)",
             common: true
@@ -752,7 +753,7 @@ task collate_to_fastq {
             common: true
         }
         paired_end: {
-            description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.",
+            description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `filter` argument to remove any unwanted reads.",
             common: true
         }
         append_read_number: {
