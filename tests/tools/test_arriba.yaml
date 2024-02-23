@@ -13,7 +13,7 @@
     - miniwdl
     - arriba
   command: >-
-    miniwdl run -d test-output/. --task arriba_tsv_to_vcf tools/arriba.wdl fusions="tests/tools/input/fusions.tsv" reference_fasta_gz="tests/tools/input/GRCh38.chr9_chr22.fa.gz"
+    miniwdl run -d test-output/. --task arriba_tsv_to_vcf tools/arriba.wdl fusions="tests/tools/input/fusions.tsv" reference_fasta="tests/tools/input/GRCh38.chr9_chr22.fa.gz"
   files:
     - path: test-output/out/fusions_vcf/fusions.vcf
 
