@@ -65,13 +65,13 @@ workflow scrnaseq_standard {
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample { input:
+        call samtools.filter_and_subsample { input:
             bam=bam,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
         }
     }
-    File selected_bam = select_first([subsample.sampled_bam, bam])
+    File selected_bam = select_first([filter_and_subsample.reduced_bam, bam])
 
     call bam_to_fastqs.cell_ranger_bam_to_fastqs { input:
         bam=selected_bam,

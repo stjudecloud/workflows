@@ -155,15 +155,15 @@ workflow quality_check {
     call util.compression_integrity after parse_input { input: bgzipped_file=bam }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample after quickcheck { input:
+        call samtools.filter_and_subsample after quickcheck { input:
             bam=bam,
             prefix=prefix,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
         }
-        if (defined(subsample.sampled_bam)) {
+        if (defined(filter_and_subsample.reduced_bam)) {
             call samtools.index as subsample_index { input:
-                bam=select_first([subsample.sampled_bam, "undefined"]),
+                bam=select_first([filter_and_subsample.reduced_bam, "undefined"]),
                 use_all_cores=use_all_cores,
             }
         }
@@ -171,14 +171,14 @@ workflow quality_check {
     # If subsampling is disabled **or** input BAM has fewer reads than
     # `subsample_n_reads` this will be `bam`
     File post_subsample_bam = select_first([
-        subsample.sampled_bam,
+        filter_and_subsample.reduced_bam,
         bam
     ])
     File post_subsample_bam_index = select_first([
         subsample_index.bam_index,
         bam_index
     ])
-    String post_subsample_prefix = if (defined(subsample.sampled_bam))
+    String post_subsample_prefix = if (defined(filter_and_subsample.reduced_bam))
         then prefix + ".subsampled"
         else prefix
 
@@ -392,7 +392,7 @@ workflow quality_check {
                 wg_coverage.summary,
                 wg_coverage.global_dist,
                 global_phred_scores.phred_scores,
-                subsample.orig_read_count,
+                filter_and_subsample.orig_read_count,
                 markdups_post.mosdepth_global_summary,
                 markdups_post.mosdepth_global_dist,
                 strandedness.strandedness_file,
@@ -412,8 +412,8 @@ workflow quality_check {
 
     if (output_intermediate_files) {
         IntermediateFiles optional_files = {
-            "subsampled_bam": subsample.sampled_bam,
-            "subsampled_bam_index": subsample_index.bam_index,
+            "reduced_bam": filter_and_subsample.reduced_bam,
+            "reduced_bam_index": subsample_index.bam_index,
             "collated_bam": collate_to_fastq.collated_bam,
             "read_one_fastq_gz": collate_to_fastq.read_one_fastq_gz,
             "read_two_fastq_gz": collate_to_fastq.read_two_fastq_gz,
@@ -462,7 +462,7 @@ workflow quality_check {
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
         File multiqc_report = multiqc.multiqc_report
-        File? orig_read_count = subsample.orig_read_count
+        File? orig_read_count = filter_and_subsample.orig_read_count
         File? kraken_sequences = kraken.sequences
         File? comparative_kraken_report = comparative_kraken.report
         File? comparative_kraken_sequences = comparative_kraken.sequences
@@ -544,8 +544,8 @@ task parse_input {
 
 # TODO does this need documentation?
 struct IntermediateFiles {
-    File? subsampled_bam
-    File? subsampled_bam_index
+    File? reduced_bam
+    File? reduced_bam_index
     File? collated_bam
     File? read_one_fastq_gz
     File? read_two_fastq_gz

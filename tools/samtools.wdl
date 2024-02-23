@@ -236,20 +236,22 @@ task index {
     }
 }
 
-task subsample {
+task filter_and_subsample {
+    # TODO add more filtering options
     meta {
-        description: "Randomly subsamples the input BAM. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
+        description: "Depending on paraemters, filter and or randomly subsamples the input BAM."
+        help: "By default, no filtering is done. A `desired_reads` must be supplied (`desired_reads <= 0` to only filter). Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `reduced_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
-            orig_read_count: "A TSV report containing the original read count before subsampling",
-            sampled_bam: "The subsampled input BAM."
+            orig_read_count: "A TSV report containing the original read count before filtering and or subsampling",
+            reduced_bam: "The filtered and or subsampled input BAM. Only present if filtering or subsampling was performed."
         }
     }
 
     parameter_meta {
-        bam: "Input BAM format file to subsample"
-        desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value."
-        filter: "A set of 4 possible read filters to apply during subsampling. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **not remove any reads** from the output BAM (aside from those randomly discarded during subsampling). **WARNING utilizing this parameter will likely result in a subsampled BAM that is not a representative sample of the original BAM.**"
-        prefix: "Prefix for the BAM file. The extension `.subsampled.bam` will be added."
+        bam: "Input BAM format file to filter and or subsample"
+        desired_reads: "How many reads should be in the ouput BAM? Any value less-than-or-equal-to 0 to disable subsampling. If positive, output BAM read count will be approximate to this value."
+        filter: "A set of 4 possible read filters to apply. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **not remove any reads** from the output BAM (aside from those randomly discarded during subsampling). **WARNING:** Utilizing this parameter will likely result in a subsampled BAM that is not a representative sample of the original BAM."
+        prefix: "Prefix for the BAM file. The extension `.reduced.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             common: true
@@ -264,19 +266,16 @@ task subsample {
     input {
         File bam
         Int desired_reads
-        FlagFilter filter = {
-            "include_if_any": "0x0",
-            "include_if_all": "0x0",
-            "exclude_if_any": "0x0",
-            "exclude_if_all": "0x0",
-        }
+        FlagFilter filter?
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_disk_size_gb = 0
     }
 
-    String suffixed = prefix + ".subsampled"
+    Boolean should_subsample = desired_reads > 0
+
+    String suffixed = prefix + ".reduced"
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
@@ -284,26 +283,29 @@ task subsample {
     command <<<
         set -euo pipefail
 
-        if [[ ~{desired_reads} -le 0 ]]; then
-            echo "'desired_reads' must be >0!" > /dev/stderr
-            exit 1
-        fi
-
         n_cores=~{ncpu}
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
 
+        if ! ~{should_subsample} && ! ~{defined(filter)}; then
+            >&2 echo "No filtering or subsampling requested"
+            >&2 echo "This task is failing as it has nothing to do!"
+            exit 42
+        fi
+
         read_count="$(samtools view \
             --threads "$n_cores" \
-            -f ~{filter.include_if_all} \
-            -F ~{filter.exclude_if_any} \
-            --rf ~{filter.include_if_any} \
-            -G ~{filter.exclude_if_all} \
-            -c ~{bam} \
+            ~{if defined(filter) then "-f " + filter.include_if_all else ""} \
+            ~{if defined(filter) then "-F " + filter.exclude_if_any else ""} \
+            ~{if defined(filter) then "--rf " + filter.include_if_any else ""} \
+            ~{if defined(filter) then "-G " + filter.exclude_if_all else ""} \
+            ~{bam} \
+            | tee ~{if !should_subsample then suffixed + ".bam" else ""} \
+            | wc -l
         )"
 
-        if [[ "$read_count" -gt "~{desired_reads}" ]]; then
+        if should_subsample && [[ "$read_count" -gt "~{desired_reads}" ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
             # subsample it.
             frac=$( \
@@ -317,14 +319,20 @@ task subsample {
             samtools view \
                 --threads "$n_cores" \
                 -hb \
-                -f ~{filter.include_if_all} \
-                -F ~{filter.exclude_if_any} \
-                --rf ~{filter.include_if_any} \
-                -G ~{filter.exclude_if_all} \
+                ~{if defined(filter) then "-f " + filter.include_if_all else ""} \
+                ~{if defined(filter) then "-F " + filter.exclude_if_any else ""} \
+                ~{if defined(filter) then "--rf " + filter.include_if_any else ""} \
+                ~{if defined(filter) then "-G " + filter.exclude_if_all else ""} \
                 -s "$frac" \
                 ~{bam} \
                 > ~{suffixed}.bam
 
+            # Report the original read count.
+            # Use 'prefix' as the entry name
+            # because that will be more familiar to the user.
+            # Use the '.reduced' suffixed name in the filename
+            # because that is the name of the output BAM.
+            # This might seem odd but it looks best in MultiQC.
             {
                 echo -e "sample\toriginal read count"
                 echo -e "~{prefix}\t$read_count"
@@ -333,8 +341,9 @@ task subsample {
             # the BAM has less than ~{desired_reads} reads, meaning we should
             # just use it directly without subsampling.
 
-            # Do not use the '.subsampled' suffixed name
+            # Do not use the '.reduced' suffixed name
             # if not subsampled. Use ~{prefix} instead.
+            # Again, this is for MultiQC.
             {
                 echo -e "sample\toriginal read count"
                 echo -e "~{prefix}\t-"
@@ -344,7 +353,7 @@ task subsample {
 
     output {
         File orig_read_count = glob("*.orig_read_count.tsv")[0]
-        File? sampled_bam = suffixed + ".bam"
+        File? reduced_bam = suffixed + ".bam"
     }
 
     runtime {
