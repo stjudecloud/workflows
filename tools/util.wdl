@@ -58,7 +58,10 @@ task get_read_groups {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to get read groups from"
+        bam: {
+            description: "Input BAM format file to get read groups from",
+            stream: true
+        }
         format_for_star: {
             description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`.",
             common: true
@@ -761,7 +764,10 @@ task split_fastq {
     }
 
     parameter_meta {
-        fastq: "Gzipped FASTQ file to split"
+        fastq: {
+            description: "Gzipped FASTQ file to split",
+            stream: true
+        }
         reads_per_file: "Number of reads to include in each output FASTQ file"
         prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -771,7 +777,7 @@ task split_fastq {
     input {
         File fastq
         String prefix = basename(fastq, ".fastq.gz")
-        Int reads_per_file = 2000000
+        Int reads_per_file = 10000000
         Int modify_disk_size_gb = 0
         String? md5sum
     }

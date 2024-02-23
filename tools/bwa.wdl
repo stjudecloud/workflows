@@ -102,8 +102,14 @@ task bwa_aln_pe {
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Input gzipped FASTQ read one file to align with bwa"  # TODO verify can be gzipped or compressed
-        read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
+        read_one_fastq_gz: {
+            description: "Input gzipped FASTQ read one file to align with bwa",
+            stream: false
+        }  # TODO verify can be gzipped or compressed
+        read_two_fastq_gz: {
+            description: "Input gzipped FASTQ read two file to align with bwa",
+            stream: false
+        }
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {

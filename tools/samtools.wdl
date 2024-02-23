@@ -47,7 +47,10 @@ task split {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to split"
+        bam: {
+            description: "Input BAM format file to split",
+            stream: true
+        }
         prefix: "Prefix for the split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
         reject_unaccounted: {
             description: "If true, error if there are reads present that do not have read group information.",
@@ -729,7 +732,10 @@ task collate_to_fastq {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to collate and convert to FASTQ(s)"
+        bam: {
+            description: "Input BAM format file to collate and convert to FASTQ(s)",
+            stream: true
+        }
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
         f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
         F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
