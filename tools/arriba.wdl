@@ -22,7 +22,7 @@ task arriba {
         }
         known_fusions: {
             description: "Optional input file of known fusions in tab delimited format"
-            extenral_help: "https://arriba.readthedocs.io/en/latest/input-files/#known-fusions"
+            external_help: "https://arriba.readthedocs.io/en/latest/input-files/#known-fusions"
         }
         annotate_fusions: {
             description: "Optional input file in tab delimited format of fusions to annotate with tags"
@@ -91,7 +91,7 @@ task arriba {
         Array[String] viral_contigs = ["AC_*", "NC_*"]
         Array[String] disable_filters = []
         String feature_name = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
-        String prefix = basename(bam, ".bam")
+        String prefix = basename(bam, ".bam") + ".fusions"
         String strandedness = "auto"
         Boolean mark_duplicates = true
         Boolean report_additional_columns_discard = false
@@ -294,7 +294,7 @@ task arriba_annotate_exon_numbers {
     input {
         File fusions
         File gtf
-        String prefix = basename(fusions, ".tsv") + ".annotated.tsv"
+        String outfile_name = basename(fusions, ".tsv") + ".annotated.tsv"
         Int modify_disk_size_gb = 0
     }
 
