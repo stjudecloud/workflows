@@ -1,7 +1,4 @@
 ## [Homepage](https://arriba.readthedocs.io/en/latest/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 task arriba {
@@ -14,7 +11,7 @@ task arriba {
     }
 
     parameter_meta {
-        bam: "Input BAM format file on which to call fusions"
+        bam: "Input BAM format file from which to call fusions"
         gtf: "GTF features file. Gzipped or uncompressed."
         reference_fasta_gz: "Gzipped reference genome in FASTA format"
         chimeric_sam: "Optional input file of chimeric reads in SAM format, from older versions of STAR"
@@ -106,9 +103,9 @@ task arriba {
         Int modify_disk_size_gb = 0
     }
 
-    Int input_size_gb = ceil(size(bam, "GiB"))
-    Int disk_size_gb = ceil(input_size_gb ) + ceil(size(gtf, "GiB")) + ceil(size(reference_fasta_gz, "GiB")) + modify_disk_size_gb
-    Int memory_gb = ceil(input_size_gb) + modify_memory_gb
+    Int bam_size_gb = ceil(size(bam, "GiB"))
+    Int disk_size_gb = bam_size_gb + ceil(size(gtf, "GiB")) + ceil(size(reference_fasta_gz, "GiB")) + modify_disk_size_gb
+    Int memory_gb = bam_size_gb + modify_memory_gb
 
     command <<<
         arriba \
