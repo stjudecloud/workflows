@@ -3,7 +3,8 @@ version 1.1
 
 task arriba {
     meta {
-        description: "Run Arriba structural variant caller on a STAR-produced BAM file."
+        description: "Run Arriba structural variant caller on a RNA-Seq BAM file."
+        help: "Typical input is a STAR-aligned BAM. Arriba also supports DRAGEN-aligned BAMs and any spec compliant BAM. That is discordant mates must have `BAM_FPROPER_PAIR (0x2)`, split reads must have `BAM_FSUPPLEMENTARY (0x800)`, and the anchor read must have a `SA` tag. Arriba also uses the `HI` tag to group supplementary alignments."
         outputs: {
             fusions: "Output file of fusions in TSV format"
             discarded_fusions: "Output file of discarded fusions in TSV format"
