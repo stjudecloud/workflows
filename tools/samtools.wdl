@@ -266,7 +266,7 @@ task filter_and_subsample {
     input {
         File bam
         Int desired_reads
-        FlagFilter filter?
+        FlagFilter? filter
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
         Int ncpu = 2
