@@ -248,6 +248,7 @@ task subsample {
     parameter_meta {
         bam: "Input BAM format file to subsample"
         desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value."
+        filter: "A set of 4 possible read filters to apply during subsampling. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **not remove any reads** from the output BAM (aside from those randomly discarded during subsampling). **WARNING utilizing this parameter will likely result in a subsampled BAM that is not a representative sample of the original BAM.**"
         prefix: "Prefix for the BAM file. The extension `.subsampled.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
@@ -263,6 +264,12 @@ task subsample {
     input {
         File bam
         Int desired_reads
+        FlagFilter filter = {
+            "include_if_any": "0x0",
+            "include_if_all": "0x0",
+            "exclude_if_any": "0x0",
+            "exclude_if_all": "0x0",
+        }
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
         Int ncpu = 2
@@ -287,7 +294,14 @@ task subsample {
             n_cores=$(nproc)
         fi
 
-        read_count="$(samtools view --threads "$n_cores" -c ~{bam})"
+        read_count="$(samtools view \
+            --threads "$n_cores" \
+            -f ~{filter.include_if_all} \
+            -F ~{filter.exclude_if_any} \
+            --rf ~{filter.include_if_any} \
+            -G ~{filter.exclude_if_all} \
+            -c ~{bam} \
+        )"
 
         if [[ "$read_count" -gt "~{desired_reads}" ]]; then
             # the BAM has at least ~{desired_reads} reads, meaning we should
@@ -300,7 +314,15 @@ task subsample {
                             ( desired_reads / read_count )
                         }' \
                 )
-            samtools view --threads "$n_cores" -hb -s "$frac" ~{bam} \
+            samtools view \
+                --threads "$n_cores" \
+                -hb \
+                -f ~{filter.include_if_all} \
+                -F ~{filter.exclude_if_any} \
+                --rf ~{filter.include_if_any} \
+                -G ~{filter.exclude_if_all} \
+                -s "$frac" \
+                ~{bam} \
                 > ~{suffixed}.bam
 
             {
@@ -628,9 +650,9 @@ task bam_to_fastq {
     input {
         File bam
         FlagFilter filter = {
-            "include_if_any": "0x0",
             "include_if_all": "0x0",
             "exclude_if_any": "0x900",
+            "include_if_any": "0x0",
             "exclude_if_all": "0x0",
         }
         String prefix = basename(bam, ".bam")
@@ -785,9 +807,9 @@ task collate_to_fastq {
     input {
         File bam
         FlagFilter filter = {
-            "include_if_any": "0x0",
             "include_if_all": "0x0",
             "exclude_if_any": "0x900",
+            "include_if_any": "0x0",
             "exclude_if_all": "0x0",
         }
         String prefix = basename(bam, ".bam")

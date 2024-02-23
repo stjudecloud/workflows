@@ -1,6 +1,6 @@
 ## # FlagFilter
 ##
-## A struct to represent the flags used in the `samtools fastq` command.
+## A struct to represent the filtering flags used in various `samtools` commands.
 ## The order of precedence is `include_if_all`, `exclude_if_any`, `include_if_any`,
 ## and `exclude_if_all`.
 ## These four fields correspond to the samtools flags
@@ -8,7 +8,7 @@
 ## The values of these fields are strings that represent a 12bit bitwise flag.
 ## These strings must evaluate to an integer less than 4096 (2^12).
 ## They can be in octal, decimal, or hexadecimal format.
-## Please see the `meta.help` of `validate_string_is_oct_dec_or_hex`
+## Please see the `meta.help` of `validate_string_is_12bit_oct_dec_or_hex`
 ## for more information on the valid formats.
 ##
 ## The `validate_FlagFilter` workflow can be used to validate a `FlagFilter` struct.
@@ -68,7 +68,7 @@ struct FlagFilter {
     String exclude_if_all  # samtools -G
 }
 
-task validate_string_is_oct_dec_or_hex {
+task validate_string_is_12bit_oct_dec_or_hex {
     meta {
         description: "Validates that a string is a octal, decimal, or hexadecimal number and less than 2^12."
         help: "**WARNING** Hexadecimal numbers must be prefixed with '0x' and only contain the characters [0-9A-F] to be valid (i.e. [a-f] is not allowed). Octal number must start with '0' and only contain the characters [0-7] to be valid. And decimal numbers must start with a digit between 1-9 and only contain the characters [0-9] to be valid."
@@ -137,16 +137,16 @@ workflow validate_FlagFilter {
         FlagFilter flags
     }
 
-    call validate_string_is_oct_dec_or_hex as validate_include_if_any { input:
+    call validate_string_is_12bit_oct_dec_or_hex as validate_include_if_any { input:
         number = flags.include_if_any
     }
-    call validate_string_is_oct_dec_or_hex as validate_include_if_all { input:
+    call validate_string_is_12bit_oct_dec_or_hex as validate_include_if_all { input:
         number = flags.include_if_all
     }
-    call validate_string_is_oct_dec_or_hex as validate_exclude_if_any { input:
+    call validate_string_is_12bit_oct_dec_or_hex as validate_exclude_if_any { input:
         number = flags.exclude_if_any
     }
-    call validate_string_is_oct_dec_or_hex as validate_exclude_if_all { input:
+    call validate_string_is_12bit_oct_dec_or_hex as validate_exclude_if_all { input:
         number = flags.exclude_if_all
     }
 
