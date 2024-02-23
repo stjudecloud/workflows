@@ -15,17 +15,32 @@ task arriba {
         gtf: "GTF features file. Gzipped or uncompressed."
         reference_fasta_gz: "Gzipped reference genome in FASTA format"
         chimeric_sam: "Optional input file of chimeric reads in SAM format, from older versions of STAR"
-        exclude_list: "Optional input file of regions to exclude from analysis in tab delimited format"
-        known_fusions: "Optional input file of known fusions in tab delimited format"
-        annotate_fusions: "Optional input file in tab delimited format of fusions to annotate with tags"
-        protein_domains: "Optional input file of protein domains coordinates in GFF3 format"
-        wgs_svs: "Optional input file of structural variants found by WGS in tab delimited or VCF format"
-        interesting_contigs: "Array of contigs to consider for analysis. Default is all autosomes, X, Y, and AC/NC contigs."
-        viral_contigs: "Array of contigs to consider for viral integation site analysis. Default is AC/NC contigs."
-        disable_filters: "Array of filters to disable. Default is no filters disabled."
-        feature_name: "List of feature names to use in GTF. Default is 'gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS'."
+        exclude_list: {
+            description: "Optional input file of regions to exclude from analysis in tab delimited format"
+            external_help: "https://arriba.readthedocs.io/en/latest/input-files/#blacklist"
+        }
+        known_fusions: {
+            description: "Optional input file of known fusions in tab delimited format"
+            extenral_help: "https://arriba.readthedocs.io/en/latest/input-files/#known-fusions"
+        }
+        annotate_fusions: {
+            description: "Optional input file in tab delimited format of fusions to annotate with tags"
+            external_help: "https://arriba.readthedocs.io/en/latest/input-files/#tags"
+        }
+        protein_domains: {
+            description: "Optional input file of protein domains coordinates in GFF3 format"
+            external_help: "https://arriba.readthedocs.io/en/latest/input-files/#protein-domains"
+        }
+        wgs_svs: {
+            description: "Optional input file of structural variants found by WGS in tab delimited or VCF format"
+            external_help: "https://arriba.readthedocs.io/en/latest/input-files/#structural-variant-calls-from-wgs"
+        }
+        interesting_contigs: "Array of contigs to consider for analysis."
+        viral_contigs: "Array of contigs to consider for viral integation site analysis."
+        disable_filters: "Array of filters to disable."
+        feature_name: "List of feature names to use in GTF."
         strandedness: {
-            description: "Strandedness of the input data. Default is 'auto'."
+            description: "Strandedness of the input data."
             external_help: "https://arriba.readthedocs.io/en/latest/command-line-options/"
             choices: [
                 "auto",
@@ -34,29 +49,29 @@ task arriba {
                 "reverse"
             ]
         }
-        mark_duplicates: "Mark duplicates in the input BAM file with Arriba. Default is true."
-        report_additional_columns_discard: "Report additional columns ['fusion_transcript', 'peptide_sequence', 'read_identifiers'] in the discarded fusions file. Default is false."
-        fill_gaps: "Fill gaps in assembled transcripts with reference bases. Expands the fusion sequence to the complete sequence of the fusion gene. Default is false."
-        max_e_value: "Maximum E-value for read support. Default is 0.3."
-        max_mismappers: "Maximum fraction of mismapped reads in the fusion region. Default is 0.8."
-        max_homolog_identity: "Maximum fraction of homologous sequence for genes. Default is 0.3."
-        max_kmer_content: "Maximum fraction of repetitive 3-mer content in the fusion region. Default is 0.6."
-        max_mismatch_pvalue: "Maximum p-value for mismatches in the fusion region. Default is 0.01."
-        quantile: "Genes with expression above the given quantile are eligible for filtering. Default is 0.998."
-        exonic_fraction: "Minimum fraction of exonic sequence between breakpoints. Default is 0.33."
-        coverage_fraction: "Minimum fraction of viral contig transcription. Default is 0.05."
-        min_itd_allele_fraction: "Minimum supporting read fraction for internal tandem duplications. Default is 0.07."
-        max_genomic_breakpoint_distance: "With 'wgs_svs', threshold for relating genomic and transcriptomic events. Default is 1000000."
-        min_supporting_reads: "Minimum number of supporting reads for a fusion. Default is 2."
-        homopolymer_length: "Maximum homopolymer length adjacent to breakpoints. Default is 6."
-        read_through_distance: "Minimum distance between breakpoints for read-through events. Default is 10000."
-        min_anchor_length: "Minimum anchor length for split reads. Default is 23."
-        many_spliced_events: "Recover fusions with at least this many spliced breakpoints. Default is 4."
-        fragment_length: "For single-end data, this is the fragment length. With paired-end reads, this is ignored and determined automatically. Default is 200."
-        max_reads: "Subsample fusions with more than this number of reads. Default is 300."
-        top_n: "Only report the top N most highly expressed viral integration sites. Default is 5."
-        max_itd_length: "Maximum length of internal tandem duplications. Default is 100."
-        min_itd_supporting_reads: "Minimum number of supporting reads for internal tandem duplications. Default is 10."
+        mark_duplicates: "Mark duplicates in the input BAM file with Arriba."
+        report_additional_columns_discard: "Report additional columns ['fusion_transcript', 'peptide_sequence', 'read_identifiers'] in the discarded fusions file."
+        fill_gaps: "Fill gaps in assembled transcripts with reference bases. Expands the fusion sequence to the complete sequence of the fusion gene."
+        max_e_value: "Maximum E-value for read support."
+        max_mismappers: "Maximum fraction of mismapped reads in the fusion region."
+        max_homolog_identity: "Maximum fraction of homologous sequence for genes."
+        max_kmer_content: "Maximum fraction of repetitive 3-mer content in the fusion region."
+        max_mismatch_pvalue: "Maximum p-value for mismatches in the fusion region."
+        quantile: "Genes with expression above the given quantile are eligible for filtering."
+        exonic_fraction: "Minimum fraction of exonic sequence between breakpoints."
+        coverage_fraction: "Minimum fraction of viral contig transcription."
+        min_itd_allele_fraction: "Minimum supporting read fraction for internal tandem duplications."
+        max_genomic_breakpoint_distance: "With 'wgs_svs', threshold for relating genomic and transcriptomic events."
+        min_supporting_reads: "Minimum number of supporting reads for a fusion."
+        homopolymer_length: "Maximum homopolymer length adjacent to breakpoints."
+        read_through_distance: "Minimum distance between breakpoints for read-through events."
+        min_anchor_length: "Minimum anchor length for split reads."
+        many_spliced_events: "Recover fusions with at least this many spliced breakpoints."
+        fragment_length: "For single-end data, this is the fragment length. With paired-end reads, this is ignored and determined automatically."
+        max_reads: "Subsample fusions with more than this number of reads."
+        top_n: "Only report the top N most highly expressed viral integration sites."
+        max_itd_length: "Maximum length of internal tandem duplications."
+        min_itd_supporting_reads: "Minimum number of supporting reads for internal tandem duplications."
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -75,6 +90,7 @@ task arriba {
         Array[String] viral_contigs = ["AC_*", "NC_*"]
         Array[String] disable_filters = []
         String feature_name = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
+        String prefix = basename(bam, ".bam")
         String strandedness = "auto"
         Boolean mark_duplicates = true
         Boolean report_additional_columns_discard = false
@@ -111,8 +127,8 @@ task arriba {
         arriba \
             -x ~{bam} \
             ~{if defined(chimeric_sam) then "-c " + chimeric_sam else ""} \
-            -o fusions.tsv \
-            -O fusions.discarded.tsv \
+            -o ~{prefix}.tsv \
+            -O ~{prefix}.discarded.tsv \
             -a ~{reference_fasta_gz} \
             -g ~{gtf} \
             -G "~{feature_name}" \
@@ -151,8 +167,8 @@ task arriba {
     >>>
 
     output {
-        File fusions = "fusions.tsv"
-        File discarded_fusions = "fusions.discarded.tsv"
+        File fusions = "~{prefix}.tsv"
+        File discarded_fusions = "~{prefix}.discarded.tsv"
     }
 
     runtime {
@@ -221,7 +237,7 @@ task arriba_extract_fusion_supporting_alignments {
     }
 
     parameter_meta {
-        bam: "Input BAM format file on which to call fusions"
+        bam: "Input BAM format file from which fusions were called"
         bam_index: "BAM index file corresponding to the input BAM"
         fusions: "Input fusions in TSV format to convert to VCF"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -284,17 +300,13 @@ task arriba_annotate_exon_numbers {
     Int input_size_gb = ceil(size(gtf, "GiB"))
     Int disk_size_gb = ceil(input_size_gb) + 5 + modify_disk_size_gb
 
-    String gene_model = basename(gtf, ".gz")
-
     command <<<
-        if [ "~{gene_model}" != "~{gtf}" ]
-        then
-            gunzip -dc ~{gtf} > ~{gene_model}
-        fi
+        gtf_name=~{basename(gtf, ".gz")}
+        gunzip -c ~{gtf} > "$gtf_name" || ln -sf ~{gtf} "$gtf_name"
 
         annotate_exon_numbers.sh \
             ~{fusions} \
-            ~{gene_model} \
+            $gtf_name \
             ~{prefix}
     >>>
 
