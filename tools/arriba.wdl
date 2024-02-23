@@ -191,32 +191,32 @@ task arriba_tsv_to_vcf {
 
     parameter_meta {
         fusions: "Input fusions in TSV format to convert to VCF"
-        reference_fasta_gz: "Gzipped reference genome in FASTA format"
+        reference_fasta: "Reference genome in FASTA format. Either gzipped or uncompressed."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File fusions
-        File reference_fasta_gz
-        String vcf = basename(fusions, ".tsv") + ".vcf"
+        File reference_fasta
+        String prefix = basename(fusions, ".tsv")
         Int modify_disk_size_gb = 0
     }
 
     Int input_size_gb = ceil(size(fusions, "GiB"))
-    Int disk_size_gb = ceil(input_size_gb) + (ceil(size(reference_fasta_gz, "GiB")) * 3) + modify_disk_size_gb
-
-    String fa = basename(reference_fasta_gz, ".gz")
+    Int disk_size_gb = ceil(input_size_gb) + (ceil(size(reference_fasta, "GiB")) * 3) + modify_disk_size_gb
 
     command <<<
-        gunzip -dc ~{reference_fasta_gz} > ~{fa}
+        fasta_name=~{basename(reference_fasta, ".gz")}
+        gunzip -c ~{reference_fasta} > "$fasta_name" || ln -sf ~{reference_fasta} "$fasta_name"
+
         convert_fusions_to_vcf.sh \
-            ~{fa} \
+            $fasta_name \
             ~{fusions} \
-            ~{vcf}
+            ~{prefix}.vcf
     >>>
 
     output {
-        File fusions_vcf = vcf
+        File fusions_vcf = "~{prefix}.vcf"
     }
 
     runtime {
@@ -240,7 +240,7 @@ task arriba_extract_fusion_supporting_alignments {
     parameter_meta {
         bam: "Input BAM format file from which fusions were called"
         bam_index: "BAM index file corresponding to the input BAM"
-        fusions: "Input fusions in TSV format to convert to VCF"
+        fusions: "Input fusions in TSV format for which to extract supporting alignments"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
@@ -286,7 +286,7 @@ task arriba_annotate_exon_numbers {
     }
 
     parameter_meta {
-        fusions: "Input fusions in TSV format to convert to VCF"
+        fusions: "Input fusions in TSV format for which to annotate gene exon numbers"
         gtf: "GTF features file. Gzipped or uncompressed."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -308,11 +308,11 @@ task arriba_annotate_exon_numbers {
         annotate_exon_numbers.sh \
             ~{fusions} \
             $gtf_name \
-            ~{prefix}
+            ~{outfile_name}
     >>>
 
     output {
-        File fusion_tsv = prefix
+        File fusion_tsv = outfile_name
     }
 
     runtime {
