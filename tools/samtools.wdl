@@ -274,6 +274,13 @@ task filter_and_subsample {
     }
 
     Boolean should_subsample = desired_reads > 0
+    Boolean supplied_filter = defined(filter)
+    FlagFilter filter_resolved = if supplied_filter then filter else {
+        "include_if_all": "0x0",
+        "exclude_if_any": "0x0",
+        "include_if_any": "0x0",
+        "exclude_if_all": "0x0",
+    }
 
     String suffixed = prefix + ".reduced"
 
@@ -288,7 +295,7 @@ task filter_and_subsample {
             n_cores=$(nproc)
         fi
 
-        if ! ~{should_subsample} && ! ~{defined(filter)}; then
+        if ! ~{should_subsample} && ! ~{supplied_filter}; then
             >&2 echo "No filtering or subsampling requested"
             >&2 echo "This task is failing as it has nothing to do!"
             exit 42
@@ -296,10 +303,10 @@ task filter_and_subsample {
 
         read_count="$(samtools view \
             --threads "$n_cores" \
-            ~{if defined(filter) then "-f " + filter.include_if_all else ""} \
-            ~{if defined(filter) then "-F " + filter.exclude_if_any else ""} \
-            ~{if defined(filter) then "--rf " + filter.include_if_any else ""} \
-            ~{if defined(filter) then "-G " + filter.exclude_if_all else ""} \
+            ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
+            ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
+            ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
+            ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
             ~{bam} \
             | tee ~{if !should_subsample then suffixed + ".bam" else ""} \
             | wc -l
@@ -319,10 +326,10 @@ task filter_and_subsample {
             samtools view \
                 --threads "$n_cores" \
                 -hb \
-                ~{if defined(filter) then "-f " + filter.include_if_all else ""} \
-                ~{if defined(filter) then "-F " + filter.exclude_if_any else ""} \
-                ~{if defined(filter) then "--rf " + filter.include_if_any else ""} \
-                ~{if defined(filter) then "-G " + filter.exclude_if_all else ""} \
+                ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
+                ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
+                ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
+                ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
                 -s "$frac" \
                 ~{bam} \
                 > ~{suffixed}.bam
