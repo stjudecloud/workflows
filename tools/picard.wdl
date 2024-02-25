@@ -178,8 +178,8 @@ task validate_bam {
         if ! ~{succeed_on_errors} \
             && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]
         then
-            echo "Problems detected by Picard ValidateSamFile" > /dev/stderr
-            grep -E "$GREP_PATTERN" ~{outfile_name} > /dev/stderr
+            >&2 echo "Problems detected by Picard ValidateSamFile"
+            >&2 grep -E "$GREP_PATTERN" ~{outfile_name}
             exit $rc
         fi
     >>>

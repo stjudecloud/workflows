@@ -78,7 +78,7 @@ task validate_string_is_12bit_oct_dec_or_hex {
     }
 
     parameter_meta {
-        number: "The number to validate. See task description for accepted formats."
+        number: "The number to validate. See task `meta.help` for accepted formats."
     }
 
     input {
@@ -89,10 +89,10 @@ task validate_string_is_12bit_oct_dec_or_hex {
         if [[ "~{number}" =~ ^[1-9][0-9]+$ ]]; then
             # number is in decimal
             if [ "~{number}" -lt 4096 ]; then
-                echo "Input number (~{number}) is valid" >> /dev/stderr
+                >&2 echo "Input number (~{number}) is valid"
             else
-                echo "Input number (~{number}) interpreted as decimal" >> /dev/stderr
-                echo "But number must be less than 4096!" >> /dev/stderr
+                >&2 echo "Input number (~{number}) interpreted as decimal"
+                >&2 echo "But number must be less than 4096!"
                 exit 42
             fi
         elif [[ "~{number}" =~ ^0[0-7]{0,4}$ ]] \
@@ -100,11 +100,11 @@ task validate_string_is_12bit_oct_dec_or_hex {
         then
             # number is in octal or hexadecimal
             # and number is less than 4096(decimal)
-            echo "Input number (~{number}) is valid" >> /dev/stderr
+            >&2 echo "Input number (~{number}) is valid"
         else
             # malformed for any reason
-            echo "Input number (~{number}) is invalid" >> /dev/stderr
-            echo "See task description for valid formats" >> /dev/stderr
+            >&2 echo "Input number (~{number}) is invalid"
+            >&2 echo "See task description for valid formats"
             exit 42
         fi
     >>>

@@ -40,8 +40,8 @@ task multiqc {
 
         echo "~{sep('\n', input_files)}" > file_list.txt
 
-        # --strict might be too strict? It is! It causes errors due
-        # to how our config is adds 'custom-content' to the report.
+        # --strict is too strict. It causes errors due
+        # to how our config adds 'custom-content' to the report.
         # Leaving this here as a warning not to try putting it back.
         # --require-logs might be useful at some point, but as of now,
         # it would cause errors. It could replace the check currently

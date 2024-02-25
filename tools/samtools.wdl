@@ -8,9 +8,9 @@ import "../data_structures/flag_filter.wdl"
 
 task quickcheck {
     meta {
-        description: "Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
+        description: "Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists and the end-of-file marker exists."
         outputs: {
-            checked_bam: "The unmodfied input BAM after it has been successfully quickchecked"
+            check: "Dummy output to enable caching"
         }
     }
 
@@ -242,7 +242,15 @@ task filter_and_subsample {
         description: "Filter and or randomly subsample the input BAM."
         help: "By default, no filtering is done. **Either filtering or subsampling must be enabled.** A `desired_reads` must be supplied. Supply a `desired_reads <= 0` to disable subsampling and only filter. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `reduced_bam` will always be created if a `filter` parameter is supplied. A `reduced_bam` will not be produced if filtering is disabled and the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
-            orig_read_count: "A TSV report containing the original read count before subsampling **but after filtering**. Only produced if subsampling was performed.",
+            # The read count behavior is odd when filtering is done in
+            # conjunction with subsampling.
+            # Reporting an unfiltered read count would require an extra
+            # pass through of the BAM,
+            # increasing runtime by about 50%. Or using the unfiltered read count
+            # for the sampling fraction calculation, which would be inaccurate.
+            # So we don't report the unfiltered read count.
+            # TODO Perhaps no output would be preferable to this strange output?
+            orig_read_count: "A TSV report containing the original read count before subsampling **but after filtering**. File only created if subsampling was requested. If subsampling was requested but the [filtered] input BAM had less than `desired_reads`, no read count will be filled in (instead there will be a `dash`).",
             reduced_bam: "The filtered and or subsampled input BAM. Only present if filtering or subsampling was performed."
         }
     }
@@ -250,7 +258,7 @@ task filter_and_subsample {
     parameter_meta {
         bam: "Input BAM format file to filter and or subsample"
         desired_reads: "How many reads should be in the ouput BAM? Any value less-than-or-equal-to 0 to disable subsampling. If positive, output BAM read count will be approximate to this value."
-        filter: "A set of 4 possible read filters to apply. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **not remove any reads** from the output BAM (aside from those randomly discarded during subsampling). **WARNING:** Utilizing this parameter will likely result in a subsampled BAM that is not a representative sample of the original BAM."
+        filter: "A set of 4 possible read filters to apply. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). **WARNING:** Utilizing this parameter in conjunction with subsampling will likely result in a subsampled BAM that is not a representative sample of the original BAM."
         prefix: "Prefix for the BAM file. The extension `.reduced.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
@@ -345,11 +353,11 @@ task filter_and_subsample {
                     ~{bam} \
                     > ~{suffixed}.bam
 
-                # Report the original read count.
+                # Report the original (or filtered) read count.
                 # Use 'prefix' as the entry name.
                 # Use the '.reduced' suffixed name in the filename
                 # because that is the name of the output BAM.
-                # This might seem odd but it looks best in MultiQC.
+                # This might seem odd but it works best with MultiQC.
                 {
                     echo -e "sample\toriginal read count"
                     echo -e "~{prefix}\t$read_count"
@@ -370,15 +378,16 @@ task filter_and_subsample {
                         ~{bam} \
                         > ~{suffixed}.bam
 
-                    # Report the original read count.
+                    # Since no subsampling was done, do not report the
+                    # original read count.
                     # Use 'prefix' as the entry name.
                     # Use the '.reduced' suffixed name in the filename
                     # because that is the name of the output BAM.
                     # This might seem odd but it looks best in MultiQC.
                     {
                         echo -e "sample\toriginal read count"
-                        echo -e "~{prefix}\t$read_count"
-                    } > ~{prefix}.orig_read_count.tsv
+                        echo -e "~{prefix}\t-"
+                    } > ~{suffixed}.orig_read_count.tsv
                 else
                     # No filtering requested. Do not create the output BAM.
                     # Do not report an original read count,
@@ -422,12 +431,20 @@ task filter_and_subsample {
                 >&2 echo "Please check that the input BAM is not empty"
                 >&2 echo "and that the filter is not too restrictive."
                 >&2 echo "Command failed!"
+                rm first_read.sam
                 exit 42
             fi
             rm first_read.sam
             # TODO should there be a check that the output
-            # BAM is different from the input?
-            # More complicated check.
+            # BAM is different from the input? Probably.
+            # It would only need to be a simple `wc -l` check.
+            # However, how to do without an extra pass through the BAM?
+            # An easier check is that the supplied filters aren't all zeroes.
+            # However it's still possible to have an active filter
+            # that doesn't catch anything. What's the ideal
+            # behavior in that case? The user provided something valid,
+            # so failing seems wrong. But (essentially) duplicating the BAM is also
+            # (most likely) wrong.
         fi
 
     >>>
@@ -693,7 +710,7 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "Runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. Use `filter` argument to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
+        description: "Runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. Use `filter` argument to remove any unwanted reads. **Assumes either a name sorted or collated BAM.** For converting a position sorted BAM see `collate_to_fastq`."
         help: "An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
         outputs: {
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
@@ -709,21 +726,21 @@ task bam_to_fastq {
         filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
         prefix: "Prefix for output FASTQ(s). Extensions `[,.R1,.R2,.singleton].fastq.gz` will be added depending on other options."
         paired_end: {
-            description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.",
+            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `filter` argument to remove any unwanted reads.",
             common: true
         }
         append_read_number: {
-            description: "Append /1 and /2 suffixes to read names",
+            description: "Append /1 and /2 suffixes to read names?",
             common: true
         }
         interleaved: {
-            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end = false`.",
+            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end == false`.",
             common: true
         }
-        output_singletons: "Output singleton reads as their own FASTQ?"
+        output_singletons: "Output singleton reads as their own FASTQ? Ignored if `paired_end == false`."
         fail_on_unexpected_reads: {
             description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?",
-            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. In any case, reads that have neither or both `first` and `last` bits set are considered unexpected. If `paired_end` is `true` and `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read will be present in the resulting FASTQ regardless of bit settings.",
+            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read (not caught by `filter`) will be present in the resulting FASTQ regardless of `first`/`last` bit settings. This setting will be ignored in that case. If `paired_end` is `true` then reads that don't satisfy `first` XOR `last` are considered unexpected (i.e. reads that have neither `first` nor `last` set or reads that have both `first` and `last` set). If `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set (but not both) and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.",
             common: true
         }
         use_all_cores: {
@@ -795,7 +812,7 @@ task bam_to_fastq {
                     then "-s " + prefix+".singleton.fastq.gz"
                     else "-s junk.singleton.fastq.gz"
                 )
-                else ""
+                else ""  # TODO document why `-s` isn't specified here
             } \
             -0 ~{
                 if paired_end
@@ -838,10 +855,12 @@ task bam_to_fastq {
     }
 }
 
+# TODO: combine collate_to_fastq and bam_to_fastq into one task
+
 task collate_to_fastq {
     meta {
         description: "Runs `samtools collate` on the input BAM file then converts it into FASTQ(s) using `samtools fastq`"
-        help: "This task is useful for converting a position sorted BAM into FASTQs. It is not suitable for name sorted or collated BAMs. If you have a name sorted or collated BAM, use `bam_to_fastq` instead. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
+        help: "This task is useful for converting a position sorted BAM into FASTQs. Name sorted or collated BAMs will see better performance from `bam_to_fastq`. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
         outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)",
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
@@ -865,21 +884,21 @@ task collate_to_fastq {
             common: true
         }
         paired_end: {
-            description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `filter` argument to remove any unwanted reads.",
+            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `filter` argument to remove any unwanted reads.",
             common: true
         }
         append_read_number: {
-            description: "Append /1 and /2 suffixes to read names",
+            description: "Append /1 and /2 suffixes to read names?",
             common: true
         }
         interleaved: {
-            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end = false`.",
+            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end == false`.",
             common: true
         }
-        output_singletons: "Output singleton reads as their own FASTQ?"
+        output_singletons: "Output singleton reads as their own FASTQ? Ignored if `paired_end == false`."
         fail_on_unexpected_reads: {
             description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?",
-            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. In any case, reads that have neither or both `first` and `last` bits set are considered unexpected. If `paired_end` is `true` and `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read will be present in the resulting FASTQ regardless of bit settings.",
+            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read (not caught by `filter`) will be present in the resulting FASTQ regardless of `first`/`last` bit settings. This setting will be ignored in that case. If `paired_end` is `true` then reads that don't satisfy `first` XOR `last` are considered unexpected (i.e. reads that have neither `first` nor `last` set or reads that have both `first` and `last` set). If `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set (but not both) and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.",
             common: true
         }
         use_all_cores: {
@@ -929,7 +948,7 @@ task collate_to_fastq {
         fi
 
         # Use the `-u` flag to skip compression (and decompression)
-        # if not storing the output
+        # if not storing the output of `collate`
         samtools collate \
             ~{if store_collated_bam then "" else "-u"} \
             --threads "$n_cores" \
@@ -965,7 +984,7 @@ task collate_to_fastq {
                         then "-s " + prefix+".singleton.fastq.gz"
                         else "-s junk.singleton.fastq.gz"
                     )
-                    else ""
+                    else ""  # TODO document why `-s` isn't specified here
                 } \
                 -0 ~{
                     if paired_end
