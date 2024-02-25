@@ -97,14 +97,14 @@ task split {
             -h 0 \
             -n 1 \
             ~{prefix}.unaccounted_reads.bam \
-            > first_unaccounted_read.bam
+            > first_unaccounted_read.sam
 
-        if ~{reject_unaccounted} && [ -s first_unaccounted_read.bam ]; then
+        if ~{reject_unaccounted} && [ -s first_unaccounted_read.sam ]; then
             exit 42
         else
             rm ~{prefix}.unaccounted_reads.bam
         fi
-        rm first_unaccounted_read.bam
+        rm first_unaccounted_read.sam
     >>>
 
     output {
@@ -239,10 +239,10 @@ task index {
 task filter_and_subsample {
     # TODO add more filtering options
     meta {
-        description: "Depending on paraemters, filter and or randomly subsamples the input BAM."
-        help: "By default, no filtering is done. A `desired_reads` must be supplied (`desired_reads <= 0` to only filter). Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `reduced_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
+        description: "Filter and or randomly subsample the input BAM."
+        help: "By default, no filtering is done. **Either filtering or subsampling must be enabled.** A `desired_reads` must be supplied. Supply a `desired_reads <= 0` to disable subsampling and only filter. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `reduced_bam` will always be created if a `filter` parameter is supplied. A `reduced_bam` will not be produced if filtering is disabled and the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
-            orig_read_count: "A TSV report containing the original read count before filtering and or subsampling",
+            orig_read_count: "A TSV report containing the original read count before subsampling **but after filtering**. Only produced if subsampling was performed.",
             reduced_bam: "The filtered and or subsampled input BAM. Only present if filtering or subsampling was performed."
         }
     }
@@ -304,7 +304,7 @@ task filter_and_subsample {
             exit 42
         fi
 
-        if should_subsample; then
+        if ~{should_subsample}; then
             read_count="$(samtools view \
                 --threads "$n_cores" \
                 ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
@@ -314,8 +314,17 @@ task filter_and_subsample {
                 --count \
                 ~{bam}
             )"
+
+            if [[ "$read_count" -eq 0 ]]; then
+                >&2 echo "Read count is 0. Cannot subsample."
+                >&2 echo "Please check that the input BAM is not empty"
+                >&2 echo "and that the filter is not too restrictive."
+                >&2 echo "Command failed!"
+                exit 42
+            fi
+
             if [[ "$read_count" -gt "~{desired_reads}" ]]; then
-                # the BAM has at least ~{desired_reads} reads, meaning we should
+                # the BAM has more than ~{desired_reads} reads, meaning we should
                 # subsample it.
                 frac=$( \
                     awk -v desired_reads=~{desired_reads} \
@@ -324,7 +333,7 @@ task filter_and_subsample {
                                 printf "%1.8f",
                                 ( desired_reads / read_count )
                             }' \
-                    )
+                )
                 samtools view \
                     --threads "$n_cores" \
                     -hb \
@@ -348,14 +357,40 @@ task filter_and_subsample {
             else
                 # the BAM has less than ~{desired_reads} reads, meaning we should
                 # just use it directly without subsampling.
+                # However it might still need to be filtered.
 
-                # Do not use the '.reduced' suffixed name
-                # if not subsampled. Use ~{prefix} instead.
-                # Again, this is for MultiQC.
-                {
-                    echo -e "sample\toriginal read count"
-                    echo -e "~{prefix}\t-"
-                } > ~{prefix}.orig_read_count.tsv
+                if ~{supplied_filter}; then
+                    samtools view \
+                        --threads "$n_cores" \
+                        -hb \
+                        ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
+                        ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
+                        ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
+                        ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
+                        ~{bam} \
+                        > ~{suffixed}.bam
+
+                    # Report the original read count.
+                    # Use 'prefix' as the entry name.
+                    # Use the '.reduced' suffixed name in the filename
+                    # because that is the name of the output BAM.
+                    # This might seem odd but it looks best in MultiQC.
+                    {
+                        echo -e "sample\toriginal read count"
+                        echo -e "~{prefix}\t$read_count"
+                    } > ~{prefix}.orig_read_count.tsv
+                else
+                    # No filtering requested. Do not create the output BAM.
+                    # Do not report an original read count,
+                    # as it is the same as the input BAM. Just write a dash.
+                    # Do not use the '.reduced' suffixed name in the filename
+                    # if not filtered or subsampled. Use ~{prefix} instead.
+                    # This is for MultiQC purposes.
+                    {
+                        echo -e "sample\toriginal read count"
+                        echo -e "~{prefix}\t-"
+                    } > ~{prefix}.orig_read_count.tsv
+                fi
             fi
         else
             # No subsampling requested, just filter the BAM.
@@ -370,7 +405,31 @@ task filter_and_subsample {
                 > ~{suffixed}.bam
 
             # Do not report an original read count if not subsampled.
+
         fi
+        # Check that if output was created,
+        # it contains at least one read.
+        if [ -e ~{suffixed}.bam ]; then
+            samtools head \
+                --threads "$n_cores" \
+                -h 0 \
+                -n 1 \
+                ~{suffixed}.bam \
+                > first_read.sam
+
+            if [ ! -s first_read.sam ]; then
+                >&2 echo "No reads are in the output BAM!"
+                >&2 echo "Please check that the input BAM is not empty"
+                >&2 echo "and that the filter is not too restrictive."
+                >&2 echo "Command failed!"
+                exit 42
+            fi
+            rm first_read.sam
+            # TODO should there be a check that the output
+            # BAM is different from the input?
+            # More complicated check.
+        fi
+
     >>>
 
     output {
