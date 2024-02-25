@@ -275,12 +275,15 @@ task filter_and_subsample {
 
     Boolean should_subsample = desired_reads > 0
     Boolean supplied_filter = defined(filter)
-    FlagFilter filter_resolved = if supplied_filter then filter else {
-        "include_if_all": "0x0",
-        "exclude_if_any": "0x0",
-        "include_if_any": "0x0",
-        "exclude_if_all": "0x0",
-    }
+    FlagFilter filter_resolved = select_first([
+        filter,
+        {
+            "include_if_all": "undefined",
+            "exclude_if_any": "undefined",
+            "include_if_any": "undefined",
+            "exclude_if_all": "undefined",
+        },
+    ])
 
     String suffixed = prefix + ".reduced"
 
@@ -296,33 +299,66 @@ task filter_and_subsample {
         fi
 
         if ! ~{should_subsample} && ! ~{supplied_filter}; then
-            >&2 echo "No filtering or subsampling requested"
+            >&2 echo "No filtering or subsampling requested."
             >&2 echo "This task is failing as it has nothing to do!"
             exit 42
         fi
 
-        read_count="$(samtools view \
-            --threads "$n_cores" \
-            ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
-            ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
-            ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
-            ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
-            ~{bam} \
-            | tee ~{if !should_subsample then suffixed + ".bam" else ""} \
-            | wc -l
-        )"
+        if should_subsample; then
+            read_count="$(samtools view \
+                --threads "$n_cores" \
+                ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
+                ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
+                ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
+                ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
+                --count \
+                ~{bam}
+            )"
+            if [[ "$read_count" -gt "~{desired_reads}" ]]; then
+                # the BAM has at least ~{desired_reads} reads, meaning we should
+                # subsample it.
+                frac=$( \
+                    awk -v desired_reads=~{desired_reads} \
+                        -v read_count="$read_count" \
+                            'BEGIN{
+                                printf "%1.8f",
+                                ( desired_reads / read_count )
+                            }' \
+                    )
+                samtools view \
+                    --threads "$n_cores" \
+                    -hb \
+                    ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
+                    ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
+                    ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
+                    ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
+                    -s "$frac" \
+                    ~{bam} \
+                    > ~{suffixed}.bam
 
-        if should_subsample && [[ "$read_count" -gt "~{desired_reads}" ]]; then
-            # the BAM has at least ~{desired_reads} reads, meaning we should
-            # subsample it.
-            frac=$( \
-                awk -v desired_reads=~{desired_reads} \
-                    -v read_count="$read_count" \
-                        'BEGIN{
-                            printf "%1.8f",
-                            ( desired_reads / read_count )
-                        }' \
-                )
+                # Report the original read count.
+                # Use 'prefix' as the entry name.
+                # Use the '.reduced' suffixed name in the filename
+                # because that is the name of the output BAM.
+                # This might seem odd but it looks best in MultiQC.
+                {
+                    echo -e "sample\toriginal read count"
+                    echo -e "~{prefix}\t$read_count"
+                } > ~{suffixed}.orig_read_count.tsv
+            else
+                # the BAM has less than ~{desired_reads} reads, meaning we should
+                # just use it directly without subsampling.
+
+                # Do not use the '.reduced' suffixed name
+                # if not subsampled. Use ~{prefix} instead.
+                # Again, this is for MultiQC.
+                {
+                    echo -e "sample\toriginal read count"
+                    echo -e "~{prefix}\t-"
+                } > ~{prefix}.orig_read_count.tsv
+            fi
+        else
+            # No subsampling requested, just filter the BAM.
             samtools view \
                 --threads "$n_cores" \
                 -hb \
@@ -330,36 +366,15 @@ task filter_and_subsample {
                 ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
                 ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
                 ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
-                -s "$frac" \
                 ~{bam} \
                 > ~{suffixed}.bam
 
-            # Report the original read count.
-            # Use 'prefix' as the entry name
-            # because that will be more familiar to the user.
-            # Use the '.reduced' suffixed name in the filename
-            # because that is the name of the output BAM.
-            # This might seem odd but it looks best in MultiQC.
-            {
-                echo -e "sample\toriginal read count"
-                echo -e "~{prefix}\t$read_count"
-            } > ~{suffixed}.orig_read_count.tsv
-        else
-            # the BAM has less than ~{desired_reads} reads, meaning we should
-            # just use it directly without subsampling.
-
-            # Do not use the '.reduced' suffixed name
-            # if not subsampled. Use ~{prefix} instead.
-            # Again, this is for MultiQC.
-            {
-                echo -e "sample\toriginal read count"
-                echo -e "~{prefix}\t-"
-            } > ~{prefix}.orig_read_count.tsv
+            # Do not report an original read count if not subsampled.
         fi
     >>>
 
     output {
-        File orig_read_count = glob("*.orig_read_count.tsv")[0]
+        File? orig_read_count = glob("*.orig_read_count.tsv")[0]
         File? reduced_bam = suffixed + ".bam"
     }
 
