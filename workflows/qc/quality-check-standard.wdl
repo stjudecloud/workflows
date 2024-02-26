@@ -154,22 +154,16 @@ workflow quality_check {
     call samtools.quickcheck after parse_input { input: bam=bam }
     call util.compression_integrity after parse_input { input: bgzipped_file=bam }
 
-    # This task can also filter without sampling; but that is not exposed here.
-    # If you want to filter your BAM without subsampling, call the
-    # `samtools.filter_and_subsample` task directly prior to running QC.
-    # (Or, as a bit of a hack, set `subsample_n_reads` to some `n` larger
-    # than your input BAM's read count _and_ supply a
-    # `quality_check.filter_and_subsample.filter` object.)
     if (subsample_n_reads > 0) {
-        call samtools.filter_and_subsample after quickcheck { input:
+        call samtools.subsample after quickcheck { input:
             bam=bam,
             prefix=prefix,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
         }
-        if (defined(filter_and_subsample.reduced_bam)) {
+        if (defined(subsample.sampled_bam)) {
             call samtools.index as subsample_index { input:
-                bam=select_first([filter_and_subsample.reduced_bam, "undefined"]),
+                bam=select_first([subsample.sampled_bam, "undefined"]),
                 use_all_cores=use_all_cores,
             }
         }
@@ -177,14 +171,14 @@ workflow quality_check {
     # If subsampling is disabled **or** input BAM has fewer reads than
     # `subsample_n_reads` this will be `bam`
     File post_subsample_bam = select_first([
-        filter_and_subsample.reduced_bam,
+        subsample.sampled_bam,
         bam
     ])
     File post_subsample_bam_index = select_first([
         subsample_index.bam_index,
         bam_index
     ])
-    String post_subsample_prefix = if (defined(filter_and_subsample.reduced_bam))
+    String post_subsample_prefix = if (defined(subsample.sampled_bam))
         then prefix + ".subsampled"
         else prefix
 
@@ -237,7 +231,7 @@ workflow quality_check {
         after kraken_filter_validator
     { input:
         bam = post_subsample_bam,
-        filter = kraken_filter,
+        bitwise_filter = kraken_filter,
         prefix = post_subsample_prefix,
         # RNA needs a collated BAM for Qualimap
         # DNA can skip the associated storage costs
@@ -275,7 +269,7 @@ workflow quality_check {
             after comparative_kraken_filter_validator
         { input:
             bam = post_subsample_bam,
-            filter = comparative_kraken_filter,
+            bitwise_filter = comparative_kraken_filter,
             prefix = post_subsample_prefix + ".alt_filtered",
             # matches default but prevents user from overriding
             # If the user wants a collated BAM, they should save the one
@@ -398,7 +392,7 @@ workflow quality_check {
                 wg_coverage.summary,
                 wg_coverage.global_dist,
                 global_phred_scores.phred_scores,
-                filter_and_subsample.orig_read_count,
+                subsample.orig_read_count,
                 markdups_post.mosdepth_global_summary,
                 markdups_post.mosdepth_global_dist,
                 strandedness.strandedness_file,
@@ -418,8 +412,8 @@ workflow quality_check {
 
     if (output_intermediate_files) {
         IntermediateFiles optional_files = {
-            "reduced_bam": filter_and_subsample.reduced_bam,
-            "reduced_bam_index": subsample_index.bam_index,
+            "sampled_bam": subsample.sampled_bam,
+            "sampled_bam_index": subsample_index.bam_index,
             "collated_bam": collate_to_fastq.collated_bam,
             "read_one_fastq_gz": collate_to_fastq.read_one_fastq_gz,
             "read_two_fastq_gz": collate_to_fastq.read_two_fastq_gz,
@@ -468,7 +462,7 @@ workflow quality_check {
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
         File multiqc_report = multiqc.multiqc_report
-        File? orig_read_count = filter_and_subsample.orig_read_count
+        File? orig_read_count = subsample.orig_read_count
         File? kraken_sequences = kraken.sequences
         File? comparative_kraken_report = comparative_kraken.report
         File? comparative_kraken_sequences = comparative_kraken.sequences
@@ -550,8 +544,8 @@ task parse_input {
 
 # TODO does this need documentation?
 struct IntermediateFiles {
-    File? reduced_bam
-    File? reduced_bam_index
+    File? sampled_bam
+    File? sampled_bam_index
     File? collated_bam
     File? read_one_fastq_gz
     File? read_two_fastq_gz

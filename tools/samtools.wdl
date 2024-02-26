@@ -236,30 +236,22 @@ task index {
     }
 }
 
-task filter_and_subsample {
-    # TODO add more filtering options
+task subsample {
     meta {
-        description: "Filter and or randomly subsample the input BAM."
-        help: "By default, no filtering is done. **Either filtering or subsampling must be enabled.** A `desired_reads` must be supplied. Supply a `desired_reads <= 0` to disable subsampling and only filter. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `reduced_bam` will always be created if a `filter` parameter is supplied. A `reduced_bam` will not be produced if filtering is disabled and the input BAM read count is less than or equal to `desired_reads`."
+        description: "Randomly subsample the input BAM."
+        help: "A `desired_reads` **greater than zero** must be supplied. A `desired_reads <= 0` will result in task failure. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
-            # The read count behavior is odd when filtering is done in
-            # conjunction with subsampling.
-            # Reporting an unfiltered read count would require an extra
-            # pass through of the BAM,
-            # increasing runtime by about 50%. Or using the unfiltered read count
-            # for the sampling fraction calculation, which would be inaccurate.
-            # So we don't report the unfiltered read count.
-            # TODO Perhaps no output would be preferable to this strange output?
-            orig_read_count: "A TSV report containing the original read count before subsampling **but after filtering**. File only created if subsampling was requested. If subsampling was requested but the [filtered] input BAM had less than `desired_reads`, no read count will be filled in (instead there will be a `dash`).",
-            reduced_bam: "The filtered and or subsampled input BAM. Only present if filtering or subsampling was performed."
+            # TODO is there any situation where the sampling fraction should be reported?
+            # It is _roughly_ derivable from the input and output read counts.
+            orig_read_count: "A TSV report containing the original read count before subsampling. If subsampling was requested but the input BAM had less than `desired_reads`, no read count will be filled in (instead there will be a `dash`).",
+            sampled_bam: "The subsampled input BAM. Only present if subsampling was performed."
         }
     }
 
     parameter_meta {
-        bam: "Input BAM format file to filter and or subsample"
-        desired_reads: "How many reads should be in the ouput BAM? Any value less-than-or-equal-to 0 to disable subsampling. If positive, output BAM read count will be approximate to this value."
-        filter: "A set of 4 possible read filters to apply. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). **WARNING:** Utilizing this parameter in conjunction with subsampling will likely result in a subsampled BAM that is not a representative sample of the original BAM."
-        prefix: "Prefix for the BAM file. The extension `.reduced.bam` will be added."
+        bam: "Input BAM format file subsample"
+        desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value. **Must be greater than zero.** A `desired_reads <= 0` will result in task failure."
+        prefix: "Prefix for the BAM file. The extension `.sampled.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             common: true
@@ -274,26 +266,13 @@ task filter_and_subsample {
     input {
         File bam
         Int desired_reads
-        FlagFilter? filter
         String prefix = basename(bam, ".bam")
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_disk_size_gb = 0
     }
 
-    Boolean should_subsample = desired_reads > 0
-    Boolean supplied_filter = defined(filter)
-    FlagFilter filter_resolved = select_first([
-        filter,
-        {
-            "include_if_all": "undefined",
-            "exclude_if_any": "undefined",
-            "include_if_any": "undefined",
-            "exclude_if_all": "undefined",
-        },
-    ])
-
-    String suffixed = prefix + ".reduced"
+    String suffixed = prefix + ".sampled"
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
@@ -306,116 +285,67 @@ task filter_and_subsample {
             n_cores=$(nproc)
         fi
 
-        if ! ~{should_subsample} && ! ~{supplied_filter}; then
-            >&2 echo "No filtering or subsampling requested."
-            >&2 echo "This task is failing as it has nothing to do!"
+        if [[ ~{desired_reads} -le 0 ]]; then
+            >&2 echo "'desired_reads' must be greater than zero!"
+            >&2 echo "Task failed!"
             exit 42
         fi
 
-        if ~{should_subsample}; then
-            read_count="$(samtools view \
-                --threads "$n_cores" \
-                ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
-                ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
-                ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
-                ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
-                --count \
-                ~{bam}
-            )"
+        read_count="$(samtools view \
+            --threads "$n_cores" \
+            --count \
+            ~{bam}
+        )"
 
-            if [[ "$read_count" -eq 0 ]]; then
-                >&2 echo "Read count is 0. Cannot subsample."
-                >&2 echo "Please check that the input BAM is not empty"
-                >&2 echo "and that the filter is not too restrictive."
-                >&2 echo "Command failed!"
-                exit 42
-            fi
+        if [[ "$read_count" -eq 0 ]]; then
+            >&2 echo "Read count is 0. Cannot subsample."
+            >&2 echo "Please check that the input BAM is not empty."
+            >&2 echo "Command failed!"
+            exit 42
+        fi
 
-            if [[ "$read_count" -gt "~{desired_reads}" ]]; then
-                # the BAM has more than ~{desired_reads} reads, meaning we should
-                # subsample it.
-                frac=$( \
-                    awk -v desired_reads=~{desired_reads} \
-                        -v read_count="$read_count" \
-                            'BEGIN{
-                                printf "%1.8f",
-                                ( desired_reads / read_count )
-                            }' \
-                )
-                samtools view \
-                    --threads "$n_cores" \
-                    -hb \
-                    ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
-                    ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
-                    ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
-                    ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
-                    -s "$frac" \
-                    ~{bam} \
-                    > ~{suffixed}.bam
-
-                # Report the original (or filtered) read count.
-                # Use 'prefix' as the entry name.
-                # Use the '.reduced' suffixed name in the filename
-                # because that is the name of the output BAM.
-                # This might seem odd but it works best with MultiQC.
-                {
-                    echo -e "sample\toriginal read count"
-                    echo -e "~{prefix}\t$read_count"
-                } > ~{suffixed}.orig_read_count.tsv
-            else
-                # the BAM has less than ~{desired_reads} reads, meaning we should
-                # just use it directly without subsampling.
-                # However it might still need to be filtered.
-
-                if ~{supplied_filter}; then
-                    samtools view \
-                        --threads "$n_cores" \
-                        -hb \
-                        ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
-                        ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
-                        ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
-                        ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
-                        ~{bam} \
-                        > ~{suffixed}.bam
-
-                    # Since no subsampling was done, do not report the
-                    # original read count.
-                    # Use 'prefix' as the entry name.
-                    # Use the '.reduced' suffixed name in the filename
-                    # because that is the name of the output BAM.
-                    # This might seem odd but it looks best in MultiQC.
-                    {
-                        echo -e "sample\toriginal read count"
-                        echo -e "~{prefix}\t-"
-                    } > ~{suffixed}.orig_read_count.tsv
-                else
-                    # No filtering requested. Do not create the output BAM.
-                    # Do not report an original read count,
-                    # as it is the same as the input BAM. Just write a dash.
-                    # Do not use the '.reduced' suffixed name in the filename
-                    # if not filtered or subsampled. Use ~{prefix} instead.
-                    # This is for MultiQC purposes.
-                    {
-                        echo -e "sample\toriginal read count"
-                        echo -e "~{prefix}\t-"
-                    } > ~{prefix}.orig_read_count.tsv
-                fi
-            fi
-        else
-            # No subsampling requested, just filter the BAM.
+        if [[ "$read_count" -gt "~{desired_reads}" ]]; then
+            # the BAM has more than ~{desired_reads} reads, meaning we should
+            # subsample it.
+            frac=$( \
+                awk -v desired_reads=~{desired_reads} \
+                    -v read_count="$read_count" \
+                        'BEGIN{
+                            printf "%1.8f",
+                            ( desired_reads / read_count )
+                        }' \
+            )
             samtools view \
                 --threads "$n_cores" \
                 -hb \
-                ~{if supplied_filter then "-f " + filter_resolved.include_if_all else ""} \
-                ~{if supplied_filter then "-F " + filter_resolved.exclude_if_any else ""} \
-                ~{if supplied_filter then "--rf " + filter_resolved.include_if_any else ""} \
-                ~{if supplied_filter then "-G " + filter_resolved.exclude_if_all else ""} \
+                -s "$frac" \
                 ~{bam} \
                 > ~{suffixed}.bam
 
-            # Do not report an original read count if not subsampled.
+            # Report the original read count.
+            # Use 'prefix' as the entry name.
+            # Use the '.sampled' suffixed name in the filename
+            # because that is the name of the output BAM.
+            # This might seem odd but it works best with MultiQC.
+            {
+                echo -e "sample\toriginal read count"
+                echo -e "~{prefix}\t$read_count"
+            } > ~{suffixed}.orig_read_count.tsv
+        else
+            # the BAM has less than or equal to ~{desired_reads} reads,
+            # meaning we should just use it directly without subsampling.
 
+            # Do not report an original read count,
+            # as it is the same as the input BAM. Just write a dash.
+            # Do not use the '.sampled' suffixed name in the filename
+            # if not subsampled. Use ~{prefix} instead.
+            # This is for MultiQC purposes.
+            {
+                echo -e "sample\toriginal read count"
+                echo -e "~{prefix}\t-"
+            } > ~{prefix}.orig_read_count.tsv
         fi
+
         # Check that if output was created,
         # it contains at least one read.
         if [ -e ~{suffixed}.bam ]; then
@@ -428,30 +358,111 @@ task filter_and_subsample {
 
             if [ ! -s first_read.sam ]; then
                 >&2 echo "No reads are in the output BAM!"
-                >&2 echo "Please check that the input BAM is not empty"
-                >&2 echo "and that the filter is not too restrictive."
-                >&2 echo "Command failed!"
+                >&2 echo "This should not be possible! Please report this as a bug."
                 rm first_read.sam
                 exit 42
             fi
             rm first_read.sam
-            # TODO should there be a check that the output
-            # BAM is different from the input? Probably.
-            # It would only need to be a simple `wc -l` check.
-            # However, how to do without an extra pass through the BAM?
-            # An easier check is that the supplied filters aren't all zeroes.
-            # However it's still possible to have an active filter
-            # that doesn't catch anything. What's the ideal
-            # behavior in that case? The user provided something valid,
-            # so failing seems wrong. But (essentially) duplicating the BAM is also
-            # (most likely) wrong.
         fi
 
     >>>
 
     output {
-        File? orig_read_count = glob("*.orig_read_count.tsv")[0]
-        File? reduced_bam = suffixed + ".bam"
+        File orig_read_count = glob("*.orig_read_count.tsv")[0]
+        File? sampled_bam = suffixed + ".bam"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "4 GB"
+        disk: "~{disk_size_gb} GB"
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        maxRetries: 1
+    }
+}
+
+task filter {
+    # TODO expose more `view` options
+    meta {
+        description: "Filters a BAM based on its bitwise flag value."
+        help: "This task is a wrapper around `samtools view`. This task will fail if there are no reads in the output BAM. This can happen either because the input BAM was empty or because the supplied `bitwise_filter` was too strict. This task is not suitable for random subsampling. If you want to subsample a BAM, use the `subsample` task instead."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to filter"
+        bitwise_filter: "A set of 4 possible read filters to apply. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information)."
+        prefix: "Prefix for the filtered BAM file. The extension `.bam` will be added."
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments.",
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task",
+            common: true
+        }
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        FlagFilter bitwise_filter
+        String prefix = basename(bam, ".bam") + ".filtered"
+        Boolean use_all_cores = false
+        Int ncpu = 2
+        Int modify_disk_size_gb = 0
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+
+        samtools view \
+            --threads "$n_cores" \
+            -hb \
+            -f ~{bitwise_filter.include_if_all} \
+            -F ~{bitwise_filter.exclude_if_any} \
+            --rf ~{bitwise_filter.include_if_any} \
+            -G ~{bitwise_filter.exclude_if_all} \
+            ~{bam} \
+            > ~{prefix}.bam
+
+        samtools head \
+            --threads "$n_cores" \
+            -h 0 \
+            -n 1 \
+            ~{prefix}.bam \
+            > first_read.sam
+
+        if [ ! -s first_read.sam ]; then
+            >&2 echo "No reads are in the output BAM!"
+            >&2 echo "Please check that the input BAM is not empty"
+            >&2 echo "and that the filter is not too restrictive."
+            >&2 echo "Command failed!"
+            rm first_read.sam
+            exit 42
+        fi
+        rm first_read.sam
+        # TODO should there be a check that the output
+        # BAM is different from the input?
+        # It would only need to be a simple `wc -l` check.
+        # Ideally this would be done _without_ an extra pass through the BAM.
+        # An easier check is that the supplied filters aren't all zeroes.
+        # However it's still possible to have an active filter
+        # that doesn't catch anything. What's the ideal
+        # behavior in that case? The user provided something valid,
+        # so failing seems wrong. But (essentially) duplicating the BAM is also
+        # (most likely) wrong.
+    >>>
+
+    output {
+        File filtered_bam = prefix + ".bam"
     }
 
     runtime {
@@ -710,7 +721,7 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "Runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. Use `filter` argument to remove any unwanted reads. **Assumes either a name sorted or collated BAM.** For converting a position sorted BAM see `collate_to_fastq`."
+        description: "Runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. Use `bitwise_filter` argument to remove any unwanted reads. **Assumes either a name sorted or collated BAM.** For converting a position sorted BAM see `collate_to_fastq`."
         help: "An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
         outputs: {
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
@@ -723,10 +734,10 @@ task bam_to_fastq {
 
     parameter_meta {
         bam: "Input name sorted or collated BAM format file to convert into FASTQ(s)"
-        filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
+        bitwise_filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
         prefix: "Prefix for output FASTQ(s). Extensions `[,.R1,.R2,.singleton].fastq.gz` will be added depending on other options."
         paired_end: {
-            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `filter` argument to remove any unwanted reads.",
+            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads.",
             common: true
         }
         append_read_number: {
@@ -740,7 +751,7 @@ task bam_to_fastq {
         output_singletons: "Output singleton reads as their own FASTQ? Ignored if `paired_end == false`."
         fail_on_unexpected_reads: {
             description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?",
-            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read (not caught by `filter`) will be present in the resulting FASTQ regardless of `first`/`last` bit settings. This setting will be ignored in that case. If `paired_end` is `true` then reads that don't satisfy `first` XOR `last` are considered unexpected (i.e. reads that have neither `first` nor `last` set or reads that have both `first` and `last` set). If `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set (but not both) and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.",
+            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read (not caught by `bitwise_filter`) will be present in the resulting FASTQ regardless of `first`/`last` bit settings. This setting will be ignored in that case. If `paired_end` is `true` then reads that don't satisfy `first` XOR `last` are considered unexpected (i.e. reads that have neither `first` nor `last` set or reads that have both `first` and `last` set). If `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set (but not both) and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.",
             common: true
         }
         use_all_cores: {
@@ -756,7 +767,7 @@ task bam_to_fastq {
 
     input {
         File bam
-        FlagFilter filter = {
+        FlagFilter bitwise_filter = {
             "include_if_all": "0x0",
             "exclude_if_any": "0x900",
             "include_if_any": "0x0",
@@ -786,10 +797,10 @@ task bam_to_fastq {
 
         samtools fastq \
             --threads "$n_cores" \
-            -f ~{filter.include_if_all} \
-            -F ~{filter.exclude_if_any} \
-            --rf ~{filter.include_if_any} \
-            -G ~{filter.exclude_if_all} \
+            -f ~{bitwise_filter.include_if_all} \
+            -F ~{bitwise_filter.exclude_if_any} \
+            --rf ~{bitwise_filter.include_if_any} \
+            -G ~{bitwise_filter.exclude_if_all} \
             ~{if append_read_number
                 then "-N"
                 else "-n"
@@ -873,7 +884,7 @@ task collate_to_fastq {
 
     parameter_meta {
         bam: "Input BAM format file to collate and convert to FASTQ(s)"
-        filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
+        bitwise_filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
         fast_mode: {
             description: "Fast mode for `samtools collate` (primary alignments only)",
@@ -884,7 +895,7 @@ task collate_to_fastq {
             common: true
         }
         paired_end: {
-            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `filter` argument to remove any unwanted reads.",
+            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads.",
             common: true
         }
         append_read_number: {
@@ -898,7 +909,7 @@ task collate_to_fastq {
         output_singletons: "Output singleton reads as their own FASTQ? Ignored if `paired_end == false`."
         fail_on_unexpected_reads: {
             description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?",
-            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read (not caught by `filter`) will be present in the resulting FASTQ regardless of `first`/`last` bit settings. This setting will be ignored in that case. If `paired_end` is `true` then reads that don't satisfy `first` XOR `last` are considered unexpected (i.e. reads that have neither `first` nor `last` set or reads that have both `first` and `last` set). If `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set (but not both) and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.",
+            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read (not caught by `bitwise_filter`) will be present in the resulting FASTQ regardless of `first`/`last` bit settings. This setting will be ignored in that case. If `paired_end` is `true` then reads that don't satisfy `first` XOR `last` are considered unexpected (i.e. reads that have neither `first` nor `last` set or reads that have both `first` and `last` set). If `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set (but not both) and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.",
             common: true
         }
         use_all_cores: {
@@ -915,7 +926,7 @@ task collate_to_fastq {
 
     input {
         File bam
-        FlagFilter filter = {
+        FlagFilter bitwise_filter = {
             "include_if_all": "0x0",
             "exclude_if_any": "0x900",
             "include_if_any": "0x0",
@@ -958,10 +969,10 @@ task collate_to_fastq {
             | tee ~{if store_collated_bam then prefix + ".collated.bam" else ""} \
             | samtools fastq \
                 --threads "$n_cores" \
-                -f ~{filter.include_if_all} \
-                -F ~{filter.exclude_if_any} \
-                --rf ~{filter.include_if_any} \
-                -G ~{filter.exclude_if_all} \
+                -f ~{bitwise_filter.include_if_all} \
+                -F ~{bitwise_filter.exclude_if_any} \
+                --rf ~{bitwise_filter.include_if_any} \
+                -G ~{bitwise_filter.exclude_if_all} \
                 ~{if append_read_number
                     then "-N"
                     else "-n"

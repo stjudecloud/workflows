@@ -41,9 +41,9 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task filter_and_subsample tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam" desired_reads=100
+    miniwdl run -d test-output/. --task subsample tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam" desired_reads=100
   files:
-    - path: test-output/out/reduced_bam/test.reduced.bam
+    - path: test-output/out/sampled_bam/test.sampled.bam
 
 - name: samtools_merge
   tags:
