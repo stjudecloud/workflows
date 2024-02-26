@@ -60,8 +60,8 @@ workflow quality_check {
                 description: "Detailed Kraken2 output that has been gzipped",
                 external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#standard-kraken-output-format"
             },
-            comparative_kraken_report: "Kraken2 summary report for only the mapped reads",
-            comparative_kraken_sequences: "Detailed Kraken2 output for only the mapped reads",
+            comparative_kraken_report: "Kraken2 summary report for only the alternatively filtered reads",
+            comparative_kraken_sequences: "Detailed Kraken2 output for only the alternatively filtered reads",
             mosdepth_dups_marked_global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
             mosdepth_dups_marked_global_summary: "A summary of mean depths per chromosome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
             mosdepth_dups_marked_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
@@ -97,7 +97,7 @@ workflow quality_check {
         run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_kraken_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_kraken_filter` is ignored."
         output_intermediate_files: "Output intermediate files? FASTQs, if `rna == true` a collated BAM, if `mark_duplicates == true` a duplicate marked BAM, various accessory files like indexes and md5sums. **WARNING** these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments."
-        subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
+        subsample_n_reads: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
     }
 
     input {
@@ -154,6 +154,12 @@ workflow quality_check {
     call samtools.quickcheck after parse_input { input: bam=bam }
     call util.compression_integrity after parse_input { input: bgzipped_file=bam }
 
+    # This task can also filter without sampling; but that is not exposed here.
+    # If you want to filter your BAM without subsampling, call the
+    # `samtools.filter_and_subsample` task directly prior to running QC.
+    # (Or, as a bit of a hack, set `subsample_n_reads` to some `n` larger
+    # than your input BAM's read count _and_ supply a
+    # `quality_check.filter_and_subsample.filter` object.)
     if (subsample_n_reads > 0) {
         call samtools.filter_and_subsample after quickcheck { input:
             bam=bam,
@@ -265,7 +271,7 @@ workflow quality_check {
     }
 
     if (run_comparative_kraken) {
-        call samtools.collate_to_fastq as alt_filtered_fastq
+        call samtools.collate_to_fastq as alt_filtered_fastq after quickcheck
             after comparative_kraken_filter_validator
         { input:
             bam = post_subsample_bam,
@@ -278,7 +284,7 @@ workflow quality_check {
             # matches default but prevents user from overriding
             # Since the only output here is FASTQs, we can disable fast mode.
             # This discards secondary and supplementary alignments, which should not
-            # be converted to FASTQs.
+            # be converted to FASTQs. (Is that true?)
             fast_mode = true,
             paired_end = true,  # matches default but prevents user from overriding
             interleaved = false,  # matches default but prevents user from overriding
