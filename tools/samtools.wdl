@@ -85,6 +85,8 @@ task split {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools split \
             --threads "$n_cores" \
@@ -161,6 +163,8 @@ task flagstat {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools flagstat --threads "$n_cores" ~{bam} > ~{outfile_name}
     >>>
@@ -217,10 +221,10 @@ task index {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
-        # For some reason, index doesn't support '--threads',
-        # so we use '-@' here
-        samtools index -@ "$n_cores" ~{bam} ~{outfile_name}
+        samtools index --threads "$n_cores" ~{bam} ~{outfile_name}
     >>>
 
     output {
@@ -284,6 +288,8 @@ task subsample {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         if [[ ~{desired_reads} -le 0 ]]; then
             >&2 echo "'desired_reads' must be greater than zero!"
@@ -422,6 +428,8 @@ task filter {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools view \
             --threads "$n_cores" \
@@ -539,6 +547,8 @@ task merge {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools merge \
             --threads "$n_cores" \
@@ -624,6 +634,8 @@ task addreplacerg {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools addreplacerg \
             --threads "$n_cores" \
@@ -698,6 +710,8 @@ task collate {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools collate \
             --threads "$n_cores" \
@@ -794,6 +808,8 @@ task bam_to_fastq {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools fastq \
             --threads "$n_cores" \
@@ -865,8 +881,6 @@ task bam_to_fastq {
         maxRetries: 1
     }
 }
-
-# TODO: combine collate_to_fastq and bam_to_fastq into one task
 
 task collate_to_fastq {
     meta {
@@ -957,6 +971,8 @@ task collate_to_fastq {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         # Use the `-u` flag to skip compression (and decompression)
         # if not storing the output of `collate`
@@ -1092,6 +1108,8 @@ task fixmate {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools fixmate \
             --threads "$n_cores" \
