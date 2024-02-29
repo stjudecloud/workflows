@@ -7,8 +7,8 @@ task librarian {
         description: "Runs the `librarian` tool to derive the likely Illumina library preparation protocol used to generate a pair of FASTQ files."
         help: "**WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database. This version of `librarian` has been trained on \"read one\" data of Paired-End sequencing data. It is not intended for use with Single-End data, even though it only accepts a single FASTQ."
         output: {
-            report: "A tar archive containing the `librarian` report and raw data."
-            raw_data: "The raw data that can be processed by MultiQC."
+            report: "A tar archive containing the `librarian` report and raw data.",
+            raw_data: "The raw data that can be processed by MultiQC.",
         }
     }
 
