@@ -31,7 +31,7 @@ workflow bam_to_fastqs {
     call samtools.quickcheck { input: bam=bam }
     call samtools.split { input: bam=bam, use_all_cores=use_all_cores }
     scatter (split_bam in split.split_bams) {
-        call samtools.collate_to_fastq as bam_to_fastq { input:
+        call samtools.bam_to_fastq { input:
             bam=split_bam,
             paired_end=paired_end,
             interleaved=false,  # matches default but prevents user from overriding

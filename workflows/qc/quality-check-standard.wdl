@@ -227,7 +227,7 @@ workflow quality_check {
         prefix=post_subsample_prefix,
     }
 
-    call samtools.collate_to_fastq after quickcheck
+    call samtools.bam_to_fastq after quickcheck
         after kraken_filter_validator
     { input:
         bam = post_subsample_bam,
@@ -246,26 +246,26 @@ workflow quality_check {
     }
 
     call fq.fqlint { input:
-        read_one_fastq = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
-        read_two_fastq = select_first([collate_to_fastq.read_two_fastq_gz, "undefined"]),
+        read_one_fastq = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
+        read_two_fastq = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
     }
     call kraken2.kraken after fqlint { input:
         read_one_fastq_gz
-            = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+            = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
         read_two_fastq_gz
-            = select_first([collate_to_fastq.read_two_fastq_gz, "undefined"]),
+            = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
         db=kraken_db,
         prefix=post_subsample_prefix,
         use_all_cores=use_all_cores,
     }
     if (run_librarian) {
         call libraran_tasks.librarian after fqlint { input:
-            read_one_fastq = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+            read_one_fastq = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
         }
     }
 
     if (run_comparative_kraken) {
-        call samtools.collate_to_fastq as alt_filtered_fastq after quickcheck
+        call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck
             after comparative_kraken_filter_validator
         { input:
             bam = post_subsample_bam,
@@ -273,7 +273,7 @@ workflow quality_check {
             prefix = post_subsample_prefix + ".alt_filtered",
             # matches default but prevents user from overriding
             # If the user wants a collated BAM, they should save the one
-            # from the first collate_to_fastq call.
+            # from the first bam_to_fastq call.
             store_collated_bam = false,
             # matches default but prevents user from overriding
             # Since the only output here is FASTQs, we can disable fast mode.
@@ -329,7 +329,7 @@ workflow quality_check {
             outfile_name=post_subsample_prefix + ".strandedness.tsv",
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam=select_first([collate_to_fastq.collated_bam, "undefined"]),
+            bam=select_first([bam_to_fastq.collated_bam, "undefined"]),
             prefix=post_subsample_prefix + ".qualimap_rnaseq_results",
             gtf=select_first([gtf, "undefined"]),
             name_sorted=true,
@@ -414,10 +414,10 @@ workflow quality_check {
         IntermediateFiles optional_files = {
             "sampled_bam": subsample.sampled_bam,
             "sampled_bam_index": subsample_index.bam_index,
-            "collated_bam": collate_to_fastq.collated_bam,
-            "read_one_fastq_gz": collate_to_fastq.read_one_fastq_gz,
-            "read_two_fastq_gz": collate_to_fastq.read_two_fastq_gz,
-            "singleton_reads_fastq_gz": collate_to_fastq.singleton_reads_fastq_gz,
+            "collated_bam": bam_to_fastq.collated_bam,
+            "read_one_fastq_gz": bam_to_fastq.read_one_fastq_gz,
+            "read_two_fastq_gz": bam_to_fastq.read_two_fastq_gz,
+            "singleton_reads_fastq_gz": bam_to_fastq.singleton_reads_fastq_gz,
             "alt_filtered_read_one_fastq_gz": alt_filtered_fastq.read_one_fastq_gz,
             "alt_filtered_read_two_fastq_gz": alt_filtered_fastq.read_two_fastq_gz,
             "alt_filtered_singleton_reads_fastq_gz": alt_filtered_fastq.singleton_reads_fastq_gz,
