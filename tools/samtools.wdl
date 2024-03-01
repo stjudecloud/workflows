@@ -735,157 +735,8 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "Runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. Use `bitwise_filter` argument to remove any unwanted reads. **Assumes either a name sorted or collated BAM.** For converting a position sorted BAM see `collate_to_fastq`."
+        description: "Converts an input BAM file into FASTQ(s) using `samtools fastq`. `samtools collate` will be run beforehand in the case of an input BAM file which is not collated (e.g. position-sorted)."
         help: "An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
-        outputs: {
-            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
-            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair",
-            singleton_reads_fastq_gz: "A gzipped FASTQ containing singleton reads",
-            interleaved_reads_fastq_gz: "An interleaved gzipped Paired-End FASTQ",
-            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads"
-        }
-    }
-
-    parameter_meta {
-        bam: "Input name sorted or collated BAM format file to convert into FASTQ(s)"
-        bitwise_filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
-        prefix: "Prefix for output FASTQ(s). Extensions `[,.R1,.R2,.singleton].fastq.gz` will be added depending on other options."
-        paired_end: {
-            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads.",
-            common: true
-        }
-        append_read_number: {
-            description: "Append /1 and /2 suffixes to read names?",
-            common: true
-        }
-        interleaved: {
-            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end == false`.",
-            common: true
-        }
-        output_singletons: "Output singleton reads as their own FASTQ? Ignored if `paired_end == false`."
-        fail_on_unexpected_reads: {
-            description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?",
-            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read (not caught by `bitwise_filter`) will be present in the resulting FASTQ regardless of `first`/`last` bit settings. This setting will be ignored in that case. If `paired_end` is `true` then reads that don't satisfy `first` XOR `last` are considered unexpected (i.e. reads that have neither `first` nor `last` set or reads that have both `first` and `last` set). If `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set (but not both) and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.",
-            common: true
-        }
-        use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments.",
-            common: true
-        }
-        ncpu: {
-            description: "Number of cores to allocate for task",
-            common: true
-        }
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
-
-    input {
-        File bam
-        FlagFilter bitwise_filter = {
-            "include_if_all": "0x0",
-            "exclude_if_any": "0x900",
-            "include_if_any": "0x0",
-            "exclude_if_all": "0x0",
-        }
-        String prefix = basename(bam, ".bam")
-        Boolean paired_end = true
-        Boolean append_read_number = true
-        Boolean interleaved = false
-        Boolean output_singletons = false
-        Boolean fail_on_unexpected_reads = false
-        Boolean use_all_cores = false
-        Int ncpu = 2
-        Int modify_disk_size_gb = 0
-    }
-
-    Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
-
-    command <<<
-        set -euo pipefail
-
-        n_cores=~{ncpu}
-        if ~{use_all_cores}; then
-            n_cores=$(nproc)
-        fi
-        # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
-
-        samtools fastq \
-            --threads "$n_cores" \
-            -f ~{bitwise_filter.include_if_all} \
-            -F ~{bitwise_filter.exclude_if_any} \
-            --rf ~{bitwise_filter.include_if_any} \
-            -G ~{bitwise_filter.exclude_if_all} \
-            ~{if append_read_number
-                then "-N"
-                else "-n"
-            } \
-            -1 ~{
-                if paired_end then (
-                    if interleaved then prefix + ".fastq.gz" else prefix + ".R1.fastq.gz"
-                )
-                else prefix + ".fastq.gz"
-            } \
-            -2 ~{
-                if paired_end then (
-                    if interleaved then prefix + ".fastq.gz" else prefix + ".R2.fastq.gz"
-                )
-                else prefix + ".fastq.gz"
-            } \
-            ~{
-                if paired_end then (
-                    if output_singletons
-                    then "-s " + prefix+".singleton.fastq.gz"
-                    else "-s junk.singleton.fastq.gz"
-                )
-                else ""  # TODO document why `-s` isn't specified here
-            } \
-            -0 ~{
-                if paired_end
-                then "junk.unknown_bit_setting.fastq.gz"
-                else prefix + ".fastq.gz"
-            } \
-            ~{bam}
-
-        # Check that some output is non-empty
-        if [ -z "$(gunzip -c ~{prefix}*.fastq.gz | head -c 1 | tr '\0\n' __)" ]; then
-            >&2 echo "No reads are in any output FASTQ"
-            >&2 echo "Command failed!"
-            exit 42
-        fi
-
-        # Check that there weren't any unexpected reads in the input BAM
-        if ~{fail_on_unexpected_reads} \
-            && [ -n "$(gunzip -c junk.*.fastq.gz | head -c 1 | tr '\0\n' __)" ]
-        then
-            >&2 echo "Discovered unexpected reads in:"
-            >&2 echo "TODO print the names of the unexpected FASTQs"
-            exit 43
-        fi
-    >>>
-
-    output {
-        File? read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
-        File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
-        File? singleton_reads_fastq_gz = "~{prefix}.singleton.fastq.gz"
-        File? interleaved_reads_fastq_gz = "~{prefix}.fastq.gz"
-        File? single_end_reads_fastq_gz = "~{prefix}.fastq.gz"
-    }
-
-    runtime {
-        cpu: ncpu
-        memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
-        maxRetries: 1
-    }
-}
-
-task collate_to_fastq {
-    meta {
-        description: "Runs `samtools collate` on the input BAM file then converts it into FASTQ(s) using `samtools fastq`"
-        help: "This task is useful for converting a position sorted BAM into FASTQs. Name sorted or collated BAMs will see better performance from `bam_to_fastq`. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
         outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)",
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
@@ -897,15 +748,19 @@ task collate_to_fastq {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to collate and convert to FASTQ(s)"
+        bam: "Input BAM format file to convert to FASTQ(s)"
         bitwise_filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
+        collated: {
+            description: "Is the BAM collated (or name-sorted)? If `collated == true`, then the input BAM will be directly run through `samtools fastq`. If `collated == false`, then `samtools collate` must be run on the input BAM before conversion to FASTQ. ignored if `paired_end == false`.",
+            common: true
+        }
         fast_mode: {
-            description: "Fast mode for `samtools collate` (primary alignments only)",
+            description: "Fast mode for `samtools collate`? If `true`, this outputs primary alignments only. Ignored if `collated == true`.",
             common: true
         }
         store_collated_bam: {
-            description: "Save the collated BAM to disk and output it (true)?",
+            description: "Save the collated BAM to disk and output it (true)? This slows performance and **substantially** increases storage requirements. Be aware that collated BAMs occupy much more space than either position sorted or name sorted BAMs (due to the compression algorithm). Ignored if `collated == true` **or** `paired_end == false`.",
             common: true
         }
         paired_end: {
@@ -947,6 +802,7 @@ task collate_to_fastq {
             "exclude_if_all": "0x0",
         }
         String prefix = basename(bam, ".bam")
+        Boolean collated = false
         Boolean fast_mode = true
         Boolean store_collated_bam = false
         Boolean paired_end = true
@@ -974,50 +830,59 @@ task collate_to_fastq {
         # -1 because samtools uses one more core than `--threads` specifies
         let "n_cores -= 1"
 
-        # Use the `-u` flag to skip compression (and decompression)
-        # if not storing the output of `collate`
-        samtools collate \
-            ~{if store_collated_bam then "" else "-u"} \
-            --threads "$n_cores" \
-            ~{if fast_mode then "-f" else ""} \
-            -O \
-            ~{bam} \
-            | tee ~{if store_collated_bam then prefix + ".collated.bam" else ""} \
-            | samtools fastq \
+        mkfifo bam_pipe
+        if ! ~{collated}; then
+            samtools collate \
+                ~{if store_collated_bam then "" else "-u"} \
                 --threads "$n_cores" \
-                -f ~{bitwise_filter.include_if_all} \
-                -F ~{bitwise_filter.exclude_if_any} \
-                --rf ~{bitwise_filter.include_if_any} \
-                -G ~{bitwise_filter.exclude_if_all} \
-                ~{if append_read_number
-                    then "-N"
-                    else "-n"
-                } \
-                -1 ~{
-                    if paired_end then (
-                        if interleaved then prefix + ".fastq.gz" else prefix + ".R1.fastq.gz"
-                    )
-                    else prefix + ".fastq.gz"
-                } \
-                -2 ~{
-                    if paired_end then (
-                        if interleaved then prefix + ".fastq.gz" else prefix + ".R2.fastq.gz"
-                    )
-                    else prefix + ".fastq.gz"
-                } \
-                ~{
-                    if paired_end then (
-                        if output_singletons
-                        then "-s " + prefix+".singleton.fastq.gz"
-                        else "-s junk.singleton.fastq.gz"
-                    )
-                    else ""  # TODO document why `-s` isn't specified here
-                } \
-                -0 ~{
-                    if paired_end
-                    then "junk.unknown_bit_setting.fastq.gz"
-                    else prefix + ".fastq.gz"
-                }
+                ~{if fast_mode then "-f" else ""} \
+                -O \
+                ~{bam} \
+                | tee ~{if store_collated_bam then prefix + ".collated.bam" else ""} \
+                > bam_pipe \
+                &
+        else
+            samtools view -h --threads "$n_cores" ~{bam} > bam_pipe &
+        fi
+
+        samtools fastq \
+            --threads "$n_cores" \
+            -f ~{bitwise_filter.include_if_all} \
+            -F ~{bitwise_filter.exclude_if_any} \
+            --rf ~{bitwise_filter.include_if_any} \
+            -G ~{bitwise_filter.exclude_if_all} \
+            ~{if append_read_number
+                then "-N"
+                else "-n"
+            } \
+            -1 ~{
+                if paired_end then (
+                    if interleaved then prefix + ".fastq.gz" else prefix + ".R1.fastq.gz"
+                )
+                else prefix + ".fastq.gz"
+            } \
+            -2 ~{
+                if paired_end then (
+                    if interleaved then prefix + ".fastq.gz" else prefix + ".R2.fastq.gz"
+                )
+                else prefix + ".fastq.gz"
+            } \
+            ~{
+                if paired_end then (
+                    if output_singletons
+                    then "-s " + prefix+".singleton.fastq.gz"
+                    else "-s junk.singleton.fastq.gz"
+                )
+                else ""  # TODO document why `-s` isn't specified here
+            } \
+            -0 ~{
+                if paired_end
+                then "junk.unknown_bit_setting.fastq.gz"
+                else prefix + ".fastq.gz"
+            } \
+            bam_pipe
+
+        rm bam_pipe
 
         # Check that some output is non-empty
         if [ -z "$(gunzip -c ~{prefix}*.fastq.gz | head -c 1 | tr '\0\n' __)" ]; then
