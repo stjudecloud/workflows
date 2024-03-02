@@ -242,7 +242,7 @@ task index {
 
 task subsample {
     meta {
-        description: "Randomly subsample the input BAM."
+        description: "Randomly subsamples the input BAM, in order to produce an output BAM with approximately the desired number of reads."
         help: "A `desired_reads` **greater than zero** must be supplied. A `desired_reads <= 0` will result in task failure. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
             # TODO is there any situation where the sampling fraction should be reported?
@@ -253,7 +253,7 @@ task subsample {
     }
 
     parameter_meta {
-        bam: "Input BAM format file subsample"
+        bam: "Input BAM format file to subsample"
         desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value. **Must be greater than zero.** A `desired_reads <= 0` will result in task failure."
         prefix: "Prefix for the BAM file. The extension `.sampled.bam` will be added."
         use_all_cores: {
@@ -343,8 +343,9 @@ task subsample {
 
             # Do not report an original read count,
             # as it is the same as the input BAM. Just write a dash.
-            # Do not use the '.sampled' suffixed name in the filename
-            # if not subsampled. Use ~{prefix} instead.
+            # Do not use the '.sampled' suffixed name in the filename.
+            # Use ~{prefix} instead, so it matches the any downstream calls
+            # which also use ~{prefix}.
             # This is for MultiQC purposes.
             {
                 echo -e "sample\toriginal read count"
@@ -391,7 +392,7 @@ task filter {
     # TODO expose more `view` options
     meta {
         description: "Filters a BAM based on its bitwise flag value."
-        help: "This task is a wrapper around `samtools view`. This task will fail if there are no reads in the output BAM. This can happen either because the input BAM was empty or because the supplied `bitwise_filter` was too strict. This task is not suitable for random subsampling. If you want to subsample a BAM, use the `subsample` task instead."
+        help: "This task is a wrapper around `samtools view`. This task will fail if there are no reads in the output BAM. This can happen either because the input BAM was empty or because the supplied `bitwise_filter` was too strict. If you want to down-sample a BAM, use the `subsample` task instead."
     }
 
     parameter_meta {
@@ -735,15 +736,15 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "Converts an input BAM file into FASTQ(s) using `samtools fastq`. `samtools collate` will be run beforehand in the case of an input BAM file which is not collated (e.g. position-sorted)."
-        help: "An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
+        description: "Converts an input BAM file into FASTQ(s) using `samtools fastq`."
+        help: "`samtools collate` will be run beforehand in the case of a `piared_end == true` input BAM file with `collated == false` (e.g. it is position-sorted or unsorted). Name-sorted BAMs are considered a special case of collated BAMs, and this task makes no distinction. If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
         outputs: {
-            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)",
-            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
-            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair",
-            singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads",
-            interleaved_reads_fastq_gz: "Interleaved gzipped Paired-End FASTQ",
-            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads"
+            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order). Only generated if `store_collated_bam` and `paired_end` are both true.",
+            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair. Only generated if `paired_end` is true.",
+            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair. Only generated if `paired_end` is true.",
+            singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads. Only generated if `paired_end` and `output_singletons` are both true.",
+            interleaved_reads_fastq_gz: "Interleaved gzipped Paired-End FASTQ. Only generated if `paired_end` and `interleaved` are both true.",
+            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads. Only generated if `paired_end` is false."
         }
     }
 
@@ -756,7 +757,7 @@ task bam_to_fastq {
             common: true
         }
         fast_mode: {
-            description: "Fast mode for `samtools collate`? If `true`, this outputs primary alignments only. Ignored if `collated == true`.",
+            description: "Fast mode for `samtools collate`? If `true`, this outputs primary alignments only. Ignored if `collated == true` or `paired_end == false`.",
             common: true
         }
         store_collated_bam: {
@@ -817,8 +818,16 @@ task bam_to_fastq {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int memory_gb = ceil(bam_size * 0.4) + 4 + modify_memory_gb
-    Int disk_size_gb = ceil(bam_size * 5) + 10 + modify_disk_size_gb
+    Int memory_gb = (
+        if (collated || !paired_end)
+        then 4
+        else (ceil(bam_size * 0.4) + 4)
+    ) + modify_memory_gb
+    Int disk_size_gb = ceil(bam_size * (
+        if (store_collated_bam && !collated && paired_end)
+        then 5
+        else 2
+    )) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -831,7 +840,7 @@ task bam_to_fastq {
         let "n_cores -= 1"
 
         mkfifo bam_pipe
-        if ! ~{collated}; then
+        if ! ~{collated} && ~{paired_end}; then
             samtools collate \
                 ~{if store_collated_bam then "" else "-u"} \
                 --threads "$n_cores" \
