@@ -80,8 +80,8 @@ workflow quality_check {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
         kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
-        kraken_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the downstream FASTQs. **WARNING** this filter is not applied to the second run of Kraken2 if `run_comparative_kraken = true`. **WARNING** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults."
-        comparative_kraken_filter: "Filter to apply to the input BAM while performing a second FASTQ conversion, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove unmapped, secondary, and supplementary reads** from the downstream FASTQs. **WARNING** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults."
+        standard_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2 and `librarian` (if `run_librarian == true`). This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the created FASTQs. **WARNING:** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults. **WARNING:** If you have set `run_librarian` to `true`, we **strongly** recommend leaving this filter at the default value. `librarian` is trained on a specific set of reads, and changing this filter may produce nonsensical results."
+        comparative_filter: "Filter to apply to the input BAM while performing a second FASTQ conversion, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove unmapped, secondary, and supplementary reads** from the created FASTQs. **WARNING** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults."
         gtf: "GTF features file. Gzipped or uncompressed. **Required** for RNA-Seq data."
         multiqc_config: "YAML file for configuring MultiQC"
         extra_multiqc_inputs: "An array of additional files to pass directly into MultiQC"
@@ -94,7 +94,7 @@ workflow quality_check {
             description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database. By default, this tool is run when `rna == true`.",
             external_help: "https://f1000research.com/articles/11-1122/v2",
         }
-        run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_kraken_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_kraken_filter` is ignored."
+        run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_filter` is ignored."
         output_intermediate_files: "Output intermediate files? FASTQs, if `rna == true` a collated BAM, if `mark_duplicates == true` a duplicate marked BAM, various accessory files like indexes and md5sums. **WARNING** these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
@@ -104,14 +104,14 @@ workflow quality_check {
         File bam
         File bam_index
         File kraken_db
-        FlagFilter kraken_filter = {
+        FlagFilter standard_filter = {
             "include_if_all": "0x0",
             "exclude_if_any": "0x900",  # 0x100 (secondary) || 0x800 (supplementary)
             "include_if_any": "0x0",
             "exclude_if_all": "0x0",
         }
         # TODO: consider making this an array of FlagFilters similar to coverage_beds
-        FlagFilter comparative_kraken_filter =  {
+        FlagFilter comparative_filter =  {
             "include_if_all": "0x0",
             # 0x4 (unmapped) || 0x100 (secondary) || 0x800 (supplementary)
             "exclude_if_any": "0x904",
@@ -141,11 +141,11 @@ workflow quality_check {
         coverage_labels=coverage_labels,
     }
     call flag_filter.validate_FlagFilter as kraken_filter_validator { input:
-        flags = kraken_filter
+        flags = standard_filter
     }
     if (run_comparative_kraken) {
         call flag_filter.validate_FlagFilter as comparative_kraken_filter_validator { input:
-            flags = comparative_kraken_filter
+            flags = comparative_filter
         }
     }
 
@@ -231,11 +231,11 @@ workflow quality_check {
         after kraken_filter_validator
     { input:
         bam = post_subsample_bam,
-        bitwise_filter = kraken_filter,
+        bitwise_filter = standard_filter,
         prefix = post_subsample_prefix,
         # RNA needs a collated BAM for Qualimap
         # DNA can skip the associated storage costs
-        store_collated_bam = rna,
+        retain_collated_bam = rna,
         # disabling fast_mode enables writing of secondary and supplementary alignments
         # to the collated BAM when processing RNA.
         # Those alignments are used downstream by Qualimap.
@@ -269,12 +269,12 @@ workflow quality_check {
             after comparative_kraken_filter_validator
         { input:
             bam = post_subsample_bam,
-            bitwise_filter = comparative_kraken_filter,
+            bitwise_filter = comparative_filter,
             prefix = post_subsample_prefix + ".alt_filtered",
             # matches default but prevents user from overriding
             # If the user wants a collated BAM, they should save the one
             # from the first bam_to_fastq call.
-            store_collated_bam = false,
+            retain_collated_bam = false,
             # matches default but prevents user from overriding
             # Since the only output here is FASTQs, we can disable fast mode.
             # This discards secondary and supplementary alignments, which should not

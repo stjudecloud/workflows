@@ -737,14 +737,14 @@ task collate {
 task bam_to_fastq {
     meta {
         description: "Converts an input BAM file into FASTQ(s) using `samtools fastq`."
-        help: "`samtools collate` will be run beforehand in the case of a `piared_end == true` input BAM file with `collated == false` (e.g. it is position-sorted or unsorted). Name-sorted BAMs are considered a special case of collated BAMs, and this task makes no distinction. If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
-        outputs: {
-            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order). Only generated if `store_collated_bam` and `paired_end` are both true.",
-            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair. Only generated if `paired_end` is true.",
-            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair. Only generated if `paired_end` is true.",
-            singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads. Only generated if `paired_end` and `output_singletons` are both true.",
-            interleaved_reads_fastq_gz: "Interleaved gzipped Paired-End FASTQ. Only generated if `paired_end` and `interleaved` are both true.",
-            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads. Only generated if `paired_end` is false."
+        help: "If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
+        output: {
+            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order). Only generated if `retain_collated_bam` and `paired_end` are both true. Has the name `~{prefix}.collated.bam`.",
+            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair. Only generated if `paired_end` is true and `interleaved` is false. Has the name `~{prefix}.R1.fastq.gz`.",
+            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair. Only generated if `paired_end` is true and `interleaved` is false. Has the name `~{prefix}.R2.fastq.gz`.",
+            singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads. Only generated if `paired_end` and `output_singletons` are both true. Has the name `~{prefix}.singleton.fastq.gz`.",
+            interleaved_reads_fastq_gz: "Interleaved gzipped Paired-End FASTQ. Only generated if `paired_end` and `interleaved` are both true. Has the name `~{prefix}.fastq.gz`. The conditions under which this output and `single_end_reads_fastq_gz` are created are mutually exclusive, but since they share the same literal filename they will always evaluate to the same file (or undefined if neither are created).",
+            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads. Only generated if `paired_end` is false. Has the name `~{prefix}.fastq.gz`. The conditions under which this output and `interleaved_reads_fastq_gz` are created are mutually exclusive, but since they share the same literal filename they will always evaluate to the same file (or undefined if neither are created).",
         }
     }
 
@@ -752,20 +752,20 @@ task bam_to_fastq {
         bam: "Input BAM format file to convert to FASTQ(s)"
         bitwise_filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
+        paired_end: {
+            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads.",
+            common: true
+        }
         collated: {
-            description: "Is the BAM collated (or name-sorted)? If `collated == true`, then the input BAM will be directly run through `samtools fastq`. If `collated == false`, then `samtools collate` must be run on the input BAM before conversion to FASTQ. ignored if `paired_end == false`.",
+            description: "Is the BAM collated (or name-sorted)? If `collated == true`, then the input BAM will be run through `samtools fastq` without preprocessing. If `collated == false`, then `samtools collate` must be run on the input BAM before conversion to FASTQ. Ignored if `paired_end == false`.",
             common: true
         }
-        fast_mode: {
-            description: "Fast mode for `samtools collate`? If `true`, this outputs primary alignments only. Ignored if `collated == true` or `paired_end == false`.",
-            common: true
-        }
-        store_collated_bam: {
+        retain_collated_bam: {
             description: "Save the collated BAM to disk and output it (true)? This slows performance and **substantially** increases storage requirements. Be aware that collated BAMs occupy much more space than either position sorted or name sorted BAMs (due to the compression algorithm). Ignored if `collated == true` **or** `paired_end == false`.",
             common: true
         }
-        paired_end: {
-            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads.",
+        fast_mode: {
+            description: "Fast mode for `samtools collate`? If `true`, this **removes secondary and supplementary reads** during the `collate` step. If `false`, secondary and supplementary reads will be retained in the `collated_bam` output (if created). Defaults to the opposite of `retain_collated_bam`. Ignored if `collated == true` **or** `paired_end == false`.",
             common: true
         }
         append_read_number: {
@@ -803,10 +803,10 @@ task bam_to_fastq {
             "exclude_if_all": "0x0",
         }
         String prefix = basename(bam, ".bam")
-        Boolean collated = false
-        Boolean fast_mode = true
-        Boolean store_collated_bam = false
         Boolean paired_end = true
+        Boolean collated = false
+        Boolean retain_collated_bam = false
+        Boolean fast_mode = !retain_collated_bam
         Boolean append_read_number = true
         Boolean interleaved = false
         Boolean output_singletons = false
@@ -824,7 +824,7 @@ task bam_to_fastq {
         else (ceil(bam_size * 0.4) + 4)
     ) + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * (
-        if (store_collated_bam && !collated && paired_end)
+        if (retain_collated_bam && !collated && paired_end)
         then 5
         else 2
     )) + 10 + modify_disk_size_gb
@@ -842,12 +842,12 @@ task bam_to_fastq {
         mkfifo bam_pipe
         if ! ~{collated} && ~{paired_end}; then
             samtools collate \
-                ~{if store_collated_bam then "" else "-u"} \
+                ~{if retain_collated_bam then "" else "-u"} \
                 --threads "$n_cores" \
                 ~{if fast_mode then "-f" else ""} \
                 -O \
                 ~{bam} \
-                | tee ~{if store_collated_bam then prefix + ".collated.bam" else ""} \
+                | tee ~{if retain_collated_bam then prefix + ".collated.bam" else ""} \
                 > bam_pipe \
                 &
         else

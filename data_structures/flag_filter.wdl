@@ -16,7 +16,7 @@
 ## can be parsed as integers less than 4096. It will not check if the flags are
 ## sensible input to `samtools fastq`.
 ## `samtools fastq` also employs very little error checking on the flags.
-## So it is possible to pass in flags that produce nonsensible output.
+## So it is possible to pass in flags that produce nonsensical output.
 ## For example, it is possible to pass in flags that produce no output.
 ## **Please exhibit caution while modifying any default values of a `FlagFilter`.**
 ##
