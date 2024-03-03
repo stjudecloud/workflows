@@ -71,7 +71,7 @@ struct FlagFilter {
 task validate_string_is_12bit_oct_dec_or_hex {
     meta {
         description: "Validates that a string is a octal, decimal, or hexadecimal number and less than 2^12."
-        help: "**WARNING** Hexadecimal numbers must be prefixed with '0x' and only contain the characters [0-9A-F] to be valid (i.e. [a-f] is not allowed). Octal number must start with '0' and only contain the characters [0-7] to be valid. And decimal numbers must start with a digit between 1-9 and only contain the characters [0-9] to be valid."
+        help: "Hexadecimal numbers must be prefixed with '0x' and only contain the characters [0-9A-F] to be valid (i.e. [a-f] is not allowed). Octal number must start with '0' and only contain the characters [0-7] to be valid. And decimal numbers must start with a digit between 1-9 and only contain the characters [0-9] to be valid."
         outputs: {
             check: "Dummy output to enable caching."
         }

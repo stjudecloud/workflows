@@ -55,7 +55,7 @@ top_modules:
       path_filters:
         - "*.MarkDuplicates.CDS.mosdepth.*"
   - kraken:
-      name: "kraken2 (original)"
+      name: "kraken2 (standard)"
       path_filters:
         - "*.kraken2.txt"
       path_filters_exclude:
