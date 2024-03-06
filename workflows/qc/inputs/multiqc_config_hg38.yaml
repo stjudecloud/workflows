@@ -18,8 +18,6 @@ extra_fn_clean_exts:
   - '.qualimap_rnaseq_results'
   - '.alt_filtered'
   - '.librarian'
-  - type: remove
-    pattern: 'sample_'
 log_filesize_limit: 1000000000
 fastqc_config:
   fastqc_theoretical_gc: "hg38_genome"
