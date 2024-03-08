@@ -427,6 +427,7 @@ workflow quality_check {
             "alt_filtered_read_two_fastq_gz": alt_filtered_fastq.read_two_fastq_gz,
             "alt_filtered_singleton_reads_fastq_gz": alt_filtered_fastq.singleton_reads_fastq_gz,
             "markdup_bam": markdup.markdup_bam,
+            "markdup_bam_index": markdup_index.bam_index,
         }
     }
 
@@ -557,4 +558,5 @@ struct IntermediateFiles {
     File? alt_filtered_read_two_fastq_gz
     File? alt_filtered_singleton_reads_fastq_gz
     File? markdup_bam
+    File? markdup_bam_index
 }
