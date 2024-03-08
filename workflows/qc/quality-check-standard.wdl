@@ -20,7 +20,7 @@ import "./markdups-post.wdl" as markdups_post_wf
 workflow quality_check {
     meta {
         description: "Performs comprehensive quality checks, aggregating all analyses and metrics into a final MultiQC report."
-        help: "Assumes that input BAM is position-sorted. Assumes that  `ms` or \"mate score\" tags, and `MC` or \"mate cigar\" tags are present."
+        help: "Assumes that input BAM is position-sorted."
         external_help: "https://multiqc.info/"
         outputs: {
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
@@ -90,7 +90,8 @@ workflow quality_check {
         coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used. If using the BEDs created by `../reference/make-qc-reference.wdl`, the labels [\"exon\", \"CDS\"] are appropriate. Make sure to provide the coverage BEDs **in the same order** as the labels."
         prefix: "Prefix for all results files"
         rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
-        mark_duplicates: "Mark duplicates before analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. Note that regardless of this setting, `samtools markdup` will be run in order to generate a `*.markdup.txt` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
+        mark_duplicates: "Mark duplicates before analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. Note that regardless of this setting, `samtools markdup` will be run in order to generate a `*.markdup.[txt,json]` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
+        need_fixmate: "Does the input BAM need fixmate? If `true`, `samtools fixmate` will be run before `samtools markdup`. If `false`, `samtools fixmate` will be skipped. **Failures during `samtools markdup` may be fixed by enabling this option.** Among other things, `fixmate` will add `ms` or \"mate score\" tags and `MC` or \"mate cigar\" tags. These two tags are required by the `samtools markdup` algorithm. TODO note about performance."
         run_librarian: {
             description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database. By default, this tool is run when `rna == true`.",
             external_help: "https://f1000research.com/articles/11-1122/v2",
@@ -129,6 +130,7 @@ workflow quality_check {
         String prefix = basename(bam, ".bam")
         Boolean rna = false
         Boolean mark_duplicates = rna
+        Boolean need_fixmate = true
         Boolean run_librarian = rna
         Boolean run_comparative_kraken = false
         Boolean output_intermediate_files = false
@@ -340,8 +342,17 @@ workflow quality_check {
         }
     }
 
+    if (need_fixmate) {
+        call samtools.collate_to_fixmate_to_sort as fixmate after quickcheck { input:
+            bam = post_subsample_bam,
+            prefix = post_subsample_prefix + ".fixmate",
+        }
+    }
     call samtools.markdup after quickcheck { input:
-        bam = post_subsample_bam,
+        bam = select_first([
+            fixmate.fixmate_bam,
+            post_subsample_bam,
+        ]),
         create_bam = mark_duplicates,
         prefix = post_subsample_prefix + ".markdup",
         optical_distance = optical_distance,
@@ -350,14 +361,14 @@ workflow quality_check {
         call samtools.index as markdup_index { input:
             bam = select_first([
                 markdup.markdup_bam,
-                "undefined"
+                "undefined",
             ]),
             use_all_cores = use_all_cores,
         }
         call markdups_post_wf.markdups_post { input:
             markdups_bam = select_first([
                 markdup.markdup_bam,
-                "undefined"
+                "undefined",
             ]),
             markdups_bam_index = markdup_index.bam_index,
             coverage_beds = coverage_beds,
