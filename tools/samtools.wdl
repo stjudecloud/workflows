@@ -1162,7 +1162,7 @@ task markdup {
         Boolean mark_duplicates_with_do_tag = false
         Boolean duplicate_count = false
         Boolean include_qc_fails = false
-        Boolean duplicates_of_duplicates_check = true
+        Boolean duplicates_of_duplicates_check = false  # tool default is true
         Boolean use_read_groups = false
         Boolean use_all_cores = false
         Int max_readlen = 300
