@@ -20,6 +20,7 @@ import "./markdups-post.wdl" as markdups_post_wf
 workflow quality_check {
     meta {
         description: "Performs comprehensive quality checks, aggregating all analyses and metrics into a final MultiQC report."
+        help: "Assumes that input BAM is position-sorted. Assumes that  `ms` or \"mate score\" tags, and `MC` or \"mate cigar\" tags are present."
         external_help: "https://multiqc.info/"
         outputs: {
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
@@ -89,7 +90,7 @@ workflow quality_check {
         coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used. If using the BEDs created by `../reference/make-qc-reference.wdl`, the labels [\"exon\", \"CDS\"] are appropriate. Make sure to provide the coverage BEDs **in the same order** as the labels."
         prefix: "Prefix for all results files"
         rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
-        mark_duplicates: "Mark duplicates before analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. Note that regardless of this setting, `picard MarkDuplicates` will be run in order to generate a `*.MarkDuplicates.metrics.txt` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
+        mark_duplicates: "Mark duplicates before analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. Note that regardless of this setting, `samtools markdup` will be run in order to generate a `*.markdup.txt` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
         run_librarian: {
             description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database. By default, this tool is run when `rna == true`.",
             external_help: "https://f1000research.com/articles/11-1122/v2",
@@ -337,19 +338,19 @@ workflow quality_check {
         }
     }
 
-    call picard.mark_duplicates as markdups after quickcheck { input:
-        bam=post_subsample_bam,
-        create_bam=mark_duplicates,
-        prefix=post_subsample_prefix + ".MarkDuplicates",
+    call samtools.markdup after quickcheck { input:
+        bam = post_subsample_bam,
+        create_bam = mark_duplicates,
+        prefix = post_subsample_prefix + ".markdup",
     }
     if (mark_duplicates) {
         call markdups_post_wf.markdups_post { input:
             markdups_bam=select_first([
-                markdups.duplicate_marked_bam,
+                markdup.duplicate_marked_bam,
                 "undefined"
             ]),
             markdups_bam_index=select_first([
-                markdups.duplicate_marked_bam_index,
+                markdup.duplicate_marked_bam_index,
                 "undefined"
             ]),
             coverage_beds=coverage_beds,
@@ -374,7 +375,7 @@ workflow quality_check {
         input_files=select_all(flatten([
             [
                 validate_bam.validate_report,
-                markdups.mark_duplicates_metrics,
+                markdup.mark_duplicates_metrics,
                 flagstat.flagstat_report,
                 markdups_post.flagstat_report,
                 instrument.instrument_file,
@@ -421,16 +422,16 @@ workflow quality_check {
             "alt_filtered_read_one_fastq_gz": alt_filtered_fastq.read_one_fastq_gz,
             "alt_filtered_read_two_fastq_gz": alt_filtered_fastq.read_two_fastq_gz,
             "alt_filtered_singleton_reads_fastq_gz": alt_filtered_fastq.singleton_reads_fastq_gz,
-            "duplicate_marked_bam": markdups.duplicate_marked_bam,
-            "duplicate_marked_bam_index": markdups.duplicate_marked_bam_index,
-            "duplicate_marked_bam_md5": markdups.duplicate_marked_bam_md5
+            "duplicate_marked_bam": markdup.duplicate_marked_bam,
+            "duplicate_marked_bam_index": markdup.duplicate_marked_bam_index,
+            "duplicate_marked_bam_md5": markdup.duplicate_marked_bam_md5
         }
     }
 
     output {
         File bam_checksum = compute_checksum.md5sum
         File validate_sam_file = validate_bam.validate_report
-        File mark_duplicates_metrics = markdups.mark_duplicates_metrics
+        File mark_duplicates_metrics = markdup.mark_duplicates_metrics
         File flagstat_report = select_first([
             markdups_post.flagstat_report,
             flagstat.flagstat_report
