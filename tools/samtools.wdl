@@ -1186,8 +1186,8 @@ task markdup {
 
         samtools markdup \
             --threads "$n_cores" \
-            -f ~{prefix + if json then ".json" else ".txt"} \
-            --read-coords ~{read_coords_regex} \
+            -f "~{prefix + if json then ".json" else ".txt"}" \
+            --read-coords '~{read_coords_regex}' \
             --coords-order ~{coordinates_order} \
             ~{if remove_duplicates then "-r" else ""} \
             ~{if mark_supp_or_sec_or_unmapped_as_duplicates then "-S" else ""} \
@@ -1200,7 +1200,7 @@ task markdup {
             -d ~{optical_distance} \
             -c \
             ~{bam} \
-            ~{if create_bam then prefix + ".bam" else "/dev/null"}
+            "~{if create_bam then prefix + ".bam" else "/dev/null"}"
     >>>
 
     output {
