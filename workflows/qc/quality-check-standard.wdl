@@ -98,6 +98,7 @@ workflow quality_check {
         run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_filter` is ignored."
         output_intermediate_files: "Output intermediate files? FASTQs; if `rna == true` a collated BAM; if `mark_duplicates == true` a duplicate marked BAM and associated index; if subsampling was requested _and_ performed then a sampled BAM and associated index. **WARNING** these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments."
+        optical_distance: "Optical distance for `samtools markdup`"
         subsample_n_reads: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
     }
 
@@ -132,6 +133,7 @@ workflow quality_check {
         Boolean run_comparative_kraken = false
         Boolean output_intermediate_files = false
         Boolean use_all_cores = false
+        Int optical_distance = 100
         Int subsample_n_reads = -1
     }
 
@@ -342,6 +344,7 @@ workflow quality_check {
         bam = post_subsample_bam,
         create_bam = mark_duplicates,
         prefix = post_subsample_prefix + ".markdup",
+        optical_distance = optical_distance,
     }
     if (mark_duplicates) {
         call samtools.index as markdup_index { input:
