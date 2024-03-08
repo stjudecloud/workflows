@@ -25,9 +25,9 @@ workflow quality_check {
         outputs: {
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
             validate_sam_file: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
-            mark_duplicates_metrics: {
-                description: "The METRICS_FILE result of `picard MarkDuplicates`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics"
+            markdup_report: {
+                description: "TODO",
+                external_help: "TODO"
             },
             flagstat_report: "`samtools flagstat` STDOUT redirected to a file. If `mark_duplicates` is `true`, then this result will be generated from the duplicate marked BAM.",
             fastqc_results: "A gzipped tar archive of all FastQC output files",
@@ -96,7 +96,7 @@ workflow quality_check {
             external_help: "https://f1000research.com/articles/11-1122/v2",
         }
         run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_filter` is ignored."
-        output_intermediate_files: "Output intermediate files? FASTQs, if `rna == true` a collated BAM, if `mark_duplicates == true` a duplicate marked BAM, various accessory files like indexes and md5sums. **WARNING** these files can be large."
+        output_intermediate_files: "Output intermediate files? FASTQs; if `rna == true` a collated BAM; if `mark_duplicates == true` a duplicate marked BAM and associated index; if subsampling was requested _and_ performed then a sampled BAM and associated index. **WARNING** these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
     }
@@ -344,18 +344,22 @@ workflow quality_check {
         prefix = post_subsample_prefix + ".markdup",
     }
     if (mark_duplicates) {
+        call samtools.index as markdup_index { input:
+            bam = select_first([
+                markdup.markdup_bam,
+                "undefined"
+            ]),
+            use_all_cores = use_all_cores,
+        }
         call markdups_post_wf.markdups_post { input:
-            markdups_bam=select_first([
-                markdup.duplicate_marked_bam,
+            markdups_bam = select_first([
+                markdup.markdup_bam,
                 "undefined"
             ]),
-            markdups_bam_index=select_first([
-                markdup.duplicate_marked_bam_index,
-                "undefined"
-            ]),
-            coverage_beds=coverage_beds,
-            coverage_labels=parse_input.labels,
-            prefix=post_subsample_prefix + ".MarkDuplicates",
+            markdups_bam_index = markdup_index.bam_index,
+            coverage_beds = coverage_beds,
+            coverage_labels = parse_input.labels,
+            prefix = post_subsample_prefix + ".markdup",
         }
     }
     if (!mark_duplicates) {
@@ -375,7 +379,7 @@ workflow quality_check {
         input_files=select_all(flatten([
             [
                 validate_bam.validate_report,
-                markdup.mark_duplicates_metrics,
+                markdup.markdup_report,
                 flagstat.flagstat_report,
                 markdups_post.flagstat_report,
                 instrument.instrument_file,
@@ -422,16 +426,14 @@ workflow quality_check {
             "alt_filtered_read_one_fastq_gz": alt_filtered_fastq.read_one_fastq_gz,
             "alt_filtered_read_two_fastq_gz": alt_filtered_fastq.read_two_fastq_gz,
             "alt_filtered_singleton_reads_fastq_gz": alt_filtered_fastq.singleton_reads_fastq_gz,
-            "duplicate_marked_bam": markdup.duplicate_marked_bam,
-            "duplicate_marked_bam_index": markdup.duplicate_marked_bam_index,
-            "duplicate_marked_bam_md5": markdup.duplicate_marked_bam_md5
+            "markdup_bam": markdup.markdup_bam,
         }
     }
 
     output {
         File bam_checksum = compute_checksum.md5sum
         File validate_sam_file = validate_bam.validate_report
-        File mark_duplicates_metrics = markdup.mark_duplicates_metrics
+        File markdup_report = markdup.markdup_report
         File flagstat_report = select_first([
             markdups_post.flagstat_report,
             flagstat.flagstat_report
@@ -554,7 +556,5 @@ struct IntermediateFiles {
     File? alt_filtered_read_one_fastq_gz
     File? alt_filtered_read_two_fastq_gz
     File? alt_filtered_singleton_reads_fastq_gz
-    File? duplicate_marked_bam
-    File? duplicate_marked_bam_index
-    File? duplicate_marked_bam_md5
+    File? markdup_bam
 }
