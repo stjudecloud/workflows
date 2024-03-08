@@ -1168,10 +1168,12 @@ task markdup {
         Int max_readlen = 300
         Int optical_distance = 0
         Int ncpu = 2
+        Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
     }
 
     Float bam_size = size(bam, "GiB")
+    Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
@@ -1210,7 +1212,7 @@ task markdup {
 
     runtime {
         cpu: ncpu
-        memory: "4 GB"
+        memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
