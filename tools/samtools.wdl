@@ -1011,7 +1011,7 @@ task fixmate {
     }
 }
 
-task pos_sorted_fixmate {
+task position_sorted_fixmate {
     meta {
         description: "Runs `samtools fixmate` on the position-sorted input BAM file and output a position-sorted BAM. `fixmate` fills in mate coordinates and insert size fields among other tags and fields. `samtools fixmate` assumes a name-sorted or name-collated input BAM. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM."
     }
@@ -1107,7 +1107,7 @@ task pos_sorted_fixmate {
 task markdup {
     meta {
         description: "Runs `samtools markdup` on the position-sorted input BAM file. This creates a report and optionally a new BAM with duplicate reads marked."
-        help: "This task assumes `samtools fixmate` has already been run on the input BAM. If it has not, then the output may be incorrect. Running `fixmate` may not be necessary, if the aligner used correctly sets the mate information. This includes but is not limited to having correct insert sizes, mate coordinates, `ms` or \"mate score\" tags, and `MC` or \"mate cigar\" tags. A name-sorted or collated BAM can be run through the `fixmate` task (and then position sorted prior to this task) or a position-sorted BAM can be run through the `pos_sorted_fixmate` task."
+        help: "This task assumes `samtools fixmate` has already been run on the input BAM. If it has not, then the output may be incorrect. Running `fixmate` may not be necessary, if the aligner used correctly sets the mate information. This includes but is not limited to having correct insert sizes, mate coordinates, `ms` or \"mate score\" tags, and `MC` or \"mate cigar\" tags. A name-sorted or collated BAM can be run through the `fixmate` task (and then position sorted prior to this task) or a position-sorted BAM can be run through the `position_sorted_fixmate` task."
     }
 
     parameter_meta {

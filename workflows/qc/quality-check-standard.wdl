@@ -343,7 +343,7 @@ workflow quality_check {
     }
 
     if (need_fixmate) {
-        call samtools.pos_sorted_fixmate as fixmate after quickcheck { input:
+        call samtools.position_sorted_fixmate as fixmate after quickcheck { input:
             bam = post_subsample_bam,
             prefix = post_subsample_prefix + ".fixmate",
         }
