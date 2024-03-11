@@ -112,6 +112,8 @@
     </li>
     </ul>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../flag_filter/">FlagFilter</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make qc reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../markdups-post/">MarkDuplicates Post</a>
@@ -207,19 +209,17 @@
 <li><code>validate_input_bam.succeed_on_errors</code> (Boolean, default=false)</li>
 <li><code>validate_input_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
 <li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.F</code> (String, default="0x900")</li>
-<li><code>bam_to_fastqs.bam_to_fastq.G</code> (String, default="0")</li>
 <li><code>bam_to_fastqs.bam_to_fastq.append_read_number</code> (Boolean, default=true)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.f</code> (String, default="0")</li>
+<li><code>bam_to_fastqs.bam_to_fastq.bitwise_filter</code> (FlagFilter, default={"include_if_all": "0x0", "exclude_if_any": "0x900", "include_if_any": "0x0", "exclude_if_all": "0x0"})</li>
+<li><code>bam_to_fastqs.bam_to_fastq.collated</code> (Boolean, default=false)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.fail_on_unexpected_reads</code> (Boolean, default=false)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.fast_mode</code> (Boolean, default=true)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.fast_mode</code> (Boolean, default=!retain_collated_bam)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.ncpu</code> (Int, default=2)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.output_singletons</code> (Boolean, default=false)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
-<li><code>bam_to_fastqs.bam_to_fastq.rf</code> (String, default="0")</li>
-<li><code>bam_to_fastqs.bam_to_fastq.store_collated_bam</code> (Boolean, default=false)</li>
+<li><code>bam_to_fastqs.bam_to_fastq.retain_collated_bam</code> (Boolean, default=false)</li>
 <li><code>bam_to_fastqs.fqlint.disable_validator_codes</code> (Array[String], default=[])</li>
 <li><code>bam_to_fastqs.fqlint.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>bam_to_fastqs.fqlint.modify_memory_gb</code> (Int, default=0)</li>
@@ -257,7 +257,7 @@
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../bwa-db-build/" class="btn btn-neutral float-left" title="Bwa db build"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../make-qc-reference/" class="btn btn-neutral float-right" title="Make qc reference">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../flag_filter/" class="btn btn-neutral float-right" title="FlagFilter">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -288,7 +288,7 @@
       <span><a href="../bwa-db-build/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../make-qc-reference/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../flag_filter/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

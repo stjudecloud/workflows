@@ -110,6 +110,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/dnaseq-standard/">Dnaseq standard</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/flag_filter/">FlagFilter</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make qc reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
@@ -152,9 +154,9 @@
 <h2 id="quickcheck">quickcheck</h2>
 <dl>
 <dt>description</dt>
-<dd>Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists.</dd>
+<dd>Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists and the end-of-file marker exists.</dd>
 <dt>outputs</dt>
-<dd>{'checked_bam': 'The unmodfied input BAM after it has been successfully quickchecked'}</dd>
+<dd>{'check': 'Dummy output to enable caching'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -243,28 +245,55 @@
 <h2 id="subsample">subsample</h2>
 <dl>
 <dt>description</dt>
-<dd>Randomly subsamples the input BAM. Sampling is probabalistic and will be approximate to <code>desired_reads</code>. Read count will not be exact. A <code>sampled_bam</code> will not be produced if the input BAM read count is less than or equal to <code>desired_reads</code>.</dd>
+<dd>Randomly subsamples the input BAM, in order to produce an output BAM with approximately the desired number of reads.</dd>
+<dt>help</dt>
+<dd>A <code>desired_reads</code> <strong>greater than zero</strong> must be supplied. A <code>desired_reads &lt;= 0</code> will result in task failure. Sampling is probabalistic and will be approximate to <code>desired_reads</code>. Read count will not be exact. A <code>sampled_bam</code> will not be produced if the input BAM read count is less than or equal to <code>desired_reads</code>.</dd>
 <dt>outputs</dt>
-<dd>{'orig_read_count': 'A TSV report containing the original read count before subsampling', 'sampled_bam': 'The subsampled input BAM.'}</dd>
+<dd>{'orig_read_count': 'A TSV report containing the original read count before subsampling. If subsampling was requested but the input BAM had less than <code>desired_reads</code>, no read count will be filled in (instead there will be a <code>dash</code>).', 'sampled_bam': 'The subsampled input BAM. Only present if subsampling was performed.'}</dd>
 </dl>
 <h3 id="inputs_4">Inputs</h3>
 <h4 id="required_4">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to subsample</li>
-<li><code>desired_reads</code> (Int, <strong>required</strong>): How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value.</li>
+<li><code>desired_reads</code> (Int, <strong>required</strong>): How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value. <strong>Must be greater than zero.</strong> A <code>desired_reads &lt;= 0</code> will result in task failure.</li>
 </ul>
 <h4 id="defaults_4">Defaults</h4>
 <ul>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.subsampled.bam</code> will be added.</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.sampled.bam</code> will be added.</li>
 <li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
 <ul>
 <li><code>orig_read_count</code> (File)</li>
 <li><code>sampled_bam</code> (File?)</li>
+</ul>
+<h2 id="filter">filter</h2>
+<dl>
+<dt>description</dt>
+<dd>Filters a BAM based on its bitwise flag value.</dd>
+<dt>help</dt>
+<dd>This task is a wrapper around <code>samtools view</code>. This task will fail if there are no reads in the output BAM. This can happen either because the input BAM was empty or because the supplied <code>bitwise_filter</code> was too strict. If you want to down-sample a BAM, use the <code>subsample</code> task instead.</dd>
+</dl>
+<h3 id="inputs_5">Inputs</h3>
+<h4 id="required_5">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to filter</li>
+<li><code>bitwise_filter</code> (FlagFilter, <strong>required</strong>): A set of 4 possible read filters to apply. This is a <code>FlagFilter</code> object (see ../data_structures/flag_filter.wdl for more information).</li>
+</ul>
+<h4 id="defaults_5">Defaults</h4>
+<ul>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam") + ".filtered"): Prefix for the filtered BAM file. The extension <code>.bam</code> will be added.</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
+</ul>
+<h3 id="outputs_5">Outputs</h3>
+<ul>
+<li><code>filtered_bam</code> (File)</li>
 </ul>
 <h2 id="merge">merge</h2>
 <dl>
@@ -273,8 +302,8 @@
 <dt>outputs</dt>
 <dd>{'merged_bam': 'The BAM resulting from merging all the input BAMs'}</dd>
 </dl>
-<h3 id="inputs_5">Inputs</h3>
-<h4 id="required_5">Required</h4>
+<h3 id="inputs_6">Inputs</h3>
+<h4 id="required_6">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bams</code> (Array[File], <strong>required</strong>): An array of BAMs to merge into one combined BAM</li>
@@ -284,7 +313,7 @@
 <ul>
 <li><code>new_header</code> (File?): Use the lines of FILE as <code>@</code> headers to be copied to the merged BAM, replacing any header lines that would otherwise be copied from the first BAM file in the list. (File may actually be in SAM format, though any alignment records it may contain are ignored.)</li>
 </ul>
-<h4 id="defaults_5">Defaults</h4>
+<h4 id="defaults_6">Defaults</h4>
 <ul>
 <li><code>attach_rg</code> (Boolean, default=true); <strong>description</strong>: Attach an RG tag to each alignment. The tag value is inferred from file names.; <strong>common</strong>: true</li>
 <li><code>combine_pg</code> (Boolean, default=true); <strong>description</strong>: Similarly to <code>combine_rg</code>: for each @PG ID in the set of files to merge, use the @PG line of the first file we find that ID in rather than adding a suffix to differentiate similar IDs.; <strong>common</strong>: true</li>
@@ -295,7 +324,7 @@
 <li><code>region</code> (String, default=""): Merge files in the specified region (Format: <code>chr:start-end</code>)</li>
 <li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
-<h3 id="outputs_5">Outputs</h3>
+<h3 id="outputs_6">Outputs</h3>
 <ul>
 <li><code>merged_bam</code> (File)</li>
 </ul>
@@ -306,8 +335,8 @@
 <dt>outputs</dt>
 <dd>{'tagged_bam': 'The transformed input BAM after read group modifications have been applied'}</dd>
 </dl>
-<h3 id="inputs_6">Inputs</h3>
-<h4 id="required_6">Required</h4>
+<h3 id="inputs_7">Inputs</h3>
+<h4 id="required_7">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to add read group information</li>
@@ -316,7 +345,7 @@
 <ul>
 <li><code>read_group_id</code> (String?): Allows you to specify the read group ID of an existing @RG line and applies it to the reads specified by the <code>orphan_only</code> option</li>
 </ul>
-<h4 id="defaults_6">Defaults</h4>
+<h4 id="defaults_7">Defaults</h4>
 <ul>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
@@ -326,7 +355,7 @@
 <li><code>read_group_line</code> (Array[String], default=[]); <strong>description</strong>: Allows you to specify a read group line to append to (or replace in) the header and applies it to the reads specified by the <code>orphan_only</code> option. Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM. Only <strong>one</strong> read group line can be supplied per invocation of this task.; <strong>common</strong>: true</li>
 <li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
-<h3 id="outputs_6">Outputs</h3>
+<h3 id="outputs_7">Outputs</h3>
 <ul>
 <li><code>tagged_bam</code> (File)</li>
 </ul>
@@ -337,13 +366,13 @@
 <dt>outputs</dt>
 <dd>{'collated_bam': 'A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)'}</dd>
 </dl>
-<h3 id="inputs_7">Inputs</h3>
-<h4 id="required_7">Required</h4>
+<h3 id="inputs_8">Inputs</h3>
+<h4 id="required_8">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to collate</li>
 </ul>
-<h4 id="defaults_7">Defaults</h4>
+<h4 id="defaults_8">Defaults</h4>
 <ul>
 <li><code>fast_mode</code> (Boolean, default=true); <strong>description</strong>: Use fast mode (output primary alignments only)?; <strong>common</strong>: true</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
@@ -352,77 +381,40 @@
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".collated"): Prefix for the collated BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
-<h3 id="outputs_7">Outputs</h3>
+<h3 id="outputs_8">Outputs</h3>
 <ul>
 <li><code>collated_bam</code> (File)</li>
 </ul>
 <h2 id="bam_to_fastq">bam_to_fastq</h2>
 <dl>
 <dt>description</dt>
-<dd>Runs <code>samtools fastq</code> on the input BAM file. Converts the BAM into FASTQ files. If <code>paired_end = false</code>, then <em>all</em> reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see <code>collate_to_fastq</code>.</dd>
-<dt>outputs</dt>
-<dd>{'read_one_fastq_gz': 'Gzipped FASTQ file with 1st reads in pair', 'read_two_fastq_gz': 'Gzipped FASTQ file with 2nd reads in pair', 'singleton_reads_fastq_gz': 'A gzipped FASTQ containing singleton reads', 'interleaved_reads_fastq_gz': 'An interleaved gzipped Paired-End FASTQ', 'single_end_reads_fastq_gz': 'A gzipped FASTQ containing all reads'}</dd>
-</dl>
-<h3 id="inputs_8">Inputs</h3>
-<h4 id="required_8">Required</h4>
-<ul>
-<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>): Input name sorted or collated BAM format file to convert into FASTQ(s)</li>
-</ul>
-<h4 id="defaults_8">Defaults</h4>
-<ul>
-<li><code>F</code> (String, default="0x900"): Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments.</li>
-<li><code>G</code> (String, default="0"): Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
-<li><code>append_read_number</code> (Boolean, default=true); <strong>description</strong>: Append /1 and /2 suffixes to read names; <strong>common</strong>: true</li>
-<li><code>f</code> (String, default="0"): Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
-<li><code>fail_on_unexpected_reads</code> (Boolean, default=false): The definition of 'unexpected' depends on whether the values of <code>paired_end</code> and <code>output_singletons</code> are true or false. In any case, reads that have neither or both <code>first</code> and <code>last</code> bits set are considered unexpected. If <code>paired_end</code> is <code>true</code> and <code>output_singletons</code> is <code>false</code>, singleton reads are considered unexpected. A singleton read is a read with either the <code>first</code> or the <code>last</code> bit set and that possesses a <em>unique</em> QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if <code>output_singletons</code> is <code>true</code>, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If <code>fail_on_unexpected_reads</code> is <code>false</code>, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded. If <code>paired_end</code> is <code>false</code>, no reads are considered unexpected, and <em>every</em> read will be present in the resulting FASTQ regardless of bit settings.; <strong>description</strong>: Should the task fail if reads with an unexpected <code>first</code>/<code>last</code> bit setting are discovered?; <strong>common</strong>: true</li>
-<li><code>interleaved</code> (Boolean, default=false); <strong>description</strong>: Create an interleaved FASTQ file from Paired-End data? Ignored if <code>paired_end = false</code>.; <strong>common</strong>: true</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
-<li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
-<li><code>output_singletons</code> (Boolean, default=false): Output singleton reads as their own FASTQ?</li>
-<li><code>paired_end</code> (Boolean, default=true); <strong>description</strong>: Is the data Paired-End? If <code>paired_end = false</code>, then <em>all</em> reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.; <strong>common</strong>: true</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for output FASTQ(s). Extensions <code>[,.R1,.R2,.singleton].fastq.gz</code> will be added depending on other options.</li>
-<li><code>rf</code> (String, default="0"): Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/), in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
-</ul>
-<h3 id="outputs_8">Outputs</h3>
-<ul>
-<li><code>read_one_fastq_gz</code> (File?)</li>
-<li><code>read_two_fastq_gz</code> (File?)</li>
-<li><code>singleton_reads_fastq_gz</code> (File?)</li>
-<li><code>interleaved_reads_fastq_gz</code> (File?)</li>
-<li><code>single_end_reads_fastq_gz</code> (File?)</li>
-</ul>
-<h2 id="collate_to_fastq">collate_to_fastq</h2>
-<dl>
-<dt>description</dt>
-<dd>Runs <code>samtools collate</code> on the input BAM file then converts it into FASTQ(s) using <code>samtools fastq</code></dd>
-<dt>outputs</dt>
-<dd>{'collated_bam': 'A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)', 'read_one_fastq_gz': 'Gzipped FASTQ file with 1st reads in pair', 'read_two_fastq_gz': 'Gzipped FASTQ file with 2nd reads in pair', 'singleton_reads_fastq_gz': 'Gzipped FASTQ containing singleton reads', 'interleaved_reads_fastq_gz': 'Interleaved gzipped Paired-End FASTQ', 'single_end_reads_fastq_gz': 'A gzipped FASTQ containing all reads'}</dd>
+<dd>Converts an input BAM file into FASTQ(s) using <code>samtools fastq</code>.</dd>
+<dt>help</dt>
+<dd>If <code>paired_end == false</code>, then <em>all</em> reads in the BAM will be output to a single FASTQ file. Use <code>bitwise_filter</code> argument to remove any unwanted reads. An exit-code of <code>42</code> indicates that no reads were present in the output FASTQs. An exit-code of <code>43</code> indicates that unexpected reads were discovered in the input BAM.</dd>
+<dt>output</dt>
+<dd>{'collated_bam': 'A collated BAM (reads sharing a name next to each other, no other guarantee of sort order). Only generated if <code>retain_collated_bam</code> and <code>paired_end</code> are both true. Has the name <code>~{prefix}.collated.bam</code>.', 'read_one_fastq_gz': 'Gzipped FASTQ file with 1st reads in pair. Only generated if <code>paired_end</code> is true and <code>interleaved</code> is false. Has the name <code>~{prefix}.R1.fastq.gz</code>.', 'read_two_fastq_gz': 'Gzipped FASTQ file with 2nd reads in pair. Only generated if <code>paired_end</code> is true and <code>interleaved</code> is false. Has the name <code>~{prefix}.R2.fastq.gz</code>.', 'singleton_reads_fastq_gz': 'Gzipped FASTQ containing singleton reads. Only generated if <code>paired_end</code> and <code>output_singletons</code> are both true. Has the name <code>~{prefix}.singleton.fastq.gz</code>.', 'interleaved_reads_fastq_gz': 'Interleaved gzipped Paired-End FASTQ. Only generated if <code>paired_end</code> and <code>interleaved</code> are both true. Has the name <code>~{prefix}.fastq.gz</code>. The conditions under which this output and <code>single_end_reads_fastq_gz</code> are created are mutually exclusive, but since they share the same literal filename they will always evaluate to the same file (or undefined if neither are created).', 'single_end_reads_fastq_gz': 'A gzipped FASTQ containing all reads. Only generated if <code>paired_end</code> is false. Has the name <code>~{prefix}.fastq.gz</code>. The conditions under which this output and <code>interleaved_reads_fastq_gz</code> are created are mutually exclusive, but since they share the same literal filename they will always evaluate to the same file (or undefined if neither are created).'}</dd>
 </dl>
 <h3 id="inputs_9">Inputs</h3>
 <h4 id="required_9">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to collate and convert to FASTQ(s)</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to convert to FASTQ(s)</li>
 </ul>
 <h4 id="defaults_9">Defaults</h4>
 <ul>
-<li><code>F</code> (String, default="0x900"): Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments.</li>
-<li><code>G</code> (String, default="0"): Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
-<li><code>append_read_number</code> (Boolean, default=true); <strong>description</strong>: Append /1 and /2 suffixes to read names; <strong>common</strong>: true</li>
-<li><code>f</code> (String, default="0"): Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/) or in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
-<li><code>fail_on_unexpected_reads</code> (Boolean, default=false): The definition of 'unexpected' depends on whether the values of <code>paired_end</code> and <code>output_singletons</code> are true or false. In any case, reads that have neither or both <code>first</code> and <code>last</code> bits set are considered unexpected. If <code>paired_end</code> is <code>true</code> and <code>output_singletons</code> is <code>false</code>, singleton reads are considered unexpected. A singleton read is a read with either the <code>first</code> or the <code>last</code> bit set and that possesses a <em>unique</em> QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if <code>output_singletons</code> is <code>true</code>, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If <code>fail_on_unexpected_reads</code> is <code>false</code>, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded. If <code>paired_end</code> is <code>false</code>, no reads are considered unexpected, and <em>every</em> read will be present in the resulting FASTQ regardless of bit settings.; <strong>description</strong>: Should the task fail if reads with an unexpected <code>first</code>/<code>last</code> bit setting are discovered?; <strong>common</strong>: true</li>
-<li><code>fast_mode</code> (Boolean, default=true); <strong>description</strong>: Fast mode for <code>samtools collate</code> (primary alignments only); <strong>common</strong>: true</li>
-<li><code>interleaved</code> (Boolean, default=false); <strong>description</strong>: Create an interleaved FASTQ file from Paired-End data? Ignored if <code>paired_end = false</code>.; <strong>common</strong>: true</li>
+<li><code>append_read_number</code> (Boolean, default=true); <strong>description</strong>: Append /1 and /2 suffixes to read names?; <strong>common</strong>: true</li>
+<li><code>bitwise_filter</code> (FlagFilter, default={"include_if_all": "0x0", "exclude_if_any": "0x900", "include_if_any": "0x0", "exclude_if_all": "0x0"}): A set of 4 possible read filters to apply during conversion to FASTQ. This is a <code>FlagFilter</code> object (see ../data_structures/flag_filter.wdl for more information). By default, it will <strong>remove secondary and supplementary reads</strong> from the output FASTQs.</li>
+<li><code>collated</code> (Boolean, default=false); <strong>description</strong>: Is the BAM collated (or name-sorted)? If <code>collated == true</code>, then the input BAM will be run through <code>samtools fastq</code> without preprocessing. If <code>collated == false</code>, then <code>samtools collate</code> must be run on the input BAM before conversion to FASTQ. Ignored if <code>paired_end == false</code>.; <strong>common</strong>: true</li>
+<li><code>fail_on_unexpected_reads</code> (Boolean, default=false): The definition of 'unexpected' depends on whether the values of <code>paired_end</code> and <code>output_singletons</code> are true or false. If <code>paired_end</code> is <code>false</code>, no reads are considered unexpected, and <em>every</em> read (not caught by <code>bitwise_filter</code>) will be present in the resulting FASTQ regardless of <code>first</code>/<code>last</code> bit settings. This setting will be ignored in that case. If <code>paired_end</code> is <code>true</code> then reads that don't satisfy <code>first</code> XOR <code>last</code> are considered unexpected (i.e. reads that have neither <code>first</code> nor <code>last</code> set or reads that have both <code>first</code> and <code>last</code> set). If <code>output_singletons</code> is <code>false</code>, singleton reads are considered unexpected. A singleton read is a read with either the <code>first</code> or the <code>last</code> bit set (but not both) and that possesses a <em>unique</em> QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if <code>output_singletons</code> is <code>true</code>, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If <code>fail_on_unexpected_reads</code> is <code>false</code>, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.; <strong>description</strong>: Should the task fail if reads with an unexpected <code>first</code>/<code>last</code> bit setting are discovered?; <strong>common</strong>: true</li>
+<li><code>fast_mode</code> (Boolean, default=!retain_collated_bam); <strong>description</strong>: Fast mode for <code>samtools collate</code>? If <code>true</code>, this <strong>removes secondary and supplementary reads</strong> during the <code>collate</code> step. If <code>false</code>, secondary and supplementary reads will be retained in the <code>collated_bam</code> output (if created). Defaults to the opposite of <code>retain_collated_bam</code>. Ignored if <code>collated == true</code> <strong>or</strong> <code>paired_end == false</code>.; <strong>common</strong>: true</li>
+<li><code>interleaved</code> (Boolean, default=false); <strong>description</strong>: Create an interleaved FASTQ file from Paired-End data? Ignored if <code>paired_end == false</code>.; <strong>common</strong>: true</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
-<li><code>output_singletons</code> (Boolean, default=false): Output singleton reads as their own FASTQ?</li>
-<li><code>paired_end</code> (Boolean, default=true); <strong>description</strong>: Is the data Paired-End? If <code>paired_end = false</code>, then <em>all</em> reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.; <strong>common</strong>: true</li>
+<li><code>output_singletons</code> (Boolean, default=false): Output singleton reads as their own FASTQ? Ignored if <code>paired_end == false</code>.</li>
+<li><code>paired_end</code> (Boolean, default=true); <strong>description</strong>: Is the data Paired-End? If <code>paired_end == false</code>, then <em>all</em> reads in the BAM will be output to a single FASTQ file. Use <code>bitwise_filter</code> argument to remove any unwanted reads.; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the collated BAM and FASTQ files. The extensions <code>.collated.bam</code> and <code>[,.R1,.R2,.singleton].fastq.gz</code> will be added.</li>
-<li><code>rf</code> (String, default="0"): Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with <code>0x</code> (i.e. /^0x[0-9A-F]+/), in octal by beginning with <code>0</code> (i.e. /^0[0-7]+/).</li>
-<li><code>store_collated_bam</code> (Boolean, default=false); <strong>description</strong>: Save the collated BAM to disk and output it (true)?; <strong>common</strong>: true</li>
+<li><code>retain_collated_bam</code> (Boolean, default=false); <strong>description</strong>: Save the collated BAM to disk and output it (true)? This slows performance and <strong>substantially</strong> increases storage requirements. Be aware that collated BAMs occupy much more space than either position sorted or name sorted BAMs (due to the compression algorithm). Ignored if <code>collated == true</code> <strong>or</strong> <code>paired_end == false</code>.; <strong>common</strong>: true</li>
 <li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_9">Outputs</h3>

@@ -100,6 +100,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="workflows/dnaseq-standard/">Dnaseq standard</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="workflows/flag_filter/">FlagFilter</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="workflows/make-qc-reference/">Make qc reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="workflows/markdups-post/">MarkDuplicates Post</a>
@@ -162,8 +164,9 @@
 <ul>
 <li><code>workflows/</code> - Directory containing all end-to-end bioinformatics workflows.</li>
 <li><code>tools/</code> - All tools we have wrapped as individual WDL tasks.</li>
+<li><code>data_structures/</code> - WDL <code>struct</code> definitions and tasks or workflows related to their construction, parsing, or validation.</li>
 <li><code>docker/</code> - Dockerfiles used in our workflows. All docker images are published to the <a href="https://github.com/orgs/stjudecloud/packages?repo_name=workflows">GitHub Container Registy</a> as a part of our CI and are versioned.</li>
-<li><code>tests/tools/</code> - Home to all of our testing infrastructure. We use <a href="https://pytest-workflow.readthedocs.io/en/stable/">pytest-workflow</a> for validating our code.</li>
+<li><code>tests/</code> - Home to all of our testing infrastructure. We use <a href="https://pytest-workflow.readthedocs.io/en/stable/">pytest-workflow</a> for validating our code.</li>
 <li><code>bin/</code> - <strong>no longer in use</strong> Scripts used by Cromwell configuration settings. Add this to <code>$PATH</code> prior to using configurations in <code>conf</code> with Cromwell.</li>
 <li><code>conf/</code> - <strong>no longer in use</strong> Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.</li>
 </ul>
@@ -175,15 +178,15 @@
 <li>Twitter: <a href="https://twitter.com/StJudeResearch">@StJudeResearch</a></li>
 </ul>
 <h2 id="tests">Tests</h2>
-<p>Every task in this repository is covered by at least one test (see all of our tests in <code>tests/tools/</code>). These are run using <a href="https://pytest-workflow.readthedocs.io/en/stable/">pytest-workflow</a>.
-The command for running our tests should be executed at the root of the repo: <code>python -m pytest --kwdof --git-aware</code></p>
+<p>Every task in this repository is covered by at least one test (see all of our tests in <code>tests/tools/</code>). These are run using <a href="https://pytest-workflow.readthedocs.io/en/stable/">pytest-workflow</a>.</p>
+<p>The command for running our tests should be executed at the root of the repo: <code>python -m pytest --kwdof --git-aware</code></p>
 <h2 id="contributing">🤝 Contributing</h2>
 <p>Contributions, issues and feature requests are welcome!<br />Feel free to check <a href="https://github.com/stjudecloud/workflows/issues">issues page</a>. You can also take a look at the <a href="https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md">contributing guide</a>.</p>
 <h2 id="links-worth-checking-out">Links worth checking out</h2>
-<p><a href="https://github.com/openwdl">The OpenWDL GitHub</a>
-Our preferred WDL runner: <a href="https://github.com/chanzuckerberg/miniwdl">miniwdl</a>
-Most of our tasks are run inside a <a href="https://github.com/BioContainers/containers">BioContainers image</a>
-Our tasks are validated using <a href="https://pytest-workflow.readthedocs.io/en/stable/">pytest-workflow</a></p>
+<p><a href="https://github.com/openwdl">The OpenWDL GitHub</a></p>
+<p>Our preferred WDL runner: <a href="https://github.com/chanzuckerberg/miniwdl">miniwdl</a></p>
+<p>Most of our tasks are run inside a <a href="https://github.com/BioContainers/containers">BioContainers image</a></p>
+<p>Our tasks are validated using <a href="https://pytest-workflow.readthedocs.io/en/stable/">pytest-workflow</a></p>
 <h2 id="license">📝 License</h2>
 <p>Copyright © 2020-Present <a href="https://github.com/stjudecloud">St. Jude Cloud Team</a>.<br />
 This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md">MIT</a> licensed.</p>
@@ -240,5 +243,5 @@ This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LI
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-02-21 18:40:06.975331+00:00
+Build Date UTC : 2024-03-11 15:10:46.403347+00:00
 -->
