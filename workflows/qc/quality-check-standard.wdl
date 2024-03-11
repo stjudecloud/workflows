@@ -2,6 +2,7 @@
 # Copyright St. Jude Children's Research Hospital
 version 1.1
 
+import "../../data_structures/flag_filter.wdl"
 import "../../tools/fastqc.wdl" as fastqc_tasks
 import "../../tools/fq.wdl"
 import "../../tools/kraken2.wdl"
@@ -59,6 +60,8 @@ workflow quality_check {
                 description: "Detailed Kraken2 output that has been gzipped",
                 external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#standard-kraken-output-format"
             },
+            comparative_kraken_report: "Kraken2 summary report for only the alternatively filtered reads",
+            comparative_kraken_sequences: "Detailed Kraken2 output for only the alternatively filtered reads",
             mosdepth_dups_marked_global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
             mosdepth_dups_marked_global_summary: "A summary of mean depths per chromosome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
             mosdepth_dups_marked_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
@@ -76,12 +79,14 @@ workflow quality_check {
     parameter_meta {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
-        kraken_db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
+        kraken_db: "Kraken2 database. Can be generated with `../reference/make-qc-reference.wdl`. Must be a tarball without a root directory."
+        standard_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2 and `librarian` (if `run_librarian == true`). This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the created FASTQs. **WARNING:** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults. **WARNING:** If you have set `run_librarian` to `true`, we **strongly** recommend leaving this filter at the default value. `librarian` is trained on a specific set of reads, and changing this filter may produce nonsensical results."
+        comparative_filter: "Filter to apply to the input BAM while performing a second FASTQ conversion, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove unmapped, secondary, and supplementary reads** from the created FASTQs. **WARNING** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults."
         gtf: "GTF features file. Gzipped or uncompressed. **Required** for RNA-Seq data."
         multiqc_config: "YAML file for configuring MultiQC"
         extra_multiqc_inputs: "An array of additional files to pass directly into MultiQC"
-        coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions"
-        coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used."
+        coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions. Any regional analysis enabled by this option is _in addition_ to whole genome coverage, which is calculated regardless of this setting. An exon BED and a Coding Sequence BED are examples of regions you may wish to restrict coverage analysis to. Those two BEDs can be created with the workflow in `../reference/make-qc-reference.wdl`."
+        coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used. If using the BEDs created by `../reference/make-qc-reference.wdl`, the labels [\"exon\", \"CDS\"] are appropriate. Make sure to provide the coverage BEDs **in the same order** as the labels."
         prefix: "Prefix for all results files"
         rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
         mark_duplicates: "Mark duplicates before analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. Note that regardless of this setting, `picard MarkDuplicates` will be run in order to generate a `*.MarkDuplicates.metrics.txt` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
@@ -89,17 +94,33 @@ workflow quality_check {
             description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database. By default, this tool is run when `rna == true`.",
             external_help: "https://f1000research.com/articles/11-1122/v2",
         }
+        run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_filter` is ignored."
         output_intermediate_files: "Output intermediate files? FASTQs, if `rna == true` a collated BAM, if `mark_duplicates == true` a duplicate marked BAM, various accessory files like indexes and md5sums. **WARNING** these files can be large."
         use_all_cores: "Use all cores? Recommended for cloud environments."
-        subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
+        subsample_n_reads: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
     }
 
     input {
         File bam
         File bam_index
         File kraken_db
+        FlagFilter standard_filter = {
+            "include_if_all": "0x0",
+            "exclude_if_any": "0x900",  # 0x100 (secondary) || 0x800 (supplementary)
+            "include_if_any": "0x0",
+            "exclude_if_all": "0x0",
+        }
+        # TODO: consider making this an array of FlagFilters similar to coverage_beds
+        FlagFilter comparative_filter =  {
+            "include_if_all": "0x0",
+            # 0x4 (unmapped) || 0x100 (secondary) || 0x800 (supplementary)
+            "exclude_if_any": "0x904",
+            "include_if_any": "0x0",
+            "exclude_if_all": "0x0",
+        }
         File? gtf
-        File multiqc_config = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
+        File multiqc_config
+            = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
         Array[File] extra_multiqc_inputs = []
         Array[File] coverage_beds = []
         Array[String] coverage_labels = []
@@ -107,6 +128,7 @@ workflow quality_check {
         Boolean rna = false
         Boolean mark_duplicates = rna
         Boolean run_librarian = rna
+        Boolean run_comparative_kraken = false
         Boolean output_intermediate_files = false
         Boolean use_all_cores = false
         Int subsample_n_reads = -1
@@ -117,6 +139,14 @@ workflow quality_check {
         rna,
         coverage_beds_len=length(coverage_beds),
         coverage_labels=coverage_labels,
+    }
+    call flag_filter.validate_FlagFilter as kraken_filter_validator { input:
+        flags = standard_filter
+    }
+    if (run_comparative_kraken) {
+        call flag_filter.validate_FlagFilter as comparative_kraken_filter_validator { input:
+            flags = comparative_filter
+        }
     }
 
     call md5sum.compute_checksum after parse_input { input: file=bam }
@@ -197,37 +227,77 @@ workflow quality_check {
         prefix=post_subsample_prefix,
     }
 
-    call samtools.collate_to_fastq after quickcheck { input:
-        bam=post_subsample_bam,
-        prefix=post_subsample_prefix,
+    call samtools.bam_to_fastq after quickcheck
+        after kraken_filter_validator
+    { input:
+        bam = post_subsample_bam,
+        bitwise_filter = standard_filter,
+        prefix = post_subsample_prefix,
         # RNA needs a collated BAM for Qualimap
         # DNA can skip the associated storage costs
-        store_collated_bam = rna,
+        retain_collated_bam = rna,
         # disabling fast_mode enables writing of secondary and supplementary alignments
         # to the collated BAM when processing RNA.
         # Those alignments are used downstream by Qualimap.
         fast_mode = (!rna),
-        paired_end=true,  # matches default but prevents user from overriding
-        interleaved=false,  # matches default but prevents user from overriding
-        use_all_cores=use_all_cores,
+        paired_end = true,  # matches default but prevents user from overriding
+        interleaved = false,  # matches default but prevents user from overriding
+        use_all_cores = use_all_cores,
     }
 
     call fq.fqlint { input:
-        read_one_fastq = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
-        read_two_fastq = select_first([collate_to_fastq.read_two_fastq_gz, "undefined"]),
+        read_one_fastq = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
+        read_two_fastq = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
     }
     call kraken2.kraken after fqlint { input:
         read_one_fastq_gz
-            = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+            = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
         read_two_fastq_gz
-            = select_first([collate_to_fastq.read_two_fastq_gz, "undefined"]),
+            = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
         db=kraken_db,
         prefix=post_subsample_prefix,
         use_all_cores=use_all_cores,
     }
     if (run_librarian) {
         call libraran_tasks.librarian after fqlint { input:
-            read_one_fastq = select_first([collate_to_fastq.read_one_fastq_gz, "undefined"]),
+            read_one_fastq = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
+        }
+    }
+
+    if (run_comparative_kraken) {
+        call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck
+            after comparative_kraken_filter_validator
+        { input:
+            bam = post_subsample_bam,
+            bitwise_filter = comparative_filter,
+            prefix = post_subsample_prefix + ".alt_filtered",
+            # matches default but prevents user from overriding
+            # If the user wants a collated BAM, they should save the one
+            # from the first bam_to_fastq call.
+            retain_collated_bam = false,
+            # matches default but prevents user from overriding
+            # Since the only output here is FASTQs, we can disable fast mode.
+            # This discards secondary and supplementary alignments, which should not
+            # be converted to FASTQs. (Is that true?)
+            fast_mode = true,
+            paired_end = true,  # matches default but prevents user from overriding
+            interleaved = false,  # matches default but prevents user from overriding
+            use_all_cores = use_all_cores,
+        }
+        call fq.fqlint as alt_filtered_fqlint { input:
+            read_one_fastq
+                = select_first([alt_filtered_fastq.read_one_fastq_gz, "undefined"]),
+            read_two_fastq
+                = select_first([alt_filtered_fastq.read_two_fastq_gz, "undefined"]),
+        }
+        call kraken2.kraken as comparative_kraken after alt_filtered_fqlint { input:
+            read_one_fastq_gz
+                = select_first([alt_filtered_fastq.read_one_fastq_gz, "undefined"]),
+            read_two_fastq_gz
+                = select_first([alt_filtered_fastq.read_two_fastq_gz, "undefined"]),
+            db = kraken_db,
+            prefix = post_subsample_prefix + ".alt_filtered",
+            use_all_cores = use_all_cores,
         }
     }
 
@@ -259,7 +329,7 @@ workflow quality_check {
             outfile_name=post_subsample_prefix + ".strandedness.tsv",
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam=select_first([collate_to_fastq.collated_bam, "undefined"]),
+            bam=select_first([bam_to_fastq.collated_bam, "undefined"]),
             prefix=post_subsample_prefix + ".qualimap_rnaseq_results",
             gtf=select_first([gtf, "undefined"]),
             name_sorted=true,
@@ -318,6 +388,7 @@ workflow quality_check {
                 quality_score_distribution.quality_score_distribution_txt,
                 kraken.report,
                 librarian.raw_data,
+                comparative_kraken.report,
                 wg_coverage.summary,
                 wg_coverage.global_dist,
                 global_phred_scores.phred_scores,
@@ -341,12 +412,15 @@ workflow quality_check {
 
     if (output_intermediate_files) {
         IntermediateFiles optional_files = {
-            "subsampled_bam": subsample.sampled_bam,
-            "subsampled_bam_index": subsample_index.bam_index,
-            "collated_bam": collate_to_fastq.collated_bam,
-            "read_one_fastq_gz": collate_to_fastq.read_one_fastq_gz,
-            "read_two_fastq_gz": collate_to_fastq.read_two_fastq_gz,
-            "singleton_reads_fastq_gz": collate_to_fastq.singleton_reads_fastq_gz,
+            "sampled_bam": subsample.sampled_bam,
+            "sampled_bam_index": subsample_index.bam_index,
+            "collated_bam": bam_to_fastq.collated_bam,
+            "read_one_fastq_gz": bam_to_fastq.read_one_fastq_gz,
+            "read_two_fastq_gz": bam_to_fastq.read_two_fastq_gz,
+            "singleton_reads_fastq_gz": bam_to_fastq.singleton_reads_fastq_gz,
+            "alt_filtered_read_one_fastq_gz": alt_filtered_fastq.read_one_fastq_gz,
+            "alt_filtered_read_two_fastq_gz": alt_filtered_fastq.read_two_fastq_gz,
+            "alt_filtered_singleton_reads_fastq_gz": alt_filtered_fastq.singleton_reads_fastq_gz,
             "duplicate_marked_bam": markdups.duplicate_marked_bam,
             "duplicate_marked_bam_index": markdups.duplicate_marked_bam_index,
             "duplicate_marked_bam_md5": markdups.duplicate_marked_bam_md5
@@ -390,6 +464,8 @@ workflow quality_check {
         File multiqc_report = multiqc.multiqc_report
         File? orig_read_count = subsample.orig_read_count
         File? kraken_sequences = kraken.sequences
+        File? comparative_kraken_report = comparative_kraken.report
+        File? comparative_kraken_sequences = comparative_kraken.sequences
         File? mosdepth_dups_marked_global_dist = markdups_post.mosdepth_global_dist
         File? mosdepth_dups_marked_global_summary = markdups_post.mosdepth_global_summary
         Array[File]? mosdepth_dups_marked_region_summary
@@ -468,12 +544,15 @@ task parse_input {
 
 # TODO does this need documentation?
 struct IntermediateFiles {
-    File? subsampled_bam
-    File? subsampled_bam_index
+    File? sampled_bam
+    File? sampled_bam_index
     File? collated_bam
     File? read_one_fastq_gz
     File? read_two_fastq_gz
     File? singleton_reads_fastq_gz
+    File? alt_filtered_read_one_fastq_gz
+    File? alt_filtered_read_two_fastq_gz
+    File? alt_filtered_singleton_reads_fastq_gz
     File? duplicate_marked_bam
     File? duplicate_marked_bam_index
     File? duplicate_marked_bam_md5

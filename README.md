@@ -26,8 +26,9 @@ The repository is laid out as follows:
 
 * `workflows/` - Directory containing all end-to-end bioinformatics workflows.
 * `tools/` - All tools we have wrapped as individual WDL tasks.
+* `data_structures/` - WDL `struct` definitions and tasks or workflows related to their construction, parsing, or validation.
 * `docker/` - Dockerfiles used in our workflows. All docker images are published to the [GitHub Container Registy](https://github.com/orgs/stjudecloud/packages?repo_name=workflows) as a part of our CI and are versioned.
-* `tests/tools/` - Home to all of our testing infrastructure. We use [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/) for validating our code.
+* `tests/` - Home to all of our testing infrastructure. We use [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/) for validating our code.
 * `bin/` - **no longer in use** Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations in `conf` with Cromwell.
 * `conf/` - **no longer in use** Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
 
@@ -42,6 +43,7 @@ The repository is laid out as follows:
 ## Tests
 
 Every task in this repository is covered by at least one test (see all of our tests in `tests/tools/`). These are run using [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/).
+
 The command for running our tests should be executed at the root of the repo: `python -m pytest --kwdof --git-aware`
 
 ## 🤝 Contributing
@@ -51,8 +53,11 @@ Contributions, issues and feature requests are welcome!<br />Feel free to check 
 ## Links worth checking out
 
 [The OpenWDL GitHub](https://github.com/openwdl)
+
 Our preferred WDL runner: [miniwdl](https://github.com/chanzuckerberg/miniwdl)
+
 Most of our tasks are run inside a [BioContainers image](https://github.com/BioContainers/containers)
+
 Our tasks are validated using [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/)
 
 ## 📝 License

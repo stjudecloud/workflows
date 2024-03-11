@@ -4,11 +4,13 @@
 # Copyright St. Jude Children's Research Hospital
 version 1.1
 
+import "../data_structures/flag_filter.wdl"
+
 task quickcheck {
     meta {
-        description: "Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists, at least one sequence is present, and the end-of-file marker exists."
+        description: "Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists and the end-of-file marker exists."
         outputs: {
-            checked_bam: "The unmodfied input BAM after it has been successfully quickchecked"
+            check: "Dummy output to enable caching"
         }
     }
 
@@ -83,6 +85,8 @@ task split {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools split \
             --threads "$n_cores" \
@@ -95,14 +99,14 @@ task split {
             -h 0 \
             -n 1 \
             ~{prefix}.unaccounted_reads.bam \
-            > first_unaccounted_read.bam
+            > first_unaccounted_read.sam
 
-        if ~{reject_unaccounted} && [ -s first_unaccounted_read.bam ]; then
+        if ~{reject_unaccounted} && [ -s first_unaccounted_read.sam ]; then
             exit 42
         else
             rm ~{prefix}.unaccounted_reads.bam
         fi
-        rm first_unaccounted_read.bam
+        rm first_unaccounted_read.sam
     >>>
 
     output {
@@ -159,6 +163,8 @@ task flagstat {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools flagstat --threads "$n_cores" ~{bam} > ~{outfile_name}
     >>>
@@ -215,10 +221,10 @@ task index {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
-        # For some reason, index doesn't support '--threads',
-        # so we use '-@' here
-        samtools index -@ "$n_cores" ~{bam} ~{outfile_name}
+        samtools index --threads "$n_cores" ~{bam} ~{outfile_name}
     >>>
 
     output {
@@ -236,17 +242,20 @@ task index {
 
 task subsample {
     meta {
-        description: "Randomly subsamples the input BAM. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
+        description: "Randomly subsamples the input BAM, in order to produce an output BAM with approximately the desired number of reads."
+        help: "A `desired_reads` **greater than zero** must be supplied. A `desired_reads <= 0` will result in task failure. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
-            orig_read_count: "A TSV report containing the original read count before subsampling",
-            sampled_bam: "The subsampled input BAM."
+            # TODO is there any situation where the sampling fraction should be reported?
+            # It is _roughly_ derivable from the input and output read counts.
+            orig_read_count: "A TSV report containing the original read count before subsampling. If subsampling was requested but the input BAM had less than `desired_reads`, no read count will be filled in (instead there will be a `dash`).",
+            sampled_bam: "The subsampled input BAM. Only present if subsampling was performed."
         }
     }
 
     parameter_meta {
         bam: "Input BAM format file to subsample"
-        desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value."
-        prefix: "Prefix for the BAM file. The extension `.subsampled.bam` will be added."
+        desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value. **Must be greater than zero.** A `desired_reads <= 0` will result in task failure."
+        prefix: "Prefix for the BAM file. The extension `.sampled.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             common: true
@@ -267,7 +276,7 @@ task subsample {
         Int modify_disk_size_gb = 0
     }
 
-    String suffixed = prefix + ".subsampled"
+    String suffixed = prefix + ".sampled"
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
@@ -275,20 +284,34 @@ task subsample {
     command <<<
         set -euo pipefail
 
-        if [[ ~{desired_reads} -le 0 ]]; then
-            echo "'desired_reads' must be >0!" > /dev/stderr
-            exit 1
-        fi
-
         n_cores=~{ncpu}
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
-        read_count="$(samtools view --threads "$n_cores" -c ~{bam})"
+        if [[ ~{desired_reads} -le 0 ]]; then
+            >&2 echo "'desired_reads' must be greater than zero!"
+            >&2 echo "Task failed!"
+            exit 42
+        fi
+
+        read_count="$(samtools view \
+            --threads "$n_cores" \
+            --count \
+            ~{bam}
+        )"
+
+        if [[ "$read_count" -eq 0 ]]; then
+            >&2 echo "Read count is 0. Cannot subsample."
+            >&2 echo "Please check that the input BAM is not empty."
+            >&2 echo "Command failed!"
+            exit 42
+        fi
 
         if [[ "$read_count" -gt "~{desired_reads}" ]]; then
-            # the BAM has at least ~{desired_reads} reads, meaning we should
+            # the BAM has more than ~{desired_reads} reads, meaning we should
             # subsample it.
             frac=$( \
                 awk -v desired_reads=~{desired_reads} \
@@ -297,30 +320,158 @@ task subsample {
                             printf "%1.8f",
                             ( desired_reads / read_count )
                         }' \
-                )
-            samtools view --threads "$n_cores" -hb -s "$frac" ~{bam} \
+            )
+            samtools view \
+                --threads "$n_cores" \
+                -hb \
+                -s "$frac" \
+                ~{bam} \
                 > ~{suffixed}.bam
 
+            # Report the original read count.
+            # Use 'prefix' as the entry name.
+            # Use the '.sampled' suffixed name in the filename
+            # because that is the name of the output BAM.
+            # This might seem odd but it works best with MultiQC.
             {
                 echo -e "sample\toriginal read count"
                 echo -e "~{prefix}\t$read_count"
             } > ~{suffixed}.orig_read_count.tsv
         else
-            # the BAM has less than ~{desired_reads} reads, meaning we should
-            # just use it directly without subsampling.
+            # the BAM has less than or equal to ~{desired_reads} reads,
+            # meaning we should just use it directly without subsampling.
 
-            # Do not use the '.subsampled' suffixed name
-            # if not subsampled. Use ~{prefix} instead.
+            # Do not report an original read count,
+            # as it is the same as the input BAM. Just write a dash.
+            # Do not use the '.sampled' suffixed name in the filename.
+            # Use ~{prefix} instead, so it matches the any downstream calls
+            # which also use ~{prefix}.
+            # This is for MultiQC purposes.
             {
                 echo -e "sample\toriginal read count"
                 echo -e "~{prefix}\t-"
             } > ~{prefix}.orig_read_count.tsv
         fi
+
+        # Check that if output was created,
+        # it contains at least one read.
+        if [ -e ~{suffixed}.bam ]; then
+            samtools head \
+                --threads "$n_cores" \
+                -h 0 \
+                -n 1 \
+                ~{suffixed}.bam \
+                > first_read.sam
+
+            if [ ! -s first_read.sam ]; then
+                >&2 echo "No reads are in the output BAM!"
+                >&2 echo "This should not be possible! Please report this as a bug."
+                rm first_read.sam
+                exit 42
+            fi
+            rm first_read.sam
+        fi
+
     >>>
 
     output {
         File orig_read_count = glob("*.orig_read_count.tsv")[0]
         File? sampled_bam = suffixed + ".bam"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "4 GB"
+        disk: "~{disk_size_gb} GB"
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        maxRetries: 1
+    }
+}
+
+task filter {
+    # TODO expose more `view` options
+    meta {
+        description: "Filters a BAM based on its bitwise flag value."
+        help: "This task is a wrapper around `samtools view`. This task will fail if there are no reads in the output BAM. This can happen either because the input BAM was empty or because the supplied `bitwise_filter` was too strict. If you want to down-sample a BAM, use the `subsample` task instead."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to filter"
+        bitwise_filter: "A set of 4 possible read filters to apply. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information)."
+        prefix: "Prefix for the filtered BAM file. The extension `.bam` will be added."
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments.",
+            common: true
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task",
+            common: true
+        }
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        FlagFilter bitwise_filter
+        String prefix = basename(bam, ".bam") + ".filtered"
+        Boolean use_all_cores = false
+        Int ncpu = 2
+        Int modify_disk_size_gb = 0
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
+
+        samtools view \
+            --threads "$n_cores" \
+            -hb \
+            -f ~{bitwise_filter.include_if_all} \
+            -F ~{bitwise_filter.exclude_if_any} \
+            --rf ~{bitwise_filter.include_if_any} \
+            -G ~{bitwise_filter.exclude_if_all} \
+            ~{bam} \
+            > ~{prefix}.bam
+
+        samtools head \
+            --threads "$n_cores" \
+            -h 0 \
+            -n 1 \
+            ~{prefix}.bam \
+            > first_read.sam
+
+        if [ ! -s first_read.sam ]; then
+            >&2 echo "No reads are in the output BAM!"
+            >&2 echo "Please check that the input BAM is not empty"
+            >&2 echo "and that the filter is not too restrictive."
+            >&2 echo "Command failed!"
+            rm first_read.sam
+            exit 42
+        fi
+        rm first_read.sam
+        # TODO should there be a check that the output
+        # BAM is different from the input?
+        # It would only need to be a simple `wc -l` check.
+        # Ideally this would be done _without_ an extra pass through the BAM.
+        # An easier check is that the supplied filters aren't all zeroes.
+        # However it's still possible to have an active filter
+        # that doesn't catch anything. What's the ideal
+        # behavior in that case? The user provided something valid,
+        # so failing seems wrong. But (essentially) duplicating the BAM is also
+        # (most likely) wrong.
+    >>>
+
+    output {
+        File filtered_bam = prefix + ".bam"
     }
 
     runtime {
@@ -397,6 +548,8 @@ task merge {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools merge \
             --threads "$n_cores" \
@@ -482,6 +635,8 @@ task addreplacerg {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools addreplacerg \
             --threads "$n_cores" \
@@ -556,6 +711,8 @@ task collate {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools collate \
             --threads "$n_cores" \
@@ -579,39 +736,50 @@ task collate {
 
 task bam_to_fastq {
     meta {
-        description: "Runs `samtools fastq` on the input BAM file. Converts the BAM into FASTQ files. If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads. Assumes either a name sorted or collated BAM. For splitting a position sorted BAM see `collate_to_fastq`."
-        outputs: {
-            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
-            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair",
-            singleton_reads_fastq_gz: "A gzipped FASTQ containing singleton reads",
-            interleaved_reads_fastq_gz: "An interleaved gzipped Paired-End FASTQ",
-            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads"
+        description: "Converts an input BAM file into FASTQ(s) using `samtools fastq`."
+        help: "If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
+        output: {
+            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order). Only generated if `retain_collated_bam` and `paired_end` are both true. Has the name `~{prefix}.collated.bam`.",
+            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair. Only generated if `paired_end` is true and `interleaved` is false. Has the name `~{prefix}.R1.fastq.gz`.",
+            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair. Only generated if `paired_end` is true and `interleaved` is false. Has the name `~{prefix}.R2.fastq.gz`.",
+            singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads. Only generated if `paired_end` and `output_singletons` are both true. Has the name `~{prefix}.singleton.fastq.gz`.",
+            interleaved_reads_fastq_gz: "Interleaved gzipped Paired-End FASTQ. Only generated if `paired_end` and `interleaved` are both true. Has the name `~{prefix}.fastq.gz`. The conditions under which this output and `single_end_reads_fastq_gz` are created are mutually exclusive, but since they share the same literal filename they will always evaluate to the same file (or undefined if neither are created).",
+            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads. Only generated if `paired_end` is false. Has the name `~{prefix}.fastq.gz`. The conditions under which this output and `interleaved_reads_fastq_gz` are created are mutually exclusive, but since they share the same literal filename they will always evaluate to the same file (or undefined if neither are created).",
         }
     }
 
     parameter_meta {
-        bam: "Input name sorted or collated BAM format file to convert into FASTQ(s)"
-        prefix: "Prefix for output FASTQ(s). Extensions `[,.R1,.R2,.singleton].fastq.gz` will be added depending on other options."
-        f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
-        rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
+        bam: "Input BAM format file to convert to FASTQ(s)"
+        bitwise_filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
+        prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
         paired_end: {
-            description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.",
+            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads.",
+            common: true
+        }
+        collated: {
+            description: "Is the BAM collated (or name-sorted)? If `collated == true`, then the input BAM will be run through `samtools fastq` without preprocessing. If `collated == false`, then `samtools collate` must be run on the input BAM before conversion to FASTQ. Ignored if `paired_end == false`.",
+            common: true
+        }
+        retain_collated_bam: {
+            description: "Save the collated BAM to disk and output it (true)? This slows performance and **substantially** increases storage requirements. Be aware that collated BAMs occupy much more space than either position sorted or name sorted BAMs (due to the compression algorithm). Ignored if `collated == true` **or** `paired_end == false`.",
+            common: true
+        }
+        fast_mode: {
+            description: "Fast mode for `samtools collate`? If `true`, this **removes secondary and supplementary reads** during the `collate` step. If `false`, secondary and supplementary reads will be retained in the `collated_bam` output (if created). Defaults to the opposite of `retain_collated_bam`. Ignored if `collated == true` **or** `paired_end == false`.",
             common: true
         }
         append_read_number: {
-            description: "Append /1 and /2 suffixes to read names",
+            description: "Append /1 and /2 suffixes to read names?",
             common: true
         }
         interleaved: {
-            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end = false`.",
+            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end == false`.",
             common: true
         }
-        output_singletons: "Output singleton reads as their own FASTQ?"
+        output_singletons: "Output singleton reads as their own FASTQ? Ignored if `paired_end == false`."
         fail_on_unexpected_reads: {
             description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?",
-            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. In any case, reads that have neither or both `first` and `last` bits set are considered unexpected. If `paired_end` is `true` and `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read will be present in the resulting FASTQ regardless of bit settings.",
+            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read (not caught by `bitwise_filter`) will be present in the resulting FASTQ regardless of `first`/`last` bit settings. This setting will be ignored in that case. If `paired_end` is `true` then reads that don't satisfy `first` XOR `last` are considered unexpected (i.e. reads that have neither `first` nor `last` set or reads that have both `first` and `last` set). If `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set (but not both) and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.",
             common: true
         }
         use_all_cores: {
@@ -622,28 +790,44 @@ task bam_to_fastq {
             description: "Number of cores to allocate for task",
             common: true
         }
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File bam
+        FlagFilter bitwise_filter = {
+            "include_if_all": "0x0",
+            "exclude_if_any": "0x900",
+            "include_if_any": "0x0",
+            "exclude_if_all": "0x0",
+        }
         String prefix = basename(bam, ".bam")
-        String f = "0"
-        String F = "0x900"
-        String rf = "0"
-        String G = "0"
         Boolean paired_end = true
+        Boolean collated = false
+        Boolean retain_collated_bam = false
+        Boolean fast_mode = !retain_collated_bam
         Boolean append_read_number = true
         Boolean interleaved = false
         Boolean output_singletons = false
         Boolean fail_on_unexpected_reads = false
         Boolean use_all_cores = false
         Int ncpu = 2
+        Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+    Int memory_gb = (
+        if (collated || !paired_end)
+        then 4
+        else (ceil(bam_size * 0.4) + 4)
+    ) + modify_memory_gb
+    Int disk_size_gb = ceil(bam_size * (
+        if (retain_collated_bam && !collated && paired_end)
+        then 5
+        else 2
+    )) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -652,13 +836,30 @@ task bam_to_fastq {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
+
+        mkfifo bam_pipe
+        if ! ~{collated} && ~{paired_end}; then
+            samtools collate \
+                ~{if retain_collated_bam then "" else "-u"} \
+                --threads "$n_cores" \
+                ~{if fast_mode then "-f" else ""} \
+                -O \
+                ~{bam} \
+                | tee ~{if retain_collated_bam then prefix + ".collated.bam" else ""} \
+                > bam_pipe \
+                &
+        else
+            samtools view -h --threads "$n_cores" ~{bam} > bam_pipe &
+        fi
 
         samtools fastq \
             --threads "$n_cores" \
-            -f ~{f} \
-            -F ~{F} \
-            --rf ~{rf} \
-            -G ~{G} \
+            -f ~{bitwise_filter.include_if_all} \
+            -F ~{bitwise_filter.exclude_if_any} \
+            --rf ~{bitwise_filter.include_if_any} \
+            -G ~{bitwise_filter.exclude_if_all} \
             ~{if append_read_number
                 then "-N"
                 else "-n"
@@ -681,182 +882,31 @@ task bam_to_fastq {
                     then "-s " + prefix+".singleton.fastq.gz"
                     else "-s junk.singleton.fastq.gz"
                 )
-                else ""
+                else ""  # TODO document why `-s` isn't specified here
             } \
             -0 ~{
                 if paired_end
                 then "junk.unknown_bit_setting.fastq.gz"
                 else prefix + ".fastq.gz"
             } \
-            ~{bam}
+            bam_pipe
 
-        if ~{fail_on_unexpected_reads} \
-            && find . -name 'junk.*.fastq.gz' ! -empty | grep -q .
-        then
-            >&2 echo "Discovered unexpected reads in:"
-            find . -name 'junk.*.fastq.gz' ! -empty >&2
+        rm bam_pipe
+
+        # Check that some output is non-empty
+        if [ -z "$(gunzip -c ~{prefix}*.fastq.gz | head -c 1 | tr '\0\n' __)" ]; then
+            >&2 echo "No reads are in any output FASTQ"
+            >&2 echo "Command failed!"
             exit 42
         fi
-    >>>
 
-    output {
-        File? read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
-        File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
-        File? singleton_reads_fastq_gz = "~{prefix}.singleton.fastq.gz"
-        File? interleaved_reads_fastq_gz = "~{prefix}.fastq.gz"
-        File? single_end_reads_fastq_gz = "~{prefix}.fastq.gz"
-    }
-
-    runtime {
-        cpu: ncpu
-        memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
-        maxRetries: 1
-    }
-}
-
-task collate_to_fastq {
-    meta {
-        description: "Runs `samtools collate` on the input BAM file then converts it into FASTQ(s) using `samtools fastq`"
-        outputs: {
-            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)",
-            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair",
-            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair",
-            singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads",
-            interleaved_reads_fastq_gz: "Interleaved gzipped Paired-End FASTQ",
-            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads"
-        }
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to collate and convert to FASTQ(s)"
-        prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
-        f: "Only output alignments with all bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        F: "Do not output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/). This defaults to 0x900 representing filtering of secondary and supplementary alignments."
-        rf: "Only output alignments with any bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/), in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        G: "Only EXCLUDE reads with all of the bits set in INT present in the FLAG field. INT can be specified in hex by beginning with `0x` (i.e. /^0x[0-9A-F]+/) or in octal by beginning with `0` (i.e. /^0[0-7]+/)."
-        fast_mode: {
-            description: "Fast mode for `samtools collate` (primary alignments only)",
-            common: true
-        }
-        store_collated_bam: {
-            description: "Save the collated BAM to disk and output it (true)?",
-            common: true
-        }
-        paired_end: {
-            description: "Is the data Paired-End? If `paired_end = false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use filtering arguments to remove any unwanted reads.",
-            common: true
-        }
-        append_read_number: {
-            description: "Append /1 and /2 suffixes to read names",
-            common: true
-        }
-        interleaved: {
-            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end = false`.",
-            common: true
-        }
-        output_singletons: "Output singleton reads as their own FASTQ?"
-        fail_on_unexpected_reads: {
-            description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?",
-            help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. In any case, reads that have neither or both `first` and `last` bits set are considered unexpected. If `paired_end` is `true` and `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read will be present in the resulting FASTQ regardless of bit settings.",
-            common: true
-        }
-        use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments.",
-            common: true
-        }
-        ncpu: {
-            description: "Number of cores to allocate for task",
-            common: true
-        }
-        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
-
-    input {
-        File bam
-        String prefix = basename(bam, ".bam")
-        String f = "0"
-        String F = "0x900"
-        String rf = "0"
-        String G = "0"
-        Boolean fast_mode = true
-        Boolean store_collated_bam = false
-        Boolean paired_end = true
-        Boolean append_read_number = true
-        Boolean interleaved = false
-        Boolean output_singletons = false
-        Boolean fail_on_unexpected_reads = false
-        Boolean use_all_cores = false
-        Int ncpu = 2
-        Int modify_memory_gb = 0
-        Int modify_disk_size_gb = 0
-    }
-
-    Float bam_size = size(bam, "GiB")
-    Int memory_gb = ceil(bam_size * 0.4) + 4 + modify_memory_gb
-    Int disk_size_gb = ceil(bam_size * 5) + 10 + modify_disk_size_gb
-
-    command <<<
-        set -euo pipefail
-
-        n_cores=~{ncpu}
-        if ~{use_all_cores}; then
-            n_cores=$(nproc)
-        fi
-
-        # Use the `-u` flag to skip compression (and decompression)
-        # if not storing the output
-        samtools collate \
-            ~{if store_collated_bam then "" else "-u"} \
-            --threads "$n_cores" \
-            ~{if fast_mode then "-f" else ""} \
-            -O \
-            ~{bam} \
-            | tee ~{if store_collated_bam then prefix + ".collated.bam" else ""} \
-            | samtools fastq \
-                --threads "$n_cores" \
-                -f ~{f} \
-                -F ~{F} \
-                --rf ~{rf} \
-                -G ~{G} \
-                ~{if append_read_number
-                    then "-N"
-                    else "-n"
-                } \
-                -1 ~{
-                    if paired_end then (
-                        if interleaved then prefix + ".fastq.gz" else prefix + ".R1.fastq.gz"
-                    )
-                    else prefix + ".fastq.gz"
-                } \
-                -2 ~{
-                    if paired_end then (
-                        if interleaved then prefix + ".fastq.gz" else prefix + ".R2.fastq.gz"
-                    )
-                    else prefix + ".fastq.gz"
-                } \
-                ~{
-                    if paired_end then (
-                        if output_singletons
-                        then "-s " + prefix+".singleton.fastq.gz"
-                        else "-s junk.singleton.fastq.gz"
-                    )
-                    else ""
-                } \
-                -0 ~{
-                    if paired_end
-                    then "junk.unknown_bit_setting.fastq.gz"
-                    else prefix + ".fastq.gz"
-                }
-
+        # Check that there weren't any unexpected reads in the input BAM
         if ~{fail_on_unexpected_reads} \
-            && find . -name 'junk.*.fastq.gz' ! -empty | grep -q .
+            && [ -n "$(gunzip -c junk.*.fastq.gz | head -c 1 | tr '\0\n' __)" ]
         then
             >&2 echo "Discovered unexpected reads in:"
-            find . -name 'junk.*.fastq.gz' ! -empty >&2
-            exit 42
+            >&2 echo "TODO print the names of the unexpected FASTQs"
+            exit 43
         fi
     >>>
 
@@ -932,6 +982,8 @@ task fixmate {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
 
         samtools fixmate \
             --threads "$n_cores" \
