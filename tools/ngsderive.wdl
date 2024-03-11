@@ -69,7 +69,7 @@ task strandedness {
             "$CWD_BAM" \
             > ~{outfile_name}
 
-        if split_by_rg; then
+        if ~{split_by_rg}; then
             echo "N/A" > strandedness.txt
         else
             awk 'NR > 1' ~{outfile_name} | cut -f 5 > strandedness.txt

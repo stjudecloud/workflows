@@ -348,18 +348,7 @@ workflow quality_check {
             prefix = post_subsample_prefix + ".fixmate",
         }
     }
-    if (instrument.instrument_string == "NovaSeq") {
-        Int nova_seq_opt_dist = select_first([
-            optical_distance,
-            2500,
-        ])
-    }
-    if (instrument.instrument_string != "NovaSeq") {
-        Int other_opt_dist = select_first([
-            optical_distance,
-            100,
-        ])
-    }
+    Int default_optical_distance = if (instrument.instrument_string == "NovaSeq") then 2500 else 100
     call samtools.markdup { input:
         bam = select_first([
             fixmate.fixmate_bam,
@@ -368,8 +357,8 @@ workflow quality_check {
         create_bam = mark_duplicates,
         prefix = post_subsample_prefix + ".markdup",
         optical_distance = select_first([
-            nova_seq_opt_dist,
-            other_opt_dist,
+            optical_distance,
+            default_optical_distance,
         ]),
     }
     if (mark_duplicates) {
