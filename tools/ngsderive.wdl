@@ -70,9 +70,9 @@ task strandedness {
             > ~{outfile_name}
 
         if split_by_rg; then
-            awk 'NR > 1' ~{outfile_name} | grep 'overall' | cut -f6 > strandedness.txt # TODO broken until ngsderive v4 is released
+            echo "N/A" > strandedness.txt
         else
-            awk 'NR > 1' ~{outfile_name} | cut -f5 > strandedness.txt
+            awk 'NR > 1' ~{outfile_name} | cut -f 5 > strandedness.txt
         fi
 
         rm "$CWD_BAM" "$CWD_BAM".bai
@@ -120,14 +120,19 @@ task instrument {
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         ngsderive instrument --verbose \
             -n ~{num_reads} \
             ~{bam} \
             > ~{outfile_name}
+
+        awk 'NR > 1' ~{outfile_name} | cut -f 2 > instrument.txt
     >>>
 
     output {
         File instrument_file = outfile_name
+        String instrument_string = read_string("instrument.txt")
     }
 
     runtime {

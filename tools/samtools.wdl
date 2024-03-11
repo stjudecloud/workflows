@@ -1141,7 +1141,7 @@ task markdup {
             common: true
         }
         max_readlen: "Expected maximum read length."
-        optical_distance: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. Suggested settings of 100 for HiSeq style platforms or about 2500 for NovaSeq ones. When set above `0`, duplicate reads are tagged with `dt:Z:SQ` for optical duplicates and `dt:Z:LB` otherwise. Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines."
+        optical_distance: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. Suggested settings of 100 for HiSeq style platforms or about 2500 for NovaSeq ones. When set above `0`, duplicate reads are tagged with `dt:Z:SQ` for optical duplicates and `dt:Z:LB` otherwise. Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_coords_regex`. If changing `read_coords_regex`, make sure that `coordinates_order` matches."
         ncpu: {
             description: "Number of cores to allocate for task",
             common: true

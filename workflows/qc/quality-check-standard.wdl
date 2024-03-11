@@ -107,6 +107,13 @@ workflow quality_check {
         File bam
         File bam_index
         File kraken_db
+        File? gtf
+        Int? optical_distance
+        File multiqc_config
+            = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
+        Array[File] extra_multiqc_inputs = []
+        Array[File] coverage_beds = []
+        Array[String] coverage_labels = []
         FlagFilter standard_filter = {
             "include_if_all": "0x0",
             "exclude_if_any": "0x900",  # 0x100 (secondary) || 0x800 (supplementary)
@@ -121,12 +128,6 @@ workflow quality_check {
             "include_if_any": "0x0",
             "exclude_if_all": "0x0",
         }
-        File? gtf
-        File multiqc_config
-            = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
-        Array[File] extra_multiqc_inputs = []
-        Array[File] coverage_beds = []
-        Array[String] coverage_labels = []
         String prefix = basename(bam, ".bam")
         Boolean rna = false
         Boolean mark_duplicates = rna
@@ -135,7 +136,6 @@ workflow quality_check {
         Boolean run_comparative_kraken = false
         Boolean output_intermediate_files = false
         Boolean use_all_cores = false
-        Int optical_distance = 100
         Int subsample_n_reads = -1
     }
 
@@ -348,14 +348,29 @@ workflow quality_check {
             prefix = post_subsample_prefix + ".fixmate",
         }
     }
-    call samtools.markdup after quickcheck { input:
+    if (instrument.instrument_string == "NovaSeq") {
+        Int nova_seq_opt_dist = select_first([
+            optical_distance,
+            2500,
+        ])
+    }
+    if (instrument.instrument_string != "NovaSeq") {
+        Int other_opt_dist = select_first([
+            optical_distance,
+            100,
+        ])
+    }
+    call samtools.markdup { input:
         bam = select_first([
             fixmate.fixmate_bam,
             post_subsample_bam,
         ]),
         create_bam = mark_duplicates,
         prefix = post_subsample_prefix + ".markdup",
-        optical_distance = optical_distance,
+        optical_distance = select_first([
+            nova_seq_opt_dist,
+            other_opt_dist,
+        ]),
     }
     if (mark_duplicates) {
         call samtools.index as markdup_index { input:
