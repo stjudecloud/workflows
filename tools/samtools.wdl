@@ -1173,7 +1173,7 @@ task markdup {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int memory_gb = ceil(bam_size * 0.5) + 6 + modify_memory_gb
+    Int memory_gb = ceil(bam_size * 0.6) + 6 + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
