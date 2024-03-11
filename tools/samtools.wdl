@@ -1153,7 +1153,7 @@ task markdup {
         # TODO expose the barcode options and the --mode option
         File bam
         String prefix = basename(bam, ".bam") + ".markdup"
-        String read_coords_regex = "(?:[!-9;-?A-~]+:)+([!-9;-?A-~]+):([0-9]+):([0-9]+)"
+        String read_coords_regex = "[!-9;-?A-~:]+:([!-9;-?A-~]+):([0-9]+):([0-9]+)"
         String coordinates_order = "txy"
         Boolean create_bam = true
         Boolean remove_duplicates = false
