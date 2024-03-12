@@ -1113,7 +1113,10 @@ task markdup {
     parameter_meta {
         bam: "Input BAM format file to mark duplicates in"
         prefix: "Prefix for the output file. TODO"
-        read_coords_regex: "Regular expression to extract read coordinates from the QNAME field. This takes a POSIX regular expression for at least x and y to be used in optical duplicate marking It can also include another part of the read name to test for equality, eg lane:tile elements. Elements wanted are captured with parentheses. The default is meant to capture information from Illumina style read names. Ignored if `optical_distance == 0`. **Tool default:** `([!-9;-?A-~]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+):([0-9]+):([0-9]+)`"
+        read_coords_regex: {
+            description: "Regular expression to extract read coordinates from the QNAME field. This takes a POSIX regular expression for at least x and y to be used in optical duplicate marking It can also include another part of the read name to test for equality, eg lane:tile elements. Elements wanted are captured with parentheses. The default is meant to capture information from Illumina style read names. Ignored if `optical_distance == 0`. If changing `read_coords_regex`, make sure that `coordinates_order` matches.",
+            tool_default: "`([!-9;-?A-~]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+):([0-9]+):([0-9]+)`"
+        }
         coordinates_order: {
             description: "The order of the elements captured in the `read_coords_regex` regular expression. Default is `txy` where `t` is a part of the read name selected for string comparison and `x`/`y` are the coordinates used for optical duplicate detection. Ignored if `optical_distance == 0`.",
             choices: [
@@ -1146,6 +1149,7 @@ task markdup {
             description: "Number of cores to allocate for task",
             common: true
         }
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
@@ -1173,7 +1177,7 @@ task markdup {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int memory_gb = ceil(bam_size) + 16 + modify_memory_gb
+    Int memory_gb = ceil(bam_size * 1.5) + 16 + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
