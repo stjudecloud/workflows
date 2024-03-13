@@ -25,10 +25,6 @@ workflow quality_check {
         outputs: {
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
             validate_sam_file: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
-            markdup_report: {
-                description: "TODO",
-                external_help: "TODO"
-            },
             flagstat_report: "`samtools flagstat` STDOUT redirected to a file. If `mark_duplicates` is `true`, then this result will be generated from the duplicate marked BAM.",
             fastqc_results: "A gzipped tar archive of all FastQC output files",
             instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file",
@@ -90,16 +86,14 @@ workflow quality_check {
         coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used. If using the BEDs created by `../reference/make-qc-reference.wdl`, the labels [\"exon\", \"CDS\"] are appropriate. Make sure to provide the coverage BEDs **in the same order** as the labels."
         prefix: "Prefix for all results files"
         rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
-        mark_duplicates: "Mark duplicates before analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. Note that regardless of this setting, `samtools markdup` will be run in order to generate a `*.markdup.[txt,json]` file. However if `mark_duplicates` is set to `false`, no BAM will be generated. If set to `true`, a BAM will be generated and passed to selected downstream analyses. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
-        need_fixmate: "Does the input BAM need fixmate? If `true`, `samtools fixmate` will be run before `samtools markdup`. If `false`, `samtools fixmate` will be skipped. **Failures during `samtools markdup` may be fixed by enabling this option.** Among other things, `fixmate` will add `ms` or \"mate score\" tags and `MC` or \"mate cigar\" tags. These two tags are required by the `samtools markdup` algorithm. TODO note about performance."
+        mark_duplicates: "Mark duplicates before select analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. If set to `true`, a BAM will be generated and passed to selected downstream analyses. For more details about what analyses are run, review `./markdups-post.wdl`. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
         run_librarian: {
             description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database. By default, this tool is run when `rna == true`.",
             external_help: "https://f1000research.com/articles/11-1122/v2",
         }
         run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_filter` is ignored."
-        output_intermediate_files: "Output intermediate files? FASTQs; if `rna == true` a collated BAM; if `mark_duplicates == true` a duplicate marked BAM and associated index; if subsampling was requested _and_ performed then a sampled BAM and associated index. **WARNING** these files can be large."
+        output_intermediate_files: "Output intermediate files? FASTQs; if `rna == true` a collated BAM; if `mark_duplicates == true` a duplicate marked BAM, various accessory files like indexes and md5sums; if subsampling was requested _and_ performed then a sampled BAM and associated index. **WARNING, these files can be large.**"
         use_all_cores: "Use all cores? Recommended for cloud environments."
-        optical_distance: "Optical distance for `samtools markdup`"
         subsample_n_reads: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
     }
 
@@ -108,7 +102,6 @@ workflow quality_check {
         File bam_index
         File kraken_db
         File? gtf
-        Int? optical_distance
         File multiqc_config
             = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
         Array[File] extra_multiqc_inputs = []
@@ -131,7 +124,6 @@ workflow quality_check {
         String prefix = basename(bam, ".bam")
         Boolean rna = false
         Boolean mark_duplicates = rna
-        Boolean need_fixmate = true
         Boolean run_librarian = rna
         Boolean run_comparative_kraken = false
         Boolean output_intermediate_files = false
@@ -341,55 +333,37 @@ workflow quality_check {
             paired_end=true,  # matches default but prevents user from overriding
         }
     }
-
-    if (need_fixmate) {
-        call samtools.position_sorted_fixmate as fixmate after quickcheck { input:
-            bam = post_subsample_bam,
-            prefix = post_subsample_prefix + ".fixmate",
-        }
-    }
-    Int default_optical_distance = if (instrument.instrument_string == "NovaSeq") then 2500 else 100
-    call samtools.markdup { input:
-        bam = select_first([
-            fixmate.fixmate_bam,
-            post_subsample_bam,
-        ]),
-        create_bam = mark_duplicates,
-        prefix = post_subsample_prefix + ".markdup",
-        optical_distance = select_first([
-            optical_distance,
-            default_optical_distance,
-        ]),
-    }
     if (mark_duplicates) {
-        call samtools.index as markdup_index { input:
-            bam = select_first([
-                markdup.markdup_bam,
-                "undefined",
-            ]),
-            use_all_cores = use_all_cores,
+        call picard.mark_duplicates as markdups after quickcheck { input:
+            bam = post_subsample_bam,
+            create_bam = true,
+            prefix = post_subsample_prefix + ".MarkDuplicates",
+            optical_distance = 0,
         }
         call markdups_post_wf.markdups_post { input:
             markdups_bam = select_first([
-                markdup.markdup_bam,
+                markdups.duplicate_marked_bam,
                 "undefined",
             ]),
-            markdups_bam_index = markdup_index.bam_index,
+            markdups_bam_index = select_first([
+                markdups.duplicate_marked_bam_index,
+                "undefined",
+            ]),
             coverage_beds = coverage_beds,
             coverage_labels = parse_input.labels,
-            prefix = post_subsample_prefix + ".markdup",
+            prefix = post_subsample_prefix + ".MarkDuplicates",
         }
     }
     if (!mark_duplicates) {
         # These analyses are called in the markdups_post workflow.
         # They should still be run if duplicates were not marked.
         call picard.collect_insert_size_metrics after quickcheck { input:
-            bam=post_subsample_bam,
-            prefix=post_subsample_prefix + ".CollectInsertSizeMetrics",
+            bam = post_subsample_bam,
+            prefix = post_subsample_prefix + ".CollectInsertSizeMetrics",
         }
         call samtools.flagstat after quickcheck { input:
-            bam=post_subsample_bam,
-            outfile_name=post_subsample_prefix + ".flagstat.txt",
+            bam = post_subsample_bam,
+            outfile_name = post_subsample_prefix + ".flagstat.txt",
         }
     }
 
@@ -397,7 +371,6 @@ workflow quality_check {
         input_files=select_all(flatten([
             [
                 validate_bam.validate_report,
-                markdup.markdup_report,
                 flagstat.flagstat_report,
                 markdups_post.flagstat_report,
                 instrument.instrument_file,
@@ -444,15 +417,15 @@ workflow quality_check {
             "alt_filtered_read_one_fastq_gz": alt_filtered_fastq.read_one_fastq_gz,
             "alt_filtered_read_two_fastq_gz": alt_filtered_fastq.read_two_fastq_gz,
             "alt_filtered_singleton_reads_fastq_gz": alt_filtered_fastq.singleton_reads_fastq_gz,
-            "markdup_bam": markdup.markdup_bam,
-            "markdup_bam_index": markdup_index.bam_index,
+            "duplicate_marked_bam": markdups.duplicate_marked_bam,
+            "duplicate_marked_bam_index": markdups.duplicate_marked_bam_index,
+            "duplicate_marked_bam_md5": markdups.duplicate_marked_bam_md5,
         }
     }
 
     output {
         File bam_checksum = compute_checksum.md5sum
         File validate_sam_file = validate_bam.validate_report
-        File markdup_report = markdup.markdup_report
         File flagstat_report = select_first([
             markdups_post.flagstat_report,
             flagstat.flagstat_report
@@ -575,6 +548,7 @@ struct IntermediateFiles {
     File? alt_filtered_read_one_fastq_gz
     File? alt_filtered_read_two_fastq_gz
     File? alt_filtered_singleton_reads_fastq_gz
-    File? markdup_bam
-    File? markdup_bam_index
+    File? duplicate_marked_bam
+    File? duplicate_marked_bam_index
+    File? duplicate_marked_bam_md5
 }
