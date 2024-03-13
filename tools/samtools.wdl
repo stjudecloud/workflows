@@ -944,8 +944,16 @@ task fixmate {
             ],
             common: true
         }
-        add_cigar: "Add template cigar `ct` tag"
-        add_mate_score: "Add mate score tags. These are used by markdup to select the best reads to keep."
+        add_cigar: {
+            description: "Add template cigar `ct` tag",
+            tool_default: false,
+            common: true,
+        }
+        add_mate_score: {
+            description: "Add mate score tags. These are used by `markdup` to select the best reads to keep.",
+            tool_default: false,
+            common: true,
+        }
         disable_flag_sanitization: "Disable all flag sanitization?"
         disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]"
         remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
@@ -1013,7 +1021,7 @@ task fixmate {
 
 task position_sorted_fixmate {
     meta {
-        description: "Runs `samtools fixmate` on the position-sorted input BAM file and output a position-sorted BAM. `fixmate` fills in mate coordinates and insert size fields among other tags and fields. `samtools fixmate` assumes a name-sorted or name-collated input BAM. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM."
+        description: "Runs `samtools fixmate` on the position-sorted input BAM file and output a position-sorted BAM. `fixmate` fills in mate coordinates and insert size fields among other tags and fields. `samtools fixmate` assumes a name-sorted or name-collated input BAM. If you already have a collated BAM, please use the `fixmate` task. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM."
     }
 
     parameter_meta {
@@ -1021,20 +1029,28 @@ task position_sorted_fixmate {
         prefix: "Prefix for the output file. The extension `.bam` will be added."
         fast_mode: {
             description: "Use fast mode (output primary alignments only)?",
-            common: true
+            common: true,
         }
-        add_cigar: "Add template cigar ct tag"
-        add_mate_score: "Add mate score tags. These are used by markdup to select the best reads to keep."
+        add_cigar: {
+            description: "Add template cigar `ct` tag",
+            tool_default: false,
+            common: true,
+        }
+        add_mate_score: {
+            description: "Add mate score tags. These are used by `markdup` to select the best reads to keep.",
+            tool_default: false,
+            common: true,
+        }
         disable_flag_sanitization: "Disable all flag sanitization?"
-        disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]"
+        disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]?"
         remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -1043,12 +1059,12 @@ task position_sorted_fixmate {
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".fixmate"
-        Boolean fast_mode = false  # TODO should this be true?
+        Boolean fast_mode = false
         Boolean add_cigar = true
         Boolean add_mate_score = true
         Boolean disable_flag_sanitization = false
         Boolean disable_proper_pair_check = false
-        Boolean remove_unaligned_and_secondary = false  # TODO should this be true?
+        Boolean remove_unaligned_and_secondary = false
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_memory_gb = 0
@@ -1106,8 +1122,9 @@ task position_sorted_fixmate {
 
 task markdup {
     meta {
-        description: "Runs `samtools markdup` on the position-sorted input BAM file. This creates a report and optionally a new BAM with duplicate reads marked."
-        help: "This task assumes `samtools fixmate` has already been run on the input BAM. If it has not, then the output may be incorrect. Running `fixmate` may not be necessary, if the aligner used correctly sets the mate information. This includes but is not limited to having correct insert sizes, mate coordinates, `ms` or \"mate score\" tags, and `MC` or \"mate cigar\" tags. A name-sorted or collated BAM can be run through the `fixmate` task (and then position sorted prior to this task) or a position-sorted BAM can be run through the `position_sorted_fixmate` task."
+        description: "**[DEPRECATED]** Runs `samtools markdup` on the position-sorted input BAM file. This creates a report and optionally a new BAM with duplicate reads marked."
+        help: "This task assumes `samtools fixmate` has already been run on the input BAM. If it has not, then the output may be incorrect. Running `fixmate` may not be necessary, if the aligner used correctly sets the mate information. This includes but is not limited to having correct insert sizes, mate coordinates, `ms` or \"mate score\" tags, and `MC` or \"mate cigar\" tags. A name-sorted or collated BAM can be run through the `fixmate` task (and then position sorted prior to this task) or a position-sorted BAM can be run through the `position_sorted_fixmate` task. Deprecated due to extremely high memory usage for certain RNA-Seq samples when searching for optical duplicates. Use `mark_duplicates` in `./picard.wdl` instead."
+        deprecated: true
     }
 
     parameter_meta {
