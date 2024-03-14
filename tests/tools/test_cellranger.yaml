@@ -3,7 +3,7 @@
     - miniwdl
     - cellranger
   command: >-
-    miniwdl run -d test-output/. --task count -i tests/tools/input_json/cellranger_count.json tools/cellranger.wdl
+    miniwdl run --verbose -d test-output/. --task count -i tests/tools/input_json/cellranger_count.json tools/cellranger.wdl
   files:
     - path: test-output/out/bam/possorted_genome_bam.bam
     - path: test-output/out/bam_index/possorted_genome_bam.bam.bai
@@ -25,7 +25,7 @@
     - miniwdl
     - cellranger
   command: >-
-    miniwdl run -d test-output/. --task bamtofastq tools/cellranger.wdl bam="tests/tools/input/possorted_genome_bam.bam"
+    miniwdl run --verbose -d test-output/. --task bamtofastq tools/cellranger.wdl bam="tests/tools/input/possorted_genome_bam.bam"
   files:
     - path: test-output/out/fastqs/0/bamtofastq_S1_L001_R1_001.fastq.gz
     - path: test-output/out/fastqs/1/bamtofastq_S1_L001_R2_001.fastq.gz
