@@ -83,7 +83,7 @@ task mark_duplicates {
 
         picard -Xmx~{java_heap_size}g MarkDuplicates \
             -I ~{bam} \
-            --METRICS_FILE ~{prefix}.metrics.txt
+            --METRICS_FILE ~{prefix}.metrics.txt \
             -O ~{if create_bam then prefix + ".bam" else "/dev/null"} \
             --CREATE_INDEX ~{create_bam} \
             --CREATE_MD5_FILE ~{create_bam} \
