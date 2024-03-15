@@ -429,7 +429,11 @@
 <h2 id="fixmate">fixmate</h2>
 <dl>
 <dt>description</dt>
-<dd>Runs <code>samtools fixmate</code> on the input BAM file. This fills in mate coordinates and insert size fields.</dd>
+<dd>Runs <code>samtools fixmate</code> on the name-collated input BAM file. This fills in mate coordinates and insert size fields among other tags and fields.</dd>
+<dt>help</dt>
+<dd>This task assumes a name-sorted or name-collated input BAM. If you have a position-sorted BAM, please use the <code>position_sorted_fixmate</code> task. This task runs <code>fixmate</code> and outputs a BAM in the same order as the input.</dd>
+<dt>outputs</dt>
+<dd>{'fixmate_bam': 'The BAM resulting from running <code>samtools fixmate</code> on the input BAM'}</dd>
 </dl>
 <h3 id="inputs_10">Inputs</h3>
 <h4 id="required_10">Required</h4>
@@ -439,8 +443,9 @@
 </ul>
 <h4 id="defaults_10">Defaults</h4>
 <ul>
-<li><code>add_cigar</code> (Boolean, default=true): Add template cigar ct tag</li>
-<li><code>add_mate_score</code> (Boolean, default=true): Add mate score tags. These are used by markdup to select the best reads to keep.</li>
+<li><code>add_cigar</code> (Boolean, default=true); <strong>description</strong>: Add template cigar <code>ct</code> tag; <strong>tool_default</strong>: false; <strong>common</strong>: true</li>
+<li><code>add_mate_score</code> (Boolean, default=true); <strong>description</strong>: Add mate score tags. These are used by <code>markdup</code> to select the best reads to keep.; <strong>tool_default</strong>: false; <strong>common</strong>: true</li>
+<li><code>disable_flag_sanitization</code> (Boolean, default=false): Disable all flag sanitization?</li>
 <li><code>disable_proper_pair_check</code> (Boolean, default=false): Disable proper pair check [ensure one forward and one reverse read in each pair]</li>
 <li><code>extension</code> (String, default=".bam"); <strong>description</strong>: File format extension to use for output file.; <strong>choices</strong>: ['.bam', '.cram']; <strong>common</strong>: true</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
@@ -452,6 +457,76 @@
 <h3 id="outputs_10">Outputs</h3>
 <ul>
 <li><code>fixmate_bam</code> (File)</li>
+</ul>
+<h2 id="position_sorted_fixmate">position_sorted_fixmate</h2>
+<dl>
+<dt>description</dt>
+<dd>Runs <code>samtools fixmate</code> on the position-sorted input BAM file and output a position-sorted BAM. <code>fixmate</code> fills in mate coordinates and insert size fields among other tags and fields. <code>samtools fixmate</code> assumes a name-sorted or name-collated input BAM. If you already have a collated BAM, please use the <code>fixmate</code> task. This task collates the input BAM, runs <code>fixmate</code>, and then resorts the output into a position-sorted BAM.</dd>
+</dl>
+<h3 id="inputs_11">Inputs</h3>
+<h4 id="required_11">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to add mate information. Must be position-sorted.</li>
+</ul>
+<h4 id="defaults_11">Defaults</h4>
+<ul>
+<li><code>add_cigar</code> (Boolean, default=true); <strong>description</strong>: Add template cigar <code>ct</code> tag; <strong>tool_default</strong>: false; <strong>common</strong>: true</li>
+<li><code>add_mate_score</code> (Boolean, default=true); <strong>description</strong>: Add mate score tags. These are used by <code>markdup</code> to select the best reads to keep.; <strong>tool_default</strong>: false; <strong>common</strong>: true</li>
+<li><code>disable_flag_sanitization</code> (Boolean, default=false): Disable all flag sanitization?</li>
+<li><code>disable_proper_pair_check</code> (Boolean, default=false): Disable proper pair check [ensure one forward and one reverse read in each pair]?</li>
+<li><code>fast_mode</code> (Boolean, default=false); <strong>description</strong>: Use fast mode (output primary alignments only)?; <strong>common</strong>: true</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam") + ".fixmate"): Prefix for the output file. The extension <code>.bam</code> will be added.</li>
+<li><code>remove_unaligned_and_secondary</code> (Boolean, default=false): Remove unmapped and secondary reads</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
+</ul>
+<h3 id="outputs_11">Outputs</h3>
+<ul>
+<li><code>fixmate_bam</code> (File)</li>
+</ul>
+<h2 id="markdup">markdup</h2>
+<dl>
+<dt>description</dt>
+<dd><strong>[DEPRECATED]</strong> Runs <code>samtools markdup</code> on the position-sorted input BAM file. This creates a report and optionally a new BAM with duplicate reads marked.</dd>
+<dt>help</dt>
+<dd>This task assumes <code>samtools fixmate</code> has already been run on the input BAM. If it has not, then the output may be incorrect. A name-sorted or collated BAM can be run through the <code>fixmate</code> task (and then position-sorted prior to this task) or a position-sorted BAM can be run through the <code>position_sorted_fixmate</code> task. Deprecated due to extremely high memory usage for certain RNA-Seq samples when searching for optical duplicates. Use <code>mark_duplicates</code> in <code>./picard.wdl</code> instead.</dd>
+<dt>deprecated</dt>
+<dd>true</dd>
+</dl>
+<h3 id="inputs_12">Inputs</h3>
+<h4 id="required_12">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to mark duplicates in</li>
+</ul>
+<h4 id="defaults_12">Defaults</h4>
+<ul>
+<li><code>coordinates_order</code> (String, default="txy"); <strong>description</strong>: The order of the elements captured in the <code>read_coords_regex</code> regular expression. Default is <code>txy</code> where <code>t</code> is a part of the read name selected for string comparison and <code>x</code>/<code>y</code> are the coordinates used for optical duplicate detection. Ignored if <code>optical_distance == 0</code>.; <strong>choices</strong>: ['txy', 'tyx', 'xyt', 'yxt', 'xty', 'ytx', 'xy', 'yx']</li>
+<li><code>create_bam</code> (Boolean, default=true): Create a new BAM with duplicate reads marked? If <code>false</code>, then only a markdup report will be generated.</li>
+<li><code>duplicate_count</code> (Boolean, default=false): Record the original primary read duplication count (include itself) in a <code>dc</code> tag? Ignored if <code>create_bam == false</code>.</li>
+<li><code>duplicates_of_duplicates_check</code> (Boolean, default=false): Check duplicates of duplicates for correctness? Performs further checks to make sure all optical duplicates are found. Also operates on <code>mark_duplicates_with_do_tag</code> tagging where reads may be tagged with the best quality read. Disabling this option can speed up duplicate marking when there are a great many duplicates for each original read. Ignored if <code>create_bam == false</code> <strong>or</strong> <code>optical_distance == 0</code>.</li>
+<li><code>include_qc_fails</code> (Boolean, default=false): Include reads that have the QC-failed flag set in duplicate marking? This can increase the number of duplicates found. Ignored if <code>create_bam == false</code>.</li>
+<li><code>json</code> (Boolean, default=false): Output a JSON report instead of a text report? Either are parseable by MultiQC.</li>
+<li><code>mark_duplicates_with_do_tag</code> (Boolean, default=false): Mark duplicates with the <code>do</code> (<code>d</code>uplicate <code>o</code>riginal) tag? The <code>do</code> tag contains the name of the "original" read that was duplicated. Ignored if <code>create_bam == false</code>.</li>
+<li><code>mark_supp_or_sec_or_unmapped_as_duplicates</code> (Boolean, default=false): Mark supplementary, secondary, or unmapped alignments of duplicates as duplicates? As this takes a quick second pass over the data it will increase running time. Ignored if <code>create_bam == false</code>.</li>
+<li><code>max_readlen</code> (Int, default=300): Expected maximum read length.</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
+<li><code>optical_distance</code> (Int, default=0): Maximum distance between read coordinates to consider them optical duplicates. If <code>0</code>, then optical duplicate marking is disabled. Suggested settings of 100 for HiSeq style platforms or about 2500 for NovaSeq ones. When set above <code>0</code>, duplicate reads are tagged with <code>dt:Z:SQ</code> for optical duplicates and <code>dt:Z:LB</code> otherwise. Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying <code>read_coords_regex</code>. If changing <code>read_coords_regex</code>, make sure that <code>coordinates_order</code> matches.</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam") + ".markdup"): Prefix for the output file. TODO</li>
+<li><code>read_coords_regex</code> (String, default="[!-9;-?A-~:]+:([!-9;-?A-~]+):([0-9]+):([0-9]+)"); <strong>description</strong>: Regular expression to extract read coordinates from the QNAME field. This takes a POSIX regular expression for at least x and y to be used in optical duplicate marking It can also include another part of the read name to test for equality, eg lane:tile elements. Elements wanted are captured with parentheses. The default is meant to capture information from Illumina style read names. Ignored if <code>optical_distance == 0</code>. If changing <code>read_coords_regex</code>, make sure that <code>coordinates_order</code> matches.; <strong>tool_default</strong>: <code>([!-9;-?A-~]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+):([0-9]+):([0-9]+)</code></li>
+<li><code>remove_duplicates</code> (Boolean, default=false): Remove duplicates from the output BAM? Ignored if <code>create_bam == false</code>.</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
+<li><code>use_read_groups</code> (Boolean, default=false): Only mark duplicates <em>within</em> the same Read Group? Ignored if <code>create_bam == false</code>.</li>
+</ul>
+<h3 id="outputs_12">Outputs</h3>
+<ul>
+<li><code>markdup_report</code> (File)</li>
+<li><code>markdup_bam</code> (File?)</li>
 </ul>
               
             </div>
