@@ -930,7 +930,11 @@ task bam_to_fastq {
 
 task fixmate {
     meta {
-        description: "Runs `samtools fixmate` on the input BAM file. This fills in mate coordinates and insert size fields."
+        description: "Runs `samtools fixmate` on the name-collated input BAM file. This fills in mate coordinates and insert size fields among other tags and fields."
+        help: "This task assumes a name-sorted or name-collated input BAM. If you have a position-sorted BAM, please use the `position_sorted_fixmate` task. This task runs `fixmate` and outputs a BAM in the same order as the input."
+        outputs: {
+            fixmate_bam: "The BAM resulting from running `samtools fixmate` on the input BAM"
+        }
     }
 
     parameter_meta {
@@ -944,8 +948,17 @@ task fixmate {
             ],
             common: true
         }
-        add_cigar: "Add template cigar ct tag"
-        add_mate_score: "Add mate score tags. These are used by markdup to select the best reads to keep."
+        add_cigar: {
+            description: "Add template cigar `ct` tag",
+            tool_default: false,
+            common: true,
+        }
+        add_mate_score: {
+            description: "Add mate score tags. These are used by `markdup` to select the best reads to keep.",
+            tool_default: false,
+            common: true,
+        }
+        disable_flag_sanitization: "Disable all flag sanitization?"
         disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]"
         remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
         use_all_cores: {
@@ -965,6 +978,7 @@ task fixmate {
         String extension = ".bam"
         Boolean add_cigar = true
         Boolean add_mate_score = true
+        Boolean disable_flag_sanitization = false
         Boolean disable_proper_pair_check = false
         Boolean remove_unaligned_and_secondary = false
         Boolean use_all_cores = false
@@ -973,7 +987,7 @@ task fixmate {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -991,7 +1005,9 @@ task fixmate {
             ~{if disable_proper_pair_check then "-p" else ""} \
             ~{if add_cigar then "-c" else ""} \
             ~{if add_mate_score then "-m" else ""} \
-            ~{bam} ~{prefix}~{extension}
+            ~{if disable_flag_sanitization then "-z off" else ""} \
+            ~{bam} \
+            ~{prefix}~{extension}
     >>>
 
     output {
@@ -1001,6 +1017,227 @@ task fixmate {
     runtime {
         cpu: ncpu
         memory: "4 GB"
+        disk: "~{disk_size_gb} GB"
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        maxRetries: 1
+    }
+}
+
+task position_sorted_fixmate {
+    meta {
+        description: "Runs `samtools fixmate` on the position-sorted input BAM file and output a position-sorted BAM. `fixmate` fills in mate coordinates and insert size fields among other tags and fields. `samtools fixmate` assumes a name-sorted or name-collated input BAM. If you already have a collated BAM, please use the `fixmate` task. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to add mate information. Must be position-sorted."
+        prefix: "Prefix for the output file. The extension `.bam` will be added."
+        fast_mode: {
+            description: "Use fast mode (output primary alignments only)?",
+            common: true,
+        }
+        add_cigar: {
+            description: "Add template cigar `ct` tag",
+            tool_default: false,
+            common: true,
+        }
+        add_mate_score: {
+            description: "Add mate score tags. These are used by `markdup` to select the best reads to keep.",
+            tool_default: false,
+            common: true,
+        }
+        disable_flag_sanitization: "Disable all flag sanitization?"
+        disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]?"
+        remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments.",
+            common: true,
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task",
+            common: true,
+        }
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam") + ".fixmate"
+        Boolean fast_mode = false
+        Boolean add_cigar = true
+        Boolean add_mate_score = true
+        Boolean disable_flag_sanitization = false
+        Boolean disable_proper_pair_check = false
+        Boolean remove_unaligned_and_secondary = false
+        Boolean use_all_cores = false
+        Int ncpu = 2
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
+
+        samtools collate \
+            --threads "$n_cores" \
+            ~{if fast_mode then "-f" else ""} \
+            -u \
+            -O \
+            ~{bam} \
+            | samtools fixmate \
+                --threads "$n_cores" \
+                -u \
+                ~{if remove_unaligned_and_secondary then "-r" else ""} \
+                ~{if disable_proper_pair_check then "-p" else ""} \
+                ~{if add_cigar then "-c" else ""} \
+                ~{if add_mate_score then "-m" else ""} \
+                ~{if disable_flag_sanitization then "-z off" else ""} \
+                - \
+                - \
+                | samtools sort \
+                    --threads "$n_cores" \
+                    -o ~{prefix + ".bam"} \
+                    -
+    >>>
+
+    output {
+        File fixmate_bam = "~{prefix}.bam"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        maxRetries: 1
+    }
+}
+
+task markdup {
+    meta {
+        description: "**[DEPRECATED]** Runs `samtools markdup` on the position-sorted input BAM file. This creates a report and optionally a new BAM with duplicate reads marked."
+        help: "This task assumes `samtools fixmate` has already been run on the input BAM. If it has not, then the output may be incorrect. A name-sorted or collated BAM can be run through the `fixmate` task (and then position-sorted prior to this task) or a position-sorted BAM can be run through the `position_sorted_fixmate` task. Deprecated due to extremely high memory usage for certain RNA-Seq samples when searching for optical duplicates. Use `mark_duplicates` in `./picard.wdl` instead."
+        deprecated: true
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to mark duplicates in"
+        prefix: "Prefix for the output file. TODO"
+        read_coords_regex: {
+            description: "Regular expression to extract read coordinates from the QNAME field. This takes a POSIX regular expression for at least x and y to be used in optical duplicate marking It can also include another part of the read name to test for equality, eg lane:tile elements. Elements wanted are captured with parentheses. The default is meant to capture information from Illumina style read names. Ignored if `optical_distance == 0`. If changing `read_coords_regex`, make sure that `coordinates_order` matches.",
+            tool_default: "`([!-9;-?A-~]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+):([0-9]+):([0-9]+)`"
+        }
+        coordinates_order: {
+            description: "The order of the elements captured in the `read_coords_regex` regular expression. Default is `txy` where `t` is a part of the read name selected for string comparison and `x`/`y` are the coordinates used for optical duplicate detection. Ignored if `optical_distance == 0`.",
+            choices: [
+                "txy",
+                "tyx",
+                "xyt",
+                "yxt",
+                "xty",
+                "ytx",
+                "xy",
+                "yx"
+            ],
+        }
+        create_bam: "Create a new BAM with duplicate reads marked? If `false`, then only a markdup report will be generated."
+        remove_duplicates: "Remove duplicates from the output BAM? Ignored if `create_bam == false`."
+        mark_supp_or_sec_or_unmapped_as_duplicates: "Mark supplementary, secondary, or unmapped alignments of duplicates as duplicates? As this takes a quick second pass over the data it will increase running time. Ignored if `create_bam == false`."
+        json: "Output a JSON report instead of a text report? Either are parseable by MultiQC."
+        mark_duplicates_with_do_tag: "Mark duplicates with the `do` (`d`uplicate `o`riginal) tag? The `do` tag contains the name of the \"original\" read that was duplicated. Ignored if `create_bam == false`."
+        duplicate_count: "Record the original primary read duplication count (include itself) in a `dc` tag? Ignored if `create_bam == false`."
+        include_qc_fails: "Include reads that have the QC-failed flag set in duplicate marking? This can increase the number of duplicates found. Ignored if `create_bam == false`."
+        duplicates_of_duplicates_check: "Check duplicates of duplicates for correctness? Performs further checks to make sure all optical duplicates are found. Also operates on `mark_duplicates_with_do_tag` tagging where reads may be tagged with the best quality read. Disabling this option can speed up duplicate marking when there are a great many duplicates for each original read. Ignored if `create_bam == false` **or** `optical_distance == 0`."
+        use_read_groups: "Only mark duplicates _within_ the same Read Group? Ignored if `create_bam == false`."
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments.",
+            common: true
+        }
+        max_readlen: "Expected maximum read length."
+        optical_distance: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. Suggested settings of 100 for HiSeq style platforms or about 2500 for NovaSeq ones. When set above `0`, duplicate reads are tagged with `dt:Z:SQ` for optical duplicates and `dt:Z:LB` otherwise. Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_coords_regex`. If changing `read_coords_regex`, make sure that `coordinates_order` matches."
+        ncpu: {
+            description: "Number of cores to allocate for task",
+            common: true
+        }
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        # TODO expose the barcode options and the --mode option
+        File bam
+        String prefix = basename(bam, ".bam") + ".markdup"
+        String read_coords_regex = "[!-9;-?A-~:]+:([!-9;-?A-~]+):([0-9]+):([0-9]+)"
+        String coordinates_order = "txy"
+        Boolean create_bam = true
+        Boolean remove_duplicates = false
+        Boolean mark_supp_or_sec_or_unmapped_as_duplicates = false
+        Boolean json = false
+        Boolean mark_duplicates_with_do_tag = false
+        Boolean duplicate_count = false
+        Boolean include_qc_fails = false
+        Boolean duplicates_of_duplicates_check = false  # tool default is true
+        Boolean use_read_groups = false
+        Boolean use_all_cores = false
+        Int max_readlen = 300
+        Int optical_distance = 0
+        Int ncpu = 2
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int memory_gb = ceil(bam_size * 3) + 4 + modify_memory_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
+
+        samtools markdup \
+            --threads "$n_cores" \
+            -f "~{prefix + if json then ".json" else ".txt"}" \
+            --read-coords '~{read_coords_regex}' \
+            --coords-order ~{coordinates_order} \
+            ~{if remove_duplicates then "-r" else ""} \
+            ~{if mark_supp_or_sec_or_unmapped_as_duplicates then "-S" else ""} \
+            ~{if mark_duplicates_with_do_tag then "-t" else ""} \
+            ~{if duplicate_count then "--duplicate-count" else ""} \
+            ~{if include_qc_fails then "--include-fails" else ""} \
+            ~{if duplicates_of_duplicates_check then "" else "--no-multi-dup"} \
+            ~{if use_read_groups then "--use-read-groups" else ""} \
+            -l ~{max_readlen} \
+            -d ~{optical_distance} \
+            -c \
+            ~{bam} \
+            "~{if create_bam then prefix + ".bam" else "/dev/null"}"
+    >>>
+
+    output {
+        File markdup_report = prefix + if json then ".json" else ".txt"
+        File? markdup_bam = prefix + ".bam"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1

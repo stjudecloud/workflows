@@ -5,6 +5,6 @@
     - estimate
     - deprecated
   command: >-
-    miniwdl run -d test-output/. --task run_estimate tools/estimate.wdl gene_expression_file="tests/tools/input/test.bwa_aln_pe.TPM.txt"
+    miniwdl run --verbose -d test-output/. --task run_estimate tools/estimate.wdl gene_expression_file="tests/tools/input/test.bwa_aln_pe.TPM.txt"
   files:
     - path: test-output/out/estimate_file/test.bwa_aln_pe.ESTIMATE.gct

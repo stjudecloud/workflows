@@ -1,7 +1,7 @@
 ## [Homepage](https://broadinstitute.github.io/picard/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+# TODO looks like this file was missed when converting from
+# a `memory_gb` parameter to a "softcoded" runtime block.
+# When moving those, check `tests/tools/test_picard.yaml`.
 version 1.1
 
 task mark_duplicates {
@@ -14,7 +14,7 @@ task mark_duplicates {
             duplicate_marked_bam_md5: "The md5sum of `duplicate_marked_bam`",
             mark_duplicates_metrics: {
                 description: "The METRICS_FILE result of `picard MarkDuplicates`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics",
             }
         }
     }
@@ -22,23 +22,52 @@ task mark_duplicates {
     parameter_meta {
         bam: "Input BAM format file in which to mark duplicates"
         prefix: "Prefix for the MarkDuplicates result files. The extensions `.bam`, `.bam.bai`, `.bam.md5`, and `.metrics.txt` will be added."
+        duplicate_scoring_strategy: {
+            description: "Strategy for scoring duplicates.",
+            choices: [
+                "SUM_OF_BASE_QUALITIES",
+                "TOTAL_MAPPED_REFERENCE_LENGTH",
+                "RANDOM"
+            ]
+        }
+        read_name_regex: "Regular expression for extracting tile names, x coordinates, and y coordinates from read names. The default works for typical Illumina read names."
+        tagging_policy: {
+            description: "Tagging policy for the output BAM.",
+            choices: [
+                "DontTag",
+                "OpticalOnly",
+                "All"
+            ],
+        }
         create_bam: {
             description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?",
             common: true
         }
-        memory_gb: "RAM to allocate for task, specified in GB"
+        clear_dt: "Clear the `DT` tag from the input BAM? For increased performance, if the input BAM does not have the `DT` tag, set to `false`."
+        remove_duplicates: "Remove duplicate reads from the output BAM? If `true`, the output BAM will not contain any duplicate reads."
+        remove_sequencing_duplicates: "Remove sequencing duplicates (i.e. optical duplicates) from the output BAM? If `true`, the output BAM will not contain any sequencing duplicates (optical duplicates)."
+        optical_distance: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models ones (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`."
+        modify_memory_gb: "Add to or subtract from the default memory allocation. Default memory allocation is determined by the size of the input BAM. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".MarkDuplicates"
+        String duplicate_scoring_strategy = "SUM_OF_BASE_QUALITIES"
+        String read_name_regex = "^[!-9;-?A-~:]+:([!-9;-?A-~]+):([0-9]+):([0-9]+)$"
+        String tagging_policy = "All"
         Boolean create_bam = true
-        Int memory_gb = 50
+        Boolean clear_dt = true
+        Boolean remove_duplicates = false
+        Boolean remove_sequencing_duplicates = false
+        Int optical_distance = 0
+        Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
     }
 
     Float bam_size = size(bam, "GiB")
+    Int memory_gb = min(ceil(bam_size + 6), 50) + modify_memory_gb
     Int disk_size_gb = (
         (
             if create_bam
@@ -54,12 +83,20 @@ task mark_duplicates {
 
         picard -Xmx~{java_heap_size}g MarkDuplicates \
             -I ~{bam} \
+            --METRICS_FILE ~{prefix}.metrics.txt \
             -O ~{if create_bam then prefix + ".bam" else "/dev/null"} \
-            --VALIDATION_STRINGENCY SILENT \
             --CREATE_INDEX ~{create_bam} \
             --CREATE_MD5_FILE ~{create_bam} \
-            --COMPRESSION_LEVEL 5 \
-            --METRICS_FILE ~{prefix}.metrics.txt
+            --VALIDATION_STRINGENCY SILENT \
+            --DUPLICATE_SCORING_STRATEGY ~{duplicate_scoring_strategy} \
+            --READ_NAME_REGEX ~{
+                if (optical_distance > 0) then read_name_regex else "null"
+            } \
+            --TAGGING_POLICY ~{tagging_policy} \
+            --CLEAR_DT ~{clear_dt} \
+            --REMOVE_DUPLICATES ~{remove_duplicates} \
+            --REMOVE_SEQUENCING_DUPLICATES ~{remove_sequencing_duplicates} \
+            --OPTICAL_DUPLICATE_PIXEL_DISTANCE ~{optical_distance}
 
         if ~{create_bam}; then
             mv ~{prefix}.bai ~{prefix}.bam.bai

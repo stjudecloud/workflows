@@ -3,7 +3,7 @@
     - miniwdl
     - htseq
   command: >-
-    miniwdl run -d test-output/. --task count tools/htseq.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" gtf="tests/tools/input/genes.gtf.gz" strandedness="no"
+    miniwdl run --verbose -d test-output/. --task count tools/htseq.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" gtf="tests/tools/input/genes.gtf.gz" strandedness="no"
   files:
     - path: test-output/out/feature_counts/test.bwa_aln_pe.feature-counts.txt
 
@@ -12,6 +12,6 @@
     - miniwdl
     - htseq
   command: >-
-    miniwdl run -d test-output/. --task calc_tpm tools/htseq.wdl counts="tests/tools/input/test.bwa_aln_pe.feature-counts.txt" gene_lengths="tests/tools/input/genes.genelengths.txt"
+    miniwdl run --verbose -d test-output/. --task calc_tpm tools/htseq.wdl counts="tests/tools/input/test.bwa_aln_pe.feature-counts.txt" gene_lengths="tests/tools/input/genes.genelengths.txt"
   files:
     - path: test-output/out/tpm_file/test.bwa_aln_pe.TPM.txt
