@@ -32,11 +32,11 @@ task bam2pairs {
     >>>
 
     output {
-        pairs = ~{prefix}.pairs.txt
+        File pairs = "~{prefix}.pairs.txt"
     }
 
     runtime {
-        cpu: ncpu
+        cpu: 1
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/pairix:0.3.7--py38h7cf9df2_5"

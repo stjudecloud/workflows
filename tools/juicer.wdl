@@ -11,7 +11,7 @@ task pre {
     parameter_meta {
         pairs: "Read pairs file"
         genomeID: {
-            description: "Genome ID"
+            description: "Genome ID",
             choices: [
                 "hg18",
                 "hg19",
@@ -28,8 +28,8 @@ task pre {
                 "sacCer3",
                 "sCerS288c",
                 "susScr3",
-                "TAIR10",
-            ]
+                "TAIR10"
+            ],
         }
         prefix: "Prefix for output files. The extension `.hic` will be added."
         diagonal: "Only calculate intra chromosome (diagonal)"
@@ -66,7 +66,7 @@ task pre {
         Array[Int]? resolutions
         Int? maq_filter
         String? chromosome_filter
-        Boolean? disable_normalize
+        Boolean disable_normalize = false
     }
 
     Int disk_size_gb = ceil(size(pairs, "GiB") * 2 ) + modify_disk_size_gb 
@@ -79,7 +79,7 @@ task pre {
             -m ~{min_count} \
             ~{if defined(maq_filter) then "-q " + maq_filter else ""} \
             ~{if defined(chromosome_filter) then "-c " + chromosome_filter else ""} \
-            ~{if defined(resolutions) then "-r " + sep(',', resolutions) else ""} \
+            ~{if defined(resolutions) then "-r " + sep(',', select_first([resolutions, []])) else ""} \
             ~{if defined(stats_file) then "-s " + stats_file else ""} \
             ~{if defined(graphs_file) then "-g " + graphs_file else ""} \
             ~{if disable_normalize then "-n" else ""} \
@@ -89,11 +89,11 @@ task pre {
     >>>
 
     output {
-        File hic = ~{prefix}.hic
+        File hic = "~{prefix}.hic"
     }
 
     runtime {
-        cpu: ncpu
+        cpu: 1
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: "aidenlab/juicer:1.0.13"

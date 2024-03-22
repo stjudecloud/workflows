@@ -802,18 +802,18 @@ task revert_sam {
         picard -Xmx~{java_heap_size}g RevertSam
             INPUT=~{bam} \
             OUTPUT=~{prefix}.reverted.bam \
-            ATTRIBUTE_TO_CLEAR=~{} \
-            ATTRIBUTE_TO_REVERSE=~{} \
-            ATTRIBUT_TO_REVERSE_COMPLEMENT=~{} \
+            ATTRIBUTE_TO_CLEAR="~{sep(',', attributes_to_clear)}" \
+            ATTRIBUTE_TO_REVERSE="~{sep(',', attributes_to_reverse)}" \
+            ATTRIBUTE_TO_REVERSE_COMPLEMENT="~{sep(',', attributes_to_reverse_complement)}" \
             KEEP_FIRST_DUPLICATE=~{keep_first_duplicate} \
-            ~{if library_name then "LIBRARY_NAME="+library_name else ""} \
+            ~{if defined(library_name) then "LIBRARY_NAME="+library_name else ""} \
             MAX_DISCARD_FRACTION=~{max_discard_fraction} \
             OUTPUT_BY_READGROUP=~{output_by_readgroup} \
             REMOVE_ALIGNMENT_INFORMATION=~{remove_alignment_information} \
             REMOVE_DUPLICATE_INFORMATION=~{remove_duplicate_information} \
             RESTORE_HARDCLIPS=~{restore_hardclips} \
             RESTORE_ORIGINAL_QUALITIES=~{restore_original_qualities} \
-            ~{if sample_alias then "SAMPLE_ALIAS="+sample_alias else ""} \
+            ~{if defined(sample_alias) then "SAMPLE_ALIAS="+sample_alias else ""} \
             SANITZE=~{santize} \
             SORT_ORDER=~{sort_order} \
             VALIDATION_STRINGENCY=SILENT
