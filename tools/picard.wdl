@@ -759,3 +759,74 @@ task bam_to_fastq {
         maxRetries: 1
     }
 }
+
+task revert_sam {
+    meta {
+        description: "This WDL task removes all alignment information from the input BAM file, leaving only the read data."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to revert"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        Array[String] attributes_to_clear = ['NM', 'UQ', 'PG', 'MD', 'MQ', 'SA', 'MC', 'AS']
+        Array[String] attributes_to_reverse = ['OQ', 'U2']
+        Array[String] attributes_to_reverse_complement = ['E2', 'SQ']
+        String prefix = basename(bam, ".bam")
+        String sort_order = "queryname"
+        String? library_name
+        String? sample_alias
+        Boolean keep_first_duplicate = false
+        Boolean output_by_readgroup = false
+        Boolean remove_alignment_information = true
+        Boolean remove_duplicate_information = true
+        Boolean restore_hardclips = true
+        Boolean restore_original_qualities = true
+        Boolean santize = false
+        Float max_discard_fraction = 0.01
+        Int memory_gb = 56
+        Int modify_disk_size_gb = 0
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command <<<
+        set -euo pipefail
+
+        picard -Xmx~{java_heap_size}g RevertSam
+            INPUT=~{bam} \
+            OUTPUT=~{prefix}.reverted.bam \
+            ATTRIBUTE_TO_CLEAR=~{} \
+            ATTRIBUTE_TO_REVERSE=~{} \
+            ATTRIBUT_TO_REVERSE_COMPLEMENT=~{} \
+            KEEP_FIRST_DUPLICATE=~{keep_first_duplicate} \
+            ~{if library_name then "LIBRARY_NAME="+library_name else ""} \
+            MAX_DISCARD_FRACTION=~{max_discard_fraction} \
+            OUTPUT_BY_READGROUP=~{output_by_readgroup} \
+            REMOVE_ALIGNMENT_INFORMATION=~{remove_alignment_information} \
+            REMOVE_DUPLICATE_INFORMATION=~{remove_duplicate_information} \
+            RESTORE_HARDCLIPS=~{restore_hardclips} \
+            RESTORE_ORIGINAL_QUALITIES=~{restore_original_qualities} \
+            ~{if sample_alias then "SAMPLE_ALIAS="+sample_alias else ""} \
+            SANITZE=~{santize} \
+            SORT_ORDER=~{sort_order} \
+            VALIDATION_STRINGENCY=SILENT
+    >>>
+
+    output {
+        File reverted_bam = "~{prefix}.reverted.bam"
+    }
+
+    runtime{
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        maxRetries: 1
+    }
+}

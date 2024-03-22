@@ -206,6 +206,10 @@ task bwa_mem {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             common: true
         }
+        skip_mate_rescue: "Skip mate rescue"
+        skip_pairing: "Skip pairing; mate rescue performed unless `skip_mate_rescue` also in use"
+        split_smallest: "For split alignment, take the alignment with the smallest coordinate as primary"
+        short_secondary: "Mark shorter split hits as secondary"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             common: true
@@ -227,6 +231,10 @@ task bwa_mem {
             ""
         )
         String read_group = ""
+        Boolean skip_mate_rescue = false
+        Boolean skip_pairing = false
+        Boolean split_smallest = false
+        Boolean short_secondary = false
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_disk_size_gb = 0
@@ -260,6 +268,10 @@ task bwa_mem {
             bwa_db/"$PREFIX" \
             ~{read_one_fastq_gz} \
             ~{read_two_fastq_gz} \
+            ~{if skip_mate_rescue then "-S" else ""} \
+            ~{if skip_pairing then "-P" else ""} \
+            ~{if split_smallest then "-5" else ""} \
+            ~{if short_secondary then "-M" else ""} \
             | samtools view --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
