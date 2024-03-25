@@ -252,6 +252,8 @@ task arriba_tsv_to_vcf {
     Int disk_size_gb = ceil(input_size_gb) + (ceil(size(reference_fasta, "GiB")) * 3) + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         fasta_name=~{basename(reference_fasta, ".gz")}
         gunzip -c ~{reference_fasta} > "$fasta_name" || ln -sf ~{reference_fasta} "$fasta_name"
 
