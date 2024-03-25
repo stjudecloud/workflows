@@ -37,7 +37,7 @@ task arriba {
             external_help: "https://arriba.readthedocs.io/en/latest/input-files/#structural-variant-calls-from-wgs"
         }
         interesting_contigs: "Array of contigs to consider for analysis."
-        viral_contigs: "Array of contigs to consider for viral integation site analysis."
+        viral_contigs: "Array of contigs to consider for viral integration site analysis."
         disable_filters: "Array of filters to disable."
         feature_name: "List of feature names to use in GTF."
         strandedness: {
