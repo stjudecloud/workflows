@@ -36,10 +36,55 @@ task arriba {
             description: "Optional input file of structural variants found by WGS in tab delimited or VCF format"
             external_help: "https://arriba.readthedocs.io/en/latest/input-files/#structural-variant-calls-from-wgs"
         }
-        interesting_contigs: "Array of contigs to consider for analysis."
+        interesting_contigs: "Array of contigs to consider for analysis. Contigs can be specified with or without the prefix `chr`."
         viral_contigs: "Array of contigs to consider for viral integration site analysis."
-        disable_filters: "Array of filters to disable."
-        feature_name: "List of feature names to use in GTF."
+        disable_filters: {
+            description: "Array of filters to disable."
+            choices: [
+                'top_expressed_viral_contigs',
+                'viral_contigs',
+                'low_coverage_viral_contigs',
+                'uninteresting_contigs',
+                'no_genomic_support',
+                'short_anchor',
+                'select_best',
+                'many_spliced',
+                'long_gap',
+                'merge_adjacent',
+                'hairpin',
+                'small_insert_size',
+                'same_gene',
+                'genomic_support',
+                'read_through',
+                'no_coverage',
+                'mismatches',
+                'homopolymer',
+                'low_entropy',
+                'multimappers',
+                'inconsistently_clipped',
+                'duplicates',
+                'homologs',
+                'blacklist',
+                'mismappers',
+                'spliced',
+                'relative_support',
+                'min_support',
+                'known_fusions',
+                'end_to_end',
+                'non_coding_neighbors',
+                'isoforms',
+                'intronic',
+                'in_vitro',
+                'intragenic_exonic',
+                'internal_tandem_duplication'
+            ]
+        }
+        feature_name: {
+            description: "List of feature names to use in GTF."
+            help: "The Arriba default it designed to handle RefSeq, GENCODE, or ENSEMBL format annotations. `feature_name` expects a string of space separated options. The required fields are `gene_name`, `gene_id`, `transcript_id`, `feature_exon`, and `feature_CDS`. The fields should space separated. The values should be provided with `field=value`. Mutliple values can be provided and separated by a pipe (`|`), e.g. `=value1|value2`. A complete example is `gene_name=gene_name|gene_id gene_id=gene_id transcript_id=transcript_id feature_exon=exon feature_CDS=CDS`."
+            external_help: "https://arriba.readthedocs.io/en/latest/command-line-options/"
+            common: false
+        }
         strandedness: {
             description: "Strandedness of the input data."
             external_help: "https://arriba.readthedocs.io/en/latest/command-line-options/"
@@ -51,7 +96,7 @@ task arriba {
             ]
         }
         mark_duplicates: "Mark duplicates in the input BAM file with Arriba."
-        report_additional_columns_discard: "Report additional columns ['fusion_transcript', 'peptide_sequence', 'read_identifiers'] in the discarded fusions file."
+        report_additional_columns: "Report additional columns ['fusion_transcript', 'peptide_sequence', 'read_identifiers'] in the discarded fusions file."
         fill_gaps: "Fill gaps in assembled transcripts with reference bases. Expands the fusion sequence to the complete sequence of the fusion gene."
         max_e_value: "Maximum E-value for read support."
         max_mismappers: "Maximum fraction of mismapped reads in the fusion region."
@@ -94,7 +139,7 @@ task arriba {
         String prefix = basename(bam, ".bam") + ".fusions"
         String strandedness = "auto"
         Boolean mark_duplicates = true
-        Boolean report_additional_columns_discard = false
+        Boolean report_additional_columns = false
         Boolean fill_gaps = false
         Float max_e_value = 0.3
         Float max_mismappers = 0.8
@@ -163,7 +208,7 @@ task arriba {
             -z ~{min_itd_allele_fraction} \
             -Z ~{min_itd_supporting_reads} \
             ~{if mark_duplicates then "" else "-u"} \
-            ~{if report_additional_columns_discard then "-X" else ""} \
+            ~{if report_additional_columns then "-X" else ""} \
             ~{if fill_gaps then "-I" else ""}
     >>>
 
@@ -280,14 +325,14 @@ task arriba_annotate_exon_numbers {
     meta {
         description: "Annotate fusions with exon numbers."
         outputs: {
-            fusion_bams: "Array of BAM files corresponding with fusions in the input file"
-            fusion_bam_indexes: "Array of BAM indexes corresponding with the BAMs in the 'fusion_bams'"
+            fusion_tsv: "TSV file with fusions annotated with exon numbers"
         }
     }
 
     parameter_meta {
         fusions: "Input fusions in TSV format for which to annotate gene exon numbers"
         gtf: "GTF features file. Gzipped or uncompressed."
+        outfile_name: "Output file name for annotated fusions in TSV format. The extension `.annotated.tsv` will be appended."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
