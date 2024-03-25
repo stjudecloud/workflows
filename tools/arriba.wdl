@@ -237,6 +237,7 @@ task arriba_tsv_to_vcf {
     parameter_meta {
         fusions: "Input fusions in TSV format to convert to VCF"
         reference_fasta: "Reference genome in FASTA format. Either gzipped or uncompressed."
+        prefix: "Output file name for fusions in VCF format. The extension `.vcf` will be appended."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
@@ -286,6 +287,7 @@ task arriba_extract_fusion_supporting_alignments {
         bam: "Input BAM format file from which fusions were called"
         bam_index: "BAM index file corresponding to the input BAM"
         fusions: "Input fusions in TSV format for which to extract supporting alignments"
+        prefix: "Output file name prefix for the extracted BAM files. The extension `.bam` will be appended."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
@@ -332,14 +334,14 @@ task arriba_annotate_exon_numbers {
     parameter_meta {
         fusions: "Input fusions in TSV format for which to annotate gene exon numbers"
         gtf: "GTF features file. Gzipped or uncompressed."
-        outfile_name: "Output file name for annotated fusions in TSV format. The extension `.annotated.tsv` will be appended."
+        prefix: "Output file name for annotated fusions in TSV format. The extension `.annotated.tsv` will be appended."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File fusions
         File gtf
-        String outfile_name = basename(fusions, ".tsv") + ".annotated.tsv"
+        String prefix = basename(fusions, ".tsv")
         Int modify_disk_size_gb = 0
     }
 
@@ -353,11 +355,11 @@ task arriba_annotate_exon_numbers {
         annotate_exon_numbers.sh \
             ~{fusions} \
             $gtf_name \
-            ~{outfile_name}
+            ~{prefix}.annotated.tsv
     >>>
 
     output {
-        File fusion_tsv = outfile_name
+        File fusion_tsv = "~{prefix}.annotated.tsv"
     }
 
     runtime {
