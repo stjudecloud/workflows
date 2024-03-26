@@ -305,6 +305,7 @@ task alignment {
                 WithinBAM_HardClip: "output into main aligned BAM files (Aligned.*.bam). Hard-clipping in the CIGAR for supplemental chimeric alignments.",
                 WithinBAM_SoftClip: "output into main aligned BAM files (Aligned.*.bam). Soft-clipping in the CIGAR for supplemental chimeric alignments."
             },
+            tool_default: "Junctions",
             common: true
         }
         chim_filter: {
@@ -428,6 +429,7 @@ task alignment {
         win_flank_n_bins: "=log2(winFlank), where winFlank is the size of the left and right flanking regions for each window"
         chim_segment_min: {
             description: "minimum length of chimeric segment length, if ==0, no chimeric output",
+            tool_default: 0,
             common: true
         }
         chim_score_min: {

@@ -30,6 +30,15 @@ workflow rnaseq_core {
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`. These two read groups could be associated with the following four FASTQs: `sample1.rg1_R1.fastq,sample1.rg2_R1.fastq` and `sample1.rg1_R2.fastq,sample1.rg2_R2.fastq`"
         prefix: "Prefix for output files"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
+        alignSJstitchMismatchNmax: {
+            description: "This overrides the STAR alignment default. Maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif",
+            tool_default: {
+                noncanonical_motifs: 0,
+                GT_AG_and_CT_AC_motif: -1,
+                GC_AG_and_CT_GC_motif: 0,
+                AT_AC_and_GT_AT_motif: 0
+            }
+        }
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
@@ -50,6 +59,42 @@ workflow rnaseq_core {
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
         use_all_cores: "Use all cores for multi-core steps?"
+        alignSplicedMateMapLminOverLmate: {
+            description: "alignSplicedMateMapLmin normalized to mate length",
+            tool_default: 0.66
+        }
+        outFilterMultimapNmax: {
+            description: "maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. **[STAR default]**: `10`. **[WDL default]**: `20`.",
+            tool_default: 20
+            common: true
+        }
+        peOverlapNbasesMin: {
+            description: "minimum number of overlap bases to trigger mates merging and realignment. Specify >0 value to switch on the 'merging of overlapping mates' algorithm.",
+            tool_default: 0
+        }
+        chimScoreSeparation: {
+            description: "minimum difference (separation) between the best chimeric score and the next one",
+            tool_default: 10
+        }
+        chimScoreJunctionNonGTAG: {
+            description: "penalty for a non-GT/AG chimeric junction",
+            tool_default: -1
+        }
+        chimJunctionOverhangMin: {
+            description: "minimum overhang for a chimeric junction",
+            tool_default: 20,
+            common: true
+        }
+        chimSegmentReadGapMax: {
+            description: "maximum gap in the read sequence between chimeric segments",
+            tool_default: 0,
+            common: true
+        }
+        chimMultimapNmax: {
+            description: "maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments",
+            tool_default: 0,
+            common: true
+        }
     }
 
     input {
