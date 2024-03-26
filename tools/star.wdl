@@ -503,8 +503,8 @@ task alignment {
         SJ_Motifs align_sj_stitch_mismatch_n_max = SJ_Motifs {
             noncanonical_motifs: 5,
             GT_AG_and_CT_AC_motif: -1,
-            GC_AG_and_CT_GC_motif: 5,
-            AT_AC_and_GT_AT_motif: 5
+            GC_AG_and_CT_GC_motif: 0,
+            AT_AC_and_GT_AT_motif: 0
         }
         Pair[String, String] clip_3p_adapter_seq = ("None", "None")
         Pair[Float, Float] clip_3p_adapter_mmp = (0.1, 0.1)

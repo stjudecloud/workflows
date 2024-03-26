@@ -60,11 +60,25 @@ workflow rnaseq_core {
         String read_groups
         String prefix
         File? contaminant_db
+        SJ_Motifs alignSJstitchMismatchNmax = SJ_Motifs {
+            noncanonical_motifs: 5,
+            GT_AG_and_CT_AC_motif: -1,
+            GC_AG_and_CT_GC_motif: 5,
+            AT_AC_and_GT_AT_motif: 5
+        }
         String xenocp_aligner = "star"
         String strandedness = ""
         Boolean mark_duplicates = false
         Boolean cleanse_xenograft = false
         Boolean use_all_cores = false
+        Float alignSplicedMateMapLminOverLmate = 0.5
+        Int outFilterMultimapNmax = 50
+        Int peOverlapNbasesMin = 10
+        Int chimScoreSeparation = 1
+        Int chimScoreJunctionNonGTAG = 0
+        Int chimJunctionOverhangMin = 10
+        Int chimSegmentReadGapMax = 3
+        Int chimMultimapNmax = 50
     }
 
     Map[String, String] htseq_strandedness_map = {
@@ -84,6 +98,14 @@ workflow rnaseq_core {
         prefix=prefix,
         read_groups=read_groups,
         use_all_cores=use_all_cores,
+        alignSJstitchMismatchNmax=alignSJstitchMismatchNmax,
+        outFilterMultimapNmax=outFilterMultimapNmax,
+        peOverlapNbasesMin=peOverlapNbasesMin,
+        chimScoreSeparation=chimScoreSeparation,
+        chimScoreJunctionNonGTAG=chimScoreJunctionNonGTAG,
+        chimJunctionOverhangMin=chimJunctionOverhangMin,
+        chimSegmentReadGapMax=chimSegmentReadGapMax,
+        chimMultimapNmax=chimMultimapNmax,
     }
 
     call alignment_post_wf.alignment_post { input:
