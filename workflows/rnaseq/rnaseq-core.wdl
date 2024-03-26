@@ -53,10 +53,10 @@ workflow rnaseq_core {
     }
 
     input {
-        Array[File] read_one_fastqs_gz
-        Array[File] read_two_fastqs_gz
         File gtf
         File star_db
+        Array[File] read_one_fastqs_gz
+        Array[File] read_two_fastqs_gz
         String read_groups
         String prefix
         File? contaminant_db
