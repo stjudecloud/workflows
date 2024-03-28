@@ -767,6 +767,30 @@ task revert_sam {
 
     parameter_meta {
         bam: "Input BAM format file to revert"
+        attributes_to_clear: "List of attributes to clear from the SAM records"
+        attributes_to_reverse: "List of attributes on negative strand reads that need to be reversed."
+        attributes_to_reverse_complement: "List of attributes on negative strand reads that need to be reverse complemented."
+        prefix: "Prefix for the reverted BAM file. The extension `.reverted.bam` will be added."
+        sort_order: {
+            description: "Order by which to sort the input BAM",
+            choices: [
+                'queryname',
+                'coordinate',
+            ],
+            common: true
+        }
+        library_name: "The library name to use in the reverted output file. This will override the existing sample alias in the file and is used only if all the read groups in the input file have the same library name."
+        sample_alias: "The sample alias to use in the reverted output file. This will override the existing sample alias in the file and is used only if all the read groups in the input file have the same sample alias."
+        keep_first_duplicate: "If SANITIZE=true keep the first record when we find more than one record with the same name for R1/R2/unpaired reads respectively. For paired end reads, keeps only the first R1 and R2 found respectively, and discards all unpaired reads. Duplicates do not refer to the duplicate flag in the FLAG field, but instead reads with the same name."
+        remove_alignment_information: "Remove all alignment information from the file."
+        remove_duplicate_information: "Remove duplicate read flags from all reads. Note that if this is false and REMOVE_ALIGNMENT_INFORMATION==true, the output may have the unusual but sometimes desirable trait of having unmapped reads that are marked as duplicates."
+        restore_hardclips: "Restore hard clipped bases to the sequence and quality strings for read containing XB and XQ tags."
+        restore_original_qualities: "Restore original qualities if available in the OQ tag."
+        sanitize: {
+            description: "Will discard problematic reads. Potentially destructive."
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832764371227-RevertSam-Picard"
+        }
+        max_discard_fraction: "If SANITIZE=true and higher than MAX_DISCARD_FRACTION reads are discarded due to sanitization then the program will exit with an Exception instead of exiting cleanly. Output BAM will still be valid."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -781,12 +805,11 @@ task revert_sam {
         String? library_name
         String? sample_alias
         Boolean keep_first_duplicate = false
-        Boolean output_by_readgroup = false
         Boolean remove_alignment_information = true
         Boolean remove_duplicate_information = true
         Boolean restore_hardclips = true
         Boolean restore_original_qualities = true
-        Boolean santize = false
+        Boolean sanitize = false
         Float max_discard_fraction = 0.01
         Int memory_gb = 56
         Int modify_disk_size_gb = 0
@@ -799,7 +822,7 @@ task revert_sam {
     command <<<
         set -euo pipefail
 
-        picard -Xmx~{java_heap_size}g RevertSam
+        picard -Xmx~{java_heap_size}g RevertSam \
             INPUT=~{bam} \
             OUTPUT=~{prefix}.reverted.bam \
             ATTRIBUTE_TO_CLEAR="~{sep(',', attributes_to_clear)}" \
@@ -808,19 +831,88 @@ task revert_sam {
             KEEP_FIRST_DUPLICATE=~{keep_first_duplicate} \
             ~{if defined(library_name) then "LIBRARY_NAME="+library_name else ""} \
             MAX_DISCARD_FRACTION=~{max_discard_fraction} \
-            OUTPUT_BY_READGROUP=~{output_by_readgroup} \
             REMOVE_ALIGNMENT_INFORMATION=~{remove_alignment_information} \
             REMOVE_DUPLICATE_INFORMATION=~{remove_duplicate_information} \
             RESTORE_HARDCLIPS=~{restore_hardclips} \
             RESTORE_ORIGINAL_QUALITIES=~{restore_original_qualities} \
             ~{if defined(sample_alias) then "SAMPLE_ALIAS="+sample_alias else ""} \
-            SANITZE=~{santize} \
+            SANITIZE=~{sanitize} \
             SORT_ORDER=~{sort_order} \
             VALIDATION_STRINGENCY=SILENT
     >>>
 
     output {
         File reverted_bam = "~{prefix}.reverted.bam"
+    }
+
+    runtime{
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        maxRetries: 1
+    }
+}
+
+task fastq_to_sam {
+    meta {
+        description: "This WDL task generates an unaligned BAM (uBAM) from FASTQ files."
+    }
+
+    parameter_meta {
+        read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
+        read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
+        read_group_name: "Name of the read group"
+        sample_name: "Sample name for the fastq files"
+        library_name: "Library name"
+        sequencing_center: "Sequencing center that produced the reads"
+        run_date: "Date the run was produced"
+        platform_unit: "Platform unit (e.g. flowcell-barcode.lane for Illumina)"
+        platform: "Platform/technology used to produce the reads (e.g. ILLUMINA)"
+        platform_model: "Model of the sequencing platform (e.g. HiSeq2000). Free-form text."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File read_one_fastq_gz
+        File read_two_fastq_gz
+        String prefix = basename(read_one_fastq_gz, ".fq.gz")
+        String read_group_name
+        String sample_name
+        String library_name
+        String sequencing_center
+        String run_date
+        String? platform_unit
+        String? platform
+        String? platform_model
+        Int memory_gb = 56
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+    Int disk_size_gb = ceil(fastq_size * 2) + 10 + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command <<<
+        set -euo pipefail
+
+        picard -Xmx~{java_heap_size}g FastqToSam \
+            FASTQ=~{read_one_fastq_gz} \
+            FASTQ2=~{read_two_fastq_gz} \
+            OUTPUT=~{prefix}.unmapped.bam \
+            READ_GROUP_NAME=~{read_group_name} \
+            SAMPLE_NAME=~{sample_name} \
+            LIBRARY_NAME=~{library_name} \
+            SEQUENCING_CENTER=~{sequencing_center} \
+            RUN_DATE=~{run_date} \
+            ~{if defined(platform_unit) then "PLATFORM_UNIT="+platform_unit else ""} \
+            ~{if defined(platform) then "PLATFORM="+platform else ""} \
+            ~{if defined(platform_model) then "PLATFORM_MODEL="+platform_model else ""}
+
+    >>>
+
+    output {
+        File unaligned_bam = "~{prefix}.unmapped.bam"
     }
 
     runtime{
