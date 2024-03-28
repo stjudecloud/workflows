@@ -32,6 +32,18 @@ The repository is laid out as follows:
 * `bin/` - **no longer in use** Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations in `conf` with Cromwell.
 * `conf/` - **no longer in use** Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
 
+## Bootstrap guide
+
+The workflows and tasks in this repository should require minimal set-up and configuration before you're ready to run. You don't even need to clone the repo! The bare minimum requirements are a locally installed WDL runner and an internet connection.
+
+The exact steps for installation, configuration, and execution are going to depend on you environment and preferred engine. There are a variety of WDL engines you could use, though our team prefers [miniwdl](https://github.com/chanzuckerberg/miniwdl). We also make use of the [`miniwdl-lsf` plugin](https://pypi.org/project/miniwdl-lsf/) for running on our LSF cluster.
+
+Most WDL runners are capable of running a WDL file from a URL. This is how we most commonly execute our workflows and tasks. The below command could be used to submit a run of our rnaseq-standard workflow using `miniwdl`:
+
+```
+miniwdl run --verbose --input inputs.json https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/workflows/rnaseq/rnaseq-standard.wdl
+```
+
 ## Author
 
 👤 **St. Jude Cloud Team**
