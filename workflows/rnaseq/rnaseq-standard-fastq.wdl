@@ -19,6 +19,7 @@
 # Copyright St. Jude Children's Research Hospital
 version 1.1
 
+import "../../data_structures/read_group.wdl"
 import "../../tools/fq.wdl"
 import "./rnaseq-core.wdl" as rnaseq_core_wf
 import "./rnaseq-standard.wdl" as rnaseq_standard
@@ -114,7 +115,7 @@ workflow rnaseq_standard_fastq {
     }
 
     scatter (rg in read_groups) {
-        call ReadGroup_to_string after parse_input { input: read_group=rg }
+        call read_group.ReadGroup_to_string after parse_input { input: read_group=rg }
     }
     String stringified_read_groups = sep(
         ' , ', ReadGroup_to_string.stringified_read_group
@@ -174,71 +175,5 @@ workflow rnaseq_standard_fastq {
         File feature_counts = rnaseq_core.feature_counts
         File inferred_strandedness = rnaseq_core.inferred_strandedness
         String inferred_strandedness_string = rnaseq_core.inferred_strandedness_string
-    }
-}
-
-# See the `read_groups` `parameter_meta` for definitions of each field
-struct ReadGroup {
-    String ID
-    String? BC
-    String? CN
-    String? DS
-    String? DT
-    String? FO
-    String? KS
-    String? LB
-    String? PG
-    Int? PI
-    String? PL
-    String? PM
-    String? PU
-    String? SM
-}
-
-task ReadGroup_to_string {
-    meta {
-        description: "Stringifies a ReadGroup struct"
-        outputs: {
-            stringified_read_group: "Input ReadGroup as a string"
-        }
-    }
-
-    parameter_meta {
-        read_group: "ReadGroup struct to stringify"
-    }
-
-    input {
-        ReadGroup read_group
-    }
-
-    command <<<
-        {
-            # TODO: I think this can be simplified by dropping the `if defined` checks?
-            echo -n "~{'ID:~{read_group.ID}'}"  # required field. All others optional
-            echo -n "~{if defined(read_group.BC) then ' BC:~{read_group.BC}' else ''}"
-            echo -n "~{if defined(read_group.CN) then ' CN:~{read_group.CN}' else ''}"
-            echo -n "~{if defined(read_group.DS) then ' DS:~{read_group.DS}' else ''}"
-            echo -n "~{if defined(read_group.DT) then ' DT:~{read_group.DT}' else ''}"
-            echo -n "~{if defined(read_group.FO) then ' FO:~{read_group.FO}' else ''}"
-            echo -n "~{if defined(read_group.KS) then ' KS:~{read_group.KS}' else ''}"
-            echo -n "~{if defined(read_group.LB) then ' LB:~{read_group.LB}' else ''}"
-            echo -n "~{if defined(read_group.PG) then ' PG:~{read_group.PG}' else ''}"
-            echo -n "~{if defined(read_group.PI) then ' PI:~{read_group.PI}' else ''}"
-            echo -n "~{if defined(read_group.PL) then ' PL:~{read_group.PL}' else ''}"
-            echo -n "~{if defined(read_group.PM) then ' PM:~{read_group.PM}' else ''}"
-            echo -n "~{if defined(read_group.PU) then ' PU:~{read_group.PU}' else ''}"
-            echo "~{if defined(read_group.SM) then ' SM:~{read_group.SM}' else ''}"
-        } > out.txt
-    >>>
-
-    output {
-        String stringified_read_group = read_string("out.txt")
-    }
-
-    runtime {
-        memory: "4 GB"
-        disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: 1
     }
 }
