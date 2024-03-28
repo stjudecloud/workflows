@@ -34,6 +34,8 @@ The repository is laid out as follows:
 
 ## Bootstrap guide
 
+This repository implements workflows using the Workflow Description Language (WDL). If unfamiliar with WDL, a short overview is available in the [WDL spec](https://github.com/openwdl/wdl/blob/main/versions/1.1/SPEC.md#introduction). 
+
 The workflows and tasks in this repository should require minimal set-up and configuration before you're ready to run. You don't even need to clone the repo! The bare minimum requirements are a locally installed WDL runner and an internet connection.
 
 The exact steps for installation, configuration, and execution are going to depend on you environment and preferred engine. There are a variety of WDL engines you could use, though our team prefers [miniwdl](https://github.com/chanzuckerberg/miniwdl). We also make use of the [`miniwdl-lsf` plugin](https://pypi.org/project/miniwdl-lsf/) for running on our LSF cluster.
