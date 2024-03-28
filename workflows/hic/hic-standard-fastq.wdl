@@ -82,15 +82,11 @@ workflow hic_standard {
         Boolean use_all_cores = false
     }
 
-    scatter (rg in read_groups) {
-        call read_group.ReadGroup_to_string { input: read_group=rg }
-    }
-
     call hic_core.hic_core { input:
         read_one_fastqs_gz=read_one_fastqs_gz,
         read_two_fastqs_gz=read_two_fastqs_gz,
         bwa_db=bwa_db,
-        read_groups=ReadGroup_to_string.stringified_read_group,
+        read_groups=read_groups,
         genomeID=genomeID,
         prefix=prefix,
         use_all_cores=use_all_cores,

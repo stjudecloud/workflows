@@ -775,7 +775,7 @@ task revert_sam {
             description: "Order by which to sort the input BAM",
             choices: [
                 'queryname',
-                'coordinate',
+                'coordinate'
             ],
             common: true
         }

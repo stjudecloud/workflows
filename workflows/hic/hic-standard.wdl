@@ -1,5 +1,6 @@
 version 1.1
 
+import "../../data_structures/read_group.wdl"
 import "../../tools/bwa.wdl"
 import "../../tools/juicer.wdl"
 import "../../tools/pairix.wdl"

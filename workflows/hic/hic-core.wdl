@@ -1,5 +1,6 @@
 version 1.1
 
+import "../../data_structures/read_group.wdl"
 import "../../tools/bwa.wdl"
 import "../../tools/juicer.wdl"
 import "../../tools/pairix.wdl"
@@ -69,16 +70,15 @@ workflow hic_core {
             input:
                 read_one_fastq_gz=tuple.left.left,
                 read_two_fastq_gz=tuple.left.right,
-                read_group=tuple.right
                 prefix=prefix,
-                read_group_name=tuple.right.ID,
-                sample_name=tuple.right.SM,
-                library_name=tuple.right.LB,
-                sequencing_center=tuple.right.CN,
-                run_date=tuple.right.DT,
-                platform_unit=tuple.right.PU,
-                platform=tuple.right.PL,
-                platform_model=tuple.right.PM,
+                read_group_name=select_first([tuple.right.ID, ""]),
+                sample_name=select_first([tuple.right.SM, ""]),
+                library_name=select_first([tuple.right.LB, ""]),
+                sequencing_center=select_first([tuple.right.CN, ""]),
+                run_date=select_first([tuple.right.DT, ""]),
+                platform_unit=select_first([tuple.right.PU, ""]),
+                platform=select_first([tuple.right.PL, ""]),
+                platform_model=select_first([tuple.right.PM, ""]),
         }
     }
 
@@ -88,9 +88,13 @@ workflow hic_core {
         use_all_cores=use_all_cores,
     }
 
+    scatter (rg in read_groups) {
+        call read_group.ReadGroup_to_string { input: read_group=rg }
+    }
+
     scatter (tuple in zip(
         zip(read_one_fastqs_gz, read_two_fastqs_gz),
-        read_groups
+        ReadGroup_to_string.stringified_read_group
     )) {
         call bwa.bwa_mem { input:
             read_one_fastq_gz=tuple.left.left,
