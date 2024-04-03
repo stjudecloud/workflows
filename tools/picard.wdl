@@ -150,6 +150,15 @@ task validate_bam {
             common: true
         }
         outfile_name: "Name for the ValidateSamFile report file"
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         succeed_on_errors: {
             description: "Succeed the task even if errors *and/or* warnings are detected",
             common: true
@@ -173,6 +182,7 @@ task validate_bam {
         File? reference_fasta
         Array[String] ignore_list = []
         String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
+        String validation_stringency = "SILENT"
         Boolean succeed_on_errors = false
         Boolean succeed_on_warnings = true
         Boolean summary_mode = false
@@ -203,6 +213,7 @@ task validate_bam {
             ~{reference_arg} \
             ~{mode_arg} \
             ~{stringency_arg} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             ~{sep(" ", prefix("--IGNORE ", ignore_list))} \
             --MAX_OUTPUT ~{max_errors} \
             > ~{outfile_name} \
