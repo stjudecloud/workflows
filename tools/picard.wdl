@@ -39,6 +39,15 @@ task mark_duplicates {
                 "All"
             ],
         }
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         create_bam: {
             description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?",
             common: true
@@ -57,6 +66,7 @@ task mark_duplicates {
         String duplicate_scoring_strategy = "SUM_OF_BASE_QUALITIES"
         String read_name_regex = "^[!-9;-?A-~:]+:([!-9;-?A-~]+):([0-9]+):([0-9]+)$"
         String tagging_policy = "All"
+        String validation_stringency = "SILENT"
         Boolean create_bam = true
         Boolean clear_dt = true
         Boolean remove_duplicates = false
@@ -87,7 +97,7 @@ task mark_duplicates {
             -O ~{if create_bam then prefix + ".bam" else "/dev/null"} \
             --CREATE_INDEX ~{create_bam} \
             --CREATE_MD5_FILE ~{create_bam} \
-            --VALIDATION_STRINGENCY SILENT \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             --DUPLICATE_SCORING_STRATEGY ~{duplicate_scoring_strategy} \
             --READ_NAME_REGEX ~{
                 if (optical_distance > 0) then read_name_regex else "null"
@@ -140,6 +150,15 @@ task validate_bam {
             common: true
         }
         outfile_name: "Name for the ValidateSamFile report file"
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         succeed_on_errors: {
             description: "Succeed the task even if errors *and/or* warnings are detected",
             common: true
@@ -163,6 +182,7 @@ task validate_bam {
         File? reference_fasta
         Array[String] ignore_list = []
         String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
+        String validation_stringency = "LENIENT"
         Boolean succeed_on_errors = false
         Boolean succeed_on_warnings = true
         Boolean summary_mode = false
@@ -193,6 +213,7 @@ task validate_bam {
             ~{reference_arg} \
             ~{mode_arg} \
             ~{stringency_arg} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             ~{sep(" ", prefix("--IGNORE ", ignore_list))} \
             --MAX_OUTPUT ~{max_errors} \
             > ~{outfile_name} \
@@ -256,6 +277,15 @@ task sort {
             common: true
         }
         prefix: "Prefix for the sorted BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -264,6 +294,7 @@ task sort {
         File bam
         String sort_order = "coordinate"
         String prefix = basename(bam, ".bam") + ".sorted"
+        String validation_stringency = "SILENT"
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
     }
@@ -283,8 +314,7 @@ task sort {
             -SO ~{sort_order} \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
-            --COMPRESSION_LEVEL 5 \
-            --VALIDATION_STRINGENCY SILENT
+            --VALIDATION_STRINGENCY ~{validation_stringency}
 
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
@@ -328,6 +358,15 @@ task merge_sam_files {
             ],
             common: true
         }
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file. **Sets `runtime.cpu = 2` if `true`. `runtime.cpu = 1` if `false`.**"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -337,6 +376,7 @@ task merge_sam_files {
         Array[File] bams
         String prefix
         String sort_order = "coordinate"
+        String validation_stringency = "SILENT"
         Boolean threading = true
         Int memory_gb = 40
         Int modify_disk_size_gb = 0
@@ -361,7 +401,7 @@ task merge_sam_files {
             --USE_THREADING ~{threading} \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
-            --VALIDATION_STRINGENCY SILENT
+            --VALIDATION_STRINGENCY ~{validation_stringency}
 
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
@@ -395,6 +435,15 @@ task clean_sam {
     parameter_meta {
         bam: "Input BAM format file to clean"
         prefix: "Prefix for the cleaned BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -402,6 +451,7 @@ task clean_sam {
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".cleaned"
+        String validation_stringency = "SILENT"
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
     }
@@ -419,6 +469,7 @@ task clean_sam {
             -I ~{bam} \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             -O ~{outfile_name}
 
         mv ~{prefix}.bai ~{outfile_name}.bai
@@ -455,6 +506,15 @@ task collect_wgs_metrics {
         bam: "Input BAM format file for which to calculate WGS metrics"
         reference_fasta: "Gzipped reference genome in FASTA format"
         outfile_name: "Name for the metrics result file"
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -463,6 +523,7 @@ task collect_wgs_metrics {
         File bam
         File reference_fasta
         String outfile_name = basename(bam, ".bam") + ".CollectWgsMetrics.txt"
+        String validation_stringency = "SILENT"
         Int memory_gb = 12
         Int modify_disk_size_gb = 0
     }
@@ -476,6 +537,7 @@ task collect_wgs_metrics {
             -I ~{bam} \
             -R ~{reference_fasta} \
             -O ~{outfile_name} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             --INCLUDE_BQ_HISTOGRAM true
     >>>
 
@@ -508,6 +570,15 @@ task collect_alignment_summary_metrics {
     parameter_meta {
         bam: "Input BAM format file for which to calculate alignment metrics"
         prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -515,6 +586,7 @@ task collect_alignment_summary_metrics {
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".CollectAlignmentSummaryMetrics"
+        String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
     }
@@ -526,6 +598,7 @@ task collect_alignment_summary_metrics {
     command <<<
         picard -Xmx~{java_heap_size}g CollectAlignmentSummaryMetrics \
             -I ~{bam} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             -O ~{prefix}.txt \
             -H ~{prefix}.pdf
     >>>
@@ -565,6 +638,15 @@ task collect_gc_bias_metrics {
         bam: "Input BAM format file for which to calculate GC bias metrics"
         reference_fasta: "Reference sequences in FASTA format"
         prefix: "Prefix for the output report files. The extensions `.txt`, `.summary.txt`, and `.pdf` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -573,6 +655,7 @@ task collect_gc_bias_metrics {
         File bam
         File reference_fasta
         String prefix = basename(bam, ".bam") + ".CollectGcBiasMetrics"
+        String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
     }
@@ -585,6 +668,7 @@ task collect_gc_bias_metrics {
         picard -Xmx~{java_heap_size}g CollectGcBiasMetrics \
             -I ~{bam} \
             -R ~{reference_fasta} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             -O ~{prefix}.txt \
             -S ~{prefix}.summary.txt \
             -CHART ~{prefix}.pdf
@@ -622,6 +706,15 @@ task collect_insert_size_metrics {
     parameter_meta {
         bam: "Input BAM format file for which to calculate insert size metrics"
         prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -629,6 +722,7 @@ task collect_insert_size_metrics {
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".CollectInsertSizeMetrics"
+        String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
     }
@@ -640,6 +734,7 @@ task collect_insert_size_metrics {
     command <<<
         picard -Xmx~{java_heap_size}g CollectInsertSizeMetrics \
             -I ~{bam} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             -O ~{prefix}.txt \
             -H ~{prefix}.pdf
     >>>
@@ -671,6 +766,15 @@ task quality_score_distribution {
     parameter_meta {
         bam: "Input BAM format file for which to calculate quality score distribution"
         prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -678,6 +782,7 @@ task quality_score_distribution {
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".QualityScoreDistribution"
+        String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
     }
@@ -688,6 +793,7 @@ task quality_score_distribution {
 
     command <<<
         picard -Xmx~{java_heap_size}g QualityScoreDistribution \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             -I ~{bam} \
             -O ~{prefix}.txt \
             -CHART ~{prefix}.pdf
