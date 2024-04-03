@@ -170,6 +170,14 @@
 <li><code>bin/</code> - <strong>no longer in use</strong> Scripts used by Cromwell configuration settings. Add this to <code>$PATH</code> prior to using configurations in <code>conf</code> with Cromwell.</li>
 <li><code>conf/</code> - <strong>no longer in use</strong> Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.</li>
 </ul>
+<h2 id="bootstrap-guide">Bootstrap guide</h2>
+<p>This repository implements workflows using the Workflow Description Language (WDL). If unfamiliar with WDL, a short overview is available in the <a href="https://github.com/openwdl/wdl/blob/main/versions/1.1/SPEC.md#introduction">WDL spec</a>.</p>
+<p>The workflows and tasks in this repository should require minimal set-up and configuration before you're ready to run. You don't even need to clone the repo! The bare minimum requirements are a locally installed WDL runner and an internet connection.</p>
+<p>The exact steps for installation, configuration, and execution are going to depend on you environment and preferred engine. There are a variety of WDL engines you could use, though our team prefers <a href="https://github.com/chanzuckerberg/miniwdl">miniwdl</a>. We also make use of the <a href="https://pypi.org/project/miniwdl-lsf/"><code>miniwdl-lsf</code> plugin</a> for running on our LSF cluster.</p>
+<p>Most WDL runners are capable of running a WDL file from a URL. This is how we most commonly execute our workflows and tasks. The below command could be used to submit a run of our rnaseq-standard workflow using <code>miniwdl</code>:</p>
+<pre><code class="language-bash">miniwdl run --verbose --input inputs.json https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/workflows/rnaseq/rnaseq-standard.wdl
+</code></pre>
+<p>For an introduction to WDL, there are many guides, one of which is <a href="https://support.terra.bio/hc/en-us/articles/360037117492-Overview-Getting-started-with-WDL">from Terra</a>.</p>
 <h2 id="author">Author</h2>
 <p>👤 <strong>St. Jude Cloud Team</strong></p>
 <ul>
@@ -243,5 +251,5 @@ This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LI
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-03-15 18:55:09.411026+00:00
+Build Date UTC : 2024-04-03 15:51:12.333626+00:00
 -->
