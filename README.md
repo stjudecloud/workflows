@@ -34,7 +34,7 @@ The repository is laid out as follows:
 
 ## Bootstrap guide
 
-This repository implements workflows using the Workflow Description Language (WDL). If unfamiliar with WDL, a short overview is available in the [WDL spec](https://github.com/openwdl/wdl/blob/main/versions/1.1/SPEC.md#introduction). 
+This repository implements workflows using the Workflow Description Language (WDL). If unfamiliar with WDL, a short overview is available in the [WDL spec](https://github.com/openwdl/wdl/blob/main/versions/1.1/SPEC.md#introduction).
 
 The workflows and tasks in this repository should require minimal set-up and configuration before you're ready to run. You don't even need to clone the repo! The bare minimum requirements are a locally installed WDL runner and an internet connection.
 
@@ -42,9 +42,11 @@ The exact steps for installation, configuration, and execution are going to depe
 
 Most WDL runners are capable of running a WDL file from a URL. This is how we most commonly execute our workflows and tasks. The below command could be used to submit a run of our rnaseq-standard workflow using `miniwdl`:
 
-```
+```bash
 miniwdl run --verbose --input inputs.json https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/workflows/rnaseq/rnaseq-standard.wdl
 ```
+
+For an introduction to WDL, there are many guides, one of which is [from Terra](https://support.terra.bio/hc/en-us/articles/360037117492-Overview-Getting-started-with-WDL).
 
 ## Author
 
