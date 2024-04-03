@@ -182,7 +182,7 @@ task validate_bam {
         File? reference_fasta
         Array[String] ignore_list = []
         String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
-        String validation_stringency = "SILENT"
+        String validation_stringency = "LENIENT"
         Boolean succeed_on_errors = false
         Boolean succeed_on_warnings = true
         Boolean summary_mode = false
