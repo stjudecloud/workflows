@@ -179,6 +179,7 @@
 <li><code>remove_duplicates</code> (Boolean, default=false): Remove duplicate reads from the output BAM? If <code>true</code>, the output BAM will not contain any duplicate reads.</li>
 <li><code>remove_sequencing_duplicates</code> (Boolean, default=false): Remove sequencing duplicates (i.e. optical duplicates) from the output BAM? If <code>true</code>, the output BAM will not contain any sequencing duplicates (optical duplicates).</li>
 <li><code>tagging_policy</code> (String, default="All"); <strong>description</strong>: Tagging policy for the output BAM.; <strong>choices</strong>: ['DontTag', 'OpticalOnly', 'All']</li>
+<li><code>validation_stringency</code> (String, default="SILENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
@@ -217,6 +218,7 @@
 <li><code>succeed_on_errors</code> (Boolean, default=false); <strong>description</strong>: Succeed the task even if errors <em>and/or</em> warnings are detected; <strong>common</strong>: true</li>
 <li><code>succeed_on_warnings</code> (Boolean, default=true); <strong>description</strong>: Succeed the task if warnings are detected and there are no errors. Overridden by <code>succeed_on_errors</code>; <strong>common</strong>: true</li>
 <li><code>summary_mode</code> (Boolean, default=false); <strong>description</strong>: Enable SUMMARY mode?; <strong>common</strong>: true</li>
+<li><code>validation_stringency</code> (String, default="LENIENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
@@ -243,6 +245,7 @@
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".sorted"): Prefix for the sorted BAM file and accessory files. The extensions <code>.bam</code>, <code>.bam.bai</code>, and <code>.bam.md5</code> will be added.</li>
 <li><code>sort_order</code> (String, default="coordinate"); <strong>description</strong>: Order by which to sort the input BAM; <strong>choices</strong>: ['queryname', 'coordinate', 'duplicate']; <strong>common</strong>: true</li>
+<li><code>validation_stringency</code> (String, default="SILENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>
 <h3 id="outputs_2">Outputs</h3>
 <ul>
@@ -272,6 +275,7 @@
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>sort_order</code> (String, default="coordinate"); <strong>description</strong>: Sort order for the output merged BAM. It is assumed all input BAMs share this order.; <strong>choices</strong>: ['unsorted', 'queryname', 'coordinate', 'duplicate', 'unknown']; <strong>common</strong>: true</li>
 <li><code>threading</code> (Boolean, default=true): Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file. <strong>Sets <code>runtime.cpu = 2</code> if <code>true</code>. <code>runtime.cpu = 1</code> if <code>false</code>.</strong></li>
+<li><code>validation_stringency</code> (String, default="SILENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>
 <h3 id="outputs_3">Outputs</h3>
 <ul>
@@ -299,6 +303,7 @@
 <li><code>memory_gb</code> (Int, default=25): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".cleaned"): Prefix for the cleaned BAM file and accessory files. The extensions <code>.bam</code>, <code>.bam.bai</code>, and <code>.bam.md5</code> will be added.</li>
+<li><code>validation_stringency</code> (String, default="SILENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>
 <h3 id="outputs_4">Outputs</h3>
 <ul>
@@ -327,6 +332,7 @@
 <li><code>memory_gb</code> (Int, default=12): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>outfile_name</code> (String, default=basename(bam,".bam") + ".CollectWgsMetrics.txt"): Name for the metrics result file</li>
+<li><code>validation_stringency</code> (String, default="SILENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>
 <h3 id="outputs_5">Outputs</h3>
 <ul>
@@ -352,6 +358,7 @@
 <li><code>memory_gb</code> (Int, default=8): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".CollectAlignmentSummaryMetrics"): Prefix for the output report files. The extensions <code>.txt</code> and <code>.pdf</code> will be added.</li>
+<li><code>validation_stringency</code> (String, default="SILENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>
 <h3 id="outputs_6">Outputs</h3>
 <ul>
@@ -379,6 +386,7 @@
 <li><code>memory_gb</code> (Int, default=8): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".CollectGcBiasMetrics"): Prefix for the output report files. The extensions <code>.txt</code>, <code>.summary.txt</code>, and <code>.pdf</code> will be added.</li>
+<li><code>validation_stringency</code> (String, default="SILENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>
 <h3 id="outputs_7">Outputs</h3>
 <ul>
@@ -406,6 +414,7 @@
 <li><code>memory_gb</code> (Int, default=8): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".CollectInsertSizeMetrics"): Prefix for the output report files. The extensions <code>.txt</code> and <code>.pdf</code> will be added.</li>
+<li><code>validation_stringency</code> (String, default="SILENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>
 <h3 id="outputs_8">Outputs</h3>
 <ul>
@@ -432,6 +441,7 @@
 <li><code>memory_gb</code> (Int, default=8): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam") + ".QualityScoreDistribution"): Prefix for the output report files. The extensions <code>.txt</code> and <code>.pdf</code> will be added.</li>
+<li><code>validation_stringency</code> (String, default="SILENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>
 <h3 id="outputs_9">Outputs</h3>
 <ul>

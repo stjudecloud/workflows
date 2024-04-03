@@ -200,6 +200,7 @@
 <li><code>sort.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>sort.prefix</code> (String, default=basename(bam,".bam") + ".sorted"): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>sort.sort_order</code> (String, default="coordinate")</li>
+<li><code>sort.validation_stringency</code> (String, default="SILENT")</li>
 <li><code>validate_input_bam.ignore_list</code> (Array[String], default=[])</li>
 <li><code>validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
 <li><code>validate_input_bam.max_errors</code> (Int, default=2147483647)</li>
@@ -209,6 +210,7 @@
 <li><code>validate_input_bam.succeed_on_errors</code> (Boolean, default=false)</li>
 <li><code>validate_input_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
 <li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
+<li><code>validate_input_bam.validation_stringency</code> (String, default="LENIENT")</li>
 <li><code>bam_to_fastqs.bam_to_fastq.append_read_number</code> (Boolean, default=true)</li>
 <li><code>bam_to_fastqs.bam_to_fastq.bitwise_filter</code> (FlagFilter, default={"include_if_all": "0x0", "exclude_if_any": "0x900", "include_if_any": "0x0", "exclude_if_all": "0x0"})</li>
 <li><code>bam_to_fastqs.bam_to_fastq.collated</code> (Boolean, default=false)</li>
