@@ -28,11 +28,12 @@ task bam2pairs {
     command <<<
         bam2pairs \
             ~{bam} \
-            ~{prefix}.pairs.txt
+            ~{prefix}
     >>>
 
     output {
-        File pairs = "~{prefix}.pairs.txt"
+        File pairs = "~{prefix}.bsorted.pairs.gz"
+        File pairs_index = "~{prefix}.bsorted.pairs.gz.px2"
     }
 
     runtime {

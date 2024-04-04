@@ -92,9 +92,11 @@ workflow hic_core {
         call read_group.ReadGroup_to_string { input: read_group=rg }
     }
 
+    Array[String] read_groups_bwa = prefix("@RG\t", ReadGroup_to_string.stringified_read_group)
+
     scatter (tuple in zip(
         zip(read_one_fastqs_gz, read_two_fastqs_gz),
-        ReadGroup_to_string.stringified_read_group
+        read_groups_bwa
     )) {
         call bwa.bwa_mem { input:
             read_one_fastq_gz=tuple.left.left,
@@ -132,7 +134,7 @@ workflow hic_core {
     }
 
     output {
-        File unaligned_bam = "x.bam" 
+        File unaligned_bam = merge_unaligned_bam.merged_bam
         File hic = pre.hic
     }
 }

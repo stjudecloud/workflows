@@ -56,7 +56,7 @@ task pre {
     input {
         File pairs
         String genomeID = "hg38"
-        String prefix = basename(pairs, ".pairs.txt")
+        String prefix = basename(pairs, ".bsorted.pairs.gz")
         Boolean diagonal = false
         Int min_count = 0
         Int modify_disk_size_gb = 0
@@ -74,7 +74,7 @@ task pre {
     command <<<
         juicer_tools \
             pre \
-            -d ~{diagonal} \
+            ~{if diagonal then "-d" else ""} \
             ~{if defined(restriction_sites) then "-f " + restriction_sites else ""} \
             -m ~{min_count} \
             ~{if defined(maq_filter) then "-q " + maq_filter else ""} \
@@ -94,7 +94,7 @@ task pre {
 
     runtime {
         cpu: 1
-        memory: "4 GB"
+        memory: "14 GB"
         disk: "~{disk_size_gb} GB"
         container: "aidenlab/juicer:1.0.13"
         maxRetries: 1
