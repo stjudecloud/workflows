@@ -99,9 +99,9 @@ task mark_duplicates {
             --CREATE_MD5_FILE ~{create_bam} \
             --VALIDATION_STRINGENCY ~{validation_stringency} \
             --DUPLICATE_SCORING_STRATEGY ~{duplicate_scoring_strategy} \
-            --READ_NAME_REGEX ~{
+            --READ_NAME_REGEX '~{
                 if (optical_distance > 0) then read_name_regex else "null"
-            } \
+            }' \
             --TAGGING_POLICY ~{tagging_policy} \
             --CLEAR_DT ~{clear_dt} \
             --REMOVE_DUPLICATES ~{remove_duplicates} \
