@@ -48,6 +48,10 @@ workflow hic_standard {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
+        restriction_sites: {
+            description: "Calculate fragment map. Requires restriction site file; each line should start with the chromosome name followed by the position of each restriction site on that chromosome, in numeric order, and ending with the size of the chromosome."
+            external_help: "https://github.com/aidenlab/juicer/wiki/Pre#restriction-site-file-format"
+        }
     }
 
     input {
@@ -57,6 +61,7 @@ workflow hic_standard {
         String prefix = basename(bam, ".bam")
         Boolean validate_input = true
         Boolean use_all_cores = false
+        File? restriction_sites
     }
 
     if (validate_input) {
@@ -83,6 +88,7 @@ workflow hic_standard {
         genomeID=genomeID,
         prefix=prefix,
         use_all_cores=use_all_cores,
+        restriction_sites=restriction_sites,
     }   
 
     output {
