@@ -1,0 +1,8 @@
+- name: juicer_pre
+  tags:
+    - miniwdl
+    - juicer
+  command: >-
+    miniwdl run --verbose -d test-output/. --task pre tools/juicer.wdl 
+  files:
+    - path: test-output/out/hic/test.bwa_aln_pe.hic

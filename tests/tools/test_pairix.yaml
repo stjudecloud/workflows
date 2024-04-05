@@ -1,0 +1,8 @@
+- name: pairix_bam2pairs
+  tags:
+    - miniwdl
+    - pairix
+  command: >-
+    miniwdl run --verbose -d test-output/. --task bam2pairs tools/pairix.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  files:
+    - path: test-output/out/pairs/test.bwa_aln_pe.bsorted.pairs.gz
