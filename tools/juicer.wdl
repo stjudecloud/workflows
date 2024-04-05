@@ -96,7 +96,7 @@ task pre {
         cpu: 1
         memory: "14 GB"
         disk: "~{disk_size_gb} GB"
-        container: "aidenlab/juicer:1.0.13"
+        container: "ghcr.io/stjudecloud/juicer:branch-hic_workflow-1.0.13-0"
         maxRetries: 1
     }
 }

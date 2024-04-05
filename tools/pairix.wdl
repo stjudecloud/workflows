@@ -40,7 +40,7 @@ task bam2pairs {
         cpu: 1
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/pairix:0.3.7--py38h7cf9df2_5"
+        container: "ghcr.io/stjudecloud/pairix:branch-hic_workflow-0.3.8-0"
         maxRetries: 1
     }
 }
