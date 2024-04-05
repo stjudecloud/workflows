@@ -95,14 +95,14 @@ workflow hic_standard_fastq {
     }
 
     scatter (read_group in read_groups) {
-        call read_group.validate_ReadGroup {
+        call read_group.validate_ReadGroup as validate_readgroups {
             input:
                 read_group = read_group,
                 required_fields = ["ID", "SM", "LB", "CN", "DT"]
         }
     }
 
-    call hic_core.hic_core after parse_input { input:
+    call hic_core.hic_core after parse_input after validate_readgroups { input:
         read_one_fastqs_gz=read_one_fastqs_gz,
         read_two_fastqs_gz=read_two_fastqs_gz,
         bwa_db=bwa_db,
@@ -182,15 +182,18 @@ task parse_input {
     }
 
     command <<<
-        if [ ~{length read_one_fastqs_gz} != ~{length read_two_fastqs_gz} ] then
+        if [ ~{length(read_one_fastqs_gz)} -ne ~{length(read_two_fastqs_gz)} ]
+        then
             >&2 echo "Length of read_one_fastqs_gz and read_two_fastqs_gz must be equal"
             exit 1
         fi
-        if [ ~{length read_one_fastqs_gz} != ~{length read_groups} ] then
+        if [ ~{length(read_one_fastqs_gz)} -ne ~{length(read_groups)} ]
+        then
             >&2 echo "Length of read_one_fastqs_gz and read_groups must be equal"
             exit 1
         fi
-        if [ ~{length read_two_fastqs_gz} != ~{length read_groups} ] then
+        if [ ~{length(read_two_fastqs_gz)} -ne ~{length(read_groups)} ]
+        then
             >&2 echo "Length of read_two_fastqs_gz and read_groups must be equal"
             exit 1
         fi
