@@ -112,3 +112,92 @@ END
         maxRetries: 1
     }
 }
+
+task validate_ReadGroup {
+    meta {
+        description: "Validate a ReadGroup struct's fields are defined"
+        outputs: {
+            check: "Dummy output to indicate success and enable call-caching"
+        }
+    }
+
+    parameter_meta {
+        read_group: "ReadGroup struct to validate"
+        required_fields: "Array of read group fields that must be defined"
+    }
+
+    input {
+        ReadGroup read_group
+        Array[String] required_fields = ["ID"]
+    }
+
+    command <<<
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "ID") -eq 1 ] && [ -z "~{read_group.ID}" ]; then
+            >&2 echo "ID is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "SM") -eq 1 ] && [ -z "~{read_group.SM}" ]; then
+            >&2 echo "SM is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "BC") -eq 1 ] && [ -z "~{read_group.BC}" ]; then
+            >&2 echo "BC is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "CN") -eq 1 ] && [ -z "~{read_group.CN}" ]; then
+            >&2 echo "CN is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "DS") -eq 1 ] && [ -z "~{read_group.DS}" ]; then
+            >&2 echo "DS is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "DT") -eq 1 ] && [ -z "~{read_group.DT}" ]; then
+            >&2 echo "DT is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "FO") -eq 1 ] && [ -z "~{read_group.FO}" ]; then
+            >&2 echo "FO is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "KS") -eq 1 ] && [ -z "~{read_group.KS}" ]; then
+            >&2 echo "KS is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "LB") -eq 1 ] && [ -z "~{read_group.LB}" ]; then
+            >&2 echo "LB is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PG") -eq 1 ] && [ -z "~{read_group.PG}" ]; then
+            >&2 echo "PG is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PI") -eq 1 ] && [ -z "~{read_group.PI}" ]; then
+            >&2 echo "PI is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PL") -eq 1 ] && [ -z "~{read_group.PL}" ]; then
+            >&2 echo "PL is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PM") -eq 1 ] && [ -z "~{read_group.PM}" ]; then
+            >&2 echo "PM is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PU") -eq 1 ] && [ -z "~{read_group.PU}" ]; then
+            >&2 echo "PU is required"
+            exit 1
+        fi
+    >>>
+
+    output {
+        String check = "passed"
+    }
+
+    runtime {
+        memory: "4 GB"
+        disk: "10 GB"
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        maxRetries: 1
+    }
+}

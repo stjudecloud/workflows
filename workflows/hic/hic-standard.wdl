@@ -64,6 +64,10 @@ workflow hic_standard {
         File? restriction_sites
     }
 
+    call parse_input { input:
+        genomeID=genomeID,
+    }
+
     if (validate_input) {
         call picard.validate_bam as validate_input_bam { input:
             bam=bam,
@@ -74,13 +78,13 @@ workflow hic_standard {
         bam=bam,
     }
 
-    call bam_to_fastqs_wf.bam_to_fastqs { input:
+    call bam_to_fastqs_wf.bam_to_fastqs after parse_input { input:
         bam=bam,
         paired_end=true,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
     }
 
-    call hic_core.hic_core { input:
+    call hic_core.hic_core after parse_input { input:
         read_one_fastqs_gz=bam_to_fastqs.read1s,
         read_two_fastqs_gz=select_all(bam_to_fastqs.read2s),
         bwa_db=bwa_db,
@@ -94,5 +98,61 @@ workflow hic_standard {
     output {
         File unaligned_bam = hic_core.unaligned_bam
         File hic = hic_core.hic
+    }
+}
+
+task parse_input {
+    meta {
+        description: "Parses and validates the `hic-standard` workflow's provided inputs"
+        outputs: {
+            check: "Dummy output to indicate success and to enable call-caching"
+        }
+    }
+
+    parameter_meta {
+        genomeID: {
+            description: "Genome ID"
+            choices: [
+                "hg18",
+                "hg19",
+                "hg38",
+                "dMel",
+                "mm9",
+                "mm10",
+                "anasPlat1",
+                "bTaurus3",
+                "canFam3",
+                "equCab2",
+                "galGal4",
+                "Pf3D7",
+                "sacCer3",
+                "sCerS288c",
+                "susScr3",
+                "TAIR10"
+            ]
+        }
+    }
+
+    input {
+        String genomeID
+    }
+
+    command <<<
+        if [ $(echo ~{genomeID} | grep -Ewc "hg18|hg19|hg38|dMel|mm9|mm10|anasPlat1|bTaurus3|canFam3|equCab2|galGal4|Pf3D7|sacCer3|sCerS288c|susScr3|TAIR10") -ne 1 ]
+        then
+            >&2 echo "Invalid genomeID: ~{genomeID}"
+            exit 1
+        fi
+    >>>
+
+    output {
+        String check = "passed"
+    }
+
+    runtime {
+        memory: "4 GB"
+        disk: "10 GB"
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        maxRetries: 1
     }
 }
