@@ -11,7 +11,7 @@ import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "../general/samtools-merge.wdl" as samtools_merge_wf
 import "./hic-core.wdl" as hic_core
 
-workflow hic_standard {
+workflow hic_standard_fastq {
     meta {
         description: "hi-c"
         outputs: {
@@ -81,7 +81,7 @@ workflow hic_standard {
         File bwa_db
         Array[ReadGroup] read_groups
         String genomeID = "hg38"
-        String prefix = basename(read_one_fastqs_gz[0], ".fq.gz")
+        String prefix = basename(read_one_fastqs_gz[0], ".fastq.gz")
         Boolean validate_input = true
         Boolean use_all_cores = false
         File? restriction_sites
