@@ -21,10 +21,10 @@ workflow hic_core {
     }
 
     parameter_meta {
-        read_one_fastqs_gz: "Array of gzipped FASTQ files with 1st reads in pair"
-        read_two_fastqs_gz: "Array of gzipped FASTQ files with 2nd reads in pair"
+        read_one_fastqs_gz: "Array of gzipped FASTQ files with 1st reads in pair. Assumes 1 file pair per read group."
+        read_two_fastqs_gz: "Array of gzipped FASTQ files with 2nd reads in pair. Assumes 1 file pair per read group."
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-        read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`. These two read groups could be associated with the following four FASTQs: `sample1.rg1_R1.fastq,sample1.rg2_R1.fastq` and `sample1.rg1_R2.fastq,sample1.rg2_R2.fastq`"
+        read_groups: "An array of ReadGroup objects containing the read group information to output in the BAM file. One entry per file in `read_one_fastqs_gz`/`read_two_fastqs_gz`."
         genomeID: {
             description: "Genome ID"
             choices: [
@@ -61,7 +61,7 @@ workflow hic_core {
         File bwa_db
         Array[ReadGroup] read_groups
         String prefix
-        String genomeID = "hg38"
+        String genomeID
         Boolean validate_input = true
         Boolean use_all_cores = false
         File? restriction_sites
@@ -75,7 +75,7 @@ workflow hic_core {
             input:
                 read_one_fastq_gz=tuple.left.left,
                 read_two_fastq_gz=tuple.left.right,
-                prefix=prefix,
+                prefix=basename(tuple.left.left, ".fastq.gz"),
                 read_group_name=select_first([tuple.right.ID, ""]),
                 sample_name=select_first([tuple.right.SM, ""]),
                 library_name=select_first([tuple.right.LB, ""]),
