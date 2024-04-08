@@ -882,9 +882,9 @@ task fastq_to_sam {
         String library_name
         String sequencing_center
         String run_date
-        String? platform_unit
-        String? platform
-        String? platform_model
+        String platform_unit = ""
+        String platform = ""
+        String platform_model = ""
         Int memory_gb = 56
         Int modify_disk_size_gb = 0
     }
@@ -905,10 +905,9 @@ task fastq_to_sam {
             LIBRARY_NAME=~{library_name} \
             SEQUENCING_CENTER=~{sequencing_center} \
             RUN_DATE=~{run_date} \
-            ~{if defined(platform_unit) then "PLATFORM_UNIT="+platform_unit else ""} \
-            ~{if defined(platform) then "PLATFORM="+platform else ""} \
-            ~{if defined(platform_model) then "PLATFORM_MODEL="+platform_model else ""}
-
+            ~{if platform_unit != "" then "PLATFORM_UNIT="+platform_unit else ""} \
+            ~{if platform != "" then "PLATFORM="+platform else ""} \
+            ~{if platform_model != "" then "PLATFORM_MODEL="+platform_model else ""}
     >>>
 
     output {
