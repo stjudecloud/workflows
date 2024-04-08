@@ -72,6 +72,7 @@ workflow hic_standard_fastq {
         restriction_sites: {
             description: "Calculate fragment map. Requires restriction site file; each line should start with the chromosome name followed by the position of each restriction site on that chromosome, in numeric order, and ending with the size of the chromosome."
             external_help: "https://github.com/aidenlab/juicer/wiki/Pre#restriction-site-file-format"
+            help: "Common restriction sites can be downloaded from: https://bcm.app.box.com/s/19807ji76uy20cd1wau9g146nypsv2u0"
         }
     }
 
