@@ -3,6 +3,6 @@
     - miniwdl
     - juicer
   command: >-
-    miniwdl run --verbose -d test-output/. --task pre tools/juicer.wdl 
+    miniwdl run --verbose -d test-output/. --task pre tools/juicer.wdl pairs="tests/tools/input/test.bwa_aln_pe.bsorted.pairs.gz"
   files:
     - path: test-output/out/hic/test.bwa_aln_pe.hic
