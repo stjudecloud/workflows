@@ -726,11 +726,19 @@ task bam_to_fastq {
 
 task merge_vcfs {
     meta {
-
+        description: "Merges the input VCF files into a single VCF file"
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036713331-MergeVcfs-Picard"
+        outputs: {
+            output_vcf: "The merged VCF file"
+            output_vcf_index: "The index file associated with the merged VCF file"
+        }
     }
 
     parameter_meta {
-
+        vcfs: "Input VCF format files to merge. May be gzipped or binary compressed."
+        vcfs_indexes: "Index files associated with the input VCF files"
+        output_vcf_name: "Name for the merged VCF file"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
@@ -764,10 +772,27 @@ task merge_vcfs {
 
 task scatter_interval_list {
     meta {
-
+        description: "Splits an interval list into smaller interval lists for parallel processing"
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036897212-IntervalListTools-Picard"
+        outputs: {
+            out: "The split interval lists"
+            interval_count: "The number of split interval lists"
+        }
     }
 
     parameter_meta  {
+        interval_list: "Input interval list to split"
+        subdivision_mode: {
+            description: "How to subdivide the intervals"
+            choices: [
+                'BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW',
+                'INTERVAL_SUBDIVISION',
+                'BALANCING_WITHOUT_INTERVAL_SUBDIVISION',
+            ]
+        }
+        unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
+        sort: "Should the output interval lists be sorted? Sorts by coordinate."
+        scatter_count: "Number of interval lists to create"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
     }
 
