@@ -787,7 +787,7 @@ task scatter_interval_list {
             choices: [
                 'BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW',
                 'INTERVAL_SUBDIVISION',
-                'BALANCING_WITHOUT_INTERVAL_SUBDIVISION',
+                'BALANCING_WITHOUT_INTERVAL_SUBDIVISION'
             ]
         }
         unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
@@ -814,7 +814,7 @@ task scatter_interval_list {
         picard -Xms1g \
             IntervalListTools \
             SCATTER_COUNT=~{scatter_count} \
-            SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
+            SUBDIVISION_MODE=~{subdivision_mode} \
             UNIQUE=~{unique} \
             SORT=~{sort} \
             INPUT=~{interval_list} \
