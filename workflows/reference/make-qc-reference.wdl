@@ -34,6 +34,20 @@ workflow make_qc_reference {
                 'UniVec_Core'
             ]
         }
+        coverage_feature_types: {
+            description: "List of feature types to use for coverage calculation",
+            help: "`choices` below are the possible values from a GENCODE GTF file. If you are using a different GTF source, you may need to adjust this parameter.",
+            choices: [
+                "gene",
+                "transcript",
+                "exon",
+                "CDS",
+                "UTR",
+                "start_codon",
+                "stop_codon",
+                "Selenocysteine"
+            ]
+        }
         reference_fa_url: "URL to retrieve the reference FASTA file from"
         reference_fa_name: "Name of output reference FASTA file"
         gtf_url: "URL to retrieve the reference GTF file from"
@@ -57,7 +71,7 @@ workflow make_qc_reference {
             "protozoa",
             "UniVec_Core",
         ]
-        Array[String] coverage_bed_patterns = [
+        Array[String] coverage_feature_types = [
             "exon",
             "CDS",
             "UTR",
@@ -83,10 +97,10 @@ workflow make_qc_reference {
         disk_size_gb=gtf_disk_size_gb,
     }
 
-    scatter (pattern in coverage_bed_patterns) {
+    scatter (feature_type in coverage_feature_types) {
         call util.make_coverage_regions_bed { input:
             gtf = gtf_download.downloaded_file,
-            pattern,
+            feature_type,
         }
     }
 
