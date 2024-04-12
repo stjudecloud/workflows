@@ -369,47 +369,55 @@ task unpack_tarball {
     }
 }
 
-task make_coverage_regions_beds {
-    # TODO make this customizable
+task make_coverage_regions_bed {
     meta {
-        description: "Takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
+        description: "Takes in a GTF file, converts it to BED, then filters it down to a 3 column BED file from all lines which match a given pattern"
         outputs: {
-            bed: "Input GTF converted into BED format using the `gtf2bed` program",
-            exon_bed: "3 column BED file corresponding to all 'exons' found in the input GTF",
-            CDS_bed: "3 column BED file corresponding to all 'CDS' regions found in the input GTF"
+            bed: "3 column BED file corresponding to all lines matching `/~{pattern}/` found in the input GTF",
         }
     }
 
     parameter_meta {
-        gtf: "GTF feature file from which to derive coverage regions BED files"
+        gtf: "Gzipped GTF feature file from which to derive a coverage regions BED file"
+        feature_type: {
+            description: "Feature type to filter on. Only lines with this feature type will be included in the output BED file."
+            help: "`choices` below are the possible values from a GENCODE GTF file. If you are using a different GTF source, you may need to adjust this parameter.",
+            choices: [
+                "gene",
+                "transcript",
+                "exon",
+                "CDS",
+                "UTR",
+                "start_codon",
+                "stop_codon",
+                "Selenocysteine"
+            ]
+        }
+        outfile_name: "Name of the output BED file"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File gtf
+        String feature_type
+        String outfile_name = basename(gtf, "gtf.gz") + feature_type + ".bed"
         Int modify_disk_size_gb = 0
     }
 
     Float gtf_size = size(gtf, "GiB")
-    Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(gtf_size * 1.2) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
 
-        BED=$(basename ~{gtf} '.gz').bed
-        gunzip -c ~{gtf} | gtf2bed > "$BED"
-
-        EXON=$(basename ~{gtf} '.gz').exon.bed
-        awk '/\texon\t/ {print $1 "\t" $2 "\t" $3}' "$BED" > "$EXON"
-
-        CDS=$(basename ~{gtf} '.gz').CDS.bed
-        awk '/\tCDS\t/ {print $1 "\t" $2 "\t" $3}' "$BED" > "$CDS"
+        gunzip -c ~{gtf} \
+            | gtf2bed \
+            | awk '$8 == "~{feature_type}" {print $1 "\t" $2 "\t" $3}' \
+            > ~{outfile_name}
     >>>
 
     output {
-        File bed = basename(gtf, '.gz') + ".bed"  # TODO I added this but I'm not sure I should have. It doesn't work with the task name
-        File exon_bed = basename(gtf, '.gz') + ".exon.bed"
-        File CDS_bed = basename(gtf, '.gz') + ".CDS.bed"
+        File bed = outfile_name
     }
 
     runtime {
