@@ -22,6 +22,7 @@ log_filesize_limit: 1000000000
 fastqc_config:
   fastqc_theoretical_gc: "hg38_genome"
 top_modules:
+  - ngsderive
   - kraken:
       name: "kraken2 (standard)"
       path_filters:
@@ -44,24 +45,12 @@ top_modules:
         - "*.exon.mosdepth*"
       path_filters_exclude:
         - "*.MarkDuplicates.exon.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (CDS)"
-      path_filters:
-        - "*.CDS.mosdepth.*"
-      path_filters_exclude:
-        - "*.MarkDuplicates.CDS.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (whole_genome, markdups)"
-      path_filters:
-        - "*.MarkDuplicates.whole_genome.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (exon, markdups)"
-      path_filters:
-        - "*.MarkDuplicates.exon.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (CDS, markdups)"
-      path_filters:
-        - "*.MarkDuplicates.CDS.mosdepth.*"
+  - picard
+  - custom_content
+  - librarian
+  - qualimap
+  - samtools
+  - fastqc
 custom_data:
   global_PHRED_scores:
     file_format: "tsv"
@@ -70,6 +59,11 @@ custom_data:
   orig_read_counts:
     file_format: "tsv"
     plot_type: "generalstats"
+remove_sections:
+  - mosdepth-coverage-dist-cov
+  - mosdepth-coverage-dist-cov-1
+  - mosdepth-coverage-per-contig-section-1
+  - mosdepth-xy-coverage-1
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false

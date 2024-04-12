@@ -92,7 +92,7 @@ workflow quality_check {
         rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
         mark_duplicates: "Mark duplicates before select analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. If set to `true`, a BAM will be generated and passed to selected downstream analyses. For more details about what analyses are run, review `./markdups-post.wdl`. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
         run_librarian: {
-            description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database. By default, this tool is run when `rna == true`.",
+            description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database.",
             external_help: "https://f1000research.com/articles/11-1122/v2",
         }
         run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_filter` is ignored."
@@ -130,7 +130,7 @@ workflow quality_check {
         String prefix = basename(bam, ".bam")
         Boolean rna = false
         Boolean mark_duplicates = rna
-        Boolean run_librarian = rna
+        Boolean run_librarian = false
         Boolean run_comparative_kraken = false
         Boolean store_kraken_sequences = false
         Boolean output_intermediate_files = false
