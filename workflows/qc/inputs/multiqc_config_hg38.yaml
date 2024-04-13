@@ -13,6 +13,7 @@ extra_fn_clean_exts:
   - '.whole_genome'
   - '.exon'
   - '.CDS'
+  - '.UTR'
   - '.MarkDuplicates'
   - '.collated'
   - '.qualimap_rnaseq_results'
@@ -22,8 +23,8 @@ log_filesize_limit: 1000000000
 fastqc_config:
   fastqc_theoretical_gc: "hg38_genome"
 top_modules:
+  - qualimap
   - kraken:
-      name: "kraken2 (standard)"
       path_filters:
         - "*.kraken2.txt"
       path_filters_exclude:
@@ -51,6 +52,12 @@ top_modules:
       path_filters_exclude:
         - "*.MarkDuplicates.CDS.mosdepth*"
   - mosdepth:
+      name: "mosdepth (UTR)"
+      path_filters:
+        - "*.UTR.mosdepth.*"
+      path_filters_exclude:
+        - "*.MarkDuplicates.UTR.mosdepth*"
+  - mosdepth:
       name: "mosdepth (whole_genome, markdups)"
       path_filters:
         - "*.MarkDuplicates.whole_genome.mosdepth*"
@@ -62,6 +69,16 @@ top_modules:
       name: "mosdepth (CDS, markdups)"
       path_filters:
         - "*.MarkDuplicates.CDS.mosdepth.*"
+  - mosdepth:
+      name: "mosdepth (UTR, markdups)"
+      path_filters:
+        - "*.MarkDuplicates.UTR.mosdepth.*"
+  - ngsderive
+  - picard
+  - custom_content
+  - librarian
+  - samtools
+  - fastqc
 custom_data:
   global_PHRED_scores:
     file_format: "tsv"
@@ -70,6 +87,10 @@ custom_data:
   orig_read_counts:
     file_format: "tsv"
     plot_type: "generalstats"
+remove_sections:
+  - fastqc_status_checks
+  - fastqc_sequence_counts
+  - fastqc_per_base_sequence_content
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false

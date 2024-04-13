@@ -13,6 +13,7 @@ extra_fn_clean_exts:
   - '.whole_genome'
   - '.exon'
   - '.CDS'
+  - '.UTR'
   - '.MarkDuplicates'
   - '.collated'
   - '.qualimap_rnaseq_results'
@@ -25,7 +26,6 @@ top_modules:
   - qualimap
   - ngsderive
   - kraken:
-      name: "kraken2 (standard)"
       path_filters:
         - "*.kraken2.txt"
       path_filters_exclude:
@@ -35,15 +35,31 @@ top_modules:
       path_filters:
         - "*.alt_filtered.kraken2.txt"
   - mosdepth:
-      name: "mosdepth (exon)"
+      name: "mosdepth (CDS, markdups)"
       path_filters:
-        - "*.exon.mosdepth*"
-      path_filters_exclude:
-        - "*.MarkDuplicates.exon.mosdepth*"
+        - "*.MarkDuplicates.CDS.mosdepth.*"
   - mosdepth:
-      name: "mosdepth (exon, markdups)"
+      name: "mosdepth (CDS)"
       path_filters:
-        - "*.MarkDuplicates.exon.mosdepth*"
+        - "*.CDS.mosdepth.*"
+      path_filters_exclude:
+        - "*.MarkDuplicates.CDS.mosdepth*"
+  - mosdepth:
+      name: "mosdepth (UTR, markdups)"
+      path_filters:
+        - "*.MarkDuplicates.UTR.mosdepth.*"
+  - mosdepth:
+      name: "mosdepth (UTR)"
+      path_filters:
+        - "*.UTR.mosdepth.*"
+      path_filters_exclude:
+        - "*.MarkDuplicates.UTR.mosdepth*"
+  - mosdepth:
+      name: "mosdepth (whole_genome)"
+      path_filters:
+        - "*.whole_genome.mosdepth*"
+      path_filters_exclude:
+        - "*.MarkDuplicates.whole_genome.mosdepth*"
   - picard
   - custom_content
   - librarian
@@ -58,8 +74,17 @@ custom_data:
     file_format: "tsv"
     plot_type: "generalstats"
 remove_sections:
+  - fastqc_status_checks
+  - fastqc_sequence_counts
+  - fastqc_per_base_sequence_content
   - mosdepth-coverage-dist-cov
   - mosdepth-coverage-dist-cov-1
+  - mosdepth-coverage-dist-cov-2
+  - mosdepth-coverage-dist-cov-3
+  - mosdepth-coverage-dist-cov-4
+  - mosdepth-xy-coverage
+  - mosdepth-xy-coverage-2
+  - mosdepth-xy-coverage-3
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false

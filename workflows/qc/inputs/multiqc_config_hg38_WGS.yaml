@@ -13,6 +13,7 @@ extra_fn_clean_exts:
   - '.whole_genome'
   - '.exon'
   - '.CDS'
+  - '.UTR'
   - '.MarkDuplicates'
   - '.collated'
   - '.qualimap_rnaseq_results'
@@ -22,9 +23,7 @@ log_filesize_limit: 1000000000
 fastqc_config:
   fastqc_theoretical_gc: "hg38_genome"
 top_modules:
-  - ngsderive
   - kraken:
-      name: "kraken2 (standard)"
       path_filters:
         - "*.kraken2.txt"
       path_filters_exclude:
@@ -45,6 +44,7 @@ top_modules:
         - "*.exon.mosdepth*"
       path_filters_exclude:
         - "*.MarkDuplicates.exon.mosdepth*"
+  - ngsderive
   - picard
   - custom_content
   - librarian
@@ -60,6 +60,9 @@ custom_data:
     file_format: "tsv"
     plot_type: "generalstats"
 remove_sections:
+  - fastqc_status_checks
+  - fastqc_sequence_counts
+  - fastqc_per_base_sequence_content
   - mosdepth-coverage-dist-cov
   - mosdepth-coverage-dist-cov-1
   - mosdepth-coverage-per-contig-section-1
