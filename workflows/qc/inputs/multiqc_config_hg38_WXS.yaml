@@ -33,12 +33,6 @@ top_modules:
       path_filters:
         - "*.alt_filtered.kraken2.txt"
   - mosdepth:
-      name: "mosdepth (whole_genome)"
-      path_filters:
-        - "*.whole_genome.mosdepth*"
-      path_filters_exclude:
-        - "*.MarkDuplicates.whole_genome.mosdepth*"
-  - mosdepth:
       name: "mosdepth (exon)"
       path_filters:
         - "*.exon.mosdepth*"
@@ -56,6 +50,12 @@ top_modules:
         - "*.UTR.mosdepth.*"
       path_filters_exclude:
         - "*.MarkDuplicates.UTR.mosdepth*"
+  - mosdepth:
+      name: "mosdepth (whole_genome)"
+      path_filters:
+        - "*.whole_genome.mosdepth*"
+      path_filters_exclude:
+        - "*.MarkDuplicates.whole_genome.mosdepth*"
   - ngsderive
   - picard
   - custom_content
@@ -79,10 +79,19 @@ remove_sections:
   - mosdepth-coverage-dist-cov-1
   - mosdepth-coverage-dist-cov-2
   - mosdepth-coverage-dist-cov-3
+  - mosdepth-coverage-per-contig-section
   - mosdepth-coverage-per-contig-section-1
   - mosdepth-coverage-per-contig-section-2
-  - mosdepth-coverage-per-contig-section-3
-  - mosdepth-xy-coverage-2
+  - mosdepth-xy-coverage-1
+custom_plot_config:
+  mosdepth-cumcoverage-dist-id:
+    title: "Cumulative coverage distribution (exon)"
+  mosdepth-cumcoverage-dist-id-1:
+    title: "Cumulative coverage distribution (CDS)"
+  mosdepth-cumcoverage-dist-id-2:
+    title: "Cumulative coverage distribution (UTR)"
+  mosdepth-cumcoverage-dist-id-3:
+    title: "Cumulative coverage distribution (whole_genome)"
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false

@@ -67,6 +67,11 @@ remove_sections:
   - mosdepth-coverage-dist-cov-1
   - mosdepth-coverage-per-contig-section-1
   - mosdepth-xy-coverage-1
+custom_plot_config:
+  mosdepth-cumcoverage-dist-id:
+    title: "Cumulative coverage distribution (whole_genome)"
+  mosdepth-cumcoverage-dist-id-1:
+    title: "Cumulative coverage distribution (exon)"
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false

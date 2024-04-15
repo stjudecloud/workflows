@@ -371,9 +371,9 @@ task unpack_tarball {
 
 task make_coverage_regions_bed {
     meta {
-        description: "Takes in a GTF file, converts it to BED, then filters it down to a 3 column BED file from all lines which match a given pattern"
+        description: "Takes in a GTF file, converts it to BED, then filters it down to a 3 column BED file from all lines which match a given feature type"
         outputs: {
-            bed: "3 column BED file corresponding to all lines matching `/~{pattern}/` found in the input GTF",
+            bed: "3 column BED file corresponding to all records in the input GTF with a feature type matching `feature_type`",
         }
     }
 
