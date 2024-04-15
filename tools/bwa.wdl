@@ -138,7 +138,7 @@ task bwa_aln_pe {
         )
         String read_group = ""
         Boolean use_all_cores = false
-        Int ncpu = 2
+        Int ncpu = 4
         Int modify_disk_size_gb = 0
     }
 
@@ -164,13 +164,11 @@ task bwa_aln_pe {
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
-        bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_one_fastq_gz} > sai_1
-        bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_two_fastq_gz} > sai_2
-
         bwa sampe \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
             bwa_db/"$PREFIX" \
-            sai_1 sai_2 \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_one_fastq_gz}) \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_two_fastq_gz}) \
             ~{read_one_fastq_gz} ~{read_two_fastq_gz} \
             | samtools view -@ "$n_cores" -hb - \
             > ~{output_bam}
@@ -184,7 +182,7 @@ task bwa_aln_pe {
 
     runtime {
         cpu: ncpu
-        memory: "5 GB"
+        memory: "17 GB"
         disks: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: 1
@@ -230,7 +228,7 @@ task bwa_mem {
         )
         String read_group = ""
         Boolean use_all_cores = false
-        Int ncpu = 2
+        Int ncpu = 4
         Int modify_disk_size_gb = 0
     }
 

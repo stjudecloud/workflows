@@ -148,8 +148,8 @@ task split_string {
 
 task calc_gene_lengths {
     meta {
-        description: "Calculate gene lengths from a GTF feature file using the \"non-overlapping exonic length\" algorithm"
-        help: "The \"non-overlapping exonic length\" algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
+        description: "Calculate gene lengths from a GTF feature file using the non-overlapping exonic length algorithm"
+        help: "The non-overlapping exonic length algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
         outputs: {
             gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
         }
@@ -771,7 +771,6 @@ task split_fastq {
         reads_per_file: "Number of reads to include in each output FASTQ file"
         prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-        md5sum: "Optional md5sum to check against downloaded file. Recommended to use in order to catch corruption or an unintentional file swap."
     }
 
     input {
@@ -779,35 +778,28 @@ task split_fastq {
         String prefix = basename(fastq, ".fastq.gz")
         Int reads_per_file = 10000000
         Int modify_disk_size_gb = 0
-        String? md5sum
     }
 
     Float fastq_size = size(fastq, "GiB")
-    Int disk_size_gb = ceil(fastq_size * 2) + 10 + modify_disk_size_gb
-
+    Int disk_size_gb = ceil(fastq_size * 5) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
 
         let "lines = ~{reads_per_file} * 4"
-        zcat -f ~{fastq} | awk -v lines=$lines -v prefix=~{prefix} '
-        BEGIN {
-            n = 0
-            remaining = 0
-        }
-        remaining == 0 {
-            if(outcmd) close(outcmd)
-            outcmd = "gzip -c > " prefix sprintf("%04i", ++n) ".fq.gz"
-            remaining = lines
-        }
-        {
-            print | outcmd
-            --remaining
-        }'
+        zcat ~{fastq} | split -l $lines -d -a 6 - ~{prefix}
+
+        for file in $(ls ~{prefix}*); do
+            echo $file
+            mv $file ${file}.fq
+            gzip ${file}.fq &
+        done
+
+        wait $(jobs -p)
     >>>
 
     output {
-        Array[File] fastqs = glob("*.fq.gz")
+        Array[File] fastqs = glob("~{prefix}*")
     }
 
     runtime {
