@@ -249,8 +249,8 @@ task haplotype_caller {
             -O ~{prefix}.vcf.gz \
             ~{if use_soft_clipped_bases then "" else "--dont-use-soft-clipped-bases"} \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
-            --dbsnp ~{dbSNP_vcf} \
             --spark-master local[4]
+            #--dbsnp ~{dbSNP_vcf} \
     >>>
 
     output {

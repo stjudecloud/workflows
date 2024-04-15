@@ -1,0 +1,10 @@
+{
+    "bam": "tests/tools/input/HG005_GM24631_replicate1_totalRNAseq_ILLUMINA_UNC_20220518_ACTCGTGT-ATTGGAAC.main_from_bam.Aligned.out.sorted.MarkDuplicates.split.bqsr.bam",
+    "bam_index": "tests/tools/input/HG005_GM24631_replicate1_totalRNAseq_ILLUMINA_UNC_20220518_ACTCGTGT-ATTGGAAC.main_from_bam.Aligned.out.sorted.MarkDuplicates.split.bqsr.bam.bai",
+    "fasta": "tests/tools/input/GRCh38.chr1_chr19.fa", 
+    "fasta_index": "tests/tools/input/GRCh38.chr1_chr19.fa.fai",
+    "dict": "tests/tools/input/GRCh38.chr1_chr19.dict",
+    "dbSNP_vcf": "tests/tools/input/Homo_sapiens_assembly38.dbsnp138.vcf",
+    "dbSNP_vcf_index": "tests/tools/input/Homo_sapiens_assembly38.dbsnp138.vcf.idx",
+    "interval_list": "tests/tools/input/1scattered.interval_list"
+}
