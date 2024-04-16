@@ -7,6 +7,7 @@ run_modules:
   - samtools
   - kraken
   - fastqc
+  - librarian
 extra_fn_clean_exts:
   - '.ValidateSamFile'
   - '.whole_genome'
@@ -15,6 +16,8 @@ extra_fn_clean_exts:
   - '.MarkDuplicates'
   - '.collated'
   - '.qualimap_rnaseq_results'
+  - '.alt_filtered'
+  - '.librarian'
 log_filesize_limit: 1000000000
 fastqc_config:
   fastqc_theoretical_gc: "hg38_genome"
@@ -49,6 +52,16 @@ top_modules:
       name: "mosdepth (CDS, markdups)"
       path_filters:
         - "*.MarkDuplicates.CDS.mosdepth.*"
+  - kraken:
+      name: "kraken2 (standard)"
+      path_filters:
+        - "*.kraken2.txt"
+      path_filters_exclude:
+        - "*.alt_filtered.kraken2.txt"
+  - kraken:
+      name: "kraken2 (comparative)"
+      path_filters:
+        - "*.alt_filtered.kraken2.txt"
 custom_data:
   global_PHRED_scores:
     file_format: "tsv"

@@ -70,7 +70,7 @@ task bam_coverage {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/deeptools:3.5.1--pyhdfd78af_1'
+        container: 'quay.io/biocontainers/deeptools:3.5.4--pyhdfd78af_1'
         maxRetries: 1
     }
 }

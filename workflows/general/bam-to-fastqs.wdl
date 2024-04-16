@@ -17,7 +17,7 @@ workflow bam_to_fastqs {
 
     parameter_meta {
         bam: "BAM file to split into FASTQs"
-        paired_end: "Is the data paired-end (true) or single-end (false)?"
+        paired_end: "Is the data Paired-End (true) or Single-End (false)?"
         use_all_cores: "Use all cores for multi-core steps?"
     }
 
@@ -30,7 +30,7 @@ workflow bam_to_fastqs {
     call samtools.quickcheck { input: bam=bam }
     call samtools.split { input: bam=bam, use_all_cores=use_all_cores }
     scatter (split_bam in split.split_bams) {
-        call samtools.collate_to_fastq as bam_to_fastq { input:
+        call samtools.bam_to_fastq { input:
             bam=split_bam,
             paired_end=paired_end,
             interleaved=false,  # matches default but prevents user from overriding

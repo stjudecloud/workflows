@@ -8,7 +8,7 @@ version 1.1
 
 task bwa_aln {
     meta {
-        description: "Maps single-end FASTQ files to BAM format using bwa aln"
+        description: "Maps Single-End FASTQ files to BAM format using bwa aln"
         outputs: {
             bam: "Aligned BAM format file"
         }
@@ -62,6 +62,8 @@ task bwa_aln {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "samtools_cores = $n_cores - 1"
 
         mkdir bwa_db
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
@@ -74,7 +76,7 @@ task bwa_aln {
             bwa_db/"$PREFIX" \
             sai \
             ~{fastq} \
-            | samtools view -@ "$n_cores" -hb - \
+            | samtools view --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
         rm -r bwa_db
@@ -95,7 +97,7 @@ task bwa_aln {
 
 task bwa_aln_pe {
     meta {
-        description: "Maps paired-end FASTQ files to BAM format using bwa aln"
+        description: "Maps Paired-End FASTQ files to BAM format using bwa aln"
         outputs: {
             bam: "Aligned BAM format file"
         }
@@ -159,6 +161,8 @@ task bwa_aln_pe {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "samtools_cores = $n_cores - 1"
 
         mkdir bwa_db
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
@@ -170,7 +174,7 @@ task bwa_aln_pe {
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_one_fastq_gz}) \
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_two_fastq_gz}) \
             ~{read_one_fastq_gz} ~{read_two_fastq_gz} \
-            | samtools view -@ "$n_cores" -hb - \
+            | samtools view --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
         rm -r bwa_db
@@ -247,6 +251,8 @@ task bwa_mem {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "samtools_cores = $n_cores - 1"
 
         mkdir bwa_db
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
@@ -258,7 +264,7 @@ task bwa_mem {
             bwa_db/"$PREFIX" \
             ~{read_one_fastq_gz} \
             ~{read_two_fastq_gz} \
-            | samtools view -@ "$n_cores" -hb - \
+            | samtools view --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
         rm -r bwa_db

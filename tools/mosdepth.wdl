@@ -69,7 +69,7 @@ task coverage {
     runtime {
         memory: "8 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/mosdepth:0.3.3--h37c5b7d_2'
+        container: 'quay.io/biocontainers/mosdepth:0.3.6--hd299d5a_0'
         maxRetries: 1
     }
 }

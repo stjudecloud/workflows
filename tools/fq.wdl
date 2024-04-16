@@ -90,8 +90,7 @@ task fqlint {
     >>>
 
     output {
-        File validated_read1 = read_one_fastq
-        File? validated_read2 = read_two_fastq
+        String check = "passed"
     }
 
     runtime {

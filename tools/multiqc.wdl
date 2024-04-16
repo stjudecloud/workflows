@@ -27,7 +27,7 @@ task multiqc {
     }
 
     Float input_size = size(input_files, "GiB")
-    Int disk_size_gb = ceil(input_size) + 5 + modify_disk_size_gb
+    Int disk_size_gb = ceil(input_size) + 10 + modify_disk_size_gb
 
     String out_tar_gz = prefix + ".tar.gz"
 
@@ -40,6 +40,13 @@ task multiqc {
 
         echo "~{sep('\n', input_files)}" > file_list.txt
 
+        # --strict is too strict. It causes errors due
+        # to how our config adds 'custom-content' to the report.
+        # Leaving this here as a warning not to try putting it back.
+        # --require-logs might be useful at some point, but as of now,
+        # it would cause errors. It could replace the check currently
+        # run after multiqc is finished.
+        # TODO: lots of other options to consider supporting.
         multiqc -v \
             --no-ansi \
             ~{if defined(config) then "-c " + config else ""} \
@@ -61,7 +68,7 @@ task multiqc {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/multiqc:1.15--pyhdfd78af_0'
+        container: 'quay.io/biocontainers/multiqc:1.20--pyhdfd78af_1'
         maxRetries: 1
     }
 }

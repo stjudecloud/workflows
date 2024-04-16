@@ -76,13 +76,13 @@ workflow rnaseq_standard {
     }
 
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
+        call picard.validate_bam as validate_input_bam after parse_input { input:
             bam=bam,
         }
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample { input:
+        call samtools.subsample after parse_input { input:
             bam=bam,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
@@ -90,11 +90,11 @@ workflow rnaseq_standard {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call util.get_read_groups { input:
+    call util.get_read_groups after parse_input { input:
         bam=selected_bam,
         format_for_star=true,  # matches default but prevents user from overriding
     }  # TODO what happens if no RG records?
-    call bam_to_fastqs_wf.bam_to_fastqs { input:
+    call bam_to_fastqs_wf.bam_to_fastqs after parse_input { input:
         bam=selected_bam,
         paired_end=true,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
@@ -181,7 +181,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
 }
