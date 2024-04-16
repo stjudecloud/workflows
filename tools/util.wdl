@@ -791,8 +791,8 @@ task split_fastq {
 
         for file in $(ls ~{prefix}*); do
             echo $file
-            mv $file ${file}.fq
-            gzip ${file}.fq &
+            mv $file ${file}.fastq
+            gzip ${file}.fastq &
         done
 
         wait $(jobs -p)
