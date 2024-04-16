@@ -110,3 +110,12 @@
     miniwdl run --verbose -d test-output/. --task global_phred_scores tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: "test-output/out/phred_scores/test.bwa_aln_pe.global_PHRED_scores.tsv"
+
+- name: split_fastq
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run -d test-output/. --task split_fastq tools/util.wdl fastq="tests/tools/input/test_R1.fq.gz" prefix="test_R1."
+  files:
+    - path: "test-output/out/fastqs/0/test_R1.000000.fq.gz"
