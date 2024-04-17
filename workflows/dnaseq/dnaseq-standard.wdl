@@ -35,7 +35,7 @@ workflow dnaseq_standard_experimental {
     input {
         File bam
         File bwa_db
-        Int reads_per_file = 2000000
+        Int reads_per_file = 10000000
         String prefix = basename(bam, ".bam")
         String aligner = "mem"
         Boolean validate_input = true
