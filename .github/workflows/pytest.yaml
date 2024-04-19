@@ -16,7 +16,7 @@ jobs:
     - name: Install miniwdl and pytest-workflow
       run: |
         python -m pip install --upgrade pip
-        pip install miniwdl pytest-workflow
+        pip install -r requirements-dev.txt
     - name: filter tests
       run: | 
         find tests -name '*.yaml' -exec yq --output-format yaml -i 'del(.[] | select(.tags[] | test("reference|deprecated|cellranger") ) )' {} \;

@@ -37,7 +37,7 @@ task quickcheck {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -49,7 +49,10 @@ task split {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to split"
+        bam: {
+            description: "Input BAM format file to split",
+            stream: true
+        }
         prefix: "Prefix for the split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
         reject_unaccounted: {
             description: "If true, error if there are reads present that do not have read group information.",
@@ -116,7 +119,7 @@ task split {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -175,7 +178,7 @@ task flagstat {
 
     runtime {
         memory: "5 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -234,7 +237,7 @@ task index {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -382,7 +385,7 @@ task subsample {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -477,7 +480,7 @@ task filter {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -570,7 +573,7 @@ task merge {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -655,7 +658,7 @@ task addreplacerg {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -728,7 +731,7 @@ task collate {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -921,8 +924,8 @@ task bam_to_fastq {
 
     runtime {
         cpu: ncpu
+        disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -938,7 +941,10 @@ task fixmate {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to add mate information. Must be name-sorted or name-collated."
+        bam: {
+            description: "Input BAM format file to add mate information. Must be name-sorted or name-collated."
+            stream: true
+        }
         prefix: "Prefix for the output file. The extension specified with the `extension` parameter will be added."
         extension: {
             description: "File format extension to use for output file.",
@@ -1017,7 +1023,7 @@ task fixmate {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -1118,7 +1124,7 @@ task position_sorted_fixmate {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }
@@ -1237,8 +1243,8 @@ task markdup {
 
     runtime {
         cpu: ncpu
+        disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
         maxRetries: 1
     }

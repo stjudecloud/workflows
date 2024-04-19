@@ -86,7 +86,7 @@ task rnaseq {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/qualimap:2.3--hdfd78af_0'
         maxRetries: 1
     }
@@ -149,7 +149,7 @@ task bamqc {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/qualimap:2.3--hdfd78af_0'
         maxRetries: max_retries
     }
