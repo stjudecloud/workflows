@@ -73,7 +73,7 @@ workflow dnaseq_standard_experimental {
         }
 
         call util.split_fastq as read_twos { input:
-            fastq = select_first([tuple.left.right, 'undefined']),
+            fastq = select_first([tuple.left.right, "undefined"]),
             reads_per_file = reads_per_file
         }
 
@@ -81,7 +81,7 @@ workflow dnaseq_standard_experimental {
             if (aligner == "mem") {
                 call bwa.bwa_mem { input:
                     read_one_fastq_gz=t.left,
-                    read_two_fastq_gz=select_first([t.right, '']),
+                    read_two_fastq_gz=select_first([t.right, "undefined"]),
                     bwa_db_tar_gz=bwa_db,
                     # find tab literals, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
@@ -92,7 +92,7 @@ workflow dnaseq_standard_experimental {
             if ( aligner == "aln") {
                 call bwa.bwa_aln_pe { input:
                     read_one_fastq_gz=t.left,
-                    read_two_fastq_gz=select_first([t.right, '']),
+                    read_two_fastq_gz=select_first([t.right, "undefined"]),
                     bwa_db_tar_gz=bwa_db,
                     # find tab literals, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
