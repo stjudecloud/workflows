@@ -775,7 +775,11 @@ task split_fastq {
 
     input {
         File fastq
-        String prefix = basename(fastq, ".fastq.gz")
+        String prefix = sub(
+            basename(fastq),
+            "\\.(fastq|fq)\\.gz$",
+            ""
+        )
         Int reads_per_file = 10000000
         Int modify_disk_size_gb = 0
         Int ncpu = 2
