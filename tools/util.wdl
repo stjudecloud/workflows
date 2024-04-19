@@ -794,7 +794,7 @@ task split_fastq {
         let "lines = ~{reads_per_file} * 4"
         zcat ~{fastq} | split -l $lines -d -a 6 - ~{prefix}
 
-        for file in $(ls ~{prefix}*); do
+        for file in "~{prefix}"*; do
             echo $file
             mv $file ${file}.fastq
             echo "gzip ${file}.fastq" > cmds
