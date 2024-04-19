@@ -276,7 +276,7 @@ task bwa_mem {
 
     runtime {
         cpu: ncpu
-        memory: "10 GB"
+        memory: "25 GB"
         disks: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: 1

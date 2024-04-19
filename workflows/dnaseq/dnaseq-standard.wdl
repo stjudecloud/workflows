@@ -88,9 +88,6 @@ workflow dnaseq_standard_experimental {
                     read_group=sub(tuple.right, "\t", "\\\\t"),
                     use_all_cores=use_all_cores,
                 }
-                call picard.sort as mem_sort { input:
-                bam=bwa_mem.bam,
-                }
             }
             if ( aligner == "aln") {
                 call bwa.bwa_aln_pe { input:
@@ -102,16 +99,16 @@ workflow dnaseq_standard_experimental {
                     read_group=sub(tuple.right, "\t", "\\\\t"),
                     use_all_cores=use_all_cores,
                 }
-                call picard.sort as aln_sort { input:
-                    bam=bwa_aln_pe.bam,
-                }
             }
+            call picard.sort as sort { input:
+                 bam=select_first([bwa_mem.bam, bwa_aln_pe.bam])
+            }
+
         }
-        Array[File] bams = select_first([select_all(mem_sort.sorted_bam), select_all(aln_sort.sorted_bam)])
 
         call samtools_merge_wf.samtools_merge as inner_merge { input:
-            bams = bams,
-            prefix = basename(tuple.left.left, "fastq.gz"),
+            bams = sort.sorted_bam,
+            prefix = basename(tuple.left.left, ".fastq.gz"),
             use_all_cores = use_all_cores,
         }
     }

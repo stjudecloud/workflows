@@ -778,6 +778,7 @@ task split_fastq {
         String prefix = basename(fastq, ".fastq.gz")
         Int reads_per_file = 10000000
         Int modify_disk_size_gb = 0
+        Int ncpu = 2
     }
 
     Float fastq_size = size(fastq, "GiB")
@@ -792,10 +793,10 @@ task split_fastq {
         for file in $(ls ~{prefix}*); do
             echo $file
             mv $file ${file}.fastq
-            gzip ${file}.fastq &
+            echo "gzip ${file}.fastq" > cmds
         done
 
-        wait $(jobs -p)
+        cat cmds | parallel --jobs ~{ncpu}
     >>>
 
     output {
@@ -803,6 +804,7 @@ task split_fastq {
     }
 
     runtime {
+        cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
