@@ -225,6 +225,20 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#split_fastq">split_fastq</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inputs_10">Inputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#required_10">Required</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#defaults_9">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs_10">Outputs</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                   </li>
               </ul>
@@ -315,7 +329,7 @@
 <h4 id="required_1">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to get read groups from</li>
+<li><code>bam</code> (File, <strong>required</strong>); <strong>description</strong>: Input BAM format file to get read groups from; <strong>stream</strong>: true</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
@@ -350,9 +364,9 @@
 <h2 id="calc_gene_lengths">calc_gene_lengths</h2>
 <dl>
 <dt>description</dt>
-<dd>Calculate gene lengths from a GTF feature file using the "non-overlapping exonic length" algorithm</dd>
+<dd>Calculate gene lengths from a GTF feature file using the non-overlapping exonic length algorithm</dd>
 <dt>help</dt>
-<dd>The "non-overlapping exonic length" algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it.</dd>
+<dd>The non-overlapping exonic length algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it.</dd>
 <dt>outputs</dt>
 <dd>{'gene_lengths': 'A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column'}</dd>
 </dl>
@@ -501,6 +515,30 @@
 <h3 id="outputs_9">Outputs</h3>
 <ul>
 <li><code>summary</code> (File)</li>
+</ul>
+<h2 id="split_fastq">split_fastq</h2>
+<dl>
+<dt>description</dt>
+<dd>Splits a FASTQ into multiple files based on the number of reads per file</dd>
+<dt>outputs</dt>
+<dd>{'fastqs': 'Array of FASTQ files, each containing a subset of the input FASTQ'}</dd>
+</dl>
+<h3 id="inputs_10">Inputs</h3>
+<h4 id="required_10">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>fastq</code> (File, <strong>required</strong>); <strong>description</strong>: Gzipped FASTQ file to split; <strong>stream</strong>: true</li>
+</ul>
+<h4 id="defaults_9">Defaults</h4>
+<ul>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=2)</li>
+<li><code>prefix</code> (String, default=sub(basename(fastq),"\.(fastq|fq)\.gz$","")): Prefix for the FASTQ file. The extension <code>.fq.gz</code> will be added.</li>
+<li><code>reads_per_file</code> (Int, default=10000000): Number of reads to include in each output FASTQ file</li>
+</ul>
+<h3 id="outputs_10">Outputs</h3>
+<ul>
+<li><code>fastqs</code> (Array[File])</li>
 </ul>
               
             </div>
