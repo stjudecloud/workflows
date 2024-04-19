@@ -130,7 +130,7 @@
 - name: picard_create_sequence_dictionary
   tags:
     - miniwdl
-    - picard2
+    - picard
   command: >-
     miniwdl run -d test-output/. --task create_sequence_dictionary tools/picard.wdl fasta="tests/tools/input/GRCh38.chrY_chrM.fa.gz" outfile_name="GRCh38.chrY_chrM.dict"
   files:

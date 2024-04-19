@@ -3,7 +3,7 @@
     - miniwdl
     - sambamba
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task index tools/sambamba.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task index tools/sambamba.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/bam_index/test.bwa_aln_pe.bam.bai
 
@@ -12,7 +12,7 @@
     - miniwdl
     - sambamba
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task merge -i tests/tools/input_json/sambamba_merge.json tools/sambamba.wdl
+    miniwdl run -d test-output/. --task merge -i tests/tools/input_json/sambamba_merge.json tools/sambamba.wdl
   files:
     - path: test-output/out/merged_bam/test.bam
 
@@ -21,7 +21,7 @@
     - miniwdl
     - sambamba
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task sort tools/sambamba.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task sort tools/sambamba.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/sorted_bam/test.bwa_aln_pe.sorted.bam
 
@@ -30,7 +30,7 @@
     - miniwdl
     - sambamba
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task flagstat tools/sambamba.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task flagstat tools/sambamba.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/flagstat_report/test.bwa_aln_pe.flagstat.txt
 
@@ -39,7 +39,7 @@
     - miniwdl
     - sambamba
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task markdup tools/sambamba.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run -d test-output/. --task markdup tools/sambamba.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.MarkDuplicates.bam
     - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.MarkDuplicates.bam.bai
