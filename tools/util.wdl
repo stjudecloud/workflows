@@ -795,12 +795,11 @@ task split_fastq {
         zcat ~{fastq} | split -l $lines -d -a 6 - ~{prefix}
 
         for file in "~{prefix}"*; do
-            echo $file
-            mv $file ${file}.fastq
+            mv "$file" "${file}.fastq"
             echo "gzip ${file}.fastq" > cmds
         done
 
-        cat cmds | parallel --jobs ~{ncpu}
+        parallel --jobs ~{ncpu} < cmds
     >>>
 
     output {
