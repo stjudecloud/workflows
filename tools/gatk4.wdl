@@ -39,7 +39,7 @@ task split_n_cigar_reads {
         Int ncpu = 8
     }
 
-    Int disk_size_gb = ceil(size(bam, "GB") + 1) * 5 + ceil(size(fasta, "GB")) + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -82,7 +82,7 @@ task base_recalibrator {
     parameter_meta  {
         bam: "Input BAM format file on which to recabilbrate base quality scores"
         bam_index: "BAM index file corresponding to the input BAM"
-        prefix: "Prefix for the output recalibration report. The extension `.txt` will be added."
+        outfile_name: "Name for the output recalibration report."
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
         dict: "Dictionary file for FASTA format genome"
@@ -98,7 +98,7 @@ task base_recalibrator {
     input {
         File bam
         File bam_index
-        String prefix = basename(bam, ".bam") + ".recal"
+        String outfile_name = basename(bam, ".bam") + ".recal.txt"
         File fasta
         File fasta_index
         File dict
@@ -120,14 +120,14 @@ task base_recalibrator {
             -R ~{fasta} \
             -I ~{bam} \
             ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
-            -O ~{prefix}.txt \
+            -O ~{outfile_name} \
             -known-sites ~{dbSNP_vcf} \
             -known-sites ~{sep=" --known-sites " known_indels_sites_VCFs} \
             --spark-master local[~{ncpu}]
     >>>
 
     output {
-        File recalibration_report = "~{prefix}.txt"
+        File recalibration_report = "~{outfile_name}"
     }
 
     runtime {
@@ -293,7 +293,10 @@ task variant_filtration {
         fasta_index: "Index for FASTA format genome"
         dict: "Dictionary file for FASTA format genome"
         prefix: "Prefix for the output filtered VCF. The extension `.vcf.gz` will be added."
-        filter_names: "Names of the filters to apply"
+        filter_names: {
+            description: "Names of the filters to apply"
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-name"
+        }
         filter_expressions: {
             description: "Expressions for the filters"
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-expression"
