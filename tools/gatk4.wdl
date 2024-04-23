@@ -322,9 +322,8 @@ task variant_filtration {
     Int disk_size_gb = ceil(size(vcf, "GB") * 2) + 30 + modify_disk_size_gb
 
     command <<<
-        gatk \
-            VariantFiltration \
-                --R ~{fasta} \
+        gatk VariantFiltration \
+            --R ~{fasta} \
                 --V ~{vcf} \
                 --window ~{window} \
                 --cluster ~{cluster} \
