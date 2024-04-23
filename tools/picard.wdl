@@ -1000,6 +1000,9 @@ task create_sequence_dictionary {
     parameter_meta {
         fasta: "Input FASTA format file from which to create dictionary"
         outfile_name: "Name for the CreateSequenceDictionary dictionary file"
+        assembly_name: "Value to put in AS field of sequence dictionary"
+        fasta_url: "Value to put in UR field of sequence dictionary"
+        species: "Value to put in SP field of sequence dictionary"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -1021,7 +1024,6 @@ task create_sequence_dictionary {
     command <<<
         set -euo pipefail
 
-        rc=0
         picard -Xmx~{java_heap_size}g CreateSequenceDictionary \
             -R ~{fasta} \
             ~{if defined(assembly_name) then "--GENOME_ASSEMBLY " + assembly_name else ""} \

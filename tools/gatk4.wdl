@@ -91,6 +91,7 @@ task base_recalibrator {
         known_indels_sites_VCFs: "List of VCF files containing known indels"
         known_indels_sites_indices: "List of VCF index files corresponding to the VCF files in `known_indels_sites_VCFs`"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
         use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
     }
 
@@ -106,6 +107,7 @@ task base_recalibrator {
         Array[File] known_indels_sites_VCFs
         Array[File] known_indels_sites_indices
         Int modify_disk_size_gb = 0
+        Int ncpu = 4
         Boolean use_original_quality_scores = true
     }
 
@@ -113,8 +115,7 @@ task base_recalibrator {
 
     command <<<
         gatk \
-            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -XX:+PrintFlagsFinal \
-            -Xloggc:gc_log.log -Xms4000m" \
+            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m" \
             BaseRecalibratorSpark \
             -R ~{fasta} \
             -I ~{bam} \
@@ -122,7 +123,7 @@ task base_recalibrator {
             -O ~{prefix}.txt \
             -known-sites ~{dbSNP_vcf} \
             -known-sites ~{sep=" --known-sites " known_indels_sites_VCFs} \
-            --spark-master local[4]
+            --spark-master local[~{ncpu}]
     >>>
 
     output {
@@ -130,7 +131,7 @@ task base_recalibrator {
     }
 
     runtime {
-        cpu: 4
+        cpu: ncpu
         memory: "25 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
@@ -155,6 +156,7 @@ task apply_bqsr {
         recalibration_report: "Recalibration report file"
         prefix: "Prefix for the output recalibrated BAM. The extension `.bam` will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
         use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
     }
 
@@ -164,25 +166,23 @@ task apply_bqsr {
         File recalibration_report
         String prefix = basename(bam, ".bam") + ".bqsr"
         Int modify_disk_size_gb = 0
-        Boolean use_original_quality_scores = true
+        Int ncpu = 4
+        Boolean use_original_quality_scores = false
     }
 
-    Int disk_size_gb = ceil(size(bam, "GB") * 4) + 30 + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
 
         gatk \
-            --java-options "-XX:+PrintFlagsFinal \
-            -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m" \
+            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m" \
             ApplyBQSRSpark \
-            --spark-master local[4] \
+            --spark-master local[~{ncpu}] \
             -I ~{bam} \
             ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
             -O ~{prefix}.bam \
             --bqsr-recal-file ~{recalibration_report}
-       # GATK is unreasonable and uses the plain ".bai" suffix.
-       #mv ~{prefix}.bai ~{prefix}.bam.bai
     >>>
 
     output {
@@ -191,7 +191,7 @@ task apply_bqsr {
     }
 
     runtime {
-        cpu: 4
+        cpu: ncpu
         memory: "25 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
@@ -212,15 +212,22 @@ task haplotype_caller {
     parameter_meta  {
         bam: "Input BAM format file on which to call variants"
         bam_index: "BAM index file corresponding to the input BAM"
-        interval_list: "Interval list indicating regions in which to call variants"
+        interval_list: {
+            description: "Interval list indicating regions in which to call variants"
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035531852-Intervals-and-interval-lists"
+        }
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
         dict: "Dictionary file for FASTA format genome"
         dbSNP_vcf: "dbSNP VCF file"
         dbSNP_vcf_index: "dbSNP VCF index file"
         prefix: "Prefix for the output VCF. The extension `.vcf.gz` will be added."
-        stand_call_conf: "Minimum confidence threshold for calling variants"
+        stand_call_conf: {
+            description: "Minimum confidence threshold for calling variants"
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller#--standard-min-confidence-threshold-for-calling"
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
         use_soft_clipped_bases: "Use soft clipped bases in variant calling. Default is to ignore soft clipped bases."
     }
 
@@ -236,6 +243,7 @@ task haplotype_caller {
         String prefix = basename(bam, ".bam")
         Int stand_call_conf = 20
         Int modify_disk_size_gb = 0
+        Int ncpu = 4
         Boolean use_soft_clipped_bases = false
     }
 
@@ -260,7 +268,7 @@ task haplotype_caller {
     }
 
     runtime {
-        cpu: 4
+        cpu: ncpu
         memory: "25 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
@@ -285,11 +293,15 @@ task variant_filtration {
         fasta_index: "Index for FASTA format genome"
         dict: "Dictionary file for FASTA format genome"
         prefix: "Prefix for the output filtered VCF. The extension `.vcf.gz` will be added."
-        filter_name: "Name of the filter to apply"
-        filter_expression: "Expression for the filter"
+        filter_names: "Names of the filters to apply"
+        filter_expressions: {
+            description: "Expressions for the filters"
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-expression"
+        }
         cluster: "Number of SNPs that must be present in a window to filter"
-        window: "Size of the window for filtering"
+        window: "Size of the window (in bases) for filtering"
         modify_disk_size_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
     }
 
     input {
@@ -299,11 +311,12 @@ task variant_filtration {
         File fasta_index
         File dict
         String prefix = basename(vcf, ".vcf.gz") + ".filtered"
-        Array[String] filter_name = ["FS", "QD"]
-        Array[String] filter_expression = ["FS > 30.0", "QD < 2.0"]
+        Array[String] filter_names = ["FS", "QD"]
+        Array[String] filter_expressions = ["FS > 30.0", "QD < 2.0"]
         Int cluster = 3
         Int window = 35
         Int modify_disk_size_gb = 0
+        Int ncpu = 1
     }
 
     Int disk_size_gb = ceil(size(vcf, "GB") * 2) + 30 + modify_disk_size_gb
@@ -315,8 +328,8 @@ task variant_filtration {
                 --V ~{vcf} \
                 --window ~{window} \
                 --cluster ~{cluster} \
-                 ~{sep(' ', prefix('--filter-name ', filter_name))} \
-                 ~{sep(' ', prefix('--filter-expression ', squote(filter_expression)))} \
+                 ~{sep(' ', prefix('--filter-name ', filter_names))} \
+                 ~{sep(' ', prefix('--filter-expression ', squote(filter_expressions)))} \
                 -O ~{prefix}.vcf.gz
     >>>
 
@@ -326,7 +339,7 @@ task variant_filtration {
     }
 
     runtime {
-        cpu: 1
+        cpu: ncpu
         memory: "15 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
