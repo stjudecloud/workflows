@@ -8,7 +8,7 @@ version 1.1
 
 task bwa_aln {
     meta {
-        description: "Maps single-end FASTQ files to BAM format using bwa aln"
+        description: "Maps Single-End FASTQ files to BAM format using bwa aln"
         outputs: {
             bam: "Aligned BAM format file"
         }
@@ -19,15 +19,15 @@ task bwa_aln {
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
-            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -38,7 +38,7 @@ task bwa_aln {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(fastq),
-            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
         String read_group = ""
@@ -62,6 +62,8 @@ task bwa_aln {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "samtools_cores = $n_cores - 1"
 
         mkdir bwa_db
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
@@ -74,7 +76,7 @@ task bwa_aln {
             bwa_db/"$PREFIX" \
             sai \
             ~{fastq} \
-            | samtools view -@ "$n_cores" -hb - \
+            | samtools view --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
         rm -r bwa_db
@@ -87,7 +89,7 @@ task bwa_aln {
     runtime {
         cpu: ncpu
         memory: "5 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: 1
     }
@@ -95,27 +97,33 @@ task bwa_aln {
 
 task bwa_aln_pe {
     meta {
-        description: "Maps paired-end FASTQ files to BAM format using bwa aln"
+        description: "Maps Paired-End FASTQ files to BAM format using bwa aln"
         outputs: {
             bam: "Aligned BAM format file"
         }
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Input gzipped FASTQ read one file to align with bwa"  # TODO verify can be gzipped or compressed
-        read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
+        read_one_fastq_gz: {
+            description: "Input gzipped FASTQ read one file to align with bwa",
+            stream: false
+        }  # TODO verify can be gzipped or compressed
+        read_two_fastq_gz: {
+            description: "Input gzipped FASTQ read two file to align with bwa",
+            stream: false
+        }
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
-            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -127,12 +135,12 @@ task bwa_aln_pe {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(read_one_fastq_gz),
-            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
         String read_group = ""
         Boolean use_all_cores = false
-        Int ncpu = 2
+        Int ncpu = 4
         Int modify_disk_size_gb = 0
     }
 
@@ -153,20 +161,20 @@ task bwa_aln_pe {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "samtools_cores = $n_cores - 1"
 
         mkdir bwa_db
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
-        bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_one_fastq_gz} > sai_1
-        bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_two_fastq_gz} > sai_2
-
         bwa sampe \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
             bwa_db/"$PREFIX" \
-            sai_1 sai_2 \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_one_fastq_gz}) \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_two_fastq_gz}) \
             ~{read_one_fastq_gz} ~{read_two_fastq_gz} \
-            | samtools view -@ "$n_cores" -hb - \
+            | samtools view --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
         rm -r bwa_db
@@ -178,8 +186,8 @@ task bwa_aln_pe {
 
     runtime {
         cpu: ncpu
-        memory: "5 GB"
-        disk: "~{disk_size_gb} GB"
+        memory: "17 GB"
+        disks: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: 1
     }
@@ -199,15 +207,15 @@ task bwa_mem {
         read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
-            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'"
+            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -219,12 +227,12 @@ task bwa_mem {
         File? read_two_fastq_gz
         String prefix = sub(
             basename(read_one_fastq_gz),
-            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
         String read_group = ""
         Boolean use_all_cores = false
-        Int ncpu = 2
+        Int ncpu = 4
         Int modify_disk_size_gb = 0
     }
 
@@ -243,6 +251,8 @@ task bwa_mem {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "samtools_cores = $n_cores - 1"
 
         mkdir bwa_db
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
@@ -254,7 +264,7 @@ task bwa_mem {
             bwa_db/"$PREFIX" \
             ~{read_one_fastq_gz} \
             ~{read_two_fastq_gz} \
-            | samtools view -@ "$n_cores" -hb - \
+            | samtools view --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
         rm -r bwa_db
@@ -266,8 +276,8 @@ task bwa_mem {
 
     runtime {
         cpu: ncpu
-        memory: "10 GB"
-        disk: "~{disk_size_gb} GB"
+        memory: "25 GB"
+        disks: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: 1
     }
@@ -284,7 +294,7 @@ task build_bwa_db {
     parameter_meta {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
         db_name: {
-            description: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added."
+            description: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added.",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -318,7 +328,7 @@ task build_bwa_db {
 
     runtime {
         memory: "5 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
         maxRetries: 1
     }

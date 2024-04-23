@@ -12,13 +12,13 @@ workflow rnaseq_standard {
     meta {
         description: "Runs the STAR RNA-Seq alignment workflow for St. Jude Cloud"
         outputs: {
-            harmonized_bam: "Harmonized RNA-Seq BAM"
-            bam_index: "BAI index file associated with `bam`"
-            bam_checksum: "STDOUT of the `md5sum` command run on the harmonized BAM that has been redirected to a file"
-            star_log: "Summary mapping statistics after mapping job is complete"
-            bigwig: "BigWig format coverage file generated from `bam`"
-            feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts."
-            inferred_strandedness: "TSV file containing the `ngsderive strandedness` report"
+            harmonized_bam: "Harmonized RNA-Seq BAM",
+            bam_index: "BAI index file associated with `bam`",
+            bam_checksum: "STDOUT of the `md5sum` command run on the harmonized BAM that has been redirected to a file",
+            star_log: "Summary mapping statistics after mapping job is complete",
+            bigwig: "BigWig format coverage file generated from `bam`",
+            feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts.",
+            inferred_strandedness: "TSV file containing the `ngsderive strandedness` report",
             inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`"
         }
         allowNestedInputs: true
@@ -31,22 +31,22 @@ workflow rnaseq_standard {
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         prefix: "Prefix for output files"
         xenocp_aligner: {
-            description: "Aligner to use to map reads to the host genome for detecting contamination"
+            description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
                 'bwa aln',
                 'bwa mem',
                 'star'
             ]
-        },
+        }
         strandedness: {
-            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`."
+            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
             choices: [
                 '',
                 'Stranded-Reverse',
                 'Stranded-Forward',
                 'Unstranded'
             ]
-        },
+        }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
@@ -76,13 +76,13 @@ workflow rnaseq_standard {
     }
 
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
+        call picard.validate_bam as validate_input_bam after parse_input { input:
             bam=bam,
         }
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample { input:
+        call samtools.subsample after parse_input { input:
             bam=bam,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
@@ -90,11 +90,11 @@ workflow rnaseq_standard {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call util.get_read_groups { input:
+    call util.get_read_groups after parse_input { input:
         bam=selected_bam,
         format_for_star=true,  # matches default but prevents user from overriding
     }  # TODO what happens if no RG records?
-    call bam_to_fastqs_wf.bam_to_fastqs { input:
+    call bam_to_fastqs_wf.bam_to_fastqs after parse_input { input:
         bam=selected_bam,
         paired_end=true,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
@@ -139,14 +139,14 @@ task parse_input {
 
     parameter_meta {
         input_strand: {
-            description: "Provided strandedness protocol of the RNA-Seq experiment"
+            description: "Provided strandedness protocol of the RNA-Seq experiment",
             choices: [
                 '',
                 'Stranded-Reverse',
                 'Stranded-Forward',
                 'Unstranded'
             ]
-        },
+        }
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
         contaminant_db: "Was a `contaminant_db` supplied by the user? Must `true` if `cleanse_xenograft` is `true`."
     }

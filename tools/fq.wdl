@@ -8,14 +8,20 @@ task fqlint {
     meta {
         description: "Performs quality control on the input FASTQs to ensure proper formatting"
         outputs: {
-            validated_read1: "The unmodified input read one FASTQ after it has been successfully validated"
+            validated_read1: "The unmodified input read one FASTQ after it has been successfully validated",
             validated_read2: "The unmodified input read two FASTQ after it has been successfully validated"
         }
     }
 
     parameter_meta {
-        read_one_fastq: "Input FASTQ with read one. Can be gzipped or uncompressed."
-        read_two_fastq: "Input FASTQ with read two. Can be gzipped or uncompressed."
+        read_one_fastq: {
+            description: "Input FASTQ with read one. Can be gzipped or uncompressed.",
+            stream: true
+        }
+        read_two_fastq: {
+            description: "Input FASTQ with read two. Can be gzipped or uncompressed.",
+            stream: true
+        }
         disable_validator_codes: {
             description: "Array of codes to disable specific validators",
             choices: {
@@ -84,13 +90,12 @@ task fqlint {
     >>>
 
     output {
-        File validated_read1 = read_one_fastq
-        File? validated_read2 = read_two_fastq
+        String check = "passed"
     }
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/fq:0.11.0--h9ee0642_0'
         maxRetries: 1
     }
@@ -100,7 +105,7 @@ task subsample {
     meta {
         description: "Subsamples the input FASTQ(s)"
         outputs: {
-            subsampled_read1: "Gzipped FASTQ file containing subsampled read1"
+            subsampled_read1: "Gzipped FASTQ file containing subsampled read1",
             subsampled_read2: "Gzipped FASTQ file containing subsampled read2"
         }
     }
@@ -110,11 +115,11 @@ task subsample {
         read_two_fastq: "Input FASTQ with read two. Can be gzipped or uncompressed."
         prefix: "Prefix for the output FASTQ file(s). The extension `_R1.subsampled.fastq.gz` and `_R2.subsampled.fastq.gz` will be added."
         probability: {
-            description: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable."
+            description: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable.",
             common: true
         }
         record_count: {
-            description: "The exact number of records to keep. Cannot be used with `probability`. Any `record_count<=0` to disable."
+            description: "The exact number of records to keep. Cannot be used with `probability`. Any `record_count<=0` to disable.",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -125,7 +130,7 @@ task subsample {
         File? read_two_fastq
         String prefix = sub(
             basename(read_one_fastq),
-            "([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$",
+            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
         Float probability = 1.0
@@ -166,7 +171,7 @@ task subsample {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/fq:0.11.0--h9ee0642_0'
         maxRetries: 1
     }

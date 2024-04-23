@@ -18,9 +18,9 @@ workflow chipseq_standard {
     meta {
         description: "Runs the BWA ChIP-Seq alignment workflow for St. Jude Cloud."
         outputs: {
-            harmonized_bam: "A harmonized BWA aligned ChIP-Seq BAM file"
-            bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file"
-            bam_index: "BAI index file associated with `harmonized_bam`"
+            harmonized_bam: "A harmonized BWA aligned ChIP-Seq BAM file",
+            bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
+            bam_index: "BAI index file associated with `harmonized_bam`",
             bigwig: "BigWig format coverage file"
         }
         allowNestedInputs: true

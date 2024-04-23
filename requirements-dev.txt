@@ -1,0 +1,4 @@
+fastq==2.0.2
+miniwdl==1.11.1
+pysam==0.21.0
+pytest-workflow==2.0.1

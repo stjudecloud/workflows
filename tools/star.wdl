@@ -16,11 +16,11 @@ task build_star_db {
         reference_fasta: "The FASTA format reference file for the genome"
         gtf: "GTF format feature file"
         db_name: {
-            description: "Name for output in compressed, archived format. The suffix `.tar.gz` will be added."
+            description: "Name for output in compressed, archived format. The suffix `.tar.gz` will be added.",
             common: true
         }
         sjdbGTFchrPrefix: {
-            description: "prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSMEBL annotations with UCSC genomes)"
+            description: "prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSMEBL annotations with UCSC genomes)",
             common: true
         }
         sjdbGTFfeatureExon: "feature type in GTF file to be used as exons for building transcripts"
@@ -29,7 +29,7 @@ task build_star_db {
         sjdbGTFtagExonParentGeneName: "GTF attrbute name for parent gene name"
         sjdbGTFtagExonParentGeneType: "GTF attrbute name for parent gene type"
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
         genomeChrBinNbits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
@@ -37,11 +37,11 @@ task build_star_db {
         genomeSAsparseD: "suffix array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction."
         genomeSuffixLengthMax: "maximum length of the suffixes, has to be longer than read length. -1 = infinite."
         sjdbOverhang: {
-            description: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). **[STAR default]**: `100`. **[WDL default]**: `125`."
+            description: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). **[STAR default]**: `100`. **[WDL default]**: `125`.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         memory_gb: "RAM to allocate for task, specified in GB"
@@ -126,8 +126,8 @@ task build_star_db {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/star:2.7.10a-1'
+        disks: "~{disk_size_gb} GB"
+        container: 'ghcr.io/stjudecloud/star:2.7.11b-0'
         maxRetries: 1
     }
 }
@@ -135,16 +135,12 @@ task build_star_db {
 task alignment {
     meta {
         description: "Runs the STAR aligner on a set of RNA-Seq FASTQ files"
-        external_help: "https://github.com/alexdobin/STAR/blob/2.7.10a/doc/STARmanual.pdf"  # TODO keep this up to date with container updates
+        external_help: "https://github.com/alexdobin/STAR/blob/2.7.11b/doc/STARmanual.pdf"  # TODO keep this up to date with container updates
         outputs: {
-            star_log: "Summary mapping statistics after mapping job is complete. The statistics are calculated for each read (single- or paired-end) and then summed or averaged over all reads. Note that STAR counts a paired-end read as one read. Most of the information is collected about the UNIQUE mappers. Each splicing is counted in the numbers of splices, which would correspond to summing the counts in SJ.out.tab. The mismatch/indel error rates are calculated on a per base basis, i.e. as total number of mismatches/indels in all unique mappers divided by the total number of mapped bases."
-            star_bam: "STAR aligned BAM"
-            star_junctions: {
-                description:"File contains high confidence collapsed splice junctions in tab-delimited format. Note that STAR defines the junction start/end as intronic bases, while many other software define them as exonic bases. See `meta.external_help` for file specification."
-            }
-            star_chimeric_junctions: {
-                description: "Tab delimited file containing chimeric reads and associated metadata. See `meta.external_help` for file specification."
-            }
+            star_log: "Summary mapping statistics after mapping job is complete. The statistics are calculated for each read (Single- or Paired-End) and then summed or averaged over all reads. Note that STAR counts a Paired-End read as one read. Most of the information is collected about the UNIQUE mappers. Each splicing is counted in the numbers of splices, which would correspond to summing the counts in SJ.out.tab. The mismatch/indel error rates are calculated on a per base basis, i.e. as total number of mismatches/indels in all unique mappers divided by the total number of mapped bases.",
+            star_bam: "STAR aligned BAM",
+            star_junctions: "File contains high confidence collapsed splice junctions in tab-delimited format. Note that STAR defines the junction start/end as intronic bases, while many other software define them as exonic bases. See `meta.external_help` for file specification.",
+            star_chimeric_junctions: "Tab delimited file containing chimeric reads and associated metadata. See `meta.external_help` for file specification.",
         }
     }
 
@@ -154,7 +150,7 @@ task alignment {
         prefix: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added."
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`. These two read groups could be associated with the following four FASTQs: `sample1.rg1_R1.fastq,sample1.rg2_R1.fastq` and `sample1.rg1_R2.fastq,sample1.rg2_R2.fastq`"
         read_two_fastqs_gz: {
-            description: "An array of gzipped FASTQ files containing read two information"
+            description: "An array of gzipped FASTQ files containing read two information",
             common: true
         }
         outSJfilterIntronMaxVsReadN: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions."
@@ -169,7 +165,7 @@ task alignment {
                 None: "No 3p adapter trimming will be performed",
                 sequence: "A nucleotide sequence string of any length, matching the regex `/[ATCG]+/`",
                 polyA: "polyA sequence with the length equal to read length"
-            }
+            },
             common: true
         }
         clip3pAdapterMMp: "max proportion of mismatches for 3p adapter clipping for each mate. `left` applies to read one and `right` applies to read two."
@@ -197,7 +193,7 @@ task alignment {
             choices: {
                 None: "not used",
                 intronMotif: "strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out."
-            }
+            },
             common: true
         }
         outSAMattributes: {
@@ -215,7 +211,7 @@ task alignment {
                 MC: "mate's CIGAR string. Standard SAM tag.",
                 ch: "marks all segments of all chimeric alignments for --chimOutType WithinBAM output.",
                 cN: "number of bases clipped from the read ends: 5' and 3'"
-            }
+            },
             common: true
         }
         outSAMunmapped: {
@@ -251,7 +247,7 @@ task alignment {
             choices: {
                 Normal: "standard filtering using only current alignment",
                 BySJout: "keep only those reads that contain junctions that passed filtering into SJ.out.tab"
-            }
+            },
             common: true
         }
         outFilterIntronMotifs: {
@@ -260,7 +256,7 @@ task alignment {
                 None: "no filtering",
                 RemoveNoncanonical: "filter out alignments that contain non-canonical junctions",
                 RemoveNoncanonicalUnannotated: "filter out alignments that contain non-canonical unannotated junctions when using annotated splice junctions database. The annotated non-canonical junctions will be kept."
-            }
+            },
             common: true
         }
         outFilterIntronStrands: {
@@ -268,7 +264,7 @@ task alignment {
             choices: {
                 None: "no filtering",
                 RemoveInconsistentStrands: "remove alignments that have junctions with inconsistent strands"
-            }
+            },
             common: true
         }
         outSJfilterReads: {
@@ -276,7 +272,7 @@ task alignment {
             choices: {
                 All: "all reads, unique- and multi-mappers",
                 Unique: "uniquely mapping reads only"
-            }
+            },
             common: true
         }
         alignEndsType: {
@@ -293,7 +289,7 @@ task alignment {
             choices: {
                 Yes: "allow",
                 No: "prohibit, useful for compatibility with Cufflinks"
-            }
+            },
             common: true
         }
         alignInsertionFlush: {
@@ -301,16 +297,16 @@ task alignment {
             choices: {
                 None: "insertions are not flushed",
                 Right: "insertions are flushed to the right"
-            }
+            },
             common: true
         }
         chimOutType: {
             description: "type of chimeric output",
             choices: {
                 Junctions: "Chimeric.out.junction",
-                WithinBAM_HardClip: "output into main aligned BAM files (Aligned.*.bam). Hard-clipping in the CIGAR for supplemental chimeric alignments."
+                WithinBAM_HardClip: "output into main aligned BAM files (Aligned.*.bam). Hard-clipping in the CIGAR for supplemental chimeric alignments.",
                 WithinBAM_SoftClip: "output into main aligned BAM files (Aligned.*.bam). Soft-clipping in the CIGAR for supplemental chimeric alignments."
-            }
+            },
             common: true
         }
         chimFilter: {
@@ -325,7 +321,7 @@ task alignment {
             choices: {
                 plain: "no comment lines/headers",
                 comments: "comment lines at the end of the file: command line and Nreads: total, unique/multi-mapping"
-            }
+            },
             common: true
         }
         twopassMode: {
@@ -333,31 +329,31 @@ task alignment {
             choices: {
                 None: "1-pass mapping **[STAR default]**",
                 Basic: "basic 2-pass mapping, with all 1st pass junctions inserted into the genome indices on the fly **[WDL default]**"
-            }
+            },
             common: true
         }
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
         outFilterMismatchNoverLmax: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
         outFilterMismatchNoverReadLmax: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
-        outFilterScoreMinOverLread: "same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for paired-end reads)"
-        outFilterMatchNminOverLread: "same as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for paired-end reads)"
+        outFilterScoreMinOverLread: "same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for Paired-End reads)"
+        outFilterMatchNminOverLread: "same as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for Paired-End reads)"
         scoreGenomicLengthLog2scale: "extra score logarithmically scaled with genomic length of the alignment: scoreGenomicLengthLog2scale*log2(genomicLength)"
-        seedSearchStartLmaxOverLread: "seedSearchStartLmax normalized to read length (sum of mates' lengths for paired-end reads)"
+        seedSearchStartLmaxOverLread: "seedSearchStartLmax normalized to read length (sum of mates' lengths for Paired-End reads)"
         alignSplicedMateMapLminOverLmate: "alignSplicedMateMapLmin normalized to mate length"
         peOverlapMMp: "maximum proportion of mismatched bases in the overlap area"
         runRNGseed: {
-            description: "random number generator seed"
+            description: "random number generator seed",
             common: true
         }
         sjdbScore: {
-            description: "extra alignment score for alignments that cross database junctions"
+            description: "extra alignment score for alignments that cross database junctions",
             common: true
         }
         readMapNumber: {
-            description: "number of reads to map from the beginning of the file. -1 to map all reads"
+            description: "number of reads to map from the beginning of the file. -1 to map all reads",
             common: true
         }
         readQualityScoreBase: "number to be subtracted from the ASCII code to get Phred quality score"
@@ -366,24 +362,24 @@ task alignment {
         limitSjdbInsertNsj: "maximum number of junction to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run"
         outQSconversionAdd: "add this number to the quality score (e.g. to convert from Illumina to Sanger, use -31)"
         outSAMattrIHstart: "start value for the IH attribute. 0 may be required by some downstream software, such as Cufflinks or StringTie."
-        outSAMmapqUnique: "`0-255`: the MAPQ value for unique mappers"
+        outSAMmapqUnique: "`0-255`: the MAPQ value for unique mappers. Please note the STAR default (255) produces errors downstream, as a MAPQ value of 255 is reserved to indicate a missing value. The default of this task is 254, which is the highest _valid_ MAPQ value, and possibly what the author of STAR intended. **[STAR default]**: `255`. **[WDL default]**: `254`."
         outSAMflagOR: "`0-65535`: sam FLAG will be bitwise OR'd with this value, i.e. FLAG=FLAG | outSAMflagOR. This is applied after all flags have been set by STAR, and after outSAMflagAND. Can be used to set specific bits that are not set otherwise."
         outSAMflagAND: "`0-65535`: sam FLAG will be bitwise AND'd with this value, i.e. FLAG=FLAG & outSAMflagOR. This is applied after all flags have been set by STAR, but before outSAMflagOR. Can be used to unset specific bits that are not set otherwise."
         outFilterMultimapScoreRange: "the score range below the maximum score for multimapping alignments"
         outFilterMultimapNmax: {
-            description: "maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. **[STAR default]**: `10`. **[WDL default]**: `20`."
+            description: "maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. **[STAR default]**: `10`. **[WDL default]**: `20`.",
             common: true
         }
         outFilterMismatchNmax: {
-            description: "alignment will be output only if it has no more mismatches than this value"
+            description: "alignment will be output only if it has no more mismatches than this value",
             common: true
         }
         outFilterScoreMin: {
-            description: "alignment will be output only if its score is higher than or equal to this value"
+            description: "alignment will be output only if its score is higher than or equal to this value",
             common: true
         }
         outFilterMatchNmin: {
-            description: "alignment will be output only if the number of matched bases is higher than or equal to this value"
+            description: "alignment will be output only if the number of matched bases is higher than or equal to this value",
             common: true
         }
         scoreGap: "splice junction penalty (independent on intron motif)"
@@ -404,23 +400,23 @@ task alignment {
         seedSplitMin: "min length of the seed sequences split by Ns or mate gap"
         seedMapMin: "min length of seeds to be mapped"
         alignIntronMin: {
-            description: "minimum intron size: genomic gap is considered intron if its length>=alignIntronMin, otherwise it is considered Deletion"
+            description: "minimum intron size: genomic gap is considered intron if its length>=alignIntronMin, otherwise it is considered Deletion",
             common: true
         }
         alignIntronMax: {
-            description: "maximum intron size, if 0, max intron size will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `500000`."
+            description: "maximum intron size, if 0, max intron size will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `500000`.",
             common: true
         }
         alignMatesGapMax: {
-            description: "maximum gap between two mates, if 0, max intron gap will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `1000000`"
+            description: "maximum gap between two mates, if 0, max intron gap will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `1000000`",
             common: true
         }
         alignSJoverhangMin: {
-            description: "minimum overhang (i.e. block size) for spliced alignments"
+            description: "minimum overhang (i.e. block size) for spliced alignments",
             common: true
         }
         alignSJDBoverhangMin: {
-            description: "minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments. **[STAR default]**: `3`. **[WDL default]**: `1`."
+            description: "minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments. **[STAR default]**: `3`. **[WDL default]**: `1`.",
             common: true
         }
         alignSplicedMateMapLmin: "minimum mapped length for a read mate that is spliced"
@@ -433,43 +429,43 @@ task alignment {
         winAnchorDistNbins: "max number of bins between two anchors that allows aggregation of anchors into one window"
         winFlankNbins: "=log2(winFlank), where winFlank is the size of the left and right flanking regions for each window"
         chimSegmentMin: {
-            description: "minimum length of chimeric segment length, if ==0, no chimeric output"
+            description: "minimum length of chimeric segment length, if ==0, no chimeric output",
             common: true
         }
         chimScoreMin: {
-            description: "minimum total (summed) score of the chimeric segments"
+            description: "minimum total (summed) score of the chimeric segments",
             common: true
         }
         chimScoreDropMax: {
-            description: "max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length"
+            description: "max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length",
             common: true
         }
         chimScoreSeparation: "minimum difference (separation) between the best chimeric score and the next one"
         chimScoreJunctionNonGTAG: "penalty for a non-GT/AG chimeric junction"
         chimJunctionOverhangMin: {
-            description: "minimum overhang for a chimeric junction"
+            description: "minimum overhang for a chimeric junction",
             common: true
         }
         chimSegmentReadGapMax: {
-            description: "maximum gap in the read sequence between chimeric segments"
+            description: "maximum gap in the read sequence between chimeric segments",
             common: true
         }
         chimMainSegmentMultNmax: {
-            description: "maximum number of multi-alignments for the main chimeric segment. =1 will prohibit multimapping main segments."
+            description: "maximum number of multi-alignments for the main chimeric segment. =1 will prohibit multimapping main segments.",
             common: true
         }
         chimMultimapNmax: {
-            description: "maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments"
+            description: "maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments",
             common: true
         }
         chimMultimapScoreRange: "the score range for multi-mapping chimeras below the best chimeric score. Only works with --chimMultimapNmax > 1."
         chimNonchimScoreDropMin: "to trigger chimeric detection, the drop in the best non-chimeric alignment score with respect to the read length has to be greater than this value"
         twopass1readsN: {
-            description: "number of reads to process for the 1st step. Use default (`-1`) to map all reads in the first step"
+            description: "number of reads to process for the 1st step. Use default (`-1`) to map all reads in the first step",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -555,7 +551,7 @@ task alignment {
         Int limitSjdbInsertNsj = 1000000
         Int outQSconversionAdd = 0
         Int outSAMattrIHstart = 1
-        Int outSAMmapqUnique = 255
+        Int outSAMmapqUnique = 254
         Int outSAMflagOR = 0
         Int outSAMflagAND = 65535
         Int outFilterMultimapScoreRange = 1
@@ -809,15 +805,14 @@ task alignment {
     runtime {
         cpu: ncpu
         memory: "50 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/star:2.7.10a-1'
+        disks: "~{disk_size_gb} GB"
+        container: 'ghcr.io/stjudecloud/star:2.7.11b-0'
         maxRetries: 1
     }
 }
 
 # There are multiple Splice Junction Motif arguments for STAR
 # that are all formatted the same. Use this struct for consistency.
-# See https://github.com/alexdobin/STAR/blob/2.7.10a/doc/STARmanual.pdf
 struct SJ_Motifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif

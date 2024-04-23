@@ -47,7 +47,7 @@ task count {
             -C transcriptome_dir \
             --strip-components 1 \
             --no-same-owner
-   
+
         mkdir fastqs
         tar -xzf ~{fastqs_tar_gz} -C fastqs --no-same-owner
 
@@ -90,8 +90,8 @@ task count {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/cellranger:1.1.1"
+        disks: "~{disk_size_gb} GB"
+        container: 'ghcr.io/stjudecloud/cellranger:1.1.1'
         maxRetries: max_retries
     }
 }
@@ -135,7 +135,7 @@ task bamtofastq {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
-        
+
         cellranger bamtofastq --nthreads "$n_cores" ~{data_arg} ~{bam} fastqs
 
         cd fastqs/*/
@@ -152,8 +152,8 @@ task bamtofastq {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/cellranger:1.1.1"
+        disks: "~{disk_size_gb} GB"
+        container: 'ghcr.io/stjudecloud/cellranger:1.1.1'
         maxRetries: max_retries
     }
 }

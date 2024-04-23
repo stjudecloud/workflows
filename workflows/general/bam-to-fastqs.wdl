@@ -9,8 +9,7 @@ workflow bam_to_fastqs {
     meta {
         description: "Converts an input BAM file to one or more FASTQ files, performing QC checks along the way"
         outputs: {
-            # TODO rename read1s and read2s?
-            read1s: "Array of FASTQ files corresponding to either `first` reads (if `paired_end = true`) or all reads (if `paired_end = false`)"
+            read1s: "Array of FASTQ files corresponding to either `first` reads (if `paired_end = true`) or all reads (if `paired_end = false`)",
             read2s: "Array of FASTQ files corresponding to `last` reads (if `paired_end = true`)"
         }
         allowNestedInputs: true
@@ -18,7 +17,7 @@ workflow bam_to_fastqs {
 
     parameter_meta {
         bam: "BAM file to split into FASTQs"
-        paired_end: "Is the data paired-end (true) or single-end (false)?"
+        paired_end: "Is the data Paired-End (true) or Single-End (false)?"
         use_all_cores: "Use all cores for multi-core steps?"
     }
 
@@ -31,7 +30,7 @@ workflow bam_to_fastqs {
     call samtools.quickcheck { input: bam=bam }
     call samtools.split { input: bam=bam, use_all_cores=use_all_cores }
     scatter (split_bam in split.split_bams) {
-        call samtools.collate_to_fastq as bam_to_fastq { input:
+        call samtools.bam_to_fastq { input:
             bam=split_bam,
             paired_end=paired_end,
             interleaved=false,  # matches default but prevents user from overriding

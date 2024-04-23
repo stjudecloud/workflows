@@ -12,13 +12,13 @@ workflow rnaseq_core {
     meta {
         description: "Main processing of RNA-Seq data, starting with FASTQs. We recommend against calling this workflow directly, and would suggest instead running `rnaseq_standard` or `rnaseq_standard_fastq`. Both wrapper workflows provide a nicer user experience than this workflow and will get you equivalent results."
         outputs: {
-            bam: "Harmonized RNA-Seq BAM"
-            bam_index: "BAI index file associated with `bam`"
-            bam_checksum: "STDOUT of the `md5sum` command run on the harmonized BAM that has been redirected to a file"
-            star_log: "Summary mapping statistics after mapping job is complete"
-            bigwig: "BigWig format coverage file generated from `bam`"
-            feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts."
-            inferred_strandedness: "TSV file containing the `ngsderive strandedness` report"
+            bam: "Harmonized RNA-Seq BAM",
+            bam_index: "BAI index file associated with `bam`",
+            bam_checksum: "STDOUT of the `md5sum` command run on the harmonized BAM that has been redirected to a file",
+            star_log: "Summary mapping statistics after mapping job is complete",
+            bigwig: "BigWig format coverage file generated from `bam`",
+            feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts.",
+            inferred_strandedness: "TSV file containing the `ngsderive strandedness` report",
             inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`"
         }
         allowNestedInputs: true
@@ -33,22 +33,22 @@ workflow rnaseq_core {
         prefix: "Prefix for output files"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         xenocp_aligner: {
-            description: "Aligner to use to map reads to the host genome for detecting contamination"
+            description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
                 'bwa aln',
                 'bwa mem',
                 'star'
             ]
-        },
+        }
         strandedness: {
-            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`."
+            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
             choices: [
                 '',
                 'Stranded-Reverse',
                 'Stranded-Forward',
                 'Unstranded'
             ]
-        },
+        }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
         use_all_cores: "Use all cores for multi-core steps?"

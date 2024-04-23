@@ -3,7 +3,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run -d test-output/. -i tests/tools/input_json/util_download.json --task download tools/util.wdl
+    miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_download.json --task download tools/util.wdl
   stdout:
     contains_regex:
       - '"download.downloaded_file": ".*test-output/out/downloaded_file/license.txt"'
@@ -18,20 +18,20 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_get_read_groups.json --task get_read_groups --copy-input-files tools/util.wdl
+    miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_get_read_groups.json --task get_read_groups tools/util.wdl
   stdout:
       contains:
-        - "@RG	ID:1"
-        - "@RG	ID:2"
+        - "@RG\\tID:1"
+        - "@RG\\tID:2"
       must_not_contain:
-        - "@RG	ID:3"
+        - "@RG\\tID:3"
 
 - name: split_string
   tags:
     - miniwdl
     - util
   command: >-
-        miniwdl run -d test-output/. --task split_string tools/util.wdl input_string="rg1 , rg2"
+        miniwdl run --verbose -d test-output/. --task split_string tools/util.wdl input_string="rg1 , rg2"
   stdout:
     contains:
       - "rg1"
@@ -44,7 +44,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
+    miniwdl run --verbose -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
   files:
     - path: test-output/out/gene_lengths/genes.genelengths.txt
       contains:
@@ -55,8 +55,9 @@
   tags:
    - miniwdl
    - util
+   - deprecated
   command: >-
-   miniwdl run -d test-output/. --task qc_summary --copy-input-files tools/util.wdl multiqc_tar_gz="tests/tools/input/SJBT031344_D1.Exome.multiqc.tar.gz"
+   miniwdl run --verbose -d test-output/. --task qc_summary tools/util.wdl multiqc_tar_gz="tests/tools/input/SJBT031344_D1.Exome.multiqc.tar.gz"
   files:
     - path: "test-output/out/summary/SJBT031344_D1.Exome.qc_summary.json"
 
@@ -65,40 +66,37 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run -d test-output/. --task compression_integrity --copy-input-files tools/util.wdl bgzipped_file="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task compression_integrity tools/util.wdl bgzipped_file="tests/tools/input/test.bwa_aln_pe.bam"
   stdout:
     contains:
       - "passed"
 
+# TODO: This does not test that the record was properly added to the header.
 - name: add_to_bam_header
   tags:
     - miniwdl
     - util
   command: >-
-      miniwdl run -d test-output/. --task add_to_bam_header --copy-input-files tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" additional_header="@RG	ID:3"
+      miniwdl run --verbose -d test-output/. --task add_to_bam_header tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" additional_header="@RG	ID:3"
   files:
     - path: "test-output/out/reheadered_bam/test.bwa_aln_pe.reheader.bam"
-  stdout:
-    contains:
-      - "@RG\\tID:3"
 
-  # TODO write custom test that handles random array indices created by `find`
 - name: unpack_tarball
   tags:
     - miniwdl
     - util
   command: >-
-      miniwdl run -d test-output/. --task unpack_tarball --copy-input-files tools/util.wdl tarball="tests/tools/input/test.tar.gz"
+      miniwdl run --verbose -d test-output/. --task unpack_tarball tools/util.wdl tarball="tests/tools/input/test.tar.gz"
   files:
-    - path: "test-output/out/tarball_contents/1/a"
-    - path: "test-output/out/tarball_contents/0/b"
+    - path: "test-output/out/tarball_contents/0/a"
+    - path: "test-output/out/tarball_contents/1/b"
 
 - name: make_coverage_regions_beds
   tags:
     - miniwdl
     - util
   command: >-
-    miniwdl run -d test-output/. --task make_coverage_regions_beds --copy-input-files tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
+    miniwdl run --verbose -d test-output/. --task make_coverage_regions_beds tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
   files:
     - path: "test-output/out/bed/genes.gtf.bed"
     - path: "test-output/out/exon_bed/genes.gtf.exon.bed"
@@ -109,6 +107,15 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run -d test-output/. --task global_phred_scores --copy-input-files tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task global_phred_scores tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: "test-output/out/phred_scores/test.bwa_aln_pe.global_PHRED_scores.tsv"
+
+- name: split_fastq
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run -d test-output/. --task split_fastq tools/util.wdl fastq="tests/tools/input/test_R1.fq.gz" prefix="test_R1."
+  files:
+    - path: "test-output/out/fastqs/0/test_R1.000000.fastq.gz"
