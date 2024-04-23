@@ -9,7 +9,7 @@ task split_n_cigar_reads {
         description: "Splits reads that contain Ns in their CIGAR strings into multiple reads."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036858811-SplitNCigarReads"
         outputs: {
-            split_bam: "BAM file with reads split a N CIGAR elements and updated CIGAR strings."
+            split_bam: "BAM file with reads split at N CIGAR elements and updated CIGAR strings."
             split_bam_index: "Index file for the split BAM"
             split_bam_md5: "MD5 checksum for the split BAM"
         }
@@ -200,7 +200,7 @@ task apply_bqsr {
 task haplotype_caller {
     meta {
         description: "Calls germline SNPs and indels via local re-assembly of haplotypes."
-        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037433931-HaplotypeCallerSpark-BETA"
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller"
         outputs: {
             vcf: "VCF file containing called variants"
             vcf_index: "Index file for the VCF"

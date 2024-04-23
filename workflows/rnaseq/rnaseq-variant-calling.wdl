@@ -90,7 +90,7 @@ workflow rnaseq_variant_calling {
             scatter_count = scatterCount
     }
 
-	scatter (i in range(scatter_interval_list.interval_count)) {
+    scatter (i in range(scatter_interval_list.interval_count)) {
         call gatk.haplotype_caller {
             input:
                 bam = apply_bqsr.recalibrated_bam,
