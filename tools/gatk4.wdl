@@ -24,6 +24,7 @@ task split_n_cigar_reads {
         interval_list: "Interval list indicating regions in which to split reads"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
     }
 
     input {
@@ -35,6 +36,7 @@ task split_n_cigar_reads {
         File dict
         String prefix = basename(bam, ".bam") + ".split"
         Int modify_disk_size_gb = 0
+        Int ncpu = 8
     }
 
     Int disk_size_gb = ceil(size(bam, "GB") + 1) * 5 + ceil(size(fasta, "GB")) + modify_disk_size_gb
@@ -59,7 +61,7 @@ task split_n_cigar_reads {
     }
 
     runtime {
-        cpu: 8
+        cpu: ncpu
         memory: "24 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
@@ -80,6 +82,7 @@ task base_recalibrator {
     parameter_meta  {
         bam: "Input BAM format file on which to recabilbrate base quality scores"
         bam_index: "BAM index file corresponding to the input BAM"
+        prefix: "Prefix for the output recalibration report. The extension `.txt` will be added."
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
         dict: "Dictionary file for FASTA format genome"
@@ -87,18 +90,17 @@ task base_recalibrator {
         dbSNP_vcf_index: "dbSNP VCF index file"
         known_indels_sites_VCFs: "List of VCF files containing known indels"
         known_indels_sites_indices: "List of VCF index files corresponding to the VCF files in `known_indels_sites_VCFs`"
-        use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
-        prefix: "Prefix for the output recalibration report. The extension `.txt` will be added."
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
     }
 
     input {
         File bam
         File bam_index
         String prefix = basename(bam, ".bam") + ".recal"
-        File dict
         File fasta
         File fasta_index
+        File dict
         File dbSNP_vcf
         File dbSNP_vcf_index
         Array[File] known_indels_sites_VCFs
@@ -152,7 +154,7 @@ task apply_bqsr {
         bam_index: "BAM index file corresponding to the input BAM"
         recalibration_report: "Recalibration report file"
         prefix: "Prefix for the output recalibrated BAM. The extension `.bam` will be added."
-        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
     }
 
@@ -210,12 +212,12 @@ task haplotype_caller {
     parameter_meta  {
         bam: "Input BAM format file on which to call variants"
         bam_index: "BAM index file corresponding to the input BAM"
+        interval_list: "Interval list indicating regions in which to call variants"
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
         dict: "Dictionary file for FASTA format genome"
         dbSNP_vcf: "dbSNP VCF file"
         dbSNP_vcf_index: "dbSNP VCF index file"
-        interval_list: "Interval list indicating regions in which to call variants"
         prefix: "Prefix for the output VCF. The extension `.vcf.gz` will be added."
         stand_call_conf: "Minimum confidence threshold for calling variants"
         modify_disk_size_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
@@ -226,9 +228,9 @@ task haplotype_caller {
         File bam
         File bam_index
         File interval_list
-        File dict
         File fasta
         File fasta_index
+        File dict
         File dbSNP_vcf
         File dbSNP_vcf_index
         String prefix = basename(bam, ".bam")
@@ -293,9 +295,9 @@ task variant_filtration {
     input {
         File vcf
         File vcf_index
-        File dict
         File fasta
         File fasta_index
+        File dict
         String prefix = basename(vcf, ".vcf.gz") + ".filtered"
         Array[String] filter_name = ["FS", "QD"]
         Array[String] filter_expression = ["FS > 30.0", "QD < 2.0"]
