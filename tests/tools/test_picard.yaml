@@ -3,7 +3,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run --verbose -d test-output/. --task mark_duplicates tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" modify_memory_gb=16
+    miniwdl run --verbose -d test-output/. --task mark_duplicates tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.MarkDuplicates.bam
     - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.MarkDuplicates.bam.bai
