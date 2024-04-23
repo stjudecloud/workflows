@@ -15,6 +15,8 @@
     - gatk4
   command: >-
     miniwdl run --verbose -d test-output/. --task base_recalibrator -i tests/tools/input_json/gatk4_base_recalibrator.json tools/gatk4.wdl
+  files:
+    - path: test-output/out/recalibration_report/test_rnaseq_variant.recal.txt
 
 - name: gatk4_apply_bqsr
   tags:
@@ -22,6 +24,10 @@
     - gatk4
   command: >-
     miniwdl run --verbose -d test-output/. --task apply_bqsr -i tests/tools/input_json/gatk4_apply_bqsr.json tools/gatk4.wdl
+  files:
+    - path: test-output/out/recalibrated_bam/test_rnaseq_variant.bqsr.bam
+    - path: test-output/out/recalibrated_bam_index/test_rnaseq_variant.bqsr.bam.bai
+
 
 - name: gatk4_haplotype_caller
   tags:
@@ -29,6 +35,8 @@
     - gatk4
   command: >-
     miniwdl run --verbose -d test-output/. --task haplotype_caller -i tests/tools/input_json/gatk4_haplotype_caller.json tools/gatk4.wdl
+  files:
+    - path: test-output/out/vcf/test_rnaseq_variant.vcf.gz
 
 - name: gatk4_variant_filtration
   tags:
@@ -36,3 +44,6 @@
     - gatk4
   command: >-
     miniwdl run --verbose -d test-output/. --task variant_filtration -i tests/tools/input_json/gatk4_variant_filtration.json tools/gatk4.wdl
+  files:
+    - path: test-output/out/vcf_filtered/test1.filtered.vcf.gz
+    - path: test-output/out/vcf_filtered_index/test1.filtered.vcf.gz.tbi
