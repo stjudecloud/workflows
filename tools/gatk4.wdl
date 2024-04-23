@@ -76,7 +76,6 @@ task base_recalibrator {
         outputs: {
             recalibration_report: "Recalibration report file"
         }
-
     }
 
     parameter_meta  {
