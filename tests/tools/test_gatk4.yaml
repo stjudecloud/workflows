@@ -23,6 +23,13 @@
   command: >-
     miniwdl run -d test-output/. --task apply_bqsr -i tests/tools/input_json/gatk4_apply_bqsr.json tools/gatk4.wdl
 
+- name: gatk4_haplotype_caller
+  tags:
+    - miniwdl
+    - gatk4
+  command: >-
+    miniwdl run -d test-output/. --task haplotype_caller -i tests/tools/input_json/gatk4_haplotype_caller.json tools/gatk4.wdl
+
 - name: gatk4_variant_filtration
   tags:
     - miniwdl

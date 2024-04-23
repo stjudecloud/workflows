@@ -6,5 +6,5 @@
     "dict": "tests/tools/input/GRCh38.chr1_chr19.dict",
     "dbSNP_vcf": "tests/tools/input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf",
     "dbSNP_vcf_index": "tests/tools/input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf.idx",
-    "interval_list": "tests/tools/input/wgs_calling_regions.hg38.interval_list"
+    "interval_list": "tests/tools/input/chr1.interval_list"
 }

@@ -240,17 +240,16 @@ task haplotype_caller {
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
 
     command <<<
-		    gatk \
+        gatk \
            --java-options "-Xms6000m -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
-            HaplotypeCallerSpark \
+            HaplotypeCaller \
             -R ~{fasta} \
             -I ~{bam} \
             -L ~{interval_list} \
             -O ~{prefix}.vcf.gz \
             ~{if use_soft_clipped_bases then "" else "--dont-use-soft-clipped-bases"} \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
-            --spark-master local[4]
-            #--dbsnp ~{dbSNP_vcf} \
+            --dbsnp ~{dbSNP_vcf}
     >>>
 
     output {
