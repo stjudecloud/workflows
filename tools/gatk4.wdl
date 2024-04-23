@@ -9,9 +9,9 @@ task split_n_cigar_reads {
         description: "Splits reads that contain Ns in their CIGAR strings into multiple reads."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036858811-SplitNCigarReads"
         outputs: {
-            split_bam: "BAM file with reads split at N CIGAR elements and updated CIGAR strings."
-            split_bam_index: "Index file for the split BAM"
-            split_bam_md5: "MD5 checksum for the split BAM"
+            split_n_reads_bam: "BAM file with reads split at N CIGAR elements and updated CIGAR strings."
+            split_n_reads_bam_index: "Index file for the split BAM"
+            split_n_reads_bam_md5: "MD5 checksum for the split BAM"
         }
     }
 
@@ -55,9 +55,9 @@ task split_n_cigar_reads {
     >>>
 
     output {
-        File split_bam = "~{prefix}.bam"
-        File split_bam_index = "~{prefix}.bam.bai"
-        File split_bam_md5 = "~{prefix}.bam.md5"
+        File split_n_reads_bam = "~{prefix}.bam"
+        File split_n_reads_bam_index = "~{prefix}.bam.bai"
+        File split_n_reads_bam_md5 = "~{prefix}.bam.md5"
     }
 
     runtime {

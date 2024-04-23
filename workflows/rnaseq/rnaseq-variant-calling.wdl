@@ -66,8 +66,8 @@ workflow rnaseq_variant_calling {
 
     call gatk.base_recalibrator {
         input:
-            bam = split_n_cigar_reads.split_bam,
-            bam_index = split_n_cigar_reads.split_bam_index,
+            bam = split_n_cigar_reads.split_n_reads_bam,
+            bam_index = split_n_cigar_reads.split_n_reads_bam_index,
             fasta = fasta,
             fasta_index = fasta_index,
             dict = dict,
@@ -79,8 +79,8 @@ workflow rnaseq_variant_calling {
 
     call gatk.apply_bqsr {
         input:
-            bam = split_n_cigar_reads.split_bam,
-            bam_index = split_n_cigar_reads.split_bam_index,
+            bam = split_n_cigar_reads.split_n_reads_bam,
+            bam_index = split_n_cigar_reads.split_n_reads_bam_index,
             recalibration_report = base_recalibrator.recalibration_report
     }
 

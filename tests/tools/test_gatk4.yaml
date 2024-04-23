@@ -5,9 +5,9 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task split_n_cigar_reads -i tests/tools/input_json/gatk4_split_n_cigar_reads.json tools/gatk4.wdl
   files:
-    - path: test-output/out/split_bam/split.bam
-    - path: test-output/out/split_bam_index/split.bam.bai
-    - path: test-output/out/split_bam_md5/split.bam.md5
+    - path: test-output/out/split_n_reads_bam/split.bam
+    - path: test-output/out/split_n_reads_bam_index/split.bam.bai
+    - path: test-output/out/split_n_reads_bam_md5/split.bam.md5
 
 - name: gatk4_base_recalibrator
   tags:
