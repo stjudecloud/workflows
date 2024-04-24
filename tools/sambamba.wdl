@@ -131,30 +131,25 @@ task sort {
 
     parameter_meta {
         bam: "Input BAM format file to sort"
-        sort_order: {
-            description: "Order by which to sort the input BAM"
-            choices: [
-                'queryname',
-                'coordinate'
-            ]
+        prefix: "Prefix for the sorted BAM file. The extension `.bam` will be added."
+        queryname_sort: {
+            description: "If true, sort the BAM by queryname. If false, sort by coordinate."
             common: true
         }
-        prefix: "Prefix for the sorted BAM file. The extension `.bam` will be added."
-        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
     }
 
     input {
         File bam
-        String sort_order = "coordinate"
         String prefix = basename(bam, ".bam") + ".sorted"
-        Int memory_gb = 25
+        Boolean queryname_sort = false
         Int modify_disk_size_gb = 0
         Int ncpu = 2
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 3) + 10 + modify_disk_size_gb
 
     String outfile_name = prefix + ".bam"
 
@@ -164,7 +159,7 @@ task sort {
         sambamba sort \
             --nthreads ~{ncpu} \
             -o ~{outfile_name} \
-            ~{if (sort_order == 'queryname') then '-n' else ''} \
+            ~{if queryname_sort then '-n' else ''} \
             ~{bam}
     >>>
 
@@ -174,7 +169,7 @@ task sort {
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "25 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/sambamba:1.0--h98b6b92_0'
         maxRetries: 1
@@ -183,7 +178,7 @@ task sort {
 
 task markdup {
     meta {
-        description: "Marks duplicate reads in the input BAM file using Picard"
+        description: "Marks duplicate reads in the input BAM file"
         outputs: {
             duplicate_marked_bam: "The input BAM with computationally determined duplicates marked."
             mark_duplicates_metrics: "Duplicate marking metrics output from sambamba"
@@ -192,16 +187,15 @@ task markdup {
 
     parameter_meta {
         bam: "Input BAM format file in which to mark duplicates"
-        prefix: "Prefix for the markdup result files. The extensions `.bam` will be added."
-        memory_gb: "RAM to allocate for task, specified in GB"
+        prefix: "Prefix for the markdup result files. The extensions `markdup.bam` will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
     }
 
     input {
         File bam
-        String prefix = basename(bam, ".bam") + ".MarkDuplicates"
+        String prefix = basename(bam, ".bam")
         Boolean remove_duplicates = false
-        Int memory_gb = 50
         Int modify_disk_size_gb = 0
         Int ncpu = 2
     }
@@ -210,25 +204,23 @@ task markdup {
     Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
 
     command <<<
-        set -euo pipefail
-
         sambamba markdup \
             --nthreads ~{ncpu} \
             ~{if remove_duplicates then '--remove-duplicates' else ''} \
             ~{bam} \
-            ~{prefix}.bam \
-            > sambamba_markdup_log.txt
+            ~{prefix}.markdup.bam \
+            > ~{prefix}.markdup_log.txt
     >>>
 
     output {
-        File duplicate_marked_bam = "~{prefix}.bam"
-        File duplicate_marked_bam_index = "~{prefix}.bam.bai"
-        File markdup_log = "sambamba_markdup_log.txt"
+        File duplicate_marked_bam = "~{prefix}.markdup.bam"
+        File duplicate_marked_bam_index = "~{prefix}.markdup.bam.bai"
+        File markdup_log = "~{prefix}.markdup_log.txt"
     }
 
     runtime {
         cpu: ncpu
-        memory: "~{memory_gb} GB"
+        memory: "50 GB"
         disk: "~{disk_size_gb} GB"
         container: 'quay.io/biocontainers/sambamba:1.0--h98b6b92_0'
         maxRetries: 1
@@ -237,7 +229,7 @@ task markdup {
 
 task flagstat {
     meta {
-        description: "Produces a samtools-like flagstat report containing statistics about the alignments based on the bit flags set in the BAM"
+        description: "Produces a report containing statistics about the alignments based on the bit flags set in the BAM"
         outputs: {
             flagstat_report: "`sambamba flagstat` STDOUT redirected to a file"
         }
