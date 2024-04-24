@@ -122,9 +122,9 @@
   command: >-
     miniwdl run -d test-output/. --task scatter_interval_list tools/picard.wdl interval_list="tests/tools/input/wgs_calling_regions.hg38.interval_list" scatter_count=3
   files:
-    - path: test-output/out/out/0/1scattered.interval_list
-    - path: test-output/out/out/1/2scattered.interval_list
-    - path: test-output/out/out/2/3scattered.interval_list
+    - path: test-output/out/interval_lists_scatter/0/1scattered.interval_list
+    - path: test-output/out/interval_lists_scatter/1/2scattered.interval_list
+    - path: test-output/out/interval_lists_scatter/2/3scattered.interval_list
 
 - name: picard_create_sequence_dictionary
   tags:

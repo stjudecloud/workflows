@@ -30,7 +30,7 @@ workflow rnaseq_variant_calling {
         dbSNP_vcf: "dbSNP VCF file"
         dbSNP_vcf_index: "Index file for dbSNP VCF file"
         scatter_count: "Number of intervals to scatter over"
-        output_vcf_name: "Name of output VCF file"
+        prefix: "Prefix for the output VCF file. The extension `.vcf.gz` will be added."
     }
 
     input {
@@ -45,7 +45,7 @@ workflow rnaseq_variant_calling {
         File dbSNP_vcf
         File dbSNP_vcf_index
         Int scatter_count = 6
-        String output_vcf_name = basename(bam, '.bam') + '.vcf.gz'
+        String prefix = basename(bam, '.bam')
     }
     
     call picard.mark_duplicates {
@@ -56,8 +56,8 @@ workflow rnaseq_variant_calling {
 
     call gatk.split_n_cigar_reads {
         input:
-            bam = select_first([mark_duplicates.duplicate_marked_bam, '']),
-            bam_index = select_first([mark_duplicates.duplicate_marked_bam_index, '']),
+            bam = select_first([mark_duplicates.duplicate_marked_bam, "undefined"]),
+            bam_index = select_first([mark_duplicates.duplicate_marked_bam_index, "undefined"]),
             fasta = fasta,
             fasta_index = fasta_index,
             dict = dict,
@@ -81,7 +81,8 @@ workflow rnaseq_variant_calling {
         input:
             bam = split_n_cigar_reads.split_n_reads_bam,
             bam_index = split_n_cigar_reads.split_n_reads_bam_index,
-            recalibration_report = base_recalibrator.recalibration_report
+            recalibration_report = base_recalibrator.recalibration_report,
+            prefix = prefix
     }
 
     call picard.scatter_interval_list {
@@ -90,7 +91,7 @@ workflow rnaseq_variant_calling {
             scatter_count = scatter_count
     }
 
-    scatter (i in range(scatter_interval_list.interval_count)) {
+    scatter (list in scatter_interval_list.interval_lists_scatter) {
         call gatk.haplotype_caller {
             input:
                 bam = apply_bqsr.recalibrated_bam,
@@ -98,7 +99,7 @@ workflow rnaseq_variant_calling {
                 fasta = fasta,
                 fasta_index = fasta_index,
                 dict = dict,
-                interval_list = scatter_interval_list.out[i],
+                interval_list = list,
                 dbSNP_vcf = dbSNP_vcf,
                 dbSNP_vcf_index = dbSNP_vcf_index
         }
@@ -108,7 +109,7 @@ workflow rnaseq_variant_calling {
         input:
             vcfs = haplotype_caller.vcf,
             vcfs_indexes = haplotype_caller.vcf_index,
-            output_vcf_name = output_vcf_name
+            output_vcf_name = "~{prefix}.vcf.gz"
     }
 
     call gatk.variant_filtration {
@@ -117,7 +118,8 @@ workflow rnaseq_variant_calling {
             vcf_index = merge_vcfs.output_vcf_index,
             fasta = fasta,
             fasta_index = fasta_index,
-            dict = dict
+            dict = dict,
+            prefix = prefix
     }
 
     output {

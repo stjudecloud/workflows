@@ -153,7 +153,7 @@ task apply_bqsr {
         bam: "Input BAM format file on which to apply base quality score recalibration"
         bam_index: "BAM index file corresponding to the input BAM"
         recalibration_report: "Recalibration report file"
-        prefix: "Prefix for the output recalibrated BAM. The extension `.bam` will be added."
+        prefix: "Prefix for the output recalibrated BAM. The extension `.bqsr.bam` will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
         use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
@@ -163,7 +163,7 @@ task apply_bqsr {
         File bam
         File bam_index
         File recalibration_report
-        String prefix = basename(bam, ".bam") + ".bqsr"
+        String prefix = basename(bam, ".bam")
         Int modify_disk_size_gb = 0
         Int ncpu = 4
         Boolean use_original_quality_scores = false
@@ -180,13 +180,13 @@ task apply_bqsr {
             --spark-master local[~{ncpu}] \
             -I ~{bam} \
             ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
-            -O ~{prefix}.bam \
+            -O ~{prefix}.bqsr.bam \
             --bqsr-recal-file ~{recalibration_report}
     >>>
 
     output {
-        File recalibrated_bam = "~{prefix}.bam"
-        File recalibrated_bam_index = "~{prefix}.bam.bai"
+        File recalibrated_bam = "~{prefix}.bqsr.bam"
+        File recalibrated_bam_index = "~{prefix}.bqsr.bam.bai"
     }
 
     runtime {
@@ -291,7 +291,7 @@ task variant_filtration {
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
         dict: "Dictionary file for FASTA format genome"
-        prefix: "Prefix for the output filtered VCF. The extension `.vcf.gz` will be added."
+        prefix: "Prefix for the output filtered VCF. The extension `.filtered.vcf.gz` will be added."
         filter_names: {
             description: "Names of the filters to apply"
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-name"
@@ -312,7 +312,7 @@ task variant_filtration {
         File fasta
         File fasta_index
         File dict
-        String prefix = basename(vcf, ".vcf.gz") + ".filtered"
+        String prefix = basename(vcf, ".vcf.gz")
         Array[String] filter_names = ["FS", "QD"]
         Array[String] filter_expressions = ["FS > 30.0", "QD < 2.0"]
         Int cluster = 3
@@ -331,12 +331,12 @@ task variant_filtration {
                 --cluster ~{cluster} \
                  ~{sep(' ', prefix('--filter-name ', filter_names))} \
                  ~{sep(' ', prefix('--filter-expression ', squote(filter_expressions)))} \
-                -O ~{prefix}.vcf.gz
+                -O ~{prefix}.filtered.vcf.gz
     >>>
 
     output {
-        File vcf_filtered = "~{prefix}.vcf.gz"
-        File vcf_filtered_index = "~{prefix}.vcf.gz.tbi"
+        File vcf_filtered = "~{prefix}.filtered.vcf.gz"
+        File vcf_filtered_index = "~{prefix}.filtered.vcf.gz.tbi"
     }
 
     runtime {

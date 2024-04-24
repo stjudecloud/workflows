@@ -976,7 +976,7 @@ task scatter_interval_list {
     >>>
 
     output {
-        Array[File] out = glob("out/*/*.interval_list")
+        Array[File] interval_lists_scatter = glob("out/*/*.interval_list")
         Int interval_count = read_int("interval_count.txt")
     }
 
