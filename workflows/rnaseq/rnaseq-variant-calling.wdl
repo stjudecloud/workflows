@@ -7,7 +7,7 @@ import "../../tools/gatk4.wdl" as gatk
 
 workflow rnaseq_variant_calling {
     meta {
-        description: "Call variants from RNA-Seq data. Produces a VCF file of variants. Based on GATK RNA-Seq short variant calling best practices pipeline."
+        description: "Call short germline variants from RNA-Seq data. Produces a VCF file of variants. Based on GATK RNA-Seq short variant calling best practices pipeline."
         outputs: {
             recalibrated_bam: "BAM that has undergone recalibration of base quality scores"
             recalibrated_bam_index: "Index file for recalibrated BAM file"
@@ -27,8 +27,9 @@ workflow rnaseq_variant_calling {
         known_vcf_indexes: "Array of index files for known indels VCF files"
         dbSNP_vcf: "dbSNP VCF file"
         dbSNP_vcf_index: "Index file for dbSNP VCF file"
-        scatter_count: "Number of intervals to scatter over"
         prefix: "Prefix for the output files."
+        bam_is_dup_marked: "Whether the input BAM file has duplicates marked."
+        scatter_count: "Number of intervals to scatter over"
     }
 
     input {
@@ -42,20 +43,23 @@ workflow rnaseq_variant_calling {
         Array[File] known_vcf_indexes
         File dbSNP_vcf
         File dbSNP_vcf_index
-        Int scatter_count = 6
         String prefix = basename(bam, '.bam')
+        Boolean bam_is_dup_marked = false
+        Int scatter_count = 6
     }
     
-    call picard.mark_duplicates {
-        input: 
-            bam = bam,
-            create_bam = true
+    if (! bam_is_dup_marked){
+        call picard.mark_duplicates {
+            input:
+                bam = bam,
+                create_bam = true
+        }
     }
 
     call gatk.split_n_cigar_reads {
         input:
-            bam = select_first([mark_duplicates.duplicate_marked_bam, "undefined"]),
-            bam_index = select_first([mark_duplicates.duplicate_marked_bam_index, "undefined"]),
+            bam = select_first([mark_duplicates.duplicate_marked_bam, bam]),
+            bam_index = select_first([mark_duplicates.duplicate_marked_bam_index, bam_index]),
             fasta = fasta,
             fasta_index = fasta_index,
             dict = dict,
