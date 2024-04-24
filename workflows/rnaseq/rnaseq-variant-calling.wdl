@@ -29,7 +29,7 @@ workflow rnaseq_variant_calling {
         dbSNP_vcf_index: "Index file for dbSNP VCF file"
         prefix: "Prefix for the output files."
         bam_is_dup_marked: "Whether the input BAM file has duplicates marked."
-        scatter_count: "Number of intervals to scatter over"
+        scatter_count: "Number of intervals to scatter over. This should typically be set to 5-20. Higher values will increase parallelism and speed up the workflow, but increase overhead in provisioning resources."
     }
 
     input {

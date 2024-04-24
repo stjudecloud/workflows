@@ -75,16 +75,16 @@ workflow gatk_reference {
     if (defined(dbSNP_vcf_index_url)) {
         call util.download as dbsnp_index {
             input:
-                url = select_first([dbSNP_vcf_index_url, '']),
-                outfile_name = select_first([dbSNP_vcf_index_name, ''])
+                url = select_first([dbSNP_vcf_index_url, "undefined"]),
+                outfile_name = select_first([dbSNP_vcf_index_name, "undefined"])
         }
     }
 
     if (defined(interval_list_url)) {
         call util.download as intervals {
             input:
-                url = select_first([interval_list_url, '']),
-                outfile_name = select_first([interval_list_name, ''])
+                url = select_first([interval_list_url, "undefined"]),
+                outfile_name = select_first([interval_list_name, "undefined"])
         }
     }
 
