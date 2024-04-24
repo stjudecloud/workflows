@@ -11,8 +11,6 @@ workflow rnaseq_variant_calling {
         outputs: {
             recalibrated_bam: "BAM that has undergone recalibration of base quality scores"
             recalibrated_bam_index: "Index file for recalibrated BAM file"
-            unfiltered_vcf_vcf: "VCF of raw RNA-Seq variant calls"
-            unfiltered_vcf_index: "Index for unfiltered VCF file"
             variant_filtered_vcf: "VCF file after variant filters have been applied"
             variant_filtered_vcf_index: "Index for filtered variant VCF file"
         }
@@ -125,8 +123,6 @@ workflow rnaseq_variant_calling {
     output {
         File recalibrated_bam = apply_bqsr.recalibrated_bam
         File recalibrated_bam_index = apply_bqsr.recalibrated_bam_index
-        File unfiltered_vcf = merge_vcfs.output_vcf
-        File unfiltered_vcf_index = merge_vcfs.output_vcf_index
         File variant_filtered_vcf = variant_filtration.vcf_filtered
         File variant_filtered_vcf_index = variant_filtration.vcf_filtered_index
     }
