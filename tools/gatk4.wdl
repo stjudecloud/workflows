@@ -89,6 +89,7 @@ task base_recalibrator {
         dbSNP_vcf_index: "dbSNP VCF index file"
         known_indels_sites_VCFs: "List of VCF files containing known indels"
         known_indels_sites_indices: "List of VCF index files corresponding to the VCF files in `known_indels_sites_VCFs`"
+        memory_gb: "RAM to allocate for task, specified in GB"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
         use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
@@ -105,16 +106,18 @@ task base_recalibrator {
         File dbSNP_vcf_index
         Array[File] known_indels_sites_VCFs
         Array[File] known_indels_sites_indices
+        Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int ncpu = 4
         Boolean use_original_quality_scores = true
     }
 
     Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
         gatk \
-            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m" \
+            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
             BaseRecalibratorSpark \
             -R ~{fasta} \
             -I ~{bam} \
@@ -131,7 +134,7 @@ task base_recalibrator {
 
     runtime {
         cpu: ncpu
-        memory: "25 GB"
+        memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
@@ -154,6 +157,7 @@ task apply_bqsr {
         bam_index: "BAM index file corresponding to the input BAM"
         recalibration_report: "Recalibration report file"
         prefix: "Prefix for the output recalibrated BAM. The extension `.bqsr.bam` will be added."
+        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
         use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
@@ -164,18 +168,20 @@ task apply_bqsr {
         File bam_index
         File recalibration_report
         String prefix = basename(bam, ".bam")
+        Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int ncpu = 4
         Boolean use_original_quality_scores = false
     }
 
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
         set -euo pipefail
 
         gatk \
-            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m" \
+            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
             ApplyBQSRSpark \
             --spark-master local[~{ncpu}] \
             -I ~{bam} \
@@ -191,7 +197,7 @@ task apply_bqsr {
 
     runtime {
         cpu: ncpu
-        memory: "25 GB"
+        memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
@@ -225,6 +231,7 @@ task haplotype_caller {
             description: "Minimum confidence threshold for calling variants"
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller#--standard-min-confidence-threshold-for-calling"
         }
+        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
         use_soft_clipped_bases: "Use soft clipped bases in variant calling. Default is to ignore soft clipped bases."
@@ -241,16 +248,18 @@ task haplotype_caller {
         File dbSNP_vcf_index
         String prefix = basename(bam, ".bam")
         Int stand_call_conf = 20
+        Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int ncpu = 4
         Boolean use_soft_clipped_bases = false
     }
 
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
         gatk \
-           --java-options "-Xms6000m -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
+           --java-options "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
             HaplotypeCaller \
             -R ~{fasta} \
             -I ~{bam} \
@@ -268,7 +277,7 @@ task haplotype_caller {
 
     runtime {
         cpu: ncpu
-        memory: "25 GB"
+        memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
