@@ -28,7 +28,7 @@ workflow rnaseq_variant_calling {
         dbSNP_vcf: "dbSNP VCF file"
         dbSNP_vcf_index: "Index file for dbSNP VCF file"
         scatter_count: "Number of intervals to scatter over"
-        prefix: "Prefix for the output VCF file. The extension `.vcf.gz` will be added."
+        prefix: "Prefix for the output files."
     }
 
     input {
