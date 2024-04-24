@@ -41,6 +41,6 @@
   command: >-
     miniwdl run -d test-output/. --task markdup tools/sambamba.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
-    - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.MarkDuplicates.bam
-    - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.MarkDuplicates.bam.bai
-    - path: test-output/out/markdup_log/sambamba_markdup_log.txt
+    - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.markdup.bam
+    - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.markdup.bam.bai
+    - path: test-output/out/markdup_log/test.bwa_aln_pe.markdup_log.txt
