@@ -11,8 +11,8 @@ workflow rnaseq_variant_calling {
         outputs: {
             recalibrated_bam: "BAM that has undergone recalibration of base quality scores"
             recalibrated_bam_index: "Index file for recalibrated BAM file"
-            merged_vcf: "VCF of raw RNA-Seq variant calls"
-            merged_vcf_index: "Index for merged VCF file"
+            unfiltered_vcf_vcf: "VCF of raw RNA-Seq variant calls"
+            unfiltered_vcf_index: "Index for unfiltered VCF file"
             variant_filtered_vcf: "VCF file after variant filters have been applied"
             variant_filtered_vcf_index: "Index for filtered variant VCF file"
         }
@@ -24,12 +24,12 @@ workflow rnaseq_variant_calling {
         fasta: "Reference FASTA file"
         fasta_index: "Index file for reference FASTA file"
         dict: "Sequence dictionary for reference FASTA file"
-        callingIntervalList: "Interval list of regions from which to call variants. Used for parallelization."
-        knownVcfs: "Array of known indels VCF files"
-        knownVcfIndexes: "Array of index files for known indels VCF files"
+        calling_interval_list: "Interval list of regions from which to call variants. Used for parallelization."
+        known_vcfs: "Array of known indels VCF files"
+        known_vcf_indexes: "Array of index files for known indels VCF files"
         dbSNP_vcf: "dbSNP VCF file"
         dbSNP_vcf_index: "Index file for dbSNP VCF file"
-        scatterCount: "Number of intervals to scatter over"
+        scatter_count: "Number of intervals to scatter over"
         output_vcf_name: "Name of output VCF file"
     }
 
@@ -39,12 +39,12 @@ workflow rnaseq_variant_calling {
         File fasta
         File fasta_index
         File dict
-        File callingIntervalList
-        Array[File] knownVcfs
-        Array[File] knownVcfIndexes
+        File calling_interval_list
+        Array[File] known_vcfs
+        Array[File] known_vcf_indexes
         File dbSNP_vcf
         File dbSNP_vcf_index
-        Int scatterCount = 6
+        Int scatter_count = 6
         String output_vcf_name = basename(bam, '.bam') + '.vcf.gz'
     }
     
@@ -61,7 +61,7 @@ workflow rnaseq_variant_calling {
             fasta = fasta,
             fasta_index = fasta_index,
             dict = dict,
-            interval_list = callingIntervalList
+            interval_list = calling_interval_list
     }
 
     call gatk.base_recalibrator {
@@ -71,8 +71,8 @@ workflow rnaseq_variant_calling {
             fasta = fasta,
             fasta_index = fasta_index,
             dict = dict,
-            known_indels_sites_VCFs = knownVcfs,
-            known_indels_sites_indices = knownVcfIndexes,
+            known_indels_sites_VCFs = known_vcfs,
+            known_indels_sites_indices = known_vcf_indexes,
             dbSNP_vcf = dbSNP_vcf,
             dbSNP_vcf_index = dbSNP_vcf_index
     }
@@ -86,8 +86,8 @@ workflow rnaseq_variant_calling {
 
     call picard.scatter_interval_list {
         input:
-            interval_list = callingIntervalList,
-            scatter_count = scatterCount
+            interval_list = calling_interval_list,
+            scatter_count = scatter_count
     }
 
     scatter (i in range(scatter_interval_list.interval_count)) {
@@ -123,8 +123,8 @@ workflow rnaseq_variant_calling {
     output {
         File recalibrated_bam = apply_bqsr.recalibrated_bam
         File recalibrated_bam_index = apply_bqsr.recalibrated_bam_index
-        File merged_vcf = merge_vcfs.output_vcf
-        File merged_vcf_index = merge_vcfs.output_vcf_index
+        File unfiltered_vcf = merge_vcfs.output_vcf
+        File unfiltered_vcf_index = merge_vcfs.output_vcf_index
         File variant_filtered_vcf = variant_filtration.vcf_filtered
         File variant_filtered_vcf_index = variant_filtration.vcf_filtered_index
     }

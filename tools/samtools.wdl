@@ -1278,7 +1278,7 @@ task faidx {
     }
 
     Float fasta_size = size(fasta, "GiB")
-    Int disk_size_gb = ceil(fasta_size * 1.2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
 
     String outfile_name = basename(fasta, '.gz') + ".fai"
 
