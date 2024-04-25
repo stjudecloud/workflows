@@ -692,6 +692,11 @@ task qc_summary {
         description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive."
     }
 
+    parameter_meta {
+        multiqc_tar_gz: "MultiQC report tarball from which to extract key metrics"
+        outfile_name: "Name for the JSON file"
+    }
+
     input {
         File multiqc_tar_gz
         String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
@@ -771,6 +776,7 @@ task split_fastq {
         reads_per_file: "Number of reads to include in each output FASTQ file"
         prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
     }
 
     input {

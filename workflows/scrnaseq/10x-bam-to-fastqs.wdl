@@ -90,8 +90,11 @@ task parse_input {
         Boolean cellranger11
         Boolean longranger20
         Boolean gemcode
-        Int memory_gb = 4
-        Int disk_size_gb = 10
+    }
+    parameter_meta {
+        cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
+        longranger20: "Convert a BAM produced by Longranger 2.0"
+        gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
     }
 
     Int exclusive_arg = (if cellranger11 then 1 else 0)
@@ -110,8 +113,8 @@ task parse_input {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        memory: "4 GB"
+        disk: "10 GB"
         container: 'ghcr.io/stjudecloud/util:1.3.0'
         maxRetries: 1
     }
