@@ -77,7 +77,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../picard/">Picard</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Qualimap</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Qualimap</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -194,12 +194,11 @@
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
-<li><code>max_retries</code> (Int, default=1)</li>
-<li><code>memory_gb</code> (Int, default=32)</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>ncpu</code> (Int, default=1)</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam"))</li>
-<li><code>use_all_cores</code> (Boolean, default=false)</li>
+<li><code>memory_gb</code> (Int, default=32): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>ncpu</code> (Int, default=1): Number of cores to allocate for task</li>
+<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the <type of file> file. The extension <code>&lt;extension&gt;</code> will be added.</li>
+<li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments.</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>

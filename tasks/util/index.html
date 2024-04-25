@@ -83,7 +83,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../star/">Star</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Utilities</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Utilities</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#download">download</a>
         <ul>
@@ -506,11 +506,11 @@
 <h4 id="required_9">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>multiqc_tar_gz</code> (File, <strong>required</strong>)</li>
+<li><code>multiqc_tar_gz</code> (File, <strong>required</strong>): MultiQC report tarball from which to extract key metrics</li>
 </ul>
 <h4 id="defaults_8">Defaults</h4>
 <ul>
-<li><code>outfile_name</code> (String, default=basename(multiqc_tar_gz,".multiqc.tar.gz") + ".qc_summary.json")</li>
+<li><code>outfile_name</code> (String, default=basename(multiqc_tar_gz,".multiqc.tar.gz") + ".qc_summary.json"): Name for the JSON file</li>
 </ul>
 <h3 id="outputs_9">Outputs</h3>
 <ul>
@@ -532,7 +532,7 @@
 <h4 id="defaults_9">Defaults</h4>
 <ul>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
-<li><code>ncpu</code> (Int, default=2)</li>
+<li><code>ncpu</code> (Int, default=2): Number of cores to allocate for task</li>
 <li><code>prefix</code> (String, default=sub(basename(fastq),"\.(fastq|fq)\.gz$","")): Prefix for the FASTQ file. The extension <code>.fq.gz</code> will be added.</li>
 <li><code>reads_per_file</code> (Int, default=10000000): Number of reads to include in each output FASTQ file</li>
 </ul>
