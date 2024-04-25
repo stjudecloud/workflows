@@ -47,7 +47,7 @@ workflow rnaseq_variant_calling {
         Boolean bam_is_dup_marked = false
         Int scatter_count = 6
     }
-    
+
     if (! bam_is_dup_marked){
         call picard.mark_duplicates { input:
             bam = bam,
