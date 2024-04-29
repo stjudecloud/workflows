@@ -4,6 +4,7 @@ version 1.1
 
 import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"
+import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "./dnaseq-core.wdl" as dnaseq_core_wf
@@ -28,6 +29,7 @@ workflow dnaseq_standard_experimental {
         }
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
+        subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
     }
     input {
         File bam
@@ -37,6 +39,7 @@ workflow dnaseq_standard_experimental {
         String aligner = "mem"
         Boolean validate_input = true
         Boolean use_all_cores = false
+        Int subsample_n_reads = -1
     }
 
     call parse_input { input:
@@ -49,16 +52,26 @@ workflow dnaseq_standard_experimental {
         }
     }
 
+    if (subsample_n_reads > 0) {
+        call samtools.subsample after parse_input { input:
+            bam=bam,
+            desired_reads=subsample_n_reads,
+            use_all_cores=use_all_cores,
+        }
+    }
+    File selected_bam = select_first([subsample.sampled_bam, bam])
+
+
     # call util.get_read_groups { input:
     #     bam=bam,
     #     format_for_star=false,
     # }  # TODO what happens if no RG records?
     call read_group.get_ReadGroups { input:
-        bam=bam,
+        bam=selected_bam,
     }
 
     call bam_to_fastqs_wf.bam_to_fastqs { input:
-        bam=bam,
+        bam=selected_bam,
         paired_end=true,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
     }
