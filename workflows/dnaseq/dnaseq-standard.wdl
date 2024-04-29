@@ -2,18 +2,18 @@
 
 version 1.1
 
-import "../../tools/bwa.wdl"
+import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"
-import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
-import "../general/samtools-merge.wdl" as samtools_merge_wf
+import "./dnaseq-core.wdl" as dnaseq_core_wf
 
 workflow dnaseq_standard_experimental {
     meta {
         description: "Aligns DNA reads using bwa"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa"
+            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file"
         }
         allowNestedInputs: true
     }
@@ -49,79 +49,33 @@ workflow dnaseq_standard_experimental {
         }
     }
 
-    call util.get_read_groups { input:
+    # call util.get_read_groups { input:
+    #     bam=bam,
+    #     format_for_star=false,
+    # }  # TODO what happens if no RG records?
+    call read_group.get_ReadGroups { input:
         bam=bam,
-        format_for_star=false,
-    }  # TODO what happens if no RG records?
+    }
+
     call bam_to_fastqs_wf.bam_to_fastqs { input:
         bam=bam,
         paired_end=true,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
     }
 
-    # For each read group
-    scatter (tuple in zip(
-        zip(bam_to_fastqs.read1s, bam_to_fastqs.read2s),
-        get_read_groups.read_groups
-    )) {
-        call util.split_fastq as read_ones { input:
-            fastq = tuple.left.left,
-            reads_per_file = reads_per_file
-        }
-
-        call util.split_fastq as read_twos { input:
-            fastq = select_first([tuple.left.right, "undefined"]),
-            reads_per_file = reads_per_file
-        }
-
-        scatter (t in zip(read_ones.fastqs, read_twos.fastqs)) {
-            if (aligner == "mem") {
-                call bwa.bwa_mem { input:
-                    read_one_fastq_gz=t.left,
-                    read_two_fastq_gz=select_first([t.right, "undefined"]),
-                    bwa_db_tar_gz=bwa_db,
-                    # find tab literals, replace with '\\t' (which must be written as '\\\\t')
-                    # '\\t' is subbed into command blocks as '\t'
-                    read_group=sub(tuple.right, "\t", "\\\\t"),
-                    use_all_cores=use_all_cores,
-                }
-            }
-            if ( aligner == "aln") {
-                call bwa.bwa_aln_pe { input:
-                    read_one_fastq_gz=t.left,
-                    read_two_fastq_gz=select_first([t.right, "undefined"]),
-                    bwa_db_tar_gz=bwa_db,
-                    # find tab literals, replace with '\\t' (which must be written as '\\\\t')
-                    # '\\t' is subbed into command blocks as '\t'
-                    read_group=sub(tuple.right, "\t", "\\\\t"),
-                    use_all_cores=use_all_cores,
-                }
-            }
-            call picard.sort as sort { input:
-                 bam=select_first([bwa_mem.bam, bwa_aln_pe.bam])
-            }
-
-        }
-
-        call samtools_merge_wf.samtools_merge as inner_merge { input:
-            bams = sort.sorted_bam,
-            prefix = basename(tuple.left.left, ".fastq.gz"),
-            use_all_cores = use_all_cores,
-        }
-    }
-    call samtools_merge_wf.samtools_merge as rg_merge { input:
-        bams=inner_merge.merged_bam,
-        prefix=prefix,
-        use_all_cores=use_all_cores,
-    }
-
-    call samtools.index { input:
-        bam=rg_merge.merged_bam,
+    call dnaseq_core_wf.dnaseq_core_experimental { input:
+        read_one_fastqs_gz = bam_to_fastqs.read1s,
+        read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
+        bwa_db = bwa_db,
+        reads_per_file = reads_per_file,
+        read_groups = get_ReadGroups.read_groups,
+        prefix = prefix,
+        aligner = aligner,
     }
 
     output {
-        File harmonized_bam = rg_merge.merged_bam
-        File harmonized_bam_index = index.bam_index
+        File harmonized_bam = dnaseq_core_experimental.harmonized_bam
+        File harmonized_bam_index = dnaseq_core_experimental.harmonized_bam_index
     }
 }
 
