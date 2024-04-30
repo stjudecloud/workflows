@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Read groups are defined in the SAM spec
 ##    ID: "Read group identifier. Each Read Group must have a unique ID. The value of ID is used in the RG tags of alignment records.",
 ##    BC: "Barcode sequence identifying the sample or library. This value is the expected barcode bases as read by the sequencing machine in the absence of errors. If there are several barcodes for the sample/library (e.g., one on each end of the template), the recommended implementation concatenates all the barcodes separating them with hyphens (`-`).",
@@ -25,6 +26,8 @@
 ##     }
 ## }
 
+=======
+>>>>>>> 59acb366 (refactor: move ReadGroup struct to separate file)
 version 1.1
 
 # See the `read_groups` `parameter_meta` for definitions of each field
@@ -88,7 +91,11 @@ task ReadGroup_to_string {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
+<<<<<<< HEAD
         container: 'ghcr.io/stjudecloud/util:1.4.0'
+=======
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
+>>>>>>> 59acb366 (refactor: move ReadGroup struct to separate file)
         maxRetries: 1
     }
 }
@@ -97,7 +104,11 @@ task get_ReadGroups {
     meta {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
         outputs: {
+<<<<<<< HEAD
             read_groups: "An array of ReadGroup structs containing read group information."
+=======
+            read_groups: "An array of strings containing read group information. If `format_for_star = true`, all found read groups are contained in one string (`read_groups[0]`). If `format_for_star = false`, each found @RG line will be its own entry in output array `read_groups`."
+>>>>>>> 59acb366 (refactor: move ReadGroup struct to separate file)
         }
     }
 
@@ -150,12 +161,17 @@ task validate_ReadGroup {
 
     parameter_meta {
         read_group: "ReadGroup struct to validate"
+<<<<<<< HEAD
         required_fields: "Array of read group fields that must be defined. The ID field is always required and does not need to be specified."
         restrictive: "If true, run a less permissive validation of field values. Otherwise, check against SAM spec-defined values."
+=======
+        required_fields: "Array of read group fields that must be defined"
+>>>>>>> 59acb366 (refactor: move ReadGroup struct to separate file)
     }
 
     input {
         ReadGroup read_group
+<<<<<<< HEAD
         Array[String] required_fields = []
         Boolean restrictive = true
     }
@@ -404,6 +420,66 @@ task validate_ReadGroup {
 
         if [ $error -eq 1 ]
         then
+=======
+        Array[String] required_fields = ["ID"]
+    }
+
+    command <<<
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "ID") -eq 1 ] && [ -z "~{read_group.ID}" ]; then
+            >&2 echo "ID is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "SM") -eq 1 ] && [ -z "~{read_group.SM}" ]; then
+            >&2 echo "SM is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "BC") -eq 1 ] && [ -z "~{read_group.BC}" ]; then
+            >&2 echo "BC is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "CN") -eq 1 ] && [ -z "~{read_group.CN}" ]; then
+            >&2 echo "CN is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "DS") -eq 1 ] && [ -z "~{read_group.DS}" ]; then
+            >&2 echo "DS is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "DT") -eq 1 ] && [ -z "~{read_group.DT}" ]; then
+            >&2 echo "DT is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "FO") -eq 1 ] && [ -z "~{read_group.FO}" ]; then
+            >&2 echo "FO is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "KS") -eq 1 ] && [ -z "~{read_group.KS}" ]; then
+            >&2 echo "KS is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "LB") -eq 1 ] && [ -z "~{read_group.LB}" ]; then
+            >&2 echo "LB is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PG") -eq 1 ] && [ -z "~{read_group.PG}" ]; then
+            >&2 echo "PG is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PI") -eq 1 ] && [ -z "~{read_group.PI}" ]; then
+            >&2 echo "PI is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PL") -eq 1 ] && [ -z "~{read_group.PL}" ]; then
+            >&2 echo "PL is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PM") -eq 1 ] && [ -z "~{read_group.PM}" ]; then
+            >&2 echo "PM is required"
+            exit 1
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PU") -eq 1 ] && [ -z "~{read_group.PU}" ]; then
+            >&2 echo "PU is required"
+>>>>>>> 59acb366 (refactor: move ReadGroup struct to separate file)
             exit 1
         fi
     >>>
@@ -415,7 +491,14 @@ task validate_ReadGroup {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
+<<<<<<< HEAD
         container: 'ghcr.io/stjudecloud/util:1.4.0'
         maxRetries: 0
     }
 }
+=======
+        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        maxRetries: 1
+    }
+}
+>>>>>>> 59acb366 (refactor: move ReadGroup struct to separate file)
