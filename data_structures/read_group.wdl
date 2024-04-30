@@ -124,68 +124,251 @@ task validate_ReadGroup {
     parameter_meta {
         read_group: "ReadGroup struct to validate"
         required_fields: "Array of read group fields that must be defined"
+        restrictive: "If true, run a less permissive validation of field values. Otherwise, check against SAM spec-defined values."
     }
 
     input {
         ReadGroup read_group
         Array[String] required_fields = ["ID"]
+        Boolean restrictive = true
     }
 
+    # The SAM spec allows any printable ASCII character in header fields.
+    String sam_spec_pattern = "[\ -~]+"
+    # We have the opinion that is too permissive for ID and SM.
+    String id_pattern = if restrictive then "id" else sam_spec_pattern
+    String sample_pattern = if restrictive then "sample.?" else sam_spec_pattern
+    Array[String] platforms = ["CAPILLARY", "DNBSEQ", "ELEMENT", "HELICOS", "ILLUMINA", "IONTORRENT", "LS454", "ONT", "PACBIO", "SINGULAR", "SOLID", "ULTIMA"]
+
     command <<<
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "ID") -eq 1 ] && [ -z "~{read_group.ID}" ]; then
-            >&2 echo "ID is required"
-            exit 1
+        error=0
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "ID") -eq 1 ]
+        then
+            if [ -z "~{read_group.ID}" ]
+            then
+                >&2 echo "ID is required"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "SM") -eq 1 ] && [ -z "~{read_group.SM}" ]; then
-            >&2 echo "SM is required"
-            exit 1
+        if [ "~{defined(read_group.ID)}" == "true" ]
+        then
+            if [[ "~{read_group.ID}" =~ ^~{id_pattern}$ ]]
+            then
+                >&2 echo "ID must match pattern ~{id_pattern}"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "BC") -eq 1 ] && [ -z "~{read_group.BC}" ]; then
-            >&2 echo "BC is required"
-            exit 1
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "SM") -eq 1 ]
+        then
+            if [ -z "~{read_group.SM}" ]
+            then
+                >&2 echo "SM is required"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "CN") -eq 1 ] && [ -z "~{read_group.CN}" ]; then
-            >&2 echo "CN is required"
-            exit 1
+        if [ "~{defined(read_group.SM)}" == "true" ]
+        then
+            if [[ "~{read_group.SM}" =~ ^~{sample_pattern}$ ]]
+            then
+                >&2 echo "SM must match pattern ~{sample_pattern}"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "DS") -eq 1 ] && [ -z "~{read_group.DS}" ]; then
-            >&2 echo "DS is required"
-            exit 1
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "BC") -eq 1 ]
+        then
+            if [ -z "~{read_group.BC}" ]
+            then
+                >&2 echo "BC is required"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "DT") -eq 1 ] && [ -z "~{read_group.DT}" ]; then
-            >&2 echo "DT is required"
-            exit 1
+        if [ "~{defined(read_group.BC)}" == "true" ]
+        then
+            if [[ ! "~{read_group.BC}" =~ ^~{sam_spec_pattern}$ ]]
+            then
+                >&2 echo "BC must match pattern ~{sam_spec_pattern}"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "FO") -eq 1 ] && [ -z "~{read_group.FO}" ]; then
-            >&2 echo "FO is required"
-            exit 1
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "CN") -eq 1 ]
+        then
+            if [ -z "~{read_group.CN}" ]
+            then
+                >&2 echo "CN is required"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "KS") -eq 1 ] && [ -z "~{read_group.KS}" ]; then
-            >&2 echo "KS is required"
-            exit 1
+        if [ "~{defined(read_group.CN)}" == "true" ]
+        then
+            if [[ ! "~{read_group.CN}" =~ ^~{sam_spec_pattern}$ ]]
+            then
+                >&2 echo "CN must match pattern ~{sam_spec_pattern}"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "LB") -eq 1 ] && [ -z "~{read_group.LB}" ]; then
-            >&2 echo "LB is required"
-            exit 1
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "DS") -eq 1 ]
+        then
+            if [ -z "~{read_group.DS}" ]
+            then
+                >&2 echo "DS is required"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PG") -eq 1 ] && [ -z "~{read_group.PG}" ]; then
-            >&2 echo "PG is required"
-            exit 1
+        if [ "~{defined(read_group.DS)}" == "true" ]
+        then
+            if [[ ! "~{read_group.DS}" =~ ^~{sam_spec_pattern}$ ]]
+            then
+                >&2 echo "DS must match pattern ~{sam_spec_pattern}"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PI") -eq 1 ] && [ -z "~{read_group.PI}" ]; then
-            >&2 echo "PI is required"
-            exit 1
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "DT") -eq 1 ]
+        then
+            if [ -z "~{read_group.DT}" ]
+            then
+                >&2 echo "DT is required"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PL") -eq 1 ] && [ -z "~{read_group.PL}" ]; then
-            >&2 echo "PL is required"
-            exit 1
+        if [ "~{defined(read_group.DT)}" == "true" ]
+        then
+            if [[ ! "~{read_group.DT}" =~ ^~{sam_spec_pattern}$ ]]
+            then
+                >&2 echo "DT must match pattern ~{sam_spec_pattern}"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PM") -eq 1 ] && [ -z "~{read_group.PM}" ]; then
-            >&2 echo "PM is required"
-            exit 1
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "FO") -eq 1 ]
+        then
+            if [ -z "~{read_group.FO}" ]
+            then
+                >&2 echo "FO is required"
+                error=1
+            fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PU") -eq 1 ] && [ -z "~{read_group.PU}" ]; then
-            >&2 echo "PU is required"
+        if [ "~{defined(read_group.FO)}" == "true" ]
+        then
+            if [[ ! "~{read_group.FO}" =~ ^\*|[ACMGRSVTWYHKDBN]+$ ]]
+            then
+                >&2 echo "FO must match pattern \*|[ACMGRSVTWYHKDBN]+"
+                error=1
+            fi
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "KS") -eq 1 ]
+        then
+            if [ -z "~{if defined(read_group.KS) then read_group.KS else ""}" ]
+            then
+                >&2 echo "KS is required"
+                error=1
+            fi
+        fi
+        if [ "~{defined(read_group.KS)}" == "true" ]
+        then
+            if [[ ! "~{read_group.KS}" =~ ^~{sam_spec_pattern}$ ]]
+            then
+                >&2 echo "KS must match pattern ~{sam_spec_pattern}"
+                error=1
+            fi
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "LB") -eq 1 ]
+        then
+            if [ -z "~{read_group.LB}" ]
+            then
+                >&2 echo "LB is required"
+                error=1
+            fi
+        fi
+        if [ "~{defined(read_group.LB)}" == "true" ]
+        then
+            if [[ ! "~{read_group.LB}" =~ ^~{sam_spec_pattern}$ ]]
+            then
+                >&2 echo "LB must match pattern ~{sam_spec_pattern}"
+                error=1
+            fi
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PG") -eq 1 ]
+        then
+            if [ -z "~{read_group.PG}" ]
+            then
+                >&2 echo "PG is required"
+                error=1
+            fi
+        fi
+        if [ "~{defined(read_group.PG)}" == "true" ]
+        then
+            if [[ ! "~{read_group.PG}" =~ ^~{sam_spec_pattern}$ ]]
+            then
+                >&2 echo "PG must match pattern ~{sam_spec_pattern}"
+                error=1
+            fi
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PI") -eq 1 ]
+        then
+            if [ -z "~{read_group.PI}" ]
+            then
+                >&2 echo "PI is required"
+                error=1
+            fi
+        fi
+        if [ "~{defined(read_group.PI)}" == "true" ]
+        then
+            if [[ ! "~{read_group.PI}" =~ ^[0-9]+$ ]]
+            then
+                >&2 echo "PI must match pattern [0-9]+"
+                error=1
+            fi
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PL") -eq 1 ]
+        then
+            if [ -z "~{read_group.PL}" ]
+            then
+                >&2 echo "PL is required"
+                error=1
+            fi
+        fi
+        if [ "~{defined(read_group.PL)}" == "true" ]
+        then
+            if [[ ! "~{read_group.PL}" =~ ^~{sep("|", platforms)}$ ]]
+            then
+                >&2 echo "PL must match pattern ~{sep("|", platforms)}"
+                error=1
+            fi
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PM") -eq 1 ]
+        then
+            if [ -z "~{read_group.PM}" ]
+            then
+                >&2 echo "PM is required"
+                error=1
+            fi
+        fi
+        if [ "~{defined(read_group.PM)}" == "true" ]
+        then
+            if [[ ! "~{read_group.PM}" =~ ^~{sam_spec_pattern}$ ]]
+            then
+                >&2 echo "PM must match pattern ~{sam_spec_pattern}"
+                error=1
+            fi
+        fi
+        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PU") -eq 1 ]
+        then
+            if [ -z "~{read_group.PU}" ]
+            then
+                >&2 echo "PU is required"
+                error=1
+            fi
+        fi
+        if [ "~{defined(read_group.PU)}" == "true" ]
+        then
+            if [[ ! "~{read_group.PU}" =~ ^~{sam_spec_pattern}$ ]]
+            then
+                >&2 echo "PU must match pattern ~{sam_spec_pattern}"
+                error=1
+            fi
+        fi
+
+        if [ $error -eq 1 ]
+        then
             exit 1
         fi
     >>>
@@ -198,6 +381,6 @@ task validate_ReadGroup {
         memory: "4 GB"
         disk: "10 GB"
         container: 'ghcr.io/stjudecloud/util:1.4.0'
-        maxRetries: 1
+        maxRetries: 0
     }
 }
