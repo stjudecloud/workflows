@@ -134,7 +134,7 @@ task validate_ReadGroup {
     }
 
     # The SAM spec allows any printable ASCII character in header fields.
-    String sam_spec_pattern = "[\ -~]+"
+    String sam_spec_pattern = "[\\ -~]+"
     # We have the opinion that is too permissive for ID and SM.
     String id_pattern = if restrictive then "id" else sam_spec_pattern
     String sample_pattern = if restrictive then "sample.?" else sam_spec_pattern
