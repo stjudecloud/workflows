@@ -1,7 +1,5 @@
 ## [Homepage](https://software.broadinstitute.org/gatk)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task split_n_cigar_reads {
@@ -23,6 +21,7 @@ task split_n_cigar_reads {
         dict: "Dictionary file for FASTA format genome"
         interval_list: "Interval list indicating regions in which to split reads"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
+        memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
     }
@@ -35,16 +34,19 @@ task split_n_cigar_reads {
         File fasta_index
         File dict
         String prefix = basename(bam, ".bam") + ".split"
+        Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int ncpu = 8
     }
 
     Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
         set -euo pipefail
 
         gatk \
+            --java-options "-Xms4000m -Xmx~{java_heap_size}g" \
             SplitNCigarReads \
             -R ~{fasta} \
             -I ~{bam} \
@@ -62,7 +64,7 @@ task split_n_cigar_reads {
 
     runtime {
         cpu: ncpu
-        memory: "24 GB"
+        memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
@@ -109,7 +111,7 @@ task base_recalibrator {
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int ncpu = 4
-        Boolean use_original_quality_scores = true
+        Boolean use_original_quality_scores = false
     }
 
     Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
