@@ -1249,3 +1249,54 @@ task markdup {
         maxRetries: 1
     }
 }
+
+task faidx {
+    meta {
+        description: "Creates a `.fai` FASTA index for the input FASTA"
+        outputs: {
+            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`."
+        }
+    }
+
+    parameter_meta {
+        fasta: "Input FASTA format file to index. Optionally gzip compressed."
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
+            common: true
+        }
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fasta
+        Boolean use_all_cores = false
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fasta_size = size(fasta, "GiB")
+    Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
+
+    String outfile_name = basename(fasta, '.gz') + ".fai"
+
+    command <<<
+        set -euo pipefail
+
+        ref_fasta=~{basename(fasta, ".gz")}
+        gunzip -c ~{fasta} > "$ref_fasta" \
+            || ln -sf ~{fasta} "$ref_fasta"
+
+        samtools faidx -o ~{outfile_name} $ref_fasta
+    >>>
+
+    output {
+        File fasta_index = outfile_name
+    }
+
+    runtime {
+        cpu: 1
+        memory: "4 GB"
+        disk: "~{disk_size_gb} GB"
+        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        maxRetries: 1
+    }
+}
