@@ -15,11 +15,11 @@ task index {
     parameter_meta {
         bam: "Input BAM format file to index"
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -73,11 +73,11 @@ task merge {
         bams: "An array of BAMs to merge into one combined BAM"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -133,7 +133,7 @@ task sort {
         bam: "Input BAM format file to sort"
         prefix: "Prefix for the sorted BAM file. The extension `.bam` will be added."
         queryname_sort: {
-            description: "If true, sort the BAM by queryname. If false, sort by coordinate."
+            description: "If true, sort the BAM by queryname. If false, sort by coordinate.",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -180,7 +180,7 @@ task markdup {
     meta {
         description: "Marks duplicate reads in the input BAM file"
         outputs: {
-            duplicate_marked_bam: "The input BAM with computationally determined duplicates marked."
+            duplicate_marked_bam: "The input BAM with computationally determined duplicates marked.",
             mark_duplicates_metrics: "Duplicate marking metrics output from sambamba"
         }
     }
@@ -188,6 +188,10 @@ task markdup {
     parameter_meta {
         bam: "Input BAM format file in which to mark duplicates"
         prefix: "Prefix for the markdup result files. The extensions `markdup.bam` will be added."
+        remove_duplicates: {
+            description: "If true, remove duplicates instead of marking them.",
+            common: true
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
     }
@@ -239,11 +243,11 @@ task flagstat {
         bam: "Input BAM format file to generate flagstat for"
         outfile_name: "Name for the flagstat report file"
         use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
             common: true
         }
         ncpu: {
-            description: "Number of cores to allocate for task"
+            description: "Number of cores to allocate for task",
             common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
