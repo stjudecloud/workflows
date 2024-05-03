@@ -965,7 +965,7 @@ task scatter_interval_list {
 
         bash <<CODE
         I=0
-        for list in \$(ls out/*/*.interval_list)
+        for list in out/*/*.interval_list
         do
            I=\$((I+1))
            dir=\$(dirname \$list)
