@@ -61,6 +61,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fq/">Fq</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gatk4/">Gatk4</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../htseq/">Htseq</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../kraken2/">Kraken2</a>
@@ -91,6 +93,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../qualimap/">Qualimap</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../sambamba/">Sambamba</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../samtools/">Samtools</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../star/">Star</a>
@@ -112,11 +116,15 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/flag_filter/">FlagFilter</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/gatk-reference/">Gatk reference</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make qc reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality check standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/rnaseq-variant-calling/">Rnaseq variant calling</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/samtools-merge/">Samtools merge</a>
                   </li>
@@ -472,6 +480,90 @@
 <ul>
 <li><code>read_one_fastq_gz</code> (File)</li>
 <li><code>read_two_fastq_gz</code> (File?)</li>
+</ul>
+<h2 id="merge_vcfs">merge_vcfs</h2>
+<dl>
+<dt>description</dt>
+<dd>Merges the input VCF files into a single VCF file</dd>
+<dt>external_help</dt>
+<dd>https://gatk.broadinstitute.org/hc/en-us/articles/360036713331-MergeVcfs-Picard</dd>
+<dt>outputs</dt>
+<dd>{'output_vcf': 'The merged VCF file', 'output_vcf_index': 'The index file associated with the merged VCF file'}</dd>
+</dl>
+<h3 id="inputs_11">Inputs</h3>
+<h4 id="required_11">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>output_vcf_name</code> (String, <strong>required</strong>): Name for the merged VCF file</li>
+<li><code>vcfs</code> (Array[File], <strong>required</strong>): Input VCF format files to merge. May be gzipped or binary compressed.</li>
+<li><code>vcfs_indexes</code> (Array[File], <strong>required</strong>): Index files associated with the input VCF files</li>
+</ul>
+<h4 id="defaults_11">Defaults</h4>
+<ul>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+</ul>
+<h3 id="outputs_11">Outputs</h3>
+<ul>
+<li><code>output_vcf</code> (File)</li>
+<li><code>output_vcf_index</code> (File)</li>
+</ul>
+<h2 id="scatter_interval_list">scatter_interval_list</h2>
+<dl>
+<dt>description</dt>
+<dd>Splits an interval list into smaller interval lists for parallel processing</dd>
+<dt>external_help</dt>
+<dd>https://gatk.broadinstitute.org/hc/en-us/articles/360036897212-IntervalListTools-Picard</dd>
+<dt>outputs</dt>
+<dd>{'out': 'The split interval lists', 'interval_count': 'The number of split interval lists'}</dd>
+</dl>
+<h3 id="inputs_12">Inputs</h3>
+<h4 id="required_12">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>interval_list</code> (File, <strong>required</strong>): Input interval list to split</li>
+<li><code>scatter_count</code> (Int, <strong>required</strong>): Number of interval lists to create</li>
+</ul>
+<h4 id="defaults_12">Defaults</h4>
+<ul>
+<li><code>sort</code> (Boolean, default=true): Should the output interval lists be sorted? Sorts by coordinate.</li>
+<li><code>subdivision_mode</code> (String, default="BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW"); <strong>description</strong>: How to subdivide the intervals; <strong>choices</strong>: ['BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW', 'INTERVAL_SUBDIVISION', 'BALANCING_WITHOUT_INTERVAL_SUBDIVISION']</li>
+<li><code>unique</code> (Boolean, default=true): Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals.</li>
+</ul>
+<h3 id="outputs_12">Outputs</h3>
+<ul>
+<li><code>interval_lists_scatter</code> (Array[File])</li>
+<li><code>interval_count</code> (Int)</li>
+</ul>
+<h2 id="create_sequence_dictionary">create_sequence_dictionary</h2>
+<dl>
+<dt>description</dt>
+<dd>Creates a sequence dictionary for the input FASTA file using Picard</dd>
+<dt>external_help</dt>
+<dd>https://gatk.broadinstitute.org/hc/en-us/articles/13832748622491-CreateSequenceDictionary-Picard-</dd>
+<dt>outputs</dt>
+<dd>{'dictionary': 'Sequence dictionary produced by <code>picard CreateSequenceDictionary</code>.'}</dd>
+</dl>
+<h3 id="inputs_13">Inputs</h3>
+<h4 id="required_13">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>fasta</code> (File, <strong>required</strong>): Input FASTA format file from which to create dictionary</li>
+</ul>
+<h4 id="optional_1">Optional</h4>
+<ul>
+<li><code>assembly_name</code> (String?): Value to put in AS field of sequence dictionary</li>
+<li><code>fasta_url</code> (String?): Value to put in UR field of sequence dictionary</li>
+<li><code>species</code> (String?): Value to put in SP field of sequence dictionary</li>
+</ul>
+<h4 id="defaults_13">Defaults</h4>
+<ul>
+<li><code>memory_gb</code> (Int, default=16): RAM to allocate for task, specified in GB</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>outfile_name</code> (String, default=basename(fasta,".fa") + ".dict"): Name for the CreateSequenceDictionary dictionary file</li>
+</ul>
+<h3 id="outputs_13">Outputs</h3>
+<ul>
+<li><code>dictionary</code> (File)</li>
 </ul>
               
             </div>

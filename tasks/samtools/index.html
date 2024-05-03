@@ -61,6 +61,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fq/">Fq</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gatk4/">Gatk4</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../htseq/">Htseq</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../kraken2/">Kraken2</a>
@@ -78,6 +80,8 @@
                   <li class="toctree-l1"><a class="reference internal" href="../picard/">Picard</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../qualimap/">Qualimap</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../sambamba/">Sambamba</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Samtools</a>
     <ul class="current">
@@ -112,11 +116,15 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/flag_filter/">FlagFilter</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/gatk-reference/">Gatk reference</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/make-qc-reference/">Make qc reference</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/markdups-post/">MarkDuplicates Post</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/quality-check-standard/">Quality check standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/rnaseq-variant-calling/">Rnaseq variant calling</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/samtools-merge/">Samtools merge</a>
                   </li>
@@ -528,11 +536,33 @@
 <li><code>markdup_report</code> (File)</li>
 <li><code>markdup_bam</code> (File?)</li>
 </ul>
+<h2 id="faidx">faidx</h2>
+<dl>
+<dt>description</dt>
+<dd>Creates a <code>.fai</code> FASTA index for the input FASTA</dd>
+<dt>outputs</dt>
+<dd>{'fasta_index': "A <code>.fai</code> FASTA index associated with the input FASTA. Filename will be <code>basename(fasta) + '.fai'</code>."}</dd>
+</dl>
+<h3 id="inputs_13">Inputs</h3>
+<h4 id="required_13">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>fasta</code> (File, <strong>required</strong>): Input FASTA format file to index. Optionally gzip compressed.</li>
+</ul>
+<h4 id="defaults_13">Defaults</h4>
+<ul>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
+</ul>
+<h3 id="outputs_13">Outputs</h3>
+<ul>
+<li><code>fasta_index</code> (File)</li>
+</ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../qualimap/" class="btn btn-neutral float-left" title="Qualimap"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../sambamba/" class="btn btn-neutral float-left" title="Sambamba"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../star/" class="btn btn-neutral float-right" title="Star">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -561,7 +591,7 @@
         </span>
     
     
-      <span><a href="../qualimap/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../sambamba/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../star/" style="color: #fcfcfc">Next &raquo;</a></span>

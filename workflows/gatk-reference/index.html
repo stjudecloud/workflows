@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Star db build - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Gatk reference - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Star db build";
-        var mkdocs_page_input_path = "workflows/star-db-build.md";
+        var mkdocs_page_name = "Gatk reference";
+        var mkdocs_page_input_path = "workflows/gatk-reference.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -104,21 +104,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../flag_filter/">FlagFilter</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../gatk-reference/">Gatk reference</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make qc reference</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../markdups-post/">MarkDuplicates Post</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality check standard</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../rnaseq-variant-calling/">Rnaseq variant calling</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../samtools-merge/">Samtools merge</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../scrnaseq-standard/">Scrnaseq standard</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Star db build</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Gatk reference</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -133,6 +119,20 @@
     <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
     </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../make-qc-reference/">Make qc reference</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../markdups-post/">MarkDuplicates Post</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quality-check-standard/">Quality check standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../rnaseq-variant-calling/">Rnaseq variant calling</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../samtools-merge/">Samtools merge</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../scrnaseq-standard/">Scrnaseq standard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../star-db-build/">Star db build</a>
                   </li>
               </ul>
       </div>
@@ -150,9 +150,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Workflows</li>
-      <li class="breadcrumb-item active">Star db build</li>
+      <li class="breadcrumb-item active">Gatk reference</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/star-db-build.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/gatk-reference.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -160,63 +160,76 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="star_db_build">star_db_build</h2>
+                <h2 id="gatk_reference">gatk_reference</h2>
 <dl>
 <dt>description</dt>
-<dd>Builds a database suitable for running the STAR alignment program</dd>
+<dd>Fetches reference files for GATK.</dd>
 <dt>outputs</dt>
-<dd>{'reference_fa': 'FASTA format reference file', 'gtf': 'GTF feature file', 'star_db_tar_gz': 'A gzipped TAR file containing the STAR reference files'}</dd>
+<dd>{'fasta': 'FASTA file for the reference genome.', 'fasta_index': 'Index for the FASTA file for the reference genome.', 'fasta_dict': 'Sequence dictionary for the reference genome.', 'dbSNP_vcf': 'dbSNP VCF file for the reference genome.', 'dbSNP_vcf_index': 'Index for the dbSNP VCF file for the reference genome.', 'interval_list': 'List of intervals that will be used when computing variants.', 'knownVCFs': 'VCF files with known variants to use with variant calling.'}</dd>
 <dt>allowNestedInputs</dt>
 <dd>true</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>gtf_name</code> (String, <strong>required</strong>): Name of output GTF file</li>
-<li><code>gtf_url</code> (String, <strong>required</strong>): URL to retrieve the reference GTF file from</li>
-<li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of output reference FASTA file</li>
-<li><code>reference_fa_url</code> (String, <strong>required</strong>): URL to retrieve the reference FASTA file from</li>
-<li><code>build_star_db._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>gtf_download._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>reference_download._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>dbSNP_vcf_name</code> (String, <strong>required</strong>): Name of the dbSNP VCF file.</li>
+<li><code>dbSNP_vcf_url</code> (String, <strong>required</strong>): URL from which to retrieve the dbSNP VCF file.</li>
+<li><code>knownVCF_names</code> (Array[String], <strong>required</strong>): Names of the VCF files with known variants. Order should match that of <code>knownVCF_urls</code>.</li>
+<li><code>knownVCF_urls</code> (Array[String], <strong>required</strong>): URLs from which to retrieve VCF files with known variants.</li>
+<li><code>reference_fa_md5</code> (String, <strong>required</strong>): MD5 checksum for the reference FASTA file.</li>
+<li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of the output reference FASTA file.</li>
+<li><code>reference_fa_url</code> (String, <strong>required</strong>): URL from which to retrieve the reference FASTA file.</li>
+<li><code>create_sequence_dictionary._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>dbsnp._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>dbsnp.disk_size_gb</code> (Int, <strong>required</strong>)</li>
+<li><code>dbsnp_index._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>dbsnp_index.disk_size_gb</code> (Int, <strong>required</strong>)</li>
+<li><code>faidx._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>fasta_download._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>fasta_download.disk_size_gb</code> (Int, <strong>required</strong>)</li>
+<li><code>intervals._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>intervals.disk_size_gb</code> (Int, <strong>required</strong>)</li>
+<li><code>knownVCF._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>knownVCF.disk_size_gb</code> (Int, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>gtf_md5</code> (String?): Expected md5sum of GTF file</li>
-<li><code>reference_fa_md5</code> (String?): Expected md5sum of reference FASTA file</li>
+<li><code>dbSNP_vcf_index_name</code> (String?): Name of the index for the dbSNP VCF file.</li>
+<li><code>dbSNP_vcf_index_url</code> (String?): URL from which to retrieve the index for the dbSNP VCF file.</li>
+<li><code>interval_list_name</code> (String?): Name of the list of intervals to use when computing variants.</li>
+<li><code>interval_list_url</code> (String?): URL from which to retrieve the list of intervals to use when computing variants.</li>
+<li><code>create_sequence_dictionary.assembly_name</code> (String?)</li>
+<li><code>create_sequence_dictionary.fasta_url</code> (String?)</li>
+<li><code>create_sequence_dictionary.species</code> (String?)</li>
+<li><code>dbsnp.md5sum</code> (String?)</li>
+<li><code>dbsnp_index.md5sum</code> (String?)</li>
+<li><code>intervals.md5sum</code> (String?)</li>
+<li><code>knownVCF.md5sum</code> (String?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>gtf_disk_size_gb</code> (Int, default=10): Disk space to allocate the GTF download task</li>
-<li><code>reference_fa_disk_size_gb</code> (Int, default=10): Disk space to allocate the FASTA download task</li>
-<li><code>build_star_db.db_name</code> (String, default="star_db")</li>
-<li><code>build_star_db.genomeChrBinNbits</code> (Int, default=18)</li>
-<li><code>build_star_db.genomeSAindexNbases</code> (Int, default=14)</li>
-<li><code>build_star_db.genomeSAsparseD</code> (Int, default=1)</li>
-<li><code>build_star_db.genomeSuffixLengthMax</code> (Int, default=-1)</li>
-<li><code>build_star_db.memory_gb</code> (Int, default=50)</li>
-<li><code>build_star_db.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>build_star_db.ncpu</code> (Int, default=8)</li>
-<li><code>build_star_db.sjdbGTFchrPrefix</code> (String, default="-")</li>
-<li><code>build_star_db.sjdbGTFfeatureExon</code> (String, default="exon")</li>
-<li><code>build_star_db.sjdbGTFtagExonParentGene</code> (String, default="gene_id")</li>
-<li><code>build_star_db.sjdbGTFtagExonParentGeneName</code> (String, default="gene_name")</li>
-<li><code>build_star_db.sjdbGTFtagExonParentGeneType</code> (String, default="gene_type gene_biotype")</li>
-<li><code>build_star_db.sjdbGTFtagExonParentTranscript</code> (String, default="transcript_id")</li>
-<li><code>build_star_db.sjdbOverhang</code> (Int, default=125)</li>
-<li><code>build_star_db.use_all_cores</code> (Boolean, default=false)</li>
+<li><code>create_sequence_dictionary.memory_gb</code> (Int, default=16)</li>
+<li><code>create_sequence_dictionary.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>create_sequence_dictionary.outfile_name</code> (String, default=basename(fasta,".fa") + ".dict")</li>
+<li><code>faidx.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>faidx.use_all_cores</code> (Boolean, default=false)</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>reference_fa</code> (File)</li>
-<li><code>gtf</code> (File)</li>
-<li><code>star_db_tar_gz</code> (File)</li>
+<li><code>fasta</code> (File)</li>
+<li><code>fasta_index</code> (File)</li>
+<li><code>fasta_dict</code> (File)</li>
+<li><code>dbSNP_vcf</code> (File?)</li>
+<li><code>dbSNP_vcf_index</code> (File?)</li>
+<li><code>interval_list</code> (File?)</li>
+<li><code>knownVCFs</code> (Array[File])</li>
 </ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../scrnaseq-standard/" class="btn btn-neutral float-left" title="Scrnaseq standard"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../flag_filter/" class="btn btn-neutral float-left" title="FlagFilter"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../make-qc-reference/" class="btn btn-neutral float-right" title="Make qc reference">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -244,8 +257,10 @@
         </span>
     
     
-      <span><a href="../scrnaseq-standard/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../flag_filter/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
+    
+      <span><a href="../make-qc-reference/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
