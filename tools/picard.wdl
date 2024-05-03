@@ -872,7 +872,7 @@ task merge_vcfs {
         description: "Merges the input VCF files into a single VCF file"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036713331-MergeVcfs-Picard"
         outputs: {
-            output_vcf: "The merged VCF file"
+            output_vcf: "The merged VCF file",
             output_vcf_index: "The index file associated with the merged VCF file"
         }
     }
@@ -918,7 +918,7 @@ task scatter_interval_list {
         description: "Splits an interval list into smaller interval lists for parallel processing"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036897212-IntervalListTools-Picard"
         outputs: {
-            out: "The split interval lists"
+            out: "The split interval lists",
             interval_count: "The number of split interval lists"
         }
     }
@@ -926,7 +926,7 @@ task scatter_interval_list {
     parameter_meta  {
         interval_list: "Input interval list to split"
         subdivision_mode: {
-            description: "How to subdivide the intervals"
+            description: "How to subdivide the intervals",
             choices: [
                 'BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW',
                 'INTERVAL_SUBDIVISION',
