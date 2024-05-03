@@ -1264,10 +1264,6 @@ task faidx {
             description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
             common: true
         }
-        ncpu: {
-            description: "Number of cores to allocate for task",
-            common: true
-        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
