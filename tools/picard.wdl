@@ -906,7 +906,7 @@ task merge_vcfs {
     }
 
     runtime {
-        memory: "3 GB"
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
         maxRetries: 1
