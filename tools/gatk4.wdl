@@ -23,7 +23,7 @@ task split_n_cigar_reads {
         dict: "Dictionary file for FASTA format genome"
         interval_list: "Interval list indicating regions in which to split reads"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
-        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
     }
 
@@ -90,7 +90,7 @@ task base_recalibrator {
         known_indels_sites_VCFs: "List of VCF files containing known indels"
         known_indels_sites_indices: "List of VCF index files corresponding to the VCF files in `known_indels_sites_VCFs`"
         memory_gb: "RAM to allocate for task, specified in GB"
-        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
         use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
     }
