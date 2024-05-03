@@ -1,7 +1,5 @@
 ## [Homepage](https://github.com/lh3/bwa)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 # TODO there are probably BWA params we can expose. Have not checked

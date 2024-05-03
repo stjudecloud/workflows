@@ -1,7 +1,5 @@
 ## [Homepage](https://deeptools.readthedocs.io/en/develop/index.html)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task bam_coverage {

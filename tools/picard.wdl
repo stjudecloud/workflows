@@ -1,7 +1,8 @@
 ## [Homepage](https://broadinstitute.github.io/picard/)
-# TODO looks like this file was missed when converting from
-# a `memory_gb` parameter to a "softcoded" runtime block.
-# When moving those, check `tests/tools/test_picard.yaml`.
+## TODO looks like this file was missed when converting from
+## a `memory_gb` parameter to a "softcoded" runtime block.
+## When moving those, check `tests/tools/test_picard.yaml`.
+
 version 1.1
 
 task mark_duplicates {
