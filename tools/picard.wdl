@@ -936,7 +936,6 @@ task scatter_interval_list {
         unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
         sort: "Should the output interval lists be sorted? Sorts by coordinate."
         scatter_count: "Number of interval lists to create"
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
