@@ -9,14 +9,14 @@ task split_n_cigar_reads {
         description: "Splits reads that contain Ns in their CIGAR strings into multiple reads."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036858811-SplitNCigarReads"
         outputs: {
-            split_n_reads_bam: "BAM file with reads split at N CIGAR elements and updated CIGAR strings."
-            split_n_reads_bam_index: "Index file for the split BAM"
+            split_n_reads_bam: "BAM file with reads split at N CIGAR elements and updated CIGAR strings.",
+            split_n_reads_bam_index: "Index file for the split BAM",
             split_n_reads_bam_md5: "MD5 checksum for the split BAM"
         }
     }
 
     parameter_meta  {
-        bam: "Input BAM format file to with unsplit reads containg Ns in their CIGAR strings."
+        bam: "Input BAM format file to with unsplit reads containing Ns in their CIGAR strings."
         bam_index: "BAM index file corresponding to the input BAM"
         fasta: "Reference genome in FASTA format. Must be uncompressed."
         fasta_index: "Index for FASTA format genome"
@@ -146,7 +146,7 @@ task apply_bqsr {
         description: "Applies base quality score recalibration to a BAM file."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360040097972-ApplyBQSRSpark-BETA"
         outputs: {
-            recalibrated_bam: "Recalibrated BAM file"
+            recalibrated_bam: "Recalibrated BAM file",
             recalibrated_bam_index: "Index file for the recalibrated BAM"
         }
 
@@ -209,7 +209,7 @@ task haplotype_caller {
         description: "Calls germline SNPs and indels via local re-assembly of haplotypes."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller"
         outputs: {
-            vcf: "VCF file containing called variants"
+            vcf: "VCF file containing called variants",
             vcf_index: "Index file for the VCF"
         }
     }
@@ -218,7 +218,7 @@ task haplotype_caller {
         bam: "Input BAM format file on which to call variants"
         bam_index: "BAM index file corresponding to the input BAM"
         interval_list: {
-            description: "Interval list indicating regions in which to call variants"
+            description: "Interval list indicating regions in which to call variants",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035531852-Intervals-and-interval-lists"
         }
         fasta: "Reference genome in FASTA format"
@@ -228,7 +228,7 @@ task haplotype_caller {
         dbSNP_vcf_index: "dbSNP VCF index file"
         prefix: "Prefix for the output VCF. The extension `.vcf.gz` will be added."
         stand_call_conf: {
-            description: "Minimum confidence threshold for calling variants"
+            description: "Minimum confidence threshold for calling variants",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller#--standard-min-confidence-threshold-for-calling"
         }
         memory_gb: "RAM to allocate for task, specified in GB"
@@ -289,7 +289,7 @@ task variant_filtration {
         description: "Filters variants based on specified criteria."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration"
         outputs: {
-            vcf_filtered: "Filtered VCF file"
+            vcf_filtered: "Filtered VCF file",
             vcf_filtered_index: "Index file for the filtered VCF"
         }
     }
@@ -302,11 +302,11 @@ task variant_filtration {
         dict: "Dictionary file for FASTA format genome"
         prefix: "Prefix for the output filtered VCF. The extension `.filtered.vcf.gz` will be added."
         filter_names: {
-            description: "Names of the filters to apply"
+            description: "Names of the filters to apply",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-name"
         }
         filter_expressions: {
-            description: "Expressions for the filters"
+            description: "Expressions for the filters",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-expression"
         }
         cluster: "Number of SNPs that must be present in a window to filter"
