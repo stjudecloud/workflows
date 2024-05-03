@@ -942,7 +942,7 @@ task fixmate {
 
     parameter_meta {
         bam: {
-            description: "Input BAM format file to add mate information. Must be name-sorted or name-collated."
+            description: "Input BAM format file to add mate information. Must be name-sorted or name-collated.",
             stream: true
         }
         prefix: "Prefix for the output file. The extension specified with the `extension` parameter will be added."

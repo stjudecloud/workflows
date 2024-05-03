@@ -820,6 +820,7 @@ task bam_to_fastq {
 
     parameter_meta {
         bam: "Input BAM format file to convert to FASTQ"
+        prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
         paired: {
             description: "Is the data Paired-End (true) or Single-End (false)?",
             common: true

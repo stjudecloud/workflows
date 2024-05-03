@@ -44,7 +44,7 @@ task download {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.4.0'
         maxRetries: 1
     }
 }
@@ -141,7 +141,7 @@ task split_string {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.4.0'
         maxRetries: 1
     }
 }
@@ -367,7 +367,7 @@ task unpack_tarball {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.4.0'
         maxRetries: 1
     }
 }
@@ -680,7 +680,7 @@ END
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.4.0'
         maxRetries: 1
     }
 }
@@ -690,6 +690,11 @@ task qc_summary {
     #   Delaram+David okayed a switch to TSV
     meta {
         description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive."
+    }
+
+    parameter_meta {
+        multiqc_tar_gz: "MultiQC report tarball from which to extract key metrics"
+        outfile_name: "Name for the JSON file"
     }
 
     input {
@@ -750,7 +755,7 @@ task qc_summary {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: 'ghcr.io/stjudecloud/util:1.4.0'
         maxRetries: 1
     }
 }
@@ -771,6 +776,7 @@ task split_fastq {
         reads_per_file: "Number of reads to include in each output FASTQ file"
         prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
     }
 
     input {
