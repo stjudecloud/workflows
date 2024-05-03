@@ -945,10 +945,7 @@ task scatter_interval_list {
         Boolean unique = true
         Boolean sort = true
         Int scatter_count
-        Int modify_disk_size_gb = 0
     }
-
-    Int disk_size_gb = 1 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -956,12 +953,12 @@ task scatter_interval_list {
         mkdir out
         picard -Xms1g \
             IntervalListTools \
-            SCATTER_COUNT=~{scatter_count} \
-            SUBDIVISION_MODE=~{subdivision_mode} \
-            UNIQUE=~{unique} \
-            SORT=~{sort} \
-            INPUT=~{interval_list} \
-            OUTPUT=out
+            --SCATTER_COUNT ~{scatter_count} \
+            --SUBDIVISION_MODE ~{subdivision_mode} \
+            --UNIQUE ~{unique} \
+            --SORT ~{sort} \
+            --INPUT ~{interval_list} \
+            --OUTPUT out
 
         bash <<CODE
         I=0
@@ -983,7 +980,7 @@ task scatter_interval_list {
 
     runtime {
         memory: "2 GB"
-        disk: "~{disk_size_gb} GB"
+        disk: "1 GB"
         container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
         maxRetries: 1
     }

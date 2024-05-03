@@ -12,7 +12,7 @@ workflow gatk_reference {
         outputs: {
             fasta: "FASTA file for the reference genome."
             fasta_index: "Index for the FASTA file for the reference genome."
-            fasta_dict: "Picard Sequence Dictionary for the reference genome."
+            fasta_dict: "Sequence dictionary for the reference genome."
             dbSNP_vcf: "dbSNP VCF file for the reference genome."
             dbSNP_vcf_index: "Index for the dbSNP VCF file for the reference genome."
             interval_list: "List of intervals that will be used when computing variants."
