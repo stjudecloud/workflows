@@ -1,7 +1,5 @@
 ## [Homepage](https://github.com/stjudecloud/ngsderive)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task strandedness {

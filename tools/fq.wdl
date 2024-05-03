@@ -1,7 +1,5 @@
 ## [Homepage](https://github.com/stjude-rust-labs/fq)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task fqlint {
