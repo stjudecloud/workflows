@@ -168,6 +168,8 @@ When moving those, check <code>tests/tools/test_picard.yaml</code>.</p>
 <dd>Marks duplicate reads in the input BAM file using Picard</dd>
 <dt>external_help</dt>
 <dd>https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-</dd>
+<dt>help</dt>
+<dd>For non-primary reads and unmapped mates of duplicate reads to be included in duplicate analysis, input BAM must be collated. See <code>external_help</code> for more information.</dd>
 <dt>outputs</dt>
 <dd>{'duplicate_marked_bam': 'The input BAM with computationally determined duplicates marked.', 'duplicate_marked_bam_index': 'The <code>.bai</code> BAM index file associated with <code>duplicate_marked_bam</code>', 'duplicate_marked_bam_md5': 'The md5sum of <code>duplicate_marked_bam</code>', 'mark_duplicates_metrics': {'description': 'The METRICS_FILE result of <code>picard MarkDuplicates</code>', 'external_help': 'http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics'}}</dd>
 </dl>
