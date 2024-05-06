@@ -9,6 +9,7 @@ task mark_duplicates {
     meta {
         description: "Marks duplicate reads in the input BAM file using Picard"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-"
+        help: "For non-primary reads and unmapped mates of duplicate reads to be included in duplicate analysis, input BAM must be collated. See `external_help` for more information."
         outputs: {
             duplicate_marked_bam: "The input BAM with computationally determined duplicates marked.",
             duplicate_marked_bam_index: "The `.bai` BAM index file associated with `duplicate_marked_bam`",
