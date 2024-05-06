@@ -32,6 +32,7 @@ workflow rnaseq_core {
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         alignSJstitchMismatchNmax: {
             description: "This overrides the STAR alignment default. Maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif",
+            tool: "star",
             tool_default: {
                 noncanonical_motifs: 0,
                 GT_AG_and_CT_AC_motif: -1,
@@ -61,37 +62,45 @@ workflow rnaseq_core {
         use_all_cores: "Use all cores for multi-core steps?"
         alignSplicedMateMapLminOverLmate: {
             description: "alignSplicedMateMapLmin normalized to mate length",
+            tool: "star",
             tool_default: 0.66
         }
         outFilterMultimapNmax: {
             description: "maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. **[STAR default]**: `10`. **[WDL default]**: `20`.",
+            tool: "star",
             tool_default: 20
             common: true
         }
         peOverlapNbasesMin: {
             description: "minimum number of overlap bases to trigger mates merging and realignment. Specify >0 value to switch on the 'merging of overlapping mates' algorithm.",
+            tool: "star",
             tool_default: 0
         }
         chimScoreSeparation: {
             description: "minimum difference (separation) between the best chimeric score and the next one",
+            tool: "star",
             tool_default: 10
         }
         chimScoreJunctionNonGTAG: {
             description: "penalty for a non-GT/AG chimeric junction",
+            tool: "star",
             tool_default: -1
         }
         chimJunctionOverhangMin: {
             description: "minimum overhang for a chimeric junction",
+            tool: "star",
             tool_default: 20,
             common: true
         }
         chimSegmentReadGapMax: {
             description: "maximum gap in the read sequence between chimeric segments",
+            tool: "star",
             tool_default: 0,
             common: true
         }
         chimMultimapNmax: {
             description: "maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments",
+            tool: "star",
             tool_default: 0,
             common: true
         }
