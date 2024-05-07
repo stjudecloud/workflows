@@ -146,20 +146,20 @@ workflow rnaseq_core {
     String provided_strandedness = strandedness
 
     call star.alignment { input:
-        read_one_fastqs_gz=read_one_fastqs_gz,
-        read_two_fastqs_gz=read_two_fastqs_gz,
+        read_one_fastqs_gz,
+        read_two_fastqs_gz,
         star_db_tar_gz=star_db,
-        prefix=prefix,
-        read_groups=read_groups,
-        use_all_cores=use_all_cores,
-        alignSJstitchMismatchNmax=alignSJstitchMismatchNmax,
-        outFilterMultimapNmax=outFilterMultimapNmax,
-        peOverlapNbasesMin=peOverlapNbasesMin,
-        chimScoreSeparation=chimScoreSeparation,
-        chimScoreJunctionNonGTAG=chimScoreJunctionNonGTAG,
-        chimJunctionOverhangMin=chimJunctionOverhangMin,
-        chimSegmentReadGapMax=chimSegmentReadGapMax,
-        chimMultimapNmax=chimMultimapNmax,
+        prefix,
+        read_groups,
+        use_all_cores,
+        alignSJstitchMismatchNmax,
+        outFilterMultimapNmax,
+        peOverlapNbasesMin,
+        chimScoreSeparation,
+        chimScoreJunctionNonGTAG,
+        chimJunctionOverhangMin,
+        chimSegmentReadGapMax,
+        chimMultimapNmax,
     }
 
     call alignment_post_wf.alignment_post { input:
