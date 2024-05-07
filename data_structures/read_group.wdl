@@ -1,21 +1,48 @@
+## Read groups are defined in the SAM spec
+##    ID: "Read group identifier. Each Read Group must have a unique ID. The value of ID is used in the RG tags of alignment records.",
+##    BC: "Barcode sequence identifying the sample or library. This value is the expected barcode bases as read by the sequencing machine in the absence of errors. If there are several barcodes for the sample/library (e.g., one on each end of the template), the recommended implementation concatenates all the barcodes separating them with hyphens (`-`).",
+##    CN: "Name of sequencing center producing the read.",
+##    DS: "Description.",
+##    DT: "Date the run was produced (ISO8601 date or date/time).",
+##    FO: "Flow order. The array of nucleotide bases that correspond to the nucleotides used for each flow of each read. Multi-base flows are encoded in IUPAC format, and non-nucleotide flows by various other characters. Format: /\\*|[ACMGRSVTWYHKDBN]+/",
+##    KS: "The array of nucleotide bases that correspond to the key sequence of each read.",
+##    LB: "Library.",
+##    PG: "Programs used for processing the read group.",
+##    PI: "Predicted median insert size, rounded to the nearest integer.",
+##    PL: "Platform/technology used to produce the reads. Valid values: CAPILLARY, DNBSEQ (MGI/BGI), ELEMENT, HELICOS, ILLUMINA, IONTORRENT, LS454, ONT (Oxford Nanopore), PACBIO (Pacific Biosciences), SINGULAR, SOLID, and ULTIMA. This field should be omitted when the technology is not in this list (though the PM field may still be present in this case) or is unknown.",
+##    PM: "Platform model. Free-form text providing further details of the platform/technology used.",
+##    PU: "Platform unit (e.g., flowcell-barcode.lane for Illumina or slide for SOLiD). Unique identifier.",
+##    SM: "Sample. Use pool name where a pool is being sequenced."
+##
+## An example input JSON entry for `read_group` might look like this:
+## {
+##     "read_group": {
+##             "ID": "rg1",
+##             "PI": 150,
+##             "PL": "ILLUMINA",
+##             "SM": "Sample",
+##             "LB": "Sample"
+##     }
+## }
+
 version 1.1
 
 # See the `read_groups` `parameter_meta` for definitions of each field
 struct ReadGroup {
-    String ID
-    String? BC
-    String? CN
-    String? DS
-    String? DT
-    String? FO
-    String? KS
-    String? LB
-    String? PG
-    Int? PI
-    String? PL
-    String? PM
-    String? PU
-    String? SM
+    String ID  # Read group identifier. Each Read Group must have a unique ID. The value of ID is used in the RG tags of alignment records.
+    String? BC # Barcode sequence identifying the sample or library. This value is the expected barcode bases as read by the sequencing machine in the absence of errors. If there are several barcodes for the sample/library (e.g., one on each end of the template), the recommended implementation concatenates all the barcodes separating them with hyphens (`-`).
+    String? CN # Name of sequencing center producing the read.
+    String? DS # Description
+    String? DT # Date the run was produced (ISO8601 date or date/time)
+    String? FO #Flow order. The array of nucleotide bases that correspond to the nucleotides used for each flow of each read. Multi-base flows are encoded in IUPAC format, and non-nucleotide flows by various other characters. Format: /\\*|[ACMGRSVTWYHKDBN]+/
+    String? KS # The array of nucleotide bases that correspond to the key sequence of each read
+    String? LB # Library
+    String? PG # Programs used for processing the read group
+    Int? PI    # Predicted median insert size, rounded to the nearest integer
+    String? PL # Platform/technology used to produce the reads. Valid values: CAPILLARY, DNBSEQ (MGI/BGI), ELEMENT, HELICOS, ILLUMINA, IONTORRENT, LS454, ONT (Oxford Nanopore), PACBIO (Pacific Biosciences), SINGULAR, SOLID, and ULTIMA. This field should be omitted when the technology is not in this list (though the PM field may still be present in this case) or is unknown.
+    String? PM # Platform model. Free-form text providing further details of the platform/technology used.
+    String? PU # Platform unit (e.g., flowcell-barcode.lane for Illumina or slide for SOLiD). Unique identifier.
+    String? SM # Sample. Use pool name where a pool is being sequenced.
 }
 
 task ReadGroup_to_string {
@@ -70,7 +97,7 @@ task get_ReadGroups {
     meta {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
         outputs: {
-            read_groups: "An array of strings containing read group information. If `format_for_star = true`, all found read groups are contained in one string (`read_groups[0]`). If `format_for_star = false`, each found @RG line will be its own entry in output array `read_groups`."
+            read_groups: "An array of ReadGroup structs containing read group information."
         }
     }
 
@@ -142,21 +169,10 @@ task validate_ReadGroup {
 
     command <<<
         error=0
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "ID") -eq 1 ]
+        if [[ "~{read_group.ID}" =~ ^~{id_pattern}$ ]]
         then
-            if [ -z "~{read_group.ID}" ]
-            then
-                >&2 echo "ID is required"
-                error=1
-            fi
-        fi
-        if [ "~{defined(read_group.ID)}" == "true" ]
-        then
-            if [[ "~{read_group.ID}" =~ ^~{id_pattern}$ ]]
-            then
-                >&2 echo "ID must match pattern ~{id_pattern}"
-                error=1
-            fi
+            >&2 echo "ID must match pattern ~{id_pattern}"
+            error=1
         fi
         if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "SM") -eq 1 ]
         then
