@@ -1,0 +1,638 @@
+#:GATKReport.v1.1:5
+#:GATKTable:2:17:%s:%s:;
+#:GATKTable:Arguments:Recalibration argument collection values used in this run
+Argument                    Value                                                                   
+binary_tag_name             null                                                                    
+covariate                   ReadGroupCovariate,QualityScoreCovariate,ContextCovariate,CycleCovariate
+default_platform            null                                                                    
+deletions_default_quality   45                                                                      
+force_platform              null                                                                    
+indels_context_size         3                                                                       
+insertions_default_quality  45                                                                      
+low_quality_tail            2                                                                       
+maximum_cycle_value         500                                                                     
+mismatches_context_size     2                                                                       
+mismatches_default_quality  -1                                                                      
+no_standard_covs            false                                                                   
+quantizing_levels           16                                                                      
+recalibration_report        null                                                                    
+run_without_dbsnp           false                                                                   
+solid_nocall_strategy       THROW_EXCEPTION                                                         
+solid_recal_mode            SET_Q_ZERO                                                              
+
+#:GATKTable:3:94:%d:%d:%d:;
+#:GATKTable:Quantized:Quality quantization map
+QualityScore  Count  QuantizedScore
+           0      0              93
+           1      0              93
+           2      0              93
+           3      0              93
+           4      0              93
+           5      0              93
+           6      0              93
+           7      0              93
+           8      0              93
+           9      0              93
+          10     76              10
+          11      0              93
+          12      0              93
+          13      0              93
+          14      0              93
+          15      0              93
+          16      0              93
+          17      0              93
+          18      0              93
+          19      0              93
+          20      0              93
+          21      0              93
+          22      0              93
+          23      0              93
+          24      0              93
+          25     97              25
+          26      0              93
+          27      0              93
+          28      0              93
+          29      0              93
+          30      0              93
+          31      0              93
+          32      0              93
+          33      0              93
+          34      0              93
+          35      0              93
+          36      0              93
+          37   2075              37
+          38      0              93
+          39      0              93
+          40      0              93
+          41      0              93
+          42      0              93
+          43      0              93
+          44      0              93
+          45      0              93
+          46      0              93
+          47      0              93
+          48      0              93
+          49      0              93
+          50      0              93
+          51      0              93
+          52      0              93
+          53      0              93
+          54      0              93
+          55      0              93
+          56      0              93
+          57      0              93
+          58      0              93
+          59      0              93
+          60      0              93
+          61      0              93
+          62      0              93
+          63      0              93
+          64      0              93
+          65      0              93
+          66      0              93
+          67      0              93
+          68      0              93
+          69      0              93
+          70      0              93
+          71      0              93
+          72      0              93
+          73      0              93
+          74      0              93
+          75      0              93
+          76      0              93
+          77      0              93
+          78      0              93
+          79      0              93
+          80      0              93
+          81      0              93
+          82      0              93
+          83      0              93
+          84      0              93
+          85      0              85
+          86      0              86
+          87      0              87
+          88      0              88
+          89      0              89
+          90      0              90
+          91      0              91
+          92      0              92
+          93      0              93
+
+#:GATKTable:6:1:%s:%s:%.4f:%.4f:%d:%.2f:;
+#:GATKTable:RecalTable0:
+ReadGroup           EventType  EmpiricalQuality  EstimatedQReported  Observations  Errors
+GM24385_replicate1  M                   24.0000             25.2200          2248   30.00
+
+#:GATKTable:6:3:%s:%d:%s:%.4f:%d:%.2f:;
+#:GATKTable:RecalTable1:
+ReadGroup           QualityScore  EventType  EmpiricalQuality  Observations  Errors
+GM24385_replicate1            11  M                   10.0000            76   20.00
+GM24385_replicate1            25  M                   25.0000            97    2.00
+GM24385_replicate1            37  M                   37.0000          2075    8.00
+
+#:GATKTable:8:502:%s:%d:%s:%s:%s:%.4f:%d:%.2f:;
+#:GATKTable:RecalTable2:
+ReadGroup           QualityScore  CovariateValue  CovariateName  EventType  EmpiricalQuality  Observations  Errors
+GM24385_replicate1            11  -10             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -103            Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -109            Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -110            Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -116            Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -117            Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -127            Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -13             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -16             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -18             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  -19             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -31             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -32             Cycle          M                   11.0000             2    0.00
+GM24385_replicate1            11  -33             Cycle          M                   11.0000             2    0.00
+GM24385_replicate1            11  -37             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -39             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  -4              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -40             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -46             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -47             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  -5              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -50             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -51             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -52             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -54             Cycle          M                   11.0000             2    0.00
+GM24385_replicate1            11  -55             Cycle          M                   11.0000             2    1.00
+GM24385_replicate1            11  -58             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  -59             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  -62             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  -64             Cycle          M                   11.0000             2    0.00
+GM24385_replicate1            11  -66             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  -7              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -70             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  -71             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -72             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -78             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -83             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  -86             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  101             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  103             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  105             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  106             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  108             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  110             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  111             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  113             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  115             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  118             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  121             Cycle          M                   11.0000             2    1.00
+GM24385_replicate1            11  123             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  126             Cycle          M                   11.0000             2    2.00
+GM24385_replicate1            11  129             Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  140             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  143             Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  54              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  58              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  65              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  68              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  73              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  76              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  80              Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  81              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  85              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  87              Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  88              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  91              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  92              Cycle          M                   11.0000             1    1.00
+GM24385_replicate1            11  93              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  96              Cycle          M                   11.0000             1    0.00
+GM24385_replicate1            11  AA              Context        M                   11.0000             8    5.00
+GM24385_replicate1            11  AC              Context        M                   11.0000             6    3.00
+GM24385_replicate1            11  AG              Context        M                   11.0000             8    0.00
+GM24385_replicate1            11  AT              Context        M                   11.0000             1    0.00
+GM24385_replicate1            11  CA              Context        M                   11.0000            15    7.00
+GM24385_replicate1            11  CC              Context        M                   11.0000             7    2.00
+GM24385_replicate1            11  CT              Context        M                   11.0000             8    0.00
+GM24385_replicate1            11  GA              Context        M                   11.0000             8    0.00
+GM24385_replicate1            11  GG              Context        M                   11.0000             3    0.00
+GM24385_replicate1            11  GT              Context        M                   11.0000             1    0.00
+GM24385_replicate1            11  TA              Context        M                   11.0000             1    1.00
+GM24385_replicate1            11  TC              Context        M                   11.0000             4    0.00
+GM24385_replicate1            11  TG              Context        M                   11.0000             2    0.00
+GM24385_replicate1            11  TT              Context        M                   11.0000             4    2.00
+GM24385_replicate1            25  -1              Cycle          M                   25.0000             3    0.00
+GM24385_replicate1            25  -100            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -103            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -109            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -111            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -113            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -119            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -12             Cycle          M                   25.0000             2    0.00
+GM24385_replicate1            25  -120            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -129            Cycle          M                   25.0000             2    0.00
+GM24385_replicate1            25  -130            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -131            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -136            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -137            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -139            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -140            Cycle          M                   25.0000             2    1.00
+GM24385_replicate1            25  -144            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -145            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -146            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -147            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -149            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -151            Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -23             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -24             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -25             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -27             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -28             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -30             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -32             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -36             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -37             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -41             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -43             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -44             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -48             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -49             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -53             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -54             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -56             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -58             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -60             Cycle          M                   25.0000             1    1.00
+GM24385_replicate1            25  -61             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -64             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -65             Cycle          M                   25.0000             2    0.00
+GM24385_replicate1            25  -73             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -8              Cycle          M                   25.0000             2    0.00
+GM24385_replicate1            25  -88             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -89             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -95             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  -96             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  102             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  104             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  105             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  110             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  112             Cycle          M                   25.0000             2    0.00
+GM24385_replicate1            25  114             Cycle          M                   25.0000             2    0.00
+GM24385_replicate1            25  118             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  119             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  126             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  130             Cycle          M                   25.0000             2    0.00
+GM24385_replicate1            25  134             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  135             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  138             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  141             Cycle          M                   25.0000             2    0.00
+GM24385_replicate1            25  146             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  147             Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  25              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  39              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  51              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  55              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  62              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  69              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  70              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  72              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  74              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  78              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  84              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  85              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  87              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  90              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  94              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  95              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  96              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  97              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  98              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  99              Cycle          M                   25.0000             1    0.00
+GM24385_replicate1            25  AA              Context        M                   25.0000             8    0.00
+GM24385_replicate1            25  AC              Context        M                   25.0000             7    0.00
+GM24385_replicate1            25  AG              Context        M                   25.0000             3    0.00
+GM24385_replicate1            25  AT              Context        M                   25.0000             3    0.00
+GM24385_replicate1            25  CA              Context        M                   25.0000             9    1.00
+GM24385_replicate1            25  CC              Context        M                   25.0000             7    0.00
+GM24385_replicate1            25  CG              Context        M                   25.0000             2    0.00
+GM24385_replicate1            25  CT              Context        M                   25.0000            11    1.00
+GM24385_replicate1            25  GA              Context        M                   25.0000             9    0.00
+GM24385_replicate1            25  GC              Context        M                   25.0000             2    0.00
+GM24385_replicate1            25  GG              Context        M                   25.0000             7    0.00
+GM24385_replicate1            25  GT              Context        M                   25.0000             8    0.00
+GM24385_replicate1            25  TC              Context        M                   25.0000             5    0.00
+GM24385_replicate1            25  TG              Context        M                   25.0000             6    0.00
+GM24385_replicate1            25  TT              Context        M                   25.0000             7    0.00
+GM24385_replicate1            37  -1              Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -10             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -100            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -101            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -102            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -103            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -104            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -105            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -106            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -107            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -108            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -109            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -11             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -110            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -111            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -112            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -113            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -114            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -115            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -116            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -117            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -118            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -119            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -12             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -120            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -121            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -122            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -123            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -124            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -125            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -126            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -127            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -128            Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -129            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -13             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -130            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -131            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -132            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -133            Cycle          M                   37.0000             6    1.00
+GM24385_replicate1            37  -134            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -135            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -136            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -137            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -138            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -139            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -14             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -140            Cycle          M                   37.0000             4    0.00
+GM24385_replicate1            37  -141            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -142            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -143            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -144            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -145            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -146            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -147            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -148            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -149            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -15             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -150            Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -151            Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -16             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -17             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -18             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -19             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -2              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -20             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -21             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -22             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -23             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -24             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -25             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -26             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -27             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -28             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -29             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -3              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -30             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -31             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -32             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -33             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -34             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -35             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -36             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -37             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -38             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -39             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -4              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -40             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -41             Cycle          M                   37.0000             7    1.00
+GM24385_replicate1            37  -42             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -43             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -44             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -45             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -46             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -47             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -48             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -49             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -5              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -50             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -51             Cycle          M                   37.0000             7    1.00
+GM24385_replicate1            37  -52             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -53             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -54             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -55             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -56             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -57             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -58             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -59             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -6              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -60             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -61             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -62             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -63             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -64             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  -65             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -66             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -67             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -68             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -69             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -7              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -70             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -71             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -72             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -73             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -74             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -75             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -76             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -77             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -78             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -79             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -8              Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -80             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -81             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -82             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -83             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -84             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -85             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -86             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -87             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -88             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -89             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -9              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  -90             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -91             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -92             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -93             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -94             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -95             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -96             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  -97             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -98             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  -99             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  1               Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  10              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  100             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  101             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  102             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  103             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  104             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  105             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  106             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  107             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  108             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  109             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  11              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  110             Cycle          M                   37.0000             6    1.00
+GM24385_replicate1            37  111             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  112             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  113             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  114             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  115             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  116             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  117             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  118             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  119             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  12              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  120             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  121             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  122             Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  123             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  124             Cycle          M                   37.0000             7    1.00
+GM24385_replicate1            37  125             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  126             Cycle          M                   37.0000             4    0.00
+GM24385_replicate1            37  127             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  128             Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  129             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  13              Cycle          M                   37.0000             8    1.00
+GM24385_replicate1            37  130             Cycle          M                   37.0000             4    0.00
+GM24385_replicate1            37  131             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  132             Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  133             Cycle          M                   37.0000             6    1.00
+GM24385_replicate1            37  134             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  135             Cycle          M                   37.0000             4    0.00
+GM24385_replicate1            37  136             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  137             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  138             Cycle          M                   37.0000             4    0.00
+GM24385_replicate1            37  139             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  14              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  140             Cycle          M                   37.0000             4    0.00
+GM24385_replicate1            37  141             Cycle          M                   37.0000             3    0.00
+GM24385_replicate1            37  142             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  143             Cycle          M                   37.0000             4    0.00
+GM24385_replicate1            37  144             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  145             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  146             Cycle          M                   37.0000             4    0.00
+GM24385_replicate1            37  147             Cycle          M                   37.0000             4    0.00
+GM24385_replicate1            37  148             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  149             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  15              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  150             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  151             Cycle          M                   37.0000             5    0.00
+GM24385_replicate1            37  16              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  17              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  18              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  19              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  2               Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  20              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  21              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  22              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  23              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  24              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  25              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  26              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  27              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  28              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  29              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  3               Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  30              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  31              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  32              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  33              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  34              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  35              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  36              Cycle          M                   37.0000             8    1.00
+GM24385_replicate1            37  37              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  38              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  39              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  4               Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  40              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  41              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  42              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  43              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  44              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  45              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  46              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  47              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  48              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  49              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  5               Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  50              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  51              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  52              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  53              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  54              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  55              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  56              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  57              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  58              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  59              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  6               Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  60              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  61              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  62              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  63              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  64              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  65              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  66              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  67              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  68              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  69              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  7               Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  70              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  71              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  72              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  73              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  74              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  75              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  76              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  77              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  78              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  79              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  8               Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  80              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  81              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  82              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  83              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  84              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  85              Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  86              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  87              Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  88              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  89              Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  9               Cycle          M                   37.0000             8    0.00
+GM24385_replicate1            37  90              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  91              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  92              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  93              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  94              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  95              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  96              Cycle          M                   37.0000             6    0.00
+GM24385_replicate1            37  97              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  98              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  99              Cycle          M                   37.0000             7    0.00
+GM24385_replicate1            37  AA              Context        M                   37.0000            72    0.00
+GM24385_replicate1            37  AC              Context        M                   37.0000           112    2.00
+GM24385_replicate1            37  AG              Context        M                   37.0000           186    0.00
+GM24385_replicate1            37  AT              Context        M                   37.0000            65    0.00
+GM24385_replicate1            37  CA              Context        M                   37.0000           180    1.00
+GM24385_replicate1            37  CC              Context        M                   37.0000           204    0.00
+GM24385_replicate1            37  CG              Context        M                   37.0000            35    1.00
+GM24385_replicate1            37  CT              Context        M                   37.0000           170    1.00
+GM24385_replicate1            37  GA              Context        M                   37.0000           148    0.00
+GM24385_replicate1            37  GC              Context        M                   37.0000           154    0.00
+GM24385_replicate1            37  GG              Context        M                   37.0000           223    2.00
+GM24385_replicate1            37  GT              Context        M                   37.0000            96    0.00
+GM24385_replicate1            37  TA              Context        M                   37.0000            23    0.00
+GM24385_replicate1            37  TC              Context        M                   37.0000           138    1.00
+GM24385_replicate1            37  TG              Context        M                   37.0000           179    0.00
+GM24385_replicate1            37  TT              Context        M                   37.0000            77    0.00
+

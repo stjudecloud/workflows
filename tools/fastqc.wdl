@@ -1,7 +1,5 @@
 ## [Homepage](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task fastqc {

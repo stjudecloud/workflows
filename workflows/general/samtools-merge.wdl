@@ -1,7 +1,5 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 import "../../tools/samtools.wdl"

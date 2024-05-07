@@ -1,7 +1,5 @@
 ## [Homepage](https://github.com/coreutils/coreutils)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 # TODO consider consolidating this file with util
