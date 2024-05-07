@@ -1,0 +1,40 @@
+- name: read_group_bad_id
+  tags:
+    - miniwdl
+    - read_group
+  command: >-
+    miniwdl run --verbose -d test-output/. --task validate_ReadGroup -i tests/data_structures/input_json/read_group_bad_id.json data_structures/read_group.wdl
+  exit_code: 1
+  stderr:
+    contains:
+      - "ID must match pattern"
+
+- name: read_group_bad_sample
+  tags:
+    - miniwdl
+    - read_group
+  command: >-
+    miniwdl run --verbose -d test-output/. --task validate_ReadGroup -i tests/data_structures/input_json/read_group_bad_sample.json data_structures/read_group.wdl
+  exit_code: 1
+  stderr:
+    contains:
+      - "SM must match pattern"
+
+- name: read_group_good
+  tags:
+    - miniwdl
+    - read_group
+  command: >-
+    miniwdl run --verbose -d test-output/. --task validate_ReadGroup -i tests/data_structures/input_json/read_group_good.json data_structures/read_group.wdl
+  exit_code: 0
+
+- name: read_group_missing_sample
+  tags:
+    - miniwdl
+    - read_group
+  command: >-
+    miniwdl run --verbose -d test-output/. --task validate_ReadGroup -i tests/data_structures/input_json/read_group_missing_sample.json data_structures/read_group.wdl
+  exit_code: 1
+  stderr:
+    contains:
+      - "SM is required"
