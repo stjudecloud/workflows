@@ -68,7 +68,7 @@ workflow rnaseq_core {
         outFilterMultimapNmax: {
             description: "maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out.",
             tool: "star",
-            tool_default: 20
+            tool_default: 10
             common: true
         }
         peOverlapNbasesMin: {
