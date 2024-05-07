@@ -19,23 +19,23 @@ task arriba {
         chimeric_sam: "Optional input file of chimeric reads in SAM format, from older versions of STAR"
         exclude_list: {
             description: "Optional input file of regions to exclude from analysis in tab delimited format"
-            external_help: "https://arriba.readthedocs.io/en/latest/input-files/#blacklist"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#blacklist"
         }
         known_fusions: {
             description: "Optional input file of known fusions in tab delimited format"
-            external_help: "https://arriba.readthedocs.io/en/latest/input-files/#known-fusions"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#known-fusions"
         }
         annotate_fusions: {
             description: "Optional input file in tab delimited format of fusions to annotate with tags"
-            external_help: "https://arriba.readthedocs.io/en/latest/input-files/#tags"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#tags"
         }
         protein_domains: {
             description: "Optional input file of protein domains coordinates in GFF3 format"
-            external_help: "https://arriba.readthedocs.io/en/latest/input-files/#protein-domains"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#protein-domains"
         }
         wgs_svs: {
             description: "Optional input file of structural variants found by WGS in tab delimited or VCF format"
-            external_help: "https://arriba.readthedocs.io/en/latest/input-files/#structural-variant-calls-from-wgs"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#structural-variant-calls-from-wgs"
         }
         interesting_contigs: "Array of contigs to consider for analysis. Contigs can be specified with or without the prefix `chr`."
         viral_contigs: "Array of contigs to consider for viral integration site analysis."
@@ -82,13 +82,13 @@ task arriba {
         }
         feature_name: {
             description: "List of feature names to use in GTF."
-            help: "The Arriba default it designed to handle RefSeq, GENCODE, or ENSEMBL format annotations. `feature_name` expects a string of space separated options. The required fields are `gene_name`, `gene_id`, `transcript_id`, `feature_exon`, and `feature_CDS`. The fields should space separated. The values should be provided with `field=value`. Mutliple values can be provided and separated by a pipe (`|`), e.g. `=value1|value2`. A complete example is `gene_name=gene_name|gene_id gene_id=gene_id transcript_id=transcript_id feature_exon=exon feature_CDS=CDS`."
-            external_help: "https://arriba.readthedocs.io/en/latest/command-line-options/"
+            help: "The Arriba default it designed to handle RefSeq, GENCODE, or ENSEMBL format annotations. `feature_name` expects a string of space/comma separated options. The required fields are `gene_name`, `gene_id`, `transcript_id`, `feature_exon`, and `feature_CDS`. The fields should space separated. The values should be provided with `field=value`. Mutliple values can be provided and separated by a pipe (`|`), e.g. `=value1|value2`. A complete example is `gene_name=gene_name|gene_id gene_id=gene_id transcript_id=transcript_id feature_exon=exon feature_CDS=CDS`."
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/command-line-options/"
             common: false
         }
         strandedness: {
             description: "Strandedness of the input data."
-            external_help: "https://arriba.readthedocs.io/en/latest/command-line-options/"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/command-line-options/"
             choices: [
                 "auto",
                 "yes",
