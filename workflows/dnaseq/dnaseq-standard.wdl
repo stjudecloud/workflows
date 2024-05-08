@@ -5,7 +5,6 @@ version 1.1
 import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
-import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "./dnaseq-core.wdl" as dnaseq_core_wf
 
@@ -42,7 +41,7 @@ workflow dnaseq_standard_experimental {
         Int subsample_n_reads = -1
     }
 
-    call parse_input { input:
+    call dnaseq_core_wf.parse_input { input:
         aligner=aligner
     }
 
@@ -61,11 +60,6 @@ workflow dnaseq_standard_experimental {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-
-    # call util.get_read_groups { input:
-    #     bam=bam,
-    #     format_for_star=false,
-    # }  # TODO what happens if no RG records?
     call read_group.get_ReadGroups { input:
         bam=selected_bam,
     }
@@ -89,46 +83,5 @@ workflow dnaseq_standard_experimental {
     output {
         File harmonized_bam = dnaseq_core_experimental.harmonized_bam
         File harmonized_bam_index = dnaseq_core_experimental.harmonized_bam_index
-    }
-}
-
-task parse_input {
-    meta {
-        description: "Parses and validates the `dnaseq_standard` workflow's provided inputs"
-        outputs: {
-            check: "Dummy output to indicate success and to enable call-caching"
-        }
-    }
-
-    parameter_meta {
-        aligner: {
-            description: "BWA aligner to use",
-            choices: ["mem", "aln"]
-        }
-    }
-
-    input {
-        String aligner
-    }
-
-    command <<<
-        if [ "~{aligner}" != "mem" ] \
-            && [ "~{aligner}" != "aln" ]
-        then
-            >&2 echo "Aligner must be:"
-            >&2 echo "'mem' or 'aln'"
-            exit 1
-        fi
-    >>>
-
-    output {
-        String check = "passed"
-    }
-
-    runtime {
-        memory: "4 GB"
-        disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
-        maxRetries: 1
     }
 }

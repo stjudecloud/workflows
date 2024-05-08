@@ -7,7 +7,7 @@ import "../../tools/fq.wdl"
 import "./dnaseq-core.wdl" as dnaseq_core_wf
 
 workflow dnaseq_standard_fastq_experimental {
-        meta {
+    meta {
         description: "Aligns DNA reads using bwa"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
@@ -60,6 +60,10 @@ workflow dnaseq_standard_fastq_experimental {
         Boolean validate_input = true
         Boolean use_all_cores = false
         Int subsample_n_reads = -1
+    }
+
+    call dnaseq_core_wf.parse_input { input:
+        aligner
     }
 
     if (validate_input){
