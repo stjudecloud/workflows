@@ -7,7 +7,7 @@ task arriba {
         description: "Run Arriba structural variant caller on a RNA-Seq BAM file."
         help: "Typical input is a STAR-aligned BAM. Arriba also supports DRAGEN-aligned BAMs and any spec compliant BAM. That is discordant mates must have `BAM_FPROPER_PAIR (0x2)`, split reads must have `BAM_FSUPPLEMENTARY (0x800)`, and the anchor read must have a `SA` tag. Arriba also uses the `HI` tag to group supplementary alignments."
         outputs: {
-            fusions: "Output file of fusions in TSV format"
+            fusions: "Output file of fusions in TSV format",
             discarded_fusions: "Output file of discarded fusions in TSV format"
         }
     }
@@ -18,29 +18,29 @@ task arriba {
         reference_fasta_gz: "Gzipped reference genome in FASTA format"
         chimeric_sam: "Optional input file of chimeric reads in SAM format, from older versions of STAR"
         exclude_list: {
-            description: "Optional input file of regions to exclude from analysis in tab delimited format"
+            description: "Optional input file of regions to exclude from analysis in tab delimited format",
             external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#blacklist"
         }
         known_fusions: {
-            description: "Optional input file of known fusions in tab delimited format"
+            description: "Optional input file of known fusions in tab delimited format",
             external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#known-fusions"
         }
         annotate_fusions: {
-            description: "Optional input file in tab delimited format of fusions to annotate with tags"
+            description: "Optional input file in tab delimited format of fusions to annotate with tags",
             external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#tags"
         }
         protein_domains: {
-            description: "Optional input file of protein domains coordinates in GFF3 format"
+            description: "Optional input file of protein domains coordinates in GFF3 format",
             external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#protein-domains"
         }
         wgs_svs: {
-            description: "Optional input file of structural variants found by WGS in tab delimited or VCF format"
+            description: "Optional input file of structural variants found by WGS in tab delimited or VCF format",
             external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#structural-variant-calls-from-wgs"
         }
         interesting_contigs: "Array of contigs to consider for analysis. Contigs can be specified with or without the prefix `chr`."
         viral_contigs: "Array of contigs to consider for viral integration site analysis."
         disable_filters: {
-            description: "Array of filters to disable."
+            description: "Array of filters to disable.",
             choices: [
                 'top_expressed_viral_contigs',
                 'viral_contigs',
@@ -81,14 +81,15 @@ task arriba {
             ]
         }
         feature_name: {
-            description: "List of feature names to use in GTF."
-            help: "The Arriba default it designed to handle RefSeq, GENCODE, or ENSEMBL format annotations. `feature_name` expects a string of space/comma separated options. The required fields are `gene_name`, `gene_id`, `transcript_id`, `feature_exon`, and `feature_CDS`. The fields should space separated. The values should be provided with `field=value`. Mutliple values can be provided and separated by a pipe (`|`), e.g. `=value1|value2`. A complete example is `gene_name=gene_name|gene_id gene_id=gene_id transcript_id=transcript_id feature_exon=exon feature_CDS=CDS`."
-            external_help: "https://arriba.readthedocs.io/en/v2.4.0/command-line-options/"
+            description: "List of feature names to use in GTF.",
+            help: "The Arriba default it designed to handle RefSeq, GENCODE, or ENSEMBL format annotations. `feature_name` expects a string of space/comma separated options. The required fields are `gene_name`, `gene_id`, `transcript_id`, `feature_exon`, and `feature_CDS`. The fields should space separated. The values should be provided with `field=value`. Mutliple values can be provided and separated by a pipe (`|`), e.g. `=value1|value2`. A complete example is `gene_name=gene_name|gene_id gene_id=gene_id transcript_id=transcript_id feature_exon=exon feature_CDS=CDS`.",
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/command-line-options/",
             common: false
         }
+        prefix: "Prefix for the fusion result files. The extensions `.tsv` and `.discarded.tsv` will be added."
         strandedness: {
-            description: "Strandedness of the input data."
-            external_help: "https://arriba.readthedocs.io/en/v2.4.0/command-line-options/"
+            description: "Strandedness of the input data.",
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/command-line-options/",
             choices: [
                 "auto",
                 "yes",
@@ -281,7 +282,7 @@ task arriba_extract_fusion_supporting_alignments {
     meta {
         description: "Extract alignments that support fusions."
         outputs: {
-            fusion_bams: "Array of BAM files corresponding with fusions in the input file"
+            fusion_bams: "Array of BAM files corresponding with fusions in the input file",
             fusion_bam_indexes: "Array of BAM indexes corresponding with the BAMs in the 'fusion_bams'"
         }
     }
