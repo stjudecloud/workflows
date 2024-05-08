@@ -1,0 +1,18 @@
+{
+    "read_group":{
+        "ID": "id",
+        "SM": "sample_a",
+        "LB": "library",
+        "BC": "barcode",
+        "PU": "platform_unit",
+        "PL": "ILLUMINA",
+        "CN": "center_name",
+        "DT": "date",
+        "DS": "description",
+        "PI": 1,
+        "PG": "program_group",
+        "PM": "platform_model",
+        "FO": "ACMG",
+        "KS": "key_sequence"
+    }
+}

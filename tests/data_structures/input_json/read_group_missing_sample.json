@@ -1,0 +1,9 @@
+{
+    "read_group":{
+        "ID": "id"
+    },
+    "required_fields": [
+        "ID",
+        "SM"
+    ]
+}
