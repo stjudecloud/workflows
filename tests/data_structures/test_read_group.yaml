@@ -7,7 +7,7 @@
   exit_code: 1
   stderr:
     contains:
-      - "ID must match pattern"
+      - "ID (id) must not match pattern"
 
 - name: read_group_bad_sample
   tags:
@@ -18,7 +18,7 @@
   exit_code: 1
   stderr:
     contains:
-      - "SM must match pattern"
+      - "SM must not match pattern"
 
 - name: read_group_good
   tags:
@@ -38,3 +38,14 @@
   stderr:
     contains:
       - "SM is required"
+
+- name: read_group_sample_with_space
+  tags:
+    - miniwdl
+    - read_group
+  command: >-
+    miniwdl run --verbose -d test-output/. --task validate_ReadGroup -i tests/data_structures/input_json/read_group_sample_with_space.json data_structures/read_group.wdl
+  exit_code: 1
+  stderr:
+    contains:
+      - "SM must not match pattern"

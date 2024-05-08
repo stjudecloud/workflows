@@ -29,20 +29,20 @@ version 1.1
 
 # See the `read_groups` `parameter_meta` for definitions of each field
 struct ReadGroup {
-    String ID  # Read group identifier. Each Read Group must have a unique ID. The value of ID is used in the RG tags of alignment records.
-    String? BC # Barcode sequence identifying the sample or library. This value is the expected barcode bases as read by the sequencing machine in the absence of errors. If there are several barcodes for the sample/library (e.g., one on each end of the template), the recommended implementation concatenates all the barcodes separating them with hyphens (`-`).
-    String? CN # Name of sequencing center producing the read.
-    String? DS # Description
-    String? DT # Date the run was produced (ISO8601 date or date/time)
-    String? FO #Flow order. The array of nucleotide bases that correspond to the nucleotides used for each flow of each read. Multi-base flows are encoded in IUPAC format, and non-nucleotide flows by various other characters. Format: /\\*|[ACMGRSVTWYHKDBN]+/
-    String? KS # The array of nucleotide bases that correspond to the key sequence of each read
-    String? LB # Library
-    String? PG # Programs used for processing the read group
-    Int? PI    # Predicted median insert size, rounded to the nearest integer
-    String? PL # Platform/technology used to produce the reads. Valid values: CAPILLARY, DNBSEQ (MGI/BGI), ELEMENT, HELICOS, ILLUMINA, IONTORRENT, LS454, ONT (Oxford Nanopore), PACBIO (Pacific Biosciences), SINGULAR, SOLID, and ULTIMA. This field should be omitted when the technology is not in this list (though the PM field may still be present in this case) or is unknown.
-    String? PM # Platform model. Free-form text providing further details of the platform/technology used.
-    String? PU # Platform unit (e.g., flowcell-barcode.lane for Illumina or slide for SOLiD). Unique identifier.
-    String? SM # Sample. Use pool name where a pool is being sequenced.
+    String ID
+    String? BC
+    String? CN
+    String? DS
+    String? DT
+    String? FO
+    String? KS
+    String? LB
+    String? PG
+    Int? PI
+    String? PL
+    String? PM
+    String? PU
+    String? SM
 }
 
 task ReadGroup_to_string {
@@ -163,15 +163,25 @@ task validate_ReadGroup {
     # The SAM spec allows any printable ASCII character in header fields.
     String sam_spec_pattern = "[\\ -~]+"
     # We have the opinion that is too permissive for ID and SM.
-    String id_pattern = if restrictive then "id" else sam_spec_pattern
-    String sample_pattern = if restrictive then "sample.?" else sam_spec_pattern
+    String id_pattern = "id"
+    String sample_pattern = "sample.?"
+    String restrictive_pattern = "\\ "  # Disallow spaces
     Array[String] platforms = ["CAPILLARY", "DNBSEQ", "ELEMENT", "HELICOS", "ILLUMINA", "IONTORRENT", "LS454", "ONT", "PACBIO", "SINGULAR", "SOLID", "ULTIMA"]
 
     command <<<
         error=0
-        if [[ "~{read_group.ID}" =~ ^~{id_pattern}$ ]]
+        if [[ ~{restrictive} == "true" ]]
         then
-            >&2 echo "ID must match pattern ~{id_pattern}"
+            if [[ ~{read_group.ID} =~ ^~{id_pattern}$ ]] \
+            || [[ ~{read_group.ID} =~ ~{restrictive_pattern} ]]
+            then
+                >&2 echo "ID (~{read_group.ID}) must not match pattern ~{id_pattern} nor ~{restrictive_pattern}"
+                error=1
+            fi
+        fi
+        if [[ ! "~{read_group.ID}" =~ ^~{sam_spec_pattern}$ ]]
+        then
+            >&2 echo "ID must match pattern ~{sam_spec_pattern}"
             error=1
         fi
         if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "SM") -eq 1 ]
@@ -184,9 +194,18 @@ task validate_ReadGroup {
         fi
         if [ "~{defined(read_group.SM)}" == "true" ]
         then
-            if [[ "~{read_group.SM}" =~ ^~{sample_pattern}$ ]]
+            if [[ ~{restrictive} == "true" ]]
             then
-                >&2 echo "SM must match pattern ~{sample_pattern}"
+                if [[ "~{read_group.SM}" =~ ^~{sample_pattern}$ ]] \
+                || [[ "~{read_group.SM}" =~ ~{restrictive_pattern} ]]
+                then
+                    >&2 echo "SM must not match pattern ~{sample_pattern} nor ~{restrictive_pattern}"
+                    error=1
+                fi
+            fi
+            if [[ ! "~{read_group.SM}" =~ ^~{sam_spec_pattern}$ ]]
+            then
+                >&2 echo "SM must match pattern ~{sam_spec_pattern}"
                 error=1
             fi
         fi
