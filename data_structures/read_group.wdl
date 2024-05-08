@@ -150,13 +150,13 @@ task validate_ReadGroup {
 
     parameter_meta {
         read_group: "ReadGroup struct to validate"
-        required_fields: "Array of read group fields that must be defined"
+        required_fields: "Array of read group fields that must be defined. The ID field is always required and does not need to be specified."
         restrictive: "If true, run a less permissive validation of field values. Otherwise, check against SAM spec-defined values."
     }
 
     input {
         ReadGroup read_group
-        Array[String] required_fields = ["ID"]
+        Array[String] required_fields = []
         Boolean restrictive = true
     }
 
