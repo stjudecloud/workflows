@@ -94,7 +94,6 @@ workflow dnaseq_core_experimental {
             call picard.sort as sort { input:
                  bam=select_first([bwa_mem.bam, bwa_aln_pe.bam])
             }
-
         }
 
         call samtools_merge_wf.samtools_merge as inner_merge { input:
