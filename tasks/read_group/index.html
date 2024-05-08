@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Htseq - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Read group - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Htseq";
-        var mkdocs_page_input_path = "tasks/htseq.md";
+        var mkdocs_page_name = "Read group";
+        var mkdocs_page_input_path = "tasks/read_group.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -63,19 +63,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../gatk4/">Gatk4</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Htseq</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#required">Required</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#defaults">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../htseq/">Htseq</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../kraken2/">Kraken2</a>
                   </li>
@@ -93,7 +81,17 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../qualimap/">Qualimap</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../read_group/">Read group</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Read group</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required">Required</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
+    </li>
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../sambamba/">Sambamba</a>
                   </li>
@@ -150,9 +148,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Tasks</li>
-      <li class="breadcrumb-item active">Htseq</li>
+      <li class="breadcrumb-item active">Read group</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/htseq.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/tasks/read_group.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -160,69 +158,97 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <p><a href="https://github.com/htseq/htseq">Homepage</a></p>
-<h2 id="count">count</h2>
+                <p>Read groups are defined in the SAM spec
+   ID: "Read group identifier. Each Read Group must have a unique ID. The value of ID is used in the RG tags of alignment records.",
+   BC: "Barcode sequence identifying the sample or library. This value is the expected barcode bases as read by the sequencing machine in the absence of errors. If there are several barcodes for the sample/library (e.g., one on each end of the template), the recommended implementation concatenates all the barcodes separating them with hyphens (<code>-</code>).",
+   CN: "Name of sequencing center producing the read.",
+   DS: "Description.",
+   DT: "Date the run was produced (ISO8601 date or date/time).",
+   FO: "Flow order. The array of nucleotide bases that correspond to the nucleotides used for each flow of each read. Multi-base flows are encoded in IUPAC format, and non-nucleotide flows by various other characters. Format: /\*|[ACMGRSVTWYHKDBN]+/",
+   KS: "The array of nucleotide bases that correspond to the key sequence of each read.",
+   LB: "Library.",
+   PG: "Programs used for processing the read group.",
+   PI: "Predicted median insert size, rounded to the nearest integer.",
+   PL: "Platform/technology used to produce the reads. Valid values: CAPILLARY, DNBSEQ (MGI/BGI), ELEMENT, HELICOS, ILLUMINA, IONTORRENT, LS454, ONT (Oxford Nanopore), PACBIO (Pacific Biosciences), SINGULAR, SOLID, and ULTIMA. This field should be omitted when the technology is not in this list (though the PM field may still be present in this case) or is unknown.",
+   PM: "Platform model. Free-form text providing further details of the platform/technology used.",
+   PU: "Platform unit (e.g., flowcell-barcode.lane for Illumina or slide for SOLiD). Unique identifier.",
+   SM: "Sample. Use pool name where a pool is being sequenced."</p>
+<p>An example input JSON entry for <code>read_group</code> might look like this:
+{
+    "read_group": {
+            "ID": "rg1",
+            "PI": 150,
+            "PL": "ILLUMINA",
+            "SM": "Sample",
+            "LB": "Sample"
+    }
+}</p>
+<h2 id="readgroup_to_string">ReadGroup_to_string</h2>
 <dl>
 <dt>description</dt>
-<dd>Performs read counting for a set of features in the input BAM file</dd>
+<dd>Stringifies a ReadGroup struct</dd>
 <dt>outputs</dt>
-<dd>{'feature_counts': 'A two column headerless TSV file. First column is feature names and second column is counts.'}</dd>
+<dd>{'stringified_read_group': 'Input ReadGroup as a string'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to generate coverage for</li>
-<li><code>gtf</code> (File, <strong>required</strong>): Input genomic features in gzipped GTF format to count reads for</li>
-<li><code>strandedness</code> (String, <strong>required</strong>); <strong>description</strong>: Strandedness protocol of the RNA-Seq experiment; <strong>external_help</strong>: https://htseq.readthedocs.io/en/latest/htseqcount.html#cmdoption-htseq-count-s; <strong>choices</strong>: ['yes', 'reverse', 'no']</li>
-</ul>
-<h4 id="defaults">Defaults</h4>
-<ul>
-<li><code>feature_type</code> (String, default="exon"); <strong>description</strong>: Feature type (3rd column in GTF file) to be used, all features of other type are ignored; <strong>common</strong>: true</li>
-<li><code>idattr</code> (String, default="gene_name"); <strong>description</strong>: GFF attribute to be used as feature ID; <strong>common</strong>: true</li>
-<li><code>include_custom_header</code> (Boolean, default=false); <strong>description</strong>: Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be <code>feature   ~{prefix}</code>. This may break downstream tools that expect the typical headerless HTSeq output format.; <strong>common</strong>: true</li>
-<li><code>minaqual</code> (Int, default=10); <strong>description</strong>: Skip all reads with alignment quality lower than the given minimum value; <strong>common</strong>: true</li>
-<li><code>mode</code> (String, default="union"); <strong>description</strong>: Mode to handle reads overlapping more than one feature. <code>union</code> is recommended for most use-cases.; <strong>external_help</strong>: https://htseq.readthedocs.io/en/latest/htseqcount.html#htseq-count-counting-reads-within-features; <strong>choices</strong>: ['union', 'intersection-strict', 'intersection-nonempty']</li>
-<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
-<li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
-<li><code>nonunique</code> (Boolean, default=false); <strong>description</strong>: Score reads that align to or are assigned to more than one feature?; <strong>common</strong>: true</li>
-<li><code>pos_sorted</code> (Boolean, default=true); <strong>description</strong>: Is the BAM position sorted (true) or name sorted (false)?; <strong>common</strong>: true</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the feature counts file. The extension <code>.feature-counts.txt</code> will be added.</li>
-<li><code>secondary_alignments</code> (Boolean, default=false); <strong>description</strong>: Score secondary alignments (SAM flag 0x100)?; <strong>common</strong>: true</li>
-<li><code>supplementary_alignments</code> (Boolean, default=false); <strong>description</strong>: Score supplementary/chimeric alignments (SAM flag 0x800)?; <strong>common</strong>: true</li>
+<li><code>read_group</code> (ReadGroup, <strong>required</strong>): ReadGroup struct to stringify</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
-<li><code>feature_counts</code> (File)</li>
+<li><code>stringified_read_group</code> (String)</li>
 </ul>
-<h2 id="calc_tpm">calc_tpm</h2>
+<h2 id="get_readgroups">get_ReadGroups</h2>
 <dl>
 <dt>description</dt>
-<dd>Given a gene counts file and a gene lengths file, calculate Transcripts Per Million (TPM)</dd>
+<dd>Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct.</dd>
 <dt>outputs</dt>
-<dd>{'tpm_file': 'Transcripts Per Million (TPM) file. A two column headered TSV file.'}</dd>
+<dd>{'read_groups': 'An array of ReadGroup structs containing read group information.'}</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>counts</code> (File, <strong>required</strong>): A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the <code>count</code> task.</li>
-<li><code>gene_lengths</code> (File, <strong>required</strong>): A two column headered TSV file with gene names (matching those in the <code>counts</code> file) in the first column and feature lengths (as integers) in the second column. Can be generated with the <code>calc_gene_lengths</code> task in <code>util.wdl</code>.</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to get read groups from</li>
 </ul>
-<h4 id="defaults_1">Defaults</h4>
+<h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>prefix</code> (String, default=basename(counts,".feature-counts.txt")): Prefix for the TPM file. The extension <code>.TPM.txt</code> will be added.</li>
+<li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
-<li><code>tpm_file</code> (File)</li>
+<li><code>read_groups</code> (Array[ReadGroup])</li>
+</ul>
+<h2 id="validate_readgroup">validate_ReadGroup</h2>
+<dl>
+<dt>description</dt>
+<dd>Validate a ReadGroup struct's fields are defined</dd>
+<dt>outputs</dt>
+<dd>{'check': 'Dummy output to indicate success and enable call-caching'}</dd>
+</dl>
+<h3 id="inputs_2">Inputs</h3>
+<h4 id="required_2">Required</h4>
+<ul>
+<li><code>_runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>read_group</code> (ReadGroup, <strong>required</strong>): ReadGroup struct to validate</li>
+</ul>
+<h4 id="defaults_1">Defaults</h4>
+<ul>
+<li><code>required_fields</code> (Array[String], default=[]): Array of read group fields that must be defined. The ID field is always required and does not need to be specified.</li>
+<li><code>restrictive</code> (Boolean, default=true): If true, run a less permissive validation of field values. Otherwise, check against SAM spec-defined values.</li>
+</ul>
+<h3 id="outputs_2">Outputs</h3>
+<ul>
+<li><code>check</code> (String)</li>
 </ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../gatk4/" class="btn btn-neutral float-left" title="Gatk4"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../kraken2/" class="btn btn-neutral float-right" title="Kraken2">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../qualimap/" class="btn btn-neutral float-left" title="Qualimap"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../sambamba/" class="btn btn-neutral float-right" title="Sambamba">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -250,10 +276,10 @@
         </span>
     
     
-      <span><a href="../gatk4/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../qualimap/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../kraken2/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../sambamba/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
