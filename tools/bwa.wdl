@@ -166,12 +166,15 @@ task bwa_aln_pe {
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
+        ln -sf ~{read_one_fastq_gz}
+        ln -sf ~{read_two_fastq_gz}
+
         bwa sampe \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
             bwa_db/"$PREFIX" \
-            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_one_fastq_gz}) \
-            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_two_fastq_gz}) \
-            ~{read_one_fastq_gz} ~{read_two_fastq_gz} \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_one_fastq_gz)}) \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_two_fastq_gz)}) \
+            ~{basename(read_one_fastq_gz)} ~{basename(read_two_fastq_gz)} \
             | samtools view --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
@@ -242,6 +245,8 @@ task bwa_mem {
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
     )
 
+    File read_two_file = select_first([read_two_fastq_gz, ''])
+
     command <<<
         set -euo pipefail
 
@@ -256,12 +261,15 @@ task bwa_mem {
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
+        ln -sf ~{read_one_fastq_gz}
+        ~{if defined(read_two_fastq_gz) then "ln -sf "+read_two_fastq_gz+"" else ""}
+
         bwa mem \
             -t "$n_cores" \
             ~{if read_group != "" then "-R '"+read_group+"'" else ""} \
             bwa_db/"$PREFIX" \
-            ~{read_one_fastq_gz} \
-            ~{read_two_fastq_gz} \
+            ~{basename(read_one_fastq_gz)} \
+            ~{basename(read_two_file)} \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
