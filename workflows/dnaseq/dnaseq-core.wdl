@@ -24,7 +24,7 @@ workflow dnaseq_core_experimental {
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         reads_per_file: "Number of reads per FASTQ file to output."
-        read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`. These two read groups could be associated with the following four FASTQs: `sample1.rg1_R1.fastq,sample1.rg2_R1.fastq` and `sample1.rg1_R2.fastq,sample1.rg2_R2.fastq`"
+        read_groups: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz` if non-zero. Only the `ID` field is required, and it must be unique for each read group defined. See data_structures/read_group.wdl for help formatting your input JSON."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
@@ -42,10 +42,6 @@ workflow dnaseq_core_experimental {
         String prefix
         String aligner = "mem"
         Boolean use_all_cores = false
-    }
-
-    call parse_input { input:
-        aligner=aligner
     }
 
     scatter (rg in read_groups) {
