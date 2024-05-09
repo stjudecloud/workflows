@@ -80,7 +80,7 @@ workflow dnaseq_core_experimental {
                     use_all_cores=use_all_cores,
                 }
             }
-            if ( aligner == "aln") {
+            if (aligner == "aln") {
                 call bwa.bwa_aln_pe { input:
                     read_one_fastq_gz=t.left,
                     read_two_fastq_gz=select_first([t.right, "undefined"]),
