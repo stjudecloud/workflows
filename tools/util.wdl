@@ -783,7 +783,7 @@ task split_fastq {
             basename(fastq),
             "\\.(fastq|fq)\\.gz$",
             ""
-        )
+        ) + "."
         Int reads_per_file = 10000000
         Int modify_disk_size_gb = 0
         Int ncpu = 2

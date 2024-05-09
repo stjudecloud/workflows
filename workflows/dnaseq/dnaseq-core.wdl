@@ -94,7 +94,7 @@ workflow dnaseq_core_experimental {
 
         call samtools_merge_wf.samtools_merge as inner_merge { input:
             bams = sort.sorted_bam,
-            prefix = basename(tuple.left.left, ".fastq.gz"),
+            prefix = basename(tuple.left.left, ".R1.fastq.gz"),
             use_all_cores = use_all_cores,
         }
     }
