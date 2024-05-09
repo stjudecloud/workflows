@@ -48,7 +48,7 @@ workflow dnaseq_core_experimental {
         call read_group.ReadGroup_to_string { input: read_group=rg }
     }
 
-    Array[String] read_groups_bwa = prefix("@RG\t", ReadGroup_to_string.stringified_read_group)
+    Array[String] read_groups_bwa = prefix("@RG ", ReadGroup_to_string.stringified_read_group)
 
     scatter (tuple in zip(
         zip(read_one_fastqs_gz, read_two_fastqs_gz),
@@ -72,7 +72,7 @@ workflow dnaseq_core_experimental {
                     bwa_db_tar_gz=bwa_db,
                     # find tab literals, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
-                    read_group=sub(tuple.right, "\t", "\\\\t"),
+                    read_group=sub(tuple.right, " ", "\\\\t"),
                     use_all_cores=use_all_cores,
                 }
             }
@@ -83,7 +83,7 @@ workflow dnaseq_core_experimental {
                     bwa_db_tar_gz=bwa_db,
                     # find tab literals, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
-                    read_group=sub(tuple.right, "\t", "\\\\t"),
+                    read_group=sub(tuple.right, " ", "\\\\t"),
                     use_all_cores=use_all_cores,
                 }
             }

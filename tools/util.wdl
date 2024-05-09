@@ -800,7 +800,7 @@ task split_fastq {
 
         for file in "~{prefix}"*; do
             mv "$file" "${file}.fastq"
-            echo "gzip ${file}.fastq" > cmds
+            echo "gzip ${file}.fastq" >> cmds
         done
 
         parallel --jobs ~{ncpu} < cmds
