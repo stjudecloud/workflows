@@ -41,7 +41,7 @@ workflow dnaseq_standard_experimental {
         Int subsample_n_reads = -1
     }
 
-    call dnaseq_core_wf.parse_input { input:
+    call parse_input { input:
         aligner=aligner
     }
 
@@ -83,5 +83,46 @@ workflow dnaseq_standard_experimental {
     output {
         File harmonized_bam = dnaseq_core_experimental.harmonized_bam
         File harmonized_bam_index = dnaseq_core_experimental.harmonized_bam_index
+    }
+}
+
+task parse_input {
+    meta {
+        description: "Parses and validates the `dnaseq_standard` workflow's provided inputs"
+        outputs: {
+            check: "Dummy output to indicate success and to enable call-caching"
+        }
+    }
+
+    parameter_meta {
+        aligner: {
+            description: "BWA aligner to use",
+            choices: ["mem", "aln"]
+        }
+    }
+
+    input {
+        String aligner
+    }
+
+    command <<<
+        if [ "~{aligner}" != "mem" ] \
+            && [ "~{aligner}" != "aln" ]
+        then
+            >&2 echo "Aligner must be:"
+            >&2 echo "'mem' or 'aln'"
+            exit 1
+        fi
+    >>>
+
+    output {
+        String check = "passed"
+    }
+
+    runtime {
+        memory: "4 GB"
+        disk: "10 GB"
+        container: 'ghcr.io/stjudecloud/util:1.4.0'
+        maxRetries: 0
     }
 }
