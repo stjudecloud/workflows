@@ -20,7 +20,7 @@ workflow dnaseq_standard_experimental {
     parameter_meta {
         bam: "Input BAM to realign"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-        reads_per_file: "Number of reads per FASTQ file to output."
+        reads_per_file: "Controls the number of reads per FASTQ file for internal split to run BWA in parallel."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
