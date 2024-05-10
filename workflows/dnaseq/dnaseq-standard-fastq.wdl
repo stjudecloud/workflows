@@ -48,14 +48,14 @@ workflow dnaseq_standard_fastq_experimental {
 
     call parse_input { input:
         aligner,
-        array_lengths=[length(read_one_fastqs_gz), length(read_two_fastqs_gz), length(read_groups)]
+        array_lengths = [length(read_one_fastqs_gz), length(read_two_fastqs_gz), length(read_groups)]
     }
 
     if (validate_input){
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
             call fq.fqlint { input:
-                read_one_fastq=reads.left,
-                read_two_fastq=reads.right,
+                read_one_fastq = reads.left,
+                read_two_fastq = reads.right,
             }
         }
     }
@@ -64,9 +64,9 @@ workflow dnaseq_standard_fastq_experimental {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
             call fq.subsample { input:
-                read_one_fastq=reads.left,
-                read_two_fastq=reads.right,
-                record_count=reads_per_pair,
+                read_one_fastq = reads.left,
+                read_two_fastq = reads.right,
+                record_count = reads_per_pair,
             }
         }
     }
@@ -82,14 +82,14 @@ workflow dnaseq_standard_fastq_experimental {
     )
 
     call dnaseq_core_wf.dnaseq_core_experimental { input:
-        read_one_fastqs_gz=selected_read_one_fastqs,
-        read_two_fastqs_gz=selected_read_two_fastqs,
-        bwa_db=bwa_db,
-        reads_per_file=reads_per_file,
-        read_groups=read_groups,
-        prefix=prefix,
-        aligner=aligner,
-        use_all_cores=use_all_cores
+        read_one_fastqs_gz = selected_read_one_fastqs,
+        read_two_fastqs_gz = selected_read_two_fastqs,
+        bwa_db,
+        reads_per_file,
+        read_groups,
+        prefix,
+        aligner,
+        use_all_cores
     }
 
     output {

@@ -45,7 +45,7 @@ workflow dnaseq_core_experimental {
     }
 
     scatter (rg in read_groups) {
-        call read_group.ReadGroup_to_string { input: read_group=rg }
+        call read_group.ReadGroup_to_string { input: read_group = rg }
     }
 
     Array[String] read_groups_bwa = prefix("@RG ", ReadGroup_to_string.stringified_read_group)
@@ -67,39 +67,39 @@ workflow dnaseq_core_experimental {
         scatter (t in zip(read_ones.fastqs, read_twos.fastqs)) {
             if (aligner == "mem") {
                 call bwa.bwa_mem { input:
-                    read_one_fastq_gz=t.left,
-                    read_two_fastq_gz=select_first([t.right, "undefined"]),
-                    bwa_db_tar_gz=bwa_db,
+                    read_one_fastq_gz = t.left,
+                    read_two_fastq_gz = select_first([t.right, "undefined"]),
+                    bwa_db_tar_gz = bwa_db,
                     # find tab literals, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
-                    read_group=sub(tuple.right, " ", "\\\\t"),
-                    use_all_cores=use_all_cores,
+                    read_group = sub(tuple.right, " ", "\\\\t"),
+                    use_all_cores,
                 }
             }
             if (aligner == "aln") {
                 call bwa.bwa_aln_pe { input:
-                    read_one_fastq_gz=t.left,
-                    read_two_fastq_gz=select_first([t.right, "undefined"]),
-                    bwa_db_tar_gz=bwa_db,
+                    read_one_fastq_gz = t.left,
+                    read_two_fastq_gz = select_first([t.right, "undefined"]),
+                    bwa_db_tar_gz = bwa_db,
                     # find tab literals, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
-                    read_group=sub(tuple.right, " ", "\\\\t"),
-                    use_all_cores=use_all_cores,
+                    read_group = sub(tuple.right, " ", "\\\\t"),
+                    use_all_cores,
                 }
             }
             call picard.sort as sort { input:
-                 bam=select_first([bwa_mem.bam, bwa_aln_pe.bam])
+                 bam = select_first([bwa_mem.bam, bwa_aln_pe.bam])
             }
         }
     }
     call samtools_merge_wf.samtools_merge as rg_merge { input:
-        bams=flatten(sort.sorted_bam),
-        prefix=prefix,
-        use_all_cores=use_all_cores,
+        bams = flatten(sort.sorted_bam),
+        prefix,
+        use_all_cores,
     }
 
     call samtools.index { input:
-        bam=rg_merge.merged_bam,
+        bam = rg_merge.merged_bam,
     }
 
     output {
