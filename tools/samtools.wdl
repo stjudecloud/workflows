@@ -555,7 +555,9 @@ task merge {
         bams=""
         for file in ~{sep(" ", bams)}
         do
-          ln -sf $file
+          # This will fail (intentionally) if there are duplicate names
+          # in the input BAM array.
+          ln -s $file
           bams+=" $(basename $file)"
         done
 
