@@ -59,7 +59,7 @@ workflow dnaseq_core_experimental {
         }
 
         call util.split_fastq as read_twos { input:
-            fastq = select_first([tuple.left.right, "undefined"]),
+            fastq = tuple.left.right,
             reads_per_file = reads_per_file
         }
 
@@ -67,7 +67,7 @@ workflow dnaseq_core_experimental {
             if (aligner == "mem") {
                 call bwa.bwa_mem { input:
                     read_one_fastq_gz = t.left,
-                    read_two_fastq_gz = select_first([t.right, "undefined"]),
+                    read_two_fastq_gz = t.right,
                     bwa_db_tar_gz = bwa_db,
                     # find spaces, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
@@ -78,7 +78,7 @@ workflow dnaseq_core_experimental {
             if (aligner == "aln") {
                 call bwa.bwa_aln_pe { input:
                     read_one_fastq_gz = t.left,
-                    read_two_fastq_gz = select_first([t.right, "undefined"]),
+                    read_two_fastq_gz = t.right,
                     bwa_db_tar_gz = bwa_db,
                     # find tab literals, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
@@ -92,7 +92,7 @@ workflow dnaseq_core_experimental {
         }
     }
     call samtools_merge_wf.samtools_merge as rg_merge { input:
-        bams = sort.sorted_bam,
+        bams = flatten(sort.sorted_bam),
         prefix,
         use_all_cores,
     }
