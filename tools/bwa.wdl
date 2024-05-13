@@ -166,8 +166,8 @@ task bwa_aln_pe {
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
-        ln -sf ~{read_one_fastq_gz}
-        ln -sf ~{read_two_fastq_gz}
+        ln -s ~{read_one_fastq_gz}
+        ln -s ~{read_two_fastq_gz}
 
         bwa sampe \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
