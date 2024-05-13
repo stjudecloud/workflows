@@ -42,42 +42,42 @@ workflow dnaseq_standard_experimental {
     }
 
     call parse_input { input:
-        aligner=aligner
+        aligner
     }
 
     if (validate_input) {
         call picard.validate_bam as validate_input_bam { input:
-            bam=bam,
+            bam,
         }
     }
 
     if (subsample_n_reads > 0) {
         call samtools.subsample after parse_input { input:
-            bam=bam,
-            desired_reads=subsample_n_reads,
-            use_all_cores=use_all_cores,
+            bam,
+            desired_reads = subsample_n_reads,
+            use_all_cores,
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
     call read_group.get_ReadGroups { input:
-        bam=selected_bam,
+        bam = selected_bam,
     }
 
     call bam_to_fastqs_wf.bam_to_fastqs { input:
-        bam=selected_bam,
-        paired_end=true,  # matches default but prevents user from overriding
-        use_all_cores=use_all_cores,
+        bam = selected_bam,
+        paired_end = true,  # matches default but prevents user from overriding
+        use_all_cores,
     }
 
     call dnaseq_core_wf.dnaseq_core_experimental { input:
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
-        bwa_db = bwa_db,
-        reads_per_file = reads_per_file,
+        bwa_db,
+        reads_per_file,
         read_groups = get_ReadGroups.read_groups,
-        prefix = prefix,
-        aligner = aligner,
+        prefix,
+        aligner,
     }
 
     output {
