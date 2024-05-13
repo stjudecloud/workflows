@@ -30,7 +30,6 @@ workflow dnaseq_core_experimental {
             description: "BWA aligner to use",
             choices: ["mem", "aln"]
         }
-        validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
     }
     input {
@@ -70,7 +69,7 @@ workflow dnaseq_core_experimental {
                     read_one_fastq_gz = t.left,
                     read_two_fastq_gz = select_first([t.right, "undefined"]),
                     bwa_db_tar_gz = bwa_db,
-                    # find tab literals, replace with '\\t' (which must be written as '\\\\t')
+                    # find spaces, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
                     read_group = sub(tuple.right, " ", "\\\\t"),
                     use_all_cores,
@@ -93,7 +92,7 @@ workflow dnaseq_core_experimental {
         }
     }
     call samtools_merge_wf.samtools_merge as rg_merge { input:
-        bams = flatten(sort.sorted_bam),
+        bams = sort.sorted_bam,
         prefix,
         use_all_cores,
     }

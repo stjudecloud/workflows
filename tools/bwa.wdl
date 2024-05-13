@@ -175,7 +175,7 @@ task bwa_aln_pe {
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_one_fastq_gz)}) \
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_two_fastq_gz)}) \
             ~{basename(read_one_fastq_gz)} ~{basename(read_two_fastq_gz)} \
-            | samtools view --threads "$samtools_cores" -hb - \
+            | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
         rm -r bwa_db
