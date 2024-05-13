@@ -3,12 +3,10 @@
 version 1.1
 
 import "../../data_structures/read_group.wdl"
-import "../../tools/picard.wdl"
-import "../../tools/samtools.wdl"
-import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
+import "../../tools/fq.wdl"
 import "./dnaseq-core.wdl" as dnaseq_core_wf
 
-workflow dnaseq_standard_experimental {
+workflow dnaseq_standard_fastq_experimental {
     meta {
         description: "Aligns DNA reads using bwa"
         outputs: {
@@ -18,9 +16,14 @@ workflow dnaseq_standard_experimental {
         allowNestedInputs: true
     }
     parameter_meta {
-        bam: "Input BAM to realign"
+        read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
+        read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         reads_per_file: "Controls the number of reads per FASTQ file for internal split to run BWA in parallel."
+        read_groups: {
+            description: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz` if non-zero. Only the `ID` field is required, and it must be unique for each read group defined. See data_structures/read_group.wdl for help formatting your input JSON.",
+            external_help: "https://samtools.github.io/hts-specs/SAMv1.pdf",
+        }
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
@@ -31,10 +34,12 @@ workflow dnaseq_standard_experimental {
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
     }
     input {
-        File bam
+        Array[File] read_one_fastqs_gz
+        Array[File] read_two_fastqs_gz
         File bwa_db
         Int reads_per_file = 10000000
-        String prefix = basename(bam, ".bam")
+        Array[ReadGroup] read_groups
+        String prefix
         String aligner = "mem"
         Boolean validate_input = true
         Boolean use_all_cores = false
@@ -42,42 +47,49 @@ workflow dnaseq_standard_experimental {
     }
 
     call parse_input { input:
-        aligner
+        aligner,
+        array_lengths = [length(read_one_fastqs_gz), length(read_two_fastqs_gz), length(read_groups)]
     }
 
-    if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
-            bam,
+    if (validate_input){
+        scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
+            call fq.fqlint { input:
+                read_one_fastq = reads.left,
+                read_two_fastq = reads.right,
+            }
         }
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample after parse_input { input:
-            bam,
-            desired_reads = subsample_n_reads,
-            use_all_cores,
+        Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
+        scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
+            call fq.subsample { input:
+                read_one_fastq = reads.left,
+                read_two_fastq = reads.right,
+                record_count = reads_per_pair,
+            }
         }
     }
-    File selected_bam = select_first([subsample.sampled_bam, bam])
-
-    call read_group.get_ReadGroups { input:
-        bam = selected_bam,
-    }
-
-    call bam_to_fastqs_wf.bam_to_fastqs { input:
-        bam = selected_bam,
-        paired_end = true,  # matches default but prevents user from overriding
-        use_all_cores,
-    }
+    Array[File] selected_read_one_fastqs = select_first([
+        subsample.subsampled_read1,
+        read_one_fastqs_gz
+    ])
+    Array[File] selected_read_two_fastqs = select_all(
+        select_first([
+            subsample.subsampled_read2,
+            read_two_fastqs_gz
+        ])
+    )
 
     call dnaseq_core_wf.dnaseq_core_experimental { input:
-        read_one_fastqs_gz = bam_to_fastqs.read1s,
-        read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
+        read_one_fastqs_gz = selected_read_one_fastqs,
+        read_two_fastqs_gz = selected_read_two_fastqs,
         bwa_db,
         reads_per_file,
-        read_groups = get_ReadGroups.read_groups,
+        read_groups,
         prefix,
         aligner,
+        use_all_cores
     }
 
     output {
@@ -103,6 +115,7 @@ task parse_input {
 
     input {
         String aligner
+        Array[Int] array_lengths
     }
 
     command <<<
@@ -111,6 +124,13 @@ task parse_input {
         then
             >&2 echo "Aligner must be:"
             >&2 echo "'mem' or 'aln'"
+            exit 1
+        fi
+
+        if [ "~{array_lengths[0]}" != "~{array_lengths[1]}" ] \
+        || [ "~{array_lengths[1]}" != "~{array_lengths[2]}" ]
+        then
+            >&2 echo "Length of read_one_fastqs_gz must equal length of read_two_fastqs_gz and read_groups"
             exit 1
         fi
     >>>

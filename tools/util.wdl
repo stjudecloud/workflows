@@ -781,7 +781,7 @@ task split_fastq {
         File fastq
         String prefix = sub(
             basename(fastq),
-            "\\.(fastq|fq)\\.gz$",
+            "(fastq|fq)\\.gz$",
             ""
         )
         Int reads_per_file = 10000000
@@ -800,7 +800,7 @@ task split_fastq {
 
         for file in "~{prefix}"*; do
             mv "$file" "${file}.fastq"
-            echo "gzip ${file}.fastq" > cmds
+            echo "gzip ${file}.fastq" >> cmds
         done
 
         parallel --jobs ~{ncpu} < cmds

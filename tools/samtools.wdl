@@ -552,6 +552,15 @@ task merge {
         # -1 because samtools uses one more core than `--threads` specifies
         let "n_cores -= 1"
 
+        bams=""
+        for file in ~{sep(" ", bams)}
+        do
+          # This will fail (intentionally) if there are duplicate names
+          # in the input BAM array.
+          ln -s $file
+          bams+=" $(basename $file)"
+        done
+
         samtools merge \
             --threads "$n_cores" \
             ~{if defined(new_header) then "-h " + new_header else ""} \
@@ -561,7 +570,7 @@ task merge {
             ~{if combine_rg then "-c" else ""} \
             ~{if combine_pg then "-p" else ""} \
             ~{prefix}.bam \
-            ~{sep(" ", bams)}
+            $bams
     >>>
 
     output {
