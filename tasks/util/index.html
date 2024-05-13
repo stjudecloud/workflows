@@ -258,6 +258,10 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/bwa-db-build/">Bwa db build</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/dnaseq-core/">Dnaseq core</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/dnaseq-standard-fastq/">Dnaseq standard fastq</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/dnaseq-standard/">Dnaseq standard</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/flag_filter/">FlagFilter</a>
@@ -543,7 +547,7 @@
 <ul>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=2): Number of cores to allocate for task</li>
-<li><code>prefix</code> (String, default=sub(basename(fastq),"\.(fastq|fq)\.gz$","")): Prefix for the FASTQ file. The extension <code>.fq.gz</code> will be added.</li>
+<li><code>prefix</code> (String, default=sub(basename(fastq),"(fastq|fq)\.gz$","")): Prefix for the FASTQ file. The extension <code>.fq.gz</code> will be added.</li>
 <li><code>reads_per_file</code> (Int, default=10000000): Number of reads to include in each output FASTQ file</li>
 </ul>
 <h3 id="outputs_10">Outputs</h3>

@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Dnaseq standard - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>Dnaseq standard fastq - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Dnaseq standard";
-        var mkdocs_page_input_path = "workflows/dnaseq-standard.md";
+        var mkdocs_page_name = "Dnaseq standard fastq";
+        var mkdocs_page_input_path = "workflows/dnaseq-standard-fastq.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -104,9 +104,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../dnaseq-core/">Dnaseq core</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../dnaseq-standard-fastq/">Dnaseq standard fastq</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Dnaseq standard</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Dnaseq standard fastq</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -121,6 +119,8 @@
     <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
     </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../dnaseq-standard/">Dnaseq standard</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../flag_filter/">FlagFilter</a>
                   </li>
@@ -156,9 +156,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Workflows</li>
-      <li class="breadcrumb-item active">Dnaseq standard</li>
+      <li class="breadcrumb-item active">Dnaseq standard fastq</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/dnaseq-standard.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/dnaseq-standard-fastq.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -167,7 +167,7 @@
             <div class="section" itemprop="articleBody">
               
                 <p><strong>WARNING:</strong> this workflow is experimental! Use at your own risk!</p>
-<h2 id="dnaseq_standard_experimental">dnaseq_standard_experimental</h2>
+<h2 id="dnaseq_standard_fastq_experimental">dnaseq_standard_fastq_experimental</h2>
 <dl>
 <dt>description</dt>
 <dd>Aligns DNA reads using bwa</dd>
@@ -179,16 +179,14 @@
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
-<li><code>bam</code> (File, <strong>required</strong>): Input BAM to realign</li>
 <li><code>bwa_db</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
-<li><code>get_ReadGroups._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>prefix</code> (String, <strong>required</strong>): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
+<li><code>read_groups</code> (Array[ReadGroup], <strong>required</strong>); <strong>description</strong>: An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of <code>read_groups</code> must equal the length of <code>read_one_fastqs_gz</code> and the length of <code>read_two_fastqs_gz</code> if non-zero. Only the <code>ID</code> field is required, and it must be unique for each read group defined. See data_structures/read_group.wdl for help formatting your input JSON.; <strong>external_help</strong>: https://samtools.github.io/hts-specs/SAMv1.pdf</li>
+<li><code>read_one_fastqs_gz</code> (Array[File], <strong>required</strong>): Input gzipped FASTQ format file(s) with 1st read in pair to align</li>
+<li><code>read_two_fastqs_gz</code> (Array[File], <strong>required</strong>): Input gzipped FASTQ format file(s) with 2nd read in pair to align</li>
+<li><code>fqlint._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>parse_input._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>subsample._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>validate_input_bam._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam_to_fastqs.bam_to_fastq._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam_to_fastqs.fqlint._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam_to_fastqs.quickcheck._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam_to_fastqs.split._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>dnaseq_core_experimental.ReadGroup_to_string._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>dnaseq_core_experimental.bwa_aln_pe._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>dnaseq_core_experimental.bwa_mem._runtime</code> (Any, <strong>required</strong>)</li>
@@ -202,7 +200,6 @@
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
-<li><code>validate_input_bam.reference_fasta</code> (File?)</li>
 <li><code>dnaseq_core_experimental.rg_merge.basic_merge.new_header</code> (File?)</li>
 <li><code>dnaseq_core_experimental.rg_merge.final_merge.new_header</code> (File?)</li>
 <li><code>dnaseq_core_experimental.rg_merge.inner_merge.new_header</code> (File?)</li>
@@ -210,48 +207,19 @@
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>aligner</code> (String, default="mem"); <strong>description</strong>: BWA aligner to use; <strong>choices</strong>: ['mem', 'aln']</li>
-<li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
 <li><code>reads_per_file</code> (Int, default=10000000): Controls the number of reads per FASTQ file for internal split to run BWA in parallel.</li>
 <li><code>subsample_n_reads</code> (Int, default=-1): Only process a random sampling of <code>n</code> reads. Any <code>n</code>&lt;=<code>0</code> for processing entire input.</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments.</li>
 <li><code>validate_input</code> (Boolean, default=true): Ensure input BAM is well-formed before beginning harmonization?</li>
-<li><code>dnaseq_core_experimental.use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments.</li>
-<li><code>get_ReadGroups.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>fqlint.disable_validator_codes</code> (Array[String], default=[])</li>
+<li><code>fqlint.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>fqlint.modify_memory_gb</code> (Int, default=0)</li>
+<li><code>fqlint.paired_read_validation_level</code> (String, default="high")</li>
+<li><code>fqlint.panic</code> (Boolean, default=true)</li>
+<li><code>fqlint.single_read_validation_level</code> (String, default="high")</li>
 <li><code>subsample.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>subsample.ncpu</code> (Int, default=2)</li>
-<li><code>subsample.prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
-<li><code>validate_input_bam.ignore_list</code> (Array[String], default=[])</li>
-<li><code>validate_input_bam.index_validation_stringency_less_exhaustive</code> (Boolean, default=false)</li>
-<li><code>validate_input_bam.max_errors</code> (Int, default=2147483647)</li>
-<li><code>validate_input_bam.memory_gb</code> (Int, default=16)</li>
-<li><code>validate_input_bam.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>validate_input_bam.outfile_name</code> (String, default=basename(bam,".bam") + ".ValidateSamFile.txt")</li>
-<li><code>validate_input_bam.succeed_on_errors</code> (Boolean, default=false)</li>
-<li><code>validate_input_bam.succeed_on_warnings</code> (Boolean, default=true)</li>
-<li><code>validate_input_bam.summary_mode</code> (Boolean, default=false)</li>
-<li><code>validate_input_bam.validation_stringency</code> (String, default="LENIENT")</li>
-<li><code>bam_to_fastqs.bam_to_fastq.append_read_number</code> (Boolean, default=true)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.bitwise_filter</code> (FlagFilter, default={"include_if_all": "0x0", "exclude_if_any": "0x900", "include_if_any": "0x0", "exclude_if_all": "0x0"})</li>
-<li><code>bam_to_fastqs.bam_to_fastq.collated</code> (Boolean, default=false)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.fail_on_unexpected_reads</code> (Boolean, default=false)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.fast_mode</code> (Boolean, default=!retain_collated_bam)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.modify_memory_gb</code> (Int, default=0)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.ncpu</code> (Int, default=2)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.output_singletons</code> (Boolean, default=false)</li>
-<li><code>bam_to_fastqs.bam_to_fastq.prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
-<li><code>bam_to_fastqs.bam_to_fastq.retain_collated_bam</code> (Boolean, default=false)</li>
-<li><code>bam_to_fastqs.fqlint.disable_validator_codes</code> (Array[String], default=[])</li>
-<li><code>bam_to_fastqs.fqlint.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>bam_to_fastqs.fqlint.modify_memory_gb</code> (Int, default=0)</li>
-<li><code>bam_to_fastqs.fqlint.paired_read_validation_level</code> (String, default="high")</li>
-<li><code>bam_to_fastqs.fqlint.panic</code> (Boolean, default=true)</li>
-<li><code>bam_to_fastqs.fqlint.single_read_validation_level</code> (String, default="high")</li>
-<li><code>bam_to_fastqs.quickcheck.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>bam_to_fastqs.split.modify_disk_size_gb</code> (Int, default=0)</li>
-<li><code>bam_to_fastqs.split.ncpu</code> (Int, default=2)</li>
-<li><code>bam_to_fastqs.split.prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
-<li><code>bam_to_fastqs.split.reject_unaccounted</code> (Boolean, default=true)</li>
+<li><code>subsample.prefix</code> (String, default=sub(basename(read_one_fastq),"([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$","")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
+<li><code>subsample.probability</code> (Float, default=1.0)</li>
 <li><code>dnaseq_core_experimental.bwa_aln_pe.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>dnaseq_core_experimental.bwa_aln_pe.ncpu</code> (Int, default=4)</li>
 <li><code>dnaseq_core_experimental.bwa_mem.modify_disk_size_gb</code> (Int, default=0)</li>
@@ -303,6 +271,7 @@
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>aligner</code> (String, <strong>required</strong>); <strong>description</strong>: BWA aligner to use; <strong>choices</strong>: ['mem', 'aln']</li>
+<li><code>array_lengths</code> (Array[Int], <strong>required</strong>)</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
 <ul>
@@ -312,8 +281,8 @@
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../dnaseq-standard-fastq/" class="btn btn-neutral float-left" title="Dnaseq standard fastq"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../flag_filter/" class="btn btn-neutral float-right" title="FlagFilter">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../dnaseq-core/" class="btn btn-neutral float-left" title="Dnaseq core"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../dnaseq-standard/" class="btn btn-neutral float-right" title="Dnaseq standard">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -341,10 +310,10 @@
         </span>
     
     
-      <span><a href="../dnaseq-standard-fastq/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../dnaseq-core/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../flag_filter/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../dnaseq-standard/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
