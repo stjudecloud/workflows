@@ -226,11 +226,11 @@ task bwa_mem {
         File read_one_fastq_gz
         File bwa_db_tar_gz
         File? read_two_fastq_gz
-        String prefix = sub(sub(
+        String prefix = sub(
             basename(read_one_fastq_gz),
             "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
-        ), "\\.([rR][12])\\.", ".")
+        )
         String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 4

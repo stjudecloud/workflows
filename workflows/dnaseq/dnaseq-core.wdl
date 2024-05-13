@@ -69,6 +69,11 @@ workflow dnaseq_core_experimental {
                     read_one_fastq_gz = t.left,
                     read_two_fastq_gz = t.right,
                     bwa_db_tar_gz = bwa_db,
+                    prefix = sub(sub(
+                        basename(t.left),
+                        "(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
+                        ""
+                    ), "\\.([rR][12])\\.", "."),
                     # find spaces, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
                     read_group = sub(tuple.right, " ", "\\\\t"),
@@ -80,6 +85,11 @@ workflow dnaseq_core_experimental {
                     read_one_fastq_gz = t.left,
                     read_two_fastq_gz = t.right,
                     bwa_db_tar_gz = bwa_db,
+                    prefix = sub(sub(
+                        basename(t.left),
+                        "(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
+                        ""
+                    ), "\\.([rR][12])\\.", "."),
                     # find tab literals, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
                     read_group = sub(tuple.right, " ", "\\\\t"),
