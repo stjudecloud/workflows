@@ -24,7 +24,7 @@ workflow dnaseq_core_experimental {
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         reads_per_file: "Controls the number of reads per FASTQ file for internal split to run BWA in parallel."
-        read_groups: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz` if non-zero. Only the `ID` field is required, and it must be unique for each read group defined. See data_structures/read_group.wdl for help formatting your input JSON."
+        read_groups: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a pair of FASTQ files. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz`. Only the `ID` field is required, and it must be unique for each read group defined. See data_structures/read_group.wdl for help formatting your input JSON."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
