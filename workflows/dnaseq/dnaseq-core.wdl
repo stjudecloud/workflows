@@ -31,6 +31,7 @@ workflow dnaseq_core_experimental {
             choices: ["mem", "aln"]
         }
         use_all_cores: "Use all cores? Recommended for cloud environments."
+        sample_override: "Value to override the SM field of *every* read group."
     }
     input {
         Array[File] read_one_fastqs_gz
@@ -41,18 +42,39 @@ workflow dnaseq_core_experimental {
         String prefix
         String aligner = "mem"
         Boolean use_all_cores = false
+        String? sample_override
     }
-
-    scatter (rg in read_groups) {
-        call read_group.ReadGroup_to_string { input: read_group = rg }
-    }
-
-    Array[String] read_groups_bwa = prefix("@RG ", ReadGroup_to_string.stringified_read_group)
 
     scatter (tuple in zip(
         zip(read_one_fastqs_gz, read_two_fastqs_gz),
-        read_groups_bwa
+        read_groups
     )) {
+        if (defined(sample_override)) {
+            # override the SM field of every read group
+            ReadGroup rg = ReadGroup{
+                ID: tuple.right.ID,
+                BC: tuple.right.BC,
+                CN: tuple.right.CN,
+                DS: tuple.right.DS,
+                DT: tuple.right.DT,
+                FO: tuple.right.FO,
+                KS: tuple.right.KS,
+                LB: tuple.right.LB,
+                PG: tuple.right.PG,
+                PI: tuple.right.PI,
+                PL: tuple.right.PL,
+                PM: tuple.right.PM,
+                PU: tuple.right.PU,
+                SM: sample_override
+            }
+        }
+
+        call read_group.ReadGroup_to_string { input:
+            read_group = select_first([rg, tuple.right])
+        }
+
+        String rg_string = "@RG " + ReadGroup_to_string.stringified_read_group
+
         call util.split_fastq as read_ones { input:
             fastq = tuple.left.left,
             reads_per_file = reads_per_file
@@ -76,7 +98,7 @@ workflow dnaseq_core_experimental {
                     ), "\\.([rR][12])\\.", "."),
                     # find spaces, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
-                    read_group = sub(tuple.right, " ", "\\\\t"),
+                    read_group = sub(rg_string, " ", "\\\\t"),
                     use_all_cores,
                 }
             }
@@ -92,7 +114,7 @@ workflow dnaseq_core_experimental {
                     ), "\\.([rR][12])\\.", "."),
                     # find tab literals, replace with '\\t' (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
-                    read_group = sub(tuple.right, " ", "\\\\t"),
+                    read_group = sub(rg_string, " ", "\\\\t"),
                     use_all_cores,
                 }
             }

@@ -29,7 +29,7 @@ workflow dnaseq_standard_fastq_experimental {
             description: "BWA aligner to use",
             choices: ["mem", "aln"]
         }
-        validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
+        validate_input: "Ensure input FASTQs ares well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
     }

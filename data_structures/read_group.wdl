@@ -123,7 +123,11 @@ import json  # lint-check: ignore
 sam = pysam.AlignmentFile(os.environ["BAM"], "rb")
 
 out_file = open(os.environ["OUTFILE"], "w")
-json.dump(sam.header.to_dict()["RG"], out_file)
+header = sam.header.to_dict()["RG"]
+modified_header = []
+for read_group in header:
+  modified_header.append({k:v.upper() if k=='PL' else v for k,v in read_group.items()})
+json.dump(modified_header, out_file)
 out_file.close()
 END
     >>>
