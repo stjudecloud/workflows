@@ -200,6 +200,7 @@
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
+<li><code>dnaseq_core_experimental.sample_override</code> (String?)</li>
 <li><code>dnaseq_core_experimental.rg_merge.basic_merge.new_header</code> (File?)</li>
 <li><code>dnaseq_core_experimental.rg_merge.final_merge.new_header</code> (File?)</li>
 <li><code>dnaseq_core_experimental.rg_merge.inner_merge.new_header</code> (File?)</li>
@@ -210,7 +211,7 @@
 <li><code>reads_per_file</code> (Int, default=10000000): Controls the number of reads per FASTQ file for internal split to run BWA in parallel.</li>
 <li><code>subsample_n_reads</code> (Int, default=-1): Only process a random sampling of <code>n</code> reads. Any <code>n</code>&lt;=<code>0</code> for processing entire input.</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments.</li>
-<li><code>validate_input</code> (Boolean, default=true): Ensure input BAM is well-formed before beginning harmonization?</li>
+<li><code>validate_input</code> (Boolean, default=true): Ensure input FASTQs ares well-formed before beginning harmonization?</li>
 <li><code>fqlint.disable_validator_codes</code> (Array[String], default=[])</li>
 <li><code>fqlint.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>fqlint.modify_memory_gb</code> (Int, default=0)</li>
