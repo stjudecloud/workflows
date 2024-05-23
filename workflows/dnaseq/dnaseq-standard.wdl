@@ -29,6 +29,7 @@ workflow dnaseq_standard_experimental {
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
+        sample_override: "Value to override the SM field of *every* read group."
     }
     input {
         File bam
@@ -39,6 +40,7 @@ workflow dnaseq_standard_experimental {
         Boolean validate_input = true
         Boolean use_all_cores = false
         Int subsample_n_reads = -1
+        String? sample_override
     }
 
     call parse_input { input:
@@ -78,6 +80,8 @@ workflow dnaseq_standard_experimental {
         read_groups = get_ReadGroups.read_groups,
         prefix,
         aligner,
+        use_all_cores,
+        sample_override,
     }
 
     output {
