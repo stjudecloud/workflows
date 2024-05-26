@@ -40,7 +40,6 @@
 
 version 1.1
 
-
 import "../../tools/cellranger.wdl"
 import "../../tools/fq.wdl"
 import "../../tools/samtools.wdl"
