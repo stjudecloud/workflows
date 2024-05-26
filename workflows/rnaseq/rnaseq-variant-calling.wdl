@@ -68,7 +68,7 @@ workflow rnaseq_variant_calling {
         fasta = fasta,
         fasta_index = fasta_index,
         dict = dict,
-        known_indels_sites_VCFs = known_vcfs,
+        known_indels_sites_vcfs = known_vcfs,
         known_indels_sites_indices = known_vcf_indexes,
         dbSNP_vcf = dbSNP_vcf,
         dbSNP_vcf_index = dbSNP_vcf_index
