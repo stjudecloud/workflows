@@ -700,7 +700,7 @@ task alignment {
             } \
             --clip5pNbases ~{'~{clip_5p_N_bases.left} ~{clip_5p_N_bases.right}'} \
             --readNameSeparator ~{read_name_separator} \
-            --clipAdapter_type ~{clip_adapter_type} \
+            --clipAdapterType ~{clip_adapter_type} \
             --outSAMstrandField ~{out_SAM_strand_field} \
             --outSAMattributes ~{out_SAM_attributes} \
             --outSAMunmapped ~{out_SAM_unmapped} \
