@@ -144,7 +144,7 @@ END
     }
 }
 
-task validate_ReadGroup {
+task validate_read_group {
     meta {
         description: "Validate a ReadGroup struct's fields are defined"
         outputs: {

@@ -3,7 +3,7 @@
     - miniwdl
     - read_group
   command: >-
-    miniwdl run --verbose -d test-output/. --task validate_ReadGroup -i tests/data_structures/input_json/read_group_bad_id.json data_structures/read_group.wdl
+    miniwdl run --verbose -d test-output/. --task validate_read_group -i tests/data_structures/input_json/read_group_bad_id.json data_structures/read_group.wdl
   exit_code: 1
   stderr:
     contains:
@@ -14,7 +14,7 @@
     - miniwdl
     - read_group
   command: >-
-    miniwdl run --verbose -d test-output/. --task validate_ReadGroup -i tests/data_structures/input_json/read_group_bad_sample.json data_structures/read_group.wdl
+    miniwdl run --verbose -d test-output/. --task validate_read_group -i tests/data_structures/input_json/read_group_bad_sample.json data_structures/read_group.wdl
   exit_code: 1
   stderr:
     contains:
@@ -25,7 +25,7 @@
     - miniwdl
     - read_group
   command: >-
-    miniwdl run --verbose -d test-output/. --task validate_ReadGroup -i tests/data_structures/input_json/read_group_good.json data_structures/read_group.wdl
+    miniwdl run --verbose -d test-output/. --task validate_read_group -i tests/data_structures/input_json/read_group_good.json data_structures/read_group.wdl
   exit_code: 0
 
 - name: read_group_missing_sample
@@ -33,7 +33,7 @@
     - miniwdl
     - read_group
   command: >-
-    miniwdl run --verbose -d test-output/. --task validate_ReadGroup -i tests/data_structures/input_json/read_group_missing_sample.json data_structures/read_group.wdl
+    miniwdl run --verbose -d test-output/. --task validate_read_group -i tests/data_structures/input_json/read_group_missing_sample.json data_structures/read_group.wdl
   exit_code: 1
   stderr:
     contains:
@@ -44,7 +44,7 @@
     - miniwdl
     - read_group
   command: >-
-    miniwdl run --verbose -d test-output/. --task validate_ReadGroup -i tests/data_structures/input_json/read_group_sample_with_space.json data_structures/read_group.wdl
+    miniwdl run --verbose -d test-output/. --task validate_read_group -i tests/data_structures/input_json/read_group_sample_with_space.json data_structures/read_group.wdl
   exit_code: 1
   stderr:
     contains:
