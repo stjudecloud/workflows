@@ -305,6 +305,7 @@ task alignment {
                 WithinBAM_HardClip: "output into main aligned BAM files (Aligned.*.bam). Hard-clipping in the CIGAR for supplemental chimeric alignments.",
                 WithinBAM_SoftClip: "output into main aligned BAM files (Aligned.*.bam). Soft-clipping in the CIGAR for supplemental chimeric alignments."
             },
+            tool_default: "Junctions",
             common: true
         }
         chim_filter: {
@@ -428,6 +429,7 @@ task alignment {
         win_flank_n_bins: "=log2(winFlank), where winFlank is the size of the left and right flanking regions for each window"
         chim_segment_min: {
             description: "minimum length of chimeric segment length, if ==0, no chimeric output",
+            tool_default: 0,
             common: true
         }
         chim_score_min: {
@@ -527,7 +529,7 @@ task alignment {
         String align_ends_type = "Local"
         String align_soft_clip_at_reference_ends = "Yes"
         String align_insertion_flush = "None"
-        String chim_out_type = "Junctions"
+        String chim_out_type = "WithinBAM HardClip"
         String chim_filter = "banGenomicN"
         String chim_out_junction_format = "plain"
         String twopass_mode = "Basic"
@@ -553,7 +555,7 @@ task alignment {
         Int out_sam_flag_OR = 0
         Int out_sam_flag_AND = 65535
         Int out_filter_multimap_score_range = 1
-        Int out_filter_multimap_n_max = 20
+        Int out_filter_multimap_n_max = 10
         Int out_filter_mismatch_n_max = 10
         Int out_filter_score_min = 0
         Int out_filter_match_n_min = 0
@@ -588,7 +590,7 @@ task alignment {
         Int win_bin_n_bits = 16
         Int win_anchor_dist_n_bins = 9
         Int win_flank_n_bins = 4
-        Int chim_segment_min = 0
+        Int chim_segment_min = 10
         Int chim_score_min = 0
         Int chim_score_drop_max = 20
         Int chim_score_separation = 10
