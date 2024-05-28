@@ -31,8 +31,8 @@ task build_star_db {
             common: true
         }
         genome_chr_bin_n_bits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
-        genome_SA_index_n_bases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
-        genome_SA_sparse_D: "suffix array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction."
+        genome_sa_index_n_bases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
+        genome_sa_sparse_D: "suffix array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction."
         genome_suffix_length_max: "maximum length of the suffixes, has to be longer than read length. -1 = infinite."
         sjdb_overhang: {
             description: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). **[STAR default]**: `100`. **[WDL default]**: `125`.",
@@ -58,8 +58,8 @@ task build_star_db {
         String sjdb_gtf_tag_exon_parent_gene_type = "gene_type gene_biotype"
         Boolean use_all_cores = false
         Int genome_chr_bin_n_bits = 18
-        Int genome_SA_index_n_bases = 14
-        Int genome_SA_sparse_D = 1
+        Int genome_sa_index_n_bases = 14
+        Int genome_sa_sparse_D = 1
         Int genome_suffix_length_max = -1
         Int sjdb_overhang = 125
         Int ncpu = 8
@@ -107,8 +107,8 @@ task build_star_db {
             --sjdbGTFtagExonParentGeneName ~{sjdb_gtf_tag_exon_parent_gene_name} \
             --sjdbGTFtagExonParentGeneType ~{sjdb_gtf_tag_exon_parent_gene_type} \
             --genomeChrBinNbits ~{genome_chr_bin_n_bits} \
-            --genomeSAindexNbases ~{genome_SA_index_n_bases} \
-            --genomeSAsparseD ~{genome_SA_sparse_D} \
+            --genomeSAindexNbases ~{genome_sa_index_n_bases} \
+            --genomeSAsparseD ~{genome_sa_sparse_D} \
             --genomeSuffixLengthMax ~{genome_suffix_length_max} \
             --sjdbOverhang ~{sjdb_overhang}
 
