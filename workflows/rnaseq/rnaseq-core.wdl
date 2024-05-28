@@ -68,7 +68,7 @@ workflow rnaseq_core {
         out_filter_multimap_n_max: {
             description: "This overrides the STAR alignment default. Maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out.",
             tool: "star",
-            tool_default: 10
+            tool_default: 10,
             common: true
         }
         pe_overlap_n_bases_min: {
