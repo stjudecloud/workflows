@@ -104,6 +104,12 @@ workflow rnaseq_core {
             tool_default: 0,
             common: true
         }
+        chim_score_drop_max: {
+            description: "max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length",
+            tool: "star",
+            tool_default: 20,
+            common: true
+        }
     }
 
     input {
@@ -133,6 +139,7 @@ workflow rnaseq_core {
         Int chim_junction_overhang_min = 10
         Int chim_segment_read_gap_max = 3
         Int chim_multimap_n_max = 50
+        Int chim_score_drop_max = 30
     }
 
     Map[String, String] htseq_strandedness_map = {
@@ -161,6 +168,7 @@ workflow rnaseq_core {
         chim_segment_read_gap_max,
         chim_multimap_n_max,
         align_spliced_mate_map_l_min_over_l_mate,
+        chim_score_drop_max,
     }
 
     call alignment_post_wf.alignment_post { input:

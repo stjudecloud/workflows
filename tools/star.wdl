@@ -592,7 +592,7 @@ task alignment {
         Int win_flank_n_bins = 4
         Int chim_segment_min = 10
         Int chim_score_min = 0
-        Int chim_score_drop_max = 30
+        Int chim_score_drop_max = 20
         Int chim_score_separation = 10
         Int chim_score_junction_nonGTAG = -1
         Int chim_junction_overhang_min = 20
