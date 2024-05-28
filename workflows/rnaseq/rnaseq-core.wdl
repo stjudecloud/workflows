@@ -60,7 +60,7 @@ workflow rnaseq_core {
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
         use_all_cores: "Use all cores for multi-core steps?"
-        alignSplicedMateMapLminOverLmate: {
+        align_spliced_mate_map_l_min_over_l_mate: {
             description: "This overrides the STAR alignment default. alignSplicedMateMapLmin normalized to mate length",
             tool: "star",
             tool_default: 0.66
@@ -125,7 +125,7 @@ workflow rnaseq_core {
         Boolean mark_duplicates = false
         Boolean cleanse_xenograft = false
         Boolean use_all_cores = false
-        Float alignSplicedMateMapLminOverLmate = 0.5
+        Float align_spliced_mate_map_l_min_over_l_mate = 0.5
         Int out_filter_multimap_n_max = 50
         Int pe_overlap_n_bases_min = 10
         Int chim_score_separation = 1
@@ -160,6 +160,7 @@ workflow rnaseq_core {
         chim_junction_overhang_min,
         chim_segment_read_gap_max,
         chim_multimap_n_max,
+        align_spliced_mate_map_l_min_over_l_mate,
     }
 
     call alignment_post_wf.alignment_post { input:
