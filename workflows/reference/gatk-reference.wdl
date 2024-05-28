@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/picard.wdl"
@@ -16,7 +14,7 @@ workflow gatk_reference {
             dbSNP_vcf: "dbSNP VCF file for the reference genome.",
             dbSNP_vcf_index: "Index for the dbSNP VCF file for the reference genome.",
             interval_list: "List of intervals that will be used when computing variants.",
-            knownVCFs: "VCF files with known variants to use with variant calling."
+            known_vcfs: "VCF files with known variants to use with variant calling."
         }
         allowNestedInputs: true
     }
@@ -29,8 +27,8 @@ workflow gatk_reference {
         dbSNP_vcf_name: "Name of the dbSNP VCF file."
         dbSNP_vcf_index_url: "URL from which to retrieve the index for the dbSNP VCF file."
         dbSNP_vcf_index_name: "Name of the index for the dbSNP VCF file."
-        knownVCF_urls: "URLs from which to retrieve VCF files with known variants."
-        knownVCF_names: "Names of the VCF files with known variants. Order should match that of `knownVCF_urls`."
+        known_vcf_urls: "URLs from which to retrieve VCF files with known variants."
+        known_vcf_names: "Names of the VCF files with known variants. Order should match that of `known_vcf_urls`."
         interval_list_url: "URL from which to retrieve the list of intervals to use when computing variants."
         interval_list_name: "Name of the list of intervals to use when computing variants."
     }
@@ -43,8 +41,8 @@ workflow gatk_reference {
         String dbSNP_vcf_name
         String? dbSNP_vcf_index_url
         String? dbSNP_vcf_index_name
-        Array[String] knownVCF_urls
-        Array[String] knownVCF_names
+        Array[String] known_vcf_urls
+        Array[String] known_vcf_names
         String? interval_list_url
         String? interval_list_name
     }
@@ -88,8 +86,8 @@ workflow gatk_reference {
         }
     }
 
-    scatter (pair in zip(knownVCF_urls, knownVCF_names)) {
-        call util.download as knownVCF {
+    scatter (pair in zip(known_vcf_urls, known_vcf_names)) {
+        call util.download as known_vcf {
             input:
                 url = pair.left,
                 outfile_name = pair.right
@@ -103,6 +101,6 @@ workflow gatk_reference {
         File? dbSNP_vcf = dbsnp.downloaded_file
         File? dbSNP_vcf_index = dbsnp_index.downloaded_file
         File? interval_list = intervals.downloaded_file
-        Array[File] knownVCFs = knownVCF.downloaded_file
+        Array[File] known_vcfs = known_vcf.downloaded_file
     }
 }

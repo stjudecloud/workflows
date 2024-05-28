@@ -560,7 +560,6 @@ print(
 )
 print(prefix, file=outfile, end="\t")
 
-
 def stats_from_dict(score_dict):
     total_score = 0
     total_freq = 0
@@ -591,7 +590,6 @@ def stats_from_dict(score_dict):
     stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2)) ** 0.5
 
     return avg, median, stdev
-
 
 if not fast_mode:
     tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)

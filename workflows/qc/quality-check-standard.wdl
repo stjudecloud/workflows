@@ -143,11 +143,11 @@ workflow quality_check {
         coverage_beds_len=length(coverage_beds),
         coverage_labels=coverage_labels,
     }
-    call flag_filter.validate_FlagFilter as kraken_filter_validator { input:
+    call flag_filter.validate_flag_filter as kraken_filter_validator { input:
         flags = standard_filter
     }
     if (run_comparative_kraken) {
-        call flag_filter.validate_FlagFilter as comparative_kraken_filter_validator { input:
+        call flag_filter.validate_flag_filter as comparative_kraken_filter_validator { input:
             flags = comparative_filter
         }
     }

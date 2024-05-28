@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/picard.wdl"
@@ -70,7 +68,7 @@ workflow rnaseq_variant_calling {
         fasta = fasta,
         fasta_index = fasta_index,
         dict = dict,
-        known_indels_sites_VCFs = known_vcfs,
+        known_indels_sites_vcfs = known_vcfs,
         known_indels_sites_indices = known_vcf_indexes,
         dbSNP_vcf = dbSNP_vcf,
         dbSNP_vcf_index = dbSNP_vcf_index
@@ -123,4 +121,3 @@ workflow rnaseq_variant_calling {
         File variant_filtered_vcf_index = variant_filtration.vcf_filtered_index
     }
 }
-

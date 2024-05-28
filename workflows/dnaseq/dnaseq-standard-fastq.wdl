@@ -111,6 +111,7 @@ task parse_input {
             description: "BWA aligner to use",
             choices: ["mem", "aln"]
         }
+        array_lengths: "Expected to be an array of length 3, containing the lengths of `read_one_fastqs_gz`, `read_two_fastqs_gz`, and `read_groups`"
     }
 
     input {

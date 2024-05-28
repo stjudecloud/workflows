@@ -89,8 +89,8 @@ task base_recalibrator {
         dict: "Dictionary file for FASTA format genome"
         dbSNP_vcf: "dbSNP VCF file"
         dbSNP_vcf_index: "dbSNP VCF index file"
-        known_indels_sites_VCFs: "List of VCF files containing known indels"
-        known_indels_sites_indices: "List of VCF index files corresponding to the VCF files in `known_indels_sites_VCFs`"
+        known_indels_sites_vcfs: "List of VCF files containing known indels"
+        known_indels_sites_indices: "List of VCF index files corresponding to the VCF files in `known_indels_sites_vcfs`"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
@@ -106,7 +106,7 @@ task base_recalibrator {
         File dict
         File dbSNP_vcf
         File dbSNP_vcf_index
-        Array[File] known_indels_sites_VCFs
+        Array[File] known_indels_sites_vcfs
         Array[File] known_indels_sites_indices
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
@@ -126,7 +126,7 @@ task base_recalibrator {
             ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
             -O ~{outfile_name} \
             -known-sites ~{dbSNP_vcf} \
-            -known-sites ~{sep=" --known-sites " known_indels_sites_VCFs} \
+            -known-sites ~{sep=" --known-sites " known_indels_sites_vcfs} \
             --spark-master local[~{ncpu}]
     >>>
 
