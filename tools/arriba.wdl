@@ -356,6 +356,8 @@ task arriba_annotate_exon_numbers {
     Int disk_size_gb = ceil(input_size_gb) + 5 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         gtf_name=~{basename(gtf, ".gz")}
         gunzip -c ~{gtf} > "$gtf_name" || ln -sf ~{gtf} "$gtf_name"
 
