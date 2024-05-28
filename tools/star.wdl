@@ -32,7 +32,7 @@ task build_star_db {
         }
         genome_chr_bin_n_bits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
         genome_sa_index_n_bases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
-        genome_sa_sparse_D: "suffix array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction."
+        genome_sa_sparse_d: "suffix array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction."
         genome_suffix_length_max: "maximum length of the suffixes, has to be longer than read length. -1 = infinite."
         sjdb_overhang: {
             description: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). **[STAR default]**: `100`. **[WDL default]**: `125`.",
@@ -59,7 +59,7 @@ task build_star_db {
         Boolean use_all_cores = false
         Int genome_chr_bin_n_bits = 18
         Int genome_sa_index_n_bases = 14
-        Int genome_sa_sparse_D = 1
+        Int genome_sa_sparse_d = 1
         Int genome_suffix_length_max = -1
         Int sjdb_overhang = 125
         Int ncpu = 8
@@ -108,7 +108,7 @@ task build_star_db {
             --sjdbGTFtagExonParentGeneType ~{sjdb_gtf_tag_exon_parent_gene_type} \
             --genomeChrBinNbits ~{genome_chr_bin_n_bits} \
             --genomeSAindexNbases ~{genome_sa_index_n_bases} \
-            --genomeSAsparseD ~{genome_sa_sparse_D} \
+            --genomeSAsparseD ~{genome_sa_sparse_d} \
             --genomeSuffixLengthMax ~{genome_suffix_length_max} \
             --sjdbOverhang ~{sjdb_overhang}
 
@@ -334,13 +334,13 @@ task alignment {
             description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
-        out_filter_mismatch_n_over_L_max: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
-        out_filter_mismatch_n_over_read_L_max: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
-        out_filter_score_min_over_L_read: "same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for Paired-End reads)"
-        out_filter_match_n_min_over_L_read: "same as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for Paired-End reads)"
+        out_filter_mismatch_n_over_l_max: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
+        out_filter_mismatch_n_over_read_l_max: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
+        out_filter_score_min_over_l_read: "same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for Paired-End reads)"
+        out_filter_match_n_min_over_l_read: "same as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for Paired-End reads)"
         score_genomic_length_log2_scale: "extra score logarithmically scaled with genomic length of the alignment: scoreGenomicLengthLog2scale*log2(genomicLength)"
-        seed_search_start_L_max_over_L_read: "seedSearchStartLmax normalized to read length (sum of mates' lengths for Paired-End reads)"
-        align_spliced_mate_map_L_min_over_L_mate: "alignSplicedMateMapLmin normalized to mate length"
+        seed_search_start_l_max_over_l_read: "seedSearchStartLmax normalized to read length (sum of mates' lengths for Paired-End reads)"
+        align_spliced_mate_map_l_min_over_l_mate: "alignSplicedMateMapLmin normalized to mate length"
         pe_overlap_MMp: "maximum proportion of mismatched bases in the overlap area"
         run_RNG_seed: {
             description: "random number generator seed",
@@ -389,8 +389,8 @@ task alignment {
         score_ins_open: "insertion open penalty"
         score_ins_base: "insertion extension penalty per base (in addition to scoreInsOpen)"
         score_stitch_sj_shift: "maximum score reduction while searching for SJ boundaries in the stitching step"
-        seed_search_start_L_max: "defines the search start point through the read - the read is split into pieces no longer than this value"
-        seed_search_L_max: "defines the maximum length of the seeds, if =0 seed length is not limited"
+        seed_search_start_l_max: "defines the search start point through the read - the read is split into pieces no longer than this value"
+        seed_search_l_max: "defines the maximum length of the seeds, if =0 seed length is not limited"
         seed_multimap_n_max: "only pieces that map fewer than this value are utilized in the stitching procedure"
         seed_per_read_n_max: "max number of seeds per read"
         seed_per_window_n_max: "max number of seeds per window"
@@ -417,7 +417,7 @@ task alignment {
             description: "minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments. **[STAR default]**: `3`. **[WDL default]**: `1`.",
             common: true
         }
-        align_spliced_mate_map_L_min: "minimum mapped length for a read mate that is spliced"
+        align_spliced_mate_map_l_min: "minimum mapped length for a read mate that is spliced"
         align_windows_per_read_n_max: "max number of windows per read"
         align_transcripts_per_window_n_max: "max number of transcripts per window"
         align_transcripts_per_read_n_max: "max number of different alignments per read to consider"
@@ -532,13 +532,13 @@ task alignment {
         String chim_out_junction_format = "plain"
         String twopass_mode = "Basic"
         Boolean use_all_cores = false
-        Float out_filter_mismatch_n_over_L_max = 0.3
-        Float out_filter_mismatch_n_over_read_L_max = 1.0
-        Float out_filter_score_min_over_L_read = 0.66
-        Float out_filter_match_n_min_over_L_read = 0.66
+        Float out_filter_mismatch_n_over_l_max = 0.3
+        Float out_filter_mismatch_n_over_read_l_max = 1.0
+        Float out_filter_score_min_over_l_read = 0.66
+        Float out_filter_match_n_min_over_l_read = 0.66
         Float score_genomic_length_log2_scale = -0.25
-        Float seed_search_start_L_max_over_L_read = 1.0
-        Float align_spliced_mate_map_L_min_over_L_mate = 0.66
+        Float seed_search_start_l_max_over_l_read = 1.0
+        Float align_spliced_mate_map_l_min_over_l_mate = 0.66
         Float pe_overlap_MMp = 0.01
         Int run_RNG_seed = 777
         Int sjdb_score = 2
@@ -566,8 +566,8 @@ task alignment {
         Int score_ins_open = -2
         Int score_ins_base = -2
         Int score_stitch_sj_shift = 1
-        Int seed_search_start_L_max = 50
-        Int seed_search_L_max = 0
+        Int seed_search_start_l_max = 50
+        Int seed_search_l_max = 0
         Int seed_multimap_n_max = 10000
         Int seed_per_read_n_max = 1000
         Int seed_per_window_n_max = 50
@@ -579,7 +579,7 @@ task alignment {
         Int align_mates_gap_max = 1000000
         Int align_sj_overhang_min = 5
         Int align_sjdb_overhang_min = 1
-        Int align_spliced_mate_map_L_min = 0
+        Int align_spliced_mate_map_l_min = 0
         Int align_windows_per_read_n_max = 10000
         Int align_transcripts_per_window_n_max = 100
         Int align_transcripts_per_read_n_max = 10000
@@ -723,13 +723,13 @@ task alignment {
             --chimOutType ~{chim_out_type} \
             --chimFilter ~{chim_filter} \
             --chimOutJunctionFormat ~{chim_out_junction_format} \
-            --outFilterMismatchNoverLmax ~{out_filter_mismatch_n_over_L_max} \
-            --outFilterMismatchNoverReadLmax ~{out_filter_mismatch_n_over_read_L_max} \
-            --outFilterScoreMinOverLread ~{out_filter_score_min_over_L_read} \
-            --outFilterMatchNminOverLread ~{out_filter_match_n_min_over_L_read} \
+            --outFilterMismatchNoverLmax ~{out_filter_mismatch_n_over_l_max} \
+            --outFilterMismatchNoverReadLmax ~{out_filter_mismatch_n_over_read_l_max} \
+            --outFilterScoreMinOverLread ~{out_filter_score_min_over_l_read} \
+            --outFilterMatchNminOverLread ~{out_filter_match_n_min_over_l_read} \
             --scoreGenomicLengthLog2scale ~{score_genomic_length_log2_scale} \
-            --seedSearchStartLmaxOverLread ~{seed_search_start_L_max_over_L_read} \
-            --alignSplicedMateMapLminOverLmate ~{align_spliced_mate_map_L_min_over_L_mate} \
+            --seedSearchStartLmaxOverLread ~{seed_search_start_l_max_over_l_read} \
+            --alignSplicedMateMapLminOverLmate ~{align_spliced_mate_map_l_min_over_l_mate} \
             --peOverlapMMp ~{pe_overlap_MMp} \
             --runRNGseed ~{run_RNG_seed} \
             --sjdbScore ~{sjdb_score} \
@@ -757,8 +757,8 @@ task alignment {
             --scoreInsOpen ~{score_ins_open} \
             --scoreInsBase ~{score_ins_base} \
             --scoreStitchSJshift ~{score_stitch_sj_shift} \
-            --seedSearchStartLmax ~{seed_search_start_L_max} \
-            --seedSearchLmax ~{seed_search_L_max} \
+            --seedSearchStartLmax ~{seed_search_start_l_max} \
+            --seedSearchLmax ~{seed_search_l_max} \
             --seedMultimapNmax ~{seed_multimap_n_max} \
             --seedPerReadNmax ~{seed_per_read_n_max} \
             --seedPerWindowNmax ~{seed_per_window_n_max} \
@@ -770,7 +770,7 @@ task alignment {
             --alignMatesGapMax ~{align_mates_gap_max} \
             --alignSJoverhangMin ~{align_sj_overhang_min} \
             --alignSJDBoverhangMin ~{align_sjdb_overhang_min} \
-            --alignSplicedMateMapLmin ~{align_spliced_mate_map_L_min} \
+            --alignSplicedMateMapLmin ~{align_spliced_mate_map_l_min} \
             --alignWindowsPerReadNmax ~{align_windows_per_read_n_max} \
             --alignTranscriptsPerWindowNmax ~{align_transcripts_per_window_n_max} \
             --alignTranscriptsPerReadNmax ~{align_transcripts_per_read_n_max} \
