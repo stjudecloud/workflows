@@ -35,7 +35,7 @@ workflow rnaseq_core {
             tool: "star",
             tool_default: {
                 noncanonical_motifs: 0,
-                GT_AG_and_CT_AC_motif: -1,
+                GT_AG_and_CT_AC_motif: "-1", #TODO: remove quotes once sprocket supports negative integers
                 GC_AG_and_CT_GC_motif: 0,
                 AT_AC_and_GT_AT_motif: 0
             }
