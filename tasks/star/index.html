@@ -181,12 +181,12 @@
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
-<li><code>SJDB_gtf_chr_prefix</code> (String, default="-"); <strong>description</strong>: prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSMEBL annotations with UCSC genomes); <strong>common</strong>: true</li>
+<li><code>SJDB_gtf_chr_prefix</code> (String, default="-"); <strong>description</strong>: prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSEMBL annotations with UCSC genomes); <strong>common</strong>: true</li>
 <li><code>SJDB_gtf_feature_exon</code> (String, default="exon"): feature type in GTF file to be used as exons for building transcripts</li>
 <li><code>SJDB_gtf_tag_exon_parant_transcript</code> (String, default="transcript_id"): GTF attribute name for parent transcript ID</li>
 <li><code>SJDB_gtf_tag_exon_parent_gene</code> (String, default="gene_id"): GTF attribute name for parent gene ID</li>
-<li><code>SJDB_gtf_tag_exon_parent_gene_name</code> (String, default="gene_name"): GTF attrbute name for parent gene name</li>
-<li><code>SJDB_gtf_tag_exon_parent_gene_type</code> (String, default="gene_type gene_biotype"): GTF attrbute name for parent gene type</li>
+<li><code>SJDB_gtf_tag_exon_parent_gene_name</code> (String, default="gene_name"): GTF attribute name for parent gene name</li>
+<li><code>SJDB_gtf_tag_exon_parent_gene_type</code> (String, default="gene_type gene_biotype"): GTF attribute name for parent gene type</li>
 <li><code>SJDB_overhang</code> (Int, default=125); <strong>description</strong>: length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). <strong>[STAR default]</strong>: <code>100</code>. <strong>[WDL default]</strong>: <code>125</code>.; <strong>common</strong>: true</li>
 <li><code>db_name</code> (String, default="star_db"); <strong>description</strong>: Name for output in compressed, archived format. The suffix <code>.tar.gz</code> will be added.; <strong>common</strong>: true</li>
 <li><code>genome_SA_index_N_bases</code> (Int, default=14): length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter <code>--genomeSAindexNbases</code> must be scaled down to <code>min(14, log2(GenomeLength)/2 - 1)</code>.</li>
@@ -256,8 +256,8 @@
 <li><code>chim_segment_min</code> (Int, default=0); <strong>description</strong>: minimum length of chimeric segment length, if ==0, no chimeric output; <strong>common</strong>: true</li>
 <li><code>chim_segment_read_gap_max</code> (Int, default=0); <strong>description</strong>: maximum gap in the read sequence between chimeric segments; <strong>common</strong>: true</li>
 <li><code>clip_3p_N_bases</code> (Pair[Int,Int], default=(0, 0)): number of bases to clip from 3p of each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.</li>
+<li><code>clip_3p_adapter_MMp</code> (Pair[Float,Float], default=(0.1, 0.1)): max proportion of mismatches for 3p adapter clipping for each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.</li>
 <li><code>clip_3p_adapter_seq</code> (Pair[String,String], default=("None", "None")); <strong>description</strong>: adapter sequences to clip from 3p of each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.; <strong>choices</strong>: {'None': 'No 3p adapter trimming will be performed', 'sequence': 'A nucleotide sequence string of any length, matching the regex <code>/[ATCG]+/</code>', 'polyA': 'polyA sequence with the length equal to read length'}; <strong>common</strong>: true</li>
-<li><code>clip_3p_adatper_MMp</code> (Pair[Float,Float], default=(0.1, 0.1)): max proportion of mismatches for 3p adapter clipping for each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.</li>
 <li><code>clip_3p_after_adapter_N_bases</code> (Pair[Int,Int], default=(0, 0)): number of bases to clip from 3p of each mate after the adapter clipping. <code>left</code> applies to read one and <code>right</code> applies to read two.</li>
 <li><code>clip_5p_N_bases</code> (Pair[Int,Int], default=(0, 0)): number of bases to clip from 5p of each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.</li>
 <li><code>clip_adapter_type</code> (String, default="Hamming"); <strong>description</strong>: adapter clipping type; <strong>choices</strong>: {'Hamming': 'adapter clipping based on Hamming distance, with the number of mismatches controlled by --clip5pAdapterMMp', 'CellRanger4': '5p and 3p adapter clipping similar to CellRanger4. Utilizes Opal package by Martin Šošić: https://github.com/Martinsos/opal', 'None': 'no adapter clipping, all other clip* parameters are disregarded'}</li>
