@@ -30,7 +30,7 @@ workflow rnaseq_core {
         read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`. These two read groups could be associated with the following four FASTQs: `sample1.rg1_R1.fastq,sample1.rg2_R1.fastq` and `sample1.rg1_R2.fastq,sample1.rg2_R2.fastq`"
         prefix: "Prefix for output files"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
-        alignSJstitchMismatchNmax: {
+        align_sj_stitch_mismatch_n_max: {
             description: "This overrides the STAR alignment default. Maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif",
             tool: "star",
             tool_default: {
@@ -65,40 +65,40 @@ workflow rnaseq_core {
             tool: "star",
             tool_default: 0.66
         }
-        outFilterMultimapNmax: {
+        out_filter_multimap_n_max: {
             description: "This overrides the STAR alignment default. Maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out.",
             tool: "star",
             tool_default: 10
             common: true
         }
-        peOverlapNbasesMin: {
+        pe_overlap_n_bases_min: {
             description: "This overrides the STAR alignment default. Minimum number of overlap bases to trigger mates merging and realignment. Specify >0 value to switch on the 'merging of overlapping mates' algorithm.",
             tool: "star",
             tool_default: 0
         }
-        chimScoreSeparation: {
+        chim_score_separation: {
             description: "This overrides the STAR alignment default. Minimum difference (separation) between the best chimeric score and the next one",
             tool: "star",
             tool_default: 10
         }
-        chimScoreJunctionNonGTAG: {
+        chim_score_junction_nonGTAG: {
             description: "This overrides the STAR alignment default. Penalty for a non-GT/AG chimeric junction",
             tool: "star",
             tool_default: -1
         }
-        chimJunctionOverhangMin: {
+        chim_junction_overhang_min: {
             description: "This overrides the STAR alignment default. Minimum overhang for a chimeric junction",
             tool: "star",
             tool_default: 20,
             common: true
         }
-        chimSegmentReadGapMax: {
+        chim_segment_read_gap_max: {
             description: "This overrides the STAR alignment default. Maximum gap in the read sequence between chimeric segments",
             tool: "star",
             tool_default: 0,
             common: true
         }
-        chimMultimapNmax: {
+        chim_multimap_n_max: {
             description: "This overrides the STAR alignment default. Maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments",
             tool: "star",
             tool_default: 0,
@@ -114,7 +114,7 @@ workflow rnaseq_core {
         String read_groups
         String prefix
         File? contaminant_db
-        SJ_Motifs alignSJstitchMismatchNmax = SJ_Motifs {
+        SJMotifs align_sj_stitch_mismatch_n_max = SJMotifs {
             noncanonical_motifs: 5,
             GT_AG_and_CT_AC_motif: -1,
             GC_AG_and_CT_GC_motif: 5,
@@ -126,13 +126,13 @@ workflow rnaseq_core {
         Boolean cleanse_xenograft = false
         Boolean use_all_cores = false
         Float alignSplicedMateMapLminOverLmate = 0.5
-        Int outFilterMultimapNmax = 50
-        Int peOverlapNbasesMin = 10
-        Int chimScoreSeparation = 1
-        Int chimScoreJunctionNonGTAG = 0
-        Int chimJunctionOverhangMin = 10
-        Int chimSegmentReadGapMax = 3
-        Int chimMultimapNmax = 50
+        Int out_filter_multimap_n_max = 50
+        Int pe_overlap_n_bases_min = 10
+        Int chim_score_separation = 1
+        Int chim_score_junction_nonGTAG = 0
+        Int chim_junction_overhang_min = 10
+        Int chim_segment_read_gap_max = 3
+        Int chim_multimap_n_max = 50
     }
 
     Map[String, String] htseq_strandedness_map = {
@@ -152,14 +152,14 @@ workflow rnaseq_core {
         prefix,
         read_groups,
         use_all_cores,
-        alignSJstitchMismatchNmax,
-        outFilterMultimapNmax,
-        peOverlapNbasesMin,
-        chimScoreSeparation,
-        chimScoreJunctionNonGTAG,
-        chimJunctionOverhangMin,
-        chimSegmentReadGapMax,
-        chimMultimapNmax,
+        align_sj_stitch_mismatch_n_max,
+        out_filter_multimap_n_max,
+        pe_overlap_n_bases_min,
+        chim_score_separation,
+        chim_score_junction_nonGTAG,
+        chim_junction_overhang_min,
+        chim_segment_read_gap_max,
+        chim_multimap_n_max,
     }
 
     call alignment_post_wf.alignment_post { input:
