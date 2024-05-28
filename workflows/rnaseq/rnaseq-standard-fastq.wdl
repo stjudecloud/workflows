@@ -113,10 +113,10 @@ workflow rnaseq_standard_fastq {
     }
 
     scatter (rg in read_groups) {
-        call read_group.ReadGroup_to_string after parse_input { input: read_group=rg }
+        call read_group.read_group_to_string after parse_input { input: read_group=rg }
     }
     String stringified_read_groups = sep(
-        ' , ', ReadGroup_to_string.stringified_read_group
+        ' , ', read_group_to_string.stringified_read_group
     )
 
     if (validate_input){

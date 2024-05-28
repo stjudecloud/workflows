@@ -17,24 +17,24 @@ task build_star_db {
             description: "Name for output in compressed, archived format. The suffix `.tar.gz` will be added.",
             common: true
         }
-        SJDB_gtf_chr_prefix: {
+        sjdb_gtf_chr_prefix: {
             description: "prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSMEBL annotations with UCSC genomes)",
             common: true
         }
-        SJDB_gtf_feature_exon: "feature type in GTF file to be used as exons for building transcripts"
-        SJDB_gtf_tag_exon_parant_transcript: "GTF attribute name for parent transcript ID"
-        SJDB_gtf_tag_exon_parent_gene: "GTF attribute name for parent gene ID"
-        SJDB_gtf_tag_exon_parent_gene_name: "GTF attrbute name for parent gene name"
-        SJDB_gtf_tag_exon_parent_gene_type: "GTF attrbute name for parent gene type"
+        sjdb_gtf_feature_exon: "feature type in GTF file to be used as exons for building transcripts"
+        sjdb_gtf_tag_exon_parant_transcript: "GTF attribute name for parent transcript ID"
+        sjdb_gtf_tag_exon_parent_gene: "GTF attribute name for parent gene ID"
+        sjdb_gtf_tag_exon_parent_gene_name: "GTF attrbute name for parent gene name"
+        sjdb_gtf_tag_exon_parent_gene_type: "GTF attrbute name for parent gene type"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
-        genome_chr_bin_N_bits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
-        genome_SA_index_N_bases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
+        genome_chr_bin_n_bits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
+        genome_SA_index_n_bases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
         genome_SA_sparse_D: "suffix array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction."
         genome_suffix_length_max: "maximum length of the suffixes, has to be longer than read length. -1 = infinite."
-        SJDB_overhang: {
+        sjdb_overhang: {
             description: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). **[STAR default]**: `100`. **[WDL default]**: `125`.",
             common: true
         }
@@ -50,18 +50,18 @@ task build_star_db {
         File reference_fasta
         File gtf
         String db_name = "star_db"
-        String SJDB_gtf_chr_prefix = "-"
-        String SJDB_gtf_feature_exon = "exon"
-        String SJDB_gtf_tag_exon_parant_transcript = "transcript_id"
-        String SJDB_gtf_tag_exon_parent_gene = "gene_id"
-        String SJDB_gtf_tag_exon_parent_gene_name = "gene_name"
-        String SJDB_gtf_tag_exon_parent_gene_type = "gene_type gene_biotype"
+        String sjdb_gtf_chr_prefix = "-"
+        String sjdb_gtf_feature_exon = "exon"
+        String sjdb_gtf_tag_exon_parant_transcript = "transcript_id"
+        String sjdb_gtf_tag_exon_parent_gene = "gene_id"
+        String sjdb_gtf_tag_exon_parent_gene_name = "gene_name"
+        String sjdb_gtf_tag_exon_parent_gene_type = "gene_type gene_biotype"
         Boolean use_all_cores = false
-        Int genome_chr_bin_N_bits = 18
-        Int genome_SA_index_N_bases = 14
+        Int genome_chr_bin_n_bits = 18
+        Int genome_SA_index_n_bases = 14
         Int genome_SA_sparse_D = 1
         Int genome_suffix_length_max = -1
-        Int SJDB_overhang = 125
+        Int sjdb_overhang = 125
         Int ncpu = 8
         Int memory_gb = 50
         Int modify_disk_size_gb = 0
@@ -100,17 +100,17 @@ task build_star_db {
             --limitGenomeGenerateRAM ~{memory_limit_bytes} \
             --genomeFastaFiles "$ref_fasta" \
             --sjdbGTFfile "$gtf_name" \
-            --sjdbGTFchrPrefix ~{SJDB_gtf_chr_prefix} \
-            --sjdbGTFfeatureExon ~{SJDB_gtf_feature_exon} \
-            --sjdbGTFtagExonParentTranscript ~{SJDB_gtf_tag_exon_parant_transcript} \
-            --sjdbGTFtagExonParentGene ~{SJDB_gtf_tag_exon_parent_gene} \
-            --sjdbGTFtagExonParentGeneName ~{SJDB_gtf_tag_exon_parent_gene_name} \
-            --sjdbGTFtagExonParentGeneType ~{SJDB_gtf_tag_exon_parent_gene_type} \
-            --genomeChrBinNbits ~{genome_chr_bin_N_bits} \
-            --genomeSAindexNbases ~{genome_SA_index_N_bases} \
+            --sjdbGTFchrPrefix ~{sjdb_gtf_chr_prefix} \
+            --sjdbGTFfeatureExon ~{sjdb_gtf_feature_exon} \
+            --sjdbGTFtagExonParentTranscript ~{sjdb_gtf_tag_exon_parant_transcript} \
+            --sjdbGTFtagExonParentGene ~{sjdb_gtf_tag_exon_parent_gene} \
+            --sjdbGTFtagExonParentGeneName ~{sjdb_gtf_tag_exon_parent_gene_name} \
+            --sjdbGTFtagExonParentGeneType ~{sjdb_gtf_tag_exon_parent_gene_type} \
+            --genomeChrBinNbits ~{genome_chr_bin_n_bits} \
+            --genomeSAindexNbases ~{genome_SA_index_n_bases} \
             --genomeSAsparseD ~{genome_SA_sparse_D} \
             --genomeSuffixLengthMax ~{genome_suffix_length_max} \
-            --sjdbOverhang ~{SJDB_overhang}
+            --sjdbOverhang ~{sjdb_overhang}
 
         rm "$gtf_name" "$ref_fasta"
 
@@ -151,12 +151,12 @@ task alignment {
             description: "An array of gzipped FASTQ files containing read two information",
             common: true
         }
-        out_SJ_filter_intron_max_vs_read_n: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions."
-        out_SJ_filter_overhang_min: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions."
-        out_SJ_filter_count_unique_min: "minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
-        out_SJ_filter_count_total_min: "minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
-        out_SJ_filter_dist_to_other_SJ_min: "minimum allowed distance to other junctions' donor/acceptor for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. Does not apply to annotated junctions."
-        align_SJ_stitch_mismatch_N_max: "maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif"
+        out_sj_filter_intron_max_vs_read_n: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions."
+        out_sj_filter_overhang_min: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions."
+        out_sj_filter_count_unique_min: "minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
+        out_sj_filter_count_total_min: "minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
+        out_sj_filter_dist_to_other_sj_min: "minimum allowed distance to other junctions' donor/acceptor for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. Does not apply to annotated junctions."
+        align_sj_stitch_mismatch_n_max: "maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif"
         clip_3p_adapter_seq: {
             description: "adapter sequences to clip from 3p of each mate. `left` applies to read one and `right` applies to read two.",
             choices: {
@@ -174,9 +174,9 @@ task alignment {
                 DiscordantPair: "report alignments with non-zero protrusion as discordant pairs"
             }
         }
-        clip_3p_N_bases: "number of bases to clip from 3p of each mate. `left` applies to read one and `right` applies to read two."
-        clip_3p_after_adapter_N_bases: "number of bases to clip from 3p of each mate after the adapter clipping. `left` applies to read one and `right` applies to read two."
-        clip_5p_N_bases: "number of bases to clip from 5p of each mate. `left` applies to read one and `right` applies to read two."
+        clip_3p_n_bases: "number of bases to clip from 3p of each mate. `left` applies to read one and `right` applies to read two."
+        clip_3p_after_adapter_n_bases: "number of bases to clip from 3p of each mate after the adapter clipping. `left` applies to read one and `right` applies to read two."
+        clip_5p_n_bases: "number of bases to clip from 5p of each mate. `left` applies to read one and `right` applies to read two."
         read_name_separator: "character(s) separating the part of the read names that will be trimmed in output (read name after space is always trimmed)"
         clip_adapter_type: {
             description: "adapter clipping type",
@@ -265,7 +265,7 @@ task alignment {
             },
             common: true
         }
-        out_SJ_filter_reads: {
+        out_sj_filter_reads: {
             description: "which reads to consider for collapsed splice junctions output",
             choices: {
                 All: "all reads, unique- and multi-mappers",
@@ -334,10 +334,10 @@ task alignment {
             description: "Use all cores? Recommended for cloud environments.",
             common: true
         }
-        out_filter_mismatch_N_over_L_max: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
-        out_filter_mismatch_N_over_read_L_max: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
+        out_filter_mismatch_n_over_L_max: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
+        out_filter_mismatch_n_over_read_L_max: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
         out_filter_score_min_over_L_read: "same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for Paired-End reads)"
-        out_filter_match_N_min_over_L_read: "same as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for Paired-End reads)"
+        out_filter_match_n_min_over_L_read: "same as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for Paired-End reads)"
         score_genomic_length_log2_scale: "extra score logarithmically scaled with genomic length of the alignment: scoreGenomicLengthLog2scale*log2(genomicLength)"
         seed_search_start_L_max_over_L_read: "seedSearchStartLmax normalized to read length (sum of mates' lengths for Paired-End reads)"
         align_spliced_mate_map_L_min_over_L_mate: "alignSplicedMateMapLmin normalized to mate length"
@@ -346,7 +346,7 @@ task alignment {
             description: "random number generator seed",
             common: true
         }
-        SJDB_score: {
+        sjdb_score: {
             description: "extra alignment score for alignments that cross database junctions",
             common: true
         }
@@ -355,20 +355,20 @@ task alignment {
             common: true
         }
         read_quality_score_base: "number to be subtracted from the ASCII code to get Phred quality score"
-        limit_out_SJ_one_read: "max number of junctions for one read (including all multi-mappers)"
-        limit_out_SJ_collapsed: "max number of collapsed junctions"
-        limit_SJDB_insert_N_SJ: "maximum number of junction to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run"
+        limit_out_sj_one_read: "max number of junctions for one read (including all multi-mappers)"
+        limit_out_sj_collapsed: "max number of collapsed junctions"
+        limit_sjdb_insert_n_SJ: "maximum number of junction to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run"
         out_QS_conversion_add: "add this number to the quality score (e.g. to convert from Illumina to Sanger, use -31)"
         out_SAM_attr_IH_start: "start value for the IH attribute. 0 may be required by some downstream software, such as Cufflinks or StringTie."
         out_SAM_mapq_unique: "`0-255`: the MAPQ value for unique mappers. Please note the STAR default (255) produces errors downstream, as a MAPQ value of 255 is reserved to indicate a missing value. The default of this task is 254, which is the highest _valid_ MAPQ value, and possibly what the author of STAR intended. **[STAR default]**: `255`. **[WDL default]**: `254`."
         out_SAM_flag_OR: "`0-65535`: sam FLAG will be bitwise OR'd with this value, i.e. FLAG=FLAG | outSAMflagOR. This is applied after all flags have been set by STAR, and after outSAMflagAND. Can be used to set specific bits that are not set otherwise."
         out_SAM_flag_AND: "`0-65535`: sam FLAG will be bitwise AND'd with this value, i.e. FLAG=FLAG & outSAMflagOR. This is applied after all flags have been set by STAR, but before outSAMflagOR. Can be used to unset specific bits that are not set otherwise."
         out_filter_multimap_score_range: "the score range below the maximum score for multimapping alignments"
-        out_filter_multimap_N_max: {
+        out_filter_multimap_n_max: {
             description: "maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. **[STAR default]**: `10`. **[WDL default]**: `20`.",
             common: true
         }
-        out_filter_mismatch_N_max: {
+        out_filter_mismatch_n_max: {
             description: "alignment will be output only if it has no more mismatches than this value",
             common: true
         }
@@ -376,7 +376,7 @@ task alignment {
             description: "alignment will be output only if its score is higher than or equal to this value",
             common: true
         }
-        out_filter_match_N_min: {
+        out_filter_match_n_min: {
             description: "alignment will be output only if the number of matched bases is higher than or equal to this value",
             common: true
         }
@@ -388,12 +388,12 @@ task alignment {
         score_del_base: "deletion extension penalty per base (in addition to scoreDelOpen)"
         score_ins_open: "insertion open penalty"
         score_ins_base: "insertion extension penalty per base (in addition to scoreInsOpen)"
-        score_stitch_SJ_shift: "maximum score reduction while searching for SJ boundaries in the stitching step"
+        score_stitch_sj_shift: "maximum score reduction while searching for SJ boundaries in the stitching step"
         seed_search_start_L_max: "defines the search start point through the read - the read is split into pieces no longer than this value"
         seed_search_L_max: "defines the maximum length of the seeds, if =0 seed length is not limited"
-        seed_multimap_N_max: "only pieces that map fewer than this value are utilized in the stitching procedure"
-        seed_per_read_N_max: "max number of seeds per read"
-        seed_per_window_N_max: "max number of seeds per window"
+        seed_multimap_n_max: "only pieces that map fewer than this value are utilized in the stitching procedure"
+        seed_per_read_n_max: "max number of seeds per read"
+        seed_per_window_n_max: "max number of seeds per window"
         seed_none_loci_per_window: "max number of one seed loci per window"
         seed_split_min: "min length of the seed sequences split by Ns or mate gap"
         seed_map_min: "min length of seeds to be mapped"
@@ -409,23 +409,23 @@ task alignment {
             description: "maximum gap between two mates, if 0, max intron gap will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `1000000`",
             common: true
         }
-        align_SJ_overhang_min: {
+        align_sj_overhang_min: {
             description: "minimum overhang (i.e. block size) for spliced alignments",
             common: true
         }
-        align_SJDB_overhang_min: {
+        align_sjdb_overhang_min: {
             description: "minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments. **[STAR default]**: `3`. **[WDL default]**: `1`.",
             common: true
         }
         align_spliced_mate_map_L_min: "minimum mapped length for a read mate that is spliced"
-        align_windows_per_read_N_max: "max number of windows per read"
-        align_transcripts_per_window_N_max: "max number of transcripts per window"
-        align_transcripts_per_read_N_max: "max number of different alignments per read to consider"
-        pe_overlap_N_bases_min: "minimum number of overlap bases to trigger mates merging and realignment. Specify >0 value to switch on the 'merging of overlapping mates' algorithm."
-        win_anchor_multimap_N_max: "max number of loci anchors are allowed to map to"
-        win_bin_N_bits: "=log2(winBin), where winBin is the size of the bin for the windows/clustering, each window will occupy an integer number of bins"
-        win_anchor_dist_N_bins: "max number of bins between two anchors that allows aggregation of anchors into one window"
-        win_flank_N_bins: "=log2(winFlank), where winFlank is the size of the left and right flanking regions for each window"
+        align_windows_per_read_n_max: "max number of windows per read"
+        align_transcripts_per_window_n_max: "max number of transcripts per window"
+        align_transcripts_per_read_n_max: "max number of different alignments per read to consider"
+        pe_overlap_n_bases_min: "minimum number of overlap bases to trigger mates merging and realignment. Specify >0 value to switch on the 'merging of overlapping mates' algorithm."
+        win_anchor_multimap_n_max: "max number of loci anchors are allowed to map to"
+        win_bin_n_bits: "=log2(winBin), where winBin is the size of the bin for the windows/clustering, each window will occupy an integer number of bins"
+        win_anchor_dist_n_bins: "max number of bins between two anchors that allows aggregation of anchors into one window"
+        win_flank_n_bins: "=log2(winFlank), where winFlank is the size of the left and right flanking regions for each window"
         chim_segment_min: {
             description: "minimum length of chimeric segment length, if ==0, no chimeric output",
             common: true
@@ -448,11 +448,11 @@ task alignment {
             description: "maximum gap in the read sequence between chimeric segments",
             common: true
         }
-        chim_main_segment_multi_N_max: {
+        chim_main_segment_multi_n_max: {
             description: "maximum number of multi-alignments for the main chimeric segment. =1 will prohibit multimapping main segments.",
             common: true
         }
-        chim_multimap_N_max: {
+        chim_multimap_n_max: {
             description: "maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments",
             common: true
         }
@@ -475,32 +475,32 @@ task alignment {
         String prefix
         String? read_groups
         Array[File] read_two_fastqs_gz = []  # TODO make Array[File]? for better docs
-        Array[Int] out_SJ_filter_intron_max_vs_read_n = [50000, 100000, 200000]
-        SJ_Motifs out_SJ_filter_overhang_min = SJ_Motifs {
+        Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
+        SJMotifs out_sj_filter_overhang_min = SJMotifs {
             noncanonical_motifs: 30,
             GT_AG_and_CT_AC_motif: 12,
             GC_AG_and_CT_GC_motif: 12,
             AT_AC_and_GT_AT_motif: 12
         }
-        SJ_Motifs out_SJ_filter_count_unique_min = SJ_Motifs {
+        SJMotifs out_sj_filter_count_unique_min = SJMotifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
             AT_AC_and_GT_AT_motif: 1
         }
-        SJ_Motifs out_SJ_filter_count_total_min = SJ_Motifs {
+        SJMotifs out_sj_filter_count_total_min = SJMotifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
             AT_AC_and_GT_AT_motif: 1
         }
-        SJ_Motifs out_SJ_filter_dist_to_other_SJ_min = SJ_Motifs {
+        SJMotifs out_sj_filter_dist_to_other_sj_min = SJMotifs {
             noncanonical_motifs: 10,
             GT_AG_and_CT_AC_motif: 0,
             GC_AG_and_CT_GC_motif: 5,
             AT_AC_and_GT_AT_motif: 10
         }
-        SJ_Motifs align_SJ_stitch_mismatch_N_max = SJ_Motifs {
+        SJMotifs align_sj_stitch_mismatch_n_max = SJMotifs {
             noncanonical_motifs: 0,
             GT_AG_and_CT_AC_motif: -1,
             GC_AG_and_CT_GC_motif: 0,
@@ -509,9 +509,9 @@ task alignment {
         Pair[String, String] clip_3p_adapter_seq = ("None", "None")
         Pair[Float, Float] clip_3p_adatper_MMp = (0.1, 0.1)
         Pair[Int, String] align_ends_protrude = (0, "ConcordantPair")
-        Pair[Int, Int] clip_3p_N_bases = (0, 0)
-        Pair[Int, Int] clip_3p_after_adapter_N_bases = (0, 0)
-        Pair[Int, Int] clip_5p_N_bases = (0, 0)
+        Pair[Int, Int] clip_3p_n_bases = (0, 0)
+        Pair[Int, Int] clip_3p_after_adapter_n_bases = (0, 0)
+        Pair[Int, Int] clip_5p_n_bases = (0, 0)
         String read_name_separator = "/"
         String clip_adapter_type = "Hamming"
         String out_SAM_strand_field = "intronMotif"
@@ -523,7 +523,7 @@ task alignment {
         String out_filter_type = "Normal"
         String out_filter_intron_motifs = "None"
         String out_filter_intron_strands = "RemoveInconsistentStrands"
-        String out_SJ_filter_reads = "All"
+        String out_sj_filter_reads = "All"
         String align_ends_type = "Local"
         String align_soft_clip_at_reference_ends = "Yes"
         String align_insertion_flush = "None"
@@ -532,31 +532,31 @@ task alignment {
         String chim_out_junction_format = "plain"
         String twopass_mode = "Basic"
         Boolean use_all_cores = false
-        Float out_filter_mismatch_N_over_L_max = 0.3
-        Float out_filter_mismatch_N_over_read_L_max = 1.0
+        Float out_filter_mismatch_n_over_L_max = 0.3
+        Float out_filter_mismatch_n_over_read_L_max = 1.0
         Float out_filter_score_min_over_L_read = 0.66
-        Float out_filter_match_N_min_over_L_read = 0.66
+        Float out_filter_match_n_min_over_L_read = 0.66
         Float score_genomic_length_log2_scale = -0.25
         Float seed_search_start_L_max_over_L_read = 1.0
         Float align_spliced_mate_map_L_min_over_L_mate = 0.66
         Float pe_overlap_MMp = 0.01
         Int run_RNG_seed = 777
-        Int SJDB_score = 2
+        Int sjdb_score = 2
         Int read_map_number = -1
         Int read_quality_score_base = 33
-        Int limit_out_SJ_one_read = 1000
-        Int limit_out_SJ_collapsed = 1000000
-        Int limit_SJDB_insert_N_SJ = 1000000
+        Int limit_out_sj_one_read = 1000
+        Int limit_out_sj_collapsed = 1000000
+        Int limit_sjdb_insert_n_SJ = 1000000
         Int out_QS_conversion_add = 0
         Int out_SAM_attr_IH_start = 1
         Int out_SAM_mapq_unique = 254
         Int out_SAM_flag_OR = 0
         Int out_SAM_flag_AND = 65535
         Int out_filter_multimap_score_range = 1
-        Int out_filter_multimap_N_max = 20
-        Int out_filter_mismatch_N_max = 10
+        Int out_filter_multimap_n_max = 20
+        Int out_filter_mismatch_n_max = 10
         Int out_filter_score_min = 0
-        Int out_filter_match_N_min = 0
+        Int out_filter_match_n_min = 0
         Int score_gap = 0
         Int score_gap_noncanon = -8
         Int score_gap_GCAG = -4
@@ -565,29 +565,29 @@ task alignment {
         Int score_del_base = -2
         Int score_ins_open = -2
         Int score_ins_base = -2
-        Int score_stitch_SJ_shift = 1
+        Int score_stitch_sj_shift = 1
         Int seed_search_start_L_max = 50
         Int seed_search_L_max = 0
-        Int seed_multimap_N_max = 10000
-        Int seed_per_read_N_max = 1000
-        Int seed_per_window_N_max = 50
+        Int seed_multimap_n_max = 10000
+        Int seed_per_read_n_max = 1000
+        Int seed_per_window_n_max = 50
         Int seed_none_loci_per_window = 10
         Int seed_split_min = 12
         Int seed_map_min = 5
         Int align_intron_min = 21
         Int align_intron_max = 500000
         Int align_mates_gap_max = 1000000
-        Int align_SJ_overhang_min = 5
-        Int align_SJDB_overhang_min = 1
+        Int align_sj_overhang_min = 5
+        Int align_sjdb_overhang_min = 1
         Int align_spliced_mate_map_L_min = 0
-        Int align_windows_per_read_N_max = 10000
-        Int align_transcripts_per_window_N_max = 100
-        Int align_transcripts_per_read_N_max = 10000
-        Int pe_overlap_N_bases_min = 0
-        Int win_anchor_multimap_N_max = 50
-        Int win_bin_N_bits = 16
-        Int win_anchor_dist_N_bins = 9
-        Int win_flank_N_bins = 4
+        Int align_windows_per_read_n_max = 10000
+        Int align_transcripts_per_window_n_max = 100
+        Int align_transcripts_per_read_n_max = 10000
+        Int pe_overlap_n_bases_min = 0
+        Int win_anchor_multimap_n_max = 50
+        Int win_bin_n_bits = 16
+        Int win_anchor_dist_n_bins = 9
+        Int win_flank_n_bins = 4
         Int chim_segment_min = 0
         Int chim_score_min = 0
         Int chim_score_drop_max = 20
@@ -595,8 +595,8 @@ task alignment {
         Int chim_score_junction_nonGTAG = -1
         Int chim_junction_overhang_min = 20
         Int chim_segment_read_gap_max = 0
-        Int chim_main_segment_multi_N_max = 10
-        Int chim_multimap_N_max = 0
+        Int chim_main_segment_multi_n_max = 10
+        Int chim_multimap_n_max = 0
         Int chim_multimap_score_range = 1
         Int chim_nonchim_score_drop_min = 20
         Int twopass1_reads_n = -1
@@ -657,48 +657,48 @@ task alignment {
             --twopassMode ~{twopass_mode} \
             --outSAMattrRGline "${read_group_args[@]}" \
             --outSJfilterIntronMaxVsReadN ~{
-                sep(' ', quote(out_SJ_filter_intron_max_vs_read_n))
+                sep(' ', quote(out_sj_filter_intron_max_vs_read_n))
             } \
             --outSJfilterOverhangMin ~{sep(' ', quote([
-                out_SJ_filter_overhang_min.noncanonical_motifs,
-                out_SJ_filter_overhang_min.GT_AG_and_CT_AC_motif,
-                out_SJ_filter_overhang_min.GC_AG_and_CT_GC_motif,
-                out_SJ_filter_overhang_min.AT_AC_and_GT_AT_motif
+                out_sj_filter_overhang_min.noncanonical_motifs,
+                out_sj_filter_overhang_min.GT_AG_and_CT_AC_motif,
+                out_sj_filter_overhang_min.GC_AG_and_CT_GC_motif,
+                out_sj_filter_overhang_min.AT_AC_and_GT_AT_motif
             ]))} \
             --outSJfilterCountUniqueMin ~{sep(' ', quote([
-                out_SJ_filter_count_unique_min.noncanonical_motifs,
-                out_SJ_filter_count_unique_min.GT_AG_and_CT_AC_motif,
-                out_SJ_filter_count_unique_min.GC_AG_and_CT_GC_motif,
-                out_SJ_filter_count_unique_min.AT_AC_and_GT_AT_motif
+                out_sj_filter_count_unique_min.noncanonical_motifs,
+                out_sj_filter_count_unique_min.GT_AG_and_CT_AC_motif,
+                out_sj_filter_count_unique_min.GC_AG_and_CT_GC_motif,
+                out_sj_filter_count_unique_min.AT_AC_and_GT_AT_motif
             ]))} \
             --outSJfilterCountTotalMin ~{sep(' ', quote([
-                out_SJ_filter_count_total_min.noncanonical_motifs,
-                out_SJ_filter_count_total_min.GT_AG_and_CT_AC_motif,
-                out_SJ_filter_count_total_min.GC_AG_and_CT_GC_motif,
-                out_SJ_filter_count_total_min.AT_AC_and_GT_AT_motif
+                out_sj_filter_count_total_min.noncanonical_motifs,
+                out_sj_filter_count_total_min.GT_AG_and_CT_AC_motif,
+                out_sj_filter_count_total_min.GC_AG_and_CT_GC_motif,
+                out_sj_filter_count_total_min.AT_AC_and_GT_AT_motif
             ]))} \
             --outSJfilterDistToOtherSJmin ~{sep(' ', quote([
-                out_SJ_filter_dist_to_other_SJ_min.noncanonical_motifs,
-                out_SJ_filter_dist_to_other_SJ_min.GT_AG_and_CT_AC_motif,
-                out_SJ_filter_dist_to_other_SJ_min.GC_AG_and_CT_GC_motif,
-                out_SJ_filter_dist_to_other_SJ_min.AT_AC_and_GT_AT_motif
+                out_sj_filter_dist_to_other_sj_min.noncanonical_motifs,
+                out_sj_filter_dist_to_other_sj_min.GT_AG_and_CT_AC_motif,
+                out_sj_filter_dist_to_other_sj_min.GC_AG_and_CT_GC_motif,
+                out_sj_filter_dist_to_other_sj_min.AT_AC_and_GT_AT_motif
             ]))} \
             --alignSJstitchMismatchNmax ~{sep(' ', quote([
-                align_SJ_stitch_mismatch_N_max.noncanonical_motifs,
-                align_SJ_stitch_mismatch_N_max.GT_AG_and_CT_AC_motif,
-                align_SJ_stitch_mismatch_N_max.GC_AG_and_CT_GC_motif,
-                align_SJ_stitch_mismatch_N_max.AT_AC_and_GT_AT_motif
+                align_sj_stitch_mismatch_n_max.noncanonical_motifs,
+                align_sj_stitch_mismatch_n_max.GT_AG_and_CT_AC_motif,
+                align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
+                align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif
             ]))} \
             --clip3pAdapterSeq ~{clip_3p_adapter_seq.left + ' ' + clip_3p_adapter_seq.right} \
             --clip3pAdapterMMp ~{'~{clip_3p_adatper_MMp.left} ~{clip_3p_adatper_MMp.right}'} \
             --alignEndsProtrude ~{
                 '~{align_ends_protrude.left} ~{align_ends_protrude.right}'
             } \
-            --clip3pNbases ~{'~{clip_3p_N_bases.left} ~{clip_3p_N_bases.right}'} \
+            --clip3pNbases ~{'~{clip_3p_n_bases.left} ~{clip_3p_n_bases.right}'} \
             --clip3pAfterAdapterNbases ~{
-                '~{clip_3p_after_adapter_N_bases.left} ~{clip_3p_after_adapter_N_bases.right}'
+                '~{clip_3p_after_adapter_n_bases.left} ~{clip_3p_after_adapter_n_bases.right}'
             } \
-            --clip5pNbases ~{'~{clip_5p_N_bases.left} ~{clip_5p_N_bases.right}'} \
+            --clip5pNbases ~{'~{clip_5p_n_bases.left} ~{clip_5p_n_bases.right}'} \
             --readNameSeparator ~{read_name_separator} \
             --clipAdapterType ~{clip_adapter_type} \
             --outSAMstrandField ~{out_SAM_strand_field} \
@@ -716,38 +716,38 @@ task alignment {
             --outFilterType ~{out_filter_type} \
             --outFilterIntronMotifs ~{out_filter_intron_motifs} \
             --outFilterIntronStrands ~{out_filter_intron_strands} \
-            --outSJfilterReads ~{out_SJ_filter_reads} \
+            --outSJfilterReads ~{out_sj_filter_reads} \
             --alignEndsType ~{align_ends_type} \
             --alignSoftClipAtReferenceEnds ~{align_soft_clip_at_reference_ends} \
             --alignInsertionFlush ~{align_insertion_flush} \
             --chimOutType ~{chim_out_type} \
             --chimFilter ~{chim_filter} \
             --chimOutJunctionFormat ~{chim_out_junction_format} \
-            --outFilterMismatchNoverLmax ~{out_filter_mismatch_N_over_L_max} \
-            --outFilterMismatchNoverReadLmax ~{out_filter_mismatch_N_over_read_L_max} \
+            --outFilterMismatchNoverLmax ~{out_filter_mismatch_n_over_L_max} \
+            --outFilterMismatchNoverReadLmax ~{out_filter_mismatch_n_over_read_L_max} \
             --outFilterScoreMinOverLread ~{out_filter_score_min_over_L_read} \
-            --outFilterMatchNminOverLread ~{out_filter_match_N_min_over_L_read} \
+            --outFilterMatchNminOverLread ~{out_filter_match_n_min_over_L_read} \
             --scoreGenomicLengthLog2scale ~{score_genomic_length_log2_scale} \
             --seedSearchStartLmaxOverLread ~{seed_search_start_L_max_over_L_read} \
             --alignSplicedMateMapLminOverLmate ~{align_spliced_mate_map_L_min_over_L_mate} \
             --peOverlapMMp ~{pe_overlap_MMp} \
             --runRNGseed ~{run_RNG_seed} \
-            --sjdbScore ~{SJDB_score} \
+            --sjdbScore ~{sjdb_score} \
             --readMapNumber ~{read_map_number} \
             --readQualityScoreBase ~{read_quality_score_base} \
-            --limitOutSJoneRead ~{limit_out_SJ_one_read} \
-            --limitOutSJcollapsed ~{limit_out_SJ_collapsed} \
-            --limitSjdbInsertNsj ~{limit_SJDB_insert_N_SJ} \
+            --limitOutSJoneRead ~{limit_out_sj_one_read} \
+            --limitOutSJcollapsed ~{limit_out_sj_collapsed} \
+            --limitSjdbInsertNsj ~{limit_sjdb_insert_n_SJ} \
             --outQSconversionAdd ~{out_QS_conversion_add} \
             --outSAMattrIHstart ~{out_SAM_attr_IH_start} \
             --outSAMmapqUnique ~{out_SAM_mapq_unique} \
             --outSAMflagOR ~{out_SAM_flag_OR} \
             --outSAMflagAND ~{out_SAM_flag_AND} \
             --outFilterMultimapScoreRange ~{out_filter_multimap_score_range} \
-            --outFilterMultimapNmax ~{out_filter_multimap_N_max} \
-            --outFilterMismatchNmax ~{out_filter_mismatch_N_max} \
+            --outFilterMultimapNmax ~{out_filter_multimap_n_max} \
+            --outFilterMismatchNmax ~{out_filter_mismatch_n_max} \
             --outFilterScoreMin ~{out_filter_score_min} \
-            --outFilterMatchNmin ~{out_filter_match_N_min} \
+            --outFilterMatchNmin ~{out_filter_match_n_min} \
             --scoreGap ~{score_gap} \
             --scoreGapNoncan ~{score_gap_noncanon} \
             --scoreGapGCAG ~{score_gap_GCAG} \
@@ -756,29 +756,29 @@ task alignment {
             --scoreDelBase ~{score_del_base} \
             --scoreInsOpen ~{score_ins_open} \
             --scoreInsBase ~{score_ins_base} \
-            --scoreStitchSJshift ~{score_stitch_SJ_shift} \
+            --scoreStitchSJshift ~{score_stitch_sj_shift} \
             --seedSearchStartLmax ~{seed_search_start_L_max} \
             --seedSearchLmax ~{seed_search_L_max} \
-            --seedMultimapNmax ~{seed_multimap_N_max} \
-            --seedPerReadNmax ~{seed_per_read_N_max} \
-            --seedPerWindowNmax ~{seed_per_window_N_max} \
+            --seedMultimapNmax ~{seed_multimap_n_max} \
+            --seedPerReadNmax ~{seed_per_read_n_max} \
+            --seedPerWindowNmax ~{seed_per_window_n_max} \
             --seedNoneLociPerWindow ~{seed_none_loci_per_window} \
             --seedSplitMin ~{seed_split_min} \
             --seedMapMin ~{seed_map_min} \
             --alignIntronMin ~{align_intron_min} \
             --alignIntronMax ~{align_intron_max} \
             --alignMatesGapMax ~{align_mates_gap_max} \
-            --alignSJoverhangMin ~{align_SJ_overhang_min} \
-            --alignSJDBoverhangMin ~{align_SJDB_overhang_min} \
+            --alignSJoverhangMin ~{align_sj_overhang_min} \
+            --alignSJDBoverhangMin ~{align_sjdb_overhang_min} \
             --alignSplicedMateMapLmin ~{align_spliced_mate_map_L_min} \
-            --alignWindowsPerReadNmax ~{align_windows_per_read_N_max} \
-            --alignTranscriptsPerWindowNmax ~{align_transcripts_per_window_N_max} \
-            --alignTranscriptsPerReadNmax ~{align_transcripts_per_read_N_max} \
-            --peOverlapNbasesMin ~{pe_overlap_N_bases_min} \
-            --winAnchorMultimapNmax ~{win_anchor_multimap_N_max} \
-            --winBinNbits ~{win_bin_N_bits} \
-            --winAnchorDistNbins ~{win_anchor_dist_N_bins} \
-            --winFlankNbins ~{win_flank_N_bins} \
+            --alignWindowsPerReadNmax ~{align_windows_per_read_n_max} \
+            --alignTranscriptsPerWindowNmax ~{align_transcripts_per_window_n_max} \
+            --alignTranscriptsPerReadNmax ~{align_transcripts_per_read_n_max} \
+            --peOverlapNbasesMin ~{pe_overlap_n_bases_min} \
+            --winAnchorMultimapNmax ~{win_anchor_multimap_n_max} \
+            --winBinNbits ~{win_bin_n_bits} \
+            --winAnchorDistNbins ~{win_anchor_dist_n_bins} \
+            --winFlankNbins ~{win_flank_n_bins} \
             --chimSegmentMin ~{chim_segment_min} \
             --chimScoreMin ~{chim_score_min} \
             --chimScoreDropMax ~{chim_score_drop_max} \
@@ -786,8 +786,8 @@ task alignment {
             --chimScoreJunctionNonGTAG ~{chim_score_junction_nonGTAG} \
             --chimJunctionOverhangMin ~{chim_junction_overhang_min} \
             --chimSegmentReadGapMax ~{chim_segment_read_gap_max} \
-            --chimMainSegmentMultNmax ~{chim_main_segment_multi_N_max} \
-            --chimMultimapNmax ~{chim_multimap_N_max} \
+            --chimMainSegmentMultNmax ~{chim_main_segment_multi_n_max} \
+            --chimMultimapNmax ~{chim_multimap_n_max} \
             --chimMultimapScoreRange ~{chim_multimap_score_range} \
             --chimNonchimScoreDropMin ~{chim_nonchim_score_drop_min} \
             --twopass1readsN ~{twopass1_reads_n}
@@ -811,7 +811,7 @@ task alignment {
 
 # There are multiple Splice Junction Motif arguments for STAR
 # that are all formatted the same. Use this struct for consistency.
-struct SJ_Motifs {
+struct SJMotifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif
     Int GC_AG_and_CT_GC_motif
