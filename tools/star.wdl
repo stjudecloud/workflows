@@ -166,7 +166,7 @@ task alignment {
             },
             common: true
         }
-        clip_3p_adapter_MMp: "max proportion of mismatches for 3p adapter clipping for each mate. `left` applies to read one and `right` applies to read two."
+        clip_3p_adapter_mmp: "max proportion of mismatches for 3p adapter clipping for each mate. `left` applies to read one and `right` applies to read two."
         align_ends_protrude: {
             description: "allow protrusion of alignment ends, i.e. start (end) of the +strand mate downstream of the start (end) of the -strand mate. `left`: maximum number of protrusion bases allowed. `right`: see `choices` below.",
             choices: {
@@ -186,7 +186,7 @@ task alignment {
                 None: "no adapter clipping, all other clip* parameters are disregarded"
             }
         }
-        out_SAM_strand_field: {
+        out_sam_strand_field: {
             description: "Cufflinks-like strand field flag",
             choices: {
                 None: "not used",
@@ -194,7 +194,7 @@ task alignment {
             },
             common: true
         }
-        out_SAM_attributes: {
+        out_sam_attributes: {
             description: "a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order. **[STAR defaults]**: `NH HI AS nM`. **[WDL default]**: `NH HI AS nM NM MD XS`.",
             choices: {
                 NH: "number of loci the reads maps to: =1 for unique mappers, >1 for multimappers. Standard SAM tag.",
@@ -212,28 +212,28 @@ task alignment {
             },
             common: true
         }
-        out_SAM_unmapped: {
+        out_sam_unmapped: {
             description: "output of unmapped reads in the SAM format.",
             choices: {
                 None: "no output **[STAR default]**",
                 Within: "output unmapped reads within the main SAM file (i.e. Aligned.out.sam) **[WDL default]**"
             }
         }
-        out_SAM_order: {
+        out_sam_order: {
             description: "type of sorting for the SAM output",
             choices: {
                 Paired: "one mate after the other for all paired alignments",
                 PairedKeepInputOrder: "one mate after the other for all paired alignments, the order is kept the same as in the input FASTQ files"
             }
         }
-        out_SAM_read_ID: {
+        out_sam_read_id: {
             description: "read ID record type",
             choices: {
                 Standard: "first word (until space) from the FASTx read ID line, removing /1,/2 from the end",
                 Number: "read number (index) in the FASTx file"
             }
         }
-        out_SAM_tlen: {
+        out_sam_tlen: {
             description: "calculation method for the TLEN field in the SAM/BAM files",
             choices: {
                 left_plus: "leftmost base of the (+)strand mate to rightmost base of the (-)mate. (+)sign for the (+)strand mate",
@@ -341,8 +341,8 @@ task alignment {
         score_genomic_length_log2_scale: "extra score logarithmically scaled with genomic length of the alignment: scoreGenomicLengthLog2scale*log2(genomicLength)"
         seed_search_start_l_max_over_l_read: "seedSearchStartLmax normalized to read length (sum of mates' lengths for Paired-End reads)"
         align_spliced_mate_map_l_min_over_l_mate: "alignSplicedMateMapLmin normalized to mate length"
-        pe_overlap_MMp: "maximum proportion of mismatched bases in the overlap area"
-        run_RNG_seed: {
+        pe_overlap_mmp: "maximum proportion of mismatched bases in the overlap area"
+        run_rng_seed: {
             description: "random number generator seed",
             common: true
         }
@@ -357,12 +357,12 @@ task alignment {
         read_quality_score_base: "number to be subtracted from the ASCII code to get Phred quality score"
         limit_out_sj_one_read: "max number of junctions for one read (including all multi-mappers)"
         limit_out_sj_collapsed: "max number of collapsed junctions"
-        limit_sjdb_insert_n_SJ: "maximum number of junction to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run"
+        limit_sjdb_insert_n_sj: "maximum number of junction to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run"
         out_QS_conversion_add: "add this number to the quality score (e.g. to convert from Illumina to Sanger, use -31)"
-        out_SAM_attr_IH_start: "start value for the IH attribute. 0 may be required by some downstream software, such as Cufflinks or StringTie."
-        out_SAM_mapq_unique: "`0-255`: the MAPQ value for unique mappers. Please note the STAR default (255) produces errors downstream, as a MAPQ value of 255 is reserved to indicate a missing value. The default of this task is 254, which is the highest _valid_ MAPQ value, and possibly what the author of STAR intended. **[STAR default]**: `255`. **[WDL default]**: `254`."
-        out_SAM_flag_OR: "`0-65535`: sam FLAG will be bitwise OR'd with this value, i.e. FLAG=FLAG | outSAMflagOR. This is applied after all flags have been set by STAR, and after outSAMflagAND. Can be used to set specific bits that are not set otherwise."
-        out_SAM_flag_AND: "`0-65535`: sam FLAG will be bitwise AND'd with this value, i.e. FLAG=FLAG & outSAMflagOR. This is applied after all flags have been set by STAR, but before outSAMflagOR. Can be used to unset specific bits that are not set otherwise."
+        out_sam_attr_IH_start: "start value for the IH attribute. 0 may be required by some downstream software, such as Cufflinks or StringTie."
+        out_sam_mapq_unique: "`0-255`: the MAPQ value for unique mappers. Please note the STAR default (255) produces errors downstream, as a MAPQ value of 255 is reserved to indicate a missing value. The default of this task is 254, which is the highest _valid_ MAPQ value, and possibly what the author of STAR intended. **[STAR default]**: `255`. **[WDL default]**: `254`."
+        out_sam_flag_OR: "`0-65535`: sam FLAG will be bitwise OR'd with this value, i.e. FLAG=FLAG | outSAMflagOR. This is applied after all flags have been set by STAR, and after outSAMflagAND. Can be used to set specific bits that are not set otherwise."
+        out_sam_flag_AND: "`0-65535`: sam FLAG will be bitwise AND'd with this value, i.e. FLAG=FLAG & outSAMflagOR. This is applied after all flags have been set by STAR, but before outSAMflagOR. Can be used to unset specific bits that are not set otherwise."
         out_filter_multimap_score_range: "the score range below the maximum score for multimapping alignments"
         out_filter_multimap_n_max: {
             description: "maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. **[STAR default]**: `10`. **[WDL default]**: `20`.",
@@ -507,19 +507,19 @@ task alignment {
             AT_AC_and_GT_AT_motif: 0
         }
         Pair[String, String] clip_3p_adapter_seq = ("None", "None")
-        Pair[Float, Float] clip_3p_adapter_MMp = (0.1, 0.1)
+        Pair[Float, Float] clip_3p_adapter_mmp = (0.1, 0.1)
         Pair[Int, String] align_ends_protrude = (0, "ConcordantPair")
         Pair[Int, Int] clip_3p_n_bases = (0, 0)
         Pair[Int, Int] clip_3p_after_adapter_n_bases = (0, 0)
         Pair[Int, Int] clip_5p_n_bases = (0, 0)
         String read_name_separator = "/"
         String clip_adapter_type = "Hamming"
-        String out_SAM_strand_field = "intronMotif"
-        String out_SAM_attributes = "NH HI AS nM NM MD XS"
-        String out_SAM_unmapped = "Within"
-        String out_SAM_order = "Paired"
-        String out_SAM_read_ID = "Standard"
-        String out_SAM_tlen = "left_plus"
+        String out_sam_strand_field = "intronMotif"
+        String out_sam_attributes = "NH HI AS nM NM MD XS"
+        String out_sam_unmapped = "Within"
+        String out_sam_order = "Paired"
+        String out_sam_read_id = "Standard"
+        String out_sam_tlen = "left_plus"
         String out_filter_type = "Normal"
         String out_filter_intron_motifs = "None"
         String out_filter_intron_strands = "RemoveInconsistentStrands"
@@ -539,19 +539,19 @@ task alignment {
         Float score_genomic_length_log2_scale = -0.25
         Float seed_search_start_l_max_over_l_read = 1.0
         Float align_spliced_mate_map_l_min_over_l_mate = 0.66
-        Float pe_overlap_MMp = 0.01
-        Int run_RNG_seed = 777
+        Float pe_overlap_mmp = 0.01
+        Int run_rng_seed = 777
         Int sjdb_score = 2
         Int read_map_number = -1
         Int read_quality_score_base = 33
         Int limit_out_sj_one_read = 1000
         Int limit_out_sj_collapsed = 1000000
-        Int limit_sjdb_insert_n_SJ = 1000000
+        Int limit_sjdb_insert_n_sj = 1000000
         Int out_QS_conversion_add = 0
-        Int out_SAM_attr_IH_start = 1
-        Int out_SAM_mapq_unique = 254
-        Int out_SAM_flag_OR = 0
-        Int out_SAM_flag_AND = 65535
+        Int out_sam_attr_IH_start = 1
+        Int out_sam_mapq_unique = 254
+        Int out_sam_flag_OR = 0
+        Int out_sam_flag_AND = 65535
         Int out_filter_multimap_score_range = 1
         Int out_filter_multimap_n_max = 20
         Int out_filter_mismatch_n_max = 10
@@ -690,7 +690,7 @@ task alignment {
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif
             ]))} \
             --clip3pAdapterSeq ~{clip_3p_adapter_seq.left + ' ' + clip_3p_adapter_seq.right} \
-            --clip3pAdapterMMp ~{'~{clip_3p_adapter_MMp.left} ~{clip_3p_adapter_MMp.right}'} \
+            --clip3pAdapterMMp ~{'~{clip_3p_adapter_mmp.left} ~{clip_3p_adapter_mmp.right}'} \
             --alignEndsProtrude ~{
                 '~{align_ends_protrude.left} ~{align_ends_protrude.right}'
             } \
@@ -701,16 +701,16 @@ task alignment {
             --clip5pNbases ~{'~{clip_5p_n_bases.left} ~{clip_5p_n_bases.right}'} \
             --readNameSeparator ~{read_name_separator} \
             --clipAdapterType ~{clip_adapter_type} \
-            --outSAMstrandField ~{out_SAM_strand_field} \
-            --outSAMattributes ~{out_SAM_attributes} \
-            --outSAMunmapped ~{out_SAM_unmapped} \
-            --outSAMorder ~{out_SAM_order} \
-            --outSAMreadID ~{out_SAM_read_ID} \
+            --outSAMstrandField ~{out_sam_strand_field} \
+            --outSAMattributes ~{out_sam_attributes} \
+            --outSAMunmapped ~{out_sam_unmapped} \
+            --outSAMorder ~{out_sam_order} \
+            --outSAMreadID ~{out_sam_read_id} \
             --outSAMtlen ~{
-                if (out_SAM_tlen == "left_plus")
+                if (out_sam_tlen == "left_plus")
                 then "1"
                 else (
-                    if (out_SAM_tlen == "left_any") then "2" else "error"
+                    if (out_sam_tlen == "left_any") then "2" else "error"
                 )
             } \
             --outFilterType ~{out_filter_type} \
@@ -730,19 +730,19 @@ task alignment {
             --scoreGenomicLengthLog2scale ~{score_genomic_length_log2_scale} \
             --seedSearchStartLmaxOverLread ~{seed_search_start_l_max_over_l_read} \
             --alignSplicedMateMapLminOverLmate ~{align_spliced_mate_map_l_min_over_l_mate} \
-            --peOverlapMMp ~{pe_overlap_MMp} \
-            --runRNGseed ~{run_RNG_seed} \
+            --peOverlapMMp ~{pe_overlap_mmp} \
+            --runRNGseed ~{run_rng_seed} \
             --sjdbScore ~{sjdb_score} \
             --readMapNumber ~{read_map_number} \
             --readQualityScoreBase ~{read_quality_score_base} \
             --limitOutSJoneRead ~{limit_out_sj_one_read} \
             --limitOutSJcollapsed ~{limit_out_sj_collapsed} \
-            --limitSjdbInsertNsj ~{limit_sjdb_insert_n_SJ} \
+            --limitSjdbInsertNsj ~{limit_sjdb_insert_n_sj} \
             --outQSconversionAdd ~{out_QS_conversion_add} \
-            --outSAMattrIHstart ~{out_SAM_attr_IH_start} \
-            --outSAMmapqUnique ~{out_SAM_mapq_unique} \
-            --outSAMflagOR ~{out_SAM_flag_OR} \
-            --outSAMflagAND ~{out_SAM_flag_AND} \
+            --outSAMattrIHstart ~{out_sam_attr_IH_start} \
+            --outSAMmapqUnique ~{out_sam_mapq_unique} \
+            --outSAMflagOR ~{out_sam_flag_OR} \
+            --outSAMflagAND ~{out_sam_flag_AND} \
             --outFilterMultimapScoreRange ~{out_filter_multimap_score_range} \
             --outFilterMultimapNmax ~{out_filter_multimap_n_max} \
             --outFilterMismatchNmax ~{out_filter_mismatch_n_max} \
