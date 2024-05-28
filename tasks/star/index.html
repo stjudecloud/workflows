@@ -49,6 +49,8 @@
               </ul>
               <p class="caption"><span class="caption-text">Tasks</span></p>
               <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../arriba/">Arriba</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../bwa/">Bwa</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../cellranger/">Cellranger</a>
@@ -247,12 +249,12 @@
 <li><code>chim_multimap_score_range</code> (Int, default=1): the score range for multi-mapping chimeras below the best chimeric score. Only works with --chimMultimapNmax &gt; 1.</li>
 <li><code>chim_nonchim_score_drop_min</code> (Int, default=20): to trigger chimeric detection, the drop in the best non-chimeric alignment score with respect to the read length has to be greater than this value</li>
 <li><code>chim_out_junction_format</code> (String, default="plain"); <strong>description</strong>: formatting type for the Chimeric.out.junction file; <strong>choices</strong>: {'plain': 'no comment lines/headers', 'comments': 'comment lines at the end of the file: command line and Nreads: total, unique/multi-mapping'}; <strong>common</strong>: true</li>
-<li><code>chim_out_type</code> (String, default="Junctions"); <strong>description</strong>: type of chimeric output; <strong>choices</strong>: {'Junctions': 'Chimeric.out.junction', 'WithinBAM_HardClip': 'output into main aligned BAM files (Aligned.<em>.bam). Hard-clipping in the CIGAR for supplemental chimeric alignments.', 'WithinBAM_SoftClip': 'output into main aligned BAM files (Aligned.</em>.bam). Soft-clipping in the CIGAR for supplemental chimeric alignments.'}; <strong>common</strong>: true</li>
+<li><code>chim_out_type</code> (String, default="WithinBAM HardClip"); <strong>description</strong>: type of chimeric output; <strong>choices</strong>: {'Junctions': 'Chimeric.out.junction', 'WithinBAM_HardClip': 'output into main aligned BAM files (Aligned.<em>.bam). Hard-clipping in the CIGAR for supplemental chimeric alignments.', 'WithinBAM_SoftClip': 'output into main aligned BAM files (Aligned.</em>.bam). Soft-clipping in the CIGAR for supplemental chimeric alignments.'}; <strong>tool_default</strong>: Junctions; <strong>common</strong>: true</li>
 <li><code>chim_score_drop_max</code> (Int, default=20); <strong>description</strong>: max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length; <strong>common</strong>: true</li>
 <li><code>chim_score_junction_nonGTAG</code> (Int, default=-1): penalty for a non-GT/AG chimeric junction</li>
 <li><code>chim_score_min</code> (Int, default=0); <strong>description</strong>: minimum total (summed) score of the chimeric segments; <strong>common</strong>: true</li>
 <li><code>chim_score_separation</code> (Int, default=10): minimum difference (separation) between the best chimeric score and the next one</li>
-<li><code>chim_segment_min</code> (Int, default=0); <strong>description</strong>: minimum length of chimeric segment length, if ==0, no chimeric output; <strong>common</strong>: true</li>
+<li><code>chim_segment_min</code> (Int, default=10); <strong>description</strong>: minimum length of chimeric segment length, if ==0, no chimeric output; <strong>tool_default</strong>: 0; <strong>common</strong>: true</li>
 <li><code>chim_segment_read_gap_max</code> (Int, default=0); <strong>description</strong>: maximum gap in the read sequence between chimeric segments; <strong>common</strong>: true</li>
 <li><code>clip_3p_adapter_mmp</code> (Pair[Float,Float], default=(0.1, 0.1)): max proportion of mismatches for 3p adapter clipping for each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.</li>
 <li><code>clip_3p_adapter_seq</code> (Pair[String,String], default=("None", "None")); <strong>description</strong>: adapter sequences to clip from 3p of each mate. <code>left</code> applies to read one and <code>right</code> applies to read two.; <strong>choices</strong>: {'None': 'No 3p adapter trimming will be performed', 'sequence': 'A nucleotide sequence string of any length, matching the regex <code>/[ATCG]+/</code>', 'polyA': 'polyA sequence with the length equal to read length'}; <strong>common</strong>: true</li>
@@ -273,7 +275,7 @@
 <li><code>out_filter_mismatch_n_max</code> (Int, default=10); <strong>description</strong>: alignment will be output only if it has no more mismatches than this value; <strong>common</strong>: true</li>
 <li><code>out_filter_mismatch_n_over_l_max</code> (Float, default=0.3): alignment will be output only if its ratio of mismatches to <em>mapped</em> length is less than or equal to this value</li>
 <li><code>out_filter_mismatch_n_over_read_l_max</code> (Float, default=1.0): alignment will be output only if its ratio of mismatches to <em>read</em> length is less than or equal to this value</li>
-<li><code>out_filter_multimap_n_max</code> (Int, default=20); <strong>description</strong>: maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. <strong>[STAR default]</strong>: <code>10</code>. <strong>[WDL default]</strong>: <code>20</code>.; <strong>common</strong>: true</li>
+<li><code>out_filter_multimap_n_max</code> (Int, default=10); <strong>description</strong>: maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. <strong>[STAR default]</strong>: <code>10</code>. <strong>[WDL default]</strong>: <code>20</code>.; <strong>common</strong>: true</li>
 <li><code>out_filter_multimap_score_range</code> (Int, default=1): the score range below the maximum score for multimapping alignments</li>
 <li><code>out_filter_score_min</code> (Int, default=0); <strong>description</strong>: alignment will be output only if its score is higher than or equal to this value; <strong>common</strong>: true</li>
 <li><code>out_filter_score_min_over_l_read</code> (Float, default=0.66): same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for Paired-End reads)</li>
