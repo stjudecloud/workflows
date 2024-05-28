@@ -116,7 +116,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#validate_flagfilter">validate_FlagFilter</a>
+    <li class="toctree-l2"><a class="reference internal" href="#validate_flag_filter">validate_flag_filter</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
@@ -195,8 +195,8 @@ These strings must evaluate to an integer less than 4096 (2^12).
 They can be in octal, decimal, or hexadecimal format.
 Please see the <code>meta.help</code> of <code>validate_string_is_12bit_oct_dec_or_hex</code>
 for more information on the valid formats.</p>
-<p>The <code>validate_FlagFilter</code> workflow can be used to validate a <code>FlagFilter</code> struct.
-<strong>WARNING</strong> The <code>validate_FlagFilter</code> workflow will only check that all the fields
+<p>The <code>validate_flag_filter</code> workflow can be used to validate a <code>FlagFilter</code> struct.
+<strong>WARNING</strong> The <code>validate_flag_filter</code> workflow will only check that all the fields
 can be parsed as integers less than 4096. It will not check if the flags are
 sensible input to <code>samtools fastq</code>.
 <code>samtools fastq</code> also employs very little error checking on the flags.
@@ -234,7 +234,7 @@ the meanings of the bits in the
 In short, those are all flags corresponding to the quality of the read
 and them being <code>true</code> may indicate that the read is of low quality and
 should be excluded.</p>
-<h2 id="validate_flagfilter">validate_FlagFilter</h2>
+<h2 id="validate_flag_filter">validate_flag_filter</h2>
 <dl>
 <dt>description</dt>
 <dd>Validates a FlagFilter struct.</dd>

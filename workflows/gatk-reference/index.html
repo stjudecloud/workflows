@@ -171,7 +171,7 @@
 <dt>description</dt>
 <dd>Fetches reference files for GATK.</dd>
 <dt>outputs</dt>
-<dd>{'fasta': 'FASTA file for the reference genome.', 'fasta_index': 'Index for the FASTA file for the reference genome.', 'fasta_dict': 'Sequence dictionary for the reference genome.', 'dbSNP_vcf': 'dbSNP VCF file for the reference genome.', 'dbSNP_vcf_index': 'Index for the dbSNP VCF file for the reference genome.', 'interval_list': 'List of intervals that will be used when computing variants.', 'knownVCFs': 'VCF files with known variants to use with variant calling.'}</dd>
+<dd>{'fasta': 'FASTA file for the reference genome.', 'fasta_index': 'Index for the FASTA file for the reference genome.', 'fasta_dict': 'Sequence dictionary for the reference genome.', 'dbSNP_vcf': 'dbSNP VCF file for the reference genome.', 'dbSNP_vcf_index': 'Index for the dbSNP VCF file for the reference genome.', 'interval_list': 'List of intervals that will be used when computing variants.', 'known_vcfs': 'VCF files with known variants to use with variant calling.'}</dd>
 <dt>allowNestedInputs</dt>
 <dd>true</dd>
 </dl>
@@ -180,8 +180,8 @@
 <ul>
 <li><code>dbSNP_vcf_name</code> (String, <strong>required</strong>): Name of the dbSNP VCF file.</li>
 <li><code>dbSNP_vcf_url</code> (String, <strong>required</strong>): URL from which to retrieve the dbSNP VCF file.</li>
-<li><code>knownVCF_names</code> (Array[String], <strong>required</strong>): Names of the VCF files with known variants. Order should match that of <code>knownVCF_urls</code>.</li>
-<li><code>knownVCF_urls</code> (Array[String], <strong>required</strong>): URLs from which to retrieve VCF files with known variants.</li>
+<li><code>known_vcf_names</code> (Array[String], <strong>required</strong>): Names of the VCF files with known variants. Order should match that of <code>known_vcf_urls</code>.</li>
+<li><code>known_vcf_urls</code> (Array[String], <strong>required</strong>): URLs from which to retrieve VCF files with known variants.</li>
 <li><code>reference_fa_md5</code> (String, <strong>required</strong>): MD5 checksum for the reference FASTA file.</li>
 <li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of the output reference FASTA file.</li>
 <li><code>reference_fa_url</code> (String, <strong>required</strong>): URL from which to retrieve the reference FASTA file.</li>
@@ -195,8 +195,8 @@
 <li><code>fasta_download.disk_size_gb</code> (Int, <strong>required</strong>)</li>
 <li><code>intervals._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>intervals.disk_size_gb</code> (Int, <strong>required</strong>)</li>
-<li><code>knownVCF._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>knownVCF.disk_size_gb</code> (Int, <strong>required</strong>)</li>
+<li><code>known_vcf._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>known_vcf.disk_size_gb</code> (Int, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -210,7 +210,7 @@
 <li><code>dbsnp.md5sum</code> (String?)</li>
 <li><code>dbsnp_index.md5sum</code> (String?)</li>
 <li><code>intervals.md5sum</code> (String?)</li>
-<li><code>knownVCF.md5sum</code> (String?)</li>
+<li><code>known_vcf.md5sum</code> (String?)</li>
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
@@ -228,7 +228,7 @@
 <li><code>dbSNP_vcf</code> (File?)</li>
 <li><code>dbSNP_vcf_index</code> (File?)</li>
 <li><code>interval_list</code> (File?)</li>
-<li><code>knownVCFs</code> (Array[File])</li>
+<li><code>known_vcfs</code> (Array[File])</li>
 </ul>
               
             </div>
