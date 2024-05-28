@@ -181,7 +181,7 @@
 <ul>
 <li><code>bam</code> (File, <strong>required</strong>): Input BAM to realign</li>
 <li><code>bwa_db</code> (File, <strong>required</strong>): Gzipped tar archive of the bwa reference files. Files should be at the root of the archive.</li>
-<li><code>get_ReadGroups._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>get_read_groups._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>parse_input._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>subsample._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>validate_input_bam._runtime</code> (Any, <strong>required</strong>)</li>
@@ -189,10 +189,10 @@
 <li><code>bam_to_fastqs.fqlint._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam_to_fastqs.quickcheck._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>bam_to_fastqs.split._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>dnaseq_core_experimental.ReadGroup_to_string._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>dnaseq_core_experimental.bwa_aln_pe._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>dnaseq_core_experimental.bwa_mem._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>dnaseq_core_experimental.index._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>dnaseq_core_experimental.read_group_to_string._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>dnaseq_core_experimental.read_ones._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>dnaseq_core_experimental.read_twos._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>dnaseq_core_experimental.sort._runtime</code> (Any, <strong>required</strong>)</li>
@@ -216,7 +216,7 @@
 <li><code>subsample_n_reads</code> (Int, default=-1): Only process a random sampling of <code>n</code> reads. Any <code>n</code>&lt;=<code>0</code> for processing entire input.</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments.</li>
 <li><code>validate_input</code> (Boolean, default=true): Ensure input BAM is well-formed before beginning harmonization?</li>
-<li><code>get_ReadGroups.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>get_read_groups.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>subsample.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>subsample.ncpu</code> (Int, default=2)</li>
 <li><code>subsample.prefix</code> (String, default=basename(bam,".bam")): Prefix for the BAM file. The extension <code>.bam</code> will be added.</li>
