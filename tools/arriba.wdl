@@ -97,7 +97,10 @@ task arriba {
                 "reverse"
             ]
         }
-        mark_duplicates: "Mark duplicates in the input BAM file with Arriba."
+        mark_duplicates: {
+            description: "Mark duplicates in the input BAM file with Arriba.",
+            help: "Arriba performs marking of duplicates internally based on identical mapping coordinates. When this switch is set, internal marking of duplicates is disabled and Arriba assumes that duplicates have been marked by a preceding program. In this case, Arriba only discards alignments flagged with the BAM_FDUP flag. This makes sense when duplicates cannot be reliably identified solely based on their mapping coordinates, e.g. when unique molecular identifiers (UMIs) are used or when independently generated libraries are merged in a single BAM file and the read group must be interrogated to distinguish duplicates from reads that map to the same coordinates by chance. In addition, when this switch is set, duplicate reads are not considered for the calculation of the coverage at fusion breakpoints (columns coverage1 and coverage2 in the output file)."
+        }
         report_additional_columns: "Report additional columns ['fusion_transcript', 'peptide_sequence', 'read_identifiers'] in the discarded fusions file."
         fill_gaps: "Fill gaps in assembled transcripts with reference bases. Expands the fusion sequence to the complete sequence of the fusion gene."
         max_e_value: "Maximum E-value for read support."
