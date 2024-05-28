@@ -18,14 +18,14 @@ task build_star_db {
             common: true
         }
         SJDB_gtf_chr_prefix: {
-            description: "prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSMEBL annotations with UCSC genomes)",
+            description: "prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSEMBL annotations with UCSC genomes)",
             common: true
         }
         SJDB_gtf_feature_exon: "feature type in GTF file to be used as exons for building transcripts"
         SJDB_gtf_tag_exon_parant_transcript: "GTF attribute name for parent transcript ID"
         SJDB_gtf_tag_exon_parent_gene: "GTF attribute name for parent gene ID"
-        SJDB_gtf_tag_exon_parent_gene_name: "GTF attrbute name for parent gene name"
-        SJDB_gtf_tag_exon_parent_gene_type: "GTF attrbute name for parent gene type"
+        SJDB_gtf_tag_exon_parent_gene_name: "GTF attribute name for parent gene name"
+        SJDB_gtf_tag_exon_parent_gene_type: "GTF attribute name for parent gene type"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             common: true
@@ -166,7 +166,7 @@ task alignment {
             },
             common: true
         }
-        clip_3p_adatper_MMp: "max proportion of mismatches for 3p adapter clipping for each mate. `left` applies to read one and `right` applies to read two."
+        clip_3p_adapter_MMp: "max proportion of mismatches for 3p adapter clipping for each mate. `left` applies to read one and `right` applies to read two."
         align_ends_protrude: {
             description: "allow protrusion of alignment ends, i.e. start (end) of the +strand mate downstream of the start (end) of the -strand mate. `left`: maximum number of protrusion bases allowed. `right`: see `choices` below.",
             choices: {
@@ -507,7 +507,7 @@ task alignment {
             AT_AC_and_GT_AT_motif: 0
         }
         Pair[String, String] clip_3p_adapter_seq = ("None", "None")
-        Pair[Float, Float] clip_3p_adatper_MMp = (0.1, 0.1)
+        Pair[Float, Float] clip_3p_adapter_MMp = (0.1, 0.1)
         Pair[Int, String] align_ends_protrude = (0, "ConcordantPair")
         Pair[Int, Int] clip_3p_N_bases = (0, 0)
         Pair[Int, Int] clip_3p_after_adapter_N_bases = (0, 0)
@@ -690,7 +690,7 @@ task alignment {
                 align_SJ_stitch_mismatch_N_max.AT_AC_and_GT_AT_motif
             ]))} \
             --clip3pAdapterSeq ~{clip_3p_adapter_seq.left + ' ' + clip_3p_adapter_seq.right} \
-            --clip3pAdapterMMp ~{'~{clip_3p_adatper_MMp.left} ~{clip_3p_adatper_MMp.right}'} \
+            --clip3pAdapterMMp ~{'~{clip_3p_adapter_MMp.left} ~{clip_3p_adapter_MMp.right}'} \
             --alignEndsProtrude ~{
                 '~{align_ends_protrude.left} ~{align_ends_protrude.right}'
             } \
