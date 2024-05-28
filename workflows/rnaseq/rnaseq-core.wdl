@@ -35,7 +35,7 @@ workflow rnaseq_core {
             tool: "star",
             tool_default: {
                 noncanonical_motifs: 0,
-                GT_AG_and_CT_AC_motif: "-1", #TODO: remove quotes once sprocket supports negative integers
+                GT_AG_and_CT_AC_motif: "-1", # TODO: remove quotes once sprocket supports negative integers
                 GC_AG_and_CT_GC_motif: 0,
                 AT_AC_and_GT_AT_motif: 0
             }
@@ -84,7 +84,7 @@ workflow rnaseq_core {
         chim_score_junction_nonGTAG: {
             description: "This overrides the STAR alignment default. Penalty for a non-GT/AG chimeric junction",
             tool: "star",
-            tool_default: -1
+            tool_default: "-1" # TODO: remove quotes once sprocket supports negative integers
         }
         chim_junction_overhang_min: {
             description: "This overrides the STAR alignment default. Minimum overhang for a chimeric junction",
