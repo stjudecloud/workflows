@@ -62,7 +62,7 @@ workflow dnaseq_standard_experimental {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call read_group.get_ReadGroups { input:
+    call read_group.get_read_groups { input:
         bam = selected_bam,
     }
 
@@ -77,7 +77,7 @@ workflow dnaseq_standard_experimental {
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
         bwa_db,
         reads_per_file,
-        read_groups = get_ReadGroups.read_groups,
+        read_groups = get_read_groups.read_groups,
         prefix,
         aligner,
         use_all_cores,

@@ -69,11 +69,11 @@ workflow dnaseq_core_experimental {
             }
         }
 
-        call read_group.ReadGroup_to_string { input:
+        call read_group.read_group_to_string { input:
             read_group = select_first([rg, tuple.right])
         }
 
-        String rg_string = "@RG " + ReadGroup_to_string.stringified_read_group
+        String rg_string = "@RG " + read_group_to_string.stringified_read_group
 
         call util.split_fastq as read_ones { input:
             fastq = tuple.left.left,

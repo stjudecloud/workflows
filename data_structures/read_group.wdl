@@ -45,7 +45,7 @@ struct ReadGroup {
     String? SM
 }
 
-task ReadGroup_to_string {
+task read_group_to_string {
     meta {
         description: "Stringifies a ReadGroup struct"
         outputs: {
@@ -93,7 +93,7 @@ task ReadGroup_to_string {
     }
 }
 
-task get_ReadGroups {
+task get_read_groups {
     meta {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
         outputs: {
