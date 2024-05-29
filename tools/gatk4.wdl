@@ -455,10 +455,6 @@ task mark_duplicates_spark {
             --duplicate-tagging-policy ~{tagging_policy} \
             --optical-duplicate-pixel-distance ~{optical_distance} \
             --spark-master local[~{ncpu}]
-
-        if ~{create_bam}; then
-            mv ~{prefix}.bai ~{prefix}.bam.bai
-        fi
     >>>
 
     output {
