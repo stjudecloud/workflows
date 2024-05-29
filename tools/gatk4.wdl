@@ -358,3 +358,116 @@ task variant_filtration {
         maxRetries: 1
     }
 }
+
+task mark_duplicates_spark {
+     meta {
+        description: "Marks duplicate reads in the input BAM file using GATK's Spark implementation of Picard's MarkDuplicates."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832682540699-MarkDuplicatesSpark"
+        outputs: {
+            duplicate_marked_bam: "The input BAM with computationally determined duplicates marked.",
+            duplicate_marked_bam_index: "The `.bai` BAM index file associated with `duplicate_marked_bam`",
+            mark_duplicates_metrics: {
+                description: "The METRICS_FILE result of `picard MarkDuplicates`",
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics",
+            }
+        }
+    }
+
+
+    parameter_meta {
+        bam: "Input BAM format file in which to mark duplicates"
+        prefix: "Prefix for the MarkDuplicates result files. The extensions `.bam`, `.bam.bai`, and `.metrics.txt` will be added."
+        duplicate_scoring_strategy: {
+            description: "Strategy for scoring duplicates.",
+            choices: [
+                "SUM_OF_BASE_QUALITIES",
+                "TOTAL_MAPPED_REFERENCE_LENGTH",
+                "RANDOM"
+            ]
+        }
+        read_name_regex: "Regular expression for extracting tile names, x coordinates, and y coordinates from read names. The default works for typical Illumina read names."
+        tagging_policy: {
+            description: "Tagging policy for the output BAM.",
+            choices: [
+                "DontTag",
+                "OpticalOnly",
+                "All"
+            ],
+        }
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
+        create_bam: {
+            description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?",
+            common: true
+        }
+        optical_distance: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`."
+        modify_memory_gb: "Add to or subtract from the default memory allocation. Default memory allocation is determined by the size of the input BAM. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam") + ".MarkDuplicates"
+        String duplicate_scoring_strategy = "SUM_OF_BASE_QUALITIES"
+        String read_name_regex = "^[!-9;-?A-~:]+:([!-9;-?A-~]+):([0-9]+):([0-9]+)$"
+        String tagging_policy = "All"
+        String validation_stringency = "SILENT"
+        Boolean create_bam = true
+        Int optical_distance = 0
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
+        Int ncpu = 4
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int memory_gb = min(ceil(bam_size + 15), 50) + modify_memory_gb
+    Int disk_size_gb = (
+        (
+            if create_bam
+            then ceil((bam_size * 2) + 10)
+            else ceil(bam_size + 10)
+        ) + modify_disk_size_gb
+    )
+
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command <<<
+        set -euo pipefail
+
+        gatk MarkDuplicatesSpark \
+            --java-options "-Xmx~{java_heap_size}g" \
+            -I ~{bam} \
+            -M ~{prefix}.metrics.txt \
+            -O ~{if create_bam then prefix + ".bam" else "/dev/null"} \
+            --create-output-bam-index ~{create_bam} \
+            --read-validation-stringency ~{validation_stringency} \
+            --duplicate-scoring-strategy ~{duplicate_scoring_strategy} \
+            --read-name-regex '~{
+                if (optical_distance > 0) then read_name_regex else "null"
+            }' \
+            --duplicate-tagging-policy ~{tagging_policy} \
+            --optical-duplicate-pixel-distance ~{optical_distance} \
+            --spark-master local[~{ncpu}]
+    >>>
+
+    output {
+        File? duplicate_marked_bam = "~{prefix}.bam"
+        File? duplicate_marked_bam_index = "~{prefix}.bam.bai"
+        File mark_duplicates_metrics = "~{prefix}.metrics.txt"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
+        maxRetries: 1
+    }
+}
