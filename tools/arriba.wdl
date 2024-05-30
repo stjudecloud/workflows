@@ -190,9 +190,9 @@ task arriba {
             ~{if defined(wgs_svs) then "-d " + wgs_svs else ""} \
             -D ~{max_genomic_breakpoint_distance} \
             -s ~{strandedness} \
-            ~{if length(interesting_contigs) > 0 then "-i " + sep(',', interesting_contigs) else ""} \
-            ~{if length(viral_contigs) > 0 then "-v " + sep(',', viral_contigs) else ""} \
-            ~{if length(disable_filters) > 0 then "-f " + sep(',', disable_filters) else ""} \
+            ~{if length(interesting_contigs) > 0 then "-i " + sep(",", interesting_contigs) else ""} \
+            ~{if length(viral_contigs) > 0 then "-v " + sep(",", viral_contigs) else ""} \
+            ~{if length(disable_filters) > 0 then "-f " + sep(",", disable_filters) else ""} \
             -E ~{max_e_value} \
             -S ~{min_supporting_reads} \
             -m ~{max_mismappers} \
