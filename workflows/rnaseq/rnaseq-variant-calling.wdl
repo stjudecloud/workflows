@@ -41,7 +41,7 @@ workflow rnaseq_variant_calling {
         Array[File] known_vcf_indexes
         File dbSNP_vcf
         File dbSNP_vcf_index
-        String prefix = basename(bam, '.bam')
+        String prefix = basename(bam, ".bam")
         Boolean bam_is_dup_marked = false
         Int scatter_count = 6
     }

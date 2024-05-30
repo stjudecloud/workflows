@@ -88,7 +88,7 @@ task bwa_aln {
         cpu: ncpu
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
         maxRetries: 1
     }
 }
@@ -189,7 +189,7 @@ task bwa_aln_pe {
         cpu: ncpu
         memory: "17 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
         maxRetries: 1
     }
 }
@@ -245,7 +245,7 @@ task bwa_mem {
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
     )
 
-    File read_two_file = select_first([read_two_fastq_gz, ''])
+    File read_two_file = select_first([read_two_fastq_gz, ""])
 
     command <<<
         set -euo pipefail
@@ -284,7 +284,7 @@ task bwa_mem {
         cpu: ncpu
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
         maxRetries: 1
     }
 }
@@ -335,7 +335,7 @@ task build_bwa_db {
     runtime {
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
         maxRetries: 1
     }
 }

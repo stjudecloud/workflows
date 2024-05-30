@@ -43,18 +43,18 @@ workflow rnaseq_core {
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
-                'bwa aln',
-                'bwa mem',
-                'star'
+                "bwa aln",
+                "bwa mem",
+                "star"
             ]
         }
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
             choices: [
-                '',
-                'Stranded-Reverse',
-                'Stranded-Forward',
-                'Unstranded'
+                "",
+                "Stranded-Reverse",
+                "Stranded-Forward",
+                "Unstranded"
             ]
         }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"

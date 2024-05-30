@@ -31,18 +31,18 @@ workflow rnaseq_standard {
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
-                'bwa aln',
-                'bwa mem',
-                'star'
+                "bwa aln",
+                "bwa mem",
+                "star"
             ]
         }
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
             choices: [
-                '',
-                'Stranded-Reverse',
-                'Stranded-Forward',
-                'Unstranded'
+                "",
+                "Stranded-Reverse",
+                "Stranded-Forward",
+                "Unstranded"
             ]
         }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
@@ -139,10 +139,10 @@ task parse_input {
         input_strand: {
             description: "Provided strandedness protocol of the RNA-Seq experiment",
             choices: [
-                '',
-                'Stranded-Reverse',
-                'Stranded-Forward',
-                'Unstranded'
+                "",
+                "Stranded-Reverse",
+                "Stranded-Forward",
+                "Unstranded"
             ]
         }
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
@@ -179,7 +179,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }

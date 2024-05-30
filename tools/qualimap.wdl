@@ -85,7 +85,7 @@ task rnaseq {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/qualimap:2.3--hdfd78af_0'
+        container: "quay.io/biocontainers/qualimap:2.3--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -114,7 +114,7 @@ task bamqc {
         Int modify_disk_size_gb = 0
     }
 
-    String out_directory = prefix + '.qualimap_bamqc_results'
+    String out_directory = prefix + ".qualimap_bamqc_results"
     String out_tar_gz = out_directory + ".tar.gz"
 
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -152,7 +152,7 @@ task bamqc {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/qualimap:2.3--hdfd78af_0'
+        container: "quay.io/biocontainers/qualimap:2.3--hdfd78af_0"
         maxRetries: 1
     }
 }

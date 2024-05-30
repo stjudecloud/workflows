@@ -536,7 +536,7 @@ task parse_input {
             >&2 echo "Otherwise the exact same amount must be supplied."
             EXITCODE=1
         else
-            echo "~{sep('\n', coverage_labels)}" >> labels.txt
+            echo "~{sep("\n", coverage_labels)}" >> labels.txt
         fi
 
         exit $EXITCODE
@@ -549,7 +549,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }

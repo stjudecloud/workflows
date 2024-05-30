@@ -128,7 +128,7 @@ task count {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/htseq:2.0.5--py310h5aa3a86_0'
+        container: "quay.io/biocontainers/htseq:2.0.5--py310h5aa3a86_0"
         maxRetries: 1
     }
 }
@@ -198,7 +198,7 @@ END
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }

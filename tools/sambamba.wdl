@@ -54,7 +54,7 @@ task index {
         cpu: ncpu
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/sambamba:1.0--h98b6b92_0'
+        container: "quay.io/biocontainers/sambamba:1.0--h98b6b92_0"
         maxRetries: 1
     }
 }
@@ -114,7 +114,7 @@ task merge {
         cpu: ncpu
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/sambamba:1.0--h98b6b92_0'
+        container: "quay.io/biocontainers/sambamba:1.0--h98b6b92_0"
         maxRetries: 1
     }
 }
@@ -157,7 +157,7 @@ task sort {
         sambamba sort \
             --nthreads ~{ncpu} \
             -o ~{outfile_name} \
-            ~{if queryname_sort then '-n' else ''} \
+            ~{if queryname_sort then "-n" else ""} \
             ~{bam}
     >>>
 
@@ -169,7 +169,7 @@ task sort {
         cpu: ncpu
         memory: "25 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/sambamba:1.0--h98b6b92_0'
+        container: "quay.io/biocontainers/sambamba:1.0--h98b6b92_0"
         maxRetries: 1
     }
 }
@@ -208,7 +208,7 @@ task markdup {
     command <<<
         sambamba markdup \
             --nthreads ~{ncpu} \
-            ~{if remove_duplicates then '--remove-duplicates' else ''} \
+            ~{if remove_duplicates then "--remove-duplicates" else ""} \
             ~{bam} \
             ~{prefix}.markdup.bam \
             > ~{prefix}.markdup_log.txt
@@ -224,7 +224,7 @@ task markdup {
         cpu: ncpu
         memory: "50 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/sambamba:1.0--h98b6b92_0'
+        container: "quay.io/biocontainers/sambamba:1.0--h98b6b92_0"
         maxRetries: 1
     }
 }
@@ -281,7 +281,7 @@ task flagstat {
         cpu: ncpu
         memory: "5 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/sambamba:1.0--h98b6b92_0'
+        container: "quay.io/biocontainers/sambamba:1.0--h98b6b92_0"
         maxRetries: 1
     }
 }

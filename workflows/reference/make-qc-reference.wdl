@@ -25,17 +25,17 @@ workflow make_qc_reference {
         kraken_libraries: {
             description: "List of kraken libraries to download",
             choices: [
-                'archaea',
-                'bacteria',
-                'plasmid',
-                'viral',
-                'human',
-                'fungi',
-                'plant',
-                'protozoa',
-                'nt',
-                'UniVec',
-                'UniVec_Core'
+                "archaea",
+                "bacteria",
+                "plasmid",
+                "viral",
+                "human",
+                "fungi",
+                "plant",
+                "protozoa",
+                "nt",
+                "UniVec",
+                "UniVec_Core"
             ]
         }
         kraken_fasta_urls: "URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database. This allows the addition of individual genomes (or other sequences) of interest."

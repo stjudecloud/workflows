@@ -42,7 +42,7 @@ task download {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.4.0'
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
@@ -98,7 +98,7 @@ task get_read_groups {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -139,7 +139,7 @@ task split_string {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.4.0'
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
@@ -239,7 +239,7 @@ END
     runtime {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
+        container: "quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0"
         maxRetries: 1
     }
 }
@@ -276,7 +276,7 @@ task compression_integrity {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -323,7 +323,7 @@ task add_to_bam_header {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -365,7 +365,7 @@ task unpack_tarball {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.4.0'
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
@@ -408,15 +408,15 @@ task make_coverage_regions_beds {
     >>>
 
     output {
-        File bed = basename(gtf, '.gz') + ".bed"  # TODO I added this but I'm not sure I should have. It doesn't work with the task name
-        File exon_bed = basename(gtf, '.gz') + ".exon.bed"
-        File CDS_bed = basename(gtf, '.gz') + ".CDS.bed"
+        File bed = basename(gtf, ".gz") + ".bed"  # TODO I added this but I'm not sure I should have. It doesn't work with the task name
+        File exon_bed = basename(gtf, ".gz") + ".exon.bed"
+        File CDS_bed = basename(gtf, ".gz") + ".CDS.bed"
     }
 
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
+        container: "quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0"
         maxRetries: 1
     }
 }
@@ -676,7 +676,7 @@ END
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.4.0'
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
@@ -751,7 +751,7 @@ task qc_summary {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.4.0'
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
@@ -812,7 +812,7 @@ task split_fastq {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.4.0'
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
