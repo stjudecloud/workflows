@@ -36,7 +36,7 @@ task multiqc {
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
 
-        echo "~{sep('\n', input_files)}" > file_list.txt
+        echo "~{sep("\n", input_files)}" > file_list.txt
 
         # --strict is too strict. It causes errors due
         # to how our config adds 'custom-content' to the report.
@@ -66,7 +66,7 @@ task multiqc {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/multiqc:1.20--pyhdfd78af_1'
+        container: "quay.io/biocontainers/multiqc:1.20--pyhdfd78af_1"
         maxRetries: 1
     }
 }

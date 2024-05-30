@@ -125,7 +125,7 @@ task build_star_db {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/star:2.7.11b-0'
+        container: "ghcr.io/stjudecloud/star:2.7.11b-0"
         maxRetries: 1
     }
 }
@@ -632,9 +632,9 @@ task alignment {
         # odd constructions a combination of needing white space properly parsed
         # and limitations of the WDL v1.1 spec
         python3 /home/sort_star_input.py \
-            --read-one-fastqs "~{sep(',', read_one_fastqs_gz)}" \
+            --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
             ~{if (read_two_fastqs_gz != empty_array) then "--read-two-fastqs" else ""} "~{
-                sep(',', (
+                sep(",", (
                     if (read_two_fastqs_gz != empty_array)
                     then read_two_fastqs_gz
                     else []
@@ -643,7 +643,7 @@ task alignment {
             ~{if defined(read_groups) then "--read-groups" else ""} "~{
                 if defined(read_groups)
                 then read_groups
-                else ''
+                else ""
             }"
 
         read -ra read_one_args < read_one_fastqs_sorted.txt
@@ -659,48 +659,48 @@ task alignment {
             --twopassMode ~{twopass_mode} \
             --outSAMattrRGline "${read_group_args[@]}" \
             --outSJfilterIntronMaxVsReadN ~{
-                sep(' ', quote(out_sj_filter_intron_max_vs_read_n))
+                sep(" ", quote(out_sj_filter_intron_max_vs_read_n))
             } \
-            --outSJfilterOverhangMin ~{sep(' ', quote([
+            --outSJfilterOverhangMin ~{sep(" ", quote([
                 out_sj_filter_overhang_min.noncanonical_motifs,
                 out_sj_filter_overhang_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_overhang_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_overhang_min.AT_AC_and_GT_AT_motif
             ]))} \
-            --outSJfilterCountUniqueMin ~{sep(' ', quote([
+            --outSJfilterCountUniqueMin ~{sep(" ", quote([
                 out_sj_filter_count_unique_min.noncanonical_motifs,
                 out_sj_filter_count_unique_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_count_unique_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_count_unique_min.AT_AC_and_GT_AT_motif
             ]))} \
-            --outSJfilterCountTotalMin ~{sep(' ', quote([
+            --outSJfilterCountTotalMin ~{sep(" ", quote([
                 out_sj_filter_count_total_min.noncanonical_motifs,
                 out_sj_filter_count_total_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_count_total_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_count_total_min.AT_AC_and_GT_AT_motif
             ]))} \
-            --outSJfilterDistToOtherSJmin ~{sep(' ', quote([
+            --outSJfilterDistToOtherSJmin ~{sep(" ", quote([
                 out_sj_filter_dist_to_other_sj_min.noncanonical_motifs,
                 out_sj_filter_dist_to_other_sj_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_dist_to_other_sj_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_dist_to_other_sj_min.AT_AC_and_GT_AT_motif
             ]))} \
-            --alignSJstitchMismatchNmax ~{sep(' ', quote([
+            --alignSJstitchMismatchNmax ~{sep(" ", quote([
                 align_sj_stitch_mismatch_n_max.noncanonical_motifs,
                 align_sj_stitch_mismatch_n_max.GT_AG_and_CT_AC_motif,
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif
             ]))} \
-            --clip3pAdapterSeq ~{clip_3p_adapter_seq.left + ' ' + clip_3p_adapter_seq.right} \
-            --clip3pAdapterMMp ~{'~{clip_3p_adapter_mmp.left} ~{clip_3p_adapter_mmp.right}'} \
+            --clip3pAdapterSeq ~{clip_3p_adapter_seq.left + " " + clip_3p_adapter_seq.right} \
+            --clip3pAdapterMMp ~{"~{clip_3p_adapter_mmp.left} ~{clip_3p_adapter_mmp.right}"} \
             --alignEndsProtrude ~{
-                '~{align_ends_protrude.left} ~{align_ends_protrude.right}'
+                "~{align_ends_protrude.left} ~{align_ends_protrude.right}"
             } \
-            --clip3pNbases ~{'~{clip_3p_n_bases.left} ~{clip_3p_n_bases.right}'} \
+            --clip3pNbases ~{"~{clip_3p_n_bases.left} ~{clip_3p_n_bases.right}"} \
             --clip3pAfterAdapterNbases ~{
-                '~{clip_3p_after_adapter_n_bases.left} ~{clip_3p_after_adapter_n_bases.right}'
+                "~{clip_3p_after_adapter_n_bases.left} ~{clip_3p_after_adapter_n_bases.right}"
             } \
-            --clip5pNbases ~{'~{clip_5p_n_bases.left} ~{clip_5p_n_bases.right}'} \
+            --clip5pNbases ~{"~{clip_5p_n_bases.left} ~{clip_5p_n_bases.right}"} \
             --readNameSeparator ~{read_name_separator} \
             --clipAdapterType ~{clip_adapter_type} \
             --outSAMstrandField ~{out_sam_strand_field} \
@@ -806,7 +806,7 @@ task alignment {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/star:2.7.11b-0'
+        container: "ghcr.io/stjudecloud/star:2.7.11b-0"
         maxRetries: 1
     }
 }

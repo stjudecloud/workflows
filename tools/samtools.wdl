@@ -36,7 +36,7 @@ task quickcheck {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -118,7 +118,7 @@ task split {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -177,7 +177,7 @@ task flagstat {
     runtime {
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -236,7 +236,7 @@ task index {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -384,7 +384,7 @@ task subsample {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -479,7 +479,7 @@ task filter {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -581,7 +581,7 @@ task merge {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -666,7 +666,7 @@ task addreplacerg {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -739,7 +739,7 @@ task collate {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -933,7 +933,7 @@ task bam_to_fastq {
         cpu: ncpu
         disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -1031,7 +1031,7 @@ task fixmate {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -1132,7 +1132,7 @@ task position_sorted_fixmate {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -1252,7 +1252,7 @@ task markdup {
         cpu: ncpu
         disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -1283,7 +1283,7 @@ task faidx {
     Float fasta_size = size(fasta, "GiB")
     Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
 
-    String outfile_name = basename(fasta, '.gz') + ".fai"
+    String outfile_name = basename(fasta, ".gz") + ".fai"
 
     command <<<
         set -euo pipefail
@@ -1303,7 +1303,7 @@ task faidx {
         cpu: 1
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        container: "quay.io/biocontainers/samtools:1.17--h00cdaf9_0"
         maxRetries: 1
     }
 }

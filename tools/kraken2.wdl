@@ -41,7 +41,7 @@ task download_taxonomy {
     runtime {
         memory: "4 GB"
         disks: "60 GB"
-        container: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
+        container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
         maxRetries: 3
     }
 }
@@ -58,18 +58,18 @@ task download_library {
         library_name: {
             description: "Library to download. Note that `protein` must equal `true` if downloading the `nr` library, and `protein` must equal `false` if downloading the `UniVec` or `UniVec_Core` library.",
             choices: [
-                'archaea',
-                'bacteria',
-                'plasmid',
-                'viral',
-                'human',
-                'fungi',
-                'plant',
-                'protozoa',
-                'nt',
-                'nr',
-                'UniVec',
-                'UniVec_Core'
+                "archaea",
+                "bacteria",
+                "plasmid",
+                "viral",
+                "human",
+                "fungi",
+                "plant",
+                "protozoa",
+                "nt",
+                "nr",
+                "UniVec",
+                "UniVec_Core"
             ]
         }
         protein: "Construct a protein database?"
@@ -115,7 +115,7 @@ task download_library {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
+        container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
         maxRetries: 3
     }
 }
@@ -172,7 +172,7 @@ task create_library_from_fastas {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
+        container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
         maxRetries: 1
     }
 }
@@ -281,7 +281,7 @@ task build_db {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
+        container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
         maxRetries: 1
     }
 }
@@ -396,7 +396,7 @@ task kraken {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
+        container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
         maxRetries: 1
     }
 }

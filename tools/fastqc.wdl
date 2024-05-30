@@ -64,7 +64,7 @@ task fastqc {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0'
+        container: "quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
         maxRetries: 1
     }
 }

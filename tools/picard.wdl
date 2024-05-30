@@ -125,7 +125,7 @@ task mark_duplicates {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -251,7 +251,7 @@ task validate_bam {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -272,9 +272,9 @@ task sort {
         sort_order: {
             description: "Order by which to sort the input BAM",
             choices: [
-                'queryname',
-                'coordinate',
-                'duplicate'
+                "queryname",
+                "coordinate",
+                "duplicate"
             ],
             common: true
         }
@@ -334,7 +334,7 @@ task sort {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -356,11 +356,11 @@ task merge_sam_files {
         sort_order: {
             description: "Sort order for the output merged BAM. It is assumed all input BAMs share this order.",
             choices: [
-                'unsorted',
-                'queryname',
-                'coordinate',
-                'duplicate',
-                'unknown'  # TODO what does this mean?
+                "unsorted",
+                "queryname",
+                "coordinate",
+                "duplicate",
+                "unknown"  # TODO what does this mean?
             ],
             common: true
         }
@@ -416,7 +416,7 @@ task merge_sam_files {
         cpu: if threading then 2 else 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 
@@ -490,7 +490,7 @@ task clean_sam {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -554,7 +554,7 @@ task collect_wgs_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -617,7 +617,7 @@ task collect_alignment_summary_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -689,7 +689,7 @@ task collect_gc_bias_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -753,7 +753,7 @@ task collect_insert_size_metrics {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -813,7 +813,7 @@ task quality_score_distribution {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -868,7 +868,7 @@ task bam_to_fastq {
     runtime{
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.1--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -902,7 +902,7 @@ task merge_vcfs {
     command <<<
         picard -Xms2000m \
             MergeVcfs \
-            ~{sep(' ', prefix('--INPUT ', vcfs))} \
+            ~{sep(" ", prefix("--INPUT ", vcfs))} \
             --OUTPUT ~{output_vcf_name}
     >>>
 
@@ -934,9 +934,9 @@ task scatter_interval_list {
         subdivision_mode: {
             description: "How to subdivide the intervals",
             choices: [
-                'BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW',
-                'INTERVAL_SUBDIVISION',
-                'BALANCING_WITHOUT_INTERVAL_SUBDIVISION'
+                "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW",
+                "INTERVAL_SUBDIVISION",
+                "BALANCING_WITHOUT_INTERVAL_SUBDIVISION"
             ]
         }
         unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
@@ -1043,7 +1043,7 @@ task create_sequence_dictionary {
         cpu: 1
         memory: "~{memory_gb} GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:3.1.0--hdfd78af_0"
         maxRetries: 1
     }
 }

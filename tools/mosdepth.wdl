@@ -30,7 +30,7 @@ task coverage {
         File bam
         File bam_index
         File? coverage_bed
-        String prefix = basename(bam, '.bam')
+        String prefix = basename(bam, ".bam")
         Boolean use_fast_mode = true
         Int min_mapping_quality = 20
         Int modify_disk_size_gb = 0
@@ -67,7 +67,7 @@ task coverage {
     runtime {
         memory: "8 GB"
         disks: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/mosdepth:0.3.6--hd299d5a_0'
+        container: "quay.io/biocontainers/mosdepth:0.3.6--hd299d5a_0"
         maxRetries: 1
     }
 }

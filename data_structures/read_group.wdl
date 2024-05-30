@@ -64,20 +64,20 @@ task read_group_to_string {
     command <<<
         {
             # TODO: I think this can be simplified by dropping the `if defined` checks?
-            echo -n "~{'ID:~{read_group.ID}'}"  # required field. All others optional
-            echo -n "~{if defined(read_group.BC) then ' BC:~{read_group.BC}' else ''}"
-            echo -n "~{if defined(read_group.CN) then ' CN:~{read_group.CN}' else ''}"
-            echo -n "~{if defined(read_group.DS) then ' DS:~{read_group.DS}' else ''}"
-            echo -n "~{if defined(read_group.DT) then ' DT:~{read_group.DT}' else ''}"
-            echo -n "~{if defined(read_group.FO) then ' FO:~{read_group.FO}' else ''}"
-            echo -n "~{if defined(read_group.KS) then ' KS:~{read_group.KS}' else ''}"
-            echo -n "~{if defined(read_group.LB) then ' LB:~{read_group.LB}' else ''}"
-            echo -n "~{if defined(read_group.PG) then ' PG:~{read_group.PG}' else ''}"
-            echo -n "~{if defined(read_group.PI) then ' PI:~{read_group.PI}' else ''}"
-            echo -n "~{if defined(read_group.PL) then ' PL:~{read_group.PL}' else ''}"
-            echo -n "~{if defined(read_group.PM) then ' PM:~{read_group.PM}' else ''}"
-            echo -n "~{if defined(read_group.PU) then ' PU:~{read_group.PU}' else ''}"
-            echo "~{if defined(read_group.SM) then ' SM:~{read_group.SM}' else ''}"
+            echo -n "~{"ID:~{read_group.ID}"}"  # required field. All others optional
+            echo -n "~{if defined(read_group.BC) then " BC:~{read_group.BC}" else ""}"
+            echo -n "~{if defined(read_group.CN) then " CN:~{read_group.CN}" else ""}"
+            echo -n "~{if defined(read_group.DS) then " DS:~{read_group.DS}" else ""}"
+            echo -n "~{if defined(read_group.DT) then " DT:~{read_group.DT}" else ""}"
+            echo -n "~{if defined(read_group.FO) then " FO:~{read_group.FO}" else ""}"
+            echo -n "~{if defined(read_group.KS) then " KS:~{read_group.KS}" else ""}"
+            echo -n "~{if defined(read_group.LB) then " LB:~{read_group.LB}" else ""}"
+            echo -n "~{if defined(read_group.PG) then " PG:~{read_group.PG}" else ""}"
+            echo -n "~{if defined(read_group.PI) then " PI:~{read_group.PI}" else ""}"
+            echo -n "~{if defined(read_group.PL) then " PL:~{read_group.PL}" else ""}"
+            echo -n "~{if defined(read_group.PM) then " PM:~{read_group.PM}" else ""}"
+            echo -n "~{if defined(read_group.PU) then " PU:~{read_group.PU}" else ""}"
+            echo "~{if defined(read_group.SM) then " SM:~{read_group.SM}" else ""}"
         } > out.txt
     >>>
 
@@ -88,7 +88,7 @@ task read_group_to_string {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.4.0'
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
@@ -139,7 +139,7 @@ END
     runtime {
         memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/pysam:0.22.0--py38h15b938a_1'
+        container: "quay.io/biocontainers/pysam:0.22.0--py38h15b938a_1"
         maxRetries: 1
     }
 }
@@ -419,7 +419,7 @@ task validate_read_group {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.4.0'
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 0
     }
 }

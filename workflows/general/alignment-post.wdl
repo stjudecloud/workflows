@@ -23,9 +23,9 @@ workflow alignment_post {
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
-                'bwa aln',
-                'bwa mem',
-                'star'
+                "bwa aln",
+                "bwa mem",
+                "star"
             ]
         }
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
