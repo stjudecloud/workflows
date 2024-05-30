@@ -318,6 +318,8 @@ task sort {
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY ~{validation_stringency}
 
+        # CREATE_INDEX true only applies when the sort order
+        # is coordinate. So the index may not exist.
         if [ -f "~{prefix}.bai" ]; then
             mv ~{prefix}.bai ~{outfile_name}.bai
         fi
