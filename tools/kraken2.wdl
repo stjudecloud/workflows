@@ -149,7 +149,7 @@ task create_library_from_fastas {
         set -euo pipefail
 
         >&2 echo "*** start adding custom FASTAs ***"
-        echo "~{sep('\n', fastas_gz)}" > fastas.txt
+        echo "~{sep("\n", fastas_gz)}" > fastas.txt
         while read -r fasta; do
             gunzip -c "$fasta" > tmp.fa
             kraken2-build \
@@ -243,7 +243,7 @@ task build_db {
         fi
 
         >&2 echo "*** start unpacking tarballs ***"
-        echo "~{sep('\n', tarballs)}" > tarballs.txt
+        echo "~{sep("\n", tarballs)}" > tarballs.txt
         mkdir ~{db_name}
         while read -r tarball; do
             tar -xzf "$tarball" -C ~{db_name} --no-same-owner
