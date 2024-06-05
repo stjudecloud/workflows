@@ -22,6 +22,7 @@ extra_fn_clean_exts:
 log_filesize_limit: 1000000000
 fastqc_config:
   fastqc_theoretical_gc: "hg38_genome"
+  status_checks: false
 top_modules:
   - kraken:
       path_filters:
