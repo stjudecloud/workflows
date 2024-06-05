@@ -1,7 +1,5 @@
 ## [Homepage](http://samtools.sourceforge.net/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 import "../data_structures/flag_filter.wdl"
@@ -37,8 +35,8 @@ task quickcheck {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -49,7 +47,10 @@ task split {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to split"
+        bam: {
+            description: "Input BAM format file to split",
+            stream: true
+        }
         prefix: "Prefix for the split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
         reject_unaccounted: {
             description: "If true, error if there are reads present that do not have read group information.",
@@ -116,8 +117,8 @@ task split {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -175,8 +176,8 @@ task flagstat {
 
     runtime {
         memory: "5 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -234,8 +235,8 @@ task index {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -382,8 +383,8 @@ task subsample {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -477,8 +478,8 @@ task filter {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -551,6 +552,15 @@ task merge {
         # -1 because samtools uses one more core than `--threads` specifies
         let "n_cores -= 1"
 
+        bams=""
+        for file in ~{sep(" ", bams)}
+        do
+          # This will fail (intentionally) if there are duplicate names
+          # in the input BAM array.
+          ln -s $file
+          bams+=" $(basename $file)"
+        done
+
         samtools merge \
             --threads "$n_cores" \
             ~{if defined(new_header) then "-h " + new_header else ""} \
@@ -560,7 +570,7 @@ task merge {
             ~{if combine_rg then "-c" else ""} \
             ~{if combine_pg then "-p" else ""} \
             ~{prefix}.bam \
-            ~{sep(" ", bams)}
+            $bams
     >>>
 
     output {
@@ -570,8 +580,8 @@ task merge {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -655,8 +665,8 @@ task addreplacerg {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -728,8 +738,8 @@ task collate {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -921,9 +931,9 @@ task bam_to_fastq {
 
     runtime {
         cpu: ncpu
+        disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -938,7 +948,10 @@ task fixmate {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to add mate information. Must be name-sorted or name-collated."
+        bam: {
+            description: "Input BAM format file to add mate information. Must be name-sorted or name-collated.",
+            stream: true
+        }
         prefix: "Prefix for the output file. The extension specified with the `extension` parameter will be added."
         extension: {
             description: "File format extension to use for output file.",
@@ -1017,8 +1030,8 @@ task fixmate {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -1118,8 +1131,8 @@ task position_sorted_fixmate {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -1237,9 +1250,60 @@ task markdup {
 
     runtime {
         cpu: ncpu
+        disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 1
+    }
+}
+
+task faidx {
+    meta {
+        description: "Creates a `.fai` FASTA index for the input FASTA"
+        outputs: {
+            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`."
+        }
+    }
+
+    parameter_meta {
+        fasta: "Input FASTA format file to index. Optionally gzip compressed."
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
+            common: true
+        }
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fasta
+        Boolean use_all_cores = false
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fasta_size = size(fasta, "GiB")
+    Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
+
+    String outfile_name = basename(fasta, ".gz") + ".fai"
+
+    command <<<
+        set -euo pipefail
+
+        ref_fasta=~{basename(fasta, ".gz")}
+        gunzip -c ~{fasta} > "$ref_fasta" \
+            || ln -sf ~{fasta} "$ref_fasta"
+
+        samtools faidx -o ~{outfile_name} $ref_fasta
+    >>>
+
+    output {
+        File fasta_index = outfile_name
+    }
+
+    runtime {
+        cpu: 1
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.17--h00cdaf9_0"
         maxRetries: 1
     }
 }

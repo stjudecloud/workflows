@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../data_structures/flag_filter.wdl"
@@ -145,11 +143,11 @@ workflow quality_check {
         coverage_beds_len=length(coverage_beds),
         coverage_labels=coverage_labels,
     }
-    call flag_filter.validate_FlagFilter as kraken_filter_validator { input:
+    call flag_filter.validate_flag_filter as kraken_filter_validator { input:
         flags = standard_filter
     }
     if (run_comparative_kraken) {
-        call flag_filter.validate_FlagFilter as comparative_kraken_filter_validator { input:
+        call flag_filter.validate_flag_filter as comparative_kraken_filter_validator { input:
             flags = comparative_filter
         }
     }
@@ -538,7 +536,7 @@ task parse_input {
             >&2 echo "Otherwise the exact same amount must be supplied."
             EXITCODE=1
         else
-            echo "~{sep('\n', coverage_labels)}" >> labels.txt
+            echo "~{sep("\n", coverage_labels)}" >> labels.txt
         fi
 
         exit $EXITCODE
@@ -551,7 +549,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }

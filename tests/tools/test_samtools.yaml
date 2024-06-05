@@ -82,3 +82,12 @@
     - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
     - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.R1.fastq.gz
     - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe.R2.fastq.gz
+
+- name: samtools_faidx
+  tags:
+    - miniwdl
+    - samtools
+  command: >-
+    miniwdl run -d test-output/. --task faidx tools/samtools.wdl fasta="tests/tools/input/test.fa"
+  files:
+    - path: test-output/out/fasta_index/test.fa.fai

@@ -11,8 +11,8 @@
 ## Please see the `meta.help` of `validate_string_is_12bit_oct_dec_or_hex`
 ## for more information on the valid formats.
 ##
-## The `validate_FlagFilter` workflow can be used to validate a `FlagFilter` struct.
-## **WARNING** The `validate_FlagFilter` workflow will only check that all the fields
+## The `validate_flag_filter` workflow can be used to validate a `FlagFilter` struct.
+## **WARNING** The `validate_flag_filter` workflow will only check that all the fields
 ## can be parsed as integers less than 4096. It will not check if the flags are
 ## sensible input to `samtools fastq`.
 ## `samtools fastq` also employs very little error checking on the flags.
@@ -116,12 +116,12 @@ task validate_string_is_12bit_oct_dec_or_hex {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }
 
-workflow validate_FlagFilter {
+workflow validate_flag_filter {
     meta {
         description: "Validates a FlagFilter struct."
         output: {

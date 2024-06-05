@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/fq.wdl"
@@ -9,7 +7,6 @@ workflow bam_to_fastqs {
     meta {
         description: "Converts an input BAM file to one or more FASTQ files, performing QC checks along the way"
         outputs: {
-            # TODO rename read1s and read2s?
             read1s: "Array of FASTQ files corresponding to either `first` reads (if `paired_end = true`) or all reads (if `paired_end = false`)",
             read2s: "Array of FASTQ files corresponding to `last` reads (if `paired_end = true`)"
         }

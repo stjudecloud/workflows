@@ -1,7 +1,5 @@
 ## [Homepage](https://bioinformatics.mdanderson.org/estimate/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task run_estimate {
@@ -51,8 +49,8 @@ END
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/estimate:1.0.0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/estimate:1.0.0"
         maxRetries: max_retries
     }
 }

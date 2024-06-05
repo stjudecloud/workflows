@@ -21,3 +21,5 @@ bin/check-job-alive !text !filter !merge !diff
 *.py !text !filter !merge !diff
 *.pl !text !filter !merge !diff
 *.conf !text !filter !merge !diff
+.fa filter=lfs diff=lfs merge=lfs -text
+*.fa filter=lfs diff=lfs merge=lfs -text

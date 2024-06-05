@@ -21,17 +21,17 @@ workflow make_qc_reference {
         kraken_libraries: {
             description: "List of kraken libraries to download",
             choices: [
-                'archaea',
-                'bacteria',
-                'plasmid',
-                'viral',
-                'human',
-                'fungi',
-                'plant',
-                'protozoa',
-                'nt',
-                'UniVec',
-                'UniVec_Core'
+                "archaea",
+                "bacteria",
+                "plasmid",
+                "viral",
+                "human",
+                "fungi",
+                "plant",
+                "protozoa",
+                "nt",
+                "UniVec",
+                "UniVec_Core"
             ]
         }
         coverage_feature_types: {

@@ -1,7 +1,5 @@
 ## [Homepage](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task fastqc {
@@ -58,15 +56,15 @@ task fastqc {
     >>>
 
     output {
-        File raw_data = "~{prefix}/~{basename(bam, '.bam')}_fastqc.zip"  # TODO verify this works if prefix differs
+        File raw_data = "~{prefix}/~{basename(bam, ".bam")}_fastqc.zip"  # TODO verify this works if prefix differs
         File results = out_tar_gz
     }
 
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
         maxRetries: 1
     }
 }

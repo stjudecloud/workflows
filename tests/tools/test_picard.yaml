@@ -37,6 +37,16 @@
     miniwdl run --verbose -d test-output/. --task sort tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" memory_gb=16
   files:
     - path: test-output/out/sorted_bam/test.bwa_aln_pe.sorted.bam
+    - path: test-output/out/sorted_bam_index/test.bwa_aln_pe.sorted.bam.bai
+
+- name: picard_sort_queryname
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run --verbose -d test-output/. --task sort tools/picard.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" memory_gb=16 sort_order="queryname"
+  files:
+    - path: test-output/out/sorted_bam/test.bwa_aln_pe.sorted.bam
 
 - name: picard_merge_sam_files
   tags:
@@ -105,3 +115,32 @@
   files:
     - path: test-output/out/quality_score_distribution_txt/test.bwa_aln_pe.QualityScoreDistribution.txt
     - path: test-output/out/quality_score_distribution_pdf/test.bwa_aln_pe.QualityScoreDistribution.pdf
+
+- name: picard_merge_vcfs
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --task merge_vcfs -i tests/tools/input_json/picard_merge_vcfs.json tools/picard.wdl
+  files:
+    - path: test-output/out/output_vcf/test.vcf.gz
+
+- name: picard_scatter_interval_list
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --task scatter_interval_list tools/picard.wdl interval_list="tests/tools/input/wgs_calling_regions.hg38.interval_list" scatter_count=3
+  files:
+    - path: test-output/out/interval_lists_scatter/0/1scattered.interval_list
+    - path: test-output/out/interval_lists_scatter/1/2scattered.interval_list
+    - path: test-output/out/interval_lists_scatter/2/3scattered.interval_list
+
+- name: picard_create_sequence_dictionary
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --task create_sequence_dictionary tools/picard.wdl fasta="tests/tools/input/GRCh38.chrY_chrM.fa.gz" outfile_name="GRCh38.chrY_chrM.dict"
+  files:
+    - path: test-output/out/dictionary/GRCh38.chrY_chrM.dict

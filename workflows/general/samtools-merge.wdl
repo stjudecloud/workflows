@@ -1,7 +1,5 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 import "../../tools/samtools.wdl"
@@ -44,6 +42,7 @@ workflow samtools_merge {
             call samtools.merge as inner_merge { input:
                 bams=select_all(list),
                 prefix=prefix,
+                attach_rg=false,
                 combine_pg=false,
                 use_all_cores=use_all_cores,
             }
@@ -62,6 +61,7 @@ workflow samtools_merge {
         call samtools.merge as basic_merge { input:
             bams=bams,
             prefix=prefix,
+            attach_rg=false,
             combine_pg=false,
             use_all_cores=use_all_cores,
         }
