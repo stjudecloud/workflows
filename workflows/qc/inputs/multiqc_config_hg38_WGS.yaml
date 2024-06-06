@@ -45,9 +45,9 @@ top_modules:
         - "*.exon.mosdepth*"
       path_filters_exclude:
         - "*.MarkDuplicates.exon.mosdepth*"
+  - custom_content
   - ngsderive
   - picard
-  - custom_content
   - librarian
   - qualimap
   - samtools
@@ -64,15 +64,12 @@ remove_sections:
   - fastqc_status_checks
   - fastqc_sequence_counts
   - fastqc_per_base_sequence_content
+  - ngsderive-instrument
   - mosdepth-coverage-dist-cov
   - mosdepth-coverage-dist-cov-1
+  - mosdepth-coverage-per-contig-section
   - mosdepth-coverage-per-contig-section-1
   - mosdepth-xy-coverage-1
-custom_plot_config:
-  mosdepth-cumcoverage-dist-id:
-    title: "Cumulative coverage distribution (whole_genome)"
-  mosdepth-cumcoverage-dist-id-1:
-    title: "Cumulative coverage distribution (exon)"
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false

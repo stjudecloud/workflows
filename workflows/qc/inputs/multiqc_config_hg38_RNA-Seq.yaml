@@ -36,33 +36,17 @@ top_modules:
       path_filters:
         - "*.alt_filtered.kraken2.txt"
   - mosdepth:
-      name: "mosdepth (CDS, markdups)"
+      name: "mosdepth (exon, markdups)"
       path_filters:
-        - "*.MarkDuplicates.CDS.mosdepth.*"
+        - "*.MarkDuplicates.exon.mosdepth.*"
   - mosdepth:
-      name: "mosdepth (CDS)"
+      name: "mosdepth (exon)"
       path_filters:
-        - "*.CDS.mosdepth.*"
+        - "*.exon.mosdepth.*"
       path_filters_exclude:
-        - "*.MarkDuplicates.CDS.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (UTR, markdups)"
-      path_filters:
-        - "*.MarkDuplicates.UTR.mosdepth.*"
-  - mosdepth:
-      name: "mosdepth (UTR)"
-      path_filters:
-        - "*.UTR.mosdepth.*"
-      path_filters_exclude:
-        - "*.MarkDuplicates.UTR.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (whole_genome)"
-      path_filters:
-        - "*.whole_genome.mosdepth*"
-      path_filters_exclude:
-        - "*.MarkDuplicates.whole_genome.mosdepth*"
-  - picard
+        - "*.MarkDuplicates.exon.mosdepth*"
   - custom_content
+  - picard
   - librarian
   - samtools
   - fastqc
@@ -78,25 +62,12 @@ remove_sections:
   - fastqc_status_checks
   - fastqc_sequence_counts
   - fastqc_per_base_sequence_content
+  - ngsderive-instrument
   - mosdepth-coverage-dist-cov
   - mosdepth-coverage-dist-cov-1
-  - mosdepth-coverage-dist-cov-2
-  - mosdepth-coverage-dist-cov-3
-  - mosdepth-coverage-dist-cov-4
+  - mosdepth-coverage-per-contig-section
+  - mosdepth-coverage-per-contig-section-1
   - mosdepth-xy-coverage
-  - mosdepth-xy-coverage-2
-  - mosdepth-xy-coverage-3
-custom_plot_config:
-  mosdepth-cumcoverage-dist-id:
-    title: "Cumulative coverage distribution (CDS, markdups)"
-  mosdepth-cumcoverage-dist-id-1:
-    title: "Cumulative coverage distribution (CDS)"
-  mosdepth-cumcoverage-dist-id-2:
-    title: "Cumulative coverage distribution (UTR, markdups)"
-  mosdepth-cumcoverage-dist-id-3:
-    title: "Cumulative coverage distribution (UTR)"
-  mosdepth-cumcoverage-dist-id-4:
-    title: "Cumulative coverage distribution (whole_genome)"
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false

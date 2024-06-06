@@ -21,7 +21,7 @@ extra_fn_clean_exts:
   - '.librarian'
 log_filesize_limit: 1000000000
 fastqc_config:
-  fastqc_theoretical_gc: "hg38_genome"
+  fastqc_theoretical_gc: "hg38_txome"
   status_checks: false
 top_modules:
   - kraken:
@@ -34,32 +34,14 @@ top_modules:
       path_filters:
         - "*.alt_filtered.kraken2.txt"
   - mosdepth:
-      name: "mosdepth (exon)"
-      path_filters:
-        - "*.exon.mosdepth*"
-      path_filters_exclude:
-        - "*.MarkDuplicates.exon.mosdepth*"
-  - mosdepth:
       name: "mosdepth (CDS)"
       path_filters:
         - "*.CDS.mosdepth.*"
       path_filters_exclude:
         - "*.MarkDuplicates.CDS.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (UTR)"
-      path_filters:
-        - "*.UTR.mosdepth.*"
-      path_filters_exclude:
-        - "*.MarkDuplicates.UTR.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (whole_genome)"
-      path_filters:
-        - "*.whole_genome.mosdepth*"
-      path_filters_exclude:
-        - "*.MarkDuplicates.whole_genome.mosdepth*"
+  - custom_content
   - ngsderive
   - picard
-  - custom_content
   - librarian
   - qualimap
   - samtools
@@ -76,23 +58,9 @@ remove_sections:
   - fastqc_status_checks
   - fastqc_sequence_counts
   - fastqc_per_base_sequence_content
+  - ngsderive-instrument
   - mosdepth-coverage-dist-cov
-  - mosdepth-coverage-dist-cov-1
-  - mosdepth-coverage-dist-cov-2
-  - mosdepth-coverage-dist-cov-3
   - mosdepth-coverage-per-contig-section
-  - mosdepth-coverage-per-contig-section-1
-  - mosdepth-coverage-per-contig-section-2
-  - mosdepth-xy-coverage-1
-custom_plot_config:
-  mosdepth-cumcoverage-dist-id:
-    title: "Cumulative coverage distribution (exon)"
-  mosdepth-cumcoverage-dist-id-1:
-    title: "Cumulative coverage distribution (CDS)"
-  mosdepth-cumcoverage-dist-id-2:
-    title: "Cumulative coverage distribution (UTR)"
-  mosdepth-cumcoverage-dist-id-3:
-    title: "Cumulative coverage distribution (whole_genome)"
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false
