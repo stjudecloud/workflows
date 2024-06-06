@@ -191,7 +191,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#make_coverage_regions_beds">make_coverage_regions_beds</a>
+    <li class="toctree-l2"><a class="reference internal" href="#make_coverage_regions_bed">make_coverage_regions_bed</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#inputs_7">Inputs</a>
         <ul>
@@ -467,28 +467,28 @@
 <ul>
 <li><code>tarball_contents</code> (Array[File])</li>
 </ul>
-<h2 id="make_coverage_regions_beds">make_coverage_regions_beds</h2>
+<h2 id="make_coverage_regions_bed">make_coverage_regions_bed</h2>
 <dl>
 <dt>description</dt>
-<dd>Takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions</dd>
+<dd>Takes in a GTF file, converts it to BED, then filters it down to a 3 column BED file from all lines which match a given feature type</dd>
 <dt>outputs</dt>
-<dd>{'bed': 'Input GTF converted into BED format using the <code>gtf2bed</code> program', 'exon_bed': "3 column BED file corresponding to all 'exons' found in the input GTF", 'CDS_bed': "3 column BED file corresponding to all 'CDS' regions found in the input GTF"}</dd>
+<dd>{'bed': '3 column BED file corresponding to all records in the input GTF with a feature type matching <code>feature_type</code>'}</dd>
 </dl>
 <h3 id="inputs_7">Inputs</h3>
 <h4 id="required_7">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>gtf</code> (File, <strong>required</strong>): GTF feature file from which to derive coverage regions BED files</li>
+<li><code>feature_type</code> (String, <strong>required</strong>): <code>choices</code> below are the possible values from a GENCODE GTF file. If you are using a different GTF source, you may need to adjust this parameter.; <strong>Choices</strong>: ['gene', 'transcript', 'exon', 'CDS', 'UTR', 'start_codon', 'stop_codon', 'Selenocysteine']; <strong>description</strong>: Feature type to filter on. Only lines with this feature type will be included in the output BED file.</li>
+<li><code>gtf</code> (File, <strong>required</strong>): Gzipped GTF feature file from which to derive a coverage regions BED file</li>
 </ul>
 <h4 id="defaults_6">Defaults</h4>
 <ul>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
+<li><code>outfile_name</code> (String, default=basename(gtf,"gtf.gz") + feature_type + ".bed"): Name of the output BED file</li>
 </ul>
 <h3 id="outputs_7">Outputs</h3>
 <ul>
 <li><code>bed</code> (File)</li>
-<li><code>exon_bed</code> (File)</li>
-<li><code>CDS_bed</code> (File)</li>
 </ul>
 <h2 id="global_phred_scores">global_phred_scores</h2>
 <dl>

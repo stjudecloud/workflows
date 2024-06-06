@@ -173,7 +173,7 @@
 <dt>description</dt>
 <dd>Downloads and creates all reference files needed to run the <code>quality_check</code> workflow</dd>
 <dt>outputs</dt>
-<dd>{'reference_fa': 'FASTA format reference file', 'gtf': 'GTF feature file', 'exon_bed': '3 column BED file defining the regions of the exome. Derived from <code>gtf</code>.', 'CDS_bed': '3 column BED file defining the regions of the coding domain. Derived from <code>gtf</code>.', 'kraken_db': 'A complete Kraken2 database'}</dd>
+<dd>{'reference_fa': 'FASTA format reference file', 'gtf': 'GTF feature file', 'coverage_beds': 'BED file for each feature type to use for coverage calculation', 'kraken_db': 'A complete Kraken2 database'}</dd>
 <dt>allowNestedInputs</dt>
 <dd>true</dd>
 </dl>
@@ -190,7 +190,7 @@
 <li><code>fastas_download._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>gtf_download._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>kraken_build_db._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>make_coverage_regions_beds._runtime</code> (Any, <strong>required</strong>)</li>
+<li><code>make_coverage_regions_bed._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>reference_download._runtime</code> (Any, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
@@ -201,6 +201,7 @@
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>coverage_feature_types</code> (Array[String], default=["exon", "CDS", "UTR"]): <code>choices</code> below are the possible values from a GENCODE GTF file. If you are using a different GTF source, you may need to adjust this parameter.; <strong>Choices</strong>: ['gene', 'transcript', 'exon', 'CDS', 'UTR', 'start_codon', 'stop_codon', 'Selenocysteine']; <strong>description</strong>: List of feature types to use for coverage calculation</li>
 <li><code>gtf_disk_size_gb</code> (Int, default=10): Disk size (in GB) to allocate for downloading the GTF file</li>
 <li><code>kraken_fasta_urls</code> (Array[String], default=[]): URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database. This allows the addition of individual genomes (or other sequences) of interest.</li>
 <li><code>kraken_fastas</code> (Array[File], default=[]): Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using <code>kraken:taxid</code></li>
@@ -219,15 +220,15 @@
 <li><code>kraken_build_db.modify_memory_gb</code> (Int, default=0)</li>
 <li><code>kraken_build_db.ncpu</code> (Int, default=4)</li>
 <li><code>kraken_build_db.use_all_cores</code> (Boolean, default=false)</li>
-<li><code>make_coverage_regions_beds.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>make_coverage_regions_bed.modify_disk_size_gb</code> (Int, default=0)</li>
+<li><code>make_coverage_regions_bed.outfile_name</code> (String, default=basename(gtf,"gtf.gz") + feature_type + ".bed")</li>
 </ul>
 <h3 id="outputs">Outputs</h3>
 <ul>
 <li><code>reference_fa</code> (File)</li>
 <li><code>gtf</code> (File)</li>
-<li><code>exon_bed</code> (File)</li>
-<li><code>CDS_bed</code> (File)</li>
 <li><code>kraken_db</code> (File)</li>
+<li><code>coverage_beds</code> (Array[File])</li>
 </ul>
               
             </div>
