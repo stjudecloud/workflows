@@ -92,23 +92,6 @@ remove_sections:
   - fastqc_status_checks
   - fastqc_sequence_counts
   - fastqc_per_base_sequence_content
-custom_plot_config:
-  mosdepth-cumcoverage-dist-id:
-    title: "Cumulative coverage distribution (whole_genome)"
-  mosdepth-cumcoverage-dist-id-1:
-    title: "Cumulative coverage distribution (exon)"
-  mosdepth-cumcoverage-dist-id-2:
-    title: "Cumulative coverage distribution (CDS)"
-  mosdepth-cumcoverage-dist-id-3:
-    title: "Cumulative coverage distribution (UTR)"
-  mosdepth-cumcoverage-dist-id-4:
-    title: "Cumulative coverage distribution (whole_genome, markdups)"
-  mosdepth-cumcoverage-dist-id-5:
-    title: "Cumulative coverage distribution (exon, markdups)"
-  mosdepth-cumcoverage-dist-id-6:
-    title: "Cumulative coverage distribution (CDS, markdups)"
-  mosdepth-cumcoverage-dist-id-7:
-    title: "Cumulative coverage distribution (UTR, markdups)"
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false
