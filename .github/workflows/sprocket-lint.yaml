@@ -22,7 +22,6 @@ jobs:
             files=$(find ./!(template) -name '*.wdl')
             for file in $files; do
               echo "  [***] $file [***]"
-              sprocket lint "$file"
-              EXITCODE=$(($? || EXITCODE))
+              sprocket lint "$file" || EXITCODE=$(($? || EXITCODE))
             done
             exit $EXITCODE
