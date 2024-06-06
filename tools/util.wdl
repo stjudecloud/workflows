@@ -381,7 +381,7 @@ task make_coverage_regions_bed {
     parameter_meta {
         gtf: "Gzipped GTF feature file from which to derive a coverage regions BED file"
         feature_type: {
-            description: "Feature type to filter on. Only lines with this feature type will be included in the output BED file."
+            description: "Feature type to filter on. Only lines with this feature type will be included in the output BED file.",
             help: "`choices` below are the possible values from a GENCODE GTF file. If you are using a different GTF source, you may need to adjust this parameter.",
             choices: [
                 "gene",
