@@ -24,7 +24,6 @@ fastqc_config:
   fastqc_theoretical_gc: "hg38_genome"
   status_checks: false
 top_modules:
-  - qualimap
   - kraken:
       path_filters:
         - "*.kraken2.txt"
@@ -46,38 +45,11 @@ top_modules:
         - "*.exon.mosdepth*"
       path_filters_exclude:
         - "*.MarkDuplicates.exon.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (CDS)"
-      path_filters:
-        - "*.CDS.mosdepth.*"
-      path_filters_exclude:
-        - "*.MarkDuplicates.CDS.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (UTR)"
-      path_filters:
-        - "*.UTR.mosdepth.*"
-      path_filters_exclude:
-        - "*.MarkDuplicates.UTR.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (whole_genome, markdups)"
-      path_filters:
-        - "*.MarkDuplicates.whole_genome.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (exon, markdups)"
-      path_filters:
-        - "*.MarkDuplicates.exon.mosdepth*"
-  - mosdepth:
-      name: "mosdepth (CDS, markdups)"
-      path_filters:
-        - "*.MarkDuplicates.CDS.mosdepth.*"
-  - mosdepth:
-      name: "mosdepth (UTR, markdups)"
-      path_filters:
-        - "*.MarkDuplicates.UTR.mosdepth.*"
+  - custom_content
   - ngsderive
   - picard
-  - custom_content
   - librarian
+  - qualimap
   - samtools
   - fastqc
 custom_data:
@@ -92,6 +64,12 @@ remove_sections:
   - fastqc_status_checks
   - fastqc_sequence_counts
   - fastqc_per_base_sequence_content
+  - ngsderive-instrument
+  - mosdepth-coverage-dist-cov
+  - mosdepth-coverage-dist-cov-1
+  - mosdepth-coverage-per-contig-section
+  - mosdepth-coverage-per-contig-section-1
+  - mosdepth-xy-coverage-1
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false

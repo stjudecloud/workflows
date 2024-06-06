@@ -91,16 +91,14 @@
     - path: "test-output/out/tarball_contents/0/a"
     - path: "test-output/out/tarball_contents/1/b"
 
-- name: make_coverage_regions_beds
+- name: make_coverage_regions_bed
   tags:
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task make_coverage_regions_beds tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
+    miniwdl run --verbose -d test-output/. --task make_coverage_regions_bed tools/util.wdl gtf="tests/tools/input/genes.gtf.gz" feature_type="exon"
   files:
-    - path: "test-output/out/bed/genes.gtf.bed"
-    - path: "test-output/out/exon_bed/genes.gtf.exon.bed"
-    - path: "test-output/out/CDS_bed/genes.gtf.CDS.bed"
+    - path: "test-output/out/bed/genes.exon.bed"
 
 - name: global_phred_scores
   tags:
