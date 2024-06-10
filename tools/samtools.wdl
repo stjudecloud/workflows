@@ -52,8 +52,12 @@ task split {
             stream: true
         }
         prefix: "Prefix for the split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
-        reject_unaccounted: {
-            description: "If true, error if there are reads present that do not have read group information.",
+        reject_unaccounted_reads: {
+            description: "If true, error if there are reads present that do not have read group information matching the header.",
+            common: true
+        }
+        reject_empty_output: {
+            description: "If true, error if any output BAMs are empty.",
             common: true
         }
         use_all_cores: {
@@ -70,7 +74,8 @@ task split {
     input {
         File bam
         String prefix = basename(bam, ".bam")
-        Boolean reject_unaccounted = true
+        Boolean reject_unaccounted_reads = true
+        Boolean reject_empty_output = true
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_disk_size_gb = 0
@@ -102,12 +107,34 @@ task split {
             ~{prefix}.unaccounted_reads.bam \
             > first_unaccounted_read.sam
 
-        if ~{reject_unaccounted} && [ -s first_unaccounted_read.sam ]; then
-            exit 42
+        if ~{reject_unaccounted_reads} && [ -s first_unaccounted_read.sam ]; then
+            >&2 echo "There are reads present with bad or missing RG tags!"
+            exit 21
         else
             rm ~{prefix}.unaccounted_reads.bam
         fi
         rm first_unaccounted_read.sam
+
+        # Check that all output BAMs have at least
+        # one read in them.
+        if ~{reject_empty_output}; then
+            for out_bam in *.bam; do
+                samtools head \
+                    --threads "$n_cores" \
+                    -h 0 \
+                    -n 1 \
+                    "$out_bam" \
+                    > first_read.sam
+
+                if [ ! -s first_read.sam ]; then
+                    >&2 echo "No reads are in output BAM $out_bam!"
+                    >&2 echo "This is likely caused by malformed RG records."
+                    rm first_read.sam
+                    exit 22
+                fi
+                rm first_read.sam
+            done
+        fi
     >>>
 
     output {
@@ -1267,16 +1294,11 @@ task faidx {
 
     parameter_meta {
         fasta: "Input FASTA format file to index. Optionally gzip compressed."
-        use_all_cores: {
-            description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
-            common: true
-        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File fasta
-        Boolean use_all_cores = false
         Int modify_disk_size_gb = 0
     }
 
