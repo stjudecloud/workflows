@@ -8,14 +8,14 @@ import fastq
 
 @pytest.mark.workflow('samtools_split')
 def test_samtools_split(workflow_dir):
-    bam = pathlib.Path(workflow_dir, 'test-output/out/split_bams/0/test_1.bam')
+    bam = pathlib.Path(workflow_dir, 'test-output/out/split_bams/0/test.1.bam')
     samfile = pysam.AlignmentFile(bam, "rb")
     bam_header = OrderedDict((k, v) for k, v in samfile.header.items())
     read_groups = [read_group['ID'] for read_group in bam_header.get('RG', []) if 'ID' in read_group]
     assert len(read_groups) == 1
     assert read_groups[0] == "1"
 
-    second_bam = pathlib.Path(workflow_dir, 'test-output/out/split_bams/1/test_2.bam')
+    second_bam = pathlib.Path(workflow_dir, 'test-output/out/split_bams/1/test.2.bam')
     second_samfile = pysam.AlignmentFile(second_bam, "rb")
     second_bam_header = OrderedDict((k, v) for k, v in second_samfile.header.items())
     second_read_groups = [read_group['ID'] for read_group in second_bam_header.get('RG', []) if 'ID' in read_group]
@@ -44,8 +44,8 @@ def test_samtools_collate(workflow_dir):
 
 @pytest.mark.workflow('samtools_bam_to_fastq', 'samtools_collate_to_fastq')
 def test_samtools_bam_to_fastq(workflow_dir):
-    fq1 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz'))
-    fq2 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz'))
+    fq1 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_one_fastq_gz/test.bwa_aln_pe.R1.fastq.gz'))
+    fq2 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_two_fastq_gz/test.bwa_aln_pe.R2.fastq.gz'))
 
     for r1, r2 in zip(fq1, fq2):
         assert r1.head.removesuffix("/1") == r2.head.removesuffix("/2")

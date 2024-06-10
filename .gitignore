@@ -3,6 +3,7 @@
 **/*.fa
 **/*.gtf
 **/*.bam
+**/*.sam
 **/*.log
 
 # Blacklist Cromwell and Womtool and miniwdl files
