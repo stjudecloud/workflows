@@ -26,6 +26,14 @@
     miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/tools/input/test.unaccounted_read.bam"
   exit_code: 21
 
+- name: samtools_split_extra_RG
+  tags:
+    - miniwdl
+    - samtools
+  command: >-
+    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/tools/input/test.extra_RG.bam"
+  exit_code: 42
+
 - name: samtools_flagstat
   tags:
     - miniwdl
