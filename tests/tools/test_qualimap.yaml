@@ -2,6 +2,7 @@
   tags:
     - miniwdl
     - qualimap
+    - deprecated
   command: >-
     miniwdl run --verbose -d test-output/. --task bamqc tools/qualimap.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
