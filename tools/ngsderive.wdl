@@ -243,29 +243,29 @@ task encoding {
             > ~{outfile_name}
 
         ENCODING_FILE="~{outfile_name}" python - <<END
-import os  # lint-check: ignore
+        import os  # lint-check: ignore
 
-encoding_file = open(os.environ['ENCODING_FILE'], 'r')
-encoding_file.readline()  # discard header
-permissive_encoding = ""
-for line in encoding_file:
-    contents = line.strip().split('\t')
-    cur_encoding = contents[2]
-    if cur_encoding == "Unkown":
-        permissive_encoding = cur_encoding
-        break
-    if cur_encoding == "Sanger/Illumina 1.8" or permissive_encoding == "Sanger/Illumina 1.8":
-        permissive_encoding = "Sanger/Illumina 1.8"
-    elif cur_encoding == "Solexa/Illumina 1.0" or permissive_encoding == "Solexa/Illumina 1.0":
-        permissive_encoding = "Solexa/Illumina 1.0"
-    elif cur_encoding == "Illumina 1.3":
-        permissive_encoding = "Illumina 1.3"
+        encoding_file = open(os.environ['ENCODING_FILE'], 'r')
+        encoding_file.readline()  # discard header
+        permissive_encoding = ""
+        for line in encoding_file:
+            contents = line.strip().split('\t')
+            cur_encoding = contents[2]
+            if cur_encoding == "Unkown":
+                permissive_encoding = cur_encoding
+                break
+            if cur_encoding == "Sanger/Illumina 1.8" or permissive_encoding == "Sanger/Illumina 1.8":
+                permissive_encoding = "Sanger/Illumina 1.8"
+            elif cur_encoding == "Solexa/Illumina 1.0" or permissive_encoding == "Solexa/Illumina 1.0":
+                permissive_encoding = "Solexa/Illumina 1.0"
+            elif cur_encoding == "Illumina 1.3":
+                permissive_encoding = "Illumina 1.3"
 
-outfile = open("encoding.txt", "w")
-outfile.write(permissive_encoding)
-outfile.close()
+        outfile = open("encoding.txt", "w")
+        outfile.write(permissive_encoding)
+        outfile.close()
 
-END
+        END
     >>>
 
     output {

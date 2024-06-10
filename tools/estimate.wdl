@@ -32,15 +32,15 @@ task run_estimate {
     command <<<
         cp "~{gene_expression_file}" gene_expression.txt
         Rscript - <<END
-library("estimate")
+        library("estimate")
 
-infile <- read.table(file = "gene_expression.txt", sep = '\t', header = TRUE)
-filtered <- infile[infile$"Gene.name" %in% common_genes[['GeneSymbol']], ]
-write.table(filtered, sep = "\t", file = "filtered.tsv", row.names = FALSE, quote = FALSE)
-outputGCT("filtered.tsv", "gene_expression.gct")
-estimateScore("gene_expression.gct", "common_estimate.gct", platform = "illumina")
-END
-    mv common_estimate.gct "~{outfile_name}"
+        infile <- read.table(file = "gene_expression.txt", sep = '\t', header = TRUE)
+        filtered <- infile[infile$"Gene.name" %in% common_genes[['GeneSymbol']], ]
+        write.table(filtered, sep = "\t", file = "filtered.tsv", row.names = FALSE, quote = FALSE)
+        outputGCT("filtered.tsv", "gene_expression.gct")
+        estimateScore("gene_expression.gct", "common_estimate.gct", platform = "illumina")
+        END
+        mv common_estimate.gct "~{outfile_name}"
     >>>
 
     output {

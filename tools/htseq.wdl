@@ -157,38 +157,38 @@ task calc_tpm {
 
     command <<<
         COUNTS="~{counts}" GENE_LENGTHS="~{gene_lengths}" OUTFILE="~{outfile_name}" python3 - <<END
-import os  # lint-check: ignore
+        import os  # lint-check: ignore
 
-counts_file = open(os.environ['COUNTS'], 'r')
-counts = {}
-for line in counts_file:
-    gene, count = line.split('\t')
-    if gene[0:2] == '__':
-        break
-    counts[gene.strip()] = int(count.strip())
-counts_file.close()
+        counts_file = open(os.environ['COUNTS'], 'r')
+        counts = {}
+        for line in counts_file:
+            gene, count = line.split('\t')
+            if gene[0:2] == '__':
+                break
+            counts[gene.strip()] = int(count.strip())
+        counts_file.close()
 
-lengths_file = open(os.environ['GENE_LENGTHS'], 'r')
-rpks = {}  # Reads Per Kilobase
-tot_rpk = 0
-lengths_file.readline()  # discard header
-for line in lengths_file:
-    gene, length = line.split('\t')
-    rpk = counts[gene.strip()] / int(length.strip()) * 1000
-    tot_rpk += rpk
-    rpks[gene.strip()] = rpk
-lengths_file.close()
+        lengths_file = open(os.environ['GENE_LENGTHS'], 'r')
+        rpks = {}  # Reads Per Kilobase
+        tot_rpk = 0
+        lengths_file.readline()  # discard header
+        for line in lengths_file:
+            gene, length = line.split('\t')
+            rpk = counts[gene.strip()] / int(length.strip()) * 1000
+            tot_rpk += rpk
+            rpks[gene.strip()] = rpk
+        lengths_file.close()
 
-scaling_factor = tot_rpk / 1000000
+        scaling_factor = tot_rpk / 1000000
 
-sample_name = '.'.join(os.environ['OUTFILE'].split('.')[:-2])  # equivalent to ~{prefix}
-outfile = open(os.environ['OUTFILE'], 'w')
-print(f"feature\t{sample_name}", file=outfile)
-for gene, rpk in sorted(rpks.items()):
-    tpm = rpk / scaling_factor
-    print(f"{gene}\t{tpm:.3f}", file=outfile)
-outfile.close()
-END
+        sample_name = '.'.join(os.environ['OUTFILE'].split('.')[:-2])  # equivalent to ~{prefix}
+        outfile = open(os.environ['OUTFILE'], 'w')
+        print(f"feature\t{sample_name}", file=outfile)
+        for gene, rpk in sorted(rpks.items()):
+            tpm = rpk / scaling_factor
+            print(f"{gene}\t{tpm:.3f}", file=outfile)
+        outfile.close()
+        END
     >>>
 
     output {
