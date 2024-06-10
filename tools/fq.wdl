@@ -1,7 +1,5 @@
 ## [Homepage](https://github.com/stjude-rust-labs/fq)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task fqlint {
@@ -14,8 +12,14 @@ task fqlint {
     }
 
     parameter_meta {
-        read_one_fastq: "Input FASTQ with read one. Can be gzipped or uncompressed."
-        read_two_fastq: "Input FASTQ with read two. Can be gzipped or uncompressed."
+        read_one_fastq: {
+            description: "Input FASTQ with read one. Can be gzipped or uncompressed.",
+            stream: true
+        }
+        read_two_fastq: {
+            description: "Input FASTQ with read two. Can be gzipped or uncompressed.",
+            stream: true
+        }
         disable_validator_codes: {
             description: "Array of codes to disable specific validators",
             choices: {
@@ -84,14 +88,13 @@ task fqlint {
     >>>
 
     output {
-        File validated_read1 = read_one_fastq
-        File? validated_read2 = read_two_fastq
+        String check = "passed"
     }
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/fq:0.11.0--h9ee0642_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/fq:0.11.0--h9ee0642_0"
         maxRetries: 1
     }
 }
@@ -166,8 +169,8 @@ task subsample {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/fq:0.11.0--h9ee0642_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/fq:0.11.0--h9ee0642_0"
         maxRetries: 1
     }
 }

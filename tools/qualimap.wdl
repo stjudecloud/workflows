@@ -1,7 +1,5 @@
 ## [Homepage](http://qualimap.bioinfo.cipf.es/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task rnaseq {
@@ -86,8 +84,8 @@ task rnaseq {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/qualimap:2.3--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -100,6 +98,11 @@ task bamqc {
 
     parameter_meta {
         bam: "Input BAM format file to run qualimap bamqc on"
+        prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
+        use_all_cores: "Use all cores? Recommended for cloud environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
@@ -109,10 +112,9 @@ task bamqc {
         Int ncpu = 1
         Int memory_gb = 32
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
-    String out_directory = prefix + '.qualimap_bamqc_results'
+    String out_directory = prefix + ".qualimap_bamqc_results"
     String out_tar_gz = out_directory + ".tar.gz"
 
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -149,8 +151,8 @@ task bamqc {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/qualimap:2.2.2d--hdfd78af_2'
-        maxRetries: max_retries
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/qualimap:2.3--hdfd78af_0"
+        maxRetries: 1
     }
 }

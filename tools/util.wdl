@@ -1,7 +1,5 @@
 ## # Utilities
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task download {
@@ -43,8 +41,8 @@ task download {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
@@ -58,7 +56,10 @@ task get_read_groups {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to get read groups from"
+        bam: {
+            description: "Input BAM format file to get read groups from",
+            stream: true
+        }
         format_for_star: {
             description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`.",
             common: true
@@ -96,8 +97,8 @@ task get_read_groups {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -137,16 +138,16 @@ task split_string {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
 
 task calc_gene_lengths {
     meta {
-        description: "Calculate gene lengths from a GTF feature file using the \"non-overlapping exonic length\" algorithm"
-        help: "The \"non-overlapping exonic length\" algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
+        description: "Calculate gene lengths from a GTF feature file using the non-overlapping exonic length algorithm"
+        help: "The non-overlapping exonic length algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
         outputs: {
             gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
         }
@@ -237,8 +238,8 @@ END
 
     runtime {
         memory: "16 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0"
         maxRetries: 1
     }
 }
@@ -274,8 +275,8 @@ task compression_integrity {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -321,8 +322,8 @@ task add_to_bam_header {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.17--h00cdaf9_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -363,59 +364,67 @@ task unpack_tarball {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
 
-task make_coverage_regions_beds {
-    # TODO make this customizable
+task make_coverage_regions_bed {
     meta {
-        description: "Takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
+        description: "Takes in a GTF file, converts it to BED, then filters it down to a 3 column BED file from all lines which match a given feature type"
         outputs: {
-            bed: "Input GTF converted into BED format using the `gtf2bed` program",
-            exon_bed: "3 column BED file corresponding to all 'exons' found in the input GTF",
-            CDS_bed: "3 column BED file corresponding to all 'CDS' regions found in the input GTF"
+            bed: "3 column BED file corresponding to all records in the input GTF with a feature type matching `feature_type`",
         }
     }
 
     parameter_meta {
-        gtf: "GTF feature file from which to derive coverage regions BED files"
+        gtf: "Gzipped GTF feature file from which to derive a coverage regions BED file"
+        feature_type: {
+            description: "Feature type to filter on. Only lines with this feature type will be included in the output BED file.",
+            help: "`choices` below are the possible values from a GENCODE GTF file. If you are using a different GTF source, you may need to adjust this parameter.",
+            choices: [
+                "gene",
+                "transcript",
+                "exon",
+                "CDS",
+                "UTR",
+                "start_codon",
+                "stop_codon",
+                "Selenocysteine"
+            ]
+        }
+        outfile_name: "Name of the output BED file"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File gtf
+        String feature_type
+        String outfile_name = basename(gtf, "gtf.gz") + feature_type + ".bed"
         Int modify_disk_size_gb = 0
     }
 
     Float gtf_size = size(gtf, "GiB")
-    Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(gtf_size * 1.2) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
 
-        BED=$(basename ~{gtf} '.gz').bed
-        gunzip -c ~{gtf} | gtf2bed > "$BED"
-
-        EXON=$(basename ~{gtf} '.gz').exon.bed
-        awk '/\texon\t/ {print $1 "\t" $2 "\t" $3}' "$BED" > "$EXON"
-
-        CDS=$(basename ~{gtf} '.gz').CDS.bed
-        awk '/\tCDS\t/ {print $1 "\t" $2 "\t" $3}' "$BED" > "$CDS"
+        gunzip -c ~{gtf} \
+            | gtf2bed \
+            | awk '$8 == "~{feature_type}" {print $1 "\t" $2 "\t" $3}' \
+            > ~{outfile_name}
     >>>
 
     output {
-        File bed = basename(gtf, '.gz') + ".bed"  # TODO I added this but I'm not sure I should have. It doesn't work with the task name
-        File exon_bed = basename(gtf, '.gz') + ".exon.bed"
-        File CDS_bed = basename(gtf, '.gz') + ".CDS.bed"
+        File bed = outfile_name
     }
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0"
         maxRetries: 1
     }
 }
@@ -479,7 +488,7 @@ for read in bam:
     if (read.is_secondary or read.is_supplementary) and not read.is_unmapped:
         continue
 
-    cur_quals = read.query_alignment_qualities  # array of phred scores
+    cur_quals = read.query_qualities  # array of phred scores
     if not fast_mode:
         for qual in cur_quals:
             tot_quals[qual] += 1
@@ -559,7 +568,6 @@ print(
 )
 print(prefix, file=outfile, end="\t")
 
-
 def stats_from_dict(score_dict):
     total_score = 0
     total_freq = 0
@@ -590,7 +598,6 @@ def stats_from_dict(score_dict):
     stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2)) ** 0.5
 
     return avg, median, stdev
-
 
 if not fast_mode:
     tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
@@ -676,8 +683,8 @@ END
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
@@ -687,6 +694,11 @@ task qc_summary {
     #   Delaram+David okayed a switch to TSV
     meta {
         description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive."
+    }
+
+    parameter_meta {
+        multiqc_tar_gz: "MultiQC report tarball from which to extract key metrics"
+        outfile_name: "Name for the JSON file"
     }
 
     input {
@@ -746,8 +758,69 @@ task qc_summary {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
+        maxRetries: 1
+    }
+}
+
+task split_fastq {
+    meta {
+        description: "Splits a FASTQ into multiple files based on the number of reads per file"
+        outputs: {
+            fastqs: "Array of FASTQ files, each containing a subset of the input FASTQ"
+        }
+    }
+
+    parameter_meta {
+        fastq: {
+            description: "Gzipped FASTQ file to split",
+            stream: true
+        }
+        reads_per_file: "Number of reads to include in each output FASTQ file"
+        prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
+    }
+
+    input {
+        File fastq
+        String prefix = sub(
+            basename(fastq),
+            "(fastq|fq)\\.gz$",
+            ""
+        )
+        Int reads_per_file = 10000000
+        Int modify_disk_size_gb = 0
+        Int ncpu = 2
+    }
+
+    Float fastq_size = size(fastq, "GiB")
+    Int disk_size_gb = ceil(fastq_size * 5) + 10 + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        let "lines = ~{reads_per_file} * 4"
+        zcat ~{fastq} | split -l $lines -d -a 6 - ~{prefix}
+
+        for file in "~{prefix}"*; do
+            mv "$file" "${file}.fastq"
+            echo "gzip ${file}.fastq" >> cmds
+        done
+
+        parallel --jobs ~{ncpu} < cmds
+    >>>
+
+    output {
+        Array[File] fastqs = glob("~{prefix}*")
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }

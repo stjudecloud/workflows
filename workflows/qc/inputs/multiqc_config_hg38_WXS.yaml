@@ -1,0 +1,172 @@
+run_modules:
+  - mosdepth
+  - custom_content
+  - ngsderive
+  - qualimap
+  - picard
+  - samtools
+  - kraken
+  - fastqc
+  - librarian
+extra_fn_clean_exts:
+  - '.ValidateSamFile'
+  - '.whole_genome'
+  - '.exon'
+  - '.CDS'
+  - '.UTR'
+  - '.MarkDuplicates'
+  - '.collated'
+  - '.qualimap_rnaseq_results'
+  - '.alt_filtered'
+  - '.librarian'
+log_filesize_limit: 1000000000
+fastqc_config:
+  fastqc_theoretical_gc: "hg38_txome"
+  status_checks: false
+top_modules:
+  - kraken:
+      path_filters:
+        - "*.kraken2.txt"
+      path_filters_exclude:
+        - "*.alt_filtered.kraken2.txt"
+  - kraken:
+      name: "kraken2 (comparative)"
+      path_filters:
+        - "*.alt_filtered.kraken2.txt"
+  - mosdepth:
+      name: "mosdepth (CDS)"
+      path_filters:
+        - "*.CDS.mosdepth.*"
+      path_filters_exclude:
+        - "*.MarkDuplicates.CDS.mosdepth*"
+  - custom_content
+  - ngsderive
+  - picard
+  - librarian
+  - qualimap
+  - samtools
+  - fastqc
+custom_data:
+  global_PHRED_scores:
+    file_format: "tsv"
+    section_name: "Global PHRED scores"
+    plot_type: "table"
+  orig_read_counts:
+    file_format: "tsv"
+    plot_type: "generalstats"
+remove_sections:
+  - fastqc_status_checks
+  - fastqc_sequence_counts
+  - fastqc_per_base_sequence_content
+  - ngsderive-instrument
+  - mosdepth-coverage-dist-cov
+  - mosdepth-coverage-per-contig-section
+table_columns_visible:
+  global_PHRED_scores-plot:
+    "first position total average": false
+    "first position total median": true
+    "first position total stdev": true
+    "first position mapped average": false
+    "first position mapped median": false
+    "first position mapped stdev": false
+    "first position unmapped average": false
+    "first position unmapped median": false
+    "first position unmapped stdev": false
+    "middle position total average": false
+    "middle position total median": true
+    "middle position total stdev": true
+    "middle position mapped average": false
+    "middle position mapped median": false
+    "middle position mapped stdev": false
+    "middle position unmapped average": false
+    "middle position unmapped median": false
+    "middle position unmapped stdev": false
+    "last position total average": false
+    "last position total median": true
+    "last position total stdev": true
+    "last position mapped average": false
+    "last position mapped median": false
+    "last position mapped stdev": false
+    "last position unmapped average": false
+    "last position unmapped median": false
+    "last position unmapped stdev": false
+table_columns_placement:
+  global_PHRED_scores-plot:
+    "first position total average": 10000
+    "first position total median": 100
+    "first position total stdev": 2000
+    "first position mapped average": 10000
+    "first position mapped median": 10000
+    "first position mapped stdev": 10000
+    "first position unmapped average": 10000
+    "first position unmapped median": 10000
+    "first position unmapped stdev": 10000
+    "middle position total average": 10000
+    "middle position total median": 200
+    "middle position total stdev": 2100
+    "middle position mapped average": 10000
+    "middle position mapped median": 10000
+    "middle position mapped stdev": 10000
+    "middle position unmapped average": 10000
+    "middle position unmapped median": 10000
+    "middle position unmapped stdev": 10000
+    "last position total average": 10000
+    "last position total median": 300
+    "last position total stdev": 2200
+    "last position mapped average": 10000
+    "last position mapped median": 10000
+    "last position mapped stdev": 10000
+    "last position unmapped average": 10000
+    "last position unmapped median": 10000
+    "last position unmapped stdev": 10000
+sp:
+  global_PHRED_scores:
+    fn: "*.global_PHRED_scores.tsv"
+  orig_read_counts:
+    fn: "*.orig_read_count.tsv"
+  picard/markdups:
+    fn: "*.MarkDuplicates.metrics.txt"
+  picard/alignment_metrics:
+    fn: "*.CollectAlignmentSummaryMetrics.txt"
+  picard/basedistributionbycycle:
+    skip: true
+  picard/gcbias:
+    fn: "*.CollectGcBiasMetrics.*"
+  picard/hsmetrics:
+    skip: true
+  picard/insertsize:
+    fn: "*.CollectInsertSizeMetrics.txt"
+  picard/oxogmetrics:
+    skip: true
+  picard/pcr_metrics:
+    skip: true
+  picard/quality_by_cycle:
+    skip: true
+  picard/quality_score_distribution:
+    fn: "*.QualityScoreDistribution.txt"
+  picard/quality_yield_metrics:
+    skip: true
+  picard/rnaseqmetrics:
+    skip: true
+  picard/rrbs_metrics:
+    skip: true
+  picard/sam_file_validation:
+    fn: "*.ValidateSamFile.txt"
+  picard/variant_calling_metrics:
+    skip: true
+  picard/wgs_metrics:
+    skip: true
+  kraken:
+    fn: "*.kraken2.txt"
+  ngsderive/strandedness:
+    fn: "*.strandedness.tsv"
+  ngsderive/encoding:
+    fn: "*.encoding.tsv"
+  ngsderive/readlen:
+    fn:  "*.readlength.tsv"
+  ngsderive/instrument:
+    fn: "*.instrument.tsv"
+  ngsderive/junction_annotation:
+    fn: "*.junction_summary.tsv"
+  samtools/flagstat:
+    fn: "*.flagstat.txt"

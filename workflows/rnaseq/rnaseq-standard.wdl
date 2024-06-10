@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/picard.wdl"
@@ -33,18 +31,18 @@ workflow rnaseq_standard {
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
-                'bwa aln',
-                'bwa mem',
-                'star'
+                "bwa aln",
+                "bwa mem",
+                "star"
             ]
         }
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
             choices: [
-                '',
-                'Stranded-Reverse',
-                'Stranded-Forward',
-                'Unstranded'
+                "",
+                "Stranded-Reverse",
+                "Stranded-Forward",
+                "Unstranded"
             ]
         }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
@@ -76,13 +74,13 @@ workflow rnaseq_standard {
     }
 
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
+        call picard.validate_bam as validate_input_bam after parse_input { input:
             bam=bam,
         }
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample { input:
+        call samtools.subsample after parse_input { input:
             bam=bam,
             desired_reads=subsample_n_reads,
             use_all_cores=use_all_cores,
@@ -90,11 +88,11 @@ workflow rnaseq_standard {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call util.get_read_groups { input:
+    call util.get_read_groups after parse_input { input:
         bam=selected_bam,
         format_for_star=true,  # matches default but prevents user from overriding
     }  # TODO what happens if no RG records?
-    call bam_to_fastqs_wf.bam_to_fastqs { input:
+    call bam_to_fastqs_wf.bam_to_fastqs after parse_input { input:
         bam=selected_bam,
         paired_end=true,  # matches default but prevents user from overriding
         use_all_cores=use_all_cores,
@@ -141,10 +139,10 @@ task parse_input {
         input_strand: {
             description: "Provided strandedness protocol of the RNA-Seq experiment",
             choices: [
-                '',
-                'Stranded-Reverse',
-                'Stranded-Forward',
-                'Unstranded'
+                "",
+                "Stranded-Reverse",
+                "Stranded-Forward",
+                "Unstranded"
             ]
         }
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
@@ -181,7 +179,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disk: "10 GB"
-        container: 'docker://ghcr.io/stjudecloud/util:1.3.0'
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }

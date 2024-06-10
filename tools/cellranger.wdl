@@ -11,10 +11,13 @@ task count {
     }
 
     parameter_meta {
-        id: "A unique run ID"
         fastqs_tar_gz: "Path to the FASTQ folder archive in .tar.gz format"
         transcriptome_tar_gz: "Path to Cell Ranger-compatible transcriptome reference in .tar.gz format"
-        sample_id: "Sample name as used by cellranger mkfastq"
+        id: "A unique run ID"
+        use_all_cores: "Use all cores? Recommended for cloud environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
@@ -25,7 +28,6 @@ task count {
         Int ncpu = 1
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float fastq_size = size(fastqs_tar_gz, "GiB")
@@ -90,9 +92,9 @@ task count {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/cellranger:1.1.1'
-        maxRetries: max_retries
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/cellranger:1.1.1"
+        maxRetries: 1
     }
 }
 
@@ -106,6 +108,10 @@ task bamtofastq {
         cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
         longranger20: "Convert a BAM produced by Longranger 2.0"
         gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
+        use_all_cores: "Use all cores? Recommended for cloud environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
@@ -117,7 +123,6 @@ task bamtofastq {
         Int ncpu = 1
         Int memory_gb = 40
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -152,8 +157,8 @@ task bamtofastq {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/cellranger:1.1.1'
-        maxRetries: max_retries
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/cellranger:1.1.1"
+        maxRetries: 1
     }
 }

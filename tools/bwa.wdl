@@ -1,14 +1,12 @@
 ## [Homepage](https://github.com/lh3/bwa)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 # TODO there are probably BWA params we can expose. Have not checked
 
 task bwa_aln {
     meta {
-        description: "Maps single-end FASTQ files to BAM format using bwa aln"
+        description: "Maps Single-End FASTQ files to BAM format using bwa aln"
         outputs: {
             bam: "Aligned BAM format file"
         }
@@ -62,6 +60,8 @@ task bwa_aln {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "samtools_cores = $n_cores - 1"
 
         mkdir bwa_db
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
@@ -74,7 +74,7 @@ task bwa_aln {
             bwa_db/"$PREFIX" \
             sai \
             ~{fastq} \
-            | samtools view -@ "$n_cores" -hb - \
+            | samtools view --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
         rm -r bwa_db
@@ -87,23 +87,29 @@ task bwa_aln {
     runtime {
         cpu: ncpu
         memory: "5 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
         maxRetries: 1
     }
 }
 
 task bwa_aln_pe {
     meta {
-        description: "Maps paired-end FASTQ files to BAM format using bwa aln"
+        description: "Maps Paired-End FASTQ files to BAM format using bwa aln"
         outputs: {
             bam: "Aligned BAM format file"
         }
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Input gzipped FASTQ read one file to align with bwa"  # TODO verify can be gzipped or compressed
-        read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
+        read_one_fastq_gz: {
+            description: "Input gzipped FASTQ read one file to align with bwa",
+            stream: false
+        }  # TODO verify can be gzipped or compressed
+        read_two_fastq_gz: {
+            description: "Input gzipped FASTQ read two file to align with bwa",
+            stream: false
+        }
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
@@ -132,7 +138,7 @@ task bwa_aln_pe {
         )
         String read_group = ""
         Boolean use_all_cores = false
-        Int ncpu = 2
+        Int ncpu = 4
         Int modify_disk_size_gb = 0
     }
 
@@ -153,20 +159,23 @@ task bwa_aln_pe {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "samtools_cores = $n_cores - 1"
 
         mkdir bwa_db
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
-        bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_one_fastq_gz} > sai_1
-        bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{read_two_fastq_gz} > sai_2
+        ln -s ~{read_one_fastq_gz}
+        ln -s ~{read_two_fastq_gz}
 
         bwa sampe \
             ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
             bwa_db/"$PREFIX" \
-            sai_1 sai_2 \
-            ~{read_one_fastq_gz} ~{read_two_fastq_gz} \
-            | samtools view -@ "$n_cores" -hb - \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_one_fastq_gz)}) \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_two_fastq_gz)}) \
+            ~{basename(read_one_fastq_gz)} ~{basename(read_two_fastq_gz)} \
+            | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
         rm -r bwa_db
@@ -178,9 +187,9 @@ task bwa_aln_pe {
 
     runtime {
         cpu: ncpu
-        memory: "5 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        memory: "17 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
         maxRetries: 1
     }
 }
@@ -224,7 +233,7 @@ task bwa_mem {
         )
         String read_group = ""
         Boolean use_all_cores = false
-        Int ncpu = 2
+        Int ncpu = 4
         Int modify_disk_size_gb = 0
     }
 
@@ -236,6 +245,8 @@ task bwa_mem {
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
     )
 
+    File read_two_file = select_first([read_two_fastq_gz, ""])
+
     command <<<
         set -euo pipefail
 
@@ -243,18 +254,23 @@ task bwa_mem {
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "samtools_cores = $n_cores - 1"
 
         mkdir bwa_db
         tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
+        ln -sf ~{read_one_fastq_gz}
+        ~{if defined(read_two_fastq_gz) then "ln -sf "+read_two_fastq_gz+"" else ""}
+
         bwa mem \
             -t "$n_cores" \
             ~{if read_group != "" then "-R '"+read_group+"'" else ""} \
             bwa_db/"$PREFIX" \
-            ~{read_one_fastq_gz} \
-            ~{read_two_fastq_gz} \
-            | samtools view -@ "$n_cores" -hb - \
+            ~{basename(read_one_fastq_gz)} \
+            ~{basename(read_two_file)} \
+            | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
         rm -r bwa_db
@@ -266,9 +282,9 @@ task bwa_mem {
 
     runtime {
         cpu: ncpu
-        memory: "10 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        memory: "25 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
         maxRetries: 1
     }
 }
@@ -318,8 +334,8 @@ task build_bwa_db {
 
     runtime {
         memory: "5 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/bwa:0.7.17-0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
         maxRetries: 1
     }
 }

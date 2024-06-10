@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/md5sum.wdl"
@@ -25,9 +23,9 @@ workflow alignment_post {
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
-                'bwa aln',
-                'bwa mem',
-                'star'
+                "bwa aln",
+                "bwa mem",
+                "star"
             ]
         }
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
@@ -77,6 +75,7 @@ workflow alignment_post {
     }
     File aligned_bam_index = samtools_index.bam_index
 
+    # TODO: should we output the validater report?
     call picard.validate_bam { input: bam=aligned_bam }
 
     call md5sum.compute_checksum { input: file=aligned_bam }

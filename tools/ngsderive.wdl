@@ -1,7 +1,5 @@
 ## [Homepage](https://github.com/stjudecloud/ngsderive)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task strandedness {
@@ -69,10 +67,10 @@ task strandedness {
             "$CWD_BAM" \
             > ~{outfile_name}
 
-        if split_by_rg; then
-            awk 'NR > 1' ~{outfile_name} | grep 'overall' | cut -f6 > strandedness.txt # TODO broken until ngsderive v4 is released
+        if ~{split_by_rg}; then
+            echo "N/A" > strandedness.txt
         else
-            awk 'NR > 1' ~{outfile_name} | cut -f5 > strandedness.txt
+            awk 'NR > 1' ~{outfile_name} | cut -f 5 > strandedness.txt
         fi
 
         rm "$CWD_BAM" "$CWD_BAM".bai
@@ -85,8 +83,8 @@ task strandedness {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }
@@ -120,20 +118,25 @@ task instrument {
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         ngsderive instrument --verbose \
             -n ~{num_reads} \
             ~{bam} \
             > ~{outfile_name}
+
+        awk 'NR > 1' ~{outfile_name} | cut -f 2 > instrument.txt
     >>>
 
     output {
         File instrument_file = outfile_name
+        String instrument_string = read_string("instrument.txt")
     }
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }
@@ -196,8 +199,8 @@ task read_length {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }
@@ -272,8 +275,8 @@ END
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }
@@ -360,8 +363,8 @@ task junction_annotation {
 
     runtime {
         memory: "56 GB"  # TODO make this dynamic
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }
@@ -442,8 +445,8 @@ task endedness {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }

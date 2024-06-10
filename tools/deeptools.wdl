@@ -1,7 +1,5 @@
 ## [Homepage](https://deeptools.readthedocs.io/en/develop/index.html)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task bam_coverage {
@@ -69,8 +67,8 @@ task bam_coverage {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/deeptools:3.5.1--pyhdfd78af_1'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/deeptools:3.5.4--pyhdfd78af_1"
         maxRetries: 1
     }
 }

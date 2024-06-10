@@ -1,0 +1,27 @@
+name: Workflows Sprocket Lint
+
+on: [push]
+
+jobs:
+    sprocket_lint:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v2
+        - name: Set up Rust
+          uses: actions-rust-lang/setup-rust-toolchain@v1
+          with:
+            toolchain: nightly
+        - name: Install sprocket
+          run: |
+            cargo install sprocket
+        - name: Run sprocket
+          run: |
+            EXITCODE=0
+            echo "Checking WDL files using \`sprocket lint\`."
+            shopt -s extglob
+            files=$(find ./!(template) -name '*.wdl')
+            for file in $files; do
+              echo "  [***] $file [***]"
+              sprocket lint "$file" || EXITCODE=$(($? || EXITCODE))
+            done
+            exit $EXITCODE

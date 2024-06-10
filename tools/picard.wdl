@@ -1,20 +1,22 @@
 ## [Homepage](https://broadinstitute.github.io/picard/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+## TODO looks like this file was missed when converting from
+## a `memory_gb` parameter to a "softcoded" runtime block.
+## When moving those, check `tests/tools/test_picard.yaml`.
+
 version 1.1
 
 task mark_duplicates {
     meta {
         description: "Marks duplicate reads in the input BAM file using Picard"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-"
+        help: "For non-primary reads and unmapped mates of duplicate reads to be included in duplicate analysis, input BAM must be collated. See `external_help` for more information."
         outputs: {
             duplicate_marked_bam: "The input BAM with computationally determined duplicates marked.",
             duplicate_marked_bam_index: "The `.bai` BAM index file associated with `duplicate_marked_bam`",
             duplicate_marked_bam_md5: "The md5sum of `duplicate_marked_bam`",
             mark_duplicates_metrics: {
                 description: "The METRICS_FILE result of `picard MarkDuplicates`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics",
             }
         }
     }
@@ -22,23 +24,62 @@ task mark_duplicates {
     parameter_meta {
         bam: "Input BAM format file in which to mark duplicates"
         prefix: "Prefix for the MarkDuplicates result files. The extensions `.bam`, `.bam.bai`, `.bam.md5`, and `.metrics.txt` will be added."
+        duplicate_scoring_strategy: {
+            description: "Strategy for scoring duplicates.",
+            choices: [
+                "SUM_OF_BASE_QUALITIES",
+                "TOTAL_MAPPED_REFERENCE_LENGTH",
+                "RANDOM"
+            ]
+        }
+        read_name_regex: "Regular expression for extracting tile names, x coordinates, and y coordinates from read names. The default works for typical Illumina read names."
+        tagging_policy: {
+            description: "Tagging policy for the output BAM.",
+            choices: [
+                "DontTag",
+                "OpticalOnly",
+                "All"
+            ],
+        }
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         create_bam: {
             description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?",
             common: true
         }
-        memory_gb: "RAM to allocate for task, specified in GB"
+        clear_dt: "Clear the `DT` tag from the input BAM? For increased performance, if the input BAM does not have the `DT` tag, set to `false`."
+        remove_duplicates: "Remove duplicate reads from the output BAM? If `true`, the output BAM will not contain any duplicate reads."
+        remove_sequencing_duplicates: "Remove sequencing duplicates (i.e. optical duplicates) from the output BAM? If `true`, the output BAM will not contain any sequencing duplicates (optical duplicates)."
+        optical_distance: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`."
+        modify_memory_gb: "Add to or subtract from the default memory allocation. Default memory allocation is determined by the size of the input BAM. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".MarkDuplicates"
+        String duplicate_scoring_strategy = "SUM_OF_BASE_QUALITIES"
+        String read_name_regex = "^[!-9;-?A-~:]+:([!-9;-?A-~]+):([0-9]+):([0-9]+)$"
+        String tagging_policy = "All"
+        String validation_stringency = "SILENT"
         Boolean create_bam = true
-        Int memory_gb = 50
+        Boolean clear_dt = true
+        Boolean remove_duplicates = false
+        Boolean remove_sequencing_duplicates = false
+        Int optical_distance = 0
+        Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
     }
 
     Float bam_size = size(bam, "GiB")
+    Int memory_gb = min(ceil(bam_size + 6), 50) + modify_memory_gb
     Int disk_size_gb = (
         (
             if create_bam
@@ -54,12 +95,20 @@ task mark_duplicates {
 
         picard -Xmx~{java_heap_size}g MarkDuplicates \
             -I ~{bam} \
+            --METRICS_FILE ~{prefix}.metrics.txt \
             -O ~{if create_bam then prefix + ".bam" else "/dev/null"} \
-            --VALIDATION_STRINGENCY SILENT \
             --CREATE_INDEX ~{create_bam} \
             --CREATE_MD5_FILE ~{create_bam} \
-            --COMPRESSION_LEVEL 5 \
-            --METRICS_FILE ~{prefix}.metrics.txt
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
+            --DUPLICATE_SCORING_STRATEGY ~{duplicate_scoring_strategy} \
+            --READ_NAME_REGEX '~{
+                if (optical_distance > 0) then read_name_regex else "null"
+            }' \
+            --TAGGING_POLICY ~{tagging_policy} \
+            --CLEAR_DT ~{clear_dt} \
+            --REMOVE_DUPLICATES ~{remove_duplicates} \
+            --REMOVE_SEQUENCING_DUPLICATES ~{remove_sequencing_duplicates} \
+            --OPTICAL_DUPLICATE_PIXEL_DISTANCE ~{optical_distance}
 
         if ~{create_bam}; then
             mv ~{prefix}.bai ~{prefix}.bam.bai
@@ -75,8 +124,8 @@ task mark_duplicates {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -103,6 +152,15 @@ task validate_bam {
             common: true
         }
         outfile_name: "Name for the ValidateSamFile report file"
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         succeed_on_errors: {
             description: "Succeed the task even if errors *and/or* warnings are detected",
             common: true
@@ -126,6 +184,7 @@ task validate_bam {
         File? reference_fasta
         Array[String] ignore_list = []
         String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
+        String validation_stringency = "LENIENT"
         Boolean succeed_on_errors = false
         Boolean succeed_on_warnings = true
         Boolean summary_mode = false
@@ -156,6 +215,7 @@ task validate_bam {
             ~{reference_arg} \
             ~{mode_arg} \
             ~{stringency_arg} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             ~{sep(" ", prefix("--IGNORE ", ignore_list))} \
             --MAX_OUTPUT ~{max_errors} \
             > ~{outfile_name} \
@@ -178,21 +238,20 @@ task validate_bam {
         if ! ~{succeed_on_errors} \
             && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]
         then
-            echo "Problems detected by Picard ValidateSamFile" > /dev/stderr
-            grep -E "$GREP_PATTERN" ~{outfile_name} > /dev/stderr
+            >&2 echo "Problems detected by Picard ValidateSamFile"
+            >&2 grep -E "$GREP_PATTERN" ~{outfile_name}
             exit $rc
         fi
     >>>
 
     output {
         File validate_report = outfile_name
-        File validated_bam = bam
     }
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -213,13 +272,22 @@ task sort {
         sort_order: {
             description: "Order by which to sort the input BAM",
             choices: [
-                'queryname',
-                'coordinate',
-                'duplicate'
+                "queryname",
+                "coordinate",
+                "duplicate"
             ],
             common: true
         }
         prefix: "Prefix for the sorted BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -228,6 +296,7 @@ task sort {
         File bam
         String sort_order = "coordinate"
         String prefix = basename(bam, ".bam") + ".sorted"
+        String validation_stringency = "SILENT"
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
     }
@@ -247,22 +316,25 @@ task sort {
             -SO ~{sort_order} \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
-            --COMPRESSION_LEVEL 5 \
-            --VALIDATION_STRINGENCY SILENT
+            --VALIDATION_STRINGENCY ~{validation_stringency}
 
-        mv ~{prefix}.bai ~{outfile_name}.bai
+        # CREATE_INDEX true only applies when the sort order
+        # is coordinate. So the index may not exist.
+        if [ -f "~{prefix}.bai" ]; then
+            mv ~{prefix}.bai ~{outfile_name}.bai
+        fi
     >>>
 
     output {
         File sorted_bam = outfile_name
-        File sorted_bam_index = outfile_name + ".bai"
+        File? sorted_bam_index = outfile_name + ".bai"
         File sorted_bam_md5 = outfile_name + ".md5"
     }
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -284,13 +356,22 @@ task merge_sam_files {
         sort_order: {
             description: "Sort order for the output merged BAM. It is assumed all input BAMs share this order.",
             choices: [
-                'unsorted',
-                'queryname',
-                'coordinate',
-                'duplicate',
-                'unknown'  # TODO what does this mean?
+                "unsorted",
+                "queryname",
+                "coordinate",
+                "duplicate",
+                "unknown"  # TODO what does this mean?
             ],
             common: true
+        }
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
         }
         threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file. **Sets `runtime.cpu = 2` if `true`. `runtime.cpu = 1` if `false`.**"
         memory_gb: "RAM to allocate for task, specified in GB"
@@ -301,6 +382,7 @@ task merge_sam_files {
         Array[File] bams
         String prefix
         String sort_order = "coordinate"
+        String validation_stringency = "SILENT"
         Boolean threading = true
         Int memory_gb = 40
         Int modify_disk_size_gb = 0
@@ -325,7 +407,7 @@ task merge_sam_files {
             --USE_THREADING ~{threading} \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
-            --VALIDATION_STRINGENCY SILENT
+            --VALIDATION_STRINGENCY ~{validation_stringency}
 
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
@@ -333,8 +415,8 @@ task merge_sam_files {
     runtime{
         cpu: if threading then 2 else 1
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 
@@ -359,6 +441,15 @@ task clean_sam {
     parameter_meta {
         bam: "Input BAM format file to clean"
         prefix: "Prefix for the cleaned BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -366,6 +457,7 @@ task clean_sam {
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".cleaned"
+        String validation_stringency = "SILENT"
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
     }
@@ -383,6 +475,7 @@ task clean_sam {
             -I ~{bam} \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             -O ~{outfile_name}
 
         mv ~{prefix}.bai ~{outfile_name}.bai
@@ -396,8 +489,8 @@ task clean_sam {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -419,6 +512,15 @@ task collect_wgs_metrics {
         bam: "Input BAM format file for which to calculate WGS metrics"
         reference_fasta: "Gzipped reference genome in FASTA format"
         outfile_name: "Name for the metrics result file"
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -427,6 +529,7 @@ task collect_wgs_metrics {
         File bam
         File reference_fasta
         String outfile_name = basename(bam, ".bam") + ".CollectWgsMetrics.txt"
+        String validation_stringency = "SILENT"
         Int memory_gb = 12
         Int modify_disk_size_gb = 0
     }
@@ -440,6 +543,7 @@ task collect_wgs_metrics {
             -I ~{bam} \
             -R ~{reference_fasta} \
             -O ~{outfile_name} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             --INCLUDE_BQ_HISTOGRAM true
     >>>
 
@@ -449,8 +553,8 @@ task collect_wgs_metrics {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -472,6 +576,15 @@ task collect_alignment_summary_metrics {
     parameter_meta {
         bam: "Input BAM format file for which to calculate alignment metrics"
         prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -479,6 +592,7 @@ task collect_alignment_summary_metrics {
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".CollectAlignmentSummaryMetrics"
+        String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
     }
@@ -490,6 +604,7 @@ task collect_alignment_summary_metrics {
     command <<<
         picard -Xmx~{java_heap_size}g CollectAlignmentSummaryMetrics \
             -I ~{bam} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             -O ~{prefix}.txt \
             -H ~{prefix}.pdf
     >>>
@@ -501,8 +616,8 @@ task collect_alignment_summary_metrics {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -529,6 +644,15 @@ task collect_gc_bias_metrics {
         bam: "Input BAM format file for which to calculate GC bias metrics"
         reference_fasta: "Reference sequences in FASTA format"
         prefix: "Prefix for the output report files. The extensions `.txt`, `.summary.txt`, and `.pdf` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -537,6 +661,7 @@ task collect_gc_bias_metrics {
         File bam
         File reference_fasta
         String prefix = basename(bam, ".bam") + ".CollectGcBiasMetrics"
+        String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
     }
@@ -549,6 +674,7 @@ task collect_gc_bias_metrics {
         picard -Xmx~{java_heap_size}g CollectGcBiasMetrics \
             -I ~{bam} \
             -R ~{reference_fasta} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             -O ~{prefix}.txt \
             -S ~{prefix}.summary.txt \
             -CHART ~{prefix}.pdf
@@ -562,8 +688,8 @@ task collect_gc_bias_metrics {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -572,7 +698,7 @@ task collect_insert_size_metrics {
     # TODO check for other options
     # TODO what happens if a SE BAM is supplied?
     meta {
-        description: "Runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction including the insert size distribution and read orientation of paired-end libraries"
+        description: "Runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction including the insert size distribution and read orientation of Paired-End libraries"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037055772-CollectInsertSizeMetrics-Picard-"
         outputs: {
             insert_size_metrics: {
@@ -586,6 +712,15 @@ task collect_insert_size_metrics {
     parameter_meta {
         bam: "Input BAM format file for which to calculate insert size metrics"
         prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -593,6 +728,7 @@ task collect_insert_size_metrics {
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".CollectInsertSizeMetrics"
+        String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
     }
@@ -604,6 +740,7 @@ task collect_insert_size_metrics {
     command <<<
         picard -Xmx~{java_heap_size}g CollectInsertSizeMetrics \
             -I ~{bam} \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             -O ~{prefix}.txt \
             -H ~{prefix}.pdf
     >>>
@@ -615,8 +752,8 @@ task collect_insert_size_metrics {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -635,6 +772,15 @@ task quality_score_distribution {
     parameter_meta {
         bam: "Input BAM format file for which to calculate quality score distribution"
         prefix: "Prefix for the output report files. The extensions `.txt` and `.pdf` will be added."
+        validation_stringency: {
+            description: "Validation stringency for parsing the input BAM.",
+            choices: [
+                "STRICT",
+                "LENIENT",
+                "SILENT"
+            ],
+            tool_default: "STRICT",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -642,6 +788,7 @@ task quality_score_distribution {
     input {
         File bam
         String prefix = basename(bam, ".bam") + ".QualityScoreDistribution"
+        String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
     }
@@ -652,6 +799,7 @@ task quality_score_distribution {
 
     command <<<
         picard -Xmx~{java_heap_size}g QualityScoreDistribution \
+            --VALIDATION_STRINGENCY ~{validation_stringency} \
             -I ~{bam} \
             -O ~{prefix}.txt \
             -CHART ~{prefix}.pdf
@@ -664,22 +812,23 @@ task quality_score_distribution {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:3.1.0--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
 
 task bam_to_fastq {
     meta {
-        description: "**[Deprecated]** This WDL task converts the input BAM file into FASTQ format files. This task has been deprecated in favor of `samtools.collate_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
+        description: "**[Deprecated]** This WDL task converts the input BAM file into FASTQ format files. This task has been deprecated in favor of `samtools.bam_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
         deprecated: true
     }
 
     parameter_meta {
         bam: "Input BAM format file to convert to FASTQ"
+        prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
         paired: {
-            description: "Is the data paired-end (true) or single-end (false)?",
+            description: "Is the data Paired-End (true) or Single-End (false)?",
             common: true
         }
         memory_gb: "RAM to allocate for task, specified in GB"
@@ -718,8 +867,183 @@ task bam_to_fastq {
 
     runtime{
         memory: "~{memory_gb} GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
+        maxRetries: 1
+    }
+}
+
+task merge_vcfs {
+    meta {
+        description: "Merges the input VCF files into a single VCF file"
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036713331-MergeVcfs-Picard"
+        outputs: {
+            output_vcf: "The merged VCF file",
+            output_vcf_index: "The index file associated with the merged VCF file"
+        }
+    }
+
+    parameter_meta {
+        vcfs: "Input VCF format files to merge. May be gzipped or binary compressed."
+        vcfs_indexes: "Index files associated with the input VCF files"
+        output_vcf_name: "Name for the merged VCF file"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        Array[File] vcfs
+        Array[File] vcfs_indexes
+        String output_vcf_name
+        Int modify_disk_size_gb = 0
+    }
+
+    Int disk_size_gb = ceil(size(vcfs, "GiB") * 2) + 10 + modify_disk_size_gb
+
+    command <<<
+        picard -Xms2000m \
+            MergeVcfs \
+            ~{sep(" ", prefix("--INPUT ", vcfs))} \
+            --OUTPUT ~{output_vcf_name}
+    >>>
+
+    output {
+        File output_vcf = output_vcf_name
+        File output_vcf_index = "~{output_vcf_name}.tbi"
+    }
+
+    runtime {
+        memory: "4 GB"
         disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/picard:2.27.5--hdfd78af_0'
+        container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
+        maxRetries: 1
+    }
+}
+
+task scatter_interval_list {
+    meta {
+        description: "Splits an interval list into smaller interval lists for parallel processing"
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036897212-IntervalListTools-Picard"
+        outputs: {
+            out: "The split interval lists",
+            interval_count: "The number of split interval lists"
+        }
+    }
+
+    parameter_meta  {
+        interval_list: "Input interval list to split"
+        subdivision_mode: {
+            description: "How to subdivide the intervals",
+            choices: [
+                "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW",
+                "INTERVAL_SUBDIVISION",
+                "BALANCING_WITHOUT_INTERVAL_SUBDIVISION"
+            ]
+        }
+        unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
+        sort: "Should the output interval lists be sorted? Sorts by coordinate."
+        scatter_count: "Number of interval lists to create"
+    }
+
+    input {
+        File interval_list
+        String subdivision_mode = "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW"
+        Boolean unique = true
+        Boolean sort = true
+        Int scatter_count
+    }
+
+    command <<<
+        set -euo pipefail
+
+        mkdir out
+        picard -Xms1g \
+            IntervalListTools \
+            --SCATTER_COUNT ~{scatter_count} \
+            --SUBDIVISION_MODE ~{subdivision_mode} \
+            --UNIQUE ~{unique} \
+            --SORT ~{sort} \
+            --INPUT ~{interval_list} \
+            --OUTPUT out
+
+        bash <<CODE
+        I=0
+        for list in out/*/*.interval_list
+        do
+           I=\$((I+1))
+           dir=\$(dirname \$list)
+           name=\$(basename \$list)
+           mv \$list \${dir}/\${I}\${name}
+        done
+        echo \$I > interval_count.txt
+        CODE
+    >>>
+
+    output {
+        Array[File] interval_lists_scatter = glob("out/*/*.interval_list")
+        Int interval_count = read_int("interval_count.txt")
+    }
+
+    runtime {
+        memory: "2 GB"
+        disk: "1 GB"
+        container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
+        maxRetries: 1
+    }
+}
+
+task create_sequence_dictionary {
+    meta {
+        description: "Creates a sequence dictionary for the input FASTA file using Picard"
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832748622491-CreateSequenceDictionary-Picard-"
+        outputs: {
+            dictionary: "Sequence dictionary produced by `picard CreateSequenceDictionary`."
+        }
+    }
+
+    parameter_meta {
+        fasta: "Input FASTA format file from which to create dictionary"
+        outfile_name: "Name for the CreateSequenceDictionary dictionary file"
+        assembly_name: "Value to put in AS field of sequence dictionary"
+        fasta_url: "Value to put in UR field of sequence dictionary"
+        species: "Value to put in SP field of sequence dictionary"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fasta
+        String outfile_name = basename(fasta, ".fa") + ".dict"
+        String? assembly_name
+        String? fasta_url
+        String? species
+        Int memory_gb = 16
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fasta_size = size(fasta, "GiB")
+    Int disk_size_gb = ceil(fasta_size * 2) + 10 + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command <<<
+        set -euo pipefail
+
+        picard -Xmx~{java_heap_size}g CreateSequenceDictionary \
+            -R ~{fasta} \
+            ~{if defined(assembly_name) then "--GENOME_ASSEMBLY " + assembly_name else ""} \
+            ~{if defined(fasta_url) then "--URI " + fasta_url else ""} \
+            ~{if defined(species) then "--SPECIES " + species else ""} \
+            > ~{outfile_name} \
+    >>>
+
+    output {
+        File dictionary = outfile_name
+    }
+
+    runtime {
+        cpu: 1
+        memory: "~{memory_gb} GB"
+        disk: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.0--hdfd78af_0"
         maxRetries: 1
     }
 }

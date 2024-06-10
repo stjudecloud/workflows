@@ -3,16 +3,17 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task quickcheck tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
-  files:
-    - path: test-output/out/checked_bam/test.bwa_aln_pe.bam
+    miniwdl run --verbose -d test-output/. --task quickcheck tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+  stdout:
+    contains_regex:
+      - "passed"
 
 - name: samtools_split
   tags:
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task split tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
+    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
   files:
     - path: test-output/out/split_bams/0/test.1.bam
     - path: test-output/out/split_bams/1/test.2.bam
@@ -22,7 +23,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task flagstat tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task flagstat tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/flagstat_report/test.bwa_aln_pe.flagstat.txt
       contains:
@@ -37,7 +38,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task index tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task index tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/bam_index/test.bwa_aln_pe.bam.bai
 
@@ -46,16 +47,16 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task subsample tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam" desired_reads=100
+    miniwdl run --verbose -d test-output/. --task subsample tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam" desired_reads=100
   files:
-    - path: test-output/out/sampled_bam/test.subsampled.bam
+    - path: test-output/out/sampled_bam/test.sampled.bam
 
 - name: samtools_merge
   tags:
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task merge -i tests/tools/input_json/samtools_merge.json tools/samtools.wdl
+    miniwdl run --verbose -d test-output/. --task merge -i tests/tools/input_json/samtools_merge.json tools/samtools.wdl
   files:
     - path: test-output/out/merged_bam/test.bam
 
@@ -64,7 +65,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task addreplacerg tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" read_group_id="test"
+    miniwdl run --verbose -d test-output/. --task addreplacerg tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" read_group_id="test"
   files:
     - path: test-output/out/tagged_bam/test.bwa_aln_pe.addreplacerg.bam
 
@@ -73,7 +74,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task collate tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task collate tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
 
@@ -82,18 +83,17 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task bam_to_fastq tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
-  files:
-    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.R1.fastq.gz
-    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe.R2.fastq.gz
-
-- name: samtools_collate_to_fastq
-  tags:
-    - miniwdl
-    - samtools
-  command: >-
-    miniwdl run -d test-output/. --task collate_to_fastq tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" store_collated_bam=true
+    miniwdl run --verbose -d test-output/. --task bam_to_fastq tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" retain_collated_bam=true
   files:
     - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
     - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.R1.fastq.gz
     - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe.R2.fastq.gz
+
+- name: samtools_faidx
+  tags:
+    - miniwdl
+    - samtools
+  command: >-
+    miniwdl run -d test-output/. --task faidx tools/samtools.wdl fasta="tests/tools/input/test.fa"
+  files:
+    - path: test-output/out/fasta_index/test.fa.fai
