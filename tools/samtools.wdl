@@ -130,7 +130,7 @@ task split {
                     >&2 echo "No reads are in output BAM $out_bam!"
                     >&2 echo "This is likely caused by malformed RG records."
                     rm first_read.sam
-                    exit 22
+                    exit 42
                 fi
                 rm first_read.sam
             done
