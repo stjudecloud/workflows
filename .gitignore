@@ -13,6 +13,9 @@
 miniwdl_call_cache/
 miniwdl_singularity_cache/
 
+# Blacklist test directories
+test-output/
+
 # Blacklist OS generated files
 .DS_Store
 

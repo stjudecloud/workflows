@@ -37,7 +37,7 @@ def test_samtools_collate(workflow_dir):
     bam = pathlib.Path(workflow_dir, 'test-output/out/collated_bam/test.bwa_aln_pe.collated.bam')
     samfile = pysam.AlignmentFile(bam, "rb")
 
-    reads = list(samfile.head(n=100))
+    reads = list(samfile.fetch(until_eof=True))
     for c in range(0, 100, 2):
         assert reads[c].query_name == reads[c+1].query_name
         assert reads[c].is_read1 != reads[c+1].is_read1

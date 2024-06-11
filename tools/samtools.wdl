@@ -107,9 +107,10 @@ task split {
             ~{prefix}.unaccounted_reads.bam \
             > first_unaccounted_read.sam
 
+        EXITCODE=0
         if ~{reject_unaccounted_reads} && [ -s first_unaccounted_read.sam ]; then
             >&2 echo "There are reads present with bad or missing RG tags!"
-            exit 21
+            EXITCODE=21
         else
             rm ~{prefix}.unaccounted_reads.bam
         fi
@@ -129,12 +130,13 @@ task split {
                 if [ ! -s first_read.sam ]; then
                     >&2 echo "No reads are in output BAM $out_bam!"
                     >&2 echo "This is likely caused by malformed RG records."
-                    rm first_read.sam
-                    exit 42
+                    EXITCODE=42
                 fi
-                rm first_read.sam
             done
+            rm first_read.sam
         fi
+        
+        exit $EXITCODE
     >>>
 
     output {
