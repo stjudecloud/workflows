@@ -239,7 +239,7 @@ task calc_gene_lengths {
     runtime {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gtfparse:2.5.0--pyh7cba7a3_0"
+        container: "quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0"
         maxRetries: 1
     }
 }
