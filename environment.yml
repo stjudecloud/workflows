@@ -10,3 +10,5 @@ dependencies:
     - pytest-workflow
     - miniwdl
     - git-lfs
+    - pysam
+    - fastq

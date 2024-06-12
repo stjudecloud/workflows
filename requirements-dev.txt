@@ -1,4 +1,5 @@
-fastq==2.0.2
+fastq==2.0.4
+miniFasta==3.0.3
 miniwdl==1.12.0
 pysam==0.21.0
 pytest-workflow==2.0.1
