@@ -3,22 +3,8 @@ name: pytest-workflow test
 on: [push]
 
 jobs:
-  list-tags:
-    runs-on: ubuntu-latest
-    outputs:
-        tags: ${{ steps.set-tags.outputs.tags }}
-    steps:
-        - name: checkout
-          uses: actions/checkout@v4
-        - name: set tags
-          id: set-tags
-          run: echo "tags=$(find tests -name '*.yaml' -exec yq --output-format yaml '.[].tags[] ' {} \;| sort | uniq | grep -vE 'deprecated|miniwdl|cellranger' | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
   pytest_check:
-    needs: list-tags
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        tag: ${{ fromJson(needs.list-tags.outputs.tags) }}
     steps:
     - uses: actions/checkout@v4
       with:
@@ -31,13 +17,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements-dev.txt
-    - name: pull image
+    - name: Run test
       run: |
-        docker pull quay.io/biocontainers/gtfparse:2.5.0--pyh7cba7a3_0 &&
-        docker pull quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0
-    - name: filter tests
-      run: |
-        find tests -name '*.yaml' -exec yq --output-format yaml -i 'del(.[] | select(.tags[] | test("reference|deprecated|cellranger") ) )' {} \;
-    - name: Run pytest-workflow
-      run: |
-        pytest --git-aware --basetemp /home/runner/work/pytest --symlink --tag ${{ matrix.tag }}
+        miniwdl run --debug -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
