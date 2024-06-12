@@ -204,7 +204,8 @@
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>ncpu</code> (Int, default=2); <strong>description</strong>: Number of cores to allocate for task; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the split BAM files. The extensions will contain read group IDs, and will end in <code>.bam</code>.</li>
-<li><code>reject_unaccounted</code> (Boolean, default=true); <strong>description</strong>: If true, error if there are reads present that do not have read group information.; <strong>common</strong>: true</li>
+<li><code>reject_empty_output</code> (Boolean, default=true); <strong>description</strong>: If true, error if any output BAMs are empty.; <strong>common</strong>: true</li>
+<li><code>reject_unaccounted_reads</code> (Boolean, default=true); <strong>description</strong>: If true, error if there are reads present that do not have read group information matching the header.; <strong>common</strong>: true</li>
 <li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
@@ -560,7 +561,6 @@
 <h4 id="defaults_13">Defaults</h4>
 <ul>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
-<li><code>use_all_cores</code> (Boolean, default=false); <strong>description</strong>: Use all cores? Recommended for cloud environments. Not recommended for cluster environments.; <strong>common</strong>: true</li>
 </ul>
 <h3 id="outputs_13">Outputs</h3>
 <ul>
