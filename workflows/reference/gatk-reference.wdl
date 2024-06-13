@@ -33,7 +33,7 @@ workflow gatk_reference {
         interval_list_name: "Name of the list of intervals to use when computing variants."
     }
 
-    #@ allow: SnakeCase
+    #@ exclude: SnakeCase
     input {
         String reference_fa_url
         String reference_fa_name
@@ -95,7 +95,7 @@ workflow gatk_reference {
         }
     }
 
-    #@ allow: SnakeCase
+    #@ exclude: SnakeCase
     output {
         File fasta = fasta_download.downloaded_file
         File fasta_index = faidx.fasta_index
