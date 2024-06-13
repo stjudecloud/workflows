@@ -135,7 +135,7 @@ workflow rnaseq_core {
         Int out_filter_multimap_n_max = 50
         Int pe_overlap_n_bases_min = 10
         Int chim_score_separation = 1
-        #@ exclude: SnakeCase
+        #@ except: SnakeCase
         Int chim_score_junction_nonGTAG = 0
         Int chim_junction_overhang_min = 10
         Int chim_segment_read_gap_max = 3

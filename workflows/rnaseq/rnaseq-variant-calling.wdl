@@ -39,9 +39,9 @@ workflow rnaseq_variant_calling {
         File calling_interval_list
         Array[File] known_vcfs
         Array[File] known_vcf_indexes
-        #@ exclude: SnakeCase
+        #@ except: SnakeCase
         File dbSNP_vcf
-        #@ exclude: SnakeCase
+        #@ except: SnakeCase
         File dbSNP_vcf_index
         String prefix = basename(bam, ".bam")
         Boolean bam_is_dup_marked = false
