@@ -28,6 +28,7 @@
 version 1.1
 
 # See the `read_groups` `parameter_meta` for definitions of each field
+#@ allow: SnakeCase
 struct ReadGroup {
     String ID
     String? BC
