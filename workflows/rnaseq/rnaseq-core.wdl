@@ -120,7 +120,7 @@ workflow rnaseq_core {
         String read_groups
         String prefix
         File? contaminant_db
-        SJMotifs align_sj_stitch_mismatch_n_max = SJMotifs {
+        SpliceJunctionMotifs align_sj_stitch_mismatch_n_max = SpliceJunctionMotifs {
             noncanonical_motifs: 5,
             GT_AG_and_CT_AC_motif: -1,
             GC_AG_and_CT_GC_motif: 5,

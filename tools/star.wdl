@@ -478,31 +478,31 @@ task alignment {
         String? read_groups
         Array[File] read_two_fastqs_gz = []  # TODO make Array[File]? for better docs
         Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
-        SJMotifs out_sj_filter_overhang_min = SJMotifs {
+        SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,
             GT_AG_and_CT_AC_motif: 12,
             GC_AG_and_CT_GC_motif: 12,
             AT_AC_and_GT_AT_motif: 12
         }
-        SJMotifs out_sj_filter_count_unique_min = SJMotifs {
+        SpliceJunctionMotifs out_sj_filter_count_unique_min = SpliceJunctionMotifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
             AT_AC_and_GT_AT_motif: 1
         }
-        SJMotifs out_sj_filter_count_total_min = SJMotifs {
+        SpliceJunctionMotifs out_sj_filter_count_total_min = SpliceJunctionMotifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
             AT_AC_and_GT_AT_motif: 1
         }
-        SJMotifs out_sj_filter_dist_to_other_sj_min = SJMotifs {
+        SpliceJunctionMotifs out_sj_filter_dist_to_other_sj_min = SpliceJunctionMotifs {
             noncanonical_motifs: 10,
             GT_AG_and_CT_AC_motif: 0,
             GC_AG_and_CT_GC_motif: 5,
             AT_AC_and_GT_AT_motif: 10
         }
-        SJMotifs align_sj_stitch_mismatch_n_max = SJMotifs {
+        SpliceJunctionMotifs align_sj_stitch_mismatch_n_max = SpliceJunctionMotifs {
             noncanonical_motifs: 0,
             GT_AG_and_CT_AC_motif: -1,
             GC_AG_and_CT_GC_motif: 0,
@@ -813,7 +813,7 @@ task alignment {
 
 # There are multiple Splice Junction Motif arguments for STAR
 # that are all formatted the same. Use this struct for consistency.
-struct SJMotifs {
+struct SpliceJunctionMotifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif
     Int GC_AG_and_CT_GC_motif
