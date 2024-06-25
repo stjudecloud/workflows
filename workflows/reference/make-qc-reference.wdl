@@ -59,6 +59,10 @@ workflow make_qc_reference {
     }
 
     input {
+        String reference_fa_url
+        String reference_fa_name
+        String gtf_url
+        String gtf_name
         Array[File] kraken_fastas = []
         Array[String] kraken_fasta_urls = []
         Array[String] kraken_libraries = [
@@ -76,10 +80,6 @@ workflow make_qc_reference {
             "CDS",
             "UTR",
         ]
-        String reference_fa_url
-        String reference_fa_name
-        String gtf_url
-        String gtf_name
         Boolean protein = false
         Int kraken_fastas_disk_size_gb = 10
         Int reference_fa_disk_size_gb = 10

@@ -34,15 +34,15 @@ workflow dnaseq_core_experimental {
         sample_override: "Value to override the SM field of *every* read group."
     }
     input {
+        File bwa_db
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
-        File bwa_db
-        Int reads_per_file = 10000000
         Array[ReadGroup] read_groups
         String prefix
+        String? sample_override
         String aligner = "mem"
         Boolean use_all_cores = false
-        String? sample_override
+        Int reads_per_file = 10000000
     }
 
     scatter (tuple in zip(

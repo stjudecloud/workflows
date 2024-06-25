@@ -34,6 +34,8 @@ workflow gatk_reference {
     }
 
     input {
+        Array[String] known_vcf_urls
+        Array[String] known_vcf_names
         String reference_fa_url
         String reference_fa_name
         String reference_fa_md5
@@ -41,8 +43,6 @@ workflow gatk_reference {
         String dbSNP_vcf_name
         String? dbSNP_vcf_index_url
         String? dbSNP_vcf_index_name
-        Array[String] known_vcf_urls
-        Array[String] known_vcf_names
         String? interval_list_url
         String? interval_list_name
     }

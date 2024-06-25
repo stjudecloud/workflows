@@ -1,7 +1,7 @@
 version 1.1
 
-import "../../tools/picard.wdl"
 import "../../tools/gatk4.wdl" as gatk
+import "../../tools/picard.wdl"
 
 workflow rnaseq_variant_calling {
     meta {
@@ -37,10 +37,10 @@ workflow rnaseq_variant_calling {
         File fasta_index
         File dict
         File calling_interval_list
-        Array[File] known_vcfs
-        Array[File] known_vcf_indexes
         File dbSNP_vcf
         File dbSNP_vcf_index
+        Array[File] known_vcfs
+        Array[File] known_vcf_indexes
         String prefix = basename(bam, ".bam")
         Boolean bam_is_dup_marked = false
         Int scatter_count = 6
