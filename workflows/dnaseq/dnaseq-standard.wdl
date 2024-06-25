@@ -34,13 +34,13 @@ workflow dnaseq_standard_experimental {
     input {
         File bam
         File bwa_db
-        Int reads_per_file = 10000000
+        String? sample_override
         String prefix = basename(bam, ".bam")
         String aligner = "mem"
         Boolean validate_input = true
         Boolean use_all_cores = false
+        Int reads_per_file = 10000000
         Int subsample_n_reads = -1
-        String? sample_override
     }
 
     call parse_input { input:

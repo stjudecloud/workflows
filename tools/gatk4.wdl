@@ -100,7 +100,6 @@ task base_recalibrator {
     input {
         File bam
         File bam_index
-        String outfile_name = basename(bam, ".bam") + ".recal.txt"
         File fasta
         File fasta_index
         File dict
@@ -108,11 +107,12 @@ task base_recalibrator {
         File dbSNP_vcf_index
         Array[File] known_indels_sites_vcfs
         Array[File] known_indels_sites_indices
+        String outfile_name = basename(bam, ".bam") + ".recal.txt"
+        Boolean use_original_quality_scores = false
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int ncpu = 4
-        Boolean use_original_quality_scores = false
-    }
+        }
 
     Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -170,10 +170,10 @@ task apply_bqsr {
         File bam_index
         File recalibration_report
         String prefix = basename(bam, ".bam")
+        Boolean use_original_quality_scores = false
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int ncpu = 4
-        Boolean use_original_quality_scores = false
     }
 
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + modify_disk_size_gb
@@ -249,11 +249,11 @@ task haplotype_caller {
         File dbSNP_vcf
         File dbSNP_vcf_index
         String prefix = basename(bam, ".bam")
+        Boolean use_soft_clipped_bases = false
         Int stand_call_conf = 20
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int ncpu = 4
-        Boolean use_soft_clipped_bases = false
     }
 
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
@@ -323,9 +323,9 @@ task variant_filtration {
         File fasta
         File fasta_index
         File dict
-        String prefix = basename(vcf, ".vcf.gz")
         Array[String] filter_names = ["FS", "QD"]
         Array[String] filter_expressions = ["FS > 30.0", "QD < 2.0"]
+        String prefix = basename(vcf, ".vcf.gz")
         Int cluster = 3
         Int window = 35
         Int modify_disk_size_gb = 0

@@ -34,15 +34,15 @@ workflow dnaseq_standard_fastq_experimental {
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
     }
     input {
+        File bwa_db
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
-        File bwa_db
-        Int reads_per_file = 10000000
         Array[ReadGroup] read_groups
         String prefix
         String aligner = "mem"
         Boolean validate_input = true
         Boolean use_all_cores = false
+        Int reads_per_file = 10000000
         Int subsample_n_reads = -1
     }
 
@@ -115,8 +115,8 @@ task parse_input {
     }
 
     input {
-        String aligner
         Array[Int] array_lengths
+        String aligner
     }
 
     command <<<

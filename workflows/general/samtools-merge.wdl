@@ -20,9 +20,9 @@ workflow samtools_merge {
     }
     input {
         Array[File] bams
-        Int max_length = 100
         String prefix = basename(bams[0], ".bam")  # TODO is this a sane default? Or should be required?
         Boolean use_all_cores = false
+        Int max_length = 100
     }
 
     Int bam_length = length(bams)

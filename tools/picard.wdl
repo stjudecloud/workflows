@@ -946,10 +946,10 @@ task scatter_interval_list {
 
     input {
         File interval_list
+        Int scatter_count
         String subdivision_mode = "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW"
         Boolean unique = true
         Boolean sort = true
-        Int scatter_count
     }
 
     command <<<
@@ -1012,10 +1012,10 @@ task create_sequence_dictionary {
 
     input {
         File fasta
-        String outfile_name = basename(fasta, ".fa") + ".dict"
         String? assembly_name
         String? fasta_url
         String? species
+        String outfile_name = basename(fasta, ".fa") + ".dict"
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
     }
