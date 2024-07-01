@@ -37,20 +37,20 @@ workflow star_db_build {
     }
 
     call util.download as reference_download { input:
-        url=reference_fa_url,
-        outfile_name=reference_fa_name,
-        md5sum=reference_fa_md5,
-        disk_size_gb=reference_fa_disk_size_gb,
+        url = reference_fa_url,
+        outfile_name = reference_fa_name,
+        md5sum = reference_fa_md5,
+        disk_size_gb = reference_fa_disk_size_gb,
     }
     call util.download as gtf_download { input:
-        url=gtf_url,
-        outfile_name=gtf_name,
-        md5sum=gtf_md5,
-        disk_size_gb=gtf_disk_size_gb,
+        url = gtf_url,
+        outfile_name = gtf_name,
+        md5sum = gtf_md5,
+        disk_size_gb = gtf_disk_size_gb,
     }
     call star.build_star_db { input:
-        reference_fasta=reference_download.downloaded_file,
-        gtf=gtf_download.downloaded_file,
+        reference_fasta = reference_download.downloaded_file,
+        gtf = gtf_download.downloaded_file,
     }
 
     output {

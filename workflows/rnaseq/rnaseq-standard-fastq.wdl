@@ -107,13 +107,13 @@ workflow rnaseq_standard_fastq {
     }
 
     call rnaseq_standard.parse_input { input:
-        input_strand=strandedness,
-        cleanse_xenograft=cleanse_xenograft,
-        contaminant_db=defined(contaminant_db)
+        input_strand = strandedness,
+        cleanse_xenograft,
+        contaminant_db = defined(contaminant_db)
     }
 
     scatter (rg in read_groups) {
-        call read_group.read_group_to_string after parse_input { input: read_group=rg }
+        call read_group.read_group_to_string after parse_input { input: read_group = rg }
     }
     String stringified_read_groups = sep(
         " , ", read_group_to_string.stringified_read_group
@@ -122,8 +122,8 @@ workflow rnaseq_standard_fastq {
     if (validate_input){
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
             call fq.fqlint { input:
-                read_one_fastq=reads.left,
-                read_two_fastq=reads.right,
+                read_one_fastq = reads.left,
+                read_two_fastq = reads.right,
             }
         }
     }
@@ -132,9 +132,9 @@ workflow rnaseq_standard_fastq {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
             call fq.subsample after parse_input { input:
-                read_one_fastq=reads.left,
-                read_two_fastq=reads.right,
-                record_count=reads_per_pair,
+                read_one_fastq = reads.left,
+                read_two_fastq = reads.right,
+                record_count = reads_per_pair,
             }
         }
     }
@@ -150,18 +150,18 @@ workflow rnaseq_standard_fastq {
     )
 
     call rnaseq_core_wf.rnaseq_core { input:
-        read_one_fastqs_gz=selected_read_one_fastqs,
-        read_two_fastqs_gz=selected_read_two_fastqs,
-        read_groups=stringified_read_groups,
-        prefix=prefix,
-        gtf=gtf,
-        star_db=star_db,
-        mark_duplicates=mark_duplicates,
-        contaminant_db=contaminant_db,
-        cleanse_xenograft=cleanse_xenograft,
-        xenocp_aligner=xenocp_aligner,
-        strandedness=strandedness,
-        use_all_cores=use_all_cores,
+        read_one_fastqs_gz = selected_read_one_fastqs,
+        read_two_fastqs_gz = selected_read_two_fastqs,
+        read_groups = stringified_read_groups,
+        prefix,
+        gtf,
+        star_db,
+        mark_duplicates,
+        contaminant_db,
+        cleanse_xenograft,
+        xenocp_aligner,
+        strandedness,
+        use_all_cores,
     }
 
     output {

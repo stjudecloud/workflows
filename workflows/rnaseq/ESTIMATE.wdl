@@ -25,15 +25,15 @@ workflow estimate {
     }
 
     call htseq.calc_tpm { input:
-        counts=counts_file,
-        gene_lengths=gene_lengths_file,
+        counts = counts_file,
+        gene_lengths = gene_lengths_file,
     }
     call estimate.run_estimate { input:
-        gene_expression_file=calc_tpm.tpm_file,
+        gene_expression_file = calc_tpm.tpm_file,
     }
 
     output {
-        File tpm=calc_tpm.tpm_file
-        File estimate_result=run_estimate.estimate_file
+        File tpm = calc_tpm.tpm_file
+        File estimate_result = run_estimate.estimate_file
     }
 }

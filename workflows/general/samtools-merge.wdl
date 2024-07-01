@@ -40,30 +40,30 @@ workflow samtools_merge {
         }
         scatter (list in bam_list){
             call samtools.merge as inner_merge { input:
-                bams=select_all(list),
-                prefix=prefix,
-                attach_rg=false,
-                combine_pg=false,
-                use_all_cores=use_all_cores,
+                bams = select_all(list),
+                prefix,
+                attach_rg = false,
+                combine_pg = false,
+                use_all_cores,
             }
         }
         call samtools.merge as final_merge { input:
-            bams=inner_merge.merged_bam,
-            prefix=prefix,
-            attach_rg=false,
-            combine_pg=true,
-            combine_rg=true,
-            use_all_cores=use_all_cores,
+            bams = inner_merge.merged_bam,
+            prefix,
+            attach_rg = false,
+            combine_pg = true,
+            combine_rg = true,
+            use_all_cores,
         }
     }
 
     if (bam_length < max_length){
         call samtools.merge as basic_merge { input:
-            bams=bams,
-            prefix=prefix,
-            attach_rg=false,
-            combine_pg=false,
-            use_all_cores=use_all_cores,
+            bams,
+            prefix,
+            attach_rg = false,
+            combine_pg = false,
+            use_all_cores,
         }
     }
 
