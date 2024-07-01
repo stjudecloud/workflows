@@ -138,10 +138,10 @@ workflow quality_check {
     }
 
     call parse_input { input:
-        gtf_provided=defined(gtf),
+        gtf_provided = defined(gtf),
         rna,
-        coverage_beds_len=length(coverage_beds),
-        coverage_labels=coverage_labels,
+        coverage_beds_len = length(coverage_beds),
+        coverage_labels,
     }
     call flag_filter.validate_flag_filter as kraken_filter_validator { input:
         flags = standard_filter
@@ -152,22 +152,22 @@ workflow quality_check {
         }
     }
 
-    call md5sum.compute_checksum after parse_input { input: file=bam }
+    call md5sum.compute_checksum after parse_input { input: file = bam }
 
-    call samtools.quickcheck after parse_input { input: bam=bam }
-    call util.compression_integrity after parse_input { input: bgzipped_file=bam }
+    call samtools.quickcheck after parse_input { input: bam }
+    call util.compression_integrity after parse_input { input: bgzipped_file = bam }
 
     if (subsample_n_reads > 0) {
         call samtools.subsample after quickcheck { input:
-            bam=bam,
-            prefix=prefix,
-            desired_reads=subsample_n_reads,
-            use_all_cores=use_all_cores,
+            bam,
+            prefix,
+            desired_reads = subsample_n_reads,
+            use_all_cores,
         }
         if (defined(subsample.sampled_bam)) {
             call samtools.index as subsample_index { input:
-                bam=select_first([subsample.sampled_bam, "undefined"]),
-                use_all_cores=use_all_cores,
+                bam = select_first([subsample.sampled_bam, "undefined"]),
+                use_all_cores,
             }
         }
     }
@@ -186,48 +186,48 @@ workflow quality_check {
         else prefix
 
     call picard.validate_bam after quickcheck { input:
-        bam=post_subsample_bam,
-        outfile_name=post_subsample_prefix + ".ValidateSamFile.txt",
-        succeed_on_errors=true,
-        ignore_list=[],
-        summary_mode=true,
+        bam = post_subsample_bam,
+        outfile_name = post_subsample_prefix + ".ValidateSamFile.txt",
+        succeed_on_errors = true,
+        ignore_list = [],
+        summary_mode = true,
     }
 
     call picard.collect_alignment_summary_metrics after quickcheck { input:
-        bam=post_subsample_bam,
-        prefix=post_subsample_prefix + ".CollectAlignmentSummaryMetrics",
+        bam = post_subsample_bam,
+        prefix = post_subsample_prefix + ".CollectAlignmentSummaryMetrics",
     }
     call picard.quality_score_distribution after quickcheck { input:
-        bam=post_subsample_bam,
-        prefix=post_subsample_prefix + ".QualityScoreDistribution",
+        bam = post_subsample_bam,
+        prefix = post_subsample_prefix + ".QualityScoreDistribution",
     }
     call fastqc_tasks.fastqc after quickcheck { input:
-        bam=post_subsample_bam,
-        prefix=post_subsample_prefix + ".fastqc_results",
-        use_all_cores=use_all_cores,
+        bam = post_subsample_bam,
+        prefix = post_subsample_prefix + ".fastqc_results",
+        use_all_cores,
     }
     call ngsderive.instrument after quickcheck { input:
-        bam=post_subsample_bam,
-        outfile_name=post_subsample_prefix + ".instrument.tsv",
+        bam = post_subsample_bam,
+        outfile_name = post_subsample_prefix + ".instrument.tsv",
     }
     call ngsderive.read_length after quickcheck { input:
-        bam=post_subsample_bam,
-        bam_index=post_subsample_bam_index,
-        outfile_name=post_subsample_prefix + ".readlength.tsv",
+        bam = post_subsample_bam,
+        bam_index = post_subsample_bam_index,
+        outfile_name = post_subsample_prefix + ".readlength.tsv",
     }
     call ngsderive.encoding after quickcheck { input:
-        ngs_files=[post_subsample_bam],
-        outfile_name=post_subsample_prefix + ".encoding.tsv",
-        num_reads=-1,
+        ngs_files = [post_subsample_bam],
+        outfile_name = post_subsample_prefix + ".encoding.tsv",
+        num_reads = -1,
     }
     call ngsderive.endedness after quickcheck { input:
-        bam=post_subsample_bam,
-        outfile_name=post_subsample_prefix + ".endedness.tsv",
-        lenient=true,
+        bam = post_subsample_bam,
+        outfile_name = post_subsample_prefix + ".endedness.tsv",
+        lenient = true,
     }
     call util.global_phred_scores after quickcheck { input:
-        bam=post_subsample_bam,
-        prefix=post_subsample_prefix,
+        bam = post_subsample_bam,
+        prefix = post_subsample_prefix,
     }
 
     call samtools.bam_to_fastq after quickcheck
@@ -245,7 +245,7 @@ workflow quality_check {
         fast_mode = (!rna),
         paired_end = true,  # matches default but prevents user from overriding
         interleaved = false,  # matches default but prevents user from overriding
-        use_all_cores = use_all_cores,
+        use_all_cores,
     }
 
     call fq.fqlint { input:
@@ -307,38 +307,38 @@ workflow quality_check {
     }
 
     call mosdepth.coverage as wg_coverage after quickcheck { input:
-        bam=post_subsample_bam,
-        bam_index=post_subsample_bam_index,
-        prefix=post_subsample_prefix + ".whole_genome",
+        bam = post_subsample_bam,
+        bam_index = post_subsample_bam_index,
+        prefix = post_subsample_prefix + ".whole_genome",
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
         call mosdepth.coverage as regions_coverage after quickcheck  { input:
-            bam=post_subsample_bam,
-            bam_index=post_subsample_bam_index,
-            coverage_bed=coverage_pair.left,
-            prefix=post_subsample_prefix + "." + coverage_pair.right,
+            bam = post_subsample_bam,
+            bam_index = post_subsample_bam_index,
+            coverage_bed = coverage_pair.left,
+            prefix = post_subsample_prefix + "." + coverage_pair.right,
         }
     }
 
     if (rna) {
         call ngsderive.junction_annotation after quickcheck { input:
-            bam=post_subsample_bam,
-            bam_index=post_subsample_bam_index,
-            gene_model=select_first([gtf, "undefined"]),
-            prefix=post_subsample_prefix,
+            bam = post_subsample_bam,
+            bam_index = post_subsample_bam_index,
+            gene_model = select_first([gtf, "undefined"]),
+            prefix = post_subsample_prefix,
         }
         call ngsderive.strandedness after quickcheck { input:
-            bam=post_subsample_bam,
-            bam_index=post_subsample_bam_index,
-            gene_model=select_first([gtf, "undefined"]),
-            outfile_name=post_subsample_prefix + ".strandedness.tsv",
+            bam = post_subsample_bam,
+            bam_index = post_subsample_bam_index,
+            gene_model = select_first([gtf, "undefined"]),
+            outfile_name = post_subsample_prefix + ".strandedness.tsv",
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam=select_first([bam_to_fastq.collated_bam, "undefined"]),
-            prefix=post_subsample_prefix + ".qualimap_rnaseq_results",
-            gtf=select_first([gtf, "undefined"]),
-            name_sorted=true,
-            paired_end=true,  # matches default but prevents user from overriding
+            bam = select_first([bam_to_fastq.collated_bam, "undefined"]),
+            prefix = post_subsample_prefix + ".qualimap_rnaseq_results",
+            gtf = select_first([gtf, "undefined"]),
+            name_sorted = true,
+            paired_end = true,  # matches default but prevents user from overriding
         }
     }
     if (mark_duplicates) {
@@ -346,7 +346,7 @@ workflow quality_check {
             bam = post_subsample_bam,
             create_bam = true,
             prefix = post_subsample_prefix + ".MarkDuplicates",
-            optical_distance = optical_distance,
+            optical_distance,
         }
         if (optical_distance > 0) {
             File markdups_metrics = markdups.mark_duplicates_metrics
@@ -379,7 +379,7 @@ workflow quality_check {
     }
 
     call multiqc_tasks.multiqc { input:
-        input_files=select_all(flatten([
+        input_files = select_all(flatten([
             [
                 validate_bam.validate_report,
                 flagstat.flagstat_report,
@@ -418,8 +418,8 @@ workflow quality_check {
             ),
             extra_multiqc_inputs,
         ])),
-        config=multiqc_config,
-        prefix=post_subsample_prefix + ".multiqc",
+        config = multiqc_config,
+        prefix = post_subsample_prefix + ".multiqc",
     }
 
     if (output_intermediate_files) {

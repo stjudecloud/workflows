@@ -87,14 +87,14 @@ workflow make_qc_reference {
     }
 
     call util.download as reference_download { input:
-        url=reference_fa_url,
-        outfile_name=reference_fa_name,
-        disk_size_gb=reference_fa_disk_size_gb,
+        url = reference_fa_url,
+        outfile_name = reference_fa_name,
+        disk_size_gb = reference_fa_disk_size_gb,
     }
     call util.download as gtf_download { input:
-        url=gtf_url,
-        outfile_name=gtf_name,
-        disk_size_gb=gtf_disk_size_gb,
+        url = gtf_url,
+        outfile_name = gtf_name,
+        disk_size_gb = gtf_disk_size_gb,
     }
 
     scatter (feature_type in coverage_feature_types) {
@@ -106,18 +106,18 @@ workflow make_qc_reference {
 
     scatter (url in kraken_fasta_urls) {
         call util.download as fastas_download { input:
-            url=url,
-            outfile_name="tmp.fa.gz",
-            disk_size_gb=kraken_fastas_disk_size_gb,
+            url,
+            outfile_name = "tmp.fa.gz",
+            disk_size_gb = kraken_fastas_disk_size_gb,
         }
     }
 
-    call kraken2.download_taxonomy { input: protein=protein }
+    call kraken2.download_taxonomy { input: protein }
 
     scatter (lib in kraken_libraries) {
         call kraken2.download_library { input:
-            library_name=lib,
-            protein=protein,
+            library_name = lib,
+            protein,
         }
     }
 
@@ -125,18 +125,18 @@ workflow make_qc_reference {
     Array[File] empty_array = []  # this structure is required by the WDL v1.1 spec
     if (custom_fastas != empty_array) {
         call kraken2.create_library_from_fastas { input:
-            fastas_gz=custom_fastas,
-            protein=protein,
+            fastas_gz = custom_fastas,
+            protein,
         }
     }
 
     call kraken2.build_db as kraken_build_db { input:
-        tarballs=flatten([
+        tarballs = flatten([
             [download_taxonomy.taxonomy],
             download_library.library,
             select_all([create_library_from_fastas.custom_library])
         ]),
-        protein=protein,
+        protein,
     }
 
     output {

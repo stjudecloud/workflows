@@ -135,6 +135,7 @@ workflow rnaseq_core {
         Int out_filter_multimap_n_max = 50
         Int pe_overlap_n_bases_min = 10
         Int chim_score_separation = 1
+        #@ except: SnakeCase
         Int chim_score_junction_nonGTAG = 0
         Int chim_junction_overhang_min = 10
         Int chim_segment_read_gap_max = 3
@@ -155,7 +156,7 @@ workflow rnaseq_core {
     call star.alignment { input:
         read_one_fastqs_gz,
         read_two_fastqs_gz,
-        star_db_tar_gz=star_db,
+        star_db_tar_gz = star_db,
         prefix,
         read_groups,
         use_all_cores,
@@ -172,24 +173,24 @@ workflow rnaseq_core {
     }
 
     call alignment_post_wf.alignment_post { input:
-        bam=alignment.star_bam,
-        mark_duplicates=mark_duplicates,
-        contaminant_db=contaminant_db,
-        cleanse_xenograft=cleanse_xenograft,
-        xenocp_aligner=xenocp_aligner,
-        use_all_cores=use_all_cores,
+        bam = alignment.star_bam,
+        mark_duplicates,
+        contaminant_db,
+        cleanse_xenograft,
+        xenocp_aligner,
+        use_all_cores,
     }
 
     call deeptools.bam_coverage as deeptools_bam_coverage { input:
-        bam=alignment_post.processed_bam,
-        bam_index=alignment_post.bam_index,
-        use_all_cores=use_all_cores,
+        bam = alignment_post.processed_bam,
+        bam_index = alignment_post.bam_index,
+        use_all_cores,
     }
 
     call ngsderive.strandedness as ngsderive_strandedness { input:
-        bam=alignment_post.processed_bam,
-        bam_index=alignment_post.bam_index,
-        gene_model=gtf,
+        bam = alignment_post.processed_bam,
+        bam_index = alignment_post.bam_index,
+        gene_model = gtf,
     }
 
     String htseq_strandedness = if (provided_strandedness != "")
@@ -197,10 +198,10 @@ workflow rnaseq_core {
         else htseq_strandedness_map[ngsderive_strandedness.strandedness_string]
 
     call htseq.count as htseq_count { input:
-        bam=alignment_post.processed_bam,
-        gtf=gtf,
-        strandedness=htseq_strandedness,
-        prefix=basename(alignment_post.processed_bam, "bam")
+        bam = alignment_post.processed_bam,
+        gtf,
+        strandedness = htseq_strandedness,
+        prefix = basename(alignment_post.processed_bam, "bam")
             + (
                 if provided_strandedness == ""
                 then ngsderive_strandedness.strandedness_string

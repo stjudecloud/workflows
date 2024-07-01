@@ -37,7 +37,9 @@ workflow rnaseq_variant_calling {
         File fasta_index
         File dict
         File calling_interval_list
+        #@ except: SnakeCase
         File dbSNP_vcf
+        #@ except: SnakeCase
         File dbSNP_vcf_index
         Array[File] known_vcfs
         Array[File] known_vcf_indexes

@@ -44,25 +44,25 @@ workflow markdups_post {
     }
 
     call picard.collect_insert_size_metrics { input:
-        bam=markdups_bam,
-        prefix=prefix + ".CollectInsertSizeMetrics",
+        bam = markdups_bam,
+        prefix = prefix + ".CollectInsertSizeMetrics",
     }
     call samtools.flagstat { input:
-        bam=markdups_bam,
-        outfile_name=prefix + ".flagstat.txt",
+        bam = markdups_bam,
+        outfile_name = prefix + ".flagstat.txt",
     }
 
     call mosdepth.coverage as wg_coverage { input:
-        bam=markdups_bam,
-        bam_index=markdups_bam_index,
-        prefix=prefix + "." + "whole_genome",
+        bam = markdups_bam,
+        bam_index = markdups_bam_index,
+        prefix = prefix + "." + "whole_genome",
     }
     scatter(coverage_pair in zip(coverage_beds, coverage_labels)) {
         call mosdepth.coverage as regions_coverage { input:
-            bam=markdups_bam,
-            bam_index=markdups_bam_index,
-            coverage_bed=coverage_pair.left,
-            prefix=prefix + "." + coverage_pair.right,
+            bam = markdups_bam,
+            bam_index = markdups_bam_index,
+            coverage_bed = coverage_pair.left,
+            prefix = prefix + "." + coverage_pair.right,
         }
     }
 
