@@ -220,6 +220,14 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FO
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
 <h2 id="cell_ranger_bam_to_fastqs">cell_ranger_bam_to_fastqs</h2>
+<dl>
+<dt>description</dt>
+<dd>Convert a 10x Genomics BAM file to FASTQs.</dd>
+<dt>allowNestedInputs</dt>
+<dd>true</dd>
+<dt>outputs</dt>
+<dd>{'fastqs': 'FASTQ files with reads.', 'fastqs_archive': 'Compressed archive of FASTQ files.', 'read1s': 'Gzipped read 1 FASTQ files.', 'read2s': 'Gzipped read 2 FASTQ files.'}</dd>
+</dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
@@ -253,6 +261,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 <li><code>read2s</code> (Array[File])</li>
 </ul>
 <h2 id="parse_input">parse_input</h2>
+<dl>
+<dt>description</dt>
+<dd>Parse 10x-bam-to-fastqs workflow inputs and validate</dd>
+</dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
 <ul>

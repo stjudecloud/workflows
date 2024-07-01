@@ -180,6 +180,14 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FO
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
 <h2 id="scrnaseq_standard">scrnaseq_standard</h2>
+<dl>
+<dt>description</dt>
+<dd>Align 10x Genomics FASTQ files to a reference genome and perform quantification.</dd>
+<dt>allowNestedInputs</dt>
+<dd>true</dd>
+<dt>outputs</dt>
+<dd>{'harmonized_bam': 'Aligned BAM file', 'bam_checksum': 'Checksum of aligned BAM file', 'bam_index': 'Index of aligned BAM file', 'qc': 'Quality control metrics', 'barcodes': 'Barcode information', 'features': 'Feature information', 'matrix': 'Gene expression matrix', 'filtered_gene_h5': 'Filtered gene expression matrix', 'raw_gene_h5': 'Raw gene expression matrix', 'raw_barcodes': 'Raw barcode information', 'raw_features': 'Raw feature information', 'raw_matrix': 'Raw gene expression matrix', 'mol_info_h5': 'Molecule information', 'web_summary': 'HTML summary', 'inferred_strandedness': 'Inferred strandedness'}</dd>
+</dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
