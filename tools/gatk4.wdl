@@ -103,7 +103,9 @@ task base_recalibrator {
         File fasta
         File fasta_index
         File dict
+        #@ except: SnakeCase
         File dbSNP_vcf
+        #@ except: SnakeCase
         File dbSNP_vcf_index
         Array[File] known_indels_sites_vcfs
         Array[File] known_indels_sites_indices
@@ -246,7 +248,9 @@ task haplotype_caller {
         File fasta
         File fasta_index
         File dict
+        #@ except: SnakeCase
         File dbSNP_vcf
+        #@ except: SnakeCase
         File dbSNP_vcf_index
         String prefix = basename(bam, ".bam")
         Boolean use_soft_clipped_bases = false

@@ -58,7 +58,9 @@ task build_star_db {
         String sjdb_gtf_tag_exon_parent_gene_type = "gene_type gene_biotype"
         Boolean use_all_cores = false
         Int genome_chr_bin_n_bits = 18
+        #@ except: SnakeCase
         Int genome_SA_index_n_bases = 14
+        #@ except: SnakeCase
         Int genome_SA_sparse_d = 1
         Int genome_suffix_length_max = -1
         Int sjdb_overhang = 125
@@ -549,10 +551,14 @@ task alignment {
         Int limit_out_sj_one_read = 1000
         Int limit_out_sj_collapsed = 1000000
         Int limit_sjdb_insert_n_sj = 1000000
+        #@ except: SnakeCase
         Int out_QS_conversion_add = 0
+        #@ except: SnakeCase
         Int out_sam_attr_IH_start = 1
         Int out_sam_mapq_unique = 254
+        #@ except: SnakeCase
         Int out_sam_flag_OR = 0
+        #@ except: SnakeCase
         Int out_sam_flag_AND = 65535
         Int out_filter_multimap_score_range = 1
         Int out_filter_multimap_n_max = 10
@@ -561,7 +567,9 @@ task alignment {
         Int out_filter_match_n_min = 0
         Int score_gap = 0
         Int score_gap_noncanon = -8
+        #@ except: SnakeCase
         Int score_gap_GCAG = -4
+        #@ except: SnakeCase
         Int score_gap_ATAC = -8
         Int score_del_open = -2
         Int score_del_base = -2
@@ -594,6 +602,7 @@ task alignment {
         Int chim_score_min = 0
         Int chim_score_drop_max = 20
         Int chim_score_separation = 10
+        #@ except: SnakeCase
         Int chim_score_junction_nonGTAG = -1
         Int chim_junction_overhang_min = 20
         Int chim_segment_read_gap_max = 0
@@ -813,6 +822,7 @@ task alignment {
 
 # There are multiple Splice Junction Motif arguments for STAR
 # that are all formatted the same. Use this struct for consistency.
+#@ except: SnakeCase
 struct SpliceJunctionMotifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif

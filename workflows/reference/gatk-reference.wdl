@@ -39,9 +39,13 @@ workflow gatk_reference {
         String reference_fa_url
         String reference_fa_name
         String reference_fa_md5
+        #@ except: SnakeCase
         String dbSNP_vcf_url
+        #@ except: SnakeCase
         String dbSNP_vcf_name
+        #@ except: SnakeCase
         String? dbSNP_vcf_index_url
+        #@ except: SnakeCase
         String? dbSNP_vcf_index_name
         String? interval_list_url
         String? interval_list_name
@@ -91,7 +95,9 @@ workflow gatk_reference {
         File fasta = fasta_download.downloaded_file
         File fasta_index = faidx.fasta_index
         File fasta_dict = create_sequence_dictionary.dictionary
+        #@ except: SnakeCase
         File? dbSNP_vcf = dbsnp.downloaded_file
+        #@ except: SnakeCase
         File? dbSNP_vcf_index = dbsnp_index.downloaded_file
         File? interval_list = intervals.downloaded_file
         Array[File] known_vcfs = known_vcf.downloaded_file
