@@ -210,8 +210,8 @@ task encoding {
     meta {
         description: "Derives the encoding of the input NGS file(s). Reports evidence supporting final results."
         outputs: {
-            encoding_file: "TSV file containing the `ngsderive encoding` report for all input files",
             inferred_encoding: "The most permissive encoding found among the input files, in string format",
+            encoding_file: "TSV file containing the `ngsderive encoding` report for all input files",
         }
     }
 
