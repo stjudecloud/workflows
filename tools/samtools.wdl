@@ -44,6 +44,9 @@ task quickcheck {
 task split {
     meta {
         description: "Runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
+        outputs: {
+            split_bams: "The split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
+        }
     }
 
     parameter_meta {
@@ -423,6 +426,9 @@ task filter {
     meta {
         description: "Filters a BAM based on its bitwise flag value."
         help: "This task is a wrapper around `samtools view`. This task will fail if there are no reads in the output BAM. This can happen either because the input BAM was empty or because the supplied `bitwise_filter` was too strict. If you want to down-sample a BAM, use the `subsample` task instead."
+        outputs: {
+            filtered_bam: "BAM file that has been filtered based on the input flags"
+        }
     }
 
     parameter_meta {
@@ -777,7 +783,7 @@ task bam_to_fastq {
     meta {
         description: "Converts an input BAM file into FASTQ(s) using `samtools fastq`."
         help: "If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
-        output: {
+        outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order). Only generated if `retain_collated_bam` and `paired_end` are both true. Has the name `~{prefix}.collated.bam`.",
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair. Only generated if `paired_end` is true and `interleaved` is false. Has the name `~{prefix}.R1.fastq.gz`.",
             read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair. Only generated if `paired_end` is true and `interleaved` is false. Has the name `~{prefix}.R2.fastq.gz`.",
@@ -1068,6 +1074,9 @@ task fixmate {
 task position_sorted_fixmate {
     meta {
         description: "Runs `samtools fixmate` on the position-sorted input BAM file and output a position-sorted BAM. `fixmate` fills in mate coordinates and insert size fields among other tags and fields. `samtools fixmate` assumes a name-sorted or name-collated input BAM. If you already have a collated BAM, please use the `fixmate` task. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM."
+        outputs: {
+            fixmate_bam: "BAM file with mate information added"
+        }
     }
 
     parameter_meta {
@@ -1166,6 +1175,7 @@ task position_sorted_fixmate {
     }
 }
 
+#@ except: NonmatchingOutput
 task markdup {
     meta {
         description: "**[DEPRECATED]** Runs `samtools markdup` on the position-sorted input BAM file. This creates a report and optionally a new BAM with duplicate reads marked."

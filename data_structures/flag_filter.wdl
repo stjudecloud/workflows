@@ -124,7 +124,7 @@ task validate_string_is_12bit_oct_dec_or_hex {
 workflow validate_flag_filter {
     meta {
         description: "Validates a FlagFilter struct."
-        output: {
+        outputs: {
             check: "Dummy output to enable caching."
         }
     }

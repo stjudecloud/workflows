@@ -70,7 +70,8 @@ workflow quality_check {
             junction_summary: "TSV file containing the `ngsderive junction-annotation` summary. Only present if `rna == true`",
             junctions: "TSV file containing a detailed list of annotated junctions. Only present if `rna == true`.",
             librarian_report: "A tar archive containing the `librarian` report and raw data. Only present if `run_librarian == true`.",
-            IntermediateFiles: "Any and all files produced as intermediate during pipeline processing. Only output if `output_intermediate_files == true`."
+            inferred_endedness: "TSV file containing the `ngsderive endedness` report",
+            intermediate_files: "Any and all files produced as intermediate during pipeline processing. Only output if `output_intermediate_files == true`."
         }
         allowNestedInputs: true
     }

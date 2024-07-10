@@ -8,6 +8,22 @@ version 1.1
 task count {
     meta {
         description: "This WDL task runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data."
+        outputs: {
+            bam: "Aligned BAM file",
+            bam_index: "BAM index file",
+            qc: "Quality control metrics in CSV format",
+            barcodes: "Barcodes in gzipped TSV format",
+            features: "Filtered features in gzipped TSV format",
+            matrix: "Filtered matrix of features",
+            filtered_gene_h5: "Filtered gene matrix in H5 format",
+            raw_gene_h5: "Raw gene matrix in H5 format",
+            raw_barcodes: "Raw barcodes in gzipped TSV format",
+            raw_features: "Raw features in gzipped TSV format",
+            raw_matrix: "Raw matrix of features",
+            mol_info_h5: "Molecule information in H5 format",
+            web_summary: "HTML summary of the run",
+            cloupe: "Cloupe file for visualization",
+        }
     }
 
     parameter_meta {
@@ -101,6 +117,12 @@ task count {
 task bamtofastq {
     meta {
         description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FASTQ files"
+        outputs: {
+            fastqs: "FASTQ files",
+            fastqs_archive: "FASTQ files in a tarball",
+            read_one_fastq_gz: "Read 1 FASTQ files",
+            read_two_fastq_gz: "Read 2 FASTQ files",
+        }
     }
 
     parameter_meta {

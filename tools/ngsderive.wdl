@@ -7,7 +7,7 @@ task strandedness {
         description: "Derives the experimental strandedness protocol used to generate the input RNA-Seq BAM file. Reports evidence supporting final results."
         outputs: {
             strandedness_file: "TSV file containing the `ngsderive strandedness` report",
-            strandedness: "The derived strandedness, in string format"
+            strandedness_string: "The derived strandedness, in string format",
         }
     }
 
@@ -93,7 +93,8 @@ task instrument {
     meta {
         description: "Derives the instrument used to sequence the input BAM file. Reports evidence supporting final results."
         outputs: {
-            instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file"
+            instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file",
+            instrument_string: "The derived instrument, in string format",
         }
     }
 
@@ -145,7 +146,7 @@ task read_length {
     meta {
         description: "Derives the original experimental read length of the input BAM. Reports evidence supporting final results."
         outputs: {
-            read_length_file: "TSV file containing the `ngsderive readlen` report for the input BAM file"
+            read_length_file: "TSV file containing the `ngsderive readlen` report for the input BAM file",
         }
     }
 
@@ -210,7 +211,7 @@ task encoding {
         description: "Derives the encoding of the input NGS file(s). Reports evidence supporting final results."
         outputs: {
             encoding_file: "TSV file containing the `ngsderive encoding` report for all input files",
-            inferred_encoding: "The most permissive encoding found among the input files, in string format"
+            inferred_encoding: "The most permissive encoding found among the input files, in string format",
         }
     }
 
@@ -287,7 +288,7 @@ task junction_annotation {
         external_help: "https://stjudecloud.github.io/ngsderive/subcommands/junction_annotation/"
         outputs: {
             junction_summary: "TSV file containing the `ngsderive junction-annotation` summary",
-            junctions: "TSV file containing a detailed list of annotated junctions"
+            junctions: "TSV file containing a detailed list of annotated junctions",
         }
     }
 
@@ -373,7 +374,7 @@ task endedness {
     meta {
         description: "Derives the endedness of the input BAM file. Reports evidence for final result."
         outputs: {
-            endedness_file: "TSV file containing the `ngsderive endedness` report"
+            endedness_file: "TSV file containing the `ngsderive endedness` report",
         }
     }
 

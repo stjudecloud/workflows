@@ -109,7 +109,7 @@ task split_string {
     meta {
         description: "Split a string into an array of strings based on a delimiter"
         outputs: {
-            split_string: "Split string as an array"
+            split_strings: "Split string as an array"
         }
     }
 
@@ -694,6 +694,9 @@ task qc_summary {
     #   Delaram+David okayed a switch to TSV
     meta {
         description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive."
+        outputs: {
+            summary: "QC summary file in JSON format"
+        }
     }
 
     parameter_meta {

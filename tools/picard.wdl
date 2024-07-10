@@ -818,6 +818,7 @@ task quality_score_distribution {
     }
 }
 
+#@ except: NonmatchingOutput
 task bam_to_fastq {
     meta {
         description: "**[Deprecated]** This WDL task converts the input BAM file into FASTQ format files. This task has been deprecated in favor of `samtools.bam_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
@@ -924,7 +925,7 @@ task scatter_interval_list {
         description: "Splits an interval list into smaller interval lists for parallel processing"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036897212-IntervalListTools-Picard"
         outputs: {
-            out: "The split interval lists",
+            interval_lists_scatter: "The split interval lists",
             interval_count: "The number of split interval lists"
         }
     }

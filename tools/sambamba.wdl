@@ -179,7 +179,8 @@ task markdup {
         description: "Marks duplicate reads in the input BAM file"
         outputs: {
             duplicate_marked_bam: "The input BAM with computationally determined duplicates marked.",
-            mark_duplicates_metrics: "Duplicate marking metrics output from sambamba"
+            duplicate_marked_bam_index: "Index file for the duplicate marked BAM",
+            markdup_log: "Log file from the markdup process"
         }
     }
 
