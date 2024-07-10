@@ -412,18 +412,18 @@ task merge_sam_files {
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
 
+    output {
+        File merged_bam = outfile_name
+        File merged_bam_index = outfile_name + ".bai"
+        File merged_bam_md5 = outfile_name + ".md5"
+    }
+
     runtime{
         cpu: if threading then 2 else 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
-    }
-
-    output {
-        File merged_bam = outfile_name
-        File merged_bam_index = outfile_name + ".bai"
-        File merged_bam_md5 = outfile_name + ".md5"
     }
 }
 
