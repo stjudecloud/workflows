@@ -127,8 +127,8 @@ task base_recalibrator {
             -I ~{bam} \
             ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
             -O ~{outfile_name} \
-            -known-sites ~{dbSNP_vcf} \
-            -known-sites ~{sep=" --known-sites " known_indels_sites_vcfs} \
+            --known-sites ~{dbSNP_vcf} \
+            ~{prefix("--known-sites ", known_indels_sites_vcfs)} \
             --spark-master local[~{ncpu}]
     >>>
 
