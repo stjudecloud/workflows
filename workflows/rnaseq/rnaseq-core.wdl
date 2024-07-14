@@ -4,7 +4,8 @@ import "../../tools/deeptools.wdl"
 import "../../tools/htseq.wdl"
 import "../../tools/ngsderive.wdl"
 import "../../tools/star.wdl"
-import "../general/alignment-post.wdl" as alignment_post_wf
+import "../general/alignment-post.wdl"
+    as alignment_post_wf
 
 workflow rnaseq_core {
     meta {
@@ -150,9 +151,7 @@ workflow rnaseq_core {
         "Inconclusive": "undefined",
         "": "undefined"
     }
-
     String provided_strandedness = strandedness
-
     call star.alignment { input:
         read_one_fastqs_gz,
         read_two_fastqs_gz,
@@ -171,7 +170,6 @@ workflow rnaseq_core {
         align_spliced_mate_map_l_min_over_l_mate,
         chim_score_drop_max,
     }
-
     call alignment_post_wf.alignment_post { input:
         bam = alignment.star_bam,
         mark_duplicates,
@@ -180,23 +178,19 @@ workflow rnaseq_core {
         xenocp_aligner,
         use_all_cores,
     }
-
     call deeptools.bam_coverage as deeptools_bam_coverage { input:
         bam = alignment_post.processed_bam,
         bam_index = alignment_post.bam_index,
         use_all_cores,
     }
-
     call ngsderive.strandedness as ngsderive_strandedness { input:
         bam = alignment_post.processed_bam,
         bam_index = alignment_post.bam_index,
         gene_model = gtf,
     }
-
     String htseq_strandedness = if (provided_strandedness != "")
         then htseq_strandedness_map[provided_strandedness]
         else htseq_strandedness_map[ngsderive_strandedness.strandedness_string]
-
     call htseq.count as htseq_count { input:
         bam = alignment_post.processed_bam,
         gtf,

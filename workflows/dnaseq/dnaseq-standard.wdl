@@ -5,8 +5,10 @@ version 1.1
 import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
-import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
-import "./dnaseq-core.wdl" as dnaseq_core_wf
+import "../general/bam-to-fastqs.wdl"
+    as bam_to_fastqs_wf
+import "./dnaseq-core.wdl"
+    as dnaseq_core_wf
 
 workflow dnaseq_standard_experimental {
     meta {
@@ -17,6 +19,7 @@ workflow dnaseq_standard_experimental {
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         bam: "Input BAM to realign"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
@@ -31,6 +34,7 @@ workflow dnaseq_standard_experimental {
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
         sample_override: "Value to override the SM field of *every* read group."
     }
+
     input {
         File bam
         File bwa_db
@@ -44,15 +48,13 @@ workflow dnaseq_standard_experimental {
     }
 
     call parse_input { input:
-        aligner
+        aligner,
     }
-
     if (validate_input) {
         call picard.validate_bam as validate_input_bam { input:
             bam,
         }
     }
-
     if (subsample_n_reads > 0) {
         call samtools.subsample after parse_input { input:
             bam,
@@ -61,17 +63,14 @@ workflow dnaseq_standard_experimental {
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
-
     call read_group.get_read_groups { input:
         bam = selected_bam,
     }
-
     call bam_to_fastqs_wf.bam_to_fastqs { input:
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding
         use_all_cores,
     }
-
     call dnaseq_core_wf.dnaseq_core_experimental { input:
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),

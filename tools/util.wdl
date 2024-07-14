@@ -306,7 +306,6 @@ task add_to_bam_header {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
-
     String outfile_name = prefix + ".bam"
 
     command <<<
@@ -453,7 +452,6 @@ task global_phred_scores {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
-
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
     command <<<

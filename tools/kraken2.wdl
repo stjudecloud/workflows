@@ -83,7 +83,6 @@ task download_library {
     }
 
     String db_name = "kraken2_"+library_name+"_library"
-
     Int disk_size_gb = (
         (
             if library_name=="bacteria" then 300
@@ -141,7 +140,6 @@ task create_library_from_fastas {
     }
 
     String db_name = "kraken2_custom_library"
-
     Float fastas_size = size(fastas_gz, "GiB")
     Int disk_size_gb = ceil(fastas_size * 5) + 10 + modify_disk_size_gb
 
@@ -231,7 +229,6 @@ task build_db {
             else ceil(tarballs_size * 2)
         ) + modify_memory_gb
     )
-
     String max_db_size_bytes = "~{max_db_size_gb}000000000"
 
     command <<<
@@ -352,9 +349,7 @@ task kraken {
     Int disk_size_gb = if store_sequences
         then disk_size_gb_calculation + ceil(read1_size + read2_size)
         else disk_size_gb_calculation
-
     Int memory_gb = ceil(db_size * 2) + modify_memory_gb
-
     String out_report = prefix + ".kraken2.txt"
     String out_sequences = prefix + ".kraken2.sequences.txt"
 

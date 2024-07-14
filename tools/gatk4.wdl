@@ -13,7 +13,7 @@ task split_n_cigar_reads {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         bam: "Input BAM format file to with unsplit reads containing Ns in their CIGAR strings."
         bam_index: "BAM index file corresponding to the input BAM"
         fasta: "Reference genome in FASTA format. Must be uncompressed."
@@ -80,7 +80,7 @@ task base_recalibrator {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         bam: "Input BAM format file on which to recabilbrate base quality scores"
         bam_index: "BAM index file corresponding to the input BAM"
         outfile_name: "Name for the output recalibration report."
@@ -114,7 +114,7 @@ task base_recalibrator {
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
         Int ncpu = 4
-        }
+    }
 
     Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -153,10 +153,9 @@ task apply_bqsr {
             recalibrated_bam: "Recalibrated BAM file",
             recalibrated_bam_index: "Index file for the recalibrated BAM"
         }
-
     }
 
-    parameter_meta  {
+    parameter_meta {
         bam: "Input BAM format file on which to apply base quality score recalibration"
         bam_index: "BAM index file corresponding to the input BAM"
         recalibration_report: "Recalibration report file"
@@ -218,7 +217,7 @@ task haplotype_caller {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         bam: "Input BAM format file on which to call variants"
         bam_index: "BAM index file corresponding to the input BAM"
         interval_list: {
@@ -300,7 +299,7 @@ task variant_filtration {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         vcf: "Input VCF format file to filter"
         vcf_index: "VCF index file corresponding to the input VCF"
         fasta: "Reference genome in FASTA format"
@@ -364,7 +363,7 @@ task variant_filtration {
 }
 
 task mark_duplicates_spark {
-     meta {
+    meta {
         description: "Marks duplicate reads in the input BAM file using GATK's Spark implementation of Picard's MarkDuplicates."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832682540699-MarkDuplicatesSpark"
         outputs: {
@@ -439,7 +438,6 @@ task mark_duplicates_spark {
             else ceil(bam_size + 10)
         ) + modify_disk_size_gb
     )
-
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<

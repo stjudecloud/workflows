@@ -127,7 +127,6 @@ task bamtofastq {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
-
     String data_arg = if (cellranger11) then "--cr11"
                         else if (longranger20) then "--lr10"
                         else if (gemcode) then "--gemcode"

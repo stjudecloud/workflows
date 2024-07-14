@@ -38,7 +38,7 @@ workflow bwa_db_build {
     }
 
     output {
-      File reference_fa = reference_download.downloaded_file
-      File bwa_db_tar_gz = build_bwa_db.bwa_db_tar_gz
+        File reference_fa = reference_download.downloaded_file
+        File bwa_db_tar_gz = build_bwa_db.bwa_db_tar_gz
     }
 }

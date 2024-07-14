@@ -140,7 +140,7 @@ task split {
     >>>
 
     output {
-       Array[File] split_bams = glob("*.bam")
+        Array[File] split_bams = glob("*.bam")
     }
 
     runtime {
@@ -180,7 +180,7 @@ task flagstat {
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_disk_size_gb = 0
-        # TODO should we support alt formats? Will they break MultiQC?
+    # TODO should we support alt formats? Will they break MultiQC?
     }
 
     Float bam_size = size(bam, "GiB")
@@ -200,7 +200,7 @@ task flagstat {
     >>>
 
     output {
-       File flagstat_report = outfile_name
+        File flagstat_report = outfile_name
     }
 
     runtime {
@@ -241,7 +241,6 @@ task index {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 1.2) + 10 + modify_disk_size_gb
-
     String outfile_name = basename(bam) + ".bai"
 
     command <<<
@@ -307,7 +306,6 @@ task subsample {
     }
 
     String suffixed = prefix + ".sampled"
-
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
@@ -664,7 +662,6 @@ task addreplacerg {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
-
     String outfile_name = prefix + ".bam"
 
     command <<<
@@ -740,7 +737,6 @@ task collate {
     Float bam_size = size(bam, "GiB")
     Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
-
     String outfile_name = prefix + ".bam"
 
     command <<<
@@ -1306,7 +1302,6 @@ task faidx {
 
     Float fasta_size = size(fasta, "GiB")
     Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
-
     String outfile_name = basename(fasta, ".gz") + ".fai"
 
     command <<<

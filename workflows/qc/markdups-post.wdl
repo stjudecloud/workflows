@@ -51,13 +51,12 @@ workflow markdups_post {
         bam = markdups_bam,
         outfile_name = prefix + ".flagstat.txt",
     }
-
     call mosdepth.coverage as wg_coverage { input:
         bam = markdups_bam,
         bam_index = markdups_bam_index,
         prefix = prefix + "." + "whole_genome",
     }
-    scatter(coverage_pair in zip(coverage_beds, coverage_labels)) {
+    scatter (coverage_pair in zip(coverage_beds, coverage_labels)) {
         call mosdepth.coverage as regions_coverage { input:
             bam = markdups_bam,
             bam_index = markdups_bam_index,
@@ -68,8 +67,7 @@ workflow markdups_post {
 
     output {
         File insert_size_metrics = collect_insert_size_metrics.insert_size_metrics
-        File insert_size_metrics_pdf
-            = collect_insert_size_metrics.insert_size_metrics_pdf
+        File insert_size_metrics_pdf = collect_insert_size_metrics.insert_size_metrics_pdf
         File flagstat_report = flagstat.flagstat_report
         File mosdepth_global_summary = wg_coverage.summary
         File mosdepth_global_dist = wg_coverage.global_dist

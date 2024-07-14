@@ -87,7 +87,6 @@ task mark_duplicates {
             else ceil(bam_size + 10)
         ) + modify_disk_size_gb
     )
-
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -201,7 +200,6 @@ task validate_bam {
     String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
-
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -304,7 +302,6 @@ task sort {
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
-
     String outfile_name = prefix + ".bam"
 
     command <<<
@@ -391,9 +388,7 @@ task merge_sam_files {
     Float bams_size = size(bams, "GiB")
     Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
-
     Array[String] input_arg = prefix("--INPUT ", bams)
-
     String outfile_name = prefix + ".bam"
 
     command <<<
@@ -412,18 +407,18 @@ task merge_sam_files {
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
 
-    runtime{
+    output {
+        File merged_bam = outfile_name
+        File merged_bam_index = outfile_name + ".bai"
+        File merged_bam_md5 = outfile_name + ".md5"
+    }
+
+    runtime {
         cpu: if threading then 2 else 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
-    }
-
-    output {
-        File merged_bam = outfile_name
-        File merged_bam_index = outfile_name + ".bai"
-        File merged_bam_md5 = outfile_name + ".md5"
     }
 }
 
@@ -465,7 +460,6 @@ task clean_sam {
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
-
     String outfile_name = prefix + ".bam"
 
     command <<<
@@ -865,7 +859,7 @@ task bam_to_fastq {
         File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
     }
 
-    runtime{
+    runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -929,7 +923,7 @@ task scatter_interval_list {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         interval_list: "Input interval list to split"
         subdivision_mode: {
             description: "How to subdivide the intervals",

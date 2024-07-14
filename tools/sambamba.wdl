@@ -32,7 +32,6 @@ task index {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 1.2) + 10 + modify_disk_size_gb
-
     String outfile_name = basename(bam) + ".bai"
 
     command <<<
@@ -148,7 +147,6 @@ task sort {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 3) + 10 + modify_disk_size_gb
-
     String outfile_name = prefix + ".bam"
 
     command <<<
@@ -274,7 +272,7 @@ task flagstat {
     >>>
 
     output {
-       File flagstat_report = outfile_name
+        File flagstat_report = outfile_name
     }
 
     runtime {

@@ -26,7 +26,6 @@ task multiqc {
 
     Float input_size = size(input_files, "GiB")
     Int disk_size_gb = ceil(input_size) + 10 + modify_disk_size_gb
-
     String out_tar_gz = prefix + ".tar.gz"
 
     command <<<

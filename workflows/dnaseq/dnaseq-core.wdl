@@ -7,8 +7,10 @@ import "../../tools/bwa.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
-import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
-import "../general/samtools-merge.wdl" as samtools_merge_wf
+import "../general/bam-to-fastqs.wdl"
+    as bam_to_fastqs_wf
+import "../general/samtools-merge.wdl"
+    as samtools_merge_wf
 
 workflow dnaseq_core_experimental {
     meta {
@@ -19,6 +21,7 @@ workflow dnaseq_core_experimental {
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
@@ -33,6 +36,7 @@ workflow dnaseq_core_experimental {
         use_all_cores: "Use all cores? Recommended for cloud environments."
         sample_override: "Value to override the SM field of *every* read group."
     }
+
     input {
         File bwa_db
         Array[File] read_one_fastqs_gz
@@ -48,7 +52,8 @@ workflow dnaseq_core_experimental {
     scatter (tuple in zip(
         zip(read_one_fastqs_gz, read_two_fastqs_gz),
         read_groups
-    )) {
+    )
+    ) {
         if (defined(sample_override)) {
             # override the SM field of every read group
             ReadGroup rg = ReadGroup{
@@ -68,23 +73,18 @@ workflow dnaseq_core_experimental {
                 SM: sample_override
             }
         }
-
         call read_group.read_group_to_string { input:
-            read_group = select_first([rg, tuple.right])
+            read_group = select_first([rg, tuple.right]),
         }
-
         String rg_string = "@RG " + read_group_to_string.stringified_read_group
-
         call util.split_fastq as read_ones { input:
             fastq = tuple.left.left,
-            reads_per_file = reads_per_file
+            reads_per_file = reads_per_file,
         }
-
         call util.split_fastq as read_twos { input:
             fastq = tuple.left.right,
-            reads_per_file = reads_per_file
+            reads_per_file = reads_per_file,
         }
-
         scatter (t in zip(read_ones.fastqs, read_twos.fastqs)) {
             if (aligner == "mem") {
                 call bwa.bwa_mem { input:
@@ -119,7 +119,7 @@ workflow dnaseq_core_experimental {
                 }
             }
             call picard.sort as sort { input:
-                 bam = select_first([bwa_mem.bam, bwa_aln_pe.bam])
+                bam = select_first([bwa_mem.bam, bwa_aln_pe.bam]),
             }
         }
     }
@@ -128,7 +128,6 @@ workflow dnaseq_core_experimental {
         prefix,
         use_all_cores,
     }
-
     call samtools.index { input:
         bam = rg_merge.merged_bam,
     }

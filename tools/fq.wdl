@@ -70,11 +70,9 @@ task fqlint {
 
     Float read1_size = size(read_one_fastq, "GiB")
     Float read2_size = size(read_two_fastq, "GiB")
-
     Int memory_gb = (
         ceil((read1_size + read2_size) * 0.25) + 4 + modify_memory_gb
     )
-
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
     command <<<
@@ -138,14 +136,11 @@ task subsample {
 
     Float read1_size = size(read_one_fastq, "GiB")
     Float read2_size = size(read_two_fastq, "GiB")
-
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
-
     String probability_arg = if (probability < 1.0 && probability > 0)
         then "-p ~{probability}"
         else ""
     String record_count_arg = if (record_count > 0) then "-n ~{record_count}" else ""
-
     String r1_dst = prefix + "_R1.subsampled.fastq.gz"
     String r2_dst = prefix + "_R2.subsampled.fastq.gz"
 

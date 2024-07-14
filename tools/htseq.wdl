@@ -87,12 +87,9 @@ task count {
     }
 
     String outfile_name = prefix + ".feature-counts.txt"
-
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
-
     Int memory_gb = ceil(bam_size) + 5 + modify_memory_gb  # TODO what's the memory usage like if the BAM is name sorted?
-
     Int disk_size_gb = ceil((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb  # TODO why would htseq need this much disk?
 
     command <<<

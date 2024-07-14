@@ -19,8 +19,10 @@ version 1.1
 
 import "../../data_structures/read_group.wdl"
 import "../../tools/fq.wdl"
-import "./rnaseq-core.wdl" as rnaseq_core_wf
-import "./rnaseq-standard.wdl" as rnaseq_standard
+import "./rnaseq-core.wdl"
+    as rnaseq_core_wf
+import "./rnaseq-standard.wdl"
+    as rnaseq_standard
 
 workflow rnaseq_standard_fastq {
     meta {
@@ -109,17 +111,17 @@ workflow rnaseq_standard_fastq {
     call rnaseq_standard.parse_input { input:
         input_strand = strandedness,
         cleanse_xenograft,
-        contaminant_db = defined(contaminant_db)
+        contaminant_db = defined(contaminant_db),
     }
-
     scatter (rg in read_groups) {
-        call read_group.read_group_to_string after parse_input { input: read_group = rg }
+        call read_group.read_group_to_string after parse_input { input:
+            read_group = rg,
+        }
     }
     String stringified_read_groups = sep(
         " , ", read_group_to_string.stringified_read_group
     )
-
-    if (validate_input){
+    if (validate_input) {
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
             call fq.fqlint { input:
                 read_one_fastq = reads.left,
@@ -127,7 +129,6 @@ workflow rnaseq_standard_fastq {
             }
         }
     }
-
     if (subsample_n_reads > 0) {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
@@ -148,7 +149,6 @@ workflow rnaseq_standard_fastq {
             read_two_fastqs_gz
         ])
     )
-
     call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,

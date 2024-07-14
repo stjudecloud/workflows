@@ -41,11 +41,9 @@ task rnaseq {
     String out_tar_gz = prefix + ".tar.gz"
     String name_sorted_arg = if (name_sorted) then "-s" else ""
     String paired_end_arg = if (paired_end) then "-pe" else ""
-
     Int java_heap_size = ceil(memory_gb * 0.9)
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
-
     # Qualimap has an inefficient name sorting algorithm and will
     # use an excessive amount of storage.
     Int disk_size_gb = (
@@ -116,9 +114,7 @@ task bamqc {
 
     String out_directory = prefix + ".qualimap_bamqc_results"
     String out_tar_gz = out_directory + ".tar.gz"
-
     Int java_heap_size = ceil(memory_gb * 0.9)
-
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 

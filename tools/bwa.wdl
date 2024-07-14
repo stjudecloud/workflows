@@ -3,7 +3,6 @@
 version 1.1
 
 # TODO there are probably BWA params we can expose. Have not checked
-
 task bwa_aln {
     meta {
         description: "Maps Single-End FASTQ files to BAM format using bwa aln"
@@ -46,7 +45,6 @@ task bwa_aln {
     }
 
     String output_bam = prefix + ".bam"
-
     Float input_fastq_size = size(fastq, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = (
@@ -143,7 +141,6 @@ task bwa_aln_pe {
     }
 
     String output_bam = prefix + ".bam"
-
     Float input_fastq_size = (
         size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
     )
@@ -238,13 +235,11 @@ task bwa_mem {
     }
 
     String output_bam = prefix + ".bam"
-
     Float input_fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = (
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
     )
-
     File read_two_file = select_first([read_two_fastq_gz, ""])
 
     command <<<

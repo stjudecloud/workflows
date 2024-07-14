@@ -3,8 +3,10 @@ version 1.1
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
-import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
-import "./rnaseq-core.wdl" as rnaseq_core_wf
+import "../general/bam-to-fastqs.wdl"
+    as bam_to_fastqs_wf
+import "./rnaseq-core.wdl"
+    as rnaseq_core_wf
 
 workflow rnaseq_standard {
     meta {
@@ -70,15 +72,13 @@ workflow rnaseq_standard {
     call parse_input { input:
         input_strand = strandedness,
         cleanse_xenograft,
-        contaminant_db = defined(contaminant_db)
+        contaminant_db = defined(contaminant_db),
     }
-
     if (validate_input) {
         call picard.validate_bam as validate_input_bam after parse_input { input:
             bam,
         }
     }
-
     if (subsample_n_reads > 0) {
         call samtools.subsample after parse_input { input:
             bam,
@@ -87,7 +87,6 @@ workflow rnaseq_standard {
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
-
     call util.get_read_groups after parse_input { input:
         bam = selected_bam,
         format_for_star = true,  # matches default but prevents user from overriding
@@ -97,7 +96,6 @@ workflow rnaseq_standard {
         paired_end = true,  # matches default but prevents user from overriding
         use_all_cores,
     }
-
     call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),

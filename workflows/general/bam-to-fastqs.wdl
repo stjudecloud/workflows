@@ -25,7 +25,9 @@ workflow bam_to_fastqs {
         Boolean use_all_cores = false
     }
 
-    call samtools.quickcheck { input: bam = bam }
+    call samtools.quickcheck { input:
+        bam = bam,
+    }
     call samtools.split { input:
         bam,
         use_all_cores,
@@ -38,10 +40,7 @@ workflow bam_to_fastqs {
             use_all_cores,
         }
     }
-
-    scatter (reads in
-        zip(bam_to_fastq.read_one_fastq_gz, bam_to_fastq.read_two_fastq_gz)
-    ) {
+    scatter (reads in zip(bam_to_fastq.read_one_fastq_gz, bam_to_fastq.read_two_fastq_gz)) {
         call fq.fqlint { input:
             read_one_fastq = select_first([reads.left, "undefined"]),
             read_two_fastq = reads.right,

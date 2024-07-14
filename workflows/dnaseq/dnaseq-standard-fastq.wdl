@@ -4,7 +4,8 @@ version 1.1
 
 import "../../data_structures/read_group.wdl"
 import "../../tools/fq.wdl"
-import "./dnaseq-core.wdl" as dnaseq_core_wf
+import "./dnaseq-core.wdl"
+    as dnaseq_core_wf
 
 workflow dnaseq_standard_fastq_experimental {
     meta {
@@ -15,6 +16,7 @@ workflow dnaseq_standard_fastq_experimental {
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
@@ -33,6 +35,7 @@ workflow dnaseq_standard_fastq_experimental {
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
     }
+
     input {
         File bwa_db
         Array[File] read_one_fastqs_gz
@@ -48,10 +51,9 @@ workflow dnaseq_standard_fastq_experimental {
 
     call parse_input { input:
         aligner,
-        array_lengths = [length(read_one_fastqs_gz), length(read_two_fastqs_gz), length(read_groups)]
+        array_lengths = [length(read_one_fastqs_gz), length(read_two_fastqs_gz), length(read_groups)],
     }
-
-    if (validate_input){
+    if (validate_input) {
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
             call fq.fqlint { input:
                 read_one_fastq = reads.left,
@@ -59,7 +61,6 @@ workflow dnaseq_standard_fastq_experimental {
             }
         }
     }
-
     if (subsample_n_reads > 0) {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
@@ -80,7 +81,6 @@ workflow dnaseq_standard_fastq_experimental {
             read_two_fastqs_gz
         ])
     )
-
     call dnaseq_core_wf.dnaseq_core_experimental { input:
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,
@@ -89,7 +89,7 @@ workflow dnaseq_standard_fastq_experimental {
         read_groups,
         prefix,
         aligner,
-        use_all_cores
+        use_all_cores,
     }
 
     output {

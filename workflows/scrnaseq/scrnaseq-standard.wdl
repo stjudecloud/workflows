@@ -35,7 +35,8 @@ import "../../tools/md5sum.wdl"
 import "../../tools/ngsderive.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
-import "./10x-bam-to-fastqs.wdl" as bam_to_fastqs
+import "./10x-bam-to-fastqs.wdl"
+    as bam_to_fastqs
 
 workflow scrnaseq_standard {
     meta {
@@ -59,6 +60,7 @@ workflow scrnaseq_standard {
             inferred_strandedness: "Inferred strandedness",
         }
     }
+
     parameter_meta {
         bam: "Input BAM format file to quality check"
         gtf: "Gzipped GTF feature file"
@@ -84,7 +86,6 @@ workflow scrnaseq_standard {
             bam,
         }
     }
-
     if (subsample_n_reads > 0) {
         call samtools.subsample { input:
             bam,
@@ -93,26 +94,27 @@ workflow scrnaseq_standard {
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
-
     call bam_to_fastqs.cell_ranger_bam_to_fastqs { input:
         bam = selected_bam,
         use_all_cores,
     }
-
     call cellranger.count { input:
         fastqs_tar_gz = cell_ranger_bam_to_fastqs.fastqs_archive,
         transcriptome_tar_gz,
         id = prefix,
         use_all_cores,
     }
-    call picard.validate_bam { input: bam = count.bam }
+    call picard.validate_bam { input:
+        bam = count.bam,
+    }
     call ngsderive.strandedness { input:
         bam = count.bam,
         bam_index = count.bam_index,
         gene_model = gtf,
     }
-
-    call md5sum.compute_checksum { input: file = count.bam }
+    call md5sum.compute_checksum { input:
+        file = count.bam,
+    }
 
     output {
         File harmonized_bam = count.bam

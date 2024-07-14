@@ -138,20 +138,19 @@ workflow validate_flag_filter {
     }
 
     call validate_string_is_12bit_oct_dec_or_hex as validate_include_if_any { input:
-        number = flags.include_if_any
+        number = flags.include_if_any,
     }
     call validate_string_is_12bit_oct_dec_or_hex as validate_include_if_all { input:
-        number = flags.include_if_all
+        number = flags.include_if_all,
     }
     call validate_string_is_12bit_oct_dec_or_hex as validate_exclude_if_any { input:
-        number = flags.exclude_if_any
+        number = flags.exclude_if_any,
     }
     call validate_string_is_12bit_oct_dec_or_hex as validate_exclude_if_all { input:
-        number = flags.exclude_if_all
+        number = flags.exclude_if_all,
     }
 
     output {
         String check = "passed"
     }
-
 }
