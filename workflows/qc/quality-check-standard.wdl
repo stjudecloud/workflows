@@ -146,23 +146,13 @@ workflow quality_check {
         coverage_beds_len = length(coverage_beds),
         coverage_labels,
     }
-    call flag_filter.validate_flag_filter as kraken_filter_validator { input:
-        flags = standard_filter,
-    }
+    call flag_filter.validate_flag_filter as kraken_filter_validator { input: flags = standard_filter }
     if (run_comparative_kraken) {
-        call flag_filter.validate_flag_filter as comparative_kraken_filter_validator { input:
-            flags = comparative_filter,
-        }
+        call flag_filter.validate_flag_filter as comparative_kraken_filter_validator { input: flags = comparative_filter }
     }
-    call md5sum.compute_checksum after parse_input { input:
-        file = bam,
-    }
-    call samtools.quickcheck after parse_input { input:
-        bam,
-    }
-    call util.compression_integrity after parse_input { input:
-        bgzipped_file = bam,
-    }
+    call md5sum.compute_checksum after parse_input { input: file = bam }
+    call samtools.quickcheck after parse_input { input: bam }
+    call util.compression_integrity after parse_input { input: bgzipped_file = bam }
     if (subsample_n_reads > 0) {
         call samtools.subsample after quickcheck { input:
             bam,
@@ -261,9 +251,7 @@ workflow quality_check {
         use_all_cores = use_all_cores,
     }
     if (run_librarian) {
-        call libraran_tasks.librarian after fqlint { input:
-            read_one_fastq = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
-        }
+        call libraran_tasks.librarian after fqlint { input: read_one_fastq = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]) }
     }
     if (run_comparative_kraken) {
         call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck after comparative_kraken_filter_validator { input:

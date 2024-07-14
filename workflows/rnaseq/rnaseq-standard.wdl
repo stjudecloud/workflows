@@ -75,9 +75,7 @@ workflow rnaseq_standard {
         contaminant_db = defined(contaminant_db),
     }
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam after parse_input { input:
-            bam,
-        }
+        call picard.validate_bam as validate_input_bam after parse_input { input: bam }
     }
     if (subsample_n_reads > 0) {
         call samtools.subsample after parse_input { input:

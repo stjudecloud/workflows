@@ -42,9 +42,7 @@ workflow alignment_post {
         Boolean use_all_cores = false
     }
 
-    call picard.sort as picard_sort { input:
-        bam,
-    }
+    call picard.sort as picard_sort { input: bam }
     if (cleanse_xenograft) {
         call samtools.index as pre_xenocp_index { input:
             bam = picard_sort.sorted_bam,
@@ -59,9 +57,7 @@ workflow alignment_post {
         }
     }
     if (mark_duplicates) {
-        call picard.mark_duplicates as picard_markdup { input:
-            bam = select_first([xenocp.bam, picard_sort.sorted_bam]),
-        }
+        call picard.mark_duplicates as picard_markdup { input: bam = select_first([xenocp.bam, picard_sort.sorted_bam]) }
     }
     File aligned_bam = select_first([
         picard_markdup.duplicate_marked_bam,
@@ -74,12 +70,8 @@ workflow alignment_post {
     }
     File aligned_bam_index = samtools_index.bam_index
     # TODO: should we output the validater report?
-    call picard.validate_bam { input:
-        bam = aligned_bam,
-    }
-    call md5sum.compute_checksum { input:
-        file = aligned_bam,
-    }
+    call picard.validate_bam { input: bam = aligned_bam }
+    call md5sum.compute_checksum { input: file = aligned_bam }
 
     output {
         File processed_bam = aligned_bam

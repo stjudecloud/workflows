@@ -72,9 +72,7 @@ workflow cell_ranger_bam_to_fastqs {
         Boolean use_all_cores = false
     }
 
-    call samtools.quickcheck { input:
-        bam,
-    }
+    call samtools.quickcheck { input: bam }
     call cellranger.bamtofastq { input:
         bam,
         cellranger11,

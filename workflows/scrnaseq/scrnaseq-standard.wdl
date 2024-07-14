@@ -82,9 +82,7 @@ workflow scrnaseq_standard {
     }
 
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
-            bam,
-        }
+        call picard.validate_bam as validate_input_bam { input: bam }
     }
     if (subsample_n_reads > 0) {
         call samtools.subsample { input:
@@ -104,17 +102,13 @@ workflow scrnaseq_standard {
         id = prefix,
         use_all_cores,
     }
-    call picard.validate_bam { input:
-        bam = count.bam,
-    }
+    call picard.validate_bam { input: bam = count.bam }
     call ngsderive.strandedness { input:
         bam = count.bam,
         bam_index = count.bam_index,
         gene_model = gtf,
     }
-    call md5sum.compute_checksum { input:
-        file = count.bam,
-    }
+    call md5sum.compute_checksum { input: file = count.bam }
 
     output {
         File harmonized_bam = count.bam

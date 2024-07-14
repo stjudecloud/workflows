@@ -73,9 +73,7 @@ workflow dnaseq_core_experimental {
                 SM: sample_override
             }
         }
-        call read_group.read_group_to_string { input:
-            read_group = select_first([rg, tuple.right]),
-        }
+        call read_group.read_group_to_string { input: read_group = select_first([rg, tuple.right]) }
         String rg_string = "@RG " + read_group_to_string.stringified_read_group
         call util.split_fastq as read_ones { input:
             fastq = tuple.left.left,
@@ -118,9 +116,7 @@ workflow dnaseq_core_experimental {
                     use_all_cores,
                 }
             }
-            call picard.sort as sort { input:
-                bam = select_first([bwa_mem.bam, bwa_aln_pe.bam]),
-            }
+            call picard.sort as sort { input: bam = select_first([bwa_mem.bam, bwa_aln_pe.bam]) }
         }
     }
     call samtools_merge_wf.samtools_merge as rg_merge { input:
@@ -128,9 +124,7 @@ workflow dnaseq_core_experimental {
         prefix,
         use_all_cores,
     }
-    call samtools.index { input:
-        bam = rg_merge.merged_bam,
-    }
+    call samtools.index { input: bam = rg_merge.merged_bam }
 
     output {
         File harmonized_bam = rg_merge.merged_bam

@@ -109,9 +109,7 @@ workflow make_qc_reference {
             disk_size_gb = kraken_fastas_disk_size_gb,
         }
     }
-    call kraken2.download_taxonomy { input:
-        protein,
-    }
+    call kraken2.download_taxonomy { input: protein }
     scatter (lib in kraken_libraries) {
         call kraken2.download_library { input:
             library_name = lib,

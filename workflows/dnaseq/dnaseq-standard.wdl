@@ -47,13 +47,9 @@ workflow dnaseq_standard_experimental {
         Int subsample_n_reads = -1
     }
 
-    call parse_input { input:
-        aligner,
-    }
+    call parse_input { input: aligner }
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
-            bam,
-        }
+        call picard.validate_bam as validate_input_bam { input: bam }
     }
     if (subsample_n_reads > 0) {
         call samtools.subsample after parse_input { input:
@@ -63,9 +59,7 @@ workflow dnaseq_standard_experimental {
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
-    call read_group.get_read_groups { input:
-        bam = selected_bam,
-    }
+    call read_group.get_read_groups { input: bam = selected_bam }
     call bam_to_fastqs_wf.bam_to_fastqs { input:
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding

@@ -56,12 +56,8 @@ workflow gatk_reference {
         outfile_name = reference_fa_name,
         md5sum = reference_fa_md5,
     }
-    call samtools.faidx { input:
-        fasta = fasta_download.downloaded_file,
-    }
-    call picard.create_sequence_dictionary { input:
-        fasta = fasta_download.downloaded_file,
-    }
+    call samtools.faidx { input: fasta = fasta_download.downloaded_file }
+    call picard.create_sequence_dictionary { input: fasta = fasta_download.downloaded_file }
     call util.download as dbsnp { input:
         url = dbSNP_vcf_url,
         outfile_name = dbSNP_vcf_name,

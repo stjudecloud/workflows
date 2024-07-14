@@ -28,9 +28,7 @@ workflow estimate {
         counts = counts_file,
         gene_lengths = gene_lengths_file,
     }
-    call estimate.run_estimate { input:
-        gene_expression_file = calc_tpm.tpm_file,
-    }
+    call estimate.run_estimate { input: gene_expression_file = calc_tpm.tpm_file }
 
     output {
         File tpm = calc_tpm.tpm_file

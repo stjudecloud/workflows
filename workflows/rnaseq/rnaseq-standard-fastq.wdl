@@ -114,9 +114,7 @@ workflow rnaseq_standard_fastq {
         contaminant_db = defined(contaminant_db),
     }
     scatter (rg in read_groups) {
-        call read_group.read_group_to_string after parse_input { input:
-            read_group = rg,
-        }
+        call read_group.read_group_to_string after parse_input { input: read_group = rg }
     }
     String stringified_read_groups = sep(
         " , ", read_group_to_string.stringified_read_group

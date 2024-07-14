@@ -33,9 +33,7 @@ workflow bwa_db_build {
         disk_size_gb = reference_fa_disk_size_gb,
         md5sum = reference_fa_md5,
     }
-    call bwa.build_bwa_db { input:
-        reference_fasta = reference_download.downloaded_file,
-    }
+    call bwa.build_bwa_db { input: reference_fasta = reference_download.downloaded_file }
 
     output {
         File reference_fa = reference_download.downloaded_file
