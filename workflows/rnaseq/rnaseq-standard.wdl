@@ -3,10 +3,8 @@ version 1.1
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
-import "../general/bam-to-fastqs.wdl"
-    as bam_to_fastqs_wf
-import "./rnaseq-core.wdl"
-    as rnaseq_core_wf
+import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
+import "./rnaseq-core.wdl" as rnaseq_core_wf
 
 workflow rnaseq_standard {
     meta {

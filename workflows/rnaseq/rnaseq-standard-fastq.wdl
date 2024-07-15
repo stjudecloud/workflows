@@ -19,10 +19,8 @@ version 1.1
 
 import "../../data_structures/read_group.wdl"
 import "../../tools/fq.wdl"
-import "./rnaseq-core.wdl"
-    as rnaseq_core_wf
-import "./rnaseq-standard.wdl"
-    as rnaseq_standard
+import "./rnaseq-core.wdl" as rnaseq_core_wf
+import "./rnaseq-standard.wdl" as rnaseq_standard
 
 workflow rnaseq_standard_fastq {
     meta {

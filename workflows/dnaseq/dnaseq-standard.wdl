@@ -5,10 +5,8 @@ version 1.1
 import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
-import "../general/bam-to-fastqs.wdl"
-    as bam_to_fastqs_wf
-import "./dnaseq-core.wdl"
-    as dnaseq_core_wf
+import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
+import "./dnaseq-core.wdl" as dnaseq_core_wf
 
 workflow dnaseq_standard_experimental {
     meta {

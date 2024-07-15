@@ -4,8 +4,7 @@ version 1.1
 
 import "../../data_structures/read_group.wdl"
 import "../../tools/fq.wdl"
-import "./dnaseq-core.wdl"
-    as dnaseq_core_wf
+import "./dnaseq-core.wdl" as dnaseq_core_wf
 
 workflow dnaseq_standard_fastq_experimental {
     meta {

@@ -35,8 +35,7 @@ import "../../tools/md5sum.wdl"
 import "../../tools/ngsderive.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
-import "./10x-bam-to-fastqs.wdl"
-    as bam_to_fastqs
+import "./10x-bam-to-fastqs.wdl" as bam_to_fastqs
 
 workflow scrnaseq_standard {
     meta {

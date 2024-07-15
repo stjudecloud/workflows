@@ -1,7 +1,6 @@
 version 1.1
 
-import "../../tools/gatk4.wdl"
-    as gatk
+import "../../tools/gatk4.wdl" as gatk
 import "../../tools/picard.wdl"
 
 workflow rnaseq_variant_calling {

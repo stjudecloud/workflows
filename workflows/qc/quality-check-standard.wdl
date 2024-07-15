@@ -1,23 +1,19 @@
 version 1.1
 
 import "../../data_structures/flag_filter.wdl"
-import "../../tools/fastqc.wdl"
-    as fastqc_tasks
+import "../../tools/fastqc.wdl" as fastqc_tasks
 import "../../tools/fq.wdl"
 import "../../tools/kraken2.wdl"
-import "../../tools/librarian.wdl"
-    as libraran_tasks
+import "../../tools/librarian.wdl" as libraran_tasks
 import "../../tools/md5sum.wdl"
 import "../../tools/mosdepth.wdl"
-import "../../tools/multiqc.wdl"
-    as multiqc_tasks
+import "../../tools/multiqc.wdl" as multiqc_tasks
 import "../../tools/ngsderive.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/qualimap.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
-import "./markdups-post.wdl"
-    as markdups_post_wf
+import "./markdups-post.wdl" as markdups_post_wf
 
 workflow quality_check {
     meta {

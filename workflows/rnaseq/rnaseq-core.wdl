@@ -4,8 +4,7 @@ import "../../tools/deeptools.wdl"
 import "../../tools/htseq.wdl"
 import "../../tools/ngsderive.wdl"
 import "../../tools/star.wdl"
-import "../general/alignment-post.wdl"
-    as alignment_post_wf
+import "../general/alignment-post.wdl" as alignment_post_wf
 
 workflow rnaseq_core {
     meta {

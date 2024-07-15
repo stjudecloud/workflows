@@ -3,8 +3,7 @@ version 1.1
 import "../../tools/md5sum.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
-import "https://raw.githubusercontent.com/stjude/XenoCP/4.0.0-alpha/wdl/workflows/xenocp.wdl"
-    as xenocp_wf
+import "https://raw.githubusercontent.com/stjude/XenoCP/4.0.0-alpha/wdl/workflows/xenocp.wdl" as xenocp_wf
 
 workflow alignment_post {
     meta {

@@ -6,14 +6,10 @@ import "../../tools/ngsderive.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
-import "../general/bam-to-fastqs.wdl"
-    as b2fq
-import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl"
-    as seaseq_map
-import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl"
-    as seaseq_samtools
-import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl"
-    as seaseq_util
+import "../general/bam-to-fastqs.wdl" as b2fq
+import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl" as seaseq_map
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 
 # TODO can we use `alignment-post.wdl`?
 workflow chipseq_standard {
