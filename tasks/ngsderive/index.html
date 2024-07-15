@@ -172,7 +172,7 @@
 <dt>description</dt>
 <dd>Derives the experimental strandedness protocol used to generate the input RNA-Seq BAM file. Reports evidence supporting final results.</dd>
 <dt>outputs</dt>
-<dd>{'strandedness_file': 'TSV file containing the <code>ngsderive strandedness</code> report', 'strandedness': 'The derived strandedness, in string format'}</dd>
+<dd>{'strandedness_file': 'TSV file containing the <code>ngsderive strandedness</code> report', 'strandedness_string': 'The derived strandedness, in string format'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
@@ -201,7 +201,7 @@
 <dt>description</dt>
 <dd>Derives the instrument used to sequence the input BAM file. Reports evidence supporting final results.</dd>
 <dt>outputs</dt>
-<dd>{'instrument_file': 'TSV file containing the <code>ngsderive isntrument</code> report for the input BAM file'}</dd>
+<dd>{'instrument_file': 'TSV file containing the <code>ngsderive isntrument</code> report for the input BAM file', 'instrument_string': 'The derived instrument, in string format'}</dd>
 </dl>
 <h3 id="inputs_1">Inputs</h3>
 <h4 id="required_1">Required</h4>
@@ -250,7 +250,7 @@
 <dt>description</dt>
 <dd>Derives the encoding of the input NGS file(s). Reports evidence supporting final results.</dd>
 <dt>outputs</dt>
-<dd>{'encoding_file': 'TSV file containing the <code>ngsderive encoding</code> report for all input files', 'inferred_encoding': 'The most permissive encoding found among the input files, in string format'}</dd>
+<dd>{'inferred_encoding': 'The most permissive encoding found among the input files, in string format', 'encoding_file': 'TSV file containing the <code>ngsderive encoding</code> report for all input files'}</dd>
 </dl>
 <h3 id="inputs_3">Inputs</h3>
 <h4 id="required_3">Required</h4>
