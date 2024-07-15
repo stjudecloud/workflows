@@ -6,8 +6,7 @@ task fqlint {
     meta {
         description: "Performs quality control on the input FASTQs to ensure proper formatting"
         outputs: {
-            validated_read1: "The unmodified input read one FASTQ after it has been successfully validated",
-            validated_read2: "The unmodified input read two FASTQ after it has been successfully validated"
+            check: "A string indicating whether the input FASTQs passed validation"
         }
     }
 

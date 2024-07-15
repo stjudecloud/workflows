@@ -9,8 +9,8 @@ workflow make_qc_reference {
         outputs: {
             reference_fa: "FASTA format reference file",
             gtf: "GTF feature file",
-            coverage_beds: "BED file for each feature type to use for coverage calculation",
             kraken_db: "A complete Kraken2 database",
+            coverage_beds: "BED file for each feature type to use for coverage calculation",
         }
         allowNestedInputs: true
     }

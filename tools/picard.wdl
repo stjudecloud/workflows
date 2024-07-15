@@ -139,7 +139,6 @@ task validate_bam {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360057440611-ValidateSamFile-Picard-"
         outputs: {
             validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
-            validated_bam: "The unmodified input BAM after it has been succesfully validated"
         }
     }
 
@@ -412,18 +411,18 @@ task merge_sam_files {
         mv ~{prefix}.bai ~{outfile_name}.bai
     >>>
 
+    output {
+        File merged_bam = outfile_name
+        File merged_bam_index = outfile_name + ".bai"
+        File merged_bam_md5 = outfile_name + ".md5"
+    }
+
     runtime{
         cpu: if threading then 2 else 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
-    }
-
-    output {
-        File merged_bam = outfile_name
-        File merged_bam_index = outfile_name + ".bai"
-        File merged_bam_md5 = outfile_name + ".md5"
     }
 }
 
@@ -818,6 +817,7 @@ task quality_score_distribution {
     }
 }
 
+#@ except: NonmatchingOutput
 task bam_to_fastq {
     meta {
         description: "**[Deprecated]** This WDL task converts the input BAM file into FASTQ format files. This task has been deprecated in favor of `samtools.bam_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
@@ -924,7 +924,7 @@ task scatter_interval_list {
         description: "Splits an interval list into smaller interval lists for parallel processing"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036897212-IntervalListTools-Picard"
         outputs: {
-            out: "The split interval lists",
+            interval_lists_scatter: "The split interval lists",
             interval_count: "The number of split interval lists"
         }
     }
