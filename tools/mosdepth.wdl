@@ -3,7 +3,6 @@
 version 1.1
 
 task coverage {
-    # TODO not all options exposed
     meta {
         description: "Runs the Mosdepth tool for calculating coverage"
         outputs: {

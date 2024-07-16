@@ -91,7 +91,7 @@ workflow rnaseq_standard {
     call util.get_read_groups after parse_input { input:
         bam = selected_bam,
         format_for_star = true,  # matches default but prevents user from overriding
-    }  # TODO what happens if no RG records?
+    }
     call bam_to_fastqs_wf.bam_to_fastqs after parse_input { input:
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding

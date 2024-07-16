@@ -64,7 +64,6 @@ task read_group_to_string {
 
     command <<<
         {
-            # TODO: I think this can be simplified by dropping the `if defined` checks?
             echo -n "~{"ID:~{read_group.ID}"}"  # required field. All others optional
             echo -n "~{if defined(read_group.BC) then " BC:~{read_group.BC}" else ""}"
             echo -n "~{if defined(read_group.CN) then " CN:~{read_group.CN}" else ""}"

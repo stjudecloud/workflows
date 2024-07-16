@@ -74,8 +74,6 @@ workflow alignment_post {
         use_all_cores,
     }
     File aligned_bam_index = samtools_index.bam_index
-
-    # TODO: should we output the validater report?
     call picard.validate_bam { input: bam = aligned_bam }
 
     call md5sum.compute_checksum { input: file = aligned_bam }
@@ -84,5 +82,6 @@ workflow alignment_post {
         File processed_bam = aligned_bam
         File bam_index = aligned_bam_index
         File bam_checksum = compute_checksum.md5sum
+        File validate_report = picard.validate_report
     }
 }

@@ -44,7 +44,6 @@ task multiqc {
         # --require-logs might be useful at some point, but as of now,
         # it would cause errors. It could replace the check currently
         # run after multiqc is finished.
-        # TODO: lots of other options to consider supporting.
         multiqc -v \
             --no-ansi \
             ~{if defined(config) then "-c " + config else ""} \

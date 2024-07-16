@@ -2,9 +2,6 @@
 
 version 1.1
 
-# TODO consider consolidating this file with util
-#   or renaming to `coreutils.wdl` and moving some of util here
-
 task compute_checksum {
     meta {
         description: "Generates an MD5 checksum for the input file"

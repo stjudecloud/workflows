@@ -135,7 +135,7 @@ task build_star_db {
 task alignment {
     meta {
         description: "Runs the STAR aligner on a set of RNA-Seq FASTQ files"
-        external_help: "https://github.com/alexdobin/STAR/blob/2.7.11b/doc/STARmanual.pdf"  # TODO keep this up to date with container updates
+        external_help: "https://github.com/alexdobin/STAR/blob/2.7.11b/doc/STARmanual.pdf"
         outputs: {
             star_log: "Summary mapping statistics after mapping job is complete. The statistics are calculated for each read (Single- or Paired-End) and then summed or averaged over all reads. Note that STAR counts a Paired-End read as one read. Most of the information is collected about the UNIQUE mappers. Each splicing is counted in the numbers of splices, which would correspond to summing the counts in SJ.out.tab. The mismatch/indel error rates are calculated on a per base basis, i.e. as total number of mismatches/indels in all unique mappers divided by the total number of mapped bases.",
             star_bam: "STAR aligned BAM",
@@ -478,7 +478,7 @@ task alignment {
         Array[File] read_one_fastqs_gz
         String prefix
         String? read_groups
-        Array[File] read_two_fastqs_gz = []  # TODO make Array[File]? for better docs
+        Array[File] read_two_fastqs_gz = []
         Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
         SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,

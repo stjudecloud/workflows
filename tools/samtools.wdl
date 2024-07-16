@@ -183,7 +183,6 @@ task flagstat {
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_disk_size_gb = 0
-        # TODO should we support alt formats? Will they break MultiQC?
     }
 
     Float bam_size = size(bam, "GiB")
@@ -278,8 +277,6 @@ task subsample {
         description: "Randomly subsamples the input BAM, in order to produce an output BAM with approximately the desired number of reads."
         help: "A `desired_reads` **greater than zero** must be supplied. A `desired_reads <= 0` will result in task failure. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
-            # TODO is there any situation where the sampling fraction should be reported?
-            # It is _roughly_ derivable from the input and output read counts.
             orig_read_count: "A TSV report containing the original read count before subsampling. If subsampling was requested but the input BAM had less than `desired_reads`, no read count will be filled in (instead there will be a `dash`).",
             sampled_bam: "The subsampled input BAM. Only present if subsampling was performed."
         }
@@ -422,7 +419,6 @@ task subsample {
 }
 
 task filter {
-    # TODO expose more `view` options
     meta {
         description: "Filters a BAM based on its bitwise flag value."
         help: "This task is a wrapper around `samtools view`. This task will fail if there are no reads in the output BAM. This can happen either because the input BAM was empty or because the supplied `bitwise_filter` was too strict. If you want to down-sample a BAM, use the `subsample` task instead."
@@ -494,16 +490,6 @@ task filter {
             exit 42
         fi
         rm first_read.sam
-        # TODO should there be a check that the output
-        # BAM is different from the input?
-        # It would only need to be a simple `wc -l` check.
-        # Ideally this would be done _without_ an extra pass through the BAM.
-        # An easier check is that the supplied filters aren't all zeroes.
-        # However it's still possible to have an active filter
-        # that doesn't catch anything. What's the ideal
-        # behavior in that case? The user provided something valid,
-        # so failing seems wrong. But (essentially) duplicating the BAM is also
-        # (most likely) wrong.
     >>>
 
     output {
@@ -927,7 +913,7 @@ task bam_to_fastq {
                     then "-s " + prefix+".singleton.fastq.gz"
                     else "-s junk.singleton.fastq.gz"
                 )
-                else ""  # TODO document why `-s` isn't specified here
+                else ""
             } \
             -0 ~{
                 if paired_end
@@ -949,8 +935,7 @@ task bam_to_fastq {
         if ~{fail_on_unexpected_reads} \
             && [ -n "$(gunzip -c junk.*.fastq.gz | head -c 1 | tr '\0\n' __)" ]
         then
-            >&2 echo "Discovered unexpected reads in:"
-            >&2 echo "TODO print the names of the unexpected FASTQs"
+            >&2 echo "Discovered unexpected reads"
             exit 43
         fi
     >>>
@@ -1185,7 +1170,7 @@ task markdup {
 
     parameter_meta {
         bam: "Input BAM format file to mark duplicates in"
-        prefix: "Prefix for the output file. TODO"
+        prefix: "Prefix for the output file."
         read_coords_regex: {
             description: "Regular expression to extract read coordinates from the QNAME field. This takes a POSIX regular expression for at least x and y to be used in optical duplicate marking It can also include another part of the read name to test for equality, eg lane:tile elements. Elements wanted are captured with parentheses. The default is meant to capture information from Illumina style read names. Ignored if `optical_distance == 0`. If changing `read_coords_regex`, make sure that `coordinates_order` matches.",
             tool_default: "`([!-9;-?A-~]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+):([0-9]+):([0-9]+)`"
@@ -1227,7 +1212,6 @@ task markdup {
     }
 
     input {
-        # TODO expose the barcode options and the --mode option
         File bam
         String prefix = basename(bam, ".bam") + ".markdup"
         String read_coords_regex = "[!-9;-?A-~:]+:([!-9;-?A-~]+):([0-9]+):([0-9]+)"

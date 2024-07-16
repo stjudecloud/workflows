@@ -118,8 +118,7 @@ workflow quality_check {
             "include_if_any": "0x0",
             "exclude_if_all": "0x0",
         }
-        # TODO: consider making this an array of FlagFilters similar to coverage_beds
-        FlagFilter comparative_filter =  {
+        FlagFilter comparative_filter = {
             "include_if_all": "0x0",
             # 0x4 (unmapped) || 0x100 (secondary) || 0x800 (supplementary)
             "exclude_if_any": "0x904",
@@ -498,7 +497,6 @@ task parse_input {
     meta {
         description: "Parses and validates the `quality_check` workflow's provided inputs"
         outputs: {
-            check: "Dummy output to indicate success and to enable call-caching",  # TODO: is this still needed with labels?
             labels: "An array of labels to use on the result coverage files associated with each coverage BED"
         }
     }
@@ -555,7 +553,6 @@ task parse_input {
     }
 }
 
-# TODO does this need documentation?
 struct IntermediateFiles {
     File? sampled_bam
     File? sampled_bam_index

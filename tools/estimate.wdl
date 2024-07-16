@@ -5,8 +5,8 @@ version 1.1
 task run_estimate {
     meta {
         description: "**[DEPRECATED]** Given a gene expression file, run the ESTIMATE software package"
-        outputs:  {
-            estimate_file: "The results file of the ESTIMATE software package"  # TODO actually run and see what format it is.
+        outputs: {
+            estimate_file: "The results file of the ESTIMATE software package"
         }
         deprecated: true
     }

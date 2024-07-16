@@ -50,7 +50,7 @@
       contains:
         - "AL954722.1"
 
-# TODO: This fails, but the underlying task will be updated.
+# This fails, but the underlying task will be updated.
 - name: qc_summary
   tags:
    - miniwdl

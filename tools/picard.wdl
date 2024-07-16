@@ -1,7 +1,4 @@
 ## [Homepage](https://broadinstitute.github.io/picard/)
-## TODO looks like this file was missed when converting from
-## a `memory_gb` parameter to a "softcoded" runtime block.
-## When moving those, check `tests/tools/test_picard.yaml`.
 
 version 1.1
 
@@ -131,9 +128,6 @@ task mark_duplicates {
 }
 
 task validate_bam {
-    # TODO should this be refactored to behave as "default" Picard behaves?
-    #   Default Picard has some weird/not ideal behaviors
-    #   e.g. `max_errors = 100`
     meta {
         description: "Validates the input BAM file for correct formatting using Picard"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360057440611-ValidateSamFile-Picard-"
@@ -358,8 +352,7 @@ task merge_sam_files {
                 "unsorted",
                 "queryname",
                 "coordinate",
-                "duplicate",
-                "unknown"  # TODO what does this mean?
+                "duplicate"
             ],
             common: true
         }
@@ -495,7 +488,6 @@ task clean_sam {
 }
 
 task collect_wgs_metrics {
-    # TODO not all options exposed
     meta {
         description: "Runs `picard CollectWgsMetrics` to collect metrics about the fractions of reads that pass base- and mapping-quality filters as well as coverage (read-depth) levels"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037226132-CollectWgsMetrics-Picard-"
@@ -559,7 +551,6 @@ task collect_wgs_metrics {
 }
 
 task collect_alignment_summary_metrics {
-    # TODO check for other options
     meta {
         description: "Runs `picard CollectAlignmentSummaryMetrics` to calculate metrics detailing the quality of the read alignments as well as the proportion of the reads that passed machine signal-to-noise threshold quality filters"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360040507751-CollectAlignmentSummaryMetrics-Picard-"
@@ -622,7 +613,6 @@ task collect_alignment_summary_metrics {
 }
 
 task collect_gc_bias_metrics {
-    # TODO check for other options
     meta {
         description: "Runs `picard CollectGcBiasMetrics` to collect information about the relative proportions of guanine (G) and cytosine (C) nucleotides"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037593931-CollectGcBiasMetrics-Picard-"
@@ -694,8 +684,6 @@ task collect_gc_bias_metrics {
 }
 
 task collect_insert_size_metrics {
-    # TODO check for other options
-    # TODO what happens if a SE BAM is supplied?
     meta {
         description: "Runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction including the insert size distribution and read orientation of Paired-End libraries"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037055772-CollectInsertSizeMetrics-Picard-"
@@ -758,7 +746,6 @@ task collect_insert_size_metrics {
 }
 
 task quality_score_distribution {
-    # TODO check for other options
     meta {
         description: "Runs `picard QualityScoreDistribution` to calculate the range of quality scores and creates an accompanying chart"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037057312-QualityScoreDistribution-Picard-"

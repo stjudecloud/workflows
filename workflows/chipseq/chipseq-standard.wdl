@@ -11,7 +11,6 @@ import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 
-# TODO can we use `alignment-post.wdl`?
 workflow chipseq_standard {
     meta {
         description: "Runs the BWA ChIP-Seq alignment workflow for St. Jude Cloud."
