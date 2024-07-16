@@ -83,6 +83,6 @@ workflow alignment_post {
         File processed_bam = aligned_bam
         File bam_index = aligned_bam_index
         File bam_checksum = compute_checksum.md5sum
-        File validate_report = picard.validate_report
+        File validate_report = validate_bam.validate_report
     }
 }
