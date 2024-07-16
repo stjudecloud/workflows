@@ -53,7 +53,7 @@ task index {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/sambamba:1.0--h98b6b92_0"
         maxRetries: 1
     }
@@ -113,7 +113,7 @@ task merge {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/sambamba:1.0--h98b6b92_0"
         maxRetries: 1
     }
@@ -168,7 +168,7 @@ task sort {
     runtime {
         cpu: ncpu
         memory: "25 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/sambamba:1.0--h98b6b92_0"
         maxRetries: 1
     }
@@ -224,7 +224,7 @@ task markdup {
     runtime {
         cpu: ncpu
         memory: "50 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/sambamba:1.0--h98b6b92_0"
         maxRetries: 1
     }
@@ -281,7 +281,7 @@ task flagstat {
     runtime {
         cpu: ncpu
         memory: "5 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/sambamba:1.0--h98b6b92_0"
         maxRetries: 1
     }

@@ -11,7 +11,8 @@ workflow alignment_post {
         outputs: {
             processed_bam: "Input BAM after being transformed by standard processing",
             bam_index: "BAI index associated with `processed_bam`",
-            bam_checksum:  "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file"
+            bam_checksum:  "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
+            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged."
         }
         allowNestedInputs: true
     }

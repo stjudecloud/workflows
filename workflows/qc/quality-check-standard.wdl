@@ -28,6 +28,7 @@ workflow quality_check {
             instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file",
             read_length_file: "TSV file containing the `ngsderive readlen` report for the input BAM file",
             inferred_encoding: "TSV file containing the `ngsderive encoding` report for the input BAM file",
+            inferred_endedness: "TSV file containing the `ngsderive endedness` report",
             alignment_metrics: {
                 description: "The text file output of `picard CollectAlignmentSummaryMetrics`",
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics"
@@ -57,20 +58,19 @@ workflow quality_check {
             },
             comparative_kraken_report: "Kraken2 summary report for only the alternatively filtered reads. Only present if `run_comparative_kraken == true`.",
             comparative_kraken_sequences: "Detailed Kraken2 output for only the alternatively filtered reads. Only present if `run_comparative_kraken == true && store_kraken_sequences == true`.",
-            mark_duplicates_metrics: {
-                description: "The METRICS_FILE result of `picard MarkDuplicates`. Only present if `mark_duplicates == true && optical_distance > 0`.",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics"
-            },
             mosdepth_dups_marked_global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome. This file is produced from analyzing the duplicate marked BAM. Only present if `mark_duplicates == true`.",
             mosdepth_dups_marked_global_summary: "A summary of mean depths per chromosome. This file is produced from analyzing the duplicate marked BAM. Only present if `mark_duplicates == true`.",
             mosdepth_dups_marked_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM. Only present if `mark_duplicates == true`.",
             mosdepth_dups_marked_region_summary: "A summary of mean depths per chromosome and within specified regions per chromosome. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM. Only present if `mark_duplicates == true`.",
+            mark_duplicates_metrics: {
+                description: "The METRICS_FILE result of `picard MarkDuplicates`. Only present if `mark_duplicates == true && optical_distance > 0`.",
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics"
+            },
             inferred_strandedness: "TSV file containing the `ngsderive strandedness` report. Only present if `rna == true`.",
             qualimap_rnaseq_results: "Gzipped tar archive of all QualiMap output files. Only present if `rna == true`.",
             junction_summary: "TSV file containing the `ngsderive junction-annotation` summary. Only present if `rna == true`",
             junctions: "TSV file containing a detailed list of annotated junctions. Only present if `rna == true`.",
             librarian_report: "A tar archive containing the `librarian` report and raw data. Only present if `run_librarian == true`.",
-            inferred_endedness: "TSV file containing the `ngsderive endedness` report",
             intermediate_files: "Any and all files produced as intermediate during pipeline processing. Only output if `output_intermediate_files == true`."
         }
         allowNestedInputs: true
@@ -479,10 +479,10 @@ workflow quality_check {
         File? comparative_kraken_sequences = comparative_kraken.sequences
         File? mosdepth_dups_marked_global_dist = markdups_post.mosdepth_global_dist
         File? mosdepth_dups_marked_global_summary = markdups_post.mosdepth_global_summary
-        Array[File]? mosdepth_dups_marked_region_summary
-            = markdups_post.mosdepth_region_summary
         Array[File?]? mosdepth_dups_marked_region_dist
             = markdups_post.mosdepth_region_dist
+        Array[File]? mosdepth_dups_marked_region_summary
+            = markdups_post.mosdepth_region_summary
         File? mark_duplicates_metrics = markdups_metrics
         File? inferred_strandedness = strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
@@ -547,7 +547,7 @@ task parse_input {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
+        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }

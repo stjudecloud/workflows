@@ -87,7 +87,7 @@ task read_group_to_string {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
+        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
@@ -138,7 +138,7 @@ task get_read_groups {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/pysam:0.22.0--py38h15b938a_1"
         maxRetries: 1
     }
@@ -418,7 +418,7 @@ task validate_read_group {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
+        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 0
     }

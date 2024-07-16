@@ -900,7 +900,7 @@ task merge_vcfs {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
         maxRetries: 1
     }
@@ -972,7 +972,7 @@ task scatter_interval_list {
 
     runtime {
         memory: "2 GB"
-        disk: "1 GB"
+        disks: "1 GB"
         container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
         maxRetries: 1
     }
@@ -1029,7 +1029,7 @@ task create_sequence_dictionary {
     runtime {
         cpu: 1
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.0--hdfd78af_0"
         maxRetries: 1
     }
