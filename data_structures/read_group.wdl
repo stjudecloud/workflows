@@ -200,7 +200,7 @@ task validate_read_group {
             || [[ ~{read_group.ID} =~ ~{restrictive_pattern} ]]
             then
                 >&2 echo "ID (~{read_group.ID}) must not match patterns:"
-                >&2 echo "~{id_pattern} nor ~{restrictive_pattern}"
+                >&2 echo "'~{id_pattern}' or '~{restrictive_pattern}'"
                 error=1
             fi
         fi
@@ -225,7 +225,7 @@ task validate_read_group {
                 || [[ "~{read_group.SM}" =~ ~{restrictive_pattern} ]]
                 then
                     >&2 echo "SM must not match patterns:"
-                    >&2 echo "~{sample_pattern} nor ~{restrictive_pattern}"
+                    >&2 echo "'~{sample_pattern}' or '~{restrictive_pattern}'"
                     error=1
                 fi
             fi
