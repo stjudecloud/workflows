@@ -2,6 +2,7 @@
 ##
 ## This WDL file wrap the [10x Genomics Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) tool.
 ## Cell Ranger is a tool for handling scRNA-Seq data.
+#@ except: LineWidth
 
 version 1.1
 

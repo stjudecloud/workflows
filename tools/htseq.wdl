@@ -159,6 +159,7 @@ task calc_tpm {
 
     String outfile_name = prefix + ".TPM.txt"
 
+    #@ except: LineWidth
     command <<<
         COUNTS="~{counts}" GENE_LENGTHS="~{gene_lengths}" OUTFILE="~{outfile_name}" python3 - <<END
         import os  # lint-check: ignore

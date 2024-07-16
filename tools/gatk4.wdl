@@ -190,6 +190,7 @@ task apply_bqsr {
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -275,6 +276,7 @@ task haplotype_caller {
         + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
+    #@ except: LineWidth
     command <<<
         gatk \
            --java-options "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \

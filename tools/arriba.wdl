@@ -142,6 +142,7 @@ task arriba {
         )
         Array[String] viral_contigs = ["AC_*", "NC_*"]
         Array[String] disable_filters = []
+        #@ except: LineWidth
         String feature_name
             = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
         String prefix = basename(bam, ".bam") + ".fusions"

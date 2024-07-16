@@ -628,6 +628,7 @@ task alignment {
 
     Array[File] empty_array = []  # odd construction forced by WDL v1.1 spec
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 

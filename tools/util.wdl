@@ -454,6 +454,7 @@ task global_phred_scores {
 
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -708,6 +709,7 @@ task qc_summary {
 
     String sample_name = basename(multiqc_tar_gz, ".multiqc.tar.gz")
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 

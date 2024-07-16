@@ -107,6 +107,7 @@ workflow quality_check {
         File bam_index
         File kraken_db
         File? gtf
+        #@ except: LineWidth
         File multiqc_config
             = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
         Array[File] extra_multiqc_inputs = []
