@@ -137,10 +137,13 @@ task arriba {
         File? annotate_fusions
         File? protein_domains
         File? wgs_svs
-        Array[String] interesting_contigs = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y", "AC_*", "NC_*"]
+        Array[String] interesting_contigs = flatten(
+            [range(23), ["X", "Y", "AC_*", "NC_*"]]
+        )
         Array[String] viral_contigs = ["AC_*", "NC_*"]
         Array[String] disable_filters = []
-        String feature_name = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
+        String feature_name
+            = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
         String prefix = basename(bam, ".bam") + ".fusions"
         String strandedness = "auto"
         Boolean mark_duplicates = true
@@ -171,7 +174,10 @@ task arriba {
     }
 
     Int bam_size_gb = ceil(size(bam, "GiB"))
-    Int disk_size_gb = bam_size_gb + ceil(size(gtf, "GiB")) + ceil(size(reference_fasta_gz, "GiB")) + modify_disk_size_gb
+    Int disk_size_gb = bam_size_gb
+        + ceil(size(gtf, "GiB"))
+        + ceil(size(reference_fasta_gz, "GiB"))
+        + modify_disk_size_gb
     Int memory_gb = bam_size_gb + modify_memory_gb
 
     command <<<
@@ -190,9 +196,17 @@ task arriba {
             ~{if defined(wgs_svs) then "-d " + wgs_svs else ""} \
             -D ~{max_genomic_breakpoint_distance} \
             -s ~{strandedness} \
-            ~{if length(interesting_contigs) > 0 then "-i " + sep(",", interesting_contigs) else ""} \
+            ~{(
+                if length(interesting_contigs) > 0
+                then "-i " + sep(",", interesting_contigs)
+                else ""
+            )} \
             ~{if length(viral_contigs) > 0 then "-v " + sep(",", viral_contigs) else ""} \
-            ~{if length(disable_filters) > 0 then "-f " + sep(",", disable_filters) else ""} \
+            ~{(
+                if length(disable_filters) > 0
+                then "-f " + sep(",", disable_filters)
+                else ""
+            )} \
             -E ~{max_e_value} \
             -S ~{min_supporting_reads} \
             -m ~{max_mismappers} \
@@ -254,13 +268,16 @@ task arriba_tsv_to_vcf {
     }
 
     Int input_size_gb = ceil(size(fusions, "GiB"))
-    Int disk_size_gb = ceil(input_size_gb) + (ceil(size(reference_fasta, "GiB")) * 3) + modify_disk_size_gb
+    Int disk_size_gb = ceil(input_size_gb)
+        + (ceil(size(reference_fasta, "GiB")) * 3)
+        + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
 
         fasta_name=~{basename(reference_fasta, ".gz")}
-        gunzip -c ~{reference_fasta} > "$fasta_name" || ln -sf ~{reference_fasta} "$fasta_name"
+        gunzip -c ~{reference_fasta} > "$fasta_name" \
+            || ln -sf ~{reference_fasta} "$fasta_name"
 
         convert_fusions_to_vcf.sh \
             $fasta_name \

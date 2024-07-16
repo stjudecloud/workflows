@@ -147,7 +147,9 @@ workflow quality_check {
         flags = standard_filter
     }
     if (run_comparative_kraken) {
-        call flag_filter.validate_flag_filter as comparative_kraken_filter_validator { input:
+        call flag_filter.validate_flag_filter
+            as comparative_kraken_filter_validator
+        { input:
             flags = comparative_filter
         }
     }
@@ -432,7 +434,8 @@ workflow quality_check {
             "singleton_reads_fastq_gz": bam_to_fastq.singleton_reads_fastq_gz,
             "alt_filtered_read_one_fastq_gz": alt_filtered_fastq.read_one_fastq_gz,
             "alt_filtered_read_two_fastq_gz": alt_filtered_fastq.read_two_fastq_gz,
-            "alt_filtered_singleton_reads_fastq_gz": alt_filtered_fastq.singleton_reads_fastq_gz,
+            "alt_filtered_singleton_reads_fastq_gz":
+                alt_filtered_fastq.singleton_reads_fastq_gz,
             "duplicate_marked_bam": markdups.duplicate_marked_bam,
             "duplicate_marked_bam_index": markdups.duplicate_marked_bam_index,
             "duplicate_marked_bam_md5": markdups.duplicate_marked_bam_md5,
@@ -478,7 +481,8 @@ workflow quality_check {
         File? comparative_kraken_report = comparative_kraken.report
         File? comparative_kraken_sequences = comparative_kraken.sequences
         File? mosdepth_dups_marked_global_dist = markdups_post.mosdepth_global_dist
-        File? mosdepth_dups_marked_global_summary = markdups_post.mosdepth_global_summary
+        File? mosdepth_dups_marked_global_summary
+            = markdups_post.mosdepth_global_summary
         Array[File?]? mosdepth_dups_marked_region_dist
             = markdups_post.mosdepth_region_dist
         Array[File]? mosdepth_dups_marked_region_summary

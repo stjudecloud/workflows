@@ -48,7 +48,11 @@ workflow dnaseq_standard_fastq_experimental {
 
     call parse_input { input:
         aligner,
-        array_lengths = [length(read_one_fastqs_gz), length(read_two_fastqs_gz), length(read_groups)]
+        array_lengths = [
+            length(read_one_fastqs_gz),
+            length(read_two_fastqs_gz),
+            length(read_groups)
+        ]
     }
 
     if (validate_input){
@@ -131,7 +135,8 @@ task parse_input {
         if [ "~{array_lengths[0]}" != "~{array_lengths[1]}" ] \
         || [ "~{array_lengths[1]}" != "~{array_lengths[2]}" ]
         then
-            >&2 echo "Length of read_one_fastqs_gz must equal length of read_two_fastqs_gz and read_groups"
+            >&2 echo "Length of read_one_fastqs_gz must equal"
+            >&2 echo "length of read_two_fastqs_gz and read_groups"
             exit 1
         fi
     >>>

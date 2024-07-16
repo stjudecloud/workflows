@@ -237,7 +237,8 @@ task bwa_mem {
 
     String output_bam = prefix + ".bam"
 
-    Float input_fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+    Float input_fastq_size = size(read_one_fastq_gz, "GiB")
+        + size(read_two_fastq_gz, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = (
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
