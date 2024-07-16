@@ -137,9 +137,10 @@ task arriba {
         File? annotate_fusions
         File? protein_domains
         File? wgs_svs
-        Array[String] interesting_contigs = flatten(
-            [range(23), ["X", "Y", "AC_*", "NC_*"]]
-        )
+        Array[String] interesting_contigs = [
+            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+            "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y", "AC_*", "NC_*"
+        ]
         Array[String] viral_contigs = ["AC_*", "NC_*"]
         Array[String] disable_filters = []
         #@ except: LineWidth
