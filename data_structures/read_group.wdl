@@ -22,8 +22,10 @@
 ##     LS454, ONT (Oxford Nanopore), PACBIO (Pacific Biosciences), SINGULAR, SOLID,
 ##     and ULTIMA. This field should be omitted when the technology is not in this list
 ##     (though the PM field may still be present in this case) or is unknown.
-## - PM: Platform model. Free-form text providing further details of the platform/technology used.
-## - PU: Platform unit (e.g., flowcell-barcode.lane for Illumina or slide for SOLiD). Unique identifier.
+## - PM: Platform model. Free-form text providing further details of the
+##     platform/technology used.
+## - PU: Platform unit (e.g., flowcell-barcode.lane for Illumina or slide
+##     for SOLiD). Unique identifier.
 ## - SM: Sample. Use pool name where a pool is being sequenced.
 ##
 ## An example input JSON entry for `read_group` might look like this:
