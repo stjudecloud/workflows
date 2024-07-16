@@ -170,7 +170,10 @@ task validate_read_group {
     String id_pattern = "id"
     String sample_pattern = "sample.?"
     String restrictive_pattern = "\\ "  # Disallow spaces
-    Array[String] platforms = ["CAPILLARY", "DNBSEQ", "ELEMENT", "HELICOS", "ILLUMINA", "IONTORRENT", "LS454", "ONT", "PACBIO", "SINGULAR", "SOLID", "ULTIMA"]
+    Array[String] platforms = [
+        "CAPILLARY", "DNBSEQ", "ELEMENT", "HELICOS", "ILLUMINA", "IONTORRENT", "LS454",
+        "ONT", "PACBIO", "SINGULAR", "SOLID", "ULTIMA"
+    ]
 
     command <<<
         error=0
@@ -179,7 +182,8 @@ task validate_read_group {
             if [[ ~{read_group.ID} =~ ^~{id_pattern}$ ]] \
             || [[ ~{read_group.ID} =~ ~{restrictive_pattern} ]]
             then
-                >&2 echo "ID (~{read_group.ID}) must not match pattern ~{id_pattern} nor ~{restrictive_pattern}"
+                >&2 echo "ID (~{read_group.ID}) must not match patterns:"
+                >&2 echo "~{id_pattern} nor ~{restrictive_pattern}"
                 error=1
             fi
         fi
@@ -203,7 +207,8 @@ task validate_read_group {
                 if [[ "~{read_group.SM}" =~ ^~{sample_pattern}$ ]] \
                 || [[ "~{read_group.SM}" =~ ~{restrictive_pattern} ]]
                 then
-                    >&2 echo "SM must not match pattern ~{sample_pattern} nor ~{restrictive_pattern}"
+                    >&2 echo "SM must not match patterns:"
+                    >&2 echo "~{sample_pattern} nor ~{restrictive_pattern}"
                     error=1
                 fi
             fi

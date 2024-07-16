@@ -700,8 +700,12 @@ task alignment {
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif
             ]))} \
-            --clip3pAdapterSeq ~{clip_3p_adapter_seq.left + " " + clip_3p_adapter_seq.right} \
-            --clip3pAdapterMMp ~{"~{clip_3p_adapter_mmp.left} ~{clip_3p_adapter_mmp.right}"} \
+            --clip3pAdapterSeq ~{
+                clip_3p_adapter_seq.left + " " + clip_3p_adapter_seq.right
+            } \
+            --clip3pAdapterMMp ~{
+                "~{clip_3p_adapter_mmp.left} ~{clip_3p_adapter_mmp.right}"
+            } \
             --alignEndsProtrude ~{
                 "~{align_ends_protrude.left} ~{align_ends_protrude.right}"
             } \

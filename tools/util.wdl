@@ -702,7 +702,8 @@ task qc_summary {
 
     input {
         File multiqc_tar_gz
-        String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
+        String outfile_name
+            = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
     }
 
     String sample_name = basename(multiqc_tar_gz, ".multiqc.tar.gz")

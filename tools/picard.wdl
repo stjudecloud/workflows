@@ -1016,7 +1016,11 @@ task create_sequence_dictionary {
 
         picard -Xmx~{java_heap_size}g CreateSequenceDictionary \
             -R ~{fasta} \
-            ~{if defined(assembly_name) then "--GENOME_ASSEMBLY " + assembly_name else ""} \
+            ~{(
+                if defined(assembly_name)
+                then "--GENOME_ASSEMBLY " + assembly_name
+                else ""
+            )} \
             ~{if defined(fasta_url) then "--URI " + fasta_url else ""} \
             ~{if defined(species) then "--SPECIES " + species else ""} \
             > ~{outfile_name} \
