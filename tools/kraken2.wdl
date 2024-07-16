@@ -287,7 +287,6 @@ task build_db {
 }
 
 task kraken {
-    # TODO allow Single-End FASTQs
     meta {
         description: "Runs Kraken2 on a pair of fastq files"
         outputs: {
@@ -303,7 +302,7 @@ task kraken {
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"  # TODO verify can be gzipped or compressed
+        read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
         read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
         db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
         prefix: "Prefix for the Kraken2 output files. The extensions `.kraken2.txt` and `.kraken2.sequences.txt.gz` will be added."

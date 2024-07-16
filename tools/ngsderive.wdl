@@ -77,8 +77,8 @@ task strandedness {
     >>>
 
     output {
-        String strandedness_string = read_string("strandedness.txt")
         File strandedness_file = outfile_name
+        String strandedness_string = read_string("strandedness.txt")
     }
 
     runtime {
@@ -235,6 +235,7 @@ task encoding {
     Float files_size = size(ngs_files, "GiB")
     Int disk_size_gb = ceil(files_size) + 10 + modify_disk_size_gb
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -363,7 +364,7 @@ task junction_annotation {
     }
 
     runtime {
-        memory: "56 GB"  # TODO make this dynamic
+        memory: "56 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1

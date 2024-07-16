@@ -91,9 +91,9 @@ task count {
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
 
-    Int memory_gb = ceil(bam_size) + 5 + modify_memory_gb  # TODO what's the memory usage like if the BAM is name sorted?
+    Int memory_gb = ceil(bam_size) + 5 + modify_memory_gb
 
-    Int disk_size_gb = ceil((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb  # TODO why would htseq need this much disk?
+    Int disk_size_gb = ceil((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -115,7 +115,11 @@ task count {
             -i ~{idattr} \
             --nonunique ~{if nonunique then "all" else "none"} \
             --secondary-alignments ~{if secondary_alignments then "score" else "ignore"} \
-            --supplementary-alignments ~{if supplementary_alignments then "score" else "ignore"} \
+            --supplementary-alignments ~{(
+                if supplementary_alignments
+                then "score"
+                else "ignore"
+            )} \
             ~{bam} \
             ~{gtf} \
             >> ~{outfile_name}
@@ -155,6 +159,7 @@ task calc_tpm {
 
     String outfile_name = prefix + ".TPM.txt"
 
+    #@ except: LineWidth
     command <<<
         COUNTS="~{counts}" GENE_LENGTHS="~{gene_lengths}" OUTFILE="~{outfile_name}" python3 - <<END
         import os  # lint-check: ignore

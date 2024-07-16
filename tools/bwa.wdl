@@ -2,8 +2,6 @@
 
 version 1.1
 
-# TODO there are probably BWA params we can expose. Have not checked
-
 task bwa_aln {
     meta {
         description: "Maps Single-End FASTQ files to BAM format using bwa aln"
@@ -13,7 +11,7 @@ task bwa_aln {
     }
 
     parameter_meta {
-        fastq: "Input FASTQ file to align with bwa"  # TODO verify can be gzipped or compressed
+        fastq: "Input FASTQ file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
@@ -105,7 +103,7 @@ task bwa_aln_pe {
         read_one_fastq_gz: {
             description: "Input gzipped FASTQ read one file to align with bwa",
             stream: false
-        }  # TODO verify can be gzipped or compressed
+        }
         read_two_fastq_gz: {
             description: "Input gzipped FASTQ read two file to align with bwa",
             stream: false
@@ -203,7 +201,7 @@ task bwa_mem {
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Input gzipped FASTQ read one file to align with bwa"  # TODO verify can be gzipped or compressed
+        read_one_fastq_gz: "Input gzipped FASTQ read one file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
@@ -239,7 +237,8 @@ task bwa_mem {
 
     String output_bam = prefix + ".bam"
 
-    Float input_fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+    Float input_fastq_size = size(read_one_fastq_gz, "GiB")
+        + size(read_two_fastq_gz, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = (
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb

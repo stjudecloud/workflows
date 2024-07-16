@@ -91,7 +91,7 @@ workflow rnaseq_standard {
     call util.get_read_groups after parse_input { input:
         bam = selected_bam,
         format_for_star = true,  # matches default but prevents user from overriding
-    }  # TODO what happens if no RG records?
+    }
     call bam_to_fastqs_wf.bam_to_fastqs after parse_input { input:
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding
@@ -178,7 +178,7 @@ task parse_input {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
+        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }

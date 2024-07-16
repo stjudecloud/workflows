@@ -282,7 +282,6 @@ task compression_integrity {
 }
 
 task add_to_bam_header {
-    # TODO consider moving to samtools.wdl
     meta {
         description: "Adds another line of text to the bottom of a BAM header"
         outputs: {
@@ -310,7 +309,6 @@ task add_to_bam_header {
     String outfile_name = prefix + ".bam"
 
     command <<<
-        # TODO isn't there a builtin samtools command for this?
         samtools view -H ~{bam} > header.sam
         echo "~{additional_header}" >> header.sam
         samtools reheader -P header.sam ~{bam} > ~{outfile_name}
@@ -456,6 +454,7 @@ task global_phred_scores {
 
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -690,8 +689,6 @@ task global_phred_scores {
 }
 
 task qc_summary {
-    # TODO not sure why I implemented as a JSON. Wouldn't TSV be easier to work with? Talk to Delaram/David
-    #   Delaram+David okayed a switch to TSV
     meta {
         description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive."
         outputs: {
@@ -706,11 +703,13 @@ task qc_summary {
 
     input {
         File multiqc_tar_gz
-        String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
+        String outfile_name
+            = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
     }
 
     String sample_name = basename(multiqc_tar_gz, ".multiqc.tar.gz")
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 

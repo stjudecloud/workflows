@@ -96,7 +96,8 @@ workflow dnaseq_core_experimental {
                         "(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
                         ""
                     ), "\\.([rR][12])\\.", "."),
-                    # find spaces, replace with '\\t' (which must be written as '\\\\t')
+                    # find spaces, replace with '\\t'
+                    # (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
                     read_group = sub(rg_string, " ", "\\\\t"),
                     use_all_cores,
@@ -112,7 +113,8 @@ workflow dnaseq_core_experimental {
                         "(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
                         ""
                     ), "\\.([rR][12])\\.", "."),
-                    # find tab literals, replace with '\\t' (which must be written as '\\\\t')
+                    # find spaces, replace with '\\t'
+                    # (which must be written as '\\\\t')
                     # '\\t' is subbed into command blocks as '\t'
                     read_group = sub(rg_string, " ", "\\\\t"),
                     use_all_cores,

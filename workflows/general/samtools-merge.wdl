@@ -20,7 +20,7 @@ workflow samtools_merge {
     }
     input {
         Array[File] bams
-        String prefix = basename(bams[0], ".bam")  # TODO is this a sane default? Or should be required?
+        String prefix
         Boolean use_all_cores = false
         Int max_length = 100
     }
@@ -32,7 +32,11 @@ workflow samtools_merge {
         scatter ( merge_num in range((bam_length / max_length) + 1)){
             # Get the sublist of bams
             scatter ( bam_num in range(max_length)){
-                Int num = if merge_num > 0 then bam_num + (merge_num * max_length) else bam_num
+                Int num = (
+                    if merge_num > 0
+                    then bam_num + (merge_num * max_length)
+                    else bam_num
+                )
                 if (num < bam_length){
                     File bam_list = bams[num]
                 }

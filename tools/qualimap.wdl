@@ -78,7 +78,8 @@ task rnaseq {
 
     output {
         File raw_summary = "~{prefix}/rnaseq_qc_results.txt"
-        File raw_coverage = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
+        File raw_coverage
+            = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
         File results = out_tar_gz
     }
 

@@ -39,7 +39,9 @@ task split_n_cigar_reads {
         Int ncpu = 8
     }
 
-    Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3
+        + ceil(size(fasta, "GB"))
+        + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -65,7 +67,7 @@ task split_n_cigar_reads {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
     }
@@ -116,16 +118,23 @@ task base_recalibrator {
         Int ncpu = 4
         }
 
-    Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3
+        + ceil(size(fasta, "GB"))
+        + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
+    #@ except: LineWidth
     command <<<
         gatk \
             --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
             BaseRecalibratorSpark \
             -R ~{fasta} \
             -I ~{bam} \
-            ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
+            ~{(
+                if use_original_quality_scores
+                then "--use-original-qualities"
+                else ""
+            )} \
             -O ~{outfile_name} \
             --known-sites ~{dbSNP_vcf} \
             ~{sep(" ", prefix("--known-sites ", known_indels_sites_vcfs))} \
@@ -139,7 +148,7 @@ task base_recalibrator {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
     }
@@ -181,6 +190,7 @@ task apply_bqsr {
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -202,7 +212,7 @@ task apply_bqsr {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
     }
@@ -260,9 +270,13 @@ task haplotype_caller {
         Int ncpu = 4
     }
 
-    Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(bam, "GB") * 2)
+        + 30
+        + ceil(size(fasta, "GB"))
+        + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
+    #@ except: LineWidth
     command <<<
         gatk \
            --java-options "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
@@ -284,7 +298,7 @@ task haplotype_caller {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
     }
@@ -357,7 +371,7 @@ task variant_filtration {
     runtime {
         cpu: ncpu
         memory: "15 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
     }
@@ -470,7 +484,7 @@ task mark_duplicates_spark {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
     }

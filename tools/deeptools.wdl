@@ -3,7 +3,6 @@
 version 1.1
 
 task bam_coverage {
-    # TODO expose other params/formats
     meta {
         description: "Generates a BigWig coverage track using bamCoverage from DeepTools"
         outputs: {
