@@ -108,7 +108,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../workflows/10x-bam-to-fastqs/">10x bam to fastqs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../workflows/ESTIMATE/">ESTIMATE</a>
                   </li>
@@ -166,10 +166,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <p><a href="https://broadinstitute.github.io/picard/">Homepage</a>
-TODO looks like this file was missed when converting from
-a <code>memory_gb</code> parameter to a "softcoded" runtime block.
-When moving those, check <code>tests/tools/test_picard.yaml</code>.</p>
+                <p><a href="https://broadinstitute.github.io/picard/">Homepage</a></p>
 <h2 id="mark_duplicates">mark_duplicates</h2>
 <dl>
 <dt>description</dt>
@@ -294,7 +291,7 @@ When moving those, check <code>tests/tools/test_picard.yaml</code>.</p>
 <ul>
 <li><code>memory_gb</code> (Int, default=40): RAM to allocate for task, specified in GB</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
-<li><code>sort_order</code> (String, default="coordinate"); <strong>description</strong>: Sort order for the output merged BAM. It is assumed all input BAMs share this order.; <strong>choices</strong>: ['unsorted', 'queryname', 'coordinate', 'duplicate', 'unknown']; <strong>common</strong>: true</li>
+<li><code>sort_order</code> (String, default="coordinate"); <strong>description</strong>: Sort order for the output merged BAM. It is assumed all input BAMs share this order.; <strong>choices</strong>: ['unsorted', 'queryname', 'coordinate', 'duplicate']; <strong>common</strong>: true</li>
 <li><code>threading</code> (Boolean, default=true): Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file. <strong>Sets <code>runtime.cpu = 2</code> if <code>true</code>. <code>runtime.cpu = 1</code> if <code>false</code>.</strong></li>
 <li><code>validation_stringency</code> (String, default="SILENT"); <strong>description</strong>: Validation stringency for parsing the input BAM.; <strong>choices</strong>: ['STRICT', 'LENIENT', 'SILENT']; <strong>tool_default</strong>: STRICT</li>
 </ul>

@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="St. Jude Cloud" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Cell Ranger BAM to FASTQs - St. Jude Cloud Bioinformatics Workflows</title>
+    <title>10x bam to fastqs - St. Jude Cloud Bioinformatics Workflows</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Cell Ranger BAM to FASTQs";
+        var mkdocs_page_name = "10x bam to fastqs";
         var mkdocs_page_input_path = "workflows/10x-bam-to-fastqs.md";
         var mkdocs_page_url = null;
       </script>
@@ -96,41 +96,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Cell Ranger BAM to FASTQs</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">10x bam to fastqs</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#output">Output:</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#licensing">LICENSING:</a>
+    <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#mit-license">MIT License</a>
+    <li class="toctree-l3"><a class="reference internal" href="#required">Required</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#defaults">Defaults</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#cell_ranger_bam_to_fastqs">cell_ranger_bam_to_fastqs</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required">Required</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#defaults">Defaults</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#parse_input">parse_input</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#inputs_1">Inputs</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#required_1">Required</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#outputs_1">Outputs</a>
-    </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
     </li>
     </ul>
                   </li>
@@ -180,7 +156,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Workflows</li>
-      <li class="breadcrumb-item active">Cell Ranger BAM to FASTQs</li>
+      <li class="breadcrumb-item active">10x bam to fastqs</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/stjudecloud/workflows/edit/master/docs/workflows/10x-bam-to-fastqs.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -190,36 +166,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="cell-ranger-bam-to-fastqs">Cell Ranger BAM to FASTQs</h1>
-<p>This WDL workflow converts an input BAM file to a set of FASTQ files.
-It performs QC checks along the way to validate the input and output.</p>
-<h3 id="output">Output:</h3>
-<dl>
-<dt>read1s</dt>
-<dd>an array of files with the first read in the pair</dd>
-<dt>read2s</dt>
-<dd>an array of files with the second read in the pair</dd>
-<dt>fastqs</dt>
-<dd>an array of files sufficient for localizing in Cell Ranger's expected format</dd>
-<dt>fastqs_archive</dt>
-<dd>a compressed archive containing the array of FASTQ files</dd>
-</dl>
-<h2 id="licensing">LICENSING:</h2>
-<h4 id="mit-license">MIT License</h4>
-<p>Copyright 2020-Present St. Jude Children's Research Hospital</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
-software and associated documentation files (the "Software"), to deal in the Software
-without restriction, including without limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
-to whom the Software is furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="cell_ranger_bam_to_fastqs">cell_ranger_bam_to_fastqs</h2>
+                <h2 id="cell_ranger_bam_to_fastqs">cell_ranger_bam_to_fastqs</h2>
 <dl>
 <dt>description</dt>
 <dd>Convert a 10x Genomics BAM file to FASTQs.</dd>

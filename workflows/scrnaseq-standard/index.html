@@ -96,7 +96,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">10x bam to fastqs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
                   </li>
@@ -126,7 +126,17 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Scrnaseq standard</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#mit-license">MIT License</a>
+    <li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required">Required</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional">Optional</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#defaults">Defaults</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a>
     </li>
     </ul>
                   </li>
@@ -158,28 +168,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <p>scRNA-Seq Standard</p>
-<p>This WDL workflow runs the Cell Ranger scRNA-Seq alignment workflow for St. Jude Cloud.</p>
-<p>The workflow takes an input BAM file and splits it into FASTQ files for each read in the pair.
-The read pairs are then passed through Cell Ranger to generate a BAM file and perform
-quantification. Strandedness is inferred using ngsderive.
-File validation is performed at several steps, including immediately preceeding output.</p>
-<h2 id="licensing">LICENSING</h2>
-<h4 id="mit-license">MIT License</h4>
-<p>Copyright 2022-Present St. Jude Children's Research Hospital</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this
-software and associated documentation files (the "Software"), to deal in the Software
-without restriction, including without limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
-to whom the Software is furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-<h2 id="scrnaseq_standard">scrnaseq_standard</h2>
+                <h2 id="scrnaseq_standard">scrnaseq_standard</h2>
 <dl>
 <dt>description</dt>
 <dd>Align 10x Genomics FASTQ files to a reference genome and perform quantification.</dd>

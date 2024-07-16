@@ -96,7 +96,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Workflows</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">Cell Ranger BAM to FASTQs</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../10x-bam-to-fastqs/">10x bam to fastqs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ESTIMATE/">ESTIMATE</a>
                   </li>
@@ -182,6 +182,7 @@
 <h4 id="required">Required</h4>
 <ul>
 <li><code>bams</code> (Array[File], <strong>required</strong>): BAMs to merge into a final BAM</li>
+<li><code>prefix</code> (String, <strong>required</strong>): Prefix for output BAM.</li>
 <li><code>basic_merge._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>final_merge._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>inner_merge._runtime</code> (Any, <strong>required</strong>)</li>
@@ -195,7 +196,6 @@
 <h4 id="defaults">Defaults</h4>
 <ul>
 <li><code>max_length</code> (Int, default=100): Maximum number of BAMs to merge before using iteration</li>
-<li><code>prefix</code> (String, default=basename(bams[0],".bam")): Prefix for output BAM.</li>
 <li><code>use_all_cores</code> (Boolean, default=false): Use all cores? Recommended for cloud environments.</li>
 <li><code>basic_merge.combine_rg</code> (Boolean, default=true)</li>
 <li><code>basic_merge.modify_disk_size_gb</code> (Int, default=0)</li>
