@@ -14,7 +14,7 @@ task mark_duplicates {
             mark_duplicates_metrics: {
                 description: "The METRICS_FILE result of `picard MarkDuplicates`",
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics",
-            }
+            },
         }
     }
 
@@ -26,8 +26,8 @@ task mark_duplicates {
             choices: [
                 "SUM_OF_BASE_QUALITIES",
                 "TOTAL_MAPPED_REFERENCE_LENGTH",
-                "RANDOM"
-            ]
+                "RANDOM",
+            ],
         }
         read_name_regex: "Regular expression for extracting tile names, x coordinates, and y coordinates from read names. The default works for typical Illumina read names."
         tagging_policy: {
@@ -35,7 +35,7 @@ task mark_duplicates {
             choices: [
                 "DontTag",
                 "OpticalOnly",
-                "All"
+                "All",
             ],
         }
         validation_stringency: {
@@ -43,13 +43,13 @@ task mark_duplicates {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT"
+                "SILENT",
             ],
             tool_default: "STRICT",
         }
         create_bam: {
             description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?",
-            common: true
+            common: true,
         }
         clear_dt: "Clear the `DT` tag from the input BAM? For increased performance, if the input BAM does not have the `DT` tag, set to `false`."
         remove_duplicates: "Remove duplicate reads from the output BAM? If `true`, the output BAM will not contain any duplicate reads."
@@ -142,7 +142,7 @@ task validate_bam {
         ignore_list: {
             description: "List of Picard errors and warnings to ignore. Possible values can be found on the GATK website (see `external_help`).",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile",
-            common: true
+            common: true,
         }
         outfile_name: "Name for the ValidateSamFile report file"
         validation_stringency: {
@@ -150,21 +150,21 @@ task validate_bam {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT"
+                "SILENT",
             ],
             tool_default: "STRICT",
         }
         succeed_on_errors: {
             description: "Succeed the task even if errors *and/or* warnings are detected",
-            common: true
+            common: true,
         }
         succeed_on_warnings: {
             description: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`",
-            common: true
+            common: true,
         }
         summary_mode: {
             description: "Enable SUMMARY mode?",
-            common: true
+            common: true,
         }
         index_validation_stringency_less_exhaustive: "Set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE`?"
         max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
@@ -256,7 +256,7 @@ task sort {
         outputs: {
             sorted_bam: "The input BAM after it has been sorted according to `sort_order`",
             sorted_bam_index: "The `.bai` BAM index file associated with `sorted_bam`",
-            sorted_bam_md5: "The md5sum of `sorted_bam`"
+            sorted_bam_md5: "The md5sum of `sorted_bam`",
         }
     }
 
@@ -267,9 +267,9 @@ task sort {
             choices: [
                 "queryname",
                 "coordinate",
-                "duplicate"
+                "duplicate",
             ],
-            common: true
+            common: true,
         }
         prefix: "Prefix for the sorted BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
         validation_stringency: {
@@ -277,7 +277,7 @@ task sort {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT"
+                "SILENT",
             ],
             tool_default: "STRICT",
         }
@@ -339,7 +339,7 @@ task merge_sam_files {
         outputs: {
             merged_bam: "The BAM resulting from merging all the input BAMs",
             merged_bam_index: "The `.bai` BAM index file associated with `merged_bam`",
-            merged_bam_md5: "The md5sum of `merged_bam`"
+            merged_bam_md5: "The md5sum of `merged_bam`",
         }
     }
 
@@ -352,16 +352,16 @@ task merge_sam_files {
                 "unsorted",
                 "queryname",
                 "coordinate",
-                "duplicate"
+                "duplicate",
             ],
-            common: true
+            common: true,
         }
         validation_stringency: {
             description: "Validation stringency for parsing the input BAM.",
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT"
+                "SILENT",
             ],
             tool_default: "STRICT",
         }
@@ -426,7 +426,7 @@ task clean_sam {
         outputs: {
             cleaned_bam: "A cleaned version of the input BAM",
             cleaned_bam_index: "The `.bai` BAM index file associated with `cleaned_bam`",
-            cleaned_bam_md5: "The md5sum of `cleaned_bam`"
+            cleaned_bam_md5: "The md5sum of `cleaned_bam`",
         }
     }
 
@@ -438,7 +438,7 @@ task clean_sam {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT"
+                "SILENT",
             ],
             tool_default: "STRICT",
         }
@@ -494,7 +494,7 @@ task collect_wgs_metrics {
         outputs: {
             wgs_metrics: {
                 description: "Output report of `picard CollectWgsMetrics`",
-                external_help: "https://broadinstitute.github.io/picard/picard-metric-definitions.html#CollectWgsMetrics.WgsMetrics"
+                external_help: "https://broadinstitute.github.io/picard/picard-metric-definitions.html#CollectWgsMetrics.WgsMetrics",
             }
         }
     }
@@ -508,7 +508,7 @@ task collect_wgs_metrics {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT"
+                "SILENT",
             ],
             tool_default: "STRICT",
         }
@@ -557,9 +557,9 @@ task collect_alignment_summary_metrics {
         outputs: {
             alignment_metrics: {
                 description: "The text file output of `CollectAlignmentSummaryMetrics`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics",
             },
-            alignment_metrics_pdf: "The PDF file output of `CollectAlignmentSummaryMetrics`"
+            alignment_metrics_pdf: "The PDF file output of `CollectAlignmentSummaryMetrics`",
         }
     }
 
@@ -571,7 +571,7 @@ task collect_alignment_summary_metrics {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT"
+                "SILENT",
             ],
             tool_default: "STRICT",
         }
@@ -619,13 +619,13 @@ task collect_gc_bias_metrics {
         outputs: {
             gc_bias_metrics: {
                 description: "The full text file output of `CollectGcBiasMetrics`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasDetailMetrics"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasDetailMetrics",
             },
             gc_bias_metrics_summary: {
                 description: "The summary text file output of `CollectGcBiasMetrics`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasSummaryMetrics"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasSummaryMetrics",
             },
-            gc_bias_metrics_pdf: "The PDF file output of `CollectGcBiasMetrics`"
+            gc_bias_metrics_pdf: "The PDF file output of `CollectGcBiasMetrics`",
         }
     }
 
@@ -638,7 +638,7 @@ task collect_gc_bias_metrics {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT"
+                "SILENT",
             ],
             tool_default: "STRICT",
         }
@@ -690,9 +690,9 @@ task collect_insert_size_metrics {
         outputs: {
             insert_size_metrics: {
                 description: "The text file output of `CollectInsertSizeMetrics`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics",
             },
-            insert_size_metrics_pdf: "The PDF file output of `CollectInsertSizeMetrics`"
+            insert_size_metrics_pdf: "The PDF file output of `CollectInsertSizeMetrics`",
         }
     }
 
@@ -704,7 +704,7 @@ task collect_insert_size_metrics {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT"
+                "SILENT",
             ],
             tool_default: "STRICT",
         }
@@ -751,7 +751,7 @@ task quality_score_distribution {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037057312-QualityScoreDistribution-Picard-"
         outputs: {
             quality_score_distribution_txt: "The text file output of `QualityScoreDistribution`",
-            quality_score_distribution_pdf: "The PDF file output of `QualityScoreDistribution`"
+            quality_score_distribution_pdf: "The PDF file output of `QualityScoreDistribution`",
         }
     }
 
@@ -763,7 +763,7 @@ task quality_score_distribution {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT"
+                "SILENT",
             ],
             tool_default: "STRICT",
         }
@@ -816,7 +816,7 @@ task bam_to_fastq {
         prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
         paired: {
             description: "Is the data Paired-End (true) or Single-End (false)?",
-            common: true
+            common: true,
         }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -866,7 +866,7 @@ task merge_vcfs {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036713331-MergeVcfs-Picard"
         outputs: {
             output_vcf: "The merged VCF file",
-            output_vcf_index: "The index file associated with the merged VCF file"
+            output_vcf_index: "The index file associated with the merged VCF file",
         }
     }
 
@@ -912,7 +912,7 @@ task scatter_interval_list {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036897212-IntervalListTools-Picard"
         outputs: {
             interval_lists_scatter: "The split interval lists",
-            interval_count: "The number of split interval lists"
+            interval_count: "The number of split interval lists",
         }
     }
 
@@ -923,8 +923,8 @@ task scatter_interval_list {
             choices: [
                 "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW",
                 "INTERVAL_SUBDIVISION",
-                "BALANCING_WITHOUT_INTERVAL_SUBDIVISION"
-            ]
+                "BALANCING_WITHOUT_INTERVAL_SUBDIVISION",
+            ],
         }
         unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
         sort: "Should the output interval lists be sorted? Sorts by coordinate."

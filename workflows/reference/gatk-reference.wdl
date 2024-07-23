@@ -14,7 +14,7 @@ workflow gatk_reference {
             dbSNP_vcf: "dbSNP VCF file for the reference genome.",
             dbSNP_vcf_index: "Index for the dbSNP VCF file for the reference genome.",
             interval_list: "List of intervals that will be used when computing variants.",
-            known_vcfs: "VCF files with known variants to use with variant calling."
+            known_vcfs: "VCF files with known variants to use with variant calling.",
         }
         allowNestedInputs: true
     }

@@ -17,7 +17,7 @@ workflow rnaseq_standard {
             bigwig: "BigWig format coverage file generated from `bam`",
             feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts.",
             inferred_strandedness: "TSV file containing the `ngsderive strandedness` report",
-            inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`"
+            inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`",
         }
         allowNestedInputs: true
     }
@@ -33,8 +33,8 @@ workflow rnaseq_standard {
             choices: [
                 "bwa aln",
                 "bwa mem",
-                "star"
-            ]
+                "star",
+            ],
         }
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
@@ -42,8 +42,8 @@ workflow rnaseq_standard {
                 "",
                 "Stranded-Reverse",
                 "Stranded-Forward",
-                "Unstranded"
-            ]
+                "Unstranded",
+            ],
         }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
@@ -142,8 +142,8 @@ task parse_input {
                 "",
                 "Stranded-Reverse",
                 "Stranded-Forward",
-                "Unstranded"
-            ]
+                "Unstranded",
+            ],
         }
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
         contaminant_db: "Was a `contaminant_db` supplied by the user? Must `true` if `cleanse_xenograft` is `true`."

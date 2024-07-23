@@ -31,8 +31,8 @@ workflow make_qc_reference {
                 "protozoa",
                 "nt",
                 "UniVec",
-                "UniVec_Core"
-            ]
+                "UniVec_Core",
+            ],
         }
         coverage_feature_types: {
             description: "List of feature types to use for coverage calculation",
@@ -45,8 +45,8 @@ workflow make_qc_reference {
                 "UTR",
                 "start_codon",
                 "stop_codon",
-                "Selenocysteine"
-            ]
+                "Selenocysteine",
+            ],
         }
         reference_fa_url: "URL to retrieve the reference FASTA file from"
         reference_fa_name: "Name of output reference FASTA file"

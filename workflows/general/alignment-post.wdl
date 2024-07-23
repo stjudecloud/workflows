@@ -12,7 +12,7 @@ workflow alignment_post {
             processed_bam: "Input BAM after being transformed by standard processing",
             bam_index: "BAI index associated with `processed_bam`",
             bam_checksum:  "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
-            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged."
+            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
         }
         allowNestedInputs: true
     }
@@ -26,8 +26,8 @@ workflow alignment_post {
             choices: [
                 "bwa aln",
                 "bwa mem",
-                "star"
-            ]
+                "star",
+            ],
         }
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
         use_all_cores: "Use all cores for multi-core steps?"

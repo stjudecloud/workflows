@@ -10,7 +10,7 @@ workflow rnaseq_variant_calling {
             recalibrated_bam: "BAM that has undergone recalibration of base quality scores",
             recalibrated_bam_index: "Index file for recalibrated BAM file",
             variant_filtered_vcf: "VCF file after variant filters have been applied",
-            variant_filtered_vcf_index: "Index for filtered variant VCF file"
+            variant_filtered_vcf_index: "Index for filtered variant VCF file",
         }
     }
 

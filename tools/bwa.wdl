@@ -16,15 +16,15 @@ task bwa_aln {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true
+            common: true,
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -102,25 +102,25 @@ task bwa_aln_pe {
     parameter_meta {
         read_one_fastq_gz: {
             description: "Input gzipped FASTQ read one file to align with bwa",
-            stream: false
+            stream: false,
         }
         read_two_fastq_gz: {
             description: "Input gzipped FASTQ read two file to align with bwa",
-            stream: false
+            stream: false,
         }
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true
+            common: true,
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -207,15 +207,15 @@ task bwa_mem {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true
+            common: true,
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -300,7 +300,7 @@ task build_bwa_db {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
         db_name: {
             description: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added.",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

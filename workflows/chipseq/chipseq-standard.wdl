@@ -18,7 +18,7 @@ workflow chipseq_standard {
             harmonized_bam: "A harmonized BWA aligned ChIP-Seq BAM file",
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
             bam_index: "BAI index file associated with `harmonized_bam`",
-            bigwig: "BigWig format coverage file"
+            bigwig: "BigWig format coverage file",
         }
         allowNestedInputs: true
     }

@@ -11,7 +11,7 @@ workflow dnaseq_standard_fastq_experimental {
         description: "Aligns DNA reads using bwa"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
-            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file"
+            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",
         }
         allowNestedInputs: true
     }
@@ -27,7 +27,7 @@ workflow dnaseq_standard_fastq_experimental {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"]
+            choices: ["mem", "aln"],
         }
         validate_input: "Ensure input FASTQs ares well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
@@ -113,7 +113,7 @@ task parse_input {
     parameter_meta {
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"]
+            choices: ["mem", "aln"],
         }
         array_lengths: "Expected to be an array of length 3, containing the lengths of `read_one_fastqs_gz`, `read_two_fastqs_gz`, and `read_groups`"
     }

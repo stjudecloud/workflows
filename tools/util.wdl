@@ -58,11 +58,11 @@ task get_read_groups {
     parameter_meta {
         bam: {
             description: "Input BAM format file to get read groups from",
-            stream: true
+            stream: true,
         }
         format_for_star: {
             description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`.",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -117,7 +117,7 @@ task split_string {
         input_string: "String to split on occurences of `delimiter`"
         delimiter: {
             description: "Delimiter on which to split `input_string`",
-            common: true
+            common: true,
         }
     }
 
@@ -158,7 +158,7 @@ task calc_gene_lengths {
         outfile_name: "Name of the gene lengths file"
         idattr: {
             description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -389,8 +389,8 @@ task make_coverage_regions_bed {
                 "UTR",
                 "start_codon",
                 "stop_codon",
-                "Selenocysteine"
-            ]
+                "Selenocysteine",
+            ],
         }
         outfile_name: "Name of the output BED file"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -777,7 +777,7 @@ task split_fastq {
     parameter_meta {
         fastq: {
             description: "Gzipped FASTQ file to split",
-            stream: true
+            stream: true,
         }
         reads_per_file: "Number of reads to include in each output FASTQ file"
         prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
