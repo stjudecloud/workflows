@@ -184,9 +184,11 @@ workflow quality_check {
         subsample_index.bam_index,
         bam_index
     ])
-    String post_subsample_prefix = if (defined(subsample.sampled_bam))
+    String post_subsample_prefix = (
+        if (defined(subsample.sampled_bam))
         then prefix + ".subsampled"
         else prefix
+    )
 
     call picard.validate_bam after quickcheck { input:
         bam = post_subsample_bam,

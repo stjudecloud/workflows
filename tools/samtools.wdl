@@ -891,35 +891,41 @@ task bam_to_fastq {
             -F ~{bitwise_filter.exclude_if_any} \
             --rf ~{bitwise_filter.include_if_any} \
             -G ~{bitwise_filter.exclude_if_all} \
-            ~{if append_read_number
+            ~{(
+                if append_read_number
                 then "-N"
                 else "-n"
-            } \
-            -1 ~{
-                if paired_end then (
-                    if interleaved then prefix + ".fastq.gz" else prefix + ".R1.fastq.gz"
+            )} \
+            -1 ~{(
+                if paired_end
+                then (
+                    if interleaved
+                    then prefix + ".fastq.gz"
+                    else prefix + ".R1.fastq.gz"
                 )
                 else prefix + ".fastq.gz"
-            } \
-            -2 ~{
-                if paired_end then (
+            )} \
+            -2 ~{(
+                if paired_end
+                then (
                     if interleaved then prefix + ".fastq.gz" else prefix + ".R2.fastq.gz"
                 )
                 else prefix + ".fastq.gz"
-            } \
-            ~{
-                if paired_end then (
+            )} \
+            ~{(
+                if paired_end
+                then (
                     if output_singletons
-                    then "-s " + prefix+".singleton.fastq.gz"
+                    then "-s " + prefix + ".singleton.fastq.gz"
                     else "-s junk.singleton.fastq.gz"
                 )
                 else ""
-            } \
-            -0 ~{
+            )} \
+            -0 ~{(
                 if paired_end
                 then "junk.unknown_bit_setting.fastq.gz"
                 else prefix + ".fastq.gz"
-            } \
+            )} \
             bam_pipe
 
         rm bam_pipe

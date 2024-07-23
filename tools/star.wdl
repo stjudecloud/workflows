@@ -650,11 +650,11 @@ task alignment {
                     else []
                 ))
             }" \
-            ~{if defined(read_groups) then "--read-groups" else ""} "~{
+            ~{if defined(read_groups) then "--read-groups" else ""} "~{(
                 if defined(read_groups)
                 then read_groups
                 else ""
-            }"
+            )}"
 
         read -ra read_one_args < read_one_fastqs_sorted.txt
         read -ra read_two_args < read_two_fastqs_sorted.txt
@@ -722,13 +722,13 @@ task alignment {
             --outSAMunmapped ~{out_sam_unmapped} \
             --outSAMorder ~{out_sam_order} \
             --outSAMreadID ~{out_sam_read_id} \
-            --outSAMtlen ~{
+            --outSAMtlen ~{(
                 if (out_sam_tlen == "left_plus")
                 then "1"
                 else (
                     if (out_sam_tlen == "left_any") then "2" else "error"
                 )
-            } \
+            )} \
             --outFilterType ~{out_filter_type} \
             --outFilterIntronMotifs ~{out_filter_intron_motifs} \
             --outFilterIntronStrands ~{out_filter_intron_strands} \

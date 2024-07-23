@@ -187,14 +187,17 @@ task validate_bam {
         Int modify_disk_size_gb = 0
     }
 
-    String reference_arg = if defined(reference_fasta)
+    String reference_arg = (
+        if defined(reference_fasta)
         then "-R ~{reference_fasta}"
         else ""
+    )
     String mode_arg = if (summary_mode) then "--MODE SUMMARY" else ""
-    String stringency_arg = if (index_validation_stringency_less_exhaustive)
+    String stringency_arg = (
+        if (index_validation_stringency_less_exhaustive)
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
-
+    )
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -839,12 +842,16 @@ task bam_to_fastq {
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
             FASTQ=~{prefix}_R1.fastq \
-            ~{if paired then "SECOND_END_FASTQ="+prefix+"_R2.fastq" else ""} \
+            ~{(
+                if paired
+                then "SECOND_END_FASTQ=" + prefix + "_R2.fastq"
+                else ""
+            )} \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
 
         gzip ~{prefix}_R1.fastq \
-            ~{if paired then prefix+"_R2.fastq" else ""}
+            ~{if paired then prefix + "_R2.fastq" else ""}
     >>>
 
     output {

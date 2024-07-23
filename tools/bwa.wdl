@@ -168,7 +168,7 @@ task bwa_aln_pe {
         ln -s ~{read_two_fastq_gz}
 
         bwa sampe \
-            ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
+            ~{if read_group != "" then "-r '" + read_group + "'" else ""} \
             bwa_db/"$PREFIX" \
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_one_fastq_gz)}) \
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_two_fastq_gz)}) \
@@ -261,11 +261,11 @@ task bwa_mem {
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
         ln -sf ~{read_one_fastq_gz}
-        ~{if defined(read_two_fastq_gz) then "ln -sf "+read_two_fastq_gz+"" else ""}
+        ~{if defined(read_two_fastq_gz) then "ln -sf " + read_two_fastq_gz + "" else ""}
 
         bwa mem \
             -t "$n_cores" \
-            ~{if read_group != "" then "-R '"+read_group+"'" else ""} \
+            ~{if read_group != "" then "-R '" + read_group + "'" else ""} \
             bwa_db/"$PREFIX" \
             ~{basename(read_one_fastq_gz)} \
             ~{basename(read_two_file)} \
