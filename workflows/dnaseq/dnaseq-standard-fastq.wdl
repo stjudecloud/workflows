@@ -15,6 +15,7 @@ workflow dnaseq_standard_fastq_experimental {
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
@@ -33,6 +34,7 @@ workflow dnaseq_standard_fastq_experimental {
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
     }
+
     input {
         File bwa_db
         Array[File] read_one_fastqs_gz

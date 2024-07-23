@@ -162,7 +162,6 @@ task apply_bqsr {
             recalibrated_bam: "Recalibrated BAM file",
             recalibrated_bam_index: "Index file for the recalibrated BAM",
         }
-
     }
 
     parameter_meta  {

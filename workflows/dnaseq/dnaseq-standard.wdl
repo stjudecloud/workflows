@@ -17,6 +17,7 @@ workflow dnaseq_standard_experimental {
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         bam: "Input BAM to realign"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
@@ -31,6 +32,7 @@ workflow dnaseq_standard_experimental {
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
         sample_override: "Value to override the SM field of *every* read group."
     }
+
     input {
         File bam
         File bwa_db

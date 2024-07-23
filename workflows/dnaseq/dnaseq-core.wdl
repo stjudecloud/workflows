@@ -19,6 +19,7 @@ workflow dnaseq_core_experimental {
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
@@ -33,6 +34,7 @@ workflow dnaseq_core_experimental {
         use_all_cores: "Use all cores? Recommended for cloud environments."
         sample_override: "Value to override the SM field of *every* read group."
     }
+
     input {
         File bwa_db
         Array[File] read_one_fastqs_gz
