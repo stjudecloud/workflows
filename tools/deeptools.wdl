@@ -6,7 +6,7 @@ task bam_coverage {
     meta {
         description: "Generates a BigWig coverage track using bamCoverage from DeepTools"
         outputs: {
-            bigwig: "BigWig format coverage file"
+            bigwig: "BigWig format coverage file",
         }
     }
 
@@ -16,11 +16,11 @@ task bam_coverage {
         prefix: "Prefix for the BigWig file. The extension `.bw` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

@@ -6,7 +6,7 @@ task compute_checksum {
     meta {
         description: "Generates an MD5 checksum for the input file"
         outputs: {
-            md5sum: "STDOUT of the `md5sum` command that has been redirected to a file"
+            md5sum: "STDOUT of the `md5sum` command that has been redirected to a file",
         }
     }
 
@@ -22,7 +22,6 @@ task compute_checksum {
 
     Float file_size = size(file, "GiB")
     Int disk_size_gb = ceil(file_size) + 10 + modify_disk_size_gb
-
     String outfile_name = basename(file) + ".md5"
 
     command <<<

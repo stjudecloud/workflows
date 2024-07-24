@@ -11,10 +11,11 @@ workflow dnaseq_standard_fastq_experimental {
         description: "Aligns DNA reads using bwa"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
-            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file"
+            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
@@ -27,12 +28,16 @@ workflow dnaseq_standard_fastq_experimental {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"]
+            choices: [
+                "mem",
+                "aln",
+            ],
         }
         validate_input: "Ensure input FASTQs ares well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
     }
+
     input {
         File bwa_db
         Array[File] read_one_fastqs_gz
@@ -52,10 +57,9 @@ workflow dnaseq_standard_fastq_experimental {
             length(read_one_fastqs_gz),
             length(read_two_fastqs_gz),
             length(read_groups)
-        ]
+        ],
     }
-
-    if (validate_input){
+    if (validate_input) {
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
             call fq.fqlint { input:
                 read_one_fastq = reads.left,
@@ -63,7 +67,6 @@ workflow dnaseq_standard_fastq_experimental {
             }
         }
     }
-
     if (subsample_n_reads > 0) {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
@@ -84,7 +87,6 @@ workflow dnaseq_standard_fastq_experimental {
             read_two_fastqs_gz
         ])
     )
-
     call dnaseq_core_wf.dnaseq_core_experimental { input:
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,
@@ -93,7 +95,7 @@ workflow dnaseq_standard_fastq_experimental {
         read_groups,
         prefix,
         aligner,
-        use_all_cores
+        use_all_cores,
     }
 
     output {
@@ -106,14 +108,17 @@ task parse_input {
     meta {
         description: "Parses and validates the `dnaseq_standard` workflow's provided inputs"
         outputs: {
-            check: "Dummy output to indicate success and to enable call-caching"
+            check: "Dummy output to indicate success and to enable call-caching",
         }
     }
 
     parameter_meta {
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"]
+            choices: [
+                "mem",
+                "aln",
+            ],
         }
         array_lengths: "Expected to be an array of length 3, containing the lengths of `read_one_fastqs_gz`, `read_two_fastqs_gz`, and `read_groups`"
     }

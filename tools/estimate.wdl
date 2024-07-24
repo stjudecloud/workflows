@@ -6,7 +6,7 @@ task run_estimate {
     meta {
         description: "**[DEPRECATED]** Given a gene expression file, run the ESTIMATE software package"
         outputs: {
-            estimate_file: "The results file of the ESTIMATE software package"
+            estimate_file: "The results file of the ESTIMATE software package",
         }
         deprecated: true
     }

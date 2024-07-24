@@ -17,7 +17,7 @@ workflow rnaseq_standard {
             bigwig: "BigWig format coverage file generated from `bam`",
             feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts.",
             inferred_strandedness: "TSV file containing the `ngsderive strandedness` report",
-            inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`"
+            inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`",
         }
         allowNestedInputs: true
     }
@@ -33,8 +33,8 @@ workflow rnaseq_standard {
             choices: [
                 "bwa aln",
                 "bwa mem",
-                "star"
-            ]
+                "star",
+            ],
         }
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
@@ -42,8 +42,8 @@ workflow rnaseq_standard {
                 "",
                 "Stranded-Reverse",
                 "Stranded-Forward",
-                "Unstranded"
-            ]
+                "Unstranded",
+            ],
         }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
@@ -70,15 +70,11 @@ workflow rnaseq_standard {
     call parse_input { input:
         input_strand = strandedness,
         cleanse_xenograft,
-        contaminant_db = defined(contaminant_db)
+        contaminant_db = defined(contaminant_db),
     }
-
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam after parse_input { input:
-            bam,
-        }
+        call picard.validate_bam as validate_input_bam after parse_input { input: bam }
     }
-
     if (subsample_n_reads > 0) {
         call samtools.subsample after parse_input { input:
             bam,
@@ -87,7 +83,6 @@ workflow rnaseq_standard {
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
-
     call util.get_read_groups after parse_input { input:
         bam = selected_bam,
         format_for_star = true,  # matches default but prevents user from overriding
@@ -97,7 +92,6 @@ workflow rnaseq_standard {
         paired_end = true,  # matches default but prevents user from overriding
         use_all_cores,
     }
-
     call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
@@ -131,7 +125,7 @@ task parse_input {
     meta {
         description: "Parses and validates the `rnaseq_standard[_fastq]` workflows' provided inputs"
         outputs: {
-            check: "Dummy output to indicate success and to enable call-caching"
+            check: "Dummy output to indicate success and to enable call-caching",
         }
     }
 
@@ -142,8 +136,8 @@ task parse_input {
                 "",
                 "Stranded-Reverse",
                 "Stranded-Forward",
-                "Unstranded"
-            ]
+                "Unstranded",
+            ],
         }
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
         contaminant_db: "Was a `contaminant_db` supplied by the user? Must `true` if `cleanse_xenograft` is `true`."

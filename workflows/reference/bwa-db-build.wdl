@@ -8,7 +8,7 @@ workflow bwa_db_build {
         description: "Generates a set of genome reference files usable by the BWA aligner from an input reference file in FASTA format."
         outputs: {
             reference_fa: "FASTA format reference file used to generate `bwa_db_tar_gz`",
-            bwa_db_tar_gz: "Gzipped tar archive of the BWA reference files. Files are at the root of the archive."
+            bwa_db_tar_gz: "Gzipped tar archive of the BWA reference files. Files are at the root of the archive.",
         }
         allowNestedInputs: true
     }
@@ -33,12 +33,10 @@ workflow bwa_db_build {
         disk_size_gb = reference_fa_disk_size_gb,
         md5sum = reference_fa_md5,
     }
-    call bwa.build_bwa_db { input:
-        reference_fasta = reference_download.downloaded_file,
-    }
+    call bwa.build_bwa_db { input: reference_fasta = reference_download.downloaded_file }
 
     output {
-      File reference_fa = reference_download.downloaded_file
-      File bwa_db_tar_gz = build_bwa_db.bwa_db_tar_gz
+        File reference_fa = reference_download.downloaded_file
+        File bwa_db_tar_gz = build_bwa_db.bwa_db_tar_gz
     }
 }

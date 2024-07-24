@@ -8,7 +8,7 @@ task arriba {
         help: "Typical input is a STAR-aligned BAM. Arriba also supports DRAGEN-aligned BAMs and any spec compliant BAM. That is discordant mates must have `BAM_FPROPER_PAIR (0x2)`, split reads must have `BAM_FSUPPLEMENTARY (0x800)`, and the anchor read must have a `SA` tag. Arriba also uses the `HI` tag to group supplementary alignments."
         outputs: {
             fusions: "Output file of fusions in TSV format",
-            discarded_fusions: "Output file of discarded fusions in TSV format"
+            discarded_fusions: "Output file of discarded fusions in TSV format",
         }
     }
 
@@ -19,23 +19,23 @@ task arriba {
         chimeric_sam: "Optional input file of chimeric reads in SAM format, from older versions of STAR"
         exclude_list: {
             description: "Optional input file of regions to exclude from analysis in tab delimited format",
-            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#blacklist"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#blacklist",
         }
         known_fusions: {
             description: "Optional input file of known fusions in tab delimited format",
-            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#known-fusions"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#known-fusions",
         }
         annotate_fusions: {
             description: "Optional input file in tab delimited format of fusions to annotate with tags",
-            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#tags"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#tags",
         }
         protein_domains: {
             description: "Optional input file of protein domains coordinates in GFF3 format",
-            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#protein-domains"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#protein-domains",
         }
         wgs_svs: {
             description: "Optional input file of structural variants found by WGS in tab delimited or VCF format",
-            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#structural-variant-calls-from-wgs"
+            external_help: "https://arriba.readthedocs.io/en/v2.4.0/input-files/#structural-variant-calls-from-wgs",
         }
         interesting_contigs: "Array of contigs to consider for analysis. Contigs can be specified with or without the prefix `chr`."
         viral_contigs: "Array of contigs to consider for viral integration site analysis."
@@ -77,14 +77,14 @@ task arriba {
                 "intronic",
                 "in_vitro",
                 "intragenic_exonic",
-                "internal_tandem_duplication"
-            ]
+                "internal_tandem_duplication",
+            ],
         }
         feature_name: {
             description: "List of feature names to use in GTF.",
             help: "The Arriba default it designed to handle RefSeq, GENCODE, or ENSEMBL format annotations. `feature_name` expects a string of space/comma separated options. The required fields are `gene_name`, `gene_id`, `transcript_id`, `feature_exon`, and `feature_CDS`. The fields should space separated. The values should be provided with `field=value`. Mutliple values can be provided and separated by a pipe (`|`), e.g. `=value1|value2`. A complete example is `gene_name=gene_name|gene_id gene_id=gene_id transcript_id=transcript_id feature_exon=exon feature_CDS=CDS`.",
             external_help: "https://arriba.readthedocs.io/en/v2.4.0/command-line-options/",
-            common: false
+            common: false,
         }
         prefix: "Prefix for the fusion result files. The extensions `.tsv` and `.discarded.tsv` will be added."
         strandedness: {
@@ -94,12 +94,12 @@ task arriba {
                 "auto",
                 "yes",
                 "no",
-                "reverse"
-            ]
+                "reverse",
+            ],
         }
         mark_duplicates: {
             description: "Mark duplicates in the input BAM file with Arriba.",
-            help: "Arriba performs marking of duplicates internally based on identical mapping coordinates. When this switch is set, internal marking of duplicates is disabled and Arriba assumes that duplicates have been marked by a preceding program. In this case, Arriba only discards alignments flagged with the BAM_FDUP flag. This makes sense when duplicates cannot be reliably identified solely based on their mapping coordinates, e.g. when unique molecular identifiers (UMIs) are used or when independently generated libraries are merged in a single BAM file and the read group must be interrogated to distinguish duplicates from reads that map to the same coordinates by chance. In addition, when this switch is set, duplicate reads are not considered for the calculation of the coverage at fusion breakpoints (columns coverage1 and coverage2 in the output file)."
+            help: "Arriba performs marking of duplicates internally based on identical mapping coordinates. When this switch is set, internal marking of duplicates is disabled and Arriba assumes that duplicates have been marked by a preceding program. In this case, Arriba only discards alignments flagged with the BAM_FDUP flag. This makes sense when duplicates cannot be reliably identified solely based on their mapping coordinates, e.g. when unique molecular identifiers (UMIs) are used or when independently generated libraries are merged in a single BAM file and the read group must be interrogated to distinguish duplicates from reads that map to the same coordinates by chance. In addition, when this switch is set, duplicate reads are not considered for the calculation of the coverage at fusion breakpoints (columns coverage1 and coverage2 in the output file).",
         }
         report_additional_columns: "Report additional columns ['fusion_transcript', 'peptide_sequence', 'read_identifiers'] in the discarded fusions file."
         fill_gaps: "Fill gaps in assembled transcripts with reference bases. Expands the fusion sequence to the complete sequence of the fusion gene."
@@ -144,8 +144,7 @@ task arriba {
         Array[String] viral_contigs = ["AC_*", "NC_*"]
         Array[String] disable_filters = []
         #@ except: LineWidth
-        String feature_name
-            = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
+        String feature_name = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
         String prefix = basename(bam, ".bam") + ".fusions"
         String strandedness = "auto"
         Boolean mark_duplicates = true
@@ -251,7 +250,7 @@ task arriba_tsv_to_vcf {
     meta {
         description: "Convert Arriba TSV format fusions to VCF format."
         outputs: {
-            fusions_vcf: "Output file of fusions in VCF format"
+            fusions_vcf: "Output file of fusions in VCF format",
         }
     }
 
@@ -305,7 +304,7 @@ task arriba_extract_fusion_supporting_alignments {
         description: "Extract alignments that support fusions."
         outputs: {
             fusion_bams: "Array of BAM files corresponding with fusions in the input file",
-            fusion_bam_indexes: "Array of BAM indexes corresponding with the BAMs in the 'fusion_bams'"
+            fusion_bam_indexes: "Array of BAM indexes corresponding with the BAMs in the 'fusion_bams'",
         }
     }
 
@@ -353,7 +352,7 @@ task arriba_annotate_exon_numbers {
     meta {
         description: "Annotate fusions with exon numbers."
         outputs: {
-            fusion_tsv: "TSV file with fusions annotated with exon numbers"
+            fusion_tsv: "TSV file with fusions annotated with exon numbers",
         }
     }
 

@@ -6,7 +6,7 @@ task bwa_aln {
     meta {
         description: "Maps Single-End FASTQ files to BAM format using bwa aln"
         outputs: {
-            bam: "Aligned BAM format file"
+            bam: "Aligned BAM format file",
         }
     }
 
@@ -16,15 +16,15 @@ task bwa_aln {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true
+            common: true,
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -44,7 +44,6 @@ task bwa_aln {
     }
 
     String output_bam = prefix + ".bam"
-
     Float input_fastq_size = size(fastq, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = (
@@ -95,32 +94,32 @@ task bwa_aln_pe {
     meta {
         description: "Maps Paired-End FASTQ files to BAM format using bwa aln"
         outputs: {
-            bam: "Aligned BAM format file"
+            bam: "Aligned BAM format file",
         }
     }
 
     parameter_meta {
         read_one_fastq_gz: {
             description: "Input gzipped FASTQ read one file to align with bwa",
-            stream: false
+            stream: false,
         }
         read_two_fastq_gz: {
             description: "Input gzipped FASTQ read two file to align with bwa",
-            stream: false
+            stream: false,
         }
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true
+            common: true,
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -141,7 +140,6 @@ task bwa_aln_pe {
     }
 
     String output_bam = prefix + ".bam"
-
     Float input_fastq_size = (
         size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
     )
@@ -196,7 +194,7 @@ task bwa_mem {
     meta {
         description: "Maps FASTQ files to BAM format using bwa mem"
         outputs: {
-            bam: "Aligned BAM format file"
+            bam: "Aligned BAM format file",
         }
     }
 
@@ -207,15 +205,15 @@ task bwa_mem {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true
+            common: true,
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -236,14 +234,12 @@ task bwa_mem {
     }
 
     String output_bam = prefix + ".bam"
-
     Float input_fastq_size = size(read_one_fastq_gz, "GiB")
         + size(read_two_fastq_gz, "GiB")
     Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = (
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
     )
-
     File read_two_file = select_first([read_two_fastq_gz, ""])
 
     command <<<
@@ -292,7 +288,7 @@ task build_bwa_db {
     meta {
         description: "Creates a BWA index and returns it as a compressed tar archive"
         outputs: {
-            bwa_db_tar_gz: "Tarballed bwa reference files"
+            bwa_db_tar_gz: "Tarballed bwa reference files",
         }
     }
 
@@ -300,7 +296,7 @@ task build_bwa_db {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
         db_name: {
             description: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added.",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

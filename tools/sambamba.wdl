@@ -6,7 +6,7 @@ task index {
     meta {
         description: "Creates a `.bai` BAM index for the input BAM"
         outputs: {
-            bam_index: "A `.bai` BAM index associated with the input BAM. Filename will be `basename(bam) + '.bai'`."
+            bam_index: "A `.bai` BAM index associated with the input BAM. Filename will be `basename(bam) + '.bai'`.",
         }
     }
 
@@ -14,11 +14,11 @@ task index {
         bam: "Input BAM format file to index"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -32,7 +32,6 @@ task index {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 1.2) + 10 + modify_disk_size_gb
-
     String outfile_name = basename(bam) + ".bai"
 
     command <<<
@@ -63,7 +62,7 @@ task merge {
     meta {
         description: "Merges multiple sorted BAMs into a single BAM"
         outputs: {
-            merged_bam: "The BAM resulting from merging all the input BAMs"
+            merged_bam: "The BAM resulting from merging all the input BAMs",
         }
     }
 
@@ -72,11 +71,11 @@ task merge {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -123,7 +122,7 @@ task sort {
     meta {
         description: "Sorts the input BAM file"
         outputs: {
-            sorted_bam: "The input BAM after it has been sorted according to `sort_order`"
+            sorted_bam: "The input BAM after it has been sorted according to `sort_order`",
         }
     }
 
@@ -132,7 +131,7 @@ task sort {
         prefix: "Prefix for the sorted BAM file. The extension `.bam` will be added."
         queryname_sort: {
             description: "If true, sort the BAM by queryname. If false, sort by coordinate.",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
@@ -148,7 +147,6 @@ task sort {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 3) + 10 + modify_disk_size_gb
-
     String outfile_name = prefix + ".bam"
 
     command <<<
@@ -180,7 +178,7 @@ task markdup {
         outputs: {
             duplicate_marked_bam: "The input BAM with computationally determined duplicates marked.",
             duplicate_marked_bam_index: "Index file for the duplicate marked BAM",
-            markdup_log: "Log file from the markdup process"
+            markdup_log: "Log file from the markdup process",
         }
     }
 
@@ -189,7 +187,7 @@ task markdup {
         prefix: "Prefix for the markdup result files. The extensions `markdup.bam` will be added."
         remove_duplicates: {
             description: "If true, remove duplicates instead of marking them.",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
@@ -234,7 +232,7 @@ task flagstat {
     meta {
         description: "Produces a report containing statistics about the alignments based on the bit flags set in the BAM"
         outputs: {
-            flagstat_report: "`sambamba flagstat` STDOUT redirected to a file"
+            flagstat_report: "`sambamba flagstat` STDOUT redirected to a file",
         }
     }
 
@@ -243,11 +241,11 @@ task flagstat {
         outfile_name: "Name for the flagstat report file"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -275,7 +273,7 @@ task flagstat {
     >>>
 
     output {
-       File flagstat_report = outfile_name
+        File flagstat_report = outfile_name
     }
 
     runtime {

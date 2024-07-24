@@ -11,8 +11,8 @@ workflow alignment_post {
         outputs: {
             processed_bam: "Input BAM after being transformed by standard processing",
             bam_index: "BAI index associated with `processed_bam`",
-            bam_checksum:  "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
-            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged."
+            bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
+            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
         }
         allowNestedInputs: true
     }
@@ -26,8 +26,8 @@ workflow alignment_post {
             choices: [
                 "bwa aln",
                 "bwa mem",
-                "star"
-            ]
+                "star",
+            ],
         }
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
         use_all_cores: "Use all cores for multi-core steps?"
@@ -43,40 +43,33 @@ workflow alignment_post {
     }
 
     call picard.sort as picard_sort { input: bam }
-
     if (cleanse_xenograft) {
         call samtools.index as pre_xenocp_index { input:
             bam = picard_sort.sorted_bam,
             use_all_cores,
         }
-
         call xenocp_wf.xenocp { input:
             input_bam = picard_sort.sorted_bam,
             input_bai = pre_xenocp_index.bam_index,
             reference_tar_gz = select_first([contaminant_db, ""]),
             aligner = xenocp_aligner,
-            skip_duplicate_marking = true
+            skip_duplicate_marking = true,
         }
     }
     if (mark_duplicates) {
-        call picard.mark_duplicates as picard_markdup { input:
-            bam = select_first([xenocp.bam, picard_sort.sorted_bam]),
-        }
+        call picard.mark_duplicates as picard_markdup { input: bam = select_first([xenocp.bam, picard_sort.sorted_bam]) }
     }
-
     File aligned_bam = select_first([
         picard_markdup.duplicate_marked_bam,
         xenocp.bam,
         picard_sort.sorted_bam
     ])
-
     call samtools.index as samtools_index { input:
         bam = aligned_bam,
         use_all_cores,
     }
     File aligned_bam_index = samtools_index.bam_index
     call picard.validate_bam { input: bam = aligned_bam }
-
     call md5sum.compute_checksum { input: file = aligned_bam }
 
     output {

@@ -66,7 +66,7 @@ task read_group_to_string {
     meta {
         description: "Stringifies a ReadGroup struct"
         outputs: {
-            stringified_read_group: "Input ReadGroup as a string"
+            stringified_read_group: "Input ReadGroup as a string",
         }
     }
 
@@ -113,7 +113,7 @@ task get_read_groups {
     meta {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
         outputs: {
-            read_groups: "An array of ReadGroup structs containing read group information."
+            read_groups: "An array of ReadGroup structs containing read group information.",
         }
     }
 
@@ -165,7 +165,7 @@ task validate_read_group {
     meta {
         description: "Validate a ReadGroup struct's fields are defined"
         outputs: {
-            check: "Dummy output to indicate success and enable call-caching"
+            check: "Dummy output to indicate success and enable call-caching",
         }
     }
 
