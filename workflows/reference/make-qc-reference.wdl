@@ -31,8 +31,8 @@ workflow make_qc_reference {
                 "protozoa",
                 "nt",
                 "UniVec",
-                "UniVec_Core"
-            ]
+                "UniVec_Core",
+            ],
         }
         coverage_feature_types: {
             description: "List of feature types to use for coverage calculation",
@@ -45,8 +45,8 @@ workflow make_qc_reference {
                 "UTR",
                 "start_codon",
                 "stop_codon",
-                "Selenocysteine"
-            ]
+                "Selenocysteine",
+            ],
         }
         reference_fa_url: "URL to retrieve the reference FASTA file from"
         reference_fa_name: "Name of output reference FASTA file"
@@ -96,14 +96,12 @@ workflow make_qc_reference {
         outfile_name = gtf_name,
         disk_size_gb = gtf_disk_size_gb,
     }
-
     scatter (feature_type in coverage_feature_types) {
         call util.make_coverage_regions_bed { input:
             gtf = gtf_download.downloaded_file,
             feature_type,
         }
     }
-
     scatter (url in kraken_fasta_urls) {
         call util.download as fastas_download { input:
             url,
@@ -111,16 +109,13 @@ workflow make_qc_reference {
             disk_size_gb = kraken_fastas_disk_size_gb,
         }
     }
-
     call kraken2.download_taxonomy { input: protein }
-
     scatter (lib in kraken_libraries) {
         call kraken2.download_library { input:
             library_name = lib,
             protein,
         }
     }
-
     Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.downloaded_file])
     Array[File] empty_array = []  # this structure is required by the WDL v1.1 spec
     if (custom_fastas != empty_array) {
@@ -129,7 +124,6 @@ workflow make_qc_reference {
             protein,
         }
     }
-
     call kraken2.build_db as kraken_build_db { input:
         tarballs = flatten([
             [download_taxonomy.taxonomy],

@@ -73,7 +73,7 @@ task validate_string_is_12bit_oct_dec_or_hex {
         description: "Validates that a string is a octal, decimal, or hexadecimal number and less than 2^12."
         help: "Hexadecimal numbers must be prefixed with '0x' and only contain the characters [0-9A-F] to be valid (i.e. [a-f] is not allowed). Octal number must start with '0' and only contain the characters [0-7] to be valid. And decimal numbers must start with a digit between 1-9 and only contain the characters [0-9] to be valid."
         outputs: {
-            check: "Dummy output to enable caching."
+            check: "Dummy output to enable caching.",
         }
     }
 
@@ -125,7 +125,7 @@ workflow validate_flag_filter {
     meta {
         description: "Validates a FlagFilter struct."
         outputs: {
-            check: "Dummy output to enable caching."
+            check: "Dummy output to enable caching.",
         }
     }
 
@@ -137,21 +137,12 @@ workflow validate_flag_filter {
         FlagFilter flags
     }
 
-    call validate_string_is_12bit_oct_dec_or_hex as validate_include_if_any { input:
-        number = flags.include_if_any
-    }
-    call validate_string_is_12bit_oct_dec_or_hex as validate_include_if_all { input:
-        number = flags.include_if_all
-    }
-    call validate_string_is_12bit_oct_dec_or_hex as validate_exclude_if_any { input:
-        number = flags.exclude_if_any
-    }
-    call validate_string_is_12bit_oct_dec_or_hex as validate_exclude_if_all { input:
-        number = flags.exclude_if_all
-    }
+    call validate_string_is_12bit_oct_dec_or_hex as validate_include_if_any { input: number = flags.include_if_any }
+    call validate_string_is_12bit_oct_dec_or_hex as validate_include_if_all { input: number = flags.include_if_all }
+    call validate_string_is_12bit_oct_dec_or_hex as validate_exclude_if_any { input: number = flags.exclude_if_any }
+    call validate_string_is_12bit_oct_dec_or_hex as validate_exclude_if_all { input: number = flags.exclude_if_all }
 
     output {
         String check = "passed"
     }
-
 }

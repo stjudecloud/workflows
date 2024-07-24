@@ -8,7 +8,7 @@ task rnaseq {
         outputs: {
             raw_summary: "Raw text summary of QualiMap's results. Can be parsed by MultiQC.",
             raw_coverage: "Raw text of QualiMap's coverage analysis results. Can be parsed by MultiQC.",
-            results: "Gzipped tar archive of all QualiMap output files"
+            results: "Gzipped tar archive of all QualiMap output files",
         }
     }
 
@@ -19,11 +19,11 @@ task rnaseq {
         memory_gb: "RAM to allocate for task"
         name_sorted: {
             description: "Is the BAM name sorted? QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to true.",
-            common: true
+            common: true,
         }
         paired_end: {
             description: "Is the BAM paired end?",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -41,11 +41,9 @@ task rnaseq {
     String out_tar_gz = prefix + ".tar.gz"
     String name_sorted_arg = if (name_sorted) then "-s" else ""
     String paired_end_arg = if (paired_end) then "-pe" else ""
-
     Int java_heap_size = ceil(memory_gb * 0.9)
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
-
     # Qualimap has an inefficient name sorting algorithm and will
     # use an excessive amount of storage.
     Int disk_size_gb = (
@@ -78,8 +76,7 @@ task rnaseq {
 
     output {
         File raw_summary = "~{prefix}/rnaseq_qc_results.txt"
-        File raw_coverage
-            = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
+        File raw_coverage = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
         File results = out_tar_gz
     }
 
@@ -118,9 +115,7 @@ task bamqc {
 
     String out_directory = prefix + ".qualimap_bamqc_results"
     String out_tar_gz = out_directory + ".tar.gz"
-
     Int java_heap_size = ceil(memory_gb * 0.9)
-
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 

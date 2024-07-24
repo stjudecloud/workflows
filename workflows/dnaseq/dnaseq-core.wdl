@@ -15,10 +15,11 @@ workflow dnaseq_core_experimental {
         description: "Aligns DNA reads using bwa"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
-            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file"
+            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
@@ -28,11 +29,15 @@ workflow dnaseq_core_experimental {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"]
+            choices: [
+                "mem",
+                "aln",
+            ],
         }
         use_all_cores: "Use all cores? Recommended for cloud environments."
         sample_override: "Value to override the SM field of *every* read group."
     }
+
     input {
         File bwa_db
         Array[File] read_one_fastqs_gz
@@ -68,23 +73,16 @@ workflow dnaseq_core_experimental {
                 SM: sample_override
             }
         }
-
-        call read_group.read_group_to_string { input:
-            read_group = select_first([rg, tuple.right])
-        }
-
+        call read_group.read_group_to_string { input: read_group = select_first([rg, tuple.right]) }
         String rg_string = "@RG " + read_group_to_string.stringified_read_group
-
         call util.split_fastq as read_ones { input:
             fastq = tuple.left.left,
-            reads_per_file = reads_per_file
+            reads_per_file = reads_per_file,
         }
-
         call util.split_fastq as read_twos { input:
             fastq = tuple.left.right,
-            reads_per_file = reads_per_file
+            reads_per_file = reads_per_file,
         }
-
         scatter (t in zip(read_ones.fastqs, read_twos.fastqs)) {
             if (aligner == "mem") {
                 call bwa.bwa_mem { input:
@@ -120,9 +118,7 @@ workflow dnaseq_core_experimental {
                     use_all_cores,
                 }
             }
-            call picard.sort as sort { input:
-                 bam = select_first([bwa_mem.bam, bwa_aln_pe.bam])
-            }
+            call picard.sort as sort { input: bam = select_first([bwa_mem.bam, bwa_aln_pe.bam]) }
         }
     }
     call samtools_merge_wf.samtools_merge as rg_merge { input:
@@ -130,10 +126,7 @@ workflow dnaseq_core_experimental {
         prefix,
         use_all_cores,
     }
-
-    call samtools.index { input:
-        bam = rg_merge.merged_bam,
-    }
+    call samtools.index { input: bam = rg_merge.merged_bam }
 
     output {
         File harmonized_bam = rg_merge.merged_bam

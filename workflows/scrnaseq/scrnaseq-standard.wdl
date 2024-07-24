@@ -29,6 +29,7 @@ workflow scrnaseq_standard {
             inferred_strandedness: "Inferred strandedness",
         }
     }
+
     parameter_meta {
         bam: "Input BAM format file to quality check"
         gtf: "Gzipped GTF feature file"
@@ -50,11 +51,8 @@ workflow scrnaseq_standard {
     }
 
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
-            bam,
-        }
+        call picard.validate_bam as validate_input_bam { input: bam }
     }
-
     if (subsample_n_reads > 0) {
         call samtools.subsample { input:
             bam,
@@ -63,12 +61,10 @@ workflow scrnaseq_standard {
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
-
     call bam_to_fastqs.cell_ranger_bam_to_fastqs { input:
         bam = selected_bam,
         use_all_cores,
     }
-
     call cellranger.count { input:
         fastqs_tar_gz = cell_ranger_bam_to_fastqs.fastqs_archive,
         transcriptome_tar_gz,
@@ -81,7 +77,6 @@ workflow scrnaseq_standard {
         bam_index = count.bam_index,
         gene_model = gtf,
     }
-
     call md5sum.compute_checksum { input: file = count.bam }
 
     output {

@@ -13,10 +13,11 @@ workflow dnaseq_standard_experimental {
         description: "Aligns DNA reads using bwa"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
-            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file"
+            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         bam: "Input BAM to realign"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
@@ -24,13 +25,17 @@ workflow dnaseq_standard_experimental {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"]
+            choices: [
+                "mem",
+                "aln",
+            ],
         }
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
         sample_override: "Value to override the SM field of *every* read group."
     }
+
     input {
         File bam
         File bwa_db
@@ -43,16 +48,10 @@ workflow dnaseq_standard_experimental {
         Int subsample_n_reads = -1
     }
 
-    call parse_input { input:
-        aligner
-    }
-
+    call parse_input { input: aligner }
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
-            bam,
-        }
+        call picard.validate_bam as validate_input_bam { input: bam }
     }
-
     if (subsample_n_reads > 0) {
         call samtools.subsample after parse_input { input:
             bam,
@@ -61,17 +60,12 @@ workflow dnaseq_standard_experimental {
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
-
-    call read_group.get_read_groups { input:
-        bam = selected_bam,
-    }
-
+    call read_group.get_read_groups { input: bam = selected_bam }
     call bam_to_fastqs_wf.bam_to_fastqs { input:
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding
         use_all_cores,
     }
-
     call dnaseq_core_wf.dnaseq_core_experimental { input:
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
@@ -94,14 +88,17 @@ task parse_input {
     meta {
         description: "Parses and validates the `dnaseq_standard` workflow's provided inputs"
         outputs: {
-            check: "Dummy output to indicate success and to enable call-caching"
+            check: "Dummy output to indicate success and to enable call-caching",
         }
     }
 
     parameter_meta {
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"]
+            choices: [
+                "mem",
+                "aln",
+            ],
         }
     }
 

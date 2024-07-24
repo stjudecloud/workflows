@@ -6,7 +6,7 @@ task download {
     meta {
         description: "Uses wget to download a file from a remote URL to the local filesystem"
         outputs: {
-            downloaded_file: "File downloaded from provided URL"
+            downloaded_file: "File downloaded from provided URL",
         }
     }
 
@@ -51,18 +51,18 @@ task get_read_groups {
     meta {
         description: "Gets read group information from a BAM file and writes it out to as a string"
         outputs: {
-            read_groups: "An array of strings containing read group information. If `format_for_star = true`, all found read groups are contained in one string (`read_groups[0]`). If `format_for_star = false`, each found @RG line will be its own entry in output array `read_groups`."
+            read_groups: "An array of strings containing read group information. If `format_for_star = true`, all found read groups are contained in one string (`read_groups[0]`). If `format_for_star = false`, each found @RG line will be its own entry in output array `read_groups`.",
         }
     }
 
     parameter_meta {
         bam: {
             description: "Input BAM format file to get read groups from",
-            stream: true
+            stream: true,
         }
         format_for_star: {
             description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`.",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -109,7 +109,7 @@ task split_string {
     meta {
         description: "Split a string into an array of strings based on a delimiter"
         outputs: {
-            split_strings: "Split string as an array"
+            split_strings: "Split string as an array",
         }
     }
 
@@ -117,7 +117,7 @@ task split_string {
         input_string: "String to split on occurences of `delimiter`"
         delimiter: {
             description: "Delimiter on which to split `input_string`",
-            common: true
+            common: true,
         }
     }
 
@@ -149,7 +149,7 @@ task calc_gene_lengths {
         description: "Calculate gene lengths from a GTF feature file using the non-overlapping exonic length algorithm"
         help: "The non-overlapping exonic length algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
         outputs: {
-            gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
+            gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column",
         }
     }
 
@@ -158,7 +158,7 @@ task calc_gene_lengths {
         outfile_name: "Name of the gene lengths file"
         idattr: {
             description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -248,7 +248,7 @@ task compression_integrity {
     meta {
         description: "Checks the compression integrity of a bgzipped file"
         outputs: {
-            check: "Dummy output to indicate success and to enable call-caching"
+            check: "Dummy output to indicate success and to enable call-caching",
         }
     }
 
@@ -285,7 +285,7 @@ task add_to_bam_header {
     meta {
         description: "Adds another line of text to the bottom of a BAM header"
         outputs: {
-            reheadered_bam: "The BAM after its header has been modified"
+            reheadered_bam: "The BAM after its header has been modified",
         }
     }
 
@@ -305,7 +305,6 @@ task add_to_bam_header {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
-
     String outfile_name = prefix + ".bam"
 
     command <<<
@@ -330,7 +329,7 @@ task unpack_tarball {
     meta {
         description: "Accepts a `.tar.gz` archive and converts it into a flat array of files. Any directory structure of the archive is ignored."
         outputs: {
-            tarball_contents: "An array of files found in the input tarball"
+            tarball_contents: "An array of files found in the input tarball",
         }
     }
 
@@ -389,8 +388,8 @@ task make_coverage_regions_bed {
                 "UTR",
                 "start_codon",
                 "stop_codon",
-                "Selenocysteine"
-            ]
+                "Selenocysteine",
+            ],
         }
         outfile_name: "Name of the output BED file"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -431,7 +430,7 @@ task global_phred_scores {
     meta {
         description: "Calculates statistics about PHRED scores of the input BAM"
         outputs: {
-            phred_scores: "Headered TSV file containing PHRED score statistics"
+            phred_scores: "Headered TSV file containing PHRED score statistics",
         }
     }
 
@@ -451,7 +450,6 @@ task global_phred_scores {
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
-
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
     #@ except: LineWidth
@@ -692,7 +690,7 @@ task qc_summary {
     meta {
         description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive."
         outputs: {
-            summary: "QC summary file in JSON format"
+            summary: "QC summary file in JSON format",
         }
     }
 
@@ -703,8 +701,7 @@ task qc_summary {
 
     input {
         File multiqc_tar_gz
-        String outfile_name
-            = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
+        String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
     }
 
     String sample_name = basename(multiqc_tar_gz, ".multiqc.tar.gz")
@@ -770,14 +767,14 @@ task split_fastq {
     meta {
         description: "Splits a FASTQ into multiple files based on the number of reads per file"
         outputs: {
-            fastqs: "Array of FASTQ files, each containing a subset of the input FASTQ"
+            fastqs: "Array of FASTQ files, each containing a subset of the input FASTQ",
         }
     }
 
     parameter_meta {
         fastq: {
             description: "Gzipped FASTQ file to split",
-            stream: true
+            stream: true,
         }
         reads_per_file: "Number of reads to include in each output FASTQ file"
         prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."

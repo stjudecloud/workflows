@@ -8,7 +8,7 @@ workflow bam_to_fastqs {
         description: "Converts an input BAM file to one or more FASTQ files, performing QC checks along the way"
         outputs: {
             read1s: "Array of FASTQ files corresponding to either `first` reads (if `paired_end = true`) or all reads (if `paired_end = false`)",
-            read2s: "Array of FASTQ files corresponding to `last` reads (if `paired_end = true`)"
+            read2s: "Array of FASTQ files corresponding to `last` reads (if `paired_end = true`)",
         }
         allowNestedInputs: true
     }
@@ -38,10 +38,7 @@ workflow bam_to_fastqs {
             use_all_cores,
         }
     }
-
-    scatter (reads in
-        zip(bam_to_fastq.read_one_fastq_gz, bam_to_fastq.read_two_fastq_gz)
-    ) {
+    scatter (reads in zip(bam_to_fastq.read_one_fastq_gz, bam_to_fastq.read_two_fastq_gz)) {
         call fq.fqlint { input:
             read_one_fastq = select_first([reads.left, "undefined"]),
             read_two_fastq = reads.right,

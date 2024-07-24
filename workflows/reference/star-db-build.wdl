@@ -9,7 +9,7 @@ workflow star_db_build {
         outputs: {
             reference_fa: "FASTA format reference file",
             gtf: "GTF feature file",
-            star_db_tar_gz: "A gzipped TAR file containing the STAR reference files"
+            star_db_tar_gz: "A gzipped TAR file containing the STAR reference files",
         }
         allowNestedInputs: true
     }
@@ -54,8 +54,8 @@ workflow star_db_build {
     }
 
     output {
-      File reference_fa = reference_download.downloaded_file
-      File gtf = gtf_download.downloaded_file
-      File star_db_tar_gz = build_star_db.star_db
+        File reference_fa = reference_download.downloaded_file
+        File gtf = gtf_download.downloaded_file
+        File star_db_tar_gz = build_star_db.star_db
     }
 }

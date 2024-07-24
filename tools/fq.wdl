@@ -6,18 +6,18 @@ task fqlint {
     meta {
         description: "Performs quality control on the input FASTQs to ensure proper formatting"
         outputs: {
-            check: "A string indicating whether the input FASTQs passed validation"
+            check: "A string indicating whether the input FASTQs passed validation",
         }
     }
 
     parameter_meta {
         read_one_fastq: {
             description: "Input FASTQ with read one. Can be gzipped or uncompressed.",
-            stream: true
+            stream: true,
         }
         read_two_fastq: {
             description: "Input FASTQ with read two. Can be gzipped or uncompressed.",
-            stream: true
+            stream: true,
         }
         disable_validator_codes: {
             description: "Array of codes to disable specific validators",
@@ -29,28 +29,28 @@ task fqlint {
                 S005: "Sequence and quality lengths are the same",
                 S006: "All characters in quality line are between '!' and '~' (ordinal values)",
                 S007: "All record names are unique",
-                P001: "Each paired read name is the same, excluding interleave"
-            }
+                P001: "Each paired read name is the same, excluding interleave",
+            },
         }
         single_read_validation_level: {
             description: "Only use single read validators up to a given level",
             choices: [
                 "low",
                 "medium",
-                "high"
-            ]
+                "high",
+            ],
         }
         paired_read_validation_level: {
             description: "Only use paired read validators up to a given level",
             choices: [
                 "low",
                 "medium",
-                "high"
-            ]
+                "high",
+            ],
         }
         panic: {
             description: "Panic on first error (true) or log all errors (false)?",
-            common: true
+            common: true,
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -69,11 +69,9 @@ task fqlint {
 
     Float read1_size = size(read_one_fastq, "GiB")
     Float read2_size = size(read_two_fastq, "GiB")
-
     Int memory_gb = (
         ceil((read1_size + read2_size) * 0.25) + 4 + modify_memory_gb
     )
-
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
     command <<<
@@ -103,7 +101,7 @@ task subsample {
         description: "Subsamples the input FASTQ(s)"
         outputs: {
             subsampled_read1: "Gzipped FASTQ file containing subsampled read1",
-            subsampled_read2: "Gzipped FASTQ file containing subsampled read2"
+            subsampled_read2: "Gzipped FASTQ file containing subsampled read2",
         }
     }
 
@@ -113,11 +111,11 @@ task subsample {
         prefix: "Prefix for the output FASTQ file(s). The extension `_R1.subsampled.fastq.gz` and `_R2.subsampled.fastq.gz` will be added."
         probability: {
             description: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable.",
-            common: true
+            common: true,
         }
         record_count: {
             description: "The exact number of records to keep. Cannot be used with `probability`. Any `record_count<=0` to disable.",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -137,14 +135,11 @@ task subsample {
 
     Float read1_size = size(read_one_fastq, "GiB")
     Float read2_size = size(read_two_fastq, "GiB")
-
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
-
     String probability_arg = if (probability < 1.0 && probability > 0)
         then "-p ~{probability}"
         else ""
     String record_count_arg = if (record_count > 0) then "-n ~{record_count}" else ""
-
     String r1_dst = prefix + "_R1.subsampled.fastq.gz"
     String r2_dst = prefix + "_R2.subsampled.fastq.gz"
 

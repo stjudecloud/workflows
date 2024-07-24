@@ -15,6 +15,7 @@ workflow cell_ranger_bam_to_fastqs {
             read2s: "Gzipped read 2 FASTQ files.",
         }
     }
+
     parameter_meta {
         bam: "BAM file to split into FASTQs."
         cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
@@ -58,14 +59,16 @@ task parse_input {
     meta {
         description: "Parse 10x-bam-to-fastqs workflow inputs and validate"
         outputs: {
-            input_check: "String indicating if input checks passed."
+            input_check: "String indicating if input checks passed.",
         }
     }
+
     parameter_meta {
         cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
         longranger20: "Convert a BAM produced by Longranger 2.0"
         gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
     }
+
     input {
         Boolean cellranger11
         Boolean longranger20
