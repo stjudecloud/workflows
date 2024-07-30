@@ -67,7 +67,7 @@ workflow dnaseq_core_experimental {
                 PL: tuple.right.PL,
                 PM: tuple.right.PM,
                 PU: tuple.right.PU,
-                SM: sample_override
+                SM: sample_override,
             }
         }
 
@@ -79,12 +79,12 @@ workflow dnaseq_core_experimental {
 
         call util.split_fastq as read_ones { input:
             fastq = tuple.left.left,
-            reads_per_file = reads_per_file
+            reads_per_file = reads_per_file,
         }
 
         call util.split_fastq as read_twos { input:
             fastq = tuple.left.right,
-            reads_per_file = reads_per_file
+            reads_per_file = reads_per_file,
         }
 
         scatter (t in zip(read_ones.fastqs, read_twos.fastqs)) {

@@ -73,21 +73,21 @@ workflow gatk_reference {
     if (defined(dbSNP_vcf_index_url) && defined(dbSNP_vcf_index_name)) {
         call util.download as dbsnp_index { input:
             url = select_first([dbSNP_vcf_index_url, "undefined"]),
-            outfile_name = select_first([dbSNP_vcf_index_name, "undefined"])
+            outfile_name = select_first([dbSNP_vcf_index_name, "undefined"]),
         }
     }
 
     if (defined(interval_list_url) && defined(interval_list_name)) {
         call util.download as intervals { input:
             url = select_first([interval_list_url, "undefined"]),
-            outfile_name = select_first([interval_list_name, "undefined"])
+            outfile_name = select_first([interval_list_name, "undefined"]),
         }
     }
 
     scatter (pair in zip(known_vcf_urls, known_vcf_names)) {
         call util.download as known_vcf { input:
             url = pair.left,
-            outfile_name = pair.right
+            outfile_name = pair.right,
         }
     }
 

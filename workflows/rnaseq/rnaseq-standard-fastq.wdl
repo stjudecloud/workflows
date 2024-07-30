@@ -109,7 +109,7 @@ workflow rnaseq_standard_fastq {
     call rnaseq_standard.parse_input { input:
         input_strand = strandedness,
         cleanse_xenograft,
-        contaminant_db = defined(contaminant_db)
+        contaminant_db = defined(contaminant_db),
     }
 
     scatter (rg in read_groups) {
@@ -140,12 +140,12 @@ workflow rnaseq_standard_fastq {
     }
     Array[File] selected_read_one_fastqs = select_first([
         subsample.subsampled_read1,
-        read_one_fastqs_gz
+        read_one_fastqs_gz,
     ])
     Array[File] selected_read_two_fastqs = select_all(
         select_first([
             subsample.subsampled_read2,
-            read_two_fastqs_gz
+            read_two_fastqs_gz,
         ])
     )
 

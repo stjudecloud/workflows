@@ -134,7 +134,7 @@ workflow make_qc_reference {
         tarballs = flatten([
             [download_taxonomy.taxonomy],
             download_library.library,
-            select_all([create_library_from_fastas.custom_library])
+            select_all([create_library_from_fastas.custom_library]),
         ]),
         protein,
     }

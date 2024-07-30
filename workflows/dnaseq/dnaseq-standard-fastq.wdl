@@ -53,8 +53,8 @@ workflow dnaseq_standard_fastq_experimental {
         array_lengths = [
             length(read_one_fastqs_gz),
             length(read_two_fastqs_gz),
-            length(read_groups)
-        ]
+            length(read_groups),
+        ],
     }
 
     if (validate_input){
@@ -78,12 +78,12 @@ workflow dnaseq_standard_fastq_experimental {
     }
     Array[File] selected_read_one_fastqs = select_first([
         subsample.subsampled_read1,
-        read_one_fastqs_gz
+        read_one_fastqs_gz,
     ])
     Array[File] selected_read_two_fastqs = select_all(
         select_first([
             subsample.subsampled_read2,
-            read_two_fastqs_gz
+            read_two_fastqs_gz,
         ])
     )
 
@@ -95,7 +95,7 @@ workflow dnaseq_standard_fastq_experimental {
         read_groups,
         prefix,
         aligner,
-        use_all_cores
+        use_all_cores,
     }
 
     output {

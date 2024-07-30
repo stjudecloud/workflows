@@ -70,7 +70,7 @@ workflow rnaseq_standard {
     call parse_input { input:
         input_strand = strandedness,
         cleanse_xenograft,
-        contaminant_db = defined(contaminant_db)
+        contaminant_db = defined(contaminant_db),
     }
 
     if (validate_input) {
