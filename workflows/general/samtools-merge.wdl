@@ -12,12 +12,14 @@ workflow samtools_merge {
         }
         allowNestedInputs: true
     }
+
     parameter_meta{
         bams: "BAMs to merge into a final BAM"
         max_length: "Maximum number of BAMs to merge before using iteration"
         prefix: "Prefix for output BAM."
         use_all_cores: "Use all cores? Recommended for cloud environments."
     }
+
     input {
         Array[File] bams
         String prefix

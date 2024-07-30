@@ -19,17 +19,17 @@ task count {
             choices: [
                 "yes",
                 "reverse",
-                "no"
-            ]
+                "no",
+            ],
         }
         prefix: "Prefix for the feature counts file. The extension `.feature-counts.txt` will be added."
         feature_type: {
             description: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored",
-            common: true
+            common: true,
         }
         idattr: {
             description: "GFF attribute to be used as feature ID",
-            common: true
+            common: true,
         }
         mode: {
             description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases.",
@@ -37,32 +37,32 @@ task count {
             choices: [
                 "union",
                 "intersection-strict",
-                "intersection-nonempty"
-            ]
+                "intersection-nonempty",
+            ],
         }
         include_custom_header: {
             description: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `feature\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format.",
-            common: true
+            common: true,
         }
         pos_sorted: {
             description: "Is the BAM position sorted (true) or name sorted (false)?",
-            common: true
+            common: true,
         }
         nonunique: {
             description: "Score reads that align to or are assigned to more than one feature?",
-            common: true
+            common: true,
         }
         secondary_alignments: {
             description: "Score secondary alignments (SAM flag 0x100)?",
-            common: true
+            common: true,
         }
         supplementary_alignments: {
             description: "Score supplementary/chimeric alignments (SAM flag 0x800)?",
-            common: true
+            common: true,
         }
         minaqual: {
             description: "Skip all reads with alignment quality lower than the given minimum value",
-            common: true
+            common: true,
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."

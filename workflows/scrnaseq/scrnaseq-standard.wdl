@@ -29,6 +29,7 @@ workflow scrnaseq_standard {
             inferred_strandedness: "Inferred strandedness",
         }
     }
+
     parameter_meta {
         bam: "Input BAM format file to quality check"
         gtf: "Gzipped GTF feature file"

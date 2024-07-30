@@ -18,7 +18,7 @@ workflow chipseq_standard {
             harmonized_bam: "A harmonized BWA aligned ChIP-Seq BAM file",
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
             bam_index: "BAI index file associated with `harmonized_bam`",
-            bigwig: "BigWig format coverage file"
+            bigwig: "BigWig format coverage file",
         }
         allowNestedInputs: true
     }
@@ -86,13 +86,13 @@ workflow chipseq_standard {
             fastqfile = pair.left,
             index_files = bowtie_indexes,
             metricsfile = basic_stats.metrics_out,
-            blacklist = excludelist
+            blacklist = excludelist,
         }
         File chosen_bam = select_first(
             [
                 bowtie_single_end_mapping.bklist_bam,
                 bowtie_single_end_mapping.mkdup_bam,
-                bowtie_single_end_mapping.sorted_bam
+                bowtie_single_end_mapping.sorted_bam,
             ]
         )
         call util.add_to_bam_header { input:
@@ -121,7 +121,7 @@ workflow chipseq_standard {
 
     call seaseq_samtools.markdup { input:
         bamfile = picard_merge.merged_bam,
-        outputfile = prefix + ".bam"
+        outputfile = prefix + ".bam",
     }
     call samtools.index as samtools_index { input:
         bam = markdup.mkdupbam,

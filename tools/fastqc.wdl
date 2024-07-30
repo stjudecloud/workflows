@@ -7,7 +7,7 @@ task fastqc {
         description: "Generates a FastQC quality control metrics report for the input BAM file"
         outputs: {
             raw_data: "A zip archive of raw FastQC data. Can be parsed by MultiQC.",
-            results: "A gzipped tar archive of all FastQC output files"
+            results: "A gzipped tar archive of all FastQC output files",
         }
     }
 
@@ -16,11 +16,11 @@ task fastqc {
         prefix: "Prefix for the FastQC results directory. The extension `.tar.gz` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
