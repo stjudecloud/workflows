@@ -91,9 +91,9 @@ task count {
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
 
-    Int memory_gb = ceil(bam_size) + 5 + modify_memory_gb
+    Int memory_gb = (if pos_sorted then ceil(bam_size) + 4 else 4) + modify_memory_gb
 
-    Int disk_size_gb = ceil((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil((bam_size + gtf_size) * if pos_sorted then 4 else 1) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
