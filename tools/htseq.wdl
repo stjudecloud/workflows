@@ -6,12 +6,12 @@ task count {
     meta {
         description: "Performs read counting for a set of features in the input BAM file"
         outputs: {
-            feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts."
+            feature_counts: "A two column TSV file. First column is feature names and second column is counts. Presence of a header is determined by the `include_custom_header` parameter."
         }
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to generate feature counts for"
         gtf: "Input genomic features in gzipped GTF format to count reads for"
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment",
@@ -45,7 +45,7 @@ task count {
             common: true
         }
         pos_sorted: {
-            description: "Is the BAM position sorted (true) or name sorted (false)?",
+            description: "Is the BAM position sorted (true) or name sorted (false)? It is **highly** recommended to use a name sorted BAM file. This is because HTSeq will re-sort position-sorted BAMs with an inefficient algorithm, causing very large memory and disk space allocations (especially for large BAMs).",
             common: true
         }
         nonunique: {
@@ -146,7 +146,7 @@ task calc_tpm {
     }
 
     parameter_meta {
-        counts: "A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the `count` task."
+        counts: "A two column TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the `count` task."
         gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with the `calc_gene_lengths` task in `util.wdl`."
         prefix: "Prefix for the TPM file. The extension `.TPM.txt` will be added."
     }
