@@ -22,8 +22,6 @@ jobs:
             files=$(find ./!(template) -name '*.wdl')
             for file in $files; do
               echo "  [***] $file [***]"
-              # Ignore LineWidth rule _FOR NOW_ because it's broken.
-              # Remove `--except LineWidth` when it's fixed.
-              sprocket lint "$file" --except LineWidth || EXITCODE=$(($? || EXITCODE))
+              sprocket lint "$file" || EXITCODE=$(($? || EXITCODE))
             done
             exit $EXITCODE
