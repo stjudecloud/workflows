@@ -150,12 +150,14 @@ task calc_tpm {
         counts: "A two column TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the `count` task."
         gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with the `calc_gene_lengths` task in `util.wdl`."
         prefix: "Prefix for the TPM file. The extension `.TPM.txt` will be added."
+        has_header: "Does the `counts` file have a header line? If true, the first line will be ignored."
     }
 
     input {
         File counts
         File gene_lengths
         String prefix = basename(counts, ".feature-counts.txt")
+        Boolean has_header = true
     }
 
     String outfile_name = prefix + ".TPM.txt"
@@ -167,6 +169,8 @@ task calc_tpm {
 
         counts_file = open(os.environ['COUNTS'], 'r')
         counts = {}
+        if "~{has_header}" == "true":
+            counts_file.readline()
         for line in counts_file:
             gene, count = line.split('\t')
             if gene[0:2] == '__':
