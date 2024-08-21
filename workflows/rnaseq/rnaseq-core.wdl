@@ -207,6 +207,7 @@ workflow rnaseq_core {
                 then ngsderive_strandedness.strandedness_string
                 else provided_strandedness
             ),
+        pos_sorted = true,
     }
 
     output {

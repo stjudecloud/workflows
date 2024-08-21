@@ -626,8 +626,6 @@ task alignment {
         ) + 10 + modify_disk_size_gb
     )
 
-    Array[File] empty_array = []  # odd construction forced by WDL v1.1 spec
-
     #@ except: LineWidth
     command <<<
         set -euo pipefail
@@ -643,12 +641,8 @@ task alignment {
         # and limitations of the WDL v1.1 spec
         python3 /home/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
-            ~{if (read_two_fastqs_gz != empty_array) then "--read-two-fastqs" else ""} "~{
-                sep(",", (
-                    if (read_two_fastqs_gz != empty_array)
-                    then read_two_fastqs_gz
-                    else []
-                ))
+            ~{if (length(read_two_fastqs_gz) != 0) then "--read-two-fastqs" else ""} "~{
+                sep(",", (read_two_fastqs_gz))
             }" \
             ~{if defined(read_groups) then "--read-groups" else ""} "~{
                 if defined(read_groups)
