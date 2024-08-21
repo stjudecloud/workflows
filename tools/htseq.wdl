@@ -41,7 +41,7 @@ task count {
             ]
         }
         include_custom_header: {
-            description: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `__~{idattr}\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format.",
+            description: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `~{idattr}\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format.",
             common: true
         }
         pos_sorted: {
@@ -99,8 +99,7 @@ task count {
         set -euo pipefail
 
         if ~{include_custom_header}; then
-            # prefix header with '__' so it is ignored downstream
-            echo -e "__~{idattr}\t~{prefix}" > ~{outfile_name}
+            echo -e "~{idattr}\t~{prefix}" > ~{outfile_name}
         else
             true > ~{outfile_name}  # ensure file is empty
         fi
