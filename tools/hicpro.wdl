@@ -236,18 +236,7 @@ task mapped_2hic_fragments {
             gunzip -c ~{fragment} > "$frag" \
                 || ln -sf ~{fragment} "$frag"
         fi
-        # opts logic from HiC-Pro
-        # opts="-v"
-        # if [[ $mode == "RS" ]]; then
-        #     if [[ "${GET_PROCESS_SAM}" -eq "1" ]]; then opts=$opts" -S"; fi
-        #     if [[ "${MIN_FRAG_SIZE}" -ge "0" && "${MIN_FRAG_SIZE}" -ne "" ]]; then opts=$opts" -t ${MIN_FRAG_SIZE}"; fi
-        #     if [[ "${MAX_FRAG_SIZE}" -ge "0" && "${MAX_FRAG_SIZE}" -ne "" ]]; then opts=$opts" -m ${MAX_FRAG_SIZE}"; fi
-        #     if [[ "${MIN_INSERT_SIZE}" -ge "0" && "${MIN_INSERT_SIZE}" -ne "" ]]; then opts=$opts" -s ${MIN_INSERT_SIZE}"; fi
-        #     if [[ "${MAX_INSERT_SIZE}" -ge "0" && "${MAX_INSERT_SIZE}" -ne "" ]]; then opts=$opts" -l ${MAX_INSERT_SIZE}"; fi
-        # fi
-        # if [[ "${GET_ALL_INTERACTION_CLASSES}" -eq "1" ]]; then opts=$opts" -a"; fi
-        # if [[ "${MIN_CIS_DIST}" -ge "0" && "${MIN_CIS_DIST}" -ne "" ]]; then opts=$opts" -d ${MIN_CIS_DIST}"; fi
-        # if [[ ! -z ${ALLELE_SPECIFIC_SNP} ]]; then opts=$opts" -g XA"; fi
+
         ~{if defined(fragment)
             then "python /HiC-Pro_3.0.0/scripts/mapped_2hic_fragments.py -f $frag \\"  # Fragment file found
             else "python /HiC-Pro_3.0.0/scripts/mapped_2hic_dnase.py \\"  # DNAse
