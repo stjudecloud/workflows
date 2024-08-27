@@ -10,6 +10,18 @@ import "../../tools/util.wdl"
 workflow hic_standard {
     meta {
         description: "Standard Hi-C processing workflow."
+        outputs: {
+            hic_file: "Hi-C file in HIC format",
+            filtered_pairs: "Filtered pairs file",
+            all_valid_pairs: "All valid pairs file",
+            qc_report: "QC report",
+            mapping_stats_plot: "Mapping stats plot",
+            pairing_stats_plot: "Pairing stats plot",
+            filtering_stats_plot: "Filtering stats plot",
+            filtering_size_plot: "Filtering size plot",
+            contacts_stats_plot: "Contacts stats plot",
+            ice_normalized_matrices: "ICE normalized matrices",
+        }
     }
 
     parameter_meta {
@@ -43,7 +55,12 @@ workflow hic_standard {
         }
         matrix_format: {
             description: "Format of the output matrix",
-            choices: ["complete", "asis", "upper", "lower"],
+            choices: [
+                "complete",
+                "asis",
+                "upper",
+                "lower",
+            ],
             hicpro_field: "MATRIX_FORMAT",
         }
         precision: {
@@ -90,9 +107,19 @@ workflow hic_standard {
         File? capture_bed
         File? allele_specific_snp
         String? read_groups
-        Array[File] read_two_fastqs_gz = []
-        Array[Int] bin_sizes = [5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000, 2500000]
         String? ligation_site = "GATCGATC"
+        Array[File] read_two_fastqs_gz = []
+        Array[Int] bin_sizes = [
+            5000,
+            10000,
+            25000,
+            50000,
+            100000,
+            250000,
+            500000,
+            1000000,
+            2500000,
+        ]
         String matrix_format = "upper"
         Boolean remove_singleton = true
         Boolean remove_multimapper = true
@@ -106,11 +133,16 @@ workflow hic_standard {
     }
 
     scatter (pair in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-        call util.split_fastq as r1_split {input: fastq = pair.left, reads_per_file = 30000000}
-        call util.split_fastq as r2_split {input: fastq = pair.right, reads_per_file = 30000000}
+        call util.split_fastq as r1_split { input:
+            fastq = pair.left,
+            reads_per_file = 30000000,
+        }
+        call util.split_fastq as r2_split { input:
+            fastq = pair.right,
+            reads_per_file = 30000000,
+        }
     }
 
-    #scatter (pair in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
     scatter (pair in zip(flatten(r1_split.fastqs), flatten(r2_split.fastqs))) {
         String fq_prefix = sub(basename(pair.left), ".fastq.gz|.fq.gz|.fastq|.fq", "")
         ReadGroup rg_e2e = ReadGroup{
@@ -121,20 +153,7 @@ workflow hic_standard {
             ID: "BML",
             SM: prefix,
         }
-        # echo "##HiC-Pro mapping" > ${ldir}/${prefix}_bowtie2.log
-        # cmd="${BOWTIE2_PATH}/bowtie2 
-        # ${BOWTIE2_GLOBAL_OPTIONS} 
-        # --rg-id BMG --rg SM:${prefix}
-        # -p ${bwt_cpu} 
-        # -x ${BOWTIE2_IDX} 
-        # -U ${infile} 2>> ${ldir}/${prefix}_bowtie2.log"
-        # if [[ $filtunmap == 1 ]]; then
-        # cmd=$cmd"| ${SAMTOOLS_PATH}/samtools view -F 4 -bS - > ${odir}/${prefix}_${REFERENCE_GENOME}.bwt2glob.bam"
-        # else
-        # cmd=$cmd"> ${odir}/${prefix}_${REFERENCE_GENOME}.bwt2glob.bam"
-        # fi
-        # BOWTIE2_GLOBAL_OPTIONS = --very-sensitive -L 30 --score-min L,-0.6,-0.2 --end-to-end --reorder
-        #    --very-sensitive       -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
+
         # do end-to-end bowtie alignment
         # retain unmapped reads 
         # align read 1, save unaligned reads (--un-gz)
@@ -172,7 +191,8 @@ workflow hic_standard {
             metrics_file = true,
         }
 
-        # TODO: ligation site should be optional. If not specified, skip local and just use the global alignment.
+        # ligation site is optional.
+        # If not specified, skip local and just use the global alignment.
         if (defined(ligation_site)) {
             FlagFilter unmapped_reads = FlagFilter {
                 include_if_all: "0x0",
@@ -203,11 +223,8 @@ workflow hic_standard {
                 fastq = select_first([read2_align.unpaired_unaligned, ""]),
                 cutsite = site,
             }
-            # cmd="${BOWTIE2_PATH}/bowtie2 ${BOWTIE2_LOCAL_OPTIONS} --rg-id BML --rg SM:${prefix} -p ${bwt_cpu} -x ${BOWTIE2_IDX} -U ${odir}/${tfile} 2>> ${ldir}/${prefix}_bowtie2.log | ${SAMTOOLS_PATH}/samtools view -bS - > ${odir}/${prefix}_bwt2loc.bam"
-            # BOWTIE2_LOCAL_OPTIONS =  --very-sensitive -L 20 --score-min L,-0.6,-0.2 --end-to-end --reorder
-            #    --very-sensitive       -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
+
             # do local bowtie2 alignment
-            #
             # align read 1, do not save unaligned reads (no --un-gz)
             call bowtie2.align as read1_local_align { input:
                 bowtie_db_tar_gz,
@@ -328,7 +345,10 @@ workflow hic_standard {
             read2_stats.mapping_stats,
         ]),
         pairing_stats = bowtie_pairing.combined_stats,
-        fragment_stats = flatten([mapped_2hic_fragments.rs_stats, mapped_2hic_fragments.valid_pairs]),
+        fragment_stats = flatten([
+            mapped_2hic_fragments.rs_stats,
+            mapped_2hic_fragments.valid_pairs,
+        ]),
         contacts_stats = [merge_valid_interactions.all_valid_pairs_stats],
         sample_name = prefix,
         remove_singleton,
@@ -347,7 +367,7 @@ workflow hic_standard {
     }
 
     if (defined(exclude_list)) {
-        call hicpro.filter { input: 
+        call hicpro.filter { input:
             all_valid_pairs = merge_valid_interactions.all_valid_pairs,
             chromsizes,
             exclude_list = select_first([exclude_list, ""]),
