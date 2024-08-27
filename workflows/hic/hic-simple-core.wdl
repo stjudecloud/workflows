@@ -14,8 +14,8 @@ workflow hic_core {
     meta {
         description: "Hi-C core pipeline to produce unaligned BAM and .hic files"
         outputs: {
-            unaligned_bam: "Unaligned BAM file"
-            hic: "Juicer .hic file"
+            unaligned_bam: "Unaligned BAM file",
+            hic: "Juicer .hic file",
         }
         allowNestedInputs: true
     }
@@ -94,10 +94,10 @@ workflow hic_core {
     }
 
     scatter (rg in read_groups) {
-        call read_group.ReadGroup_to_string { input: read_group=rg }
+        call read_group.read_group_to_string { input: read_group=rg }
     }
 
-    Array[String] read_groups_bwa = prefix("@RG\t", ReadGroup_to_string.stringified_read_group)
+    Array[String] read_groups_bwa = prefix("@RG\t", read_group_to_string.stringified_read_group)
 
     scatter (tuple in zip(
         zip(read_one_fastqs_gz, read_two_fastqs_gz),
