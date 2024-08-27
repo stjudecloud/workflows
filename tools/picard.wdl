@@ -1066,8 +1066,8 @@ task revert_sam {
         restore_hardclips: "Restore hard clipped bases to the sequence and quality strings for read containing XB and XQ tags."
         restore_original_qualities: "Restore original qualities if available in the OQ tag."
         sanitize: {
-            description: "Will discard problematic reads. Potentially destructive."
-            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832764371227-RevertSam-Picard"
+            description: "Will discard problematic reads. Potentially destructive.",
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832764371227-RevertSam-Picard",
         }
         max_discard_fraction: "If SANITIZE=true and higher than MAX_DISCARD_FRACTION reads are discarded due to sanitization then the program will exit with an Exception instead of exiting cleanly. Output BAM will still be valid."
         memory_gb: "RAM to allocate for task, specified in GB"

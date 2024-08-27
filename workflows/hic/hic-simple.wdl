@@ -15,8 +15,8 @@ workflow hic_standard {
     meta {
         description: "hi-c"
         outputs: {
-            unaligned_bam: "Unaligned BAM file"
-            hic: "Juicer .hic file"
+            unaligned_bam: "Unaligned BAM file",
+            hic: "Juicer .hic file",
         }
         allowNestedInputs: true
     }
@@ -75,7 +75,7 @@ workflow hic_standard {
         }
     }
 
-    call read_group.get_ReadGroups { input:
+    call read_group.get_read_groups { input:
         bam=bam,
     }
 
@@ -89,7 +89,7 @@ workflow hic_standard {
         read_one_fastqs_gz=bam_to_fastqs.read1s,
         read_two_fastqs_gz=select_all(bam_to_fastqs.read2s),
         bwa_db=bwa_db,
-        read_groups=get_ReadGroups.read_groups,
+        read_groups=get_read_groups.read_groups,
         genomeID=genomeID,
         prefix=prefix,
         use_all_cores=use_all_cores,

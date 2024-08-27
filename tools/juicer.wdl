@@ -35,16 +35,16 @@ task pre {
         diagonal: "Only calculate intra chromosome (diagonal)"
         min_count: "Only write cells with count above threshold"
         restriction_sites: {
-            description: "Calculate fragment map. Requires restriction site file; each line should start with the chromosome name followed by the position of each restriction site on that chromosome, in numeric order, and ending with the size of the chromosome."
-            external_help: "https://github.com/aidenlab/juicer/wiki/Pre#restriction-site-file-format"
+            description: "Calculate fragment map. Requires restriction site file; each line should start with the chromosome name followed by the position of each restriction site on that chromosome, in numeric order, and ending with the size of the chromosome.",
+            external_help: "https://github.com/aidenlab/juicer/wiki/Pre#restriction-site-file-format",
         }
         stats_file: {
-            description: "Add the text statistics file to the Hi-C file header"
-            external_help: "https://github.com/theaidenlab/juicer/blob/master/UGER/scripts/statistics.pl"
+            description: "Add the text statistics file to the Hi-C file header",
+            external_help: "https://github.com/theaidenlab/juicer/blob/master/UGER/scripts/statistics.pl",
         }
         graphs_file: {
-            description: "Add the text graphs file to the Hi-C file header"
-            external_help: "https://github.com/theaidenlab/juicer/blob/master/UGER/scripts/statistics.pl"
+            description: "Add the text graphs file to the Hi-C file header",
+            external_help: "https://github.com/theaidenlab/juicer/blob/master/UGER/scripts/statistics.pl",
         }
         resolutions: "Only calculate specific resolutions"
         maq_filter: "Filter by MAPQ score greater than or equal to this value"
