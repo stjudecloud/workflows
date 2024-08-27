@@ -15,8 +15,8 @@ workflow hic_standard_fastq {
     meta {
         description: "hi-c"
         outputs: {
-            unaligned_bam: "Unaligned BAM file"
-            hic: "Juicer .hic file"
+            unaligned_bam: "Unaligned BAM file",
+            hic: "Juicer .hic file",
         }
         allowNestedInputs: true
     }
@@ -96,7 +96,7 @@ workflow hic_standard_fastq {
     }
 
     scatter (read_group in read_groups) {
-        call read_group.validate_ReadGroup as validate_readgroups {
+        call read_group.validate_read_group as validate_readgroups {
             input:
                 read_group = read_group,
                 required_fields = ["ID", "SM", "LB", "CN", "DT"]
