@@ -1,5 +1,3 @@
-version 1.1
-
 ## Read groups are defined in the SAM spec
 ## - ID: Read group identifier. Each Read Group must have a unique ID.
 ##     The value of ID is used in the RG tags of alignment records.
