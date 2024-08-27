@@ -5,6 +5,16 @@ import "../data_structures/read_group.wdl"
 task build {
     meta {
         description: "Builds a Bowtie2 index from a FASTA file"
+        outputs: {
+            index_files: "Array of Bowtie2 index files",
+            bowtie_db_tar_gz: "Bowtie2 index files in tarred, gzipped format",
+        }
+    }
+
+    parameter_meta {
+        reference: "Reference genome in FASTA format (optionally gzipped)"
+        prefix: "Prefix for the Bowtie2 index files"
+        ncpu: "Number of threads to use"
     }
 
     input {
@@ -14,7 +24,6 @@ task build {
     }
 
     String base = basename(reference, ".gz")
-
 
     command <<<
         set -euo pipefail
@@ -35,15 +44,22 @@ task build {
     runtime {
         cpu: ncpu
         memory: "20 GB"
-        #container: "ghcr.io/stjudecloud/bowtie2:2.5.4"
-        container: "adthrasher/bowtie2:2.5.4"
+        container: "ghcr.io/stjudecloud/bowtie2:2.5.4"
         maxRetries: 1
     }
 }
 
 task align {
     meta {
-
+        description: "Aligns reads to a reference genome using Bowtie2"
+        outputs: {
+            aligned_bam: "Aligned reads in BAM format",
+            unpaired_unaligned: "Unpaired reads that didn't align",
+            unpaired_aligned: "Unpaired reads that aligned at least once",
+            paired_discordant: "Pairs that didn't align concordantly",
+            paired_concordant: "Pairs that aligned concordantly at least once",
+            metrics: "Metrics file",
+        }
     }
 
     parameter_meta {
@@ -113,30 +129,26 @@ task align {
     input {
         File bowtie_db_tar_gz
         File read_one_fastq_gz
+        ReadGroup rg
+        String prefix
         File? read_two_fastq_gz
+        String? addl_rg_text
+        String? sam_opt_config
+        String? score_min
+        String? interval_seed_substrings
         Int? skip
         Int? upto
-        Int trim5 = 0
-        Int trim3 = 0
-        Int seed_mismatch = 0
-        Int seed_substring = 22
-        Int dpad = 15
-        Int gbar = 4
+        Int? match_bonus
+        Int? max_aln_report
+        Pair[Int, Int] read_gap_open_extend = (5, 3)
+        Pair[Int, Int] ref_gap_open_extend = (5, 3)
+        Boolean end_to_end = true  # false: --local
+        Boolean non_deterministic = false
         Boolean ignore_quals = false
         Boolean nofw = false
         Boolean norc = false
         Boolean no_1mm_upfront = false
-        Boolean end_to_end = true  # false: --local
-        Int? match_bonus
-        Int mismatch_penalty = 6
-        Int non_actg_penalty = 1
-        Pair[Int, Int] read_gap_open_extend = (5, 3)
-        Pair[Int, Int] ref_gap_open_extend = (5, 3)
-        Int? max_aln_report
         Boolean report_all_alignments = false
-        Int min_fragment_len = 0
-        Int max_fragment_len = 500
-        # TODO: --fr, --rf, --ff args
         Boolean no_mixed = false
         Boolean no_discordant = false
         Boolean dovetail = false
@@ -150,27 +162,30 @@ task align {
         Boolean quiet = false
         Boolean metrics_file = false
         Boolean metrics_stderr = false
-        Int metrics_interval = 1
         Boolean no_unal = false
         Boolean no_head = false
         Boolean no_sq = false
-        ReadGroup rg
-        String? addl_rg_text
         Boolean omit_sec_seq = false
         Boolean sam_no_quane_trunc = false
         Boolean xeq = false
         Boolean soft_clipped_unmapped_tlen = false
         Boolean sam_append_comment = false
-        String? sam_opt_config
-        Int threads = 1
         Boolean reorder = false
         Boolean memory_map = false
         Boolean qc_filter = false
+        Int trim5 = 0
+        Int trim3 = 0
+        Int seed_mismatch = 0
+        Int seed_substring = 22
+        Int dpad = 15
+        Int gbar = 4
+        Int mismatch_penalty = 6
+        Int non_actg_penalty = 1
+        Int min_fragment_len = 0
+        Int max_fragment_len = 500
+        Int metrics_interval = 1
+        Int threads = 1
         Int seed = 0
-        Boolean non_deterministic = false
-        String prefix
-        String? score_min
-        String? interval_seed_substrings
         Int max_failed_extends = 15
         Int repetitive_seeds = 2
     }
@@ -271,8 +286,7 @@ task align {
     }
 
     runtime {
-        #container: "ghcr.io/stjudecloud/bowtie2:2.5.4"
-        container: "adthrasher/bowtie2:2.5.4"
+        container: "ghcr.io/stjudecloud/bowtie2:2.5.4"
         cpu: threads
         memory: "20 GB"
     }
