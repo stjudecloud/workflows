@@ -59,7 +59,7 @@ workflow hic_standard {
                 "complete",
                 "asis",
                 "upper",
-                "lower",
+                "lower"
             ],
             hicpro_field: "MATRIX_FORMAT",
         }

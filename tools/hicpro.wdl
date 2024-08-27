@@ -238,9 +238,9 @@ task mapped_2hic_fragments {
         fi
 
         ~{if defined(fragment)
-            then "python /HiC-Pro_3.0.0/scripts/mapped_2hic_fragments.py -f $frag \\"  # Fragment file found
-            else "python /HiC-Pro_3.0.0/scripts/mapped_2hic_dnase.py \\"  # DNAse
-        }
+            then "python /HiC-Pro_3.0.0/scripts/mapped_2hic_fragments.py -f $frag"  # Fragment file found
+            else "python /HiC-Pro_3.0.0/scripts/mapped_2hic_dnase.py"  # DNAse
+        } \
         -v \
         -r ~{mapped_reads} \
         ~{if defined(fragment) && sam then "-S" else ""} \
