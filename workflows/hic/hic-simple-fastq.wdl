@@ -9,7 +9,7 @@ import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "../general/samtools-merge.wdl" as samtools_merge_wf
-import "./hic-core.wdl" as hic_core
+import "./hic-simple-core.wdl" as hic_core
 
 workflow hic_standard_fastq {
     meta {
