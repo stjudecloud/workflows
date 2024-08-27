@@ -1,7 +1,5 @@
 ## [Homepage](http://samtools.sourceforge.net/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 import "../data_structures/flag_filter.wdl"
@@ -37,8 +35,8 @@ task quickcheck {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -46,13 +44,23 @@ task quickcheck {
 task split {
     meta {
         description: "Runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
+        outputs: {
+            split_bams: "The split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
+        }
     }
 
     parameter_meta {
-        bam: "Input BAM format file to split"
+        bam: {
+            description: "Input BAM format file to split",
+            stream: true
+        }
         prefix: "Prefix for the split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
-        reject_unaccounted: {
-            description: "If true, error if there are reads present that do not have read group information.",
+        reject_unaccounted_reads: {
+            description: "If true, error if there are reads present that do not have read group information matching the header.",
+            common: true
+        }
+        reject_empty_output: {
+            description: "If true, error if any output BAMs are empty.",
             common: true
         }
         use_all_cores: {
@@ -69,7 +77,8 @@ task split {
     input {
         File bam
         String prefix = basename(bam, ".bam")
-        Boolean reject_unaccounted = true
+        Boolean reject_unaccounted_reads = true
+        Boolean reject_empty_output = true
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_disk_size_gb = 0
@@ -101,12 +110,36 @@ task split {
             ~{prefix}.unaccounted_reads.bam \
             > first_unaccounted_read.sam
 
-        if ~{reject_unaccounted} && [ -s first_unaccounted_read.sam ]; then
-            exit 42
+        EXITCODE=0
+        if ~{reject_unaccounted_reads} && [ -s first_unaccounted_read.sam ]; then
+            >&2 echo "There are reads present with bad or missing RG tags!"
+            EXITCODE=21
         else
             rm ~{prefix}.unaccounted_reads.bam
         fi
         rm first_unaccounted_read.sam
+
+        # Check that all output BAMs have at least
+        # one read in them.
+        if ~{reject_empty_output}; then
+            for out_bam in *.bam; do
+                samtools head \
+                    --threads "$n_cores" \
+                    -h 0 \
+                    -n 1 \
+                    "$out_bam" \
+                    > first_read.sam
+
+                if [ ! -s first_read.sam ]; then
+                    >&2 echo "No reads are in output BAM $out_bam!"
+                    >&2 echo "This is likely caused by malformed RG records."
+                    EXITCODE=42
+                fi
+            done
+            rm first_read.sam
+        fi
+        
+        exit $EXITCODE
     >>>
 
     output {
@@ -116,8 +149,8 @@ task split {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -150,7 +183,6 @@ task flagstat {
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_disk_size_gb = 0
-        # TODO should we support alt formats? Will they break MultiQC?
     }
 
     Float bam_size = size(bam, "GiB")
@@ -175,8 +207,8 @@ task flagstat {
 
     runtime {
         memory: "5 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -234,8 +266,8 @@ task index {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -245,8 +277,6 @@ task subsample {
         description: "Randomly subsamples the input BAM, in order to produce an output BAM with approximately the desired number of reads."
         help: "A `desired_reads` **greater than zero** must be supplied. A `desired_reads <= 0` will result in task failure. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
-            # TODO is there any situation where the sampling fraction should be reported?
-            # It is _roughly_ derivable from the input and output read counts.
             orig_read_count: "A TSV report containing the original read count before subsampling. If subsampling was requested but the input BAM had less than `desired_reads`, no read count will be filled in (instead there will be a `dash`).",
             sampled_bam: "The subsampled input BAM. Only present if subsampling was performed."
         }
@@ -382,17 +412,19 @@ task subsample {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
 
 task filter {
-    # TODO expose more `view` options
     meta {
         description: "Filters a BAM based on its bitwise flag value."
         help: "This task is a wrapper around `samtools view`. This task will fail if there are no reads in the output BAM. This can happen either because the input BAM was empty or because the supplied `bitwise_filter` was too strict. If you want to down-sample a BAM, use the `subsample` task instead."
+        outputs: {
+            filtered_bam: "BAM file that has been filtered based on the input flags"
+        }
     }
 
     parameter_meta {
@@ -458,16 +490,6 @@ task filter {
             exit 42
         fi
         rm first_read.sam
-        # TODO should there be a check that the output
-        # BAM is different from the input?
-        # It would only need to be a simple `wc -l` check.
-        # Ideally this would be done _without_ an extra pass through the BAM.
-        # An easier check is that the supplied filters aren't all zeroes.
-        # However it's still possible to have an active filter
-        # that doesn't catch anything. What's the ideal
-        # behavior in that case? The user provided something valid,
-        # so failing seems wrong. But (essentially) duplicating the BAM is also
-        # (most likely) wrong.
     >>>
 
     output {
@@ -477,8 +499,8 @@ task filter {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -551,6 +573,15 @@ task merge {
         # -1 because samtools uses one more core than `--threads` specifies
         let "n_cores -= 1"
 
+        bams=""
+        for file in ~{sep(" ", bams)}
+        do
+          # This will fail (intentionally) if there are duplicate names
+          # in the input BAM array.
+          ln -s $file
+          bams+=" $(basename $file)"
+        done
+
         samtools merge \
             --threads "$n_cores" \
             ~{if defined(new_header) then "-h " + new_header else ""} \
@@ -560,7 +591,7 @@ task merge {
             ~{if combine_rg then "-c" else ""} \
             ~{if combine_pg then "-p" else ""} \
             ~{prefix}.bam \
-            ~{sep(" ", bams)}
+            $bams
     >>>
 
     output {
@@ -570,8 +601,8 @@ task merge {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -655,8 +686,8 @@ task addreplacerg {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -728,8 +759,8 @@ task collate {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -738,7 +769,7 @@ task bam_to_fastq {
     meta {
         description: "Converts an input BAM file into FASTQ(s) using `samtools fastq`."
         help: "If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
-        output: {
+        outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order). Only generated if `retain_collated_bam` and `paired_end` are both true. Has the name `~{prefix}.collated.bam`.",
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair. Only generated if `paired_end` is true and `interleaved` is false. Has the name `~{prefix}.R1.fastq.gz`.",
             read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair. Only generated if `paired_end` is true and `interleaved` is false. Has the name `~{prefix}.R2.fastq.gz`.",
@@ -882,7 +913,7 @@ task bam_to_fastq {
                     then "-s " + prefix+".singleton.fastq.gz"
                     else "-s junk.singleton.fastq.gz"
                 )
-                else ""  # TODO document why `-s` isn't specified here
+                else ""
             } \
             -0 ~{
                 if paired_end
@@ -904,8 +935,7 @@ task bam_to_fastq {
         if ~{fail_on_unexpected_reads} \
             && [ -n "$(gunzip -c junk.*.fastq.gz | head -c 1 | tr '\0\n' __)" ]
         then
-            >&2 echo "Discovered unexpected reads in:"
-            >&2 echo "TODO print the names of the unexpected FASTQs"
+            >&2 echo "Discovered unexpected reads"
             exit 43
         fi
     >>>
@@ -921,9 +951,9 @@ task bam_to_fastq {
 
     runtime {
         cpu: ncpu
+        disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -938,7 +968,10 @@ task fixmate {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to add mate information. Must be name-sorted or name-collated."
+        bam: {
+            description: "Input BAM format file to add mate information. Must be name-sorted or name-collated.",
+            stream: true
+        }
         prefix: "Prefix for the output file. The extension specified with the `extension` parameter will be added."
         extension: {
             description: "File format extension to use for output file.",
@@ -1017,8 +1050,8 @@ task fixmate {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -1026,6 +1059,9 @@ task fixmate {
 task position_sorted_fixmate {
     meta {
         description: "Runs `samtools fixmate` on the position-sorted input BAM file and output a position-sorted BAM. `fixmate` fills in mate coordinates and insert size fields among other tags and fields. `samtools fixmate` assumes a name-sorted or name-collated input BAM. If you already have a collated BAM, please use the `fixmate` task. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM."
+        outputs: {
+            fixmate_bam: "BAM file with mate information added"
+        }
     }
 
     parameter_meta {
@@ -1118,12 +1154,13 @@ task position_sorted_fixmate {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
 
+#@ except: NonmatchingOutput
 task markdup {
     meta {
         description: "**[DEPRECATED]** Runs `samtools markdup` on the position-sorted input BAM file. This creates a report and optionally a new BAM with duplicate reads marked."
@@ -1133,7 +1170,7 @@ task markdup {
 
     parameter_meta {
         bam: "Input BAM format file to mark duplicates in"
-        prefix: "Prefix for the output file. TODO"
+        prefix: "Prefix for the output file."
         read_coords_regex: {
             description: "Regular expression to extract read coordinates from the QNAME field. This takes a POSIX regular expression for at least x and y to be used in optical duplicate marking It can also include another part of the read name to test for equality, eg lane:tile elements. Elements wanted are captured with parentheses. The default is meant to capture information from Illumina style read names. Ignored if `optical_distance == 0`. If changing `read_coords_regex`, make sure that `coordinates_order` matches.",
             tool_default: "`([!-9;-?A-~]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+):([0-9]+):([0-9]+)`"
@@ -1175,7 +1212,6 @@ task markdup {
     }
 
     input {
-        # TODO expose the barcode options and the --mode option
         File bam
         String prefix = basename(bam, ".bam") + ".markdup"
         String read_coords_regex = "[!-9;-?A-~:]+:([!-9;-?A-~]+):([0-9]+):([0-9]+)"
@@ -1237,9 +1273,55 @@ task markdup {
 
     runtime {
         cpu: ncpu
+        disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 1
+    }
+}
+
+task faidx {
+    meta {
+        description: "Creates a `.fai` FASTA index for the input FASTA"
+        outputs: {
+            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`."
+        }
+    }
+
+    parameter_meta {
+        fasta: "Input FASTA format file to index. Optionally gzip compressed."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fasta
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fasta_size = size(fasta, "GiB")
+    Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
+
+    String outfile_name = basename(fasta, ".gz") + ".fai"
+
+    command <<<
+        set -euo pipefail
+
+        ref_fasta=~{basename(fasta, ".gz")}
+        gunzip -c ~{fasta} > "$ref_fasta" \
+            || ln -sf ~{fasta} "$ref_fasta"
+
+        samtools faidx -o ~{outfile_name} $ref_fasta
+    >>>
+
+    output {
+        File fasta_index = outfile_name
+    }
+
+    runtime {
+        cpu: 1
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.17--h00cdaf9_0"
         maxRetries: 1
     }
 }

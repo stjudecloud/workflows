@@ -1,7 +1,5 @@
 ## [Homepage](https://multiqc.info/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task multiqc {
@@ -38,7 +36,7 @@ task multiqc {
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
 
-        echo "~{sep('\n', input_files)}" > file_list.txt
+        echo "~{sep("\n", input_files)}" > file_list.txt
 
         # --strict is too strict. It causes errors due
         # to how our config adds 'custom-content' to the report.
@@ -46,7 +44,6 @@ task multiqc {
         # --require-logs might be useful at some point, but as of now,
         # it would cause errors. It could replace the check currently
         # run after multiqc is finished.
-        # TODO: lots of other options to consider supporting.
         multiqc -v \
             --no-ansi \
             ~{if defined(config) then "-c " + config else ""} \
@@ -67,8 +64,8 @@ task multiqc {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/multiqc:1.20--pyhdfd78af_1'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/multiqc:1.22.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }

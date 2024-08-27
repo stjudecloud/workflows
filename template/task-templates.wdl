@@ -25,7 +25,7 @@ task static_disk_and_ram_task {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
+        disks: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -61,7 +61,7 @@ task dynamic_disk_and_ram_task {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: ""
         maxRetries: 1
     }
@@ -98,7 +98,7 @@ task use_all_cores_task {
     runtime {
         cpu: ncpu
         memory: "4 GB"
-        disk: "10 GB"
+        disks: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -140,7 +140,7 @@ task localize_files_task {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
+        disks: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -169,7 +169,7 @@ task outfile_name_task {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
+        disks: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -198,7 +198,7 @@ task prefix_task {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
+        disks: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -243,7 +243,7 @@ task string_choices_task {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
+        disks: "10 GB"
         container: ""
         maxRetries: 1
     }

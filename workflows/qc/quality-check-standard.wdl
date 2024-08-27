@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../data_structures/flag_filter.wdl"
@@ -30,6 +28,7 @@ workflow quality_check {
             instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file",
             read_length_file: "TSV file containing the `ngsderive readlen` report for the input BAM file",
             inferred_encoding: "TSV file containing the `ngsderive encoding` report for the input BAM file",
+            inferred_endedness: "TSV file containing the `ngsderive endedness` report",
             alignment_metrics: {
                 description: "The text file output of `picard CollectAlignmentSummaryMetrics`",
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics"
@@ -52,23 +51,27 @@ workflow quality_check {
             mosdepth_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file.",
             mosdepth_region_summary: "A summary of mean depths per chromosome and within specified regions per chromosome. There will be one file in this array for each `coverage_beds` input file.",
             multiqc_report: "A gzipped tar archive of all MultiQC output files",
-            orig_read_count: "A TSV report containing the original read count before subsampling",
+            orig_read_count: "A TSV report containing the original read count before subsampling. Only present if `subsample_n_reads > 0`.",
             kraken_sequences: {
-                description: "Detailed Kraken2 output that has been gzipped",
+                description: "Detailed Kraken2 output that has been gzipped. Only present if `store_kraken_sequences == true`.",
                 external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#standard-kraken-output-format"
             },
-            comparative_kraken_report: "Kraken2 summary report for only the alternatively filtered reads",
-            comparative_kraken_sequences: "Detailed Kraken2 output for only the alternatively filtered reads",
-            mosdepth_dups_marked_global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
-            mosdepth_dups_marked_global_summary: "A summary of mean depths per chromosome. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
-            mosdepth_dups_marked_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
-            mosdepth_dups_marked_region_summary: "A summary of mean depths per chromosome and within specified regions per chromosome. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM (only present if `mark_duplicates = true`).",
-            inferred_strandedness: "TSV file containing the `ngsderive strandedness` report",
-            qualimap_rnaseq_results: "Gzipped tar archive of all QualiMap output files",
-            junction_summary: "TSV file containing the `ngsderive junction-annotation` summary",
-            junctions: "TSV file containing a detailed list of annotated junctions",
-            librarian_report: "A tar archive containing the `librarian` report and raw data.",
-            IntermediateFiles: "Any and all files produced as intermediate during pipeline processing. Only output if `output_intermediate_files = true`."
+            comparative_kraken_report: "Kraken2 summary report for only the alternatively filtered reads. Only present if `run_comparative_kraken == true`.",
+            comparative_kraken_sequences: "Detailed Kraken2 output for only the alternatively filtered reads. Only present if `run_comparative_kraken == true && store_kraken_sequences == true`.",
+            mosdepth_dups_marked_global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome. This file is produced from analyzing the duplicate marked BAM. Only present if `mark_duplicates == true`.",
+            mosdepth_dups_marked_global_summary: "A summary of mean depths per chromosome. This file is produced from analyzing the duplicate marked BAM. Only present if `mark_duplicates == true`.",
+            mosdepth_dups_marked_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM. Only present if `mark_duplicates == true`.",
+            mosdepth_dups_marked_region_summary: "A summary of mean depths per chromosome and within specified regions per chromosome. There will be one file in this array for each `coverage_beds` input file. This file is produced from analyzing the duplicate marked BAM. Only present if `mark_duplicates == true`.",
+            mark_duplicates_metrics: {
+                description: "The METRICS_FILE result of `picard MarkDuplicates`. Only present if `mark_duplicates == true && optical_distance > 0`.",
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics"
+            },
+            inferred_strandedness: "TSV file containing the `ngsderive strandedness` report. Only present if `rna == true`.",
+            qualimap_rnaseq_results: "Gzipped tar archive of all QualiMap output files. Only present if `rna == true`.",
+            junction_summary: "TSV file containing the `ngsderive junction-annotation` summary. Only present if `rna == true`",
+            junctions: "TSV file containing a detailed list of annotated junctions. Only present if `rna == true`.",
+            librarian_report: "A tar archive containing the `librarian` report and raw data. Only present if `run_librarian == true`.",
+            intermediate_files: "Any and all files produced as intermediate during pipeline processing. Only output if `output_intermediate_files == true`."
         }
         allowNestedInputs: true
     }
@@ -88,12 +91,14 @@ workflow quality_check {
         rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
         mark_duplicates: "Mark duplicates before select analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. If set to `true`, a BAM will be generated and passed to selected downstream analyses. For more details about what analyses are run, review `./markdups-post.wdl`. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
         run_librarian: {
-            description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database. By default, this tool is run when `rna == true`.",
+            description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database.",
             external_help: "https://f1000research.com/articles/11-1122/v2",
         }
         run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_filter` is ignored."
+        store_kraken_sequences: "Store the Kraken2 sequences output? This will apply to all runs of Kraken2 (see `parameter_meta.run_comparative_kraken`). **WARNING** these files can be very large."
         output_intermediate_files: "Output intermediate files? FASTQs; if `rna == true` a collated BAM; if `mark_duplicates == true` a duplicate marked BAM, various accessory files like indexes and md5sums; if subsampling was requested _and_ performed then a sampled BAM and associated index. **WARNING, these files can be large.**"
         use_all_cores: "Use all cores? Recommended for cloud environments."
+        optical_distance: "Maximum distance between read coordinates to consider them optical duplicates instead of library duplicates (e.g. PCR duplicates). If `mark_duplicates == false`, this parameter is ignored. If `0`, then _optical_ duplicate marking is disabled and only traditional duplicate marking will be performed. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without a custom regex for tile-data extraction. Review the `mark_duplicates` task in `../../tools/picard.wdl` for more information."
         subsample_n_reads: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
     }
 
@@ -102,6 +107,7 @@ workflow quality_check {
         File bam_index
         File kraken_db
         File? gtf
+        #@ except: LineWidth
         File multiqc_config
             = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
         Array[File] extra_multiqc_inputs = []
@@ -113,8 +119,7 @@ workflow quality_check {
             "include_if_any": "0x0",
             "exclude_if_all": "0x0",
         }
-        # TODO: consider making this an array of FlagFilters similar to coverage_beds
-        FlagFilter comparative_filter =  {
+        FlagFilter comparative_filter = {
             "include_if_all": "0x0",
             # 0x4 (unmapped) || 0x100 (secondary) || 0x800 (supplementary)
             "exclude_if_any": "0x904",
@@ -124,44 +129,48 @@ workflow quality_check {
         String prefix = basename(bam, ".bam")
         Boolean rna = false
         Boolean mark_duplicates = rna
-        Boolean run_librarian = rna
+        Boolean run_librarian = false
         Boolean run_comparative_kraken = false
+        Boolean store_kraken_sequences = false
         Boolean output_intermediate_files = false
         Boolean use_all_cores = false
+        Int optical_distance = 0
         Int subsample_n_reads = -1
     }
 
     call parse_input { input:
-        gtf_provided=defined(gtf),
+        gtf_provided = defined(gtf),
         rna,
-        coverage_beds_len=length(coverage_beds),
-        coverage_labels=coverage_labels,
+        coverage_beds_len = length(coverage_beds),
+        coverage_labels,
     }
-    call flag_filter.validate_FlagFilter as kraken_filter_validator { input:
+    call flag_filter.validate_flag_filter as kraken_filter_validator { input:
         flags = standard_filter
     }
     if (run_comparative_kraken) {
-        call flag_filter.validate_FlagFilter as comparative_kraken_filter_validator { input:
+        call flag_filter.validate_flag_filter
+            as comparative_kraken_filter_validator
+        { input:
             flags = comparative_filter
         }
     }
 
-    call md5sum.compute_checksum after parse_input { input: file=bam }
+    call md5sum.compute_checksum after parse_input { input: file = bam }
 
-    call samtools.quickcheck after parse_input { input: bam=bam }
-    call util.compression_integrity after parse_input { input: bgzipped_file=bam }
+    call samtools.quickcheck after parse_input { input: bam }
+    call util.compression_integrity after parse_input { input: bgzipped_file = bam }
 
     if (subsample_n_reads > 0) {
         call samtools.subsample after quickcheck { input:
-            bam=bam,
-            prefix=prefix,
-            desired_reads=subsample_n_reads,
-            use_all_cores=use_all_cores,
+            bam,
+            prefix,
+            desired_reads = subsample_n_reads,
+            use_all_cores,
         }
         if (defined(subsample.sampled_bam)) {
             call samtools.index as subsample_index { input:
-                bam=select_first([subsample.sampled_bam, "undefined"]),
-                use_all_cores=use_all_cores,
+                bam = select_first([subsample.sampled_bam, "undefined"]),
+                use_all_cores,
             }
         }
     }
@@ -180,48 +189,48 @@ workflow quality_check {
         else prefix
 
     call picard.validate_bam after quickcheck { input:
-        bam=post_subsample_bam,
-        outfile_name=post_subsample_prefix + ".ValidateSamFile.txt",
-        succeed_on_errors=true,
-        ignore_list=[],
-        summary_mode=true,
+        bam = post_subsample_bam,
+        outfile_name = post_subsample_prefix + ".ValidateSamFile.txt",
+        succeed_on_errors = true,
+        ignore_list = [],
+        summary_mode = true,
     }
 
     call picard.collect_alignment_summary_metrics after quickcheck { input:
-        bam=post_subsample_bam,
-        prefix=post_subsample_prefix + ".CollectAlignmentSummaryMetrics",
+        bam = post_subsample_bam,
+        prefix = post_subsample_prefix + ".CollectAlignmentSummaryMetrics",
     }
     call picard.quality_score_distribution after quickcheck { input:
-        bam=post_subsample_bam,
-        prefix=post_subsample_prefix + ".QualityScoreDistribution",
+        bam = post_subsample_bam,
+        prefix = post_subsample_prefix + ".QualityScoreDistribution",
     }
     call fastqc_tasks.fastqc after quickcheck { input:
-        bam=post_subsample_bam,
-        prefix=post_subsample_prefix + ".fastqc_results",
-        use_all_cores=use_all_cores,
+        bam = post_subsample_bam,
+        prefix = post_subsample_prefix + ".fastqc_results",
+        use_all_cores,
     }
     call ngsderive.instrument after quickcheck { input:
-        bam=post_subsample_bam,
-        outfile_name=post_subsample_prefix + ".instrument.tsv",
+        bam = post_subsample_bam,
+        outfile_name = post_subsample_prefix + ".instrument.tsv",
     }
     call ngsderive.read_length after quickcheck { input:
-        bam=post_subsample_bam,
-        bam_index=post_subsample_bam_index,
-        outfile_name=post_subsample_prefix + ".readlength.tsv",
+        bam = post_subsample_bam,
+        bam_index = post_subsample_bam_index,
+        outfile_name = post_subsample_prefix + ".readlength.tsv",
     }
     call ngsderive.encoding after quickcheck { input:
-        ngs_files=[post_subsample_bam],
-        outfile_name=post_subsample_prefix + ".encoding.tsv",
-        num_reads=-1,
+        ngs_files = [post_subsample_bam],
+        outfile_name = post_subsample_prefix + ".encoding.tsv",
+        num_reads = -1,
     }
     call ngsderive.endedness after quickcheck { input:
-        bam=post_subsample_bam,
-        outfile_name=post_subsample_prefix + ".endedness.tsv",
-        lenient=true,
+        bam = post_subsample_bam,
+        outfile_name = post_subsample_prefix + ".endedness.tsv",
+        lenient = true,
     }
     call util.global_phred_scores after quickcheck { input:
-        bam=post_subsample_bam,
-        prefix=post_subsample_prefix,
+        bam = post_subsample_bam,
+        prefix = post_subsample_prefix,
     }
 
     call samtools.bam_to_fastq after quickcheck
@@ -239,7 +248,7 @@ workflow quality_check {
         fast_mode = (!rna),
         paired_end = true,  # matches default but prevents user from overriding
         interleaved = false,  # matches default but prevents user from overriding
-        use_all_cores = use_all_cores,
+        use_all_cores,
     }
 
     call fq.fqlint { input:
@@ -251,9 +260,10 @@ workflow quality_check {
             = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
         read_two_fastq_gz
             = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
-        db=kraken_db,
-        prefix=post_subsample_prefix,
-        use_all_cores=use_all_cores,
+        db = kraken_db,
+        store_sequences = store_kraken_sequences,
+        prefix = post_subsample_prefix,
+        use_all_cores = use_all_cores,
     }
     if (run_librarian) {
         call libraran_tasks.librarian after fqlint { input:
@@ -293,44 +303,45 @@ workflow quality_check {
             read_two_fastq_gz
                 = select_first([alt_filtered_fastq.read_two_fastq_gz, "undefined"]),
             db = kraken_db,
+            store_sequences = store_kraken_sequences,
             prefix = post_subsample_prefix + ".alt_filtered",
             use_all_cores = use_all_cores,
         }
     }
 
     call mosdepth.coverage as wg_coverage after quickcheck { input:
-        bam=post_subsample_bam,
-        bam_index=post_subsample_bam_index,
-        prefix=post_subsample_prefix + ".whole_genome",
+        bam = post_subsample_bam,
+        bam_index = post_subsample_bam_index,
+        prefix = post_subsample_prefix + ".whole_genome",
     }
     scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
         call mosdepth.coverage as regions_coverage after quickcheck  { input:
-            bam=post_subsample_bam,
-            bam_index=post_subsample_bam_index,
-            coverage_bed=coverage_pair.left,
-            prefix=post_subsample_prefix + "." + coverage_pair.right,
+            bam = post_subsample_bam,
+            bam_index = post_subsample_bam_index,
+            coverage_bed = coverage_pair.left,
+            prefix = post_subsample_prefix + "." + coverage_pair.right,
         }
     }
 
     if (rna) {
         call ngsderive.junction_annotation after quickcheck { input:
-            bam=post_subsample_bam,
-            bam_index=post_subsample_bam_index,
-            gene_model=select_first([gtf, "undefined"]),
-            prefix=post_subsample_prefix,
+            bam = post_subsample_bam,
+            bam_index = post_subsample_bam_index,
+            gene_model = select_first([gtf, "undefined"]),
+            prefix = post_subsample_prefix,
         }
         call ngsderive.strandedness after quickcheck { input:
-            bam=post_subsample_bam,
-            bam_index=post_subsample_bam_index,
-            gene_model=select_first([gtf, "undefined"]),
-            outfile_name=post_subsample_prefix + ".strandedness.tsv",
+            bam = post_subsample_bam,
+            bam_index = post_subsample_bam_index,
+            gene_model = select_first([gtf, "undefined"]),
+            outfile_name = post_subsample_prefix + ".strandedness.tsv",
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam=select_first([bam_to_fastq.collated_bam, "undefined"]),
-            prefix=post_subsample_prefix + ".qualimap_rnaseq_results",
-            gtf=select_first([gtf, "undefined"]),
-            name_sorted=true,
-            paired_end=true,  # matches default but prevents user from overriding
+            bam = select_first([bam_to_fastq.collated_bam, "undefined"]),
+            prefix = post_subsample_prefix + ".qualimap_rnaseq_results",
+            gtf = select_first([gtf, "undefined"]),
+            name_sorted = true,
+            paired_end = true,  # matches default but prevents user from overriding
         }
     }
     if (mark_duplicates) {
@@ -338,7 +349,10 @@ workflow quality_check {
             bam = post_subsample_bam,
             create_bam = true,
             prefix = post_subsample_prefix + ".MarkDuplicates",
-            optical_distance = 0,
+            optical_distance,
+        }
+        if (optical_distance > 0) {
+            File markdups_metrics = markdups.mark_duplicates_metrics
         }
         call markdups_post_wf.markdups_post { input:
             markdups_bam = select_first([
@@ -368,7 +382,7 @@ workflow quality_check {
     }
 
     call multiqc_tasks.multiqc { input:
-        input_files=select_all(flatten([
+        input_files = select_all(flatten([
             [
                 validate_bam.validate_report,
                 flagstat.flagstat_report,
@@ -394,16 +408,21 @@ workflow quality_check {
                 strandedness.strandedness_file,
                 junction_annotation.junction_summary,
                 qualimap_rnaseq.raw_summary,
-                qualimap_rnaseq.raw_coverage
+                qualimap_rnaseq.raw_coverage,
             ],
             regions_coverage.summary,
             regions_coverage.region_dist,
-            extra_multiqc_inputs,
             select_first([markdups_post.mosdepth_region_summary, []]),
-            select_first([markdups_post.mosdepth_region_dist, []])
+            select_first([markdups_post.mosdepth_region_dist, []]),
+            (
+                if (mark_duplicates && optical_distance > 0)
+                then [markdups.mark_duplicates_metrics]
+                else []
+            ),
+            extra_multiqc_inputs,
         ])),
-        config=multiqc_config,
-        prefix=post_subsample_prefix + ".multiqc",
+        config = multiqc_config,
+        prefix = post_subsample_prefix + ".multiqc",
     }
 
     if (output_intermediate_files) {
@@ -416,7 +435,8 @@ workflow quality_check {
             "singleton_reads_fastq_gz": bam_to_fastq.singleton_reads_fastq_gz,
             "alt_filtered_read_one_fastq_gz": alt_filtered_fastq.read_one_fastq_gz,
             "alt_filtered_read_two_fastq_gz": alt_filtered_fastq.read_two_fastq_gz,
-            "alt_filtered_singleton_reads_fastq_gz": alt_filtered_fastq.singleton_reads_fastq_gz,
+            "alt_filtered_singleton_reads_fastq_gz":
+                alt_filtered_fastq.singleton_reads_fastq_gz,
             "duplicate_marked_bam": markdups.duplicate_marked_bam,
             "duplicate_marked_bam_index": markdups.duplicate_marked_bam_index,
             "duplicate_marked_bam_md5": markdups.duplicate_marked_bam_md5,
@@ -462,11 +482,13 @@ workflow quality_check {
         File? comparative_kraken_report = comparative_kraken.report
         File? comparative_kraken_sequences = comparative_kraken.sequences
         File? mosdepth_dups_marked_global_dist = markdups_post.mosdepth_global_dist
-        File? mosdepth_dups_marked_global_summary = markdups_post.mosdepth_global_summary
-        Array[File]? mosdepth_dups_marked_region_summary
-            = markdups_post.mosdepth_region_summary
+        File? mosdepth_dups_marked_global_summary
+            = markdups_post.mosdepth_global_summary
         Array[File?]? mosdepth_dups_marked_region_dist
             = markdups_post.mosdepth_region_dist
+        Array[File]? mosdepth_dups_marked_region_summary
+            = markdups_post.mosdepth_region_summary
+        File? mark_duplicates_metrics = markdups_metrics
         File? inferred_strandedness = strandedness.strandedness_file
         File? qualimap_rnaseq_results = qualimap_rnaseq.results
         File? junction_summary = junction_annotation.junction_summary
@@ -480,7 +502,6 @@ task parse_input {
     meta {
         description: "Parses and validates the `quality_check` workflow's provided inputs"
         outputs: {
-            check: "Dummy output to indicate success and to enable call-caching",  # TODO: is this still needed with labels?
             labels: "An array of labels to use on the result coverage files associated with each coverage BED"
         }
     }
@@ -519,7 +540,7 @@ task parse_input {
             >&2 echo "Otherwise the exact same amount must be supplied."
             EXITCODE=1
         else
-            echo "~{sep('\n', coverage_labels)}" >> labels.txt
+            echo "~{sep("\n", coverage_labels)}" >> labels.txt
         fi
 
         exit $EXITCODE
@@ -531,13 +552,12 @@ task parse_input {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }
 
-# TODO does this need documentation?
 struct IntermediateFiles {
     File? sampled_bam
     File? sampled_bam_index

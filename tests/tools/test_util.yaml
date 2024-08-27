@@ -50,7 +50,7 @@
       contains:
         - "AL954722.1"
 
-# TODO: This fails, but the underlying task will be updated.
+# This fails, but the underlying task will be updated.
 - name: qc_summary
   tags:
    - miniwdl
@@ -91,16 +91,14 @@
     - path: "test-output/out/tarball_contents/0/a"
     - path: "test-output/out/tarball_contents/1/b"
 
-- name: make_coverage_regions_beds
+- name: make_coverage_regions_bed
   tags:
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task make_coverage_regions_beds tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
+    miniwdl run --verbose -d test-output/. --task make_coverage_regions_bed tools/util.wdl gtf="tests/tools/input/genes.gtf.gz" feature_type="exon"
   files:
-    - path: "test-output/out/bed/genes.gtf.bed"
-    - path: "test-output/out/exon_bed/genes.gtf.exon.bed"
-    - path: "test-output/out/CDS_bed/genes.gtf.CDS.bed"
+    - path: "test-output/out/bed/genes.exon.bed"
 
 - name: global_phred_scores
   tags:
@@ -110,3 +108,12 @@
     miniwdl run --verbose -d test-output/. --task global_phred_scores tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: "test-output/out/phred_scores/test.bwa_aln_pe.global_PHRED_scores.tsv"
+
+- name: split_fastq
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run -d test-output/. --task split_fastq tools/util.wdl fastq="tests/tools/input/test_R1.fq.gz" prefix="test_R1."
+  files:
+    - path: "test-output/out/fastqs/0/test_R1.000000.fastq.gz"

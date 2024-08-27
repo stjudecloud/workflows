@@ -1,7 +1,5 @@
 ## [Homepage](https://github.com/DerrickWood/kraken2)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task download_taxonomy {
@@ -42,8 +40,8 @@ task download_taxonomy {
 
     runtime {
         memory: "4 GB"
-        disk: "60 GB"
-        container: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
+        disks: "60 GB"
+        container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
         maxRetries: 3
     }
 }
@@ -60,18 +58,18 @@ task download_library {
         library_name: {
             description: "Library to download. Note that `protein` must equal `true` if downloading the `nr` library, and `protein` must equal `false` if downloading the `UniVec` or `UniVec_Core` library.",
             choices: [
-                'archaea',
-                'bacteria',
-                'plasmid',
-                'viral',
-                'human',
-                'fungi',
-                'plant',
-                'protozoa',
-                'nt',
-                'nr',
-                'UniVec',
-                'UniVec_Core'
+                "archaea",
+                "bacteria",
+                "plasmid",
+                "viral",
+                "human",
+                "fungi",
+                "plant",
+                "protozoa",
+                "nt",
+                "nr",
+                "UniVec",
+                "UniVec_Core"
             ]
         }
         protein: "Construct a protein database?"
@@ -116,8 +114,8 @@ task download_library {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
         maxRetries: 3
     }
 }
@@ -151,7 +149,7 @@ task create_library_from_fastas {
         set -euo pipefail
 
         >&2 echo "*** start adding custom FASTAs ***"
-        echo "~{sep('\n', fastas_gz)}" > fastas.txt
+        echo "~{sep("\n", fastas_gz)}" > fastas.txt
         while read -r fasta; do
             gunzip -c "$fasta" > tmp.fa
             kraken2-build \
@@ -173,8 +171,8 @@ task create_library_from_fastas {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
         maxRetries: 1
     }
 }
@@ -245,7 +243,7 @@ task build_db {
         fi
 
         >&2 echo "*** start unpacking tarballs ***"
-        echo "~{sep('\n', tarballs)}" > tarballs.txt
+        echo "~{sep("\n", tarballs)}" > tarballs.txt
         mkdir ~{db_name}
         while read -r tarball; do
             tar -xzf "$tarball" -C ~{db_name} --no-same-owner
@@ -282,14 +280,13 @@ task build_db {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
         maxRetries: 1
     }
 }
 
 task kraken {
-    # TODO allow Single-End FASTQs
     meta {
         description: "Runs Kraken2 on a pair of fastq files"
         outputs: {
@@ -305,7 +302,7 @@ task kraken {
     }
 
     parameter_meta {
-        read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"  # TODO verify can be gzipped or compressed
+        read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
         read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
         db: "Kraken2 database. Can be generated with `make-qc-reference.wdl`. Must be a tarball without a root directory."
         prefix: "Prefix for the Kraken2 output files. The extensions `.kraken2.txt` and `.kraken2.sequences.txt.gz` will be added."
@@ -397,8 +394,8 @@ task kraken {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
         maxRetries: 1
     }
 }

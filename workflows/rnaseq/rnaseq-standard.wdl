@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/picard.wdl"
@@ -33,18 +31,18 @@ workflow rnaseq_standard {
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
-                'bwa aln',
-                'bwa mem',
-                'star'
+                "bwa aln",
+                "bwa mem",
+                "star"
             ]
         }
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
             choices: [
-                '',
-                'Stranded-Reverse',
-                'Stranded-Forward',
-                'Unstranded'
+                "",
+                "Stranded-Reverse",
+                "Stranded-Forward",
+                "Unstranded"
             ]
         }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
@@ -70,51 +68,51 @@ workflow rnaseq_standard {
     }
 
     call parse_input { input:
-        input_strand=strandedness,
-        cleanse_xenograft=cleanse_xenograft,
-        contaminant_db=defined(contaminant_db)
+        input_strand = strandedness,
+        cleanse_xenograft,
+        contaminant_db = defined(contaminant_db)
     }
 
     if (validate_input) {
         call picard.validate_bam as validate_input_bam after parse_input { input:
-            bam=bam,
+            bam,
         }
     }
 
     if (subsample_n_reads > 0) {
         call samtools.subsample after parse_input { input:
-            bam=bam,
-            desired_reads=subsample_n_reads,
-            use_all_cores=use_all_cores,
+            bam,
+            desired_reads = subsample_n_reads,
+            use_all_cores,
         }
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
     call util.get_read_groups after parse_input { input:
-        bam=selected_bam,
-        format_for_star=true,  # matches default but prevents user from overriding
-    }  # TODO what happens if no RG records?
+        bam = selected_bam,
+        format_for_star = true,  # matches default but prevents user from overriding
+    }
     call bam_to_fastqs_wf.bam_to_fastqs after parse_input { input:
-        bam=selected_bam,
-        paired_end=true,  # matches default but prevents user from overriding
-        use_all_cores=use_all_cores,
+        bam = selected_bam,
+        paired_end = true,  # matches default but prevents user from overriding
+        use_all_cores,
     }
 
     call rnaseq_core_wf.rnaseq_core { input:
-        read_one_fastqs_gz=bam_to_fastqs.read1s,
-        read_two_fastqs_gz=select_all(bam_to_fastqs.read2s),
+        read_one_fastqs_gz = bam_to_fastqs.read1s,
+        read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
         # format_for_star=true in get_read_groups puts
         # all found RG info in read_groups[0]
-        read_groups=get_read_groups.read_groups[0],
-        prefix=prefix,
-        gtf=gtf,
-        star_db=star_db,
-        mark_duplicates=mark_duplicates,
-        contaminant_db=contaminant_db,
-        cleanse_xenograft=cleanse_xenograft,
-        xenocp_aligner=xenocp_aligner,
-        strandedness=strandedness,
-        use_all_cores=use_all_cores,
+        read_groups = get_read_groups.read_groups[0],
+        prefix,
+        gtf,
+        star_db,
+        mark_duplicates,
+        contaminant_db,
+        cleanse_xenograft,
+        xenocp_aligner,
+        strandedness,
+        use_all_cores,
     }
 
     output {
@@ -141,10 +139,10 @@ task parse_input {
         input_strand: {
             description: "Provided strandedness protocol of the RNA-Seq experiment",
             choices: [
-                '',
-                'Stranded-Reverse',
-                'Stranded-Forward',
-                'Unstranded'
+                "",
+                "Stranded-Reverse",
+                "Stranded-Forward",
+                "Unstranded"
             ]
         }
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
@@ -180,8 +178,8 @@ task parse_input {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }

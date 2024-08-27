@@ -13,10 +13,26 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam"
+    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/tools/input/test.bam"
   files:
     - path: test-output/out/split_bams/0/test.1.bam
     - path: test-output/out/split_bams/1/test.2.bam
+
+- name: samtools_split_unaccounted
+  tags:
+    - miniwdl
+    - samtools
+  command: >-
+    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/tools/input/test.unaccounted_read.bam"
+  exit_code: 21
+
+- name: samtools_split_extra_RG
+  tags:
+    - miniwdl
+    - samtools
+  command: >-
+    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/tools/input/test.extra_RG.bam"
+  exit_code: 42
 
 - name: samtools_flagstat
   tags:
@@ -26,6 +42,12 @@
     miniwdl run --verbose -d test-output/. --task flagstat tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/flagstat_report/test.bwa_aln_pe.flagstat.txt
+      contains:
+        - "20000"
+        - "0 + 0 secondary"
+        - "20000 + 0 in total (QC-passed reads + QC-failed reads)"
+        - "10000 + 0 read1"
+        - "10000 + 0 read2"
 
 - name: samtools_index
   tags:
@@ -82,3 +104,12 @@
     - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
     - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.R1.fastq.gz
     - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe.R2.fastq.gz
+
+- name: samtools_faidx
+  tags:
+    - miniwdl
+    - samtools
+  command: >-
+    miniwdl run -d test-output/. --task faidx tools/samtools.wdl fasta="tests/tools/input/test.fa"
+  files:
+    - path: test-output/out/fasta_index/test.fa.fai

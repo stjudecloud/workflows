@@ -1,11 +1,6 @@
 ## [Homepage](https://github.com/coreutils/coreutils)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
-version 1.1
 
-# TODO consider consolidating this file with util
-#   or renaming to `coreutils.wdl` and moving some of util here
+version 1.1
 
 task compute_checksum {
     meta {
@@ -40,8 +35,8 @@ task compute_checksum {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }

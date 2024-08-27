@@ -1,7 +1,5 @@
 ## [Homepage](https://github.com/stjudecloud/ngsderive)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task strandedness {
@@ -9,7 +7,7 @@ task strandedness {
         description: "Derives the experimental strandedness protocol used to generate the input RNA-Seq BAM file. Reports evidence supporting final results."
         outputs: {
             strandedness_file: "TSV file containing the `ngsderive strandedness` report",
-            strandedness: "The derived strandedness, in string format"
+            strandedness_string: "The derived strandedness, in string format",
         }
     }
 
@@ -79,14 +77,14 @@ task strandedness {
     >>>
 
     output {
-        String strandedness_string = read_string("strandedness.txt")
         File strandedness_file = outfile_name
+        String strandedness_string = read_string("strandedness.txt")
     }
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }
@@ -95,7 +93,8 @@ task instrument {
     meta {
         description: "Derives the instrument used to sequence the input BAM file. Reports evidence supporting final results."
         outputs: {
-            instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file"
+            instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file",
+            instrument_string: "The derived instrument, in string format",
         }
     }
 
@@ -137,8 +136,8 @@ task instrument {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }
@@ -147,7 +146,7 @@ task read_length {
     meta {
         description: "Derives the original experimental read length of the input BAM. Reports evidence supporting final results."
         outputs: {
-            read_length_file: "TSV file containing the `ngsderive readlen` report for the input BAM file"
+            read_length_file: "TSV file containing the `ngsderive readlen` report for the input BAM file",
         }
     }
 
@@ -201,8 +200,8 @@ task read_length {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }
@@ -211,8 +210,8 @@ task encoding {
     meta {
         description: "Derives the encoding of the input NGS file(s). Reports evidence supporting final results."
         outputs: {
+            inferred_encoding: "The most permissive encoding found among the input files, in string format",
             encoding_file: "TSV file containing the `ngsderive encoding` report for all input files",
-            inferred_encoding: "The most permissive encoding found among the input files, in string format"
         }
     }
 
@@ -236,6 +235,7 @@ task encoding {
     Float files_size = size(ngs_files, "GiB")
     Int disk_size_gb = ceil(files_size) + 10 + modify_disk_size_gb
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -245,29 +245,29 @@ task encoding {
             > ~{outfile_name}
 
         ENCODING_FILE="~{outfile_name}" python - <<END
-import os  # lint-check: ignore
+        import os  # lint-check: ignore
 
-encoding_file = open(os.environ['ENCODING_FILE'], 'r')
-encoding_file.readline()  # discard header
-permissive_encoding = ""
-for line in encoding_file:
-    contents = line.strip().split('\t')
-    cur_encoding = contents[2]
-    if cur_encoding == "Unkown":
-        permissive_encoding = cur_encoding
-        break
-    if cur_encoding == "Sanger/Illumina 1.8" or permissive_encoding == "Sanger/Illumina 1.8":
-        permissive_encoding = "Sanger/Illumina 1.8"
-    elif cur_encoding == "Solexa/Illumina 1.0" or permissive_encoding == "Solexa/Illumina 1.0":
-        permissive_encoding = "Solexa/Illumina 1.0"
-    elif cur_encoding == "Illumina 1.3":
-        permissive_encoding = "Illumina 1.3"
+        encoding_file = open(os.environ['ENCODING_FILE'], 'r')
+        encoding_file.readline()  # discard header
+        permissive_encoding = ""
+        for line in encoding_file:
+            contents = line.strip().split('\t')
+            cur_encoding = contents[2]
+            if cur_encoding == "Unkown":
+                permissive_encoding = cur_encoding
+                break
+            if cur_encoding == "Sanger/Illumina 1.8" or permissive_encoding == "Sanger/Illumina 1.8":
+                permissive_encoding = "Sanger/Illumina 1.8"
+            elif cur_encoding == "Solexa/Illumina 1.0" or permissive_encoding == "Solexa/Illumina 1.0":
+                permissive_encoding = "Solexa/Illumina 1.0"
+            elif cur_encoding == "Illumina 1.3":
+                permissive_encoding = "Illumina 1.3"
 
-outfile = open("encoding.txt", "w")
-outfile.write(permissive_encoding)
-outfile.close()
+        outfile = open("encoding.txt", "w")
+        outfile.write(permissive_encoding)
+        outfile.close()
 
-END
+        END
     >>>
 
     output {
@@ -277,8 +277,8 @@ END
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }
@@ -289,7 +289,7 @@ task junction_annotation {
         external_help: "https://stjudecloud.github.io/ngsderive/subcommands/junction_annotation/"
         outputs: {
             junction_summary: "TSV file containing the `ngsderive junction-annotation` summary",
-            junctions: "TSV file containing a detailed list of annotated junctions"
+            junctions: "TSV file containing a detailed list of annotated junctions",
         }
     }
 
@@ -364,9 +364,9 @@ task junction_annotation {
     }
 
     runtime {
-        memory: "56 GB"  # TODO make this dynamic
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        memory: "56 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }
@@ -375,7 +375,7 @@ task endedness {
     meta {
         description: "Derives the endedness of the input BAM file. Reports evidence for final result."
         outputs: {
-            endedness_file: "TSV file containing the `ngsderive endedness` report"
+            endedness_file: "TSV file containing the `ngsderive endedness` report",
         }
     }
 
@@ -447,8 +447,8 @@ task endedness {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
         maxRetries: 1
     }
 }

@@ -2,19 +2,39 @@
 ##
 ## This WDL file wrap the [10x Genomics Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) tool.
 ## Cell Ranger is a tool for handling scRNA-Seq data.
+#@ except: LineWidth
 
 version 1.1
 
 task count {
     meta {
         description: "This WDL task runs Cell Ranger count to generate an aligned BAM and feature counts from scRNA-Seq data."
+        outputs: {
+            bam: "Aligned BAM file",
+            bam_index: "BAM index file",
+            qc: "Quality control metrics in CSV format",
+            barcodes: "Barcodes in gzipped TSV format",
+            features: "Filtered features in gzipped TSV format",
+            matrix: "Filtered matrix of features",
+            filtered_gene_h5: "Filtered gene matrix in H5 format",
+            raw_gene_h5: "Raw gene matrix in H5 format",
+            raw_barcodes: "Raw barcodes in gzipped TSV format",
+            raw_features: "Raw features in gzipped TSV format",
+            raw_matrix: "Raw matrix of features",
+            mol_info_h5: "Molecule information in H5 format",
+            web_summary: "HTML summary of the run",
+            cloupe: "Cloupe file for visualization",
+        }
     }
 
     parameter_meta {
-        id: "A unique run ID"
         fastqs_tar_gz: "Path to the FASTQ folder archive in .tar.gz format"
         transcriptome_tar_gz: "Path to Cell Ranger-compatible transcriptome reference in .tar.gz format"
-        sample_id: "Sample name as used by cellranger mkfastq"
+        id: "A unique run ID"
+        use_all_cores: "Use all cores? Recommended for cloud environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
@@ -25,7 +45,6 @@ task count {
         Int ncpu = 1
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float fastq_size = size(fastqs_tar_gz, "GiB")
@@ -90,15 +109,21 @@ task count {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/cellranger:1.1.1'
-        maxRetries: max_retries
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/cellranger:1.1.1"
+        maxRetries: 1
     }
 }
 
 task bamtofastq {
     meta {
         description: "This WDL task runs the 10x bamtofastq tool to convert Cell Ranger generated BAM files back to FASTQ files"
+        outputs: {
+            fastqs: "FASTQ files",
+            fastqs_archive: "FASTQ files in a tarball",
+            read_one_fastq_gz: "Read 1 FASTQ files",
+            read_two_fastq_gz: "Read 2 FASTQ files",
+        }
     }
 
     parameter_meta {
@@ -106,6 +131,10 @@ task bamtofastq {
         cellranger11: "Convert a BAM produced by Cell Ranger 1.0-1.1"
         longranger20: "Convert a BAM produced by Longranger 2.0"
         gemcode: "Convert a BAM produced from GemCode data (Longranger 1.0 - 1.3)"
+        use_all_cores: "Use all cores? Recommended for cloud environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
@@ -117,7 +146,6 @@ task bamtofastq {
         Int ncpu = 1
         Int memory_gb = 40
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -152,8 +180,8 @@ task bamtofastq {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/cellranger:1.1.1'
-        maxRetries: max_retries
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/cellranger:1.1.1"
+        maxRetries: 1
     }
 }

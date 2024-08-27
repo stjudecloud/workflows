@@ -1,7 +1,5 @@
 ## [Homepage](https://github.com/htseq/htseq)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task count {
@@ -93,9 +91,9 @@ task count {
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
 
-    Int memory_gb = ceil(bam_size) + 5 + modify_memory_gb  # TODO what's the memory usage like if the BAM is name sorted?
+    Int memory_gb = ceil(bam_size) + 5 + modify_memory_gb
 
-    Int disk_size_gb = ceil((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb  # TODO why would htseq need this much disk?
+    Int disk_size_gb = ceil((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -117,7 +115,11 @@ task count {
             -i ~{idattr} \
             --nonunique ~{if nonunique then "all" else "none"} \
             --secondary-alignments ~{if secondary_alignments then "score" else "ignore"} \
-            --supplementary-alignments ~{if supplementary_alignments then "score" else "ignore"} \
+            --supplementary-alignments ~{(
+                if supplementary_alignments
+                then "score"
+                else "ignore"
+            )} \
             ~{bam} \
             ~{gtf} \
             >> ~{outfile_name}
@@ -129,8 +131,8 @@ task count {
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/htseq:2.0.5--py310h5aa3a86_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/htseq:2.0.5--py310h5aa3a86_0"
         maxRetries: 1
     }
 }
@@ -157,40 +159,41 @@ task calc_tpm {
 
     String outfile_name = prefix + ".TPM.txt"
 
+    #@ except: LineWidth
     command <<<
         COUNTS="~{counts}" GENE_LENGTHS="~{gene_lengths}" OUTFILE="~{outfile_name}" python3 - <<END
-import os  # lint-check: ignore
+        import os  # lint-check: ignore
 
-counts_file = open(os.environ['COUNTS'], 'r')
-counts = {}
-for line in counts_file:
-    gene, count = line.split('\t')
-    if gene[0:2] == '__':
-        break
-    counts[gene.strip()] = int(count.strip())
-counts_file.close()
+        counts_file = open(os.environ['COUNTS'], 'r')
+        counts = {}
+        for line in counts_file:
+            gene, count = line.split('\t')
+            if gene[0:2] == '__':
+                break
+            counts[gene.strip()] = int(count.strip())
+        counts_file.close()
 
-lengths_file = open(os.environ['GENE_LENGTHS'], 'r')
-rpks = {}  # Reads Per Kilobase
-tot_rpk = 0
-lengths_file.readline()  # discard header
-for line in lengths_file:
-    gene, length = line.split('\t')
-    rpk = counts[gene.strip()] / int(length.strip()) * 1000
-    tot_rpk += rpk
-    rpks[gene.strip()] = rpk
-lengths_file.close()
+        lengths_file = open(os.environ['GENE_LENGTHS'], 'r')
+        rpks = {}  # Reads Per Kilobase
+        tot_rpk = 0
+        lengths_file.readline()  # discard header
+        for line in lengths_file:
+            gene, length = line.split('\t')
+            rpk = counts[gene.strip()] / int(length.strip()) * 1000
+            tot_rpk += rpk
+            rpks[gene.strip()] = rpk
+        lengths_file.close()
 
-scaling_factor = tot_rpk / 1000000
+        scaling_factor = tot_rpk / 1000000
 
-sample_name = '.'.join(os.environ['OUTFILE'].split('.')[:-2])  # equivalent to ~{prefix}
-outfile = open(os.environ['OUTFILE'], 'w')
-print(f"feature\t{sample_name}", file=outfile)
-for gene, rpk in sorted(rpks.items()):
-    tpm = rpk / scaling_factor
-    print(f"{gene}\t{tpm:.3f}", file=outfile)
-outfile.close()
-END
+        sample_name = '.'.join(os.environ['OUTFILE'].split('.')[:-2])  # equivalent to ~{prefix}
+        outfile = open(os.environ['OUTFILE'], 'w')
+        print(f"feature\t{sample_name}", file=outfile)
+        for gene, rpk in sorted(rpks.items()):
+            tpm = rpk / scaling_factor
+            print(f"{gene}\t{tpm:.3f}", file=outfile)
+        outfile.close()
+        END
     >>>
 
     output {
@@ -199,8 +202,8 @@ END
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }

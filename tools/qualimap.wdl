@@ -1,7 +1,5 @@
 ## [Homepage](http://qualimap.bioinfo.cipf.es/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task rnaseq {
@@ -80,18 +78,20 @@ task rnaseq {
 
     output {
         File raw_summary = "~{prefix}/rnaseq_qc_results.txt"
-        File raw_coverage = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
+        File raw_coverage
+            = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
         File results = out_tar_gz
     }
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/qualimap:2.3--hdfd78af_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/qualimap:2.3--hdfd78af_0"
         maxRetries: 1
     }
 }
 
+#@ except: NonmatchingOutput
 task bamqc {
     meta {
         description: "**[Deprecated]** This WDL task runs QualiMap's bamqc tool on the input BAM file. This task has been deprecated due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
@@ -100,6 +100,11 @@ task bamqc {
 
     parameter_meta {
         bam: "Input BAM format file to run qualimap bamqc on"
+        prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
+        use_all_cores: "Use all cores? Recommended for cloud environments."
+        ncpu: "Number of cores to allocate for task"
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
@@ -109,10 +114,9 @@ task bamqc {
         Int ncpu = 1
         Int memory_gb = 32
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
-    String out_directory = prefix + '.qualimap_bamqc_results'
+    String out_directory = prefix + ".qualimap_bamqc_results"
     String out_tar_gz = out_directory + ".tar.gz"
 
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -149,8 +153,8 @@ task bamqc {
     runtime {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/qualimap:2.3--hdfd78af_0'
-        maxRetries: max_retries
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/qualimap:2.3--hdfd78af_0"
+        maxRetries: 1
     }
 }

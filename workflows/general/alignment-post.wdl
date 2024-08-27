@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/md5sum.wdl"
@@ -13,7 +11,8 @@ workflow alignment_post {
         outputs: {
             processed_bam: "Input BAM after being transformed by standard processing",
             bam_index: "BAI index associated with `processed_bam`",
-            bam_checksum:  "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file"
+            bam_checksum:  "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
+            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged."
         }
         allowNestedInputs: true
     }
@@ -25,9 +24,9 @@ workflow alignment_post {
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
-                'bwa aln',
-                'bwa mem',
-                'star'
+                "bwa aln",
+                "bwa mem",
+                "star"
             ]
         }
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
@@ -43,25 +42,25 @@ workflow alignment_post {
         Boolean use_all_cores = false
     }
 
-    call picard.sort as picard_sort { input: bam=bam }
+    call picard.sort as picard_sort { input: bam }
 
     if (cleanse_xenograft) {
         call samtools.index as pre_xenocp_index { input:
-            bam=picard_sort.sorted_bam,
-            use_all_cores=use_all_cores,
+            bam = picard_sort.sorted_bam,
+            use_all_cores,
         }
 
         call xenocp_wf.xenocp { input:
-            input_bam=picard_sort.sorted_bam,
-            input_bai=pre_xenocp_index.bam_index,
-            reference_tar_gz=select_first([contaminant_db, ""]),
-            aligner=xenocp_aligner,
-            skip_duplicate_marking=true
+            input_bam = picard_sort.sorted_bam,
+            input_bai = pre_xenocp_index.bam_index,
+            reference_tar_gz = select_first([contaminant_db, ""]),
+            aligner = xenocp_aligner,
+            skip_duplicate_marking = true
         }
     }
     if (mark_duplicates) {
         call picard.mark_duplicates as picard_markdup { input:
-            bam=select_first([xenocp.bam, picard_sort.sorted_bam]),
+            bam = select_first([xenocp.bam, picard_sort.sorted_bam]),
         }
     }
 
@@ -72,19 +71,18 @@ workflow alignment_post {
     ])
 
     call samtools.index as samtools_index { input:
-        bam=aligned_bam,
-        use_all_cores=use_all_cores,
+        bam = aligned_bam,
+        use_all_cores,
     }
     File aligned_bam_index = samtools_index.bam_index
+    call picard.validate_bam { input: bam = aligned_bam }
 
-    # TODO: should we output the validater report?
-    call picard.validate_bam { input: bam=aligned_bam }
-
-    call md5sum.compute_checksum { input: file=aligned_bam }
+    call md5sum.compute_checksum { input: file = aligned_bam }
 
     output {
         File processed_bam = aligned_bam
         File bam_index = aligned_bam_index
         File bam_checksum = compute_checksum.md5sum
+        File validate_report = validate_bam.validate_report
     }
 }

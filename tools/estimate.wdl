@@ -1,14 +1,12 @@
 ## [Homepage](https://bioinformatics.mdanderson.org/estimate/)
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task run_estimate {
     meta {
         description: "**[DEPRECATED]** Given a gene expression file, run the ESTIMATE software package"
-        outputs:  {
-            estimate_file: "The results file of the ESTIMATE software package"  # TODO actually run and see what format it is.
+        outputs: {
+            estimate_file: "The results file of the ESTIMATE software package"
         }
         deprecated: true
     }
@@ -34,15 +32,15 @@ task run_estimate {
     command <<<
         cp "~{gene_expression_file}" gene_expression.txt
         Rscript - <<END
-library("estimate")
+        library("estimate")
 
-infile <- read.table(file = "gene_expression.txt", sep = '\t', header = TRUE)
-filtered <- infile[infile$"Gene.name" %in% common_genes[['GeneSymbol']], ]
-write.table(filtered, sep = "\t", file = "filtered.tsv", row.names = FALSE, quote = FALSE)
-outputGCT("filtered.tsv", "gene_expression.gct")
-estimateScore("gene_expression.gct", "common_estimate.gct", platform = "illumina")
-END
-    mv common_estimate.gct "~{outfile_name}"
+        infile <- read.table(file = "gene_expression.txt", sep = '\t', header = TRUE)
+        filtered <- infile[infile$"Gene.name" %in% common_genes[['GeneSymbol']], ]
+        write.table(filtered, sep = "\t", file = "filtered.tsv", row.names = FALSE, quote = FALSE)
+        outputGCT("filtered.tsv", "gene_expression.gct")
+        estimateScore("gene_expression.gct", "common_estimate.gct", platform = "illumina")
+        END
+        mv common_estimate.gct "~{outfile_name}"
     >>>
 
     output {
@@ -51,8 +49,8 @@ END
 
     runtime {
         memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/estimate:1.0.0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/estimate:1.0.0"
         maxRetries: max_retries
     }
 }

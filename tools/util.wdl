@@ -1,7 +1,5 @@
 ## # Utilities
-#
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
+
 version 1.1
 
 task download {
@@ -43,8 +41,8 @@ task download {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
@@ -58,7 +56,10 @@ task get_read_groups {
     }
 
     parameter_meta {
-        bam: "Input BAM format file to get read groups from"
+        bam: {
+            description: "Input BAM format file to get read groups from",
+            stream: true
+        }
         format_for_star: {
             description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`.",
             common: true
@@ -96,8 +97,8 @@ task get_read_groups {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -108,7 +109,7 @@ task split_string {
     meta {
         description: "Split a string into an array of strings based on a delimiter"
         outputs: {
-            split_string: "Split string as an array"
+            split_strings: "Split string as an array"
         }
     }
 
@@ -137,16 +138,16 @@ task split_string {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
 
 task calc_gene_lengths {
     meta {
-        description: "Calculate gene lengths from a GTF feature file using the \"non-overlapping exonic length\" algorithm"
-        help: "The \"non-overlapping exonic length\" algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
+        description: "Calculate gene lengths from a GTF feature file using the non-overlapping exonic length algorithm"
+        help: "The non-overlapping exonic length algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
         outputs: {
             gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
         }
@@ -176,59 +177,59 @@ task calc_gene_lengths {
         set -euo pipefail
 
         GTF="~{gtf}" OUTFILE="~{outfile_name}" IDATTR="~{idattr}" python - <<END
-import os  # lint-check: ignore
-import gtfparse  # lint-check: ignore
-import numpy as np  # lint-check: ignore
-from collections import defaultdict  # lint-check: ignore
+        import os  # lint-check: ignore
+        import gtfparse  # lint-check: ignore
+        import numpy as np  # lint-check: ignore
+        from collections import defaultdict  # lint-check: ignore
 
-gtf_name = os.environ["GTF"]
-outfile = open(os.environ["OUTFILE"], "w")
-id_attr = os.environ["IDATTR"]
+        gtf_name = os.environ["GTF"]
+        outfile = open(os.environ["OUTFILE"], "w")
+        id_attr = os.environ["IDATTR"]
 
-gtf = gtfparse.read_gtf(gtf_name)
+        gtf = gtfparse.read_gtf(gtf_name)
 
-only_exons = gtf[gtf["feature"] == "exon"]
-exon_starts = defaultdict(lambda: [])
-exon_ends = defaultdict(lambda: [])
-gene_start_offset = {}
-gene_end_offset = {}
-gene_exon_intersection = {}
+        only_exons = gtf[gtf["feature"] == "exon"]
+        exon_starts = defaultdict(lambda: [])
+        exon_ends = defaultdict(lambda: [])
+        gene_start_offset = {}
+        gene_end_offset = {}
+        gene_exon_intersection = {}
 
-for _index, value in only_exons.iterrows():
-    feature_id = value[id_attr]
-    start = value["start"]
-    end = value["end"] + 1  # end is inclusive in GTF
-    exon_starts[feature_id].append(start)
-    exon_ends[feature_id].append(end)
-    if feature_id not in gene_start_offset:
-        gene_start_offset[feature_id] = start
-        gene_end_offset[feature_id] = end
-    else:
-        gene_start_offset[feature_id] = min(gene_start_offset[feature_id], start)
-        gene_end_offset[feature_id] = max(gene_end_offset[feature_id], end)
+        for _index, value in only_exons.iterrows():
+            feature_id = value[id_attr]
+            start = value["start"]
+            end = value["end"] + 1  # end is inclusive in GTF
+            exon_starts[feature_id].append(start)
+            exon_ends[feature_id].append(end)
+            if feature_id not in gene_start_offset:
+                gene_start_offset[feature_id] = start
+                gene_end_offset[feature_id] = end
+            else:
+                gene_start_offset[feature_id] = min(gene_start_offset[feature_id], start)
+                gene_end_offset[feature_id] = max(gene_end_offset[feature_id], end)
 
-for feature_id in exon_starts:
-    gene_exon_intersection[feature_id] = np.full(
-        gene_end_offset[feature_id] - gene_start_offset[feature_id], False
-    )
+        for feature_id in exon_starts:
+            gene_exon_intersection[feature_id] = np.full(
+                gene_end_offset[feature_id] - gene_start_offset[feature_id], False
+            )
 
-    for start, end in zip(exon_starts[feature_id], exon_ends[feature_id]):
-        gene_exon_intersection[feature_id][
-            start - gene_start_offset[feature_id]
-            : end - gene_start_offset[feature_id]
-        ] = True
+            for start, end in zip(exon_starts[feature_id], exon_ends[feature_id]):
+                gene_exon_intersection[feature_id][
+                    start - gene_start_offset[feature_id]
+                    : end - gene_start_offset[feature_id]
+                ] = True
 
-print("feature\tlength", file=outfile)
-for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
-    # np.count_nonzero() is faster than sum
-    # np.count_nonzero() evaluates the "truthfulness" of
-    # of all elements (by calling their '.__bool__()' method)
-    length = np.count_nonzero(exonic_intersection)
-    print(f"{gene}\t{length}", file=outfile)
+        print("feature\tlength", file=outfile)
+        for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
+            # np.count_nonzero() is faster than sum
+            # np.count_nonzero() evaluates the "truthfulness" of
+            # of all elements (by calling their '.__bool__()' method)
+            length = np.count_nonzero(exonic_intersection)
+            print(f"{gene}\t{length}", file=outfile)
 
-outfile.close()
+        outfile.close()
 
-END
+        END
     >>>
 
     output {
@@ -237,8 +238,8 @@ END
 
     runtime {
         memory: "16 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0"
         maxRetries: 1
     }
 }
@@ -274,14 +275,13 @@ task compression_integrity {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
 
 task add_to_bam_header {
-    # TODO consider moving to samtools.wdl
     meta {
         description: "Adds another line of text to the bottom of a BAM header"
         outputs: {
@@ -309,7 +309,6 @@ task add_to_bam_header {
     String outfile_name = prefix + ".bam"
 
     command <<<
-        # TODO isn't there a builtin samtools command for this?
         samtools view -H ~{bam} > header.sam
         echo "~{additional_header}" >> header.sam
         samtools reheader -P header.sam ~{bam} > ~{outfile_name}
@@ -321,8 +320,8 @@ task add_to_bam_header {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
@@ -363,59 +362,67 @@ task unpack_tarball {
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
 
-task make_coverage_regions_beds {
-    # TODO make this customizable
+task make_coverage_regions_bed {
     meta {
-        description: "Takes in a GTF file, converts it to BED, then filters it down to two 3 column BED files: one of only 'exons', one of only 'CDS' regions"
+        description: "Takes in a GTF file, converts it to BED, then filters it down to a 3 column BED file from all lines which match a given feature type"
         outputs: {
-            bed: "Input GTF converted into BED format using the `gtf2bed` program",
-            exon_bed: "3 column BED file corresponding to all 'exons' found in the input GTF",
-            CDS_bed: "3 column BED file corresponding to all 'CDS' regions found in the input GTF"
+            bed: "3 column BED file corresponding to all records in the input GTF with a feature type matching `feature_type`",
         }
     }
 
     parameter_meta {
-        gtf: "GTF feature file from which to derive coverage regions BED files"
+        gtf: "Gzipped GTF feature file from which to derive a coverage regions BED file"
+        feature_type: {
+            description: "Feature type to filter on. Only lines with this feature type will be included in the output BED file.",
+            help: "`choices` below are the possible values from a GENCODE GTF file. If you are using a different GTF source, you may need to adjust this parameter.",
+            choices: [
+                "gene",
+                "transcript",
+                "exon",
+                "CDS",
+                "UTR",
+                "start_codon",
+                "stop_codon",
+                "Selenocysteine"
+            ]
+        }
+        outfile_name: "Name of the output BED file"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File gtf
+        String feature_type
+        String outfile_name = basename(gtf, "gtf.gz") + feature_type + ".bed"
         Int modify_disk_size_gb = 0
     }
 
     Float gtf_size = size(gtf, "GiB")
-    Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(gtf_size * 1.2) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
 
-        BED=$(basename ~{gtf} '.gz').bed
-        gunzip -c ~{gtf} | gtf2bed > "$BED"
-
-        EXON=$(basename ~{gtf} '.gz').exon.bed
-        awk '/\texon\t/ {print $1 "\t" $2 "\t" $3}' "$BED" > "$EXON"
-
-        CDS=$(basename ~{gtf} '.gz').CDS.bed
-        awk '/\tCDS\t/ {print $1 "\t" $2 "\t" $3}' "$BED" > "$CDS"
+        gunzip -c ~{gtf} \
+            | gtf2bed \
+            | awk '$8 == "~{feature_type}" {print $1 "\t" $2 "\t" $3}' \
+            > ~{outfile_name}
     >>>
 
     output {
-        File bed = basename(gtf, '.gz') + ".bed"  # TODO I added this but I'm not sure I should have. It doesn't work with the task name
-        File exon_bed = basename(gtf, '.gz') + ".exon.bed"
-        File CDS_bed = basename(gtf, '.gz') + ".CDS.bed"
+        File bed = outfile_name
     }
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0'
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0"
         maxRetries: 1
     }
 }
@@ -447,227 +454,226 @@ task global_phred_scores {
 
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
         BAM="~{bam}" PREFIX="~{prefix}" FAST_MODE=~{fast_mode} python3 - <<END
-import os  # lint-check: ignore
-from collections import defaultdict  # lint-check: ignore
+        import os  # lint-check: ignore
+        from collections import defaultdict  # lint-check: ignore
 
-import pysam  # lint-check: ignore
+        import pysam  # lint-check: ignore
 
-bam_path = os.environ["BAM"]
-bam = pysam.AlignmentFile(bam_path, "rb")
+        bam_path = os.environ["BAM"]
+        bam = pysam.AlignmentFile(bam_path, "rb")
 
-fast_mode = os.environ["FAST_MODE"] == "true"
+        fast_mode = os.environ["FAST_MODE"] == "true"
 
-if not fast_mode:
-    tot_quals = defaultdict(lambda: 0)
-    mapped_quals = defaultdict(lambda: 0)
-    unmapped_quals = defaultdict(lambda: 0)
-first_tot_quals = defaultdict(lambda: 0)
-first_mapped_quals = defaultdict(lambda: 0)
-first_unmapped_quals = defaultdict(lambda: 0)
-middle_tot_quals = defaultdict(lambda: 0)
-middle_mapped_quals = defaultdict(lambda: 0)
-middle_unmapped_quals = defaultdict(lambda: 0)
-last_tot_quals = defaultdict(lambda: 0)
-last_mapped_quals = defaultdict(lambda: 0)
-last_unmapped_quals = defaultdict(lambda: 0)
-for read in bam:
-    # only count primary alignments and unmapped reads
-    if (read.is_secondary or read.is_supplementary) and not read.is_unmapped:
-        continue
+        if not fast_mode:
+            tot_quals = defaultdict(lambda: 0)
+            mapped_quals = defaultdict(lambda: 0)
+            unmapped_quals = defaultdict(lambda: 0)
+        first_tot_quals = defaultdict(lambda: 0)
+        first_mapped_quals = defaultdict(lambda: 0)
+        first_unmapped_quals = defaultdict(lambda: 0)
+        middle_tot_quals = defaultdict(lambda: 0)
+        middle_mapped_quals = defaultdict(lambda: 0)
+        middle_unmapped_quals = defaultdict(lambda: 0)
+        last_tot_quals = defaultdict(lambda: 0)
+        last_mapped_quals = defaultdict(lambda: 0)
+        last_unmapped_quals = defaultdict(lambda: 0)
+        for read in bam:
+            # only count primary alignments and unmapped reads
+            if (read.is_secondary or read.is_supplementary) and not read.is_unmapped:
+                continue
 
-    cur_quals = read.query_qualities  # array of phred scores
-    if not fast_mode:
-        for qual in cur_quals:
-            tot_quals[qual] += 1
+            cur_quals = read.query_qualities  # array of phred scores
+            if not fast_mode:
+                for qual in cur_quals:
+                    tot_quals[qual] += 1
+                    if read.is_unmapped:
+                        unmapped_quals[qual] += 1
+                    else:
+                        mapped_quals[qual] += 1
+
+            first_score = cur_quals[0]
+            first_tot_quals[first_score] += 1
+
+            middle_pos = len(cur_quals) // 2  # middle base of read
+            middle_score = cur_quals[middle_pos]
+            middle_tot_quals[middle_score] += 1
+
+            last_score = cur_quals[-1]
+            last_tot_quals[last_score] += 1
+
             if read.is_unmapped:
-                unmapped_quals[qual] += 1
+                first_unmapped_quals[first_score] += 1
+                middle_unmapped_quals[middle_score] += 1
+                last_unmapped_quals[last_score] += 1
             else:
-                mapped_quals[qual] += 1
+                first_mapped_quals[first_score] += 1
+                middle_mapped_quals[middle_score] += 1
+                last_mapped_quals[last_score] += 1
 
-    first_score = cur_quals[0]
-    first_tot_quals[first_score] += 1
+        prefix = os.environ["PREFIX"]
+        outfile = open(prefix + ".global_PHRED_scores.tsv", "w")
 
-    middle_pos = len(cur_quals) // 2  # middle base of read
-    middle_score = cur_quals[middle_pos]
-    middle_tot_quals[middle_score] += 1
+        # print header
+        header = ["sample"]
+        if not fast_mode:
+            header += [
+                "total average",
+                "total median",
+                "total stdev",
+                "mapped average",
+                "mapped median",
+                "mapped stdev",
+                "unmapped average",
+                "unmapped median",
+                "unmapped stdev",
+            ]
+        header += [
+            "first position total average",
+            "first position total median",
+            "first position total stdev",
+            "first position mapped average",
+            "first position mapped median",
+            "first position mapped stdev",
+            "first position unmapped average",
+            "first position unmapped median",
+            "first position unmapped stdev",
+            "middle position total average",
+            "middle position total median",
+            "middle position total stdev",
+            "middle position mapped average",
+            "middle position mapped median",
+            "middle position mapped stdev",
+            "middle position unmapped average",
+            "middle position unmapped median",
+            "middle position unmapped stdev",
+            "last position total average",
+            "last position total median",
+            "last position total stdev",
+            "last position mapped average",
+            "last position mapped median",
+            "last position mapped stdev",
+            "last position unmapped average",
+            "last position unmapped median",
+            "last position unmapped stdev",
+        ]
+        print(
+            "\t".join(header),
+            file=outfile,
+        )
+        print(prefix, file=outfile, end="\t")
 
-    last_score = cur_quals[-1]
-    last_tot_quals[last_score] += 1
+        def stats_from_dict(score_dict):
+            total_score = 0
+            total_freq = 0
+            freq_table = []
+            for score, freq in score_dict.items():
+                total_score += score * freq
+                total_freq += freq
+                freq_table.append((score, freq))
 
-    if read.is_unmapped:
-        first_unmapped_quals[first_score] += 1
-        middle_unmapped_quals[middle_score] += 1
-        last_unmapped_quals[last_score] += 1
-    else:
-        first_mapped_quals[first_score] += 1
-        middle_mapped_quals[middle_score] += 1
-        last_mapped_quals[last_score] += 1
+            if total_freq == 0:
+                return -1, -1, -1
+            avg = total_score / total_freq
 
-prefix = os.environ["PREFIX"]
-outfile = open(prefix + ".global_PHRED_scores.tsv", "w")
+            freq_table.sort(key=lambda entry: entry[0])
 
-# print header
-header = ["sample"]
-if not fast_mode:
-    header += [
-        "total average",
-        "total median",
-        "total stdev",
-        "mapped average",
-        "mapped median",
-        "mapped stdev",
-        "unmapped average",
-        "unmapped median",
-        "unmapped stdev",
-    ]
-header += [
-    "first position total average",
-    "first position total median",
-    "first position total stdev",
-    "first position mapped average",
-    "first position mapped median",
-    "first position mapped stdev",
-    "first position unmapped average",
-    "first position unmapped median",
-    "first position unmapped stdev",
-    "middle position total average",
-    "middle position total median",
-    "middle position total stdev",
-    "middle position mapped average",
-    "middle position mapped median",
-    "middle position mapped stdev",
-    "middle position unmapped average",
-    "middle position unmapped median",
-    "middle position unmapped stdev",
-    "last position total average",
-    "last position total median",
-    "last position total stdev",
-    "last position mapped average",
-    "last position mapped median",
-    "last position mapped stdev",
-    "last position unmapped average",
-    "last position unmapped median",
-    "last position unmapped stdev",
-]
-print(
-    "\t".join(header),
-    file=outfile,
-)
-print(prefix, file=outfile, end="\t")
+            median_pos = (total_freq + 1) / 2
+            cumul_freq = 0
+            median_found = False
+            sum_freq_times_score_sqrd = 0
+            for score, freq in freq_table:
+                cumul_freq += freq
+                if cumul_freq >= median_pos:
+                    if not median_found:
+                        median = score
+                    median_found = True
+                sum_freq_times_score_sqrd += freq * (score**2)
 
+            stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2)) ** 0.5
 
-def stats_from_dict(score_dict):
-    total_score = 0
-    total_freq = 0
-    freq_table = []
-    for score, freq in score_dict.items():
-        total_score += score * freq
-        total_freq += freq
-        freq_table.append((score, freq))
+            return avg, median, stdev
 
-    if total_freq == 0:
-        return -1, -1, -1
-    avg = total_score / total_freq
+        if not fast_mode:
+            tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
+            print(f"{tot_avg}", file=outfile, end="\t")
+            print(f"{tot_median}", file=outfile, end="\t")
+            print(f"{tot_stdev}", file=outfile, end="\t")
 
-    freq_table.sort(key=lambda entry: entry[0])
+            mapped_avg, mapped_median, mapped_stdev = stats_from_dict(mapped_quals)
+            print(f"{mapped_avg}", file=outfile, end="\t")
+            print(f"{mapped_median}", file=outfile, end="\t")
+            print(f"{mapped_stdev}", file=outfile, end="\t")
 
-    median_pos = (total_freq + 1) / 2
-    cumul_freq = 0
-    median_found = False
-    sum_freq_times_score_sqrd = 0
-    for score, freq in freq_table:
-        cumul_freq += freq
-        if cumul_freq >= median_pos:
-            if not median_found:
-                median = score
-            median_found = True
-        sum_freq_times_score_sqrd += freq * (score**2)
+            unmapped_avg, unmapped_median, unmapped_stdev = stats_from_dict(unmapped_quals)
+            print(f"{unmapped_avg}", file=outfile, end="\t")
+            print(f"{unmapped_median}", file=outfile, end="\t")
+            print(f"{unmapped_stdev}", file=outfile, end="\t")
 
-    stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2)) ** 0.5
+        first_tot_avg, first_tot_median, first_tot_stdev = stats_from_dict(first_tot_quals)
+        print(f"{first_tot_avg}", file=outfile, end="\t")
+        print(f"{first_tot_median}", file=outfile, end="\t")
+        print(f"{first_tot_stdev}", file=outfile, end="\t")
 
-    return avg, median, stdev
+        first_mapped_avg, first_mapped_median, first_mapped_stdev = stats_from_dict(
+            first_mapped_quals
+        )
+        print(f"{first_mapped_avg}", file=outfile, end="\t")
+        print(f"{first_mapped_median}", file=outfile, end="\t")
+        print(f"{first_mapped_stdev}", file=outfile, end="\t")
 
+        first_unmapped_avg, first_unmapped_median, first_unmapped_stdev = stats_from_dict(
+            first_unmapped_quals
+        )
+        print(f"{first_unmapped_avg}", file=outfile, end="\t")
+        print(f"{first_unmapped_median}", file=outfile, end="\t")
+        print(f"{first_unmapped_stdev}", file=outfile, end="\t")
 
-if not fast_mode:
-    tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
-    print(f"{tot_avg}", file=outfile, end="\t")
-    print(f"{tot_median}", file=outfile, end="\t")
-    print(f"{tot_stdev}", file=outfile, end="\t")
+        middle_tot_avg, middle_tot_median, middle_tot_stdev = stats_from_dict(middle_tot_quals)
+        print(f"{middle_tot_avg}", file=outfile, end="\t")
+        print(f"{middle_tot_median}", file=outfile, end="\t")
+        print(f"{middle_tot_stdev}", file=outfile, end="\t")
 
-    mapped_avg, mapped_median, mapped_stdev = stats_from_dict(mapped_quals)
-    print(f"{mapped_avg}", file=outfile, end="\t")
-    print(f"{mapped_median}", file=outfile, end="\t")
-    print(f"{mapped_stdev}", file=outfile, end="\t")
+        middle_mapped_avg, middle_mapped_median, middle_mapped_stdev = stats_from_dict(
+            middle_mapped_quals
+        )
+        print(f"{middle_mapped_avg}", file=outfile, end="\t")
+        print(f"{middle_mapped_median}", file=outfile, end="\t")
+        print(f"{middle_mapped_stdev}", file=outfile, end="\t")
 
-    unmapped_avg, unmapped_median, unmapped_stdev = stats_from_dict(unmapped_quals)
-    print(f"{unmapped_avg}", file=outfile, end="\t")
-    print(f"{unmapped_median}", file=outfile, end="\t")
-    print(f"{unmapped_stdev}", file=outfile, end="\t")
+        middle_unmapped_avg, middle_unmapped_median, middle_unmapped_stdev = stats_from_dict(
+            middle_unmapped_quals
+        )
+        print(f"{middle_unmapped_avg}", file=outfile, end="\t")
+        print(f"{middle_unmapped_median}", file=outfile, end="\t")
+        print(f"{middle_unmapped_stdev}", file=outfile, end="\t")
 
-first_tot_avg, first_tot_median, first_tot_stdev = stats_from_dict(first_tot_quals)
-print(f"{first_tot_avg}", file=outfile, end="\t")
-print(f"{first_tot_median}", file=outfile, end="\t")
-print(f"{first_tot_stdev}", file=outfile, end="\t")
+        last_tot_avg, last_tot_median, last_tot_stdev = stats_from_dict(last_tot_quals)
+        print(f"{last_tot_avg}", file=outfile, end="\t")
+        print(f"{last_tot_median}", file=outfile, end="\t")
+        print(f"{last_tot_stdev}", file=outfile, end="\t")
 
-first_mapped_avg, first_mapped_median, first_mapped_stdev = stats_from_dict(
-    first_mapped_quals
-)
-print(f"{first_mapped_avg}", file=outfile, end="\t")
-print(f"{first_mapped_median}", file=outfile, end="\t")
-print(f"{first_mapped_stdev}", file=outfile, end="\t")
+        last_mapped_avg, last_mapped_median, last_mapped_stdev = stats_from_dict(
+            last_mapped_quals
+        )
+        print(f"{last_mapped_avg}", file=outfile, end="\t")
+        print(f"{last_mapped_median}", file=outfile, end="\t")
+        print(f"{last_mapped_stdev}", file=outfile, end="\t")
 
-first_unmapped_avg, first_unmapped_median, first_unmapped_stdev = stats_from_dict(
-    first_unmapped_quals
-)
-print(f"{first_unmapped_avg}", file=outfile, end="\t")
-print(f"{first_unmapped_median}", file=outfile, end="\t")
-print(f"{first_unmapped_stdev}", file=outfile, end="\t")
+        last_unmapped_avg, last_unmapped_median, last_unmapped_stdev = stats_from_dict(
+            last_unmapped_quals
+        )
+        print(f"{last_unmapped_avg}", file=outfile, end="\t")
+        print(f"{last_unmapped_median}", file=outfile, end="\t")
+        print(f"{last_unmapped_stdev}", file=outfile)  # end="\n"
 
-middle_tot_avg, middle_tot_median, middle_tot_stdev = stats_from_dict(middle_tot_quals)
-print(f"{middle_tot_avg}", file=outfile, end="\t")
-print(f"{middle_tot_median}", file=outfile, end="\t")
-print(f"{middle_tot_stdev}", file=outfile, end="\t")
+        outfile.close()
 
-middle_mapped_avg, middle_mapped_median, middle_mapped_stdev = stats_from_dict(
-    middle_mapped_quals
-)
-print(f"{middle_mapped_avg}", file=outfile, end="\t")
-print(f"{middle_mapped_median}", file=outfile, end="\t")
-print(f"{middle_mapped_stdev}", file=outfile, end="\t")
-
-middle_unmapped_avg, middle_unmapped_median, middle_unmapped_stdev = stats_from_dict(
-    middle_unmapped_quals
-)
-print(f"{middle_unmapped_avg}", file=outfile, end="\t")
-print(f"{middle_unmapped_median}", file=outfile, end="\t")
-print(f"{middle_unmapped_stdev}", file=outfile, end="\t")
-
-last_tot_avg, last_tot_median, last_tot_stdev = stats_from_dict(last_tot_quals)
-print(f"{last_tot_avg}", file=outfile, end="\t")
-print(f"{last_tot_median}", file=outfile, end="\t")
-print(f"{last_tot_stdev}", file=outfile, end="\t")
-
-last_mapped_avg, last_mapped_median, last_mapped_stdev = stats_from_dict(
-    last_mapped_quals
-)
-print(f"{last_mapped_avg}", file=outfile, end="\t")
-print(f"{last_mapped_median}", file=outfile, end="\t")
-print(f"{last_mapped_stdev}", file=outfile, end="\t")
-
-last_unmapped_avg, last_unmapped_median, last_unmapped_stdev = stats_from_dict(
-    last_unmapped_quals
-)
-print(f"{last_unmapped_avg}", file=outfile, end="\t")
-print(f"{last_unmapped_median}", file=outfile, end="\t")
-print(f"{last_unmapped_stdev}", file=outfile)  # end="\n"
-
-outfile.close()
-
-END
+        END
     >>>
 
     output {
@@ -676,26 +682,34 @@ END
 
     runtime {
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
 
 task qc_summary {
-    # TODO not sure why I implemented as a JSON. Wouldn't TSV be easier to work with? Talk to Delaram/David
-    #   Delaram+David okayed a switch to TSV
     meta {
         description: "**[OUT OF DATE]** This WDL task pulls out keys metrics that can provide a high level overview of the sample, without needing to examine the entire MultiQC report. Currently, these key metrics come from Qualimap and ngsderive."
+        outputs: {
+            summary: "QC summary file in JSON format"
+        }
+    }
+
+    parameter_meta {
+        multiqc_tar_gz: "MultiQC report tarball from which to extract key metrics"
+        outfile_name: "Name for the JSON file"
     }
 
     input {
         File multiqc_tar_gz
-        String outfile_name = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
+        String outfile_name
+            = basename(multiqc_tar_gz, ".multiqc.tar.gz") + ".qc_summary.json"
     }
 
     String sample_name = basename(multiqc_tar_gz, ".multiqc.tar.gz")
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -746,8 +760,69 @@ task qc_summary {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
+        maxRetries: 1
+    }
+}
+
+task split_fastq {
+    meta {
+        description: "Splits a FASTQ into multiple files based on the number of reads per file"
+        outputs: {
+            fastqs: "Array of FASTQ files, each containing a subset of the input FASTQ"
+        }
+    }
+
+    parameter_meta {
+        fastq: {
+            description: "Gzipped FASTQ file to split",
+            stream: true
+        }
+        reads_per_file: "Number of reads to include in each output FASTQ file"
+        prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
+    }
+
+    input {
+        File fastq
+        String prefix = sub(
+            basename(fastq),
+            "(fastq|fq)\\.gz$",
+            ""
+        )
+        Int reads_per_file = 10000000
+        Int modify_disk_size_gb = 0
+        Int ncpu = 2
+    }
+
+    Float fastq_size = size(fastq, "GiB")
+    Int disk_size_gb = ceil(fastq_size * 5) + 10 + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        let "lines = ~{reads_per_file} * 4"
+        zcat ~{fastq} | split -l $lines -d -a 6 - ~{prefix}
+
+        for file in "~{prefix}"*; do
+            mv "$file" "${file}.fastq"
+            echo "gzip ${file}.fastq" >> cmds
+        done
+
+        parallel --jobs ~{ncpu} < cmds
+    >>>
+
+    output {
+        Array[File] fastqs = glob("~{prefix}*")
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }

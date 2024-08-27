@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 import "../../tools/bwa.wdl"
@@ -30,13 +28,13 @@ workflow bwa_db_build {
     }
 
     call util.download as reference_download { input:
-        url=reference_fa_url,
-        outfile_name=reference_fa_name,
-        disk_size_gb=reference_fa_disk_size_gb,
-        md5sum=reference_fa_md5,
+        url = reference_fa_url,
+        outfile_name = reference_fa_name,
+        disk_size_gb = reference_fa_disk_size_gb,
+        md5sum = reference_fa_md5,
     }
     call bwa.build_bwa_db { input:
-        reference_fasta=reference_download.downloaded_file,
+        reference_fasta = reference_download.downloaded_file,
     }
 
     output {
