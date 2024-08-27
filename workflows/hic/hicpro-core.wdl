@@ -4,14 +4,15 @@ import "../../data_structures/flag_filter.wdl"
 import "../../data_structures/read_group.wdl"
 import "../../tools/bowtie2.wdl"
 import "../../tools/hicpro.wdl"
+import "../../tools/hilow.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 
-workflow hic_standard {
+workflow hicpro_core {
     meta {
-        description: "Standard Hi-C processing workflow."
+        description: "HiC-Pro implementation."
         outputs: {
-            hic_file: "Hi-C file in HIC format",
+            hic_file: "HiC-Pro output file",
             filtered_pairs: "Filtered pairs file",
             all_valid_pairs: "All valid pairs file",
             qc_report: "QC report",
@@ -21,6 +22,7 @@ workflow hic_standard {
             filtering_size_plot: "Filtering size plot",
             contacts_stats_plot: "Contacts stats plot",
             ice_normalized_matrices: "ICE normalized matrices",
+            combined_bams: "Combined BAM files",
         }
     }
 
@@ -143,6 +145,7 @@ workflow hic_standard {
         }
     }
 
+    # scatter (pair in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
     scatter (pair in zip(flatten(r1_split.fastqs), flatten(r2_split.fastqs))) {
         String fq_prefix = sub(basename(pair.left), ".fastq.gz|.fq.gz|.fastq|.fq", "")
         ReadGroup rg_e2e = ReadGroup{
@@ -191,8 +194,7 @@ workflow hic_standard {
             metrics_file = true,
         }
 
-        # ligation site is optional.
-        # If not specified, skip local and just use the global alignment.
+        # ligation site is optional. If not specified, skip local and just use the global alignment.
         if (defined(ligation_site)) {
             FlagFilter unmapped_reads = FlagFilter {
                 include_if_all: "0x0",
@@ -345,10 +347,7 @@ workflow hic_standard {
             read2_stats.mapping_stats,
         ]),
         pairing_stats = bowtie_pairing.combined_stats,
-        fragment_stats = flatten([
-            mapped_2hic_fragments.rs_stats,
-            mapped_2hic_fragments.valid_pairs,
-        ]),
+        fragment_stats = flatten([mapped_2hic_fragments.rs_stats, mapped_2hic_fragments.valid_pairs]),
         contacts_stats = [merge_valid_interactions.all_valid_pairs_stats],
         sample_name = prefix,
         remove_singleton,
@@ -361,20 +360,20 @@ workflow hic_standard {
         prefix,
     }
 
-    call hicpro.converthic { input:
+    call hilow.converthic { input:
         all_valid_pairs = merge_valid_interactions.all_valid_pairs,
         chromsizes,
     }
 
     if (defined(exclude_list)) {
-        call hicpro.filter { input:
+        call hilow.filter { input:
             all_valid_pairs = merge_valid_interactions.all_valid_pairs,
             chromsizes,
             exclude_list = select_first([exclude_list, ""]),
         }
     }
 
-    call hicpro.qcreport { input:
+    call hilow.qcreport { input:
         prefix,
         all_valid_pairs_stats = merge_valid_interactions.all_valid_pairs_stats,
         mapping_stats_R1 = merge_stats.read1_mapping_stats_merged,

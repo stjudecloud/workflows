@@ -4,7 +4,8 @@ task bam2pairs {
     meta {
         description: "Convert BAM file to pairs file with Pairix"
         outputs: {
-            pairs: "Mapped read pairs from BAM file"
+            pairs: "Mapped read pairs from BAM file",
+            pairs_index: "Index file for the pairs file"
         }
     }
 
@@ -39,7 +40,7 @@ task bam2pairs {
     runtime {
         cpu: 1
         memory: "4 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/pairix:branch-hic_workflow-0.3.8-0"
         maxRetries: 1
     }
