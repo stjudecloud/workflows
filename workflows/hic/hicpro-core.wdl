@@ -149,13 +149,21 @@ workflow hicpro_core {
             rg = rg_e2e,
             write_unpaired_unaligned = true,
             seed_substring = 30,  # -L
-            score_min = "L,-0.6,-0.2",
+            score_min = {
+                "function_type": "L",
+                "constant": -0.6,
+                "coefficient": -0.2,
+            },
             end_to_end = true,
             reorder = true,
             max_failed_extends = 20,  # -D
             repetitive_seeds = 3,  # -R
             seed_mismatch = 0,  # -N
-            interval_seed_substrings = "S,1,0.50",  # -i
+            interval_seed_substrings = {
+                "function_type": "S",
+                "constant": 1,
+                "coefficient": 0.50,
+            }, # -i
             metrics_file = true,
         }
         # align read 2
@@ -166,13 +174,21 @@ workflow hicpro_core {
             rg = rg_e2e,
             write_unpaired_unaligned = true,
             seed_substring = 30,  # -L
-            score_min = "L,-0.6,-0.2",
+            score_min = {
+                "function_type": "L",
+                "constant": -0.6,
+                "coefficient": -0.2,
+            },
             end_to_end = true,
             reorder = true,
             max_failed_extends = 20,  # -D
             repetitive_seeds = 3,  # -R
             seed_mismatch = 0,  # -N
-            interval_seed_substrings = "S,1,0.50",  # -i
+            interval_seed_substrings = {
+                "function_type": "S",
+                "constant": 1,
+                "coefficient": 0.50,
+            }, # -i
             metrics_file = true,
         }
 
@@ -217,13 +233,21 @@ workflow hicpro_core {
                 prefix = fq_prefix + ".R1_local",
                 rg = rg_local,
                 seed_substring = 20,  # -L
-                score_min = "L,-0.6,-0.2",
+                score_min = {
+                    "function_type": "L",
+                    "constant": -0.6,
+                    "coefficient": -0.2,
+                },
                 end_to_end = true,
                 reorder = true,
                 max_failed_extends = 20,  # -D
                 repetitive_seeds = 3,  # -R
                 seed_mismatch = 0,  # -N
-                interval_seed_substrings = "S,1,0.50",  # -i
+                interval_seed_substrings = {
+                    "function_type": "S",
+                    "constant": 1,
+                    "coefficient": 0.50,
+                }, # -i
                 metrics_file = true,
             }
             # align read 2
@@ -233,13 +257,21 @@ workflow hicpro_core {
                 prefix = fq_prefix + ".R2_local",
                 rg = rg_local,
                 seed_substring = 20,  # -L
-                score_min = "L,-0.6,-0.2",
+                score_min = {
+                    "function_type": "L",
+                    "constant": -0.6,
+                    "coefficient": -0.2,
+                },
                 end_to_end = true,
                 reorder = true,
                 max_failed_extends = 20,  # -D
                 repetitive_seeds = 3,  # -R
                 seed_mismatch = 0,  # -N
-                interval_seed_substrings = "S,1,0.50",  # -i
+                interval_seed_substrings = {
+                    "function_type": "S",
+                    "constant": 1,
+                    "coefficient": 0.50,
+                }, # -i
                 metrics_file = true,
             }
 

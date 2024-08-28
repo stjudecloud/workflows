@@ -1,5 +1,6 @@
 version 1.1
 
+import "../data_structures/bowtie2_function.wdl"
 import "../data_structures/read_group.wdl"
 
 task build {
@@ -134,12 +135,20 @@ task align {
         File? read_two_fastq_gz
         String? addl_rg_text
         String? sam_opt_config
-        String? score_min
-        String? interval_seed_substrings
         Int? skip
         Int? upto
         Int? match_bonus
         Int? max_aln_report
+        Bowtie2Function score_min = {
+            "function_type": "L",
+            "constant": -0.6,
+            "coefficient": -0.6,
+        }
+        Bowtie2Function interval_seed_substrings = {
+            "function_type": "S",
+            "constant": 1,
+            "coefficient": 1.15,
+        }
         Pair[Int, Int] read_gap_open_extend = (5, 3)
         Pair[Int, Int] ref_gap_open_extend = (5, 3)
         Boolean end_to_end = true  # false: --local
@@ -228,10 +237,26 @@ task align {
             ~{if no_contain then "--no-contain" else ""} \
             ~{if no_overlap then "--no-overlap" else ""} \
             ~{if time then "--time" else ""} \
-            ~{if write_unpaired_unaligned then "--un-gz ~{prefix}.unpaired_unaligned.fastq.gz" else ""} \
-            ~{if write_unpaired_aligned then "--al-gz ~{prefix}.unpaired_aligned.gz" else ""} \
-            ~{if write_paired_discordant then "--un-conc-gz ~{prefix}.paired_discordant.gz" else ""} \
-            ~{if write_paired_concordant then "--al-conc-gz ~{prefix}.paired_concordant.gz" else ""} \
+            ~{(
+                if write_unpaired_unaligned
+                then "--un-gz ~{prefix}.unpaired_unaligned.fastq.gz"
+                else ""
+            )} \
+            ~{(
+                if write_unpaired_aligned
+                then "--al-gz ~{prefix}.unpaired_aligned.gz"
+                else ""
+            )} \
+            ~{(
+                if write_paired_discordant
+                then "--un-conc-gz ~{prefix}.paired_discordant.gz"
+                else ""
+            )} \
+            ~{(
+                if write_paired_concordant
+                then "--al-conc-gz ~{prefix}.paired_concordant.gz"
+                else ""
+            )} \
             ~{if quiet then "--quiet" else ""} \
             ~{if metrics_file then "--met-file ~{prefix}.metrics.txt" else ""} \
             ~{if metrics_stderr then "--met-stderr" else ""} \
@@ -266,12 +291,24 @@ task align {
             ~{if qc_filter then "--qc-filter" else ""} \
             --seed ~{seed} \
             ~{if non_deterministic then "--non-deterministic" else ""} \
-            ~{if defined(score_min) then "--score-min ~{score_min}" else ""} \
-            ~{if defined(interval_seed_substrings) then "-i ~{interval_seed_substrings}" else ""} \
+            ~{(
+                if defined(score_min)
+                then "--score-min ~{score_min.function_type},~{score_min.constant},~{score_min.coefficient}"
+                else ""
+            )} \
+            ~{(
+                if defined(interval_seed_substrings)
+                then "-i ~{interval_seed_substrings.function_type},~{interval_seed_substrings.constant},~{interval_seed_substrings.coefficient}"
+                else ""
+            )} \
             -D ~{max_failed_extends} \
             -R ~{repetitive_seeds} \
             -x bowtie_db/"$PREFIX" \
-            ~{if defined(read_two_fastq_gz) then "-1 ~{read_one_fastq_gz}" else "-U ~{read_one_fastq_gz}"} \
+            ~{(
+                if defined(read_two_fastq_gz)
+                then "-1 ~{read_one_fastq_gz}"
+                else "-U ~{read_one_fastq_gz}"
+            )} \
             ~{if defined(read_two_fastq_gz) then "-2 ~{read_two_fastq_gz}" else ""} \
             | samtools view -bS - > ~{prefix}.bam    
     >>>
