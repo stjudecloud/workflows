@@ -28,7 +28,7 @@ task pre {
                 "sacCer3",
                 "sCerS288c",
                 "susScr3",
-                "TAIR10",
+                "TAIR10"
             ],
         }
         prefix: "Prefix for output files. The extension `.hic` will be added."

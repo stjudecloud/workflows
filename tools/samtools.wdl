@@ -981,7 +981,7 @@ task fixmate {
             description: "File format extension to use for output file.",
             choices: [
                 ".bam",
-                ".cram",
+                ".cram"
             ],
             common: true,
         }
@@ -1189,7 +1189,7 @@ task markdup {
                 "xty",
                 "ytx",
                 "xy",
-                "yx",
+                "yx"
             ],
         }
         create_bam: "Create a new BAM with duplicate reads marked? If `false`, then only a markdup report will be generated."
