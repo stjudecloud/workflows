@@ -25,7 +25,7 @@ workflow hic_core {
         read_two_fastqs_gz: "Array of gzipped FASTQ files with 2nd reads in pair. Assumes 1 file pair per read group."
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         read_groups: "An array of ReadGroup objects containing the read group information to output in the BAM file. One entry per file in `read_one_fastqs_gz`/`read_two_fastqs_gz`."
-        genomeID: {
+        genome_id: {
             description: "Genome ID"
             choices: [
                 "hg18",
@@ -61,7 +61,7 @@ workflow hic_core {
         File bwa_db
         Array[ReadGroup] read_groups
         String prefix
-        String genomeID
+        String genome_id
         Boolean validate_input = true
         Boolean use_all_cores = false
         File? restriction_sites
@@ -135,7 +135,7 @@ workflow hic_core {
     call juicer.pre {
         input:
             pairs=bam2pairs.pairs,
-            genomeID=genomeID,
+            genome_id,
             restriction_sites=restriction_sites,
     }
 

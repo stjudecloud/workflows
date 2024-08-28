@@ -45,7 +45,7 @@ workflow hic_standard_fastq {
                 SM: "Sample. Use pool name where a pool is being sequenced."
             }
         }
-        genomeID: {
+        genome_id: {
             description: "Genome ID"
             choices: [
                 "hg18",
@@ -81,7 +81,7 @@ workflow hic_standard_fastq {
         Array[File] read_two_fastqs_gz
         File bwa_db
         Array[ReadGroup] read_groups
-        String genomeID = "hg38"
+        String genome_id = "hg38"
         String prefix = basename(read_one_fastqs_gz[0], ".fastq.gz")
         Boolean validate_input = true
         Boolean use_all_cores = false
@@ -92,7 +92,7 @@ workflow hic_standard_fastq {
         read_one_fastqs_gz=read_one_fastqs_gz,
         read_two_fastqs_gz=read_two_fastqs_gz,
         read_groups=read_groups,
-        genomeID=genomeID
+        genome_id=genome_id
     }
 
     scatter (read_group in read_groups) {
@@ -108,7 +108,7 @@ workflow hic_standard_fastq {
         read_two_fastqs_gz=read_two_fastqs_gz,
         bwa_db=bwa_db,
         read_groups=read_groups,
-        genomeID=genomeID,
+        genome_id=genome_id,
         prefix=prefix,
         use_all_cores=use_all_cores,
         restriction_sites=restriction_sites,
@@ -152,7 +152,7 @@ task parse_input {
                 SM: "Sample. Use pool name where a pool is being sequenced."
             }
         }
-        genomeID: {
+        genome_id: {
             description: "Genome ID"
             choices: [
                 "hg18",
@@ -179,7 +179,7 @@ task parse_input {
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
         Array[ReadGroup] read_groups
-        String genomeID
+        String genome_id
     }
 
     command <<<
@@ -199,9 +199,9 @@ task parse_input {
             exit 1
         fi
 
-        if [ $(echo ~{genomeID} | grep -Ewc "hg18|hg19|hg38|dMel|mm9|mm10|anasPlat1|bTaurus3|canFam3|equCab2|galGal4|Pf3D7|sacCer3|sCerS288c|susScr3|TAIR10") -ne 1 ]
+        if [ $(echo ~{genome_id} | grep -Ewc "hg18|hg19|hg38|dMel|mm9|mm10|anasPlat1|bTaurus3|canFam3|equCab2|galGal4|Pf3D7|sacCer3|sCerS288c|susScr3|TAIR10") -ne 1 ]
         then
-            >&2 echo "Invalid genomeID: ~{genomeID}"
+            >&2 echo "Invalid genome_id: ~{genome_id}"
             exit 1
         fi
     >>>

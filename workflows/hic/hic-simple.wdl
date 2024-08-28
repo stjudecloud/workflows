@@ -24,7 +24,7 @@ workflow hic_standard {
     parameter_meta {
         bam: "Input BAM to realign"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-        genomeID: {
+        genome_id: {
             description: "Genome ID"
             choices: [
                 "hg18",
@@ -58,7 +58,7 @@ workflow hic_standard {
     input {
         File bam
         File bwa_db
-        String genomeID = "hg38"
+        String genome_id = "hg38"
         String prefix = basename(bam, ".bam")
         Boolean validate_input = true
         Boolean use_all_cores = false
@@ -66,7 +66,7 @@ workflow hic_standard {
     }
 
     call parse_input { input:
-        genomeID=genomeID,
+        genome_id=genome_id,
     }
 
     if (validate_input) {
@@ -90,7 +90,7 @@ workflow hic_standard {
         read_two_fastqs_gz=select_all(bam_to_fastqs.read2s),
         bwa_db=bwa_db,
         read_groups=get_read_groups.read_groups,
-        genomeID=genomeID,
+        genome_id=genome_id,
         prefix=prefix,
         use_all_cores=use_all_cores,
         restriction_sites=restriction_sites,
@@ -111,7 +111,7 @@ task parse_input {
     }
 
     parameter_meta {
-        genomeID: {
+        genome_id: {
             description: "Genome ID"
             choices: [
                 "hg18",
@@ -135,13 +135,13 @@ task parse_input {
     }
 
     input {
-        String genomeID
+        String genome_id
     }
 
     command <<<
-        if [ $(echo ~{genomeID} | grep -Ewc "hg18|hg19|hg38|dMel|mm9|mm10|anasPlat1|bTaurus3|canFam3|equCab2|galGal4|Pf3D7|sacCer3|sCerS288c|susScr3|TAIR10") -ne 1 ]
+        if [ $(echo ~{genome_id} | grep -Ewc "hg18|hg19|hg38|dMel|mm9|mm10|anasPlat1|bTaurus3|canFam3|equCab2|galGal4|Pf3D7|sacCer3|sCerS288c|susScr3|TAIR10") -ne 1 ]
         then
-            >&2 echo "Invalid genomeID: ~{genomeID}"
+            >&2 echo "Invalid genome_id: ~{genome_id}"
             exit 1
         fi
     >>>
