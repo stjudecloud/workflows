@@ -127,11 +127,13 @@ workflow hic_standard {
 
     call samtools.merge { input:
         bams = hicpro_core.combined_bams,
+        prefix = prefix + ".merged",
     }
 
     call samtools.markdup { input:
         bam = merge.merged_bam,
         mark_supp_or_sec_or_unmapped_as_duplicates = true,
+        prefix,
     }
 
     output {
