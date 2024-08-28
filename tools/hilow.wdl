@@ -1,12 +1,23 @@
 version 1.1
 
-task activeRegionsMerge {
-    meta {}
-    parameter_meta {}
+task active_regions_merge {
+    meta {
+        description: "Merge active regions"
+        outputs: {
+            combined_promoters: "Merged active regions"
+        }
+    }
+    
+    parameter_meta {
+        promoters: "Promoter regions in BED format"
+        loop_bed: "Loop anchors in BED format"
+        bam: "BAM file"
+        prefix: "Prefix for the output file"
+    }
 
     input {
         File promoters
-        File loopBed
+        File loop_bed
         File bam
         String prefix
     }
@@ -43,12 +54,12 @@ task activeRegionsMerge {
             > $prom"_Signal.keep."$keepN".3cols.bed"
 
         #get non-promoter region
-        cut -f 1-3 ~{loopBed} 
+        cut -f 1-3 ~{loop_bed} 
             | sort -k1,1 -k2,2n \
-            > ~{basename(loopBed)}
+            > ~{basename(loop_bed)}
         bedtools \
             subtract \
-            -a ~{basename(loopBed)} \
+            -a ~{basename(loop_bed)} \
             -b $prom".unique.bed" \
             | sort \
             > Enhancers.Subtract.4kbPromoters.sort.bed
@@ -76,7 +87,7 @@ task extract_promoters {
     meta {
         description: "Extract promoters from a GTF file"
         outputs: {
-            promoters: "Promoter regions in BED format"
+            promoter: "Promoter regions in BED format"
         }
     }
 
@@ -101,7 +112,8 @@ task extract_promoters {
 
         # Find all transcripts, excluding the mitochondrial chromosome
         # Add a 2000bp buffer to the transcription start site to include promoter
-        # Extract gene_id and transcript_id ($10 and $12). Subtract the suffix from the trasncript ID.
+        # Extract gene_id and transcript_id ($10 and $12).
+        # Subtract the suffix from the trasncript ID.
         # Convert to BED format
         awk -F\\t '{ if($3 == "transcript" && $1 !~ "chrM")
             if($7 =="+")
@@ -155,7 +167,8 @@ task extract_genes {
         sed -i 's/ /\t/g' ~{base}
 
         # Find all transcripts, excluding the mitochondrial chromosome
-        # Extract gene_id and transcript_id ($10 and $12). Subtract the suffix from the trasncript ID.
+        # Extract gene_id and transcript_id ($10 and $12).
+        # Subtract the suffix from the trasncript ID.
         # Convert to BED format
         awk -F\\t '{ if($3 == "transcript" && $1 !~ "chrM") 
             print $1 "++" $4 "++" $5 "++" substr($12,2,length($12)-5) "|" substr($10,2,length($10)-3)}' \
@@ -179,7 +192,6 @@ task extract_genes {
     }
 }
 
-
 task qcreport {
     meta {
         description: "Write QC report for Hi-C experiment"
@@ -190,8 +202,8 @@ task qcreport {
 
     parameter_meta {
         all_valid_pairs_stats: "HiC-Pro allValidPairs mergestat statistics file"
-        mapping_stats_R1: "HiC-Pro mapping statistics for read 1"
-        mapping_stats_R2: "HiC-Pro mapping statistics for read 2"
+        mapping_stats_read1: "HiC-Pro mapping statistics for read 1"
+        mapping_stats_read2: "HiC-Pro mapping statistics for read 2"
         pairing_stats: "HiC-Pro pairing statistics"
         peaks_bed: "Peaks in BED format"
         fithichip_bed: "FithiChIP interactions in BED format"
@@ -201,8 +213,8 @@ task qcreport {
 
     input {
         File all_valid_pairs_stats
-        File mapping_stats_R1
-        File mapping_stats_R2
+        File mapping_stats_read1
+        File mapping_stats_read2
         File pairing_stats
         File? peaks_bed
         File? fithichip_bed
@@ -213,7 +225,7 @@ task qcreport {
     command <<<
         python <<CODE
         import os
-        FILES = ["~{all_valid_pairs_stats}", "~{pairing_stats}", "~{mapping_stats_R1}", "~{mapping_stats_R2}"]
+        FILES = ["~{all_valid_pairs_stats}", "~{pairing_stats}", "~{mapping_stats_read1}", "~{mapping_stats_read2}"]
         VARIABLE = ["valid_interaction", "cis_shortRange", "cis_longRange", "Total_pairs_processed", "Reported_pairs", "total_R2", "mapped_R2", "total_R1", "mapped_R1"]
         RESULTS = {}
         for eachfile in FILES:
@@ -299,14 +311,13 @@ task qcreport {
     }
 }
 
-
 task filter {
     meta {
         description: "Filter Hi-C results using an exclude list"
         outputs: {
             filtered_pairs: "Filtered pairs file",
-            filtered_stats: "Filtered statistics file",
             removed_pairs: "Removed pairs file",
+            filtered_stats: "Filtered statistics file",
         }
     }
 
@@ -379,7 +390,9 @@ task filter {
         all=`wc -l ~{all_valid_pairs} |cut -d " " -f 1`
         filtered=`wc -l ~{prefix}.allValidPairs.removed | cut -d " " -f 1`
         percentage=`echo "$filtered/$all*100"|bc -l`
-        echo -e "$filtered read pairs are filtered out from a total of $all, accounting for ${percentage} %\n" | tee > ~{prefix}.allValidPairs.stats
+        echo -e "$filtered read pairs are filtered out from a total of $all, accounting for ${percentage} %\n" \
+            | tee \
+            > ~{prefix}.allValidPairs.stats
 
     >>>
 
@@ -393,7 +406,7 @@ task filter {
         cpu: 1
         memory: "4 GB"
         maxRetries: 1
-        container: "adthrasher/bedtools:2.31.1"
+        container: "ghcr.io/stjudecloud/bedtools:branch-hic_workflow-2.31.1"
     }
 }
 
@@ -420,7 +433,10 @@ task converthic {
     command <<<
         set -euo pipefail
 
-        /HiC-Pro_3.0.0/bin/utils/hicpro2juicebox.sh -i ~{all_valid_pairs} -g ~{chromsizes} -j /opt/juicer-1.6.2/CPU/common/juicer_tools.1.7.6_jcuda.0.8.jar
+        /HiC-Pro_3.0.0/bin/utils/hicpro2juicebox.sh \
+            -i ~{all_valid_pairs} \
+            -g ~{chromsizes} \
+            -j /opt/juicer-1.6.2/CPU/common/juicer_tools.1.7.6_jcuda.0.8.jar
     >>>
 
     output {

@@ -3,14 +3,14 @@ version 1.1
 task pre {
     meta {
         description: "Run Juicer pre to generate the .hic file"
-        output: {
+        outputs: {
             hic: "Reads in .hic format"
         }
     }
 
     parameter_meta {
         pairs: "Read pairs file"
-        genomeID: {
+        genome_id: {
             description: "Genome ID",
             choices: [
                 "hg18",
@@ -28,7 +28,7 @@ task pre {
                 "sacCer3",
                 "sCerS288c",
                 "susScr3",
-                "TAIR10"
+                "TAIR10",
             ],
         }
         prefix: "Prefix for output files. The extension `.hic` will be added."
@@ -55,21 +55,21 @@ task pre {
 
     input {
         File pairs
-        String genomeID = "hg38"
-        String prefix = basename(pairs, ".bsorted.pairs.gz")
-        Boolean diagonal = false
-        Int min_count = 0
-        Int modify_disk_size_gb = 0
         File? restriction_sites
         File? stats_file
         File? graphs_file
         Array[Int]? resolutions
-        Int? maq_filter
         String? chromosome_filter
+        Int? maq_filter
+        String genome_id = "hg38"
+        String prefix = basename(pairs, ".bsorted.pairs.gz")
+        Boolean diagonal = false
         Boolean disable_normalize = false
+        Int min_count = 0
+        Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(pairs, "GiB") * 2 ) + modify_disk_size_gb 
+    Int disk_size_gb = ceil(size(pairs, "GiB") * 2 ) + modify_disk_size_gb
 
     command <<<
         juicer_tools \
@@ -79,13 +79,17 @@ task pre {
             -m ~{min_count} \
             ~{if defined(maq_filter) then "-q " + maq_filter else ""} \
             ~{if defined(chromosome_filter) then "-c " + chromosome_filter else ""} \
-            ~{if defined(resolutions) then "-r " + sep(',', select_first([resolutions, []])) else ""} \
+            ~{(
+                if defined(resolutions)
+                then "-r " + sep(",", select_first([resolutions, []]))
+                else ""
+            )} \
             ~{if defined(stats_file) then "-s " + stats_file else ""} \
             ~{if defined(graphs_file) then "-g " + graphs_file else ""} \
             ~{if disable_normalize then "-n" else ""} \
             ~{pairs} \
             ~{prefix}.hic \
-            ~{genomeID}
+            ~{genome_id}
     >>>
 
     output {
@@ -95,7 +99,7 @@ task pre {
     runtime {
         cpu: 1
         memory: "14 GB"
-        disk: "~{disk_size_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/juicer:branch-hic_workflow-1.0.13-0"
         maxRetries: 1
     }

@@ -5,7 +5,7 @@ task bam2pairs {
         description: "Convert BAM file to pairs file with Pairix"
         outputs: {
             pairs: "Mapped read pairs from BAM file",
-            pairs_index: "Index file for the pairs file"
+            pairs_index: "Index file for the pairs file",
         }
     }
 
