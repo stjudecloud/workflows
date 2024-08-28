@@ -104,23 +104,6 @@ workflow hic_standard {
         remove_duplicates = true,
     }
 
-    call hilow.qc_hic { input:
-        plot_type = "all",
-        mapping_stats = flatten([
-            hicpro_core.read_one_mapping_stats,
-            hicpro_core.read_two_mapping_stats,
-        ]),
-        pairing_stats = hicpro_core.pairing_stats,
-        fragment_stats = flatten([
-            hicpro_core.rs_stats,
-            hicpro_core.fragment_stats,
-        ]),
-        contacts_stats = [hicpro_core.contact_stats],
-        sample_name = prefix,
-        remove_singleton = true,
-        remove_multimapper = true,
-    }
-
     call hilow.converthic { input:
         all_valid_pairs = hicpro_core.all_valid_pairs,
         chromsizes,
@@ -156,11 +139,11 @@ workflow hic_standard {
         File? filtered_pairs = filter.filtered_pairs
         File all_valid_pairs = hicpro_core.all_valid_pairs
         File qc_report = qcreport.qc_report
-        File? mapping_stats_plot = qc_hic.mapping_stats_plot
-        File? pairing_stats_plot = qc_hic.pairing_stats_plot
-        File? filtering_stats_plot = qc_hic.filtering_stats_plot
-        File? filtering_size_plot = qc_hic.filtering_size_plot
-        File? contacts_stats_plot = qc_hic.contacts_stats_plot
+        File? mapping_stats_plot = hicpro_core.mapping_stats_plot
+        File? pairing_stats_plot = hicpro_core.pairing_stats_plot
+        File? filtering_stats_plot = hicpro_core.filtering_stats_plot
+        File? filtering_size_plot = hicpro_core.filtering_size_plot
+        File? contacts_stats_plot = hicpro_core.contacts_stats_plot
         Array[File] ice_normalized_matrices = hicpro_core.ice_normalized_matrices
         File combined_bam = select_first([markdup.markdup_bam, ""])
     }

@@ -14,11 +14,11 @@ workflow hicpro_core {
             all_valid_pairs: "All valid pairs file",
             ice_normalized_matrices: "ICE normalized matrices",
             combined_bams: "Combined BAM files",
-            read_one_mapping_stats: "Per fastq read 1 mapping statistics",
-            read_two_mapping_stats: "Per fastq read 2 mapping statistics",
-            pairing_stats: "Paired-end statistics",
-            fragment_stats: "Fragment statistics",
-            rs_stats: "RS statistics",
+            mapping_stats_plot: "Mapping stats plot",
+            pairing_stats_plot: "Pairing stats plot",
+            filtering_stats_plot: "Filtering stats plot",
+            filtering_size_plot: "Filtering size plot",
+            contacts_stats_plot: "Contacts stats plot",
             contact_stats: "Contact statistics",
             merged_read_one_mapping_stats: "Merged read 1 mapping statistics",
             merged_read_two_mapping_stats: "Merged read 2 mapping statistics",
@@ -314,6 +314,23 @@ workflow hicpro_core {
         prefix,
     }
 
+    call qc_hic { input:
+        plot_type = "all",
+        mapping_stats = flatten([
+            read1_stats.mapping_stats,
+            read2_stats.mapping_stats,
+        ]),
+        pairing_stats = bowtie_pairing.combined_stats,
+        fragment_stats = flatten([
+            mapped_2hic_fragments.rs_stats,
+            mapped_2hic_fragments.valid_pairs,
+        ]),
+        contacts_stats = [merge_valid_interactions.all_valid_pairs_stats],
+        sample_name = prefix,
+        remove_singleton = true,
+        remove_multimapper = true,
+    }
+
     call build_raw_maps { input:
         hic_file = merge_valid_interactions.all_valid_pairs,
         bin_sizes,
@@ -333,11 +350,11 @@ workflow hicpro_core {
         File all_valid_pairs = merge_valid_interactions.all_valid_pairs
         Array[File] ice_normalized_matrices = ice_normalization.iced_matrices
         Array[File] combined_bams = bowtie_pairing.combined_bam
-        Array[File] read_one_mapping_stats = read1_stats.mapping_stats
-        Array[File] read_two_mapping_stats = read2_stats.mapping_stats
-        Array[File] pairing_stats = bowtie_pairing.combined_stats
-        Array[File] fragment_stats = mapped_2hic_fragments.valid_pairs
-        Array[File] rs_stats = mapped_2hic_fragments.rs_stats
+        File? mapping_stats_plot = qc_hic.mapping_stats_plot
+        File? pairing_stats_plot = qc_hic.pairing_stats_plot
+        File? filtering_stats_plot = qc_hic.filtering_stats_plot
+        File? filtering_size_plot = qc_hic.filtering_size_plot
+        File? contacts_stats_plot = qc_hic.contacts_stats_plot
         File contact_stats = merge_valid_interactions.all_valid_pairs_stats
         File merged_read_one_mapping_stats = merge_stats.read1_mapping_stats_merged
         File merged_read_two_mapping_stats = merge_stats.read2_mapping_stats_merged
@@ -922,5 +939,127 @@ task ice_normalization {
         maxRetries: 1
         cpu: 1
         memory: "4 GB"
+    }
+}
+
+task qc_hic {
+    meta {
+        description: "Plot Hi-C quality control statistics"
+        outputs: {
+            mapping_stats_plot: "Plot of mapping statistcs",
+            pairing_stats_plot: "Plot of fragment pairing",
+            filtering_stats_plot: "Plot of Hi-C fragments",
+            filtering_size_plot: "Plot of Hi-C fragment sizes",
+            contacts_stats_plot: "Plot of Hi-C contact ranges",
+        }
+    }
+
+    parameter_meta {
+        mapping_stats: "Mapping statistics files"
+        pairing_stats: "Pairing statistics files"
+        fragment_stats: "Fragment statistics files"
+        contacts_stats: "Contacts statistics files"
+        plot_type: {
+            description: "Type of plot to generate",
+            choices: [
+                "all",
+                "mapping",
+                "pairing",
+                "filtering",
+                "contacts"
+            ]
+        }
+        sample_name: "Sample name to use in plot labels"
+        remove_singleton: "Remove singleton reads"
+        remove_multimapper: "Remove multi-mapped reads"
+    }
+
+    input {
+        Array[File] mapping_stats
+        Array[File] pairing_stats
+        Array[File] fragment_stats
+        Array[File] contacts_stats
+        String plot_type = "all"
+        String sample_name = "sample"
+        Boolean remove_singleton = true
+        Boolean remove_multimapper = true
+    }
+
+    Int rm_single_arg = if remove_singleton then 1 else 0
+    Int rm_multi_arg = if remove_multimapper then 1 else 0
+
+    command <<<
+        set -euo pipefail
+
+        mkdir plots
+
+        mkdir bowtie
+        ln -sf ~{sep(" ", mapping_stats)} bowtie/
+        ln -sf ~{sep(" ", pairing_stats)} bowtie/
+
+        mkdir hic
+        ln -sf ~{sep(" ", fragment_stats)} hic/
+
+        mkdir stats
+        ln -sf ~{sep(" ", contacts_stats)} stats/
+
+        # mapping plots
+        if [[ "~{plot_type}" == "all" || "~{plot_type}" == "mapping" ]]
+        then
+            R CMD BATCH \
+                --no-save \
+                --no-restore \
+                "--args picDir='plots' bwtDir='bowtie' sampleName='~{sample_name}' r1tag='.R1' r2tag='.R2'" \
+                /HiC-Pro_3.0.0/scripts/plot_mapping_portion.R \
+                plot_mapping_portion.Rout
+        fi
+
+        # pairing plots
+        if [[ "~{plot_type}" == "all" || "~{plot_type}" == "pairing" ]]
+        then
+            R CMD BATCH \
+                --no-save \
+                --no-restore \
+                "--args picDir='plots' bwtDir='bowtie' sampleName='~{sample_name}' rmMulti='~{rm_multi_arg}' rmSingle='~{rm_single_arg}'" \
+                /HiC-Pro_3.0.0/scripts/plot_pairing_portion.R \
+                plot_pairing_portion.Rout
+        fi
+        
+        # filtering plots
+        if [[ "~{plot_type}" == "all" || "~{plot_type}" == "filtering" ]]
+        then
+            R CMD BATCH \
+                --no-save \
+                --no-restore \
+                "--args picDir='plots' hicDir='hic' sampleName='~{sample_name}' rmMulti='~{rm_multi_arg}' rmSingle='~{rm_single_arg}'" \
+                /HiC-Pro_3.0.0/scripts/plot_hic_fragment.R \
+                plot_hic_fragment.Rout
+        fi
+
+        # contacts plots
+        if [[ "~{plot_type}" == "all" || "~{plot_type}" == "contacts" ]]
+        then
+            R CMD BATCH \
+                --no-save \
+                --no-restore \
+                "--args picDir='plots' hicDir='hic' statsDir='stats' sampleName='~{sample_name}'" \
+                /HiC-Pro_3.0.0/scripts/plot_hic_contacts.R \
+                plot_hic_contacts.Rout
+        fi
+    >>>
+
+    output {
+        File? mapping_stats_plot = glob("plots/plotMapping_*.pdf")[0]
+        File? pairing_stats_plot = glob("plots/plotMappingPairing_*.pdf")[0]
+        File? filtering_stats_plot = glob("plots/plotHiCFragment_*.pdf")[0]
+        File? filtering_size_plot = glob("plots/plotHiCFragmentSize_*.pdf")[0]
+        File? contacts_stats_plot = glob("plots/plotHiCContactRanges_*.pdf")[0]
+    }
+
+    runtime {
+        container: "nservant/hicpro:3.0.0"
+        cpu: 1
+        memory: "4 GB"
+        maxRetries: 1
     }
 }
