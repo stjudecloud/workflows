@@ -8,7 +8,13 @@ workflow make_hic_reference {
     meta {
         description: "Downloads and creates all reference files needed to run the `hic` workflow"
         outputs: {
-
+            reference_fasta: "FASTA format reference file used to generate `bowtie2_db_tar_gz`"
+            reference_fasta_index: "FASTA index file for `reference_fasta`"
+            reference_chromsizes: "Chromosome sizes file for `reference_fasta`"
+            genome_fragment: "BED file(s) with restriction fragments"
+            exclude_list: "BED file with regions to exclude from analysis"
+            bowtie2_db_tar_gz: "Gzipped tar archive of the Bowtie2 reference files. Files are at the root of the archive."
+            bowtie2_index_files: "Bowtie2 index files"
         }
         allowNestedInputs: true
     }
@@ -68,6 +74,9 @@ workflow make_hic_reference {
         File reference_fasta_index = faidx.fasta_index
         File reference_chromsizes = chromsizes.chromsizes
         Array[File]? genome_fragment = fragment_file.fragment_file
+        File exclude_list = exclude_list_download.downloaded_file
+        File bowtie2_db_tar_gz = build.bowtie_db_tar_gz
+        Array[File] bowtie2_index_files = build.index_files
     }
 
 }
