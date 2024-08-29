@@ -1,0 +1,149 @@
+version 1.1
+
+import "../../tools/bowtie2.wdl"
+import "../../tools/samtools.wdl"
+import "../../tools/util.wdl"
+
+workflow make_hic_reference {
+    meta {
+        description: "Downloads and creates all reference files needed to run the `hic` workflow"
+        outputs: {
+
+        }
+        allowNestedInputs: true
+    }
+
+    parameter_meta {
+        reference_fa_url: "URL to retrieve the reference FASTA file from"
+        reference_fa_name: "Name of output reference FASTA file"
+        exclude_list_url: "URL from which to retrieve the exclude list file"
+        exclude_list_name: "Name of output exclude list file"
+        ligation_sites: "List of ligation sites for which to extract restriction fragments"
+    }
+
+    input {
+        String reference_fa_url
+        String reference_fa_name
+        String exclude_list_url
+        String exclude_list_name
+        Array[String] ligation_sites
+    }
+
+    call util.download as reference_download { input:
+        url = reference_fa_url,
+        outfile_name = reference_fa_name,
+        disk_size_gb = 10,
+    }
+
+    call util.download as exclude_list_download { input:
+        url = exclude_list_url,
+        outfile_name = exclude_list_name,
+        disk_size_gb = 1,
+    }
+
+    call bowtie2.build { input:
+        reference = reference_download.downloaded_file,
+        prefix = basename(reference_fa_name, ".fa.gz"),
+        ncpu = 10,
+    }
+
+    call samtools.faidx { input:
+        fasta = reference_download.downloaded_file
+    }
+
+    call chromsizes { input:
+        fasta_index = faidx.fasta_index
+    }
+
+    scatter (site in ligation_sites) {
+        call fragment_file { input:
+            reference_fasta = reference_download.downloaded_file,
+            ligation_site = site,
+            output_name = basename(reference_fa_name, ".gz") + "." + site + ".bed"
+        }
+    }
+
+    output {
+        File reference_fasta = reference_download.downloaded_file
+        File reference_fasta_index = faidx.fasta_index
+        File reference_chromsizes = chromsizes.chromsizes
+        Array[File]? genome_fragment = fragment_file.fragment_file
+    }
+
+}
+
+task chromsizes {
+    meta {
+        description: "Create a chromsizes file from a fasta index file"
+        outputs: {
+            chromsizes: "TSV with chromosome names and sizes"
+        }
+    }
+
+    parameter_meta {
+        fasta_index: "Fasta index file from which to create chromsizes file"
+    }
+
+    input {
+        File fasta_index
+        String output_name = basename(fasta_index, ".fai") + ".tab"
+    }
+
+    command <<<
+        cut -f 1,2 ~{fasta_index} > ~{output_name}
+    >>>
+
+    output {
+        File chromsizes = output_name
+    }
+
+    runtime {
+        cpu: 1
+        memory: "4 GB"
+        container: "ubuntu:22.04"
+        maxRetries: 1
+    }
+}
+
+task fragment_file {
+    meta {
+        description: "Create a fragment file from a reference FASTA file and a list of ligation sites"
+        outputs: {
+            fragment_file: "BED file with restriction fragments"
+        }
+    }
+
+    parameter_meta {
+        reference_fasta: "Reference FASTA file"
+        ligation_site: "Ligation sites"
+    }
+
+    input {
+        File reference_fasta
+        String ligation_site
+        String output_name
+    }
+
+    String base = basename(reference_fasta, ".gz")
+
+    command <<<
+        gunzip -c ~{reference_fasta} > ~{base} \
+           || ln -sf ~{reference_fasta} ~{base}
+
+        /HiC-Pro_3.0.0/bin/utils/digest_genome.py \
+            -r ~{ligation_site} \
+            -o ~{output_name} \
+            ~{base}
+    >>>
+
+    output {
+        File fragment_file = output_name
+    }
+
+    runtime {
+        cpu: 1
+        memory: "4 GB"
+        container: "nservant/hicpro:3.0.0"
+        maxRetries: 1
+    }
+}
