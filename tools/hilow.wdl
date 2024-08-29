@@ -7,7 +7,7 @@ task active_regions_merge {
             combined_promoters: "Merged active regions"
         }
     }
-    
+
     parameter_meta {
         promoters: "Promoter regions in BED format"
         loop_bed: "Loop anchors in BED format"
@@ -79,7 +79,7 @@ task active_regions_merge {
         cpu: 8
         memory: "20 GB"
         maxRetries: 1
-        container: "adthrasher/bedtools:2.31.1"
+        container: "ghcr.io/stjudecloud/bedtools:2.31.1"
     }
 }
 
