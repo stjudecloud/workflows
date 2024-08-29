@@ -120,8 +120,8 @@ workflow hic_standard {
     call hilow.qcreport { input:
         prefix,
         all_valid_pairs_stats = hicpro_core.contact_stats,
-        mapping_stats_R1 = hicpro_core.merged_read_one_mapping_stats,
-        mapping_stats_R2 = hicpro_core.merged_read_two_mapping_stats,
+        mapping_stats_read1 = hicpro_core.merged_read_one_mapping_stats,
+        mapping_stats_read2 = hicpro_core.merged_read_two_mapping_stats,
         pairing_stats = hicpro_core.merged_pairing_stats,
     }
 
@@ -130,10 +130,19 @@ workflow hic_standard {
         prefix = prefix + ".merged",
     }
 
-    call samtools.markdup { input:
+    call samtools.sort { input:
         bam = merge.merged_bam,
+    }
+
+    call samtools.markdup { input:
+        bam = sort.sorted_bam,
+        create_bam = true,
         mark_supp_or_sec_or_unmapped_as_duplicates = true,
         prefix,
+    }
+
+    call samtools.index { input:
+        bam = select_first([markdup.markdup_bam, ""]),
     }
 
     output {
@@ -148,5 +157,6 @@ workflow hic_standard {
         File? contacts_stats_plot = hicpro_core.contacts_stats_plot
         Array[File] ice_normalized_matrices = hicpro_core.ice_normalized_matrices
         File combined_bam = select_first([markdup.markdup_bam, ""])
+        File combined_bam_index = index.bam_index
     }
 }
