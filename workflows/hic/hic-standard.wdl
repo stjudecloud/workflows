@@ -86,7 +86,6 @@ workflow hic_standard {
         }
     }
 
-    # scatter (pair in zip(flatten(r1_split.fastqs), flatten(r2_split.fastqs))) {
     call hicpro_core.hicpro_core { input:
         read_one_fastqs_gz = flatten(r1_split.fastqs),
         read_two_fastqs_gz = flatten(r2_split.fastqs),
