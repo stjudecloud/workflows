@@ -130,16 +130,16 @@ workflow hic_standard {
         prefix = prefix + ".merged",
     }
 
-    call samtools.sort { input:
+    call samtools.fixmate { input:
         bam = merge.merged_bam,
     }
 
-    call samtools.fixmate { input:
-        bam = sort.sorted_bam,
+    call samtools.sort { input:
+        bam = fixmate.fixmate_bam,
     }
 
     call samtools.markdup { input:
-        bam = fixmate.fixmate_bam,
+        bam = sort.sorted_bam,
         create_bam = true,
         mark_supp_or_sec_or_unmapped_as_duplicates = true,
         prefix,
