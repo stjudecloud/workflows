@@ -24,7 +24,8 @@ workflow make_hic_reference {
         reference_fa_name: "Name of output reference FASTA file"
         exclude_list_url: "URL from which to retrieve the exclude list file"
         exclude_list_name: "Name of output exclude list file"
-        ligation_sites: "List of ligation sites for which to extract restriction fragments"
+        restriction_sites: "List of restriction sites for which to extract restriction fragments"
+        restriction_sites_names: "Names for the restriction sites to use in output files"
     }
 
     input {
@@ -32,7 +33,8 @@ workflow make_hic_reference {
         String reference_fa_name
         String exclude_list_url
         String exclude_list_name
-        Array[String] ligation_sites
+        Array[String] restriction_sites
+        Array[String] restriction_sites_names
     }
 
     call util.download as reference_download { input:
@@ -61,11 +63,11 @@ workflow make_hic_reference {
         fasta_index = faidx.fasta_index
     }
 
-    scatter (site in ligation_sites) {
+    scatter (site in zip(restriction_sites, restriction_sites_names)) {
         call fragment_file { input:
             reference_fasta = reference_download.downloaded_file,
-            ligation_site = site,
-            output_name = basename(reference_fa_name, ".gz") + "." + site + ".bed"
+            restriction_site = site.left,
+            output_name = basename(reference_fa_name, ".gz") + "." + site.right + ".bed"
         }
     }
 
@@ -116,7 +118,7 @@ task chromsizes {
 
 task fragment_file {
     meta {
-        description: "Create a fragment file from a reference FASTA file and a list of ligation sites"
+        description: "Create a fragment file from a reference FASTA file and a list of restriction site"
         outputs: {
             fragment_file: "BED file with restriction fragments"
         }
@@ -124,12 +126,12 @@ task fragment_file {
 
     parameter_meta {
         reference_fasta: "Reference FASTA file"
-        ligation_site: "Ligation sites"
+        restriction_site: "Restriction site"
     }
 
     input {
         File reference_fasta
-        String ligation_site
+        String restriction_site
         String output_name
     }
 
@@ -140,7 +142,7 @@ task fragment_file {
            || ln -sf ~{reference_fasta} ~{base}
 
         /HiC-Pro_3.0.0/bin/utils/digest_genome.py \
-            -r ~{ligation_site} \
+            -r ~{restriction_site} \
             -o ~{output_name} \
             ~{base}
     >>>
