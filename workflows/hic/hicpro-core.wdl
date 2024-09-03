@@ -28,6 +28,7 @@ workflow hicpro_core {
 
     parameter_meta {
         read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
+        read_groups: "An array of ReadGroup structs containing read group information for each input FASTQ to output in the BAM file"
         bowtie_db_tar_gz: "A gzipped TAR file containing the bowtie2 reference files."
         prefix: "Prefix for the BAM"
         read_two_fastqs_gz: {
@@ -99,6 +100,7 @@ workflow hicpro_core {
         File bowtie_db_tar_gz
         File chromsizes
         Array[File] read_one_fastqs_gz
+        Array[ReadGroup] read_groups
         String prefix
         File? fragment_file
         File? capture_bed
@@ -128,111 +130,28 @@ workflow hicpro_core {
         Int bin_step = 1
     }
 
-    scatter (pair in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-        String fq_prefix = sub(basename(pair.left), ".fastq.gz|.fq.gz|.fastq|.fq", "")
-        ReadGroup rg_e2e = ReadGroup{
-            ID: "BMG",
-            SM: prefix,
+    scatter (tuple in zip(zip(read_one_fastqs_gz, read_two_fastqs_gz), read_groups)) {
+        call util.split_fastq as r1_split { input:
+            fastq = tuple.left.left,
+            reads_per_file = 30000000,
         }
-        ReadGroup rg_local = ReadGroup{
-            ID: "BML",
-            SM: prefix,
-        }
-
-        # do end-to-end bowtie alignment
-        # retain unmapped reads 
-        # align read 1, save unaligned reads (--un-gz)
-        call bowtie2.align as read1_align { input:
-            bowtie_db_tar_gz,
-            read_one_fastq_gz = pair.left,
-            prefix = fq_prefix + ".R1_global",
-            rg = rg_e2e,
-            write_unpaired_unaligned = true,
-            seed_substring = 30,  # -L
-            score_min = {
-                "function_type": "L",
-                "constant": -0.6,
-                "coefficient": -0.2,
-            },
-            end_to_end = true,
-            reorder = true,
-            max_failed_extends = 20,  # -D
-            repetitive_seeds = 3,  # -R
-            seed_mismatch = 0,  # -N
-            interval_seed_substrings = {
-                "function_type": "S",
-                "constant": 1,
-                "coefficient": 0.50,
-            }, # -i
-            metrics_file = true,
-        }
-        # align read 2
-        call bowtie2.align as read2_align { input:
-            bowtie_db_tar_gz,
-            read_one_fastq_gz = pair.right,
-            prefix = fq_prefix + ".R2_global",
-            rg = rg_e2e,
-            write_unpaired_unaligned = true,
-            seed_substring = 30,  # -L
-            score_min = {
-                "function_type": "L",
-                "constant": -0.6,
-                "coefficient": -0.2,
-            },
-            end_to_end = true,
-            reorder = true,
-            max_failed_extends = 20,  # -D
-            repetitive_seeds = 3,  # -R
-            seed_mismatch = 0,  # -N
-            interval_seed_substrings = {
-                "function_type": "S",
-                "constant": 1,
-                "coefficient": 0.50,
-            }, # -i
-            metrics_file = true,
+        call util.split_fastq as r2_split { input:
+            fastq = tuple.left.right,
+            reads_per_file = 30000000,
         }
 
-        # ligation site is optional. 
-        # If not specified, skip local and just use the global alignment.
-        if (defined(ligation_site)) {
-            FlagFilter unmapped_reads = FlagFilter {
-                include_if_all: "0x0",
-                exclude_if_any: "0x4",
-                include_if_any: "0x0",
-                exclude_if_all: "0x0",
-            }
-
-            call samtools.filter as read1_filter { input:
-                bam = read1_align.aligned_bam,
-                bitwise_filter = unmapped_reads,
-                prefix = fq_prefix + ".R1_global.mapped",
-            }
-
-            call samtools.filter as read2_filter { input:
-                bam = read2_align.aligned_bam,
-                bitwise_filter = unmapped_reads,
-                prefix = fq_prefix + ".R2_global.mapped",
-            }
-
-            String site = select_first([ligation_site, ""])
-            # Trim FASTQs
-            call cutsite_trimming as trim_read1 { input:
-                fastq = select_first([read1_align.unpaired_unaligned, ""]),
-                cutsite = site,
-            }
-            call cutsite_trimming as trim_read2 { input:
-                fastq = select_first([read2_align.unpaired_unaligned, ""]),
-                cutsite = site,
-            }
-
-            # do local bowtie2 alignment
-            # align read 1, do not save unaligned reads (no --un-gz)
-            call bowtie2.align as read1_local_align { input:
+        scatter (pair in zip(r1_split.fastqs, r2_split.fastqs)) {
+            String fq_prefix = sub(basename(pair.left), ".fastq.gz|.fq.gz|.fastq|.fq", "")
+            # do end-to-end bowtie alignment
+            # retain unmapped reads
+            # align read 1, save unaligned reads (--un-gz)
+            call bowtie2.align as read1_align { input:
                 bowtie_db_tar_gz,
-                read_one_fastq_gz = trim_read1.cutsite_trimmed_fastq,
-                prefix = fq_prefix + ".R1_local",
-                rg = rg_local,
-                seed_substring = 20,  # -L
+                read_one_fastq_gz = pair.left,
+                prefix = fq_prefix + ".R1_global",
+                rg = tuple.right,
+                write_unpaired_unaligned = true,
+                seed_substring = 30,  # -L
                 score_min = {
                     "function_type": "L",
                     "constant": -0.6,
@@ -251,12 +170,13 @@ workflow hicpro_core {
                 metrics_file = true,
             }
             # align read 2
-            call bowtie2.align as read2_local_align { input:
+            call bowtie2.align as read2_align { input:
                 bowtie_db_tar_gz,
-                read_one_fastq_gz = trim_read2.cutsite_trimmed_fastq,
-                prefix = fq_prefix + ".R2_local",
-                rg = rg_local,
-                seed_substring = 20,  # -L
+                read_one_fastq_gz = pair.right,
+                prefix = fq_prefix + ".R2_global",
+                rg = tuple.right,
+                write_unpaired_unaligned = true,
+                seed_substring = 30,  # -L
                 score_min = {
                     "function_type": "L",
                     "constant": -0.6,
@@ -275,87 +195,173 @@ workflow hicpro_core {
                 metrics_file = true,
             }
 
-            # merge the two alignments
-            call samtools.merge as read1_merge { input:
-                bams = [read1_filter.filtered_bam, read1_local_align.aligned_bam],
-                prefix = fq_prefix + ".R1_merged",
-                name_sorted = true,
+            # ligation site is optional.
+            # If not specified, skip local and just use the global alignment.
+            if (defined(ligation_site)) {
+                FlagFilter unmapped_reads = FlagFilter {
+                    include_if_all: "0x0",
+                    exclude_if_any: "0x4",
+                    include_if_any: "0x0",
+                    exclude_if_all: "0x0",
+                }
+
+                call samtools.filter as read1_filter { input:
+                    bam = read1_align.aligned_bam,
+                    bitwise_filter = unmapped_reads,
+                    prefix = fq_prefix + ".R1_global.mapped",
+                }
+
+                call samtools.filter as read2_filter { input:
+                    bam = read2_align.aligned_bam,
+                    bitwise_filter = unmapped_reads,
+                    prefix = fq_prefix + ".R2_global.mapped",
+                }
+
+                String site = select_first([ligation_site, ""])
+                # Trim FASTQs
+                call cutsite_trimming as trim_read1 { input:
+                    fastq = select_first([read1_align.unpaired_unaligned, ""]),
+                    cutsite = site,
+                }
+                call cutsite_trimming as trim_read2 { input:
+                    fastq = select_first([read2_align.unpaired_unaligned, ""]),
+                    cutsite = site,
+                }
+
+                # do local bowtie2 alignment
+                # align read 1, do not save unaligned reads (no --un-gz)
+                call bowtie2.align as read1_local_align { input:
+                    bowtie_db_tar_gz,
+                    read_one_fastq_gz = trim_read1.cutsite_trimmed_fastq,
+                    prefix = fq_prefix + ".R1_local",
+                    rg = tuple.right,
+                    seed_substring = 20,  # -L
+                    score_min = {
+                        "function_type": "L",
+                        "constant": -0.6,
+                        "coefficient": -0.2,
+                    },
+                    end_to_end = true,
+                    reorder = true,
+                    max_failed_extends = 20,  # -D
+                    repetitive_seeds = 3,  # -R
+                    seed_mismatch = 0,  # -N
+                    interval_seed_substrings = {
+                        "function_type": "S",
+                        "constant": 1,
+                        "coefficient": 0.50,
+                    }, # -i
+                    metrics_file = true,
+                }
+                # align read 2
+                call bowtie2.align as read2_local_align { input:
+                    bowtie_db_tar_gz,
+                    read_one_fastq_gz = trim_read2.cutsite_trimmed_fastq,
+                    prefix = fq_prefix + ".R2_local",
+                    rg = tuple.right,
+                    seed_substring = 20,  # -L
+                    score_min = {
+                        "function_type": "L",
+                        "constant": -0.6,
+                        "coefficient": -0.2,
+                    },
+                    end_to_end = true,
+                    reorder = true,
+                    max_failed_extends = 20,  # -D
+                    repetitive_seeds = 3,  # -R
+                    seed_mismatch = 0,  # -N
+                    interval_seed_substrings = {
+                        "function_type": "S",
+                        "constant": 1,
+                        "coefficient": 0.50,
+                    }, # -i
+                    metrics_file = true,
+                }
+
+                # merge the two alignments
+                call samtools.merge as read1_merge { input:
+                    bams = [read1_filter.filtered_bam, read1_local_align.aligned_bam],
+                    prefix = fq_prefix + ".R1_merged",
+                    name_sorted = true,
+                    attach_rg = false,
+                }
+
+                call samtools.merge as read2_merge { input:
+                    bams = [read2_filter.filtered_bam, read2_local_align.aligned_bam],
+                    prefix = fq_prefix + ".R2_merged",
+                    name_sorted = true,
+                    attach_rg = false,
+                }
             }
 
-            call samtools.merge as read2_merge { input:
-                bams = [read2_filter.filtered_bam, read2_local_align.aligned_bam],
-                prefix = fq_prefix + ".R2_merged",
-                name_sorted = true,
+            # Sort the merged files
+            call samtools.sort as read1_sort { input:
+                bam = select_first([read1_merge.merged_bam, read1_align.aligned_bam]),
+                natural_name_sort = true,
             }
-        }
+            call samtools.sort as read2_sort { input:
+                bam = select_first([read2_merge.merged_bam, read2_align.aligned_bam]),
+                natural_name_sort = true,
+            }
 
-        # Sort the merged files
-        call samtools.sort as read1_sort { input:
-            bam = select_first([read1_merge.merged_bam, read1_align.aligned_bam]),
-            natural_name_sort = true,
-        }
-        call samtools.sort as read2_sort { input:
-            bam = select_first([read2_merge.merged_bam, read2_align.aligned_bam]),
-            natural_name_sort = true,
-        }
+            # compute stats
+            # total reads, mapped reads, globally mapped reads, locally mapped reads
+            call mapping_stats as read1_stats { input:
+                combined_bam = read1_sort.sorted_bam,
+                global_bam = read1_align.aligned_bam,
+                local_bam = read1_local_align.aligned_bam,
+                prefix = fq_prefix + ".R1",
+                tag = "R1",
+            }
+            call mapping_stats as read2_stats { input:
+                combined_bam = read2_sort.sorted_bam,
+                global_bam = read2_align.aligned_bam,
+                local_bam = read2_local_align.aligned_bam,
+                prefix = fq_prefix + ".R2",
+                tag = "R2",
+            }
 
-        # compute stats
-        # total reads, mapped reads, globally mapped reads, locally mapped reads
-        call mapping_stats as read1_stats { input:
-            combined_bam = read1_sort.sorted_bam,
-            global_bam = read1_align.aligned_bam,
-            local_bam = read1_local_align.aligned_bam,
-            prefix = fq_prefix + ".R1",
-            tag = "R1",
-        }
-        call mapping_stats as read2_stats { input:
-            combined_bam = read2_sort.sorted_bam,
-            global_bam = read2_align.aligned_bam,
-            local_bam = read2_local_align.aligned_bam,
-            prefix = fq_prefix + ".R2",
-            tag = "R2",
-        }
+            call bowtie_pairing { input:
+                read1_bam = read1_sort.sorted_bam,
+                read2_bam = read2_sort.sorted_bam,
+                prefix = fq_prefix,
+                remove_singleton,
+                remove_multimapper,
+            }
 
-        call bowtie_pairing { input:
-            read1_bam = read1_sort.sorted_bam,
-            read2_bam = read2_sort.sorted_bam,
-            prefix = fq_prefix,
-            remove_singleton,
-            remove_multimapper,
-        }
-
-        call mapped_2hic_fragments { input:
-            mapped_reads = bowtie_pairing.combined_bam,
-            fragment = fragment_file,
-            addl_output = true,
-            sam = true,
+            call mapped_2hic_fragments { input:
+                mapped_reads = bowtie_pairing.combined_bam,
+                fragment = fragment_file,
+                addl_output = true,
+                sam = true,
+            }
         }
     }
 
     call merge_valid_interactions { input:
-        interactions = mapped_2hic_fragments.valid_pairs,
+        interactions = flatten(mapped_2hic_fragments.valid_pairs),
         prefix,
         remove_duplicates,
     }
 
     call merge_stats { input:
-        read1_mapping_stats = read1_stats.mapping_stats,
-        read2_mapping_stats = read2_stats.mapping_stats,
-        valid_pairs_stats = bowtie_pairing.combined_stats,
-        rs_stats = mapped_2hic_fragments.rs_stats,
+        read1_mapping_stats = flatten(read1_stats.mapping_stats),
+        read2_mapping_stats = flatten(read2_stats.mapping_stats),
+        valid_pairs_stats = flatten(bowtie_pairing.combined_stats),
+        rs_stats = flatten(mapped_2hic_fragments.rs_stats),
         prefix,
     }
 
     call qc_hic { input:
         plot_type = "all",
         mapping_stats = flatten([
-            read1_stats.mapping_stats,
-            read2_stats.mapping_stats,
+            flatten(read1_stats.mapping_stats),
+            flatten(read2_stats.mapping_stats),
         ]),
-        pairing_stats = bowtie_pairing.combined_stats,
+        pairing_stats = flatten(bowtie_pairing.combined_stats),
         fragment_stats = flatten([
-            mapped_2hic_fragments.rs_stats,
-            mapped_2hic_fragments.valid_pairs,
+            flatten(mapped_2hic_fragments.rs_stats),
+            flatten(mapped_2hic_fragments.valid_pairs),
         ]),
         contacts_stats = [merge_valid_interactions.all_valid_pairs_stats],
         sample_name = prefix,
@@ -381,7 +387,7 @@ workflow hicpro_core {
     output {
         File all_valid_pairs = merge_valid_interactions.all_valid_pairs
         Array[File] ice_normalized_matrices = ice_normalization.iced_matrices
-        Array[File] combined_bams = bowtie_pairing.combined_bam
+        Array[File] combined_bams = flatten(bowtie_pairing.combined_bam)
         File? mapping_stats_plot = qc_hic.mapping_stats_plot
         File? pairing_stats_plot = qc_hic.pairing_stats_plot
         File? filtering_stats_plot = qc_hic.filtering_stats_plot

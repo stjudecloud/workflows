@@ -28,6 +28,7 @@ workflow hic_standard {
 
     parameter_meta {
         read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
+        read_groups: "An array of ReadGroup structs containing read group information for each input FASTQ to output in the BAM file"
         bowtie_db_tar_gz: "A gzipped TAR file containing the bowtie2 reference files."
         prefix: "Prefix for the BAM"
         read_two_fastqs_gz: {
@@ -55,6 +56,7 @@ workflow hic_standard {
         File bowtie_db_tar_gz
         File chromsizes
         Array[File] read_one_fastqs_gz
+        Array[ReadGroup] read_groups
         String prefix
         File? exclude_list
         File? fragment_file
@@ -75,20 +77,10 @@ workflow hic_standard {
         ]
     }
 
-    scatter (pair in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-        call util.split_fastq as r1_split { input:
-            fastq = pair.left,
-            reads_per_file = 30000000,
-        }
-        call util.split_fastq as r2_split { input:
-            fastq = pair.right,
-            reads_per_file = 30000000,
-        }
-    }
-
     call hicpro_core.hicpro_core { input:
-        read_one_fastqs_gz = flatten(r1_split.fastqs),
-        read_two_fastqs_gz = flatten(r2_split.fastqs),
+        read_one_fastqs_gz = read_one_fastqs_gz,
+        read_two_fastqs_gz = read_two_fastqs_gz,
+        read_groups,
         bowtie_db_tar_gz,
         chromsizes,
         fragment_file,
