@@ -119,6 +119,7 @@ workflow hic_standard {
     call samtools.merge { input:
         bams = hicpro_core.combined_bams,
         prefix = prefix + ".merged",
+        attach_rg = false,
     }
 
     call samtools.fixmate { input:
