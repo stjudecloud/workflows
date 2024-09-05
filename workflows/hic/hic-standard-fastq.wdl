@@ -4,13 +4,11 @@ import "../../data_structures/flag_filter.wdl"
 import "../../data_structures/read_group.wdl"
 import "../../tools/bowtie2.wdl"
 import "../../tools/hilow.wdl"
-import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
-import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "hicpro-core.wdl" as hicpro_core
 
-workflow hic_standard {
+workflow hic_standard_fastq {
     meta {
         description: "Standard Hi-C processing workflow."
         outputs: {
@@ -30,9 +28,14 @@ workflow hic_standard {
     }
 
     parameter_meta {
-        bam: "BAM file to extract reads and harmonize"
+        read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
+        read_groups: "An array of ReadGroup structs containing read group information for each input FASTQ to output in the BAM file"
         bowtie_db_tar_gz: "A gzipped TAR file containing the bowtie2 reference files."
-        prefix: "Prefix for the output BAM"
+        prefix: "Prefix for the BAM"
+        read_two_fastqs_gz: {
+            description: "An array of gzipped FASTQ files containing read two information",
+            common: true,
+        }
         capture_bed: "BED file of target regions for capture Hi-C data"
         allele_specific_snp: {
             description: "VCF file of SNPs to use in distinguishing parental origin",
@@ -48,20 +51,20 @@ workflow hic_standard {
         chromsizes: {
             description: "Tab delimited file with chromosome sizes"
         }
-        subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
-        validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
     }
 
     input {
         File bowtie_db_tar_gz
         File chromsizes
-        File bam
+        Array[File] read_one_fastqs_gz
+        Array[ReadGroup] read_groups
         String prefix
         File? exclude_list
         File? fragment_file
         File? capture_bed
         File? allele_specific_snp
         String? ligation_site = "GATCGATC"
+        Array[File] read_two_fastqs_gz = []
         Array[Int] bin_sizes = [
             5000,
             10000,
@@ -73,36 +76,12 @@ workflow hic_standard {
             1000000,
             2500000,
         ]
-        Boolean validate_input = true
-        Int subsample_n_reads = -1
-    }
-
-    if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
-            bam = bam,
-        }
-    }
-
-    if (subsample_n_reads > 0) {
-        call samtools.subsample { input:
-            bam,
-            desired_reads = subsample_n_reads,
-        }
-    }
-    File selected_bam = select_first([subsample.sampled_bam, bam])
-
-    call bam_to_fastqs_wf.bam_to_fastqs { input:
-        bam = selected_bam,
-    }
-
-    call read_group.get_read_groups { input:
-        bam = selected_bam,
     }
 
     call hicpro_core.hicpro_core { input:
-        read_one_fastqs_gz = bam_to_fastqs.read1s,
-        read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
-        read_groups = get_read_groups.read_groups,
+        read_one_fastqs_gz = read_one_fastqs_gz,
+        read_two_fastqs_gz = read_two_fastqs_gz,
+        read_groups,
         bowtie_db_tar_gz,
         chromsizes,
         fragment_file,
