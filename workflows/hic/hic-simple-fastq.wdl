@@ -20,7 +20,7 @@ workflow hic_standard_fastq {
         }
         allowNestedInputs: true
     }
-    
+
     parameter_meta {
         read_one_fastqs_gz: "Array of gzipped FASTQ files with 1st reads in pair"
         read_two_fastqs_gz: "Array of gzipped FASTQ files with 2nd reads in pair"
@@ -42,11 +42,11 @@ workflow hic_standard_fastq {
                 PL: "Platform/technology used to produce the reads. Valid values: CAPILLARY, DNBSEQ (MGI/BGI), ELEMENT, HELICOS, ILLUMINA, IONTORRENT, LS454, ONT (Oxford Nanopore), PACBIO (Pacific Biosciences), SINGULAR, SOLID, and ULTIMA. This field should be omitted when the technology is not in this list (though the PM field may still be present in this case) or is unknown.",
                 PM: "Platform model. Free-form text providing further details of the platform/technology used.",
                 PU: "Platform unit (e.g., flowcell-barcode.lane for Illumina or slide for SOLiD). Unique identifier.",
-                SM: "Sample. Use pool name where a pool is being sequenced."
-            }
+                SM: "Sample. Use pool name where a pool is being sequenced.",
+            },
         }
         genome_id: {
-            description: "Genome ID"
+            description: "Genome ID",
             choices: [
                 "hg18",
                 "hg19",
@@ -64,55 +64,54 @@ workflow hic_standard_fastq {
                 "sCerS288c",
                 "susScr3",
                 "TAIR10"
-            ]
+            ],
         }
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
         restriction_sites: {
-            description: "Calculate fragment map. Requires restriction site file; each line should start with the chromosome name followed by the position of each restriction site on that chromosome, in numeric order, and ending with the size of the chromosome."
-            external_help: "https://github.com/aidenlab/juicer/wiki/Pre#restriction-site-file-format"
-            help: "Common restriction sites can be downloaded from: https://bcm.app.box.com/s/19807ji76uy20cd1wau9g146nypsv2u0"
+            description: "Calculate fragment map. Requires restriction site file; each line should start with the chromosome name followed by the position of each restriction site on that chromosome, in numeric order, and ending with the size of the chromosome.",
+            external_help: "https://github.com/aidenlab/juicer/wiki/Pre#restriction-site-file-format",
+            help: "Common restriction sites can be downloaded from: https://bcm.app.box.com/s/19807ji76uy20cd1wau9g146nypsv2u0",
         }
     }
 
     input {
+        File bwa_db
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
-        File bwa_db
         Array[ReadGroup] read_groups
+        File? restriction_sites
         String genome_id = "hg38"
         String prefix = basename(read_one_fastqs_gz[0], ".fastq.gz")
         Boolean validate_input = true
         Boolean use_all_cores = false
-        File? restriction_sites
     }
 
     call parse_input { input:
-        read_one_fastqs_gz=read_one_fastqs_gz,
-        read_two_fastqs_gz=read_two_fastqs_gz,
-        read_groups=read_groups,
-        genome_id=genome_id
+        read_one_fastqs_gz,
+        read_two_fastqs_gz,
+        read_groups,
+        genome_id,
     }
 
     scatter (read_group in read_groups) {
-        call read_group.validate_read_group as validate_readgroups {
-            input:
-                read_group = read_group,
-                required_fields = ["ID", "SM", "LB", "CN", "DT"]
+        call read_group.validate_read_group as validate_readgroups { input:
+            read_group = read_group,
+            required_fields = ["ID", "SM", "LB", "CN", "DT"]
         }
     }
 
     call hic_core.hic_core after parse_input after validate_readgroups { input:
-        read_one_fastqs_gz=read_one_fastqs_gz,
-        read_two_fastqs_gz=read_two_fastqs_gz,
-        bwa_db=bwa_db,
-        read_groups=read_groups,
-        genome_id=genome_id,
-        prefix=prefix,
-        use_all_cores=use_all_cores,
-        restriction_sites=restriction_sites,
-    }   
+        read_one_fastqs_gz,
+        read_two_fastqs_gz,
+        bwa_db,
+        read_groups,
+        genome_id,
+        prefix,
+        use_all_cores,
+        restriction_sites,
+    }
 
     output {
         File unaligned_bam = hic_core.unaligned_bam
@@ -131,7 +130,6 @@ task parse_input {
     parameter_meta {
         read_one_fastqs_gz: "Array of gzipped FASTQ files with 1st reads in pair"
         read_two_fastqs_gz: "Array of gzipped FASTQ files with 2nd reads in pair"
-        bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         read_groups: {
             description: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz` if non-zero. Only the `ID` field is required, and it must be unique for each read group defined. See top of file for help formatting your input JSON.",  # TODO handle unknown RG case
             external_help: "https://samtools.github.io/hts-specs/SAMv1.pdf",
@@ -149,11 +147,11 @@ task parse_input {
                 PL: "Platform/technology used to produce the reads. Valid values: CAPILLARY, DNBSEQ (MGI/BGI), ELEMENT, HELICOS, ILLUMINA, IONTORRENT, LS454, ONT (Oxford Nanopore), PACBIO (Pacific Biosciences), SINGULAR, SOLID, and ULTIMA. This field should be omitted when the technology is not in this list (though the PM field may still be present in this case) or is unknown.",
                 PM: "Platform model. Free-form text providing further details of the platform/technology used.",
                 PU: "Platform unit (e.g., flowcell-barcode.lane for Illumina or slide for SOLiD). Unique identifier.",
-                SM: "Sample. Use pool name where a pool is being sequenced."
-            }
+                SM: "Sample. Use pool name where a pool is being sequenced.",
+            },
         }
         genome_id: {
-            description: "Genome ID"
+            description: "Genome ID",
             choices: [
                 "hg18",
                 "hg19",
@@ -212,8 +210,8 @@ task parse_input {
 
     runtime {
         memory: "4 GB"
-        disk: "10 GB"
-        container: 'ghcr.io/stjudecloud/util:1.3.0'
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }
