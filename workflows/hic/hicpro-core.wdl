@@ -166,7 +166,7 @@ workflow hicpro_core {
                     "function_type": "S",
                     "constant": 1,
                     "coefficient": 0.50,
-                }, # -i
+                },  # -i
                 metrics_file = true,
             }
             # align read 2
@@ -191,7 +191,7 @@ workflow hicpro_core {
                     "function_type": "S",
                     "constant": 1,
                     "coefficient": 0.50,
-                }, # -i
+                },  # -i
                 metrics_file = true,
             }
 
@@ -250,7 +250,7 @@ workflow hicpro_core {
                         "function_type": "S",
                         "constant": 1,
                         "coefficient": 0.50,
-                    }, # -i
+                    },  # -i
                     metrics_file = true,
                 }
                 # align read 2
@@ -274,7 +274,7 @@ workflow hicpro_core {
                         "function_type": "S",
                         "constant": 1,
                         "coefficient": 0.50,
-                    }, # -i
+                    },  # -i
                     metrics_file = true,
                 }
 
@@ -1005,7 +1005,7 @@ task qc_hic {
                 "pairing",
                 "filtering",
                 "contacts"
-            ]
+            ],
         }
         sample_name: "Sample name to use in plot labels"
         remove_singleton: "Remove singleton reads"
