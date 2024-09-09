@@ -2,26 +2,26 @@ version 1.1
 
 import "../data_structures/read_group.wdl"
 
-# Bowtie2 accepts several function parameters.
-# The first term is a function type. Available function types are:
-# - C - constant
-# - L - linear
-# - S - square-root
-# - G - natural logarithm
-# The constant and coefficient types may be negative and/or floating point numbers.
-#
-# An example input JSON entry might look like:
-# ```
-# {
-#     "interval_seed_substrings": {
-#         "function_type": "S",
-#         "constant": 1,
-#         "coefficient": 0.50,
-#     },
-# }
-# ```
-# See the function documentation in bowtie2
-# (https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#setting-function-options)
+## Bowtie2 accepts several function parameters.
+## The first term is a function type. Available function types are:
+## - C - constant
+## - L - linear
+## - S - square-root
+## - G - natural logarithm
+## The constant and coefficient types may be negative and/or floating point numbers.
+##
+## An example input JSON entry might look like:
+## ```
+## {
+##     "interval_seed_substrings": {
+##         "function_type": "S",
+##         "constant": 1,
+##         "coefficient": 0.50,
+##     },
+## }
+## ```
+## See the function documentation in bowtie2
+## (https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#setting-function-options)
 struct Bowtie2Function {
     String function_type
     Float constant
@@ -94,62 +94,122 @@ task align {
         read_two_fastq_gz: "A gzipped FASTQ file containing read two information"
         skip: "Skip the first N reads/read pairs"
         upto: "Only align the first N reads/read pairs"
-        trim5: "Trim N bases from the 5' end of each read"
-        trim3: "Trim N bases from the 3' end of each read"
-        seed_mismatch: "Maximum number of mismatches in the seed [0, 1]"
-        seed_substring: "Length of seed substring. >3, <32"
-        dpad: "include N extra ref chars on sides of DP table"
-        gbar: "disallow gaps within N nucs of read extremes"
-        ignore_quals: "treat all quality values as 30 on Phred scale"
-        nofw: "do not align forward (original) read"
-        norc: "do not align reverse-complement read"
-        no_1mm_upfront: "do not allow 1 mismatch alignments before attempting to scan for the optimal seeded alignments"
-        end_to_end: "If true, entire read must align; no clipping. Else, local alignment; ends might be soft clipped"
-        match_bonus: "bonus for match (0 for end-to-end or 2 for local)"
-        mismatch_penalty: "max penalty for mismatch; lower qual = lower penalty"
-        non_actg_penalty: "penalty for non-A/C/G/Ts in read/ref"
-        read_gap_open_extend: "read gap open, extend penalties"
-        ref_gap_open_extend: "ref gap open, extend penalties"
-        max_aln_report: "report up to N alns per read; MAPQ not meaningful"
-        report_all_alignments: "report all alignments; very slow, MAPQ not meaningful"
-        min_fragment_len: "minimum fragment length"
-        max_fragment_len: "maximum fragment length"
-        no_mixed: "suppress unpaired alignments for paired reads"
-        no_discordant: "suppress discordant alignments for paired reads"
-        dovetail: "concordant when mates extend past each other"
-        no_contain: "not concordant when one mate alignment contains other"
-        no_overlap: "not concordant when mates overlap at all"
-        time: "print wall-clock time taken by search phases"
-        write_unpaired_unaligned: "write unpaired reads that didn't align"
-        write_unpaired_aligned: "write unpaired reads that aligned at least once"
-        write_paired_discordant: "write pairs that didn't align concordantly"
-        write_paired_concordant: "write pairs that aligned concordantly at least once"
-        quiet: "print nothing to stderr except serious errors"
-        metrics_file: "write metrics to file"
-        metrics_stderr: "write metrics to stderr"
-        metrics_interval: "report internal counters & metrics every N seconds"
-        no_unal: "suppress SAM records for unaligned reads"
-        no_head: "suppress header lines, i.e. lines starting with @"
-        no_sq: "suppress @SQ header lines"
-        rg: "Read group record for SAM/BAM header"
+        trim5: "Trim N bases from the 5' end of each read before alignment"
+        trim3: "Trim N bases from the 3' end of each read before alignment"
+        seed_mismatch: {
+            description: "Maximum number of mismatches in the seed [0, 1] during multiseed alignment.",
+            external_help: "https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#multiseed-heuristic",
+            bowtie_option: "-N",
+        }
+        seed_substring: {
+            description: "Length of seed substring. >3, <32",
+            external_help: "https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#multiseed-heuristic",
+            bowtie_option: "-L",
+        }
+        dpad: "Include N extra reference characters on sides of dynamic programming table"
+        gbar: "Disallow gaps within N nucleotides of read ends"
+        ignore_quals: "When calculating a mismatch penalty, always consider the quality value at the mismatched position to be the highest possible, regardless of the actual value. Treat all quality values as 30 on Phred scale."
+        nofw: "Do not align to the forward (original) strand of the reference"
+        norc: "Do not align to the reverse-complement strand of the reference"
+        no_1mm_upfront: {
+            description: "Do not allow 1 mismatch alignments before attempting to scan for the optimal seeded alignments",
+            help: "By default, Bowtie 2 will attempt to find either an exact or a 1-mismatch end-to-end alignment for the read before trying the multiseed heuristic. Such alignments can be found very quickly, and many short read alignments have exact or near-exact end-to-end alignments. However, this can lead to unexpected alignments when the user also sets options governing the multiseed heuristic, like `seed_subtring` and `seed_mismatch`. For instance, if the user specifies `seed_mismatch` 0 and `seed_substring` equal to the length of the read, the user will be surprised to find 1-mismatch alignments reported. This option prevents Bowtie 2 from searching for 1-mismatch end-to-end alignments before using the multiseed heuristic, which leads to the expected behavior when combined with options such as `seed_substring` and `seed_mismatch`. This comes at the expense of speed."
+        }
+        end_to_end: {
+            description: "If true, entire read must align; no clipping. Else, local alignment; ends might be soft clipped",
+            help: "If true, Bowtie 2 requires that the entire read align from one end to the other, without any trimming (or soft clipping) of characters from either end. The match bonus always equals 0 in this mode, so all alignment scores are less than or equal to 0, and the greatest possible alignment score is 0. If false, Bowtie 2 does not require that the entire read align from one end to the other. Rather, some characters may be omitted (soft clipped) from the ends in order to achieve the greatest possible alignment score. The match bonus is used in this mode, and the best possible alignment score is equal to the match bonus times the length of the read."
+        }
+        match_bonus: {
+            description: "bonus for match (0 for end-to-end or 2 for local)",
+            bowtie2_option: "ma",
+        }
+        mismatch_penalty: {
+            description: "max penalty for mismatch; lower quality = lower penalty",
+            help: "Sets the maximum (MX) and minimum (MN) mismatch penalties, both integers. A number less than or equal to MX and greater than or equal to MN is subtracted from the alignment score for each position where a read character aligns to a reference character, the characters do not match, and neither is an N. If `ignore_quals` is specified, the number subtracted quals MX. Otherwise, the number subtracted is MN + floor( (MX-MN)(MIN(Q, 40.0)/40.0) ) where Q is the Phred quality value.",
+            bowtie2_option: "mp",
+        }
+        non_actg_penalty: "penalty for non-A/C/G/Ts in read/reference"
+        read_gap_open_extend: "Sets the read gap open and extend penalties. A read gap of length N gets a penalty of <int1> + N * <int2>."
+        ref_gap_open_extend: "Sets the reference gap open and extend penalties. A reference gap of length N gets a penalty of <int1> + N * <int2>."
+        max_aln_report: {
+            description: "Report up to N alignments per read; MAPQ not meaningful",
+            help: "When specified, bowtie2 searches for at most N distinct, valid alignments for each read. The search terminates when it can't find more distinct valid alignments, or when it finds <int>, whichever happens first. All alignments found are reported in descending order by alignment score. The alignment score for a paired-end alignment equals the sum of the alignment scores of the individual mates. Each reported read or pair alignment beyond the first has the SAM 'secondary' bit (which equals 256) set in its FLAGS field. For reads that have more than N distinct, valid alignments, bowtie2 does not guarantee that the N alignments reported are the best possible in terms of alignment score.",
+        }
+        report_all_alignments: "Report all alignments; very slow, MAPQ not meaningful"
+        min_fragment_len: {
+            description: "The minimum fragment length for valid paired-end alignments.",
+            bowtie2_option: "I|minins",
+        }
+        max_fragment_len: {
+            description: "The maximum fragment length for valid paired-end alignments.",
+            bowtie2_option: "X|maxins",
+        }
+        no_mixed: "By default, when bowtie2 cannot find a concordant or discordant alignment for a pair, it then tries to find alignments for the individual mates. This option disables that behavior."
+        no_discordant: "By default, bowtie2 looks for discordant alignments if it cannot find any concordant alignments. A discordant alignment is an alignment where both mates align uniquely, but that does not satisfy the paired-end constraints. This option disables that behavior."
+        dovetail: {
+            description: "If the mates 'dovetail', that is if one mate alignment extends past the beginning of the other such that the wrong mate begins upstream, consider that to be concordant.",
+            external_help: "https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
+        }
+        no_contain: {
+            description: "If one mate alignment contains the other, consider that to be non-concordant.",
+            external_help: "https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
+        }
+        no_overlap: {
+            description: "If one mate alignment overlaps the other at all, consider that to be non-concordant.",
+            external_help: "https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
+        }
+        time: "Print the wall-clock time required to load the index files and align the reads to STDERR."
+        write_unpaired_unaligned: "Write unpaired reads that didn't align to a file in gzipped FASTQ format. These reads correspond to the SAM records with the FLAGS 0x4 bit set and neither the 0x40 nor 0x80 bits set."
+        write_unpaired_aligned: "Write unpaired reads that aligned at least once to a file in gzipped FASTQ format. These reads correspond to the SAM records with the FLAGS 0x4, 0x40, and 0x80 bits unset."
+        write_paired_discordant: "Write pairs that didn't align concordantly to a file in gzipped FASTQ format. These reads correspond to the SAM records with the FLAGS 0x4 bit set and either the 0x40 or 0x80 bit set (depending on whether it's mate #1 or #2)."
+        write_paired_concordant: "Write pairs that aligned concordantly at least once to a file in gzipped FASTQ format. These reads correspond to the SAM records with the FLAGS 0x4 bit unset and either the 0x40 or 0x80 bit set (depending on whether it's mate #1 or #2)."
+        quiet: "Print nothing besides alignments and serious errors."
+        metrics_file: "Write bowtie2 alignment metrics to file. Useful for debugging."
+        metrics_stderr: "Write  bowtie2 alignment metrics to STDERR. Not mutually exclusive with `metrics_file`."
+        metrics_interval: "Report internal counters & metrics every N seconds. Only used if `metrics_file` and/or `metrics_stderr` is specified."
+        no_unal: "Suppress SAM records for unaligned reads."
+        no_head: "Suppress header lines, i.e. lines starting with @."
+        no_sq: "Suppress @SQ header lines."
+        rg: "Read group record to include in output SAM/BAM header"
         addl_rg_text: "add <text> ('label:value') to @RG line of SAM header"
-        omit_sec_seq: "put '*' in SEQ and QUAL fields for secondary alignments."
+        omit_sec_seq: "When printing secondary alignments, Bowtie 2 by default will write out the SEQ and QUAL strings. Specifying this option causes Bowtie 2 to print an asterisk in those fields instead."
         sam_no_quane_trunc: "Suppress standard behavior of truncating readname at first whitespace at the expense of generating non-standard SAM."
         xeq: "Use '='/'X', instead of 'M,' to specify matches/mismatches in SAM record"
-        soft_clipped_unmapped_tlen: "Exclude soft-clipped bases when reporting TLEN."
-        sam_append_comment: "Append FASTA/FASTQ comment to SAM record."
-        sam_opt_config: "Use <config>, example '-MD,YP,-AS', to toggle SAM optional fields."
-        threads: "Number of alignment threads to use"
-        reorder: "force SAM output order to match order of input reads"
+        soft_clipped_unmapped_tlen: "Exclude soft-clipped bases when reporting TLEN (template length). Only used if `end_to_end` is false."
+        sam_append_comment: "Append FASTA/FASTQ comment to SAM record, where a comment is everything after the first space in the read name."
+        sam_opt_config: "Toggle optional SAM fields. Prefix fields with `-` to turn off. Example: '-MD,YP,-AS' will disable the `MD` and `AS` fields and enable the `YP` field."
+        threads: "Number of threads to use for alignment. Threads will synchronize when parsing reads and outputting alignments. Searching for alignments is highly parallel, and speedup is close to linear. Increasing threads increases Bowtie 2's memory footprint."
+        reorder: {
+            description: "Force SAM output order to match order of input reads",
+            help: "Guarantees that output SAM records are printed in an order corresponding to the order of the reads in the original input file, even when `threads` is set greater than 1. Specifying `reorder` and setting `threads` greater than 1 causes Bowtie 2 to run somewhat slower and use somewhat more memory than if `reorder` were not specified. Has no effect if `threads` is set to 1, since output order will naturally correspond to input order in that case.",
+        }
         memory_map: "use memory-mapped I/O for index; many 'bowtie's can share"
-        qc_filter: "filter out reads that are bad according to QSEQ filter"
-        seed: "seed for random number generator"
-        non_deterministic: "seed random number generator arbitrarily instead of using read attributes"
+        qc_filter: {
+            description: "Filter out reads that are bad according to QSEQ filter. Only has an effect when read format is --qseq.",
+            common: false,
+        }
+        seed: "Seed for random number generator"
+        non_deterministic: {
+            description: "Seed random number generator arbitrarily instead of using read attributes",
+            help: "Normally, Bowtie 2 re-initializes its pseudo-random generator for each read. It seeds the generator with a number derived from (a) the read name, (b) the nucleotide sequence, (c) the quality sequence, (d) the value of the `seed` option. This means that if two reads are identical (same name, same nucleotides, same qualities) Bowtie 2 will find and report the same alignment(s) for both, even if there was ambiguity. When `non_deterministic` is specified, Bowtie 2 re-initializes its pseudo-random generator for each read using the current time. This means that Bowtie 2 will not necessarily report the same alignment for two identical reads. This is counter-intuitive for some users, but might be more appropriate in situations where the input consists of many identical reads."
+        }
         prefix: "Prefix to use for output files"
-        score_min: "min acceptable alignment score w/r/t read length (G,20,8 for local, L,-0.6,-0.6 for end-to-end)"
-        interval_seed_substrings: "interval between seed substrings w/r/t read len (S,1,1.15)"
-        max_failed_extends: "give up extending after N failed extends in a row"
-        repetitive_seeds: "for reads w/ repetitive seeds, try N sets of seeds"
+        score_min: {
+            description: "Sets a function governing the minimum alignment score needed for an alignment to be considered 'valid' (i.e. good enough to report).",
+            external_help: "https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#setting-function-options",
+        }
+        interval_seed_substrings: {
+            description: "Interval between seed substrings with respect to read len (S,1,1.15)",
+            help: "Sets a function governing the interval between seed substrings to use during multiseed alignment. Since it's best to use longer intervals for longer reads, this parameter sets the interval as a function of the read length, rather than a single one-size-fits-all number.",
+        }
+        max_failed_extends: {
+            description: "Give up extending after N failed extends in a row",
+            help: "Up to N consecutive seed extension attempts can 'fail' before Bowtie 2 moves on, using the alignments found so far. A seed extension 'fails' if it does not yield a new best or a new second-best alignment. This limit is automatically adjusted up when `max_aln_report` or `report_all_alignments` are specified.",
+        }
+        repetitive_seeds: {
+            description: "For reads with repetitive seeds, try N sets of seeds",
+            help: "N is the maximum number of times Bowtie 2 will re-seed reads with repetitive seeds. When re-seeding, Bowtie 2 simply chooses a new set of reads (same length, same number of mismatches allowed) at different offsets and searches for more alignments. A read is considered to have repetitive seeds if the total number of seed hits divided by the number of seeds that aligned at least once is greater than 300.",
+        }
     }
 
     input {
@@ -176,6 +236,7 @@ task align {
         }
         Pair[Int, Int] read_gap_open_extend = (5, 3)
         Pair[Int, Int] ref_gap_open_extend = (5, 3)
+        Pair[Int, Int] mismatch_penalty = (6, 2)
         Boolean end_to_end = true  # false: --local
         Boolean non_deterministic = false
         Boolean ignore_quals = false
@@ -213,7 +274,6 @@ task align {
         Int seed_substring = 22
         Int dpad = 15
         Int gbar = 4
-        Int mismatch_penalty = 6
         Int non_actg_penalty = 1
         Int min_fragment_len = 0
         Int max_fragment_len = 500
@@ -248,7 +308,7 @@ task align {
             ~{if no_1mm_upfront then "--no-1mm-upfront" else ""} \
             ~{if end_to_end then "--end-to-end" else "--local"} \
             ~{if defined(match_bonus) then "--ma ~{match_bonus}" else ""} \
-            --mp ~{mismatch_penalty} \
+            --mp ~{mismatch_penalty.left},~{mismatch_penalty.right} \
             --np ~{non_actg_penalty} \
             --rdg ~{read_gap_open_extend.left},~{read_gap_open_extend.right} \
             --rfg ~{ref_gap_open_extend.left},~{ref_gap_open_extend.right} \
