@@ -90,8 +90,8 @@ task align {
 
     parameter_meta {
         bowtie_db_tar_gz: "Bowtie2 index files in tarred, gzipped format"
-        read_one_fastq_gz: "An array of gzipped FASTQ files containing read one information"
-        read_two_fastq_gz: "An array of gzipped FASTQ files containing read two information"
+        read_one_fastq_gz: "A gzipped FASTQ file containing read one information"
+        read_two_fastq_gz: "A gzipped FASTQ file containing read two information"
         skip: "Skip the first N reads/read pairs"
         upto: "Only align the first N reads/read pairs"
         trim5: "Trim N bases from the 5' end of each read"
