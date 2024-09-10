@@ -1,22 +1,13 @@
 version 1.1
 
 import "../../data_structures/read_group.wdl"
-import "../../tools/bwa.wdl"
-import "../../tools/juicer.wdl"
-import "../../tools/pairix.wdl"
-import "../../tools/picard.wdl"
-import "../../tools/samtools.wdl"
-import "../../tools/util.wdl"
-import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
-import "../general/samtools-merge.wdl" as samtools_merge_wf
-import "./hic-simple-core.wdl" as hic_core
+import "./fastq-to-ubam-core.wdl" as ubam_core
 
-workflow hic_standard_fastq {
+workflow fastq_to_ubam {
     meta {
-        description: "hi-c"
+        description: "Generate unaligned BAM file from FASTQ files"
         outputs: {
             unaligned_bam: "Unaligned BAM file",
-            hic: "Juicer .hic file",
         }
         allowNestedInputs: true
     }
@@ -24,7 +15,6 @@ workflow hic_standard_fastq {
     parameter_meta {
         read_one_fastqs_gz: "Array of gzipped FASTQ files with 1st reads in pair"
         read_two_fastqs_gz: "Array of gzipped FASTQ files with 2nd reads in pair"
-        bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         read_groups: {
             description: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz` if non-zero. Only the `ID` field is required, and it must be unique for each read group defined. See top of file for help formatting your input JSON.",  # TODO handle unknown RG case
             external_help: "https://samtools.github.io/hts-specs/SAMv1.pdf",
@@ -45,44 +35,15 @@ workflow hic_standard_fastq {
                 SM: "Sample. Use pool name where a pool is being sequenced.",
             },
         }
-        genome_id: {
-            description: "Genome ID",
-            choices: [
-                "hg18",
-                "hg19",
-                "hg38",
-                "dMel",
-                "mm9",
-                "mm10",
-                "anasPlat1",
-                "bTaurus3",
-                "canFam3",
-                "equCab2",
-                "galGal4",
-                "Pf3D7",
-                "sacCer3",
-                "sCerS288c",
-                "susScr3",
-                "TAIR10"
-            ],
-        }
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
-        restriction_sites: {
-            description: "Calculate fragment map. Requires restriction site file; each line should start with the chromosome name followed by the position of each restriction site on that chromosome, in numeric order, and ending with the size of the chromosome.",
-            external_help: "https://github.com/aidenlab/juicer/wiki/Pre#restriction-site-file-format",
-            help: "Common restriction sites can be downloaded from: https://bcm.app.box.com/s/19807ji76uy20cd1wau9g146nypsv2u0",
-        }
     }
 
     input {
-        File bwa_db
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
         Array[ReadGroup] read_groups
-        File? restriction_sites
-        String genome_id = "hg38"
         String prefix = basename(read_one_fastqs_gz[0], ".fastq.gz")
         Boolean validate_input = true
         Boolean use_all_cores = false
@@ -92,7 +53,6 @@ workflow hic_standard_fastq {
         read_one_fastqs_gz,
         read_two_fastqs_gz,
         read_groups,
-        genome_id,
     }
 
     scatter (read_group in read_groups) {
@@ -102,26 +62,22 @@ workflow hic_standard_fastq {
         }
     }
 
-    call hic_core.hic_core after parse_input after validate_readgroups { input:
+    call ubam_core.fastq_to_ubam_core after parse_input after validate_readgroups { input:
         read_one_fastqs_gz,
         read_two_fastqs_gz,
-        bwa_db,
         read_groups,
-        genome_id,
         prefix,
         use_all_cores,
-        restriction_sites,
     }
 
     output {
-        File unaligned_bam = hic_core.unaligned_bam
-        File hic = hic_core.hic
+        File unaligned_bam = fastq_to_ubam_core.unaligned_bam
     }
 }
 
 task parse_input {
     meta {
-        description: "Parses and validates the `hic-standard-fastq` workflow's provided inputs"
+        description: "Parses and validates the `fastq-to-ubam` workflow's provided inputs"
         outputs: {
             check: "Dummy output to indicate success and to enable call-caching"
         }
@@ -150,27 +106,6 @@ task parse_input {
                 SM: "Sample. Use pool name where a pool is being sequenced.",
             },
         }
-        genome_id: {
-            description: "Genome ID",
-            choices: [
-                "hg18",
-                "hg19",
-                "hg38",
-                "dMel",
-                "mm9",
-                "mm10",
-                "anasPlat1",
-                "bTaurus3",
-                "canFam3",
-                "equCab2",
-                "galGal4",
-                "Pf3D7",
-                "sacCer3",
-                "sCerS288c",
-                "susScr3",
-                "TAIR10"
-            ]
-        }
     }
 
     input {
@@ -194,12 +129,6 @@ task parse_input {
         if [ ~{length(read_two_fastqs_gz)} -ne ~{length(read_groups)} ]
         then
             >&2 echo "Length of read_two_fastqs_gz and read_groups must be equal"
-            exit 1
-        fi
-
-        if [ $(echo ~{genome_id} | grep -Ewc "hg18|hg19|hg38|dMel|mm9|mm10|anasPlat1|bTaurus3|canFam3|equCab2|galGal4|Pf3D7|sacCer3|sCerS288c|susScr3|TAIR10") -ne 1 ]
-        then
-            >&2 echo "Invalid genome_id: ~{genome_id}"
             exit 1
         fi
     >>>
