@@ -72,7 +72,7 @@ workflow hicpro_core {
             hicpro_field: "FILTER_LOW_COUNT_PERC",
         }
         filter_high_counts_percentage: {
-            description: "Define which percentage of bins with low counts should be discarded before normalization",
+            description: "Define which percentage of bins with high counts should be discarded before normalization",
             hicpro_field: "FILTER_HIGH_COUNT_PERC",
         }
         remove_singleton: {
