@@ -899,7 +899,6 @@ task build_raw_maps {
                 --chrsizes ~{chromsizes} \
                 --ifile /dev/stdin \
                 --oprefix ~{prefix}_${bin_size}
-
         done
     >>>
 
