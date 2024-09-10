@@ -1067,7 +1067,7 @@ task revert_sam {
         sample_alias: "The sample alias to use in the reverted output file. This will override the existing sample alias in the file and is used only if all the read groups in the input file have the same sample alias."
         keep_first_duplicate: "If `sanitize = true` keep the first record when we find more than one record with the same name for R1/R2/unpaired reads respectively. For paired end reads, keeps only the first R1 and R2 found respectively, and discards all unpaired reads. Duplicates do not refer to the duplicate flag in the FLAG field, but instead reads with the same name."
         remove_alignment_information: "Remove all alignment information from the file."
-        remove_duplicate_information: "Remove duplicate read flags from all reads. Note that if this is false and REMOVE_ALIGNMENT_INFORMATION==true, the output may have the unusual but sometimes desirable trait of having unmapped reads that are marked as duplicates."
+        remove_duplicate_information: "Remove duplicate read flags from all reads. Note that if this is false and `remove_alignment_informat = true`, the output may have the unusual but sometimes desirable trait of having unmapped reads that are marked as duplicates."
         restore_hardclips: "Restore hard clipped bases to the sequence and quality strings for read containing XB and XQ tags."
         restore_original_qualities: "Restore original qualities if available in the OQ tag."
         sanitize: {
