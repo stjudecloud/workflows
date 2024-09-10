@@ -28,28 +28,28 @@ workflow hic_standard_fastq {
     }
 
     parameter_meta {
+        bowtie_db_tar_gz: "A gzipped TAR file containing the bowtie2 reference files."
+        chromsizes: {
+            description: "Tab delimited file with chromosome sizes. File is a headerless, two-column TSV and column 1 is the chromosome label and column 2 is the chromosome size in base pairs (bp).",
+        }
         read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
         read_groups: "An array of ReadGroup structs containing read group information for each input FASTQ to output in the BAM file"
-        bowtie_db_tar_gz: "A gzipped TAR file containing the bowtie2 reference files."
         prefix: "Prefix for the BAM"
-        read_two_fastqs_gz: {
-            description: "An array of gzipped FASTQ files containing read two information",
-            common: true,
-        }
+        exclude_list: "BED file with regions to exclude from analysis"
+        fragment_file: "BED file with restriction fragments"
         capture_bed: "BED file of target regions for capture Hi-C data"
         allele_specific_snp: {
             description: "VCF file of SNPs to use in distinguishing parental origin",
             external_help: "https://nservant.github.io/HiC-Pro/AS.html#as",
         }
-        exclude_list: "BED file with regions to exclude from analysis"
-        fragment_file: "BED file with restriction fragments"
         ligation_site: "Ligation site sequence used for reads trimming."
+        read_two_fastqs_gz: {
+            description: "An array of gzipped FASTQ files containing read two information",
+            common: true,
+        }
         bin_sizes: {
             description: "Resolution of contact maps to generate ",
             hicpro_field: "BIN_SIZE",
-        }
-        chromsizes: {
-            description: "Tab delimited file with chromosome sizes"
         }
     }
 

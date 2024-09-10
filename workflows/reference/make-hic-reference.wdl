@@ -24,7 +24,11 @@ workflow make_hic_reference {
         reference_fa_name: "Name of output reference FASTA file"
         exclude_list_url: "URL from which to retrieve the exclude list file"
         exclude_list_name: "Name of output exclude list file"
-        restriction_sites: "List of restriction sites for which to extract restriction fragments"
+        restriction_sites: {
+            description: "List of restriction sites for which to extract restriction fragments"
+            help: "This uses HiC-Pro's `digest_genome.py` script to generate restriction fragments. Each site should be specified as a string of nucleotides. A carat (`^`) marks the cut site."
+            external_help: "https://github.com/nservant/HiC-Pro/blob/master/doc/UTILS.md#digest_genomepy-or-how-can-i-generate-the-list-of-restriction-fragments-after-genome-digestion-"
+        }
         restriction_sites_names: "Names for the restriction sites to use in output files"
     }
 
@@ -35,6 +39,11 @@ workflow make_hic_reference {
         String exclude_list_name
         Array[String] restriction_sites
         Array[String] restriction_sites_names
+    }
+
+    call parse_input { input:
+        restriction_sites,
+        restriction_sites_names,
     }
 
     call util.download as reference_download { input:
@@ -64,7 +73,7 @@ workflow make_hic_reference {
     }
 
     scatter (site in zip(restriction_sites, restriction_sites_names)) {
-        call fragment_file { input:
+        call fragment_file after parse_input { input:
             reference_fasta = reference_download.downloaded_file,
             restriction_site = site.left,
             output_name = basename(reference_fa_name, ".gz") + "." + site.right + ".bed"
@@ -155,6 +164,48 @@ task fragment_file {
         cpu: 1
         memory: "4 GB"
         container: "nservant/hicpro:3.0.0"
+        maxRetries: 1
+    }
+}
+
+task parse_input {
+    meta {
+        description: "Parse parameters for the `make_hic_reference` workflow"
+        outputs: {
+            check: "Dummy output to indicate success and to enable call-caching"
+        }
+    }
+
+    parameter_meta {
+        restriction_sites: {
+            description: "List of restriction sites for which to extract restriction fragments"
+            help: "This uses HiC-Pro's `digest_genome.py` script to generate restriction fragments. Each site should be specified as a string of nucleotides. A carat (`^`) marks the cut site."
+            external_help: "https://github.com/nservant/HiC-Pro/blob/master/doc/UTILS.md#digest_genomepy-or-how-can-i-generate-the-list-of-restriction-fragments-after-genome-digestion-"
+        }
+        restriction_sites_names: "Names for the restriction sites to use in output files"
+    }
+
+    input {
+        Array[String] restriction_sites
+        Array[String] restriction_sites_names
+    }
+
+    command <<<
+        if [ ~{length(restriction_sites)} -ne ~{length(restriction_sites_names)} ]
+        then
+            >&2 echo "Length of restriction_sites and restriction_sites_names must be equal"
+            exit 1
+        fi
+    >>>
+
+    output {
+        String check = "passed"
+    }
+
+    runtime {
+        memory: "4 GB"
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:1.3.0"
         maxRetries: 1
     }
 }

@@ -1,0 +1,8 @@
+{
+    "make_hic_reference.reference_fa_url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz",
+    "make_hic_reference.reference_fa_name": "GRCh38_no_alt.fa.gz",
+    "make_hic_reference.exclude_list_url": "https://github.com/Boyle-Lab/Blacklist/raw/master/lists/hg38-blacklist.v2.bed.gz",
+    "make_hic_reference.exclude_list_name": "hg38-blacklist.v2.bed.gz",
+    "make_hic_reference.restriction_sites":  ["^GATC", "^GATC", "A^GATCT", "A^AGCTT", "G^ANTC", "AT^CGAT"],
+    "make_hic_reference.restriction_sites_names":  ["mboi", "dpnii", "bglii", "hindiii", "hinfi", "clai"]
+}
