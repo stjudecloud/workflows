@@ -1344,7 +1344,7 @@ task sort {
         tag_sort: "Sort by the value of the tag `tag_sort`"
         prefix: "Prefix for the output file. The extension `.bam` will be added."
         uncompressed: "Output uncompressed BAM?"
-        natural_name_sort: "Sort by read name in alphsnumeric order"
+        natural_name_sort: "Sort by read name in alphanumeric order"
         ascii_name_sort: "Sort by read name in ASCII order"
         index: "Create an index for the output BAM?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
