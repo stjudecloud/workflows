@@ -13,7 +13,7 @@ workflow hicpro_core {
         outputs: {
             all_valid_pairs: "All valid pairs file",
             ice_normalized_matrices: "ICE normalized matrices",
-            combined_bams: "Combined BAM files with gloabl and (if run) local alignments",
+            combined_bams: "Combined BAM files with global and (if run) local alignments",
             mapping_stats_plot: "Mapping stats plot for R1 and R2 tags. Contains aligned percentage, unaligned percentage, and full-read and trimmed read mapping.",
             pairing_stats_plot: "Pairing stats plot containing reported status for all pairs and quality for filtered pairs.",
             filtering_stats_plot: "Plot of pair alignments to restriction fragments. Contains orientation and classification of intercations.",
