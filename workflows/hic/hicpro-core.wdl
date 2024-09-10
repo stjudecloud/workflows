@@ -68,7 +68,7 @@ workflow hicpro_core {
             hicpro_field: "EPS",
         }
         filter_low_counts_percentage: {
-            description: "Define which percentage of bins with low counts should be force to zero",
+            description: "Define which percentage of bins with low counts should be forced to zero",
             hicpro_field: "FILTER_LOW_COUNT_PERC",
         }
         filter_high_counts_percentage: {
