@@ -956,17 +956,15 @@ task scatter_interval_list {
             --INPUT ~{interval_list} \
             --OUTPUT out
 
-        bash <<CODE
         I=0
         for list in out/*/*.interval_list
         do
-           I=\$((I+1))
-           dir=\$(dirname \$list)
-           name=\$(basename \$list)
-           mv \$list \${dir}/\${I}\${name}
+           I=$((I+1))
+           dir=$(dirname $list)
+           name=$(basename $list)
+           mv $list ${dir}/${I}${name}
         done
-        echo \$I > interval_count.txt
-        CODE
+        echo $I > interval_count.txt
     >>>
 
     output {
