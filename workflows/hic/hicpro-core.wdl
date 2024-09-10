@@ -754,7 +754,7 @@ task merge_valid_interactions {
             python /HiC-Pro_3.0.0/scripts/split_valid_interactions.py \
                 ~{(
                     if defined(capture_target)
-                    then "-i  ~{prefix}_ontarget.allValidPairs"
+                    then "-i ~{prefix}_ontarget.allValidPairs"
                     else "-i ~{prefix}.allValidPairs"
                 )} \
                 -s ~{prefix}_allValidPairs_assplit.stat \
