@@ -220,6 +220,16 @@ task qcreport {
         String prefix = basename(all_valid_pairs_stats, "_allValidPairs.mergestat")
     }
 
+    Int disk_size_gb = ceil(
+        size(all_valid_pairs_stats, "GiB") +
+        size(mapping_stats_read1, "GiB") +
+        size(mapping_stats_read2, "GiB") +
+        size(pairing_stats, "GiB") +
+        size(peaks_bed, "GiB") +
+        size(fithichip_bed, "GiB") +
+        size(fithichip_q01_bed, "GiB")
+    ) + 2
+
     command <<<
         python <<CODE
         import os
@@ -302,10 +312,11 @@ task qcreport {
     }
 
     runtime {
+        container: "python:3.9.19"
         cpu: 1
+        disks: "~{disk_size_gb} GB"
         memory: "4 GB"
         maxRetries: 1
-        container: "python:3.9.19"
     }
 }
 
@@ -336,6 +347,7 @@ task filter {
 
     String base = basename(exclude_list, ".gz")
     String prefix = basename(all_valid_pairs, ".AllValidPairs")
+    Int disk_size_gb = ceil(size(all_valid_pairs, "GiB")) + 2
 
     command <<<
         set -euo pipefail
@@ -401,10 +413,11 @@ task filter {
     }
 
     runtime {
+        container: "ghcr.io/stjudecloud/bedtools:branch-hic_workflow-2.31.1"
         cpu: 1
+        disks: "~{disk_size_gb} GB"
         memory: "4 GB"
         maxRetries: 1
-        container: "ghcr.io/stjudecloud/bedtools:branch-hic_workflow-2.31.1"
     }
 }
 
@@ -427,6 +440,7 @@ task converthic {
     }
 
     String prefix = basename(all_valid_pairs)
+    Int disk_size_gb = ceil(size(all_valid_pairs, "GiB")) * 2
 
     command <<<
         set -euo pipefail
@@ -442,9 +456,10 @@ task converthic {
     }
 
     runtime {
+        container: "ghcr.io/stjudecloud/juicertools:1.6.2"
         cpu: 1
+        disks: "~{disk_size_gb} GB"
         memory: "18 GB"
         maxRetries: 1
-        container: "ghcr.io/stjudecloud/juicertools:1.6.2"
     }
 }
