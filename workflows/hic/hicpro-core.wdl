@@ -41,7 +41,7 @@ workflow hicpro_core {
             external_help: "https://nservant.github.io/HiC-Pro/AS.html#as",
         }
         fragment_file: "BED file with restriction fragments"
-        ligation_site: "Ligation site sequence used for reads trimming."
+        ligation_site: "Ligation site sequence used for reads trimming. Multiple sites can be specified if comma-separated."
         max_iter: {
             description: "Maxium number of iterations for the ICE normalization",
             hicpro_field: "MAX_ITER",
@@ -54,9 +54,7 @@ workflow hicpro_core {
             description: "Format of the output matrix",
             choices: [
                 "complete",
-                "asis",
-                "upper",
-                "lower"
+                "upper"
             ],
             hicpro_field: "MATRIX_FORMAT",
         }
@@ -827,6 +825,13 @@ task merge_stats {
         String prefix
     }
 
+    Int disk_size_gb = ceil(
+        size(read1_mapping_stats, "GiB") +
+        size(read2_mapping_stats, "GiB") +
+        size(valid_pairs_stats, "GiB") +
+        size(rs_stats, "GiB")
+    ) * 2
+
     command <<<
         set -euo pipefail
 
@@ -873,7 +878,9 @@ task merge_stats {
 
     runtime {
         container: "nservant/hicpro:3.0.0"
+        disks: "~{disk_size_gb} GB"
         maxRetries: 1
+        memory: "4 GB"
     }
 }
 
@@ -906,6 +913,8 @@ task build_raw_maps {
         String matrix_format = "upper"
     }
 
+    Int disk_size_gb = ceil(size(hic_file, "GiB")) * length(bin_sizes)
+
     command <<<
         set -euo pipefail
 
@@ -932,7 +941,9 @@ task build_raw_maps {
 
     runtime {
         container: "nservant/hicpro:3.0.0"
+        disks: "~{disk_size_gb} GB"
         maxRetries: 1
+        memory: "4 GB"
     }
 }
 
@@ -966,6 +977,8 @@ task ice_normalization {
         Int max_iterations = 100
     }
 
+    Int disk_size_gb = ceil(size(contact_counts, "GiB")) * length(bin_sizes)
+
     command <<<
         for map in ~{sep(" ", contact_counts)}
         do
@@ -992,8 +1005,9 @@ task ice_normalization {
 
     runtime {
         container: "nservant/hicpro:3.0.0"
-        maxRetries: 1
         cpu: 1
+        disks: "~{disk_size_gb} GB"
+        maxRetries: 1
         memory: "4 GB"
     }
 }
@@ -1043,6 +1057,12 @@ task qc_hic {
 
     Int rm_single_arg = if remove_singleton then 1 else 0
     Int rm_multi_arg = if remove_multimapper then 1 else 0
+    Int disk_size_gb = ceil(
+        size(mapping_stats, "GiB") +
+        size(pairing_stats, "GiB") +
+        size(fragment_stats, "GiB") +
+        size(contacts_stats, "GiB")
+    ) + 2
 
     command <<<
         set -euo pipefail
@@ -1115,6 +1135,7 @@ task qc_hic {
     runtime {
         container: "nservant/hicpro:3.0.0"
         cpu: 1
+        disks: "~{disk_size_gb} GB"
         memory: "4 GB"
         maxRetries: 1
     }
