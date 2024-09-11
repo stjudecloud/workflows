@@ -12,14 +12,12 @@ task active_regions_merge {
         promoters: "Promoter regions in BED format"
         loop_bed: "Loop anchors in BED format"
         bam: "BAM file"
-        prefix: "Prefix for the output file"
     }
 
     input {
         File promoters
         File loop_bed
         File bam
-        String prefix
     }
 
     String outfile = basename(promoters, ".bed") + ".LoopAnchors.Enhs.combined.sort.bed"
@@ -30,12 +28,12 @@ task active_regions_merge {
             -k1,1 \
             -k2,2n \
             -k4,4 \
-            ~{promoters} \
-            | awk \
+            ~{promoters} | \
+            awk \
             -F'\t' \
             -v OFS="\t" \
-            '{ a[$1"\t"$2"\t"$3]=($1"\t"$2"\t"$3 in a? a[$1"\t"$2"\t"$3]",":"")$4 }END{ for(i in a) print i,a[i] }'
-            | sort \
+            '{ a[$1"\t"$2"\t"$3]=($1"\t"$2"\t"$3 in a? a[$1"\t"$2"\t"$3]",":"")$4 }END{ for(i in a) print i,a[i] }' | \
+            sort \
             -k1,1 \
             -k2,2n \
             > $prom".unique.bed"
@@ -44,28 +42,28 @@ task active_regions_merge {
         intersectBed -c -a $prom".unique.bed" -b ~{bam} > $prom"_Signal"
 
         #compute top 2/3
-        length=$(wc -l $prom"_Signal" | awk -F\  '{print $1}'); 
-        keepN=$(echo "$(($length * 2 / 3))"); 
+        length=$(wc -l $prom"_Signal" | awk -F\  '{print $1}')
+        keepN=$((length * 2 / 3))
 
         sort -k5,5nr $prom"_Signal" \
-            | head -n $keepN \
+            | head -n "$keepN" \
             | sort -k1,1 -k2,2n \
             | cut -f 1-3 \
-            > $prom"_Signal.keep."$keepN".3cols.bed"
+            > "${prom}_Signal.keep.${keepN}.3cols.bed"
 
         #get non-promoter region
-        cut -f 1-3 ~{loop_bed} 
-            | sort -k1,1 -k2,2n \
+        cut -f 1-3 ~{loop_bed} | \
+            sort -k1,1 -k2,2n \
             > ~{basename(loop_bed)}
         bedtools \
             subtract \
             -a ~{basename(loop_bed)} \
-            -b $prom".unique.bed" \
-            | sort \
+            -b $prom".unique.bed" | \
+            sort \
             > Enhancers.Subtract.4kbPromoters.sort.bed
 
         cat \
-            $prom"_Signal.keep."$keepN".3cols.bed" \
+            "${prom}_Signal.keep.${keepN}.3cols.bed" \
             Enhancers.Subtract.4kbPromoters.sort.bed \
             | sort -k1,1 -k2,2n \
             > ~{outfile}
@@ -387,9 +385,9 @@ task filter {
                     of1.write(line)
         CODE
 
-        all=`wc -l ~{all_valid_pairs} |cut -d " " -f 1`
-        filtered=`wc -l ~{prefix}.allValidPairs.removed | cut -d " " -f 1`
-        percentage=`echo "$filtered/$all*100"|bc -l`
+        all=$(wc -l ~{all_valid_pairs} |cut -d " " -f 1)
+        filtered=$(wc -l ~{prefix}.allValidPairs.removed | cut -d " " -f 1)
+        percentage=$(echo "$filtered/$all*100"|bc -l)
         echo -e "$filtered read pairs are filtered out from a total of $all, accounting for ${percentage} %\n" \
             | tee \
             > ~{prefix}.allValidPairs.stats

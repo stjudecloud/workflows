@@ -50,9 +50,6 @@ workflow hicpro_core {
             description: "Resolution of contact maps to generate ",
             hicpro_field: "BIN_SIZE",
         }
-        bin_step: {
-            description: "Binning step size in `n` coverage i.e. window step."
-        }
         matrix_format: {
             description: "Format of the output matrix",
             choices: [
@@ -105,7 +102,7 @@ workflow hicpro_core {
         File? fragment_file
         File? capture_bed
         File? allele_specific_snp
-        String? ligation_site = "GATCGATC"
+        String? ligation_site
         Array[File] read_two_fastqs_gz = []
         Array[Int] bin_sizes = [
             5000,
@@ -127,7 +124,6 @@ workflow hicpro_core {
         Float precision = 0.1
         Int min_mapq = 10
         Int max_iter = 100
-        Int bin_step = 1
     }
 
     scatter (tuple in zip(zip(read_one_fastqs_gz, read_two_fastqs_gz), read_groups)) {
@@ -327,6 +323,7 @@ workflow hicpro_core {
                 prefix = fq_prefix,
                 remove_singleton,
                 remove_multimapper,
+                min_mapq,
             }
 
             call mapped_2hic_fragments { input:
@@ -382,6 +379,10 @@ workflow hicpro_core {
         bin_sizes,
         contact_counts = build_raw_maps.contact_counts,
         prefix,
+        filter_low_counts_percentage,
+        filter_high_counts_percentage,
+        precision,
+        max_iterations = max_iter,
     }
 
     output {
@@ -420,6 +421,7 @@ task cutsite_trimming {
     }
 
     String prefix = sub(basename(fastq), ".fq.gz|.fastq.gz|.fq|.fastq", "")
+    Int disk_size_gb = ceil(size(fastq, "GiB")) * 8
 
     command <<<
         set -euo pipefail
@@ -446,6 +448,7 @@ task cutsite_trimming {
     runtime {
         container: "nservant/hicpro:3.0.0"
         cpu: 1
+        disks: "~{disk_size_gb} GB"
         memory: "4 GB"
         maxRetries: 1
     }
@@ -481,6 +484,12 @@ task bowtie_pairing {
         Int min_mapq = 10
     }
 
+    Int disk_size_gb = ceil(size(read1_bam, "GiB") + size(read2_bam, "GiB")) * (
+        if defined(allele_specific_tag)
+        then 3
+        else 2
+    )
+
     command <<<
         set -euo pipefail
         # merge pairs
@@ -510,7 +519,9 @@ task bowtie_pairing {
 
     runtime {
         container: "nservant/hicpro:3.0.0"
+        disks: "~{disk_size_gb} GB"
         maxRetries: 1
+        memory: "4 GB"
     }
 }
 
@@ -537,6 +548,12 @@ task mapping_stats {
         String? tag
         String prefix = basename(combined_bam, ".bwt2glob.bam")
     }
+
+    Int disk_size_gb = ceil(size(combined_bam, "GiB") + size(global_bam, "GiB") + (
+        if defined(local_bam)
+        then size(local_bam, "GiB")
+        else 0
+    )) + 2
 
     command <<<
         set -euo pipefail
@@ -567,7 +584,9 @@ task mapping_stats {
 
     runtime {
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        disks: "~{disk_size_gb} GB"
         maxRetries: 1
+        memory: "4 GB"
     }
 }
 
@@ -628,6 +647,7 @@ task mapped_2hic_fragments {
     }
 
     String outfile_name = basename(mapped_reads, ".bam") + ".validPairs"
+    Int disk_size_gb = ceil(size(mapped_reads, "GiB") + (size(fragment, "GiB") * 4)) + 2
 
     command <<<
         set -euo pipefail
@@ -648,26 +668,26 @@ task mapped_2hic_fragments {
         -r ~{mapped_reads} \
         ~{if defined(fragment) && sam then "-S" else ""} \
         ~{if addl_output then "-a" else ""} \
-        ~{if min_cis_distance > 0 then "-d " + min_cis_distance else ""} \
+        ~{if min_cis_distance > 0 then "-d ~{min_cis_distance}" else ""} \
         ~{if genotype_tag then "-g XA" else ""} \
         ~{(
             if defined(fragment) && shortest_insert_size > 0
-            then "-s " + shortest_insert_size
+            then "-s ~{shortest_insert_size}"
             else ""
         )} \
         ~{(
             if defined(fragment) && longest_insert_size > 0
-            then "-l " + longest_insert_size
+            then "-l ~{longest_insert_size}"
             else ""
         )} \
         ~{(
             if defined(fragment) && shortest_fragment_length > 0
-            then "-t " + shortest_fragment_length
+            then "-t ~{shortest_fragment_length}"
             else ""
         )} \
         ~{(
             if defined(fragment) && longest_fragment_length > 0
-            then "-m " + longest_fragment_length
+            then "-m ~{longest_fragment_length}"
             else ""
         )}
 
@@ -681,7 +701,9 @@ task mapped_2hic_fragments {
 
     runtime {
         container: "nservant/hicpro:3.0.0"
+        disks: "~{disk_size_gb} GB"
         maxRetries: 1
+        memory: "4 GB"
     }
 }
 
@@ -714,6 +736,8 @@ task merge_valid_interactions {
         Boolean allele_specific_snp = false
     }
 
+    Int disk_size_gb = ceil(size(interactions, "GiB")) + 2
+
     command <<<
         set -euo pipefail
 
@@ -721,8 +745,8 @@ task merge_valid_interactions {
         then
             LANG=en; sort \
                 -k2,2V -k3,3n -k5,5V -k6,6n \
-                -m ~{sep(" ", interactions)} \
-                | awk -F "\t" \
+                -m ~{sep(" ", interactions)} | \
+                awk -F "\t" \
                 'BEGIN{c1=0;c2=0;s1=0;s2=0}(c1!=$2 || c2!=$5 || s1!=$3 || s2!=$6){print;c1=$2;c2=$5;s1=$3;s2=$6}' \
                 > ~{prefix}.allValidPairs
         else
@@ -731,11 +755,10 @@ task merge_valid_interactions {
 
         allcount=$(cat ~{sep(" ", interactions)} | wc -l)
         allcount_rmdup=$(cat ~{prefix}.allValidPairs | wc -l)
-        ndbup=$(( $allcount - $allcount_rmdup ))
 
         ## merge stat file
-        echo -e "valid_interaction\t"$allcount > ~{prefix}_allValidPairs.mergestat
-        echo -e "valid_interaction_rmdup\t"$allcount_rmdup >> ~{prefix}_allValidPairs.mergestat
+        echo -e "valid_interaction\t$allcount" > ~{prefix}_allValidPairs.mergestat
+        echo -e "valid_interaction_rmdup\t$allcount_rmdup" >> ~{prefix}_allValidPairs.mergestat
         awk 'BEGIN{cis=0;trans=0;sr=0;lr=0} $2 == $5{cis=cis+1; d=$6>$3?$6-$3:$3-$6; if (d<=20000){sr=sr+1}else{lr=lr+1}} $2!=$5{trans=trans+1}END{print "trans_interaction\t"trans"\ncis_interaction\t"cis"\ncis_shortRange\t"sr"\ncis_longRange\t"lr}' ~{prefix}.allValidPairs >> ~{prefix}_allValidPairs.mergestat
 
         if ~{if defined(capture_target) then "true" else "false"}
@@ -771,7 +794,9 @@ task merge_valid_interactions {
 
     runtime {
         container: "nservant/hicpro:3.0.0"
+        disks: "~{disk_size_gb} GB"
         maxRetries: 1
+        memory: "4 GB"
     }
 }
 
@@ -787,10 +812,10 @@ task merge_stats {
     }
 
     parameter_meta {
-        read1_mapping_stats: "Mapping statistics for read 1"
-        read2_mapping_stats: "Mapping statistics for read 2"
-        valid_pairs_stats: "Valid pairs statistics"
-        rs_stats: "RS statistics"
+        read1_mapping_stats: "Mapping statistics for read 1. Files must match the pattern '*.R1*.mapstat'."
+        read2_mapping_stats: "Mapping statistics for read 2. Files must match the pattern '*.R2*.mapstat'."
+        valid_pairs_stats: "Valid pairs statistics. Files must match the pattern '*.pairstat'."
+        rs_stats: "RS statistics. Files must match the pattern '*.RSstat'."
         prefix: "Prefix for the output files"
     }
 
@@ -810,7 +835,7 @@ task merge_stats {
         ln -s ~{sep(" ", read1_mapping_stats)} read1/
         python /HiC-Pro_3.0.0/scripts/merge_statfiles.py \
             -d read1 \
-            -p "*.R1*.mapstat" \
+            -p '*.R1*.mapstat' \
             -v \
             > ~{prefix}_R1.mmapstat
         # merge read2 mapping stats
@@ -818,7 +843,7 @@ task merge_stats {
         ln -s ~{sep(" ", read2_mapping_stats)} read2/
         python /HiC-Pro_3.0.0/scripts/merge_statfiles.py \
             -d read2 \
-            -p "*.R2*.mapstat" \
+            -p '*.R2*.mapstat' \
             -v \
             > ~{prefix}_R2.mmapstat
         # merge pairing stats
@@ -826,7 +851,7 @@ task merge_stats {
         ln -s ~{sep(" ", valid_pairs_stats)} pairs/
         python /HiC-Pro_3.0.0/scripts/merge_statfiles.py \
             -d pairs \
-            -p "*.pairstat" \
+            -p '*.pairstat' \
             -v \
             > ~{prefix}.mpairstat
         # merge RS stat
@@ -834,7 +859,7 @@ task merge_stats {
         ln -s ~{sep(" ", rs_stats)} rsstat/
         python /HiC-Pro_3.0.0/scripts/merge_statfiles.py \
             -d rsstat \
-            -p "*.RSstat" \
+            -p '*.RSstat' \
             -v \
             > ~{prefix}.mRSstat
     >>>
@@ -879,8 +904,6 @@ task build_raw_maps {
         String prefix
         File? genome_fragment
         String matrix_format = "upper"
-        Boolean allele_specific_snp = false
-        Boolean capture_target = false
     }
 
     command <<<
@@ -888,8 +911,7 @@ task build_raw_maps {
 
         for bin_size in ~{sep(" ", bin_sizes)}
         do
-            cat ~{hic_file} \
-            | /HiC-Pro_3.0.0/scripts/build_matrix \
+            /HiC-Pro_3.0.0/scripts/build_matrix \
                 --matrix-format ~{matrix_format} \
                 ~{(
                     if (length(bin_sizes) > 1)
@@ -898,7 +920,8 @@ task build_raw_maps {
                 )} \
                 --chrsizes ~{chromsizes} \
                 --ifile /dev/stdin \
-                --oprefix ~{prefix}_${bin_size}
+                --oprefix ~{prefix}_${bin_size} \
+                < ~{hic_file}
         done
     >>>
 
@@ -927,8 +950,6 @@ task ice_normalization {
         contact_counts: "Contact counts files to normalize"
         bin_sizes: "Bin sizes for each contact counts file"
         prefix: "Prefix for the output files"
-        filtering_percentage: "Percentage of contacts to filter out"
-        remove_all_zeroes_loci: "Remove all zero loci"
         filter_low_counts_percentage: "Filter low counts percentage"
         filter_high_counts_percentage: "Filter high counts percentage"
         precision: "Precision of the normalization"
@@ -939,8 +960,6 @@ task ice_normalization {
         Array[File] contact_counts
         Array[Int] bin_sizes
         String prefix
-        Float? filtering_percentage
-        Boolean remove_all_zeroes_loci = false
         Float filter_low_counts_percentage = 0.02
         Float filter_high_counts_percentage = 0.0
         Float precision = 0.1
@@ -954,7 +973,7 @@ task ice_normalization {
             for bin in ~{sep(" ", bin_sizes)}
             do
                 ice \
-                    --results_filename ${name}_${bin}_iced.matrix \
+                    --results_filename "${name}_${bin}_iced.matrix" \
                     --filter_low_counts_perc ~{filter_low_counts_percentage} \
                     --filter_high_counts_perc ~{filter_high_counts_percentage} \
                     --max_iter ~{max_iterations} \
