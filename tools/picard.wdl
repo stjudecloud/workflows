@@ -1095,7 +1095,7 @@ task revert_sam {
         Boolean restore_original_qualities = true
         Boolean sanitize = false
         Float max_discard_fraction = 0.01
-        Int memory_gb = 56
+        Int memory_gb = 8
         Int modify_disk_size_gb = 0
     }
 
@@ -1173,6 +1173,7 @@ task fastq_to_sam {
         String platform_unit = ""
         String platform = ""
         String platform_model = ""
+        Int memory_gb = 8
         Int modify_disk_size_gb = 0
     }
 
@@ -1202,7 +1203,7 @@ task fastq_to_sam {
     }
 
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
