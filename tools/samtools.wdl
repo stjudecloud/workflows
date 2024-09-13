@@ -1391,8 +1391,8 @@ task sort {
             ~{if uncompressed then "-u" else "-l ~{compression_level}"} \
             -m ~{max_mem_per_thread}M \
             ~{if natural_name_sort then "-n" else ""} \
-            ~{if ascii_name_sort then "-t" else ""} \
-            ~{if defined(tag_sort) then "-T " + tag_sort else ""} \
+            ~{if ascii_name_sort then "-N" else ""} \
+            ~{if defined(tag_sort) then "-t " + tag_sort else ""} \
             ~{if index then "--write-index" else ""} \
             -o ~{prefix}.bam \
             ~{bam}
