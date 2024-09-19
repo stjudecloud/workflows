@@ -1,0 +1,13 @@
+name: Workflows Sprocket Check
+
+on: [push]
+
+jobs:
+    sprocket_check:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v2
+        - name: Run sprocket
+          uses: stjude-rust-labs/sprocket-action@v0.3.0
+          with:
+            exclude-paths: template
