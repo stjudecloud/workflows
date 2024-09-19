@@ -1348,7 +1348,7 @@ task sort {
         prefix: "Prefix for the output file. The extension `.bam` will be added."
         uncompressed: "Output uncompressed BAM?"
         natural_name_sort: "Sort by read name in alphanumeric order"
-        ascii_name_sort: "Sort by read name in ASCII order"
+        ascii_name_sort: "Sort by read name in ASCII order (lexicographic)"
         index: "Create an index for the output BAM?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
         compression_level: "Compression level for output BAM file. 0 is no compression, 9 is maximum compression."
