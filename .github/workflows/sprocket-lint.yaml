@@ -8,7 +8,7 @@ jobs:
         steps:
         - uses: actions/checkout@v2
         - name: Run sprocket
-          uses: stjude-rust-labs/sprocket-action@v0.3.0
+          uses: stjude-rust-labs/sprocket-action@v0.4.0
           with:
             lint: true
             exclude-patterns: template
