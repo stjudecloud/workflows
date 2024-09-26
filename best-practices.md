@@ -12,7 +12,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - This can commonly be handled by a `parse_input` task (defined in the same file as the workflow in question)
     - When possible, avoid passing in entire files to the `parse_input` task. Coerce files to `Boolean`s or `String`s to avoid unnecessary disk space usage
 - All tasks with multiple commands (including any pipes (`|`)) should have `set -euo pipefail` before any other commands.
-- Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-templates.wdl`)
+- Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-examples.wdl.template`)
   - they should also fail quickly with an informative error message if an invalid input is provided
     - In most cases, just passing the parameter to the underlying tool should produce a satisfactory error, but this must be checked for each tool
   - While redundant, it is still best practice to validate these strings in the `parse_input` task of any workflow which calls the task
@@ -21,11 +21,11 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - see the various tasks in the template directory for possible ways to allocate resources
     - Contributors can mix and match the available templates, copy and pasting subsections as appropriate
     - It is allowed to have one resource allocated dynamically, and another allocated statically in the same task.
-- multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-templates.wdl`)
+- multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-examples.wdl.template`)
   - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter
   - Note that future versions of WDL will likely cause a change to this convention.
     - We plan to deprecate the `ncpu` param in favor of accessing the runtime section directly (`n_cores=~{task.runtime.cpu}`)
-- Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-templates.wdl`)
+- Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-examples.wdl.template`)
   - This is to accomodate as many backends as possible
 - output file names should *always* be determined with either the `outfile_name` parameter or the `prefix` parameter.
   - `outfile_name` should be preferred if no downstream tasks/tools rely on the file name/extension
