@@ -61,7 +61,6 @@ workflow rnaseq_variant_calling {
         fasta = fasta,
         fasta_index = fasta_index,
         dict = dict,
-        interval_list = calling_interval_list
     }
 
     call gatk.base_recalibrator { input:
