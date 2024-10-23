@@ -59,8 +59,8 @@ workflow gatk_reference {
         String? interval_list_url
         String? interval_list_name
         #@ except: SnakeCase
-        Int? dbSNP_vcf_index_disk_size_gb
-        Int? interval_list_disk_size_gb
+        Int dbSNP_vcf_index_disk_size_gb = 1
+        Int interval_list_disk_size_gb = 1
     }
 
     call util.download as fasta_download { input:
@@ -88,7 +88,7 @@ workflow gatk_reference {
         call util.download as dbsnp_index { input:
             url = select_first([dbSNP_vcf_index_url, "undefined"]),
             outfile_name = select_first([dbSNP_vcf_index_name, "undefined"]),
-            disk_size_gb = select_first([dbSNP_vcf_index_disk_size_gb, 1]),
+            disk_size_gb = dbSNP_vcf_index_disk_size_gb,
         }
     }
 
@@ -96,7 +96,7 @@ workflow gatk_reference {
         call util.download as intervals { input:
             url = select_first([interval_list_url, "undefined"]),
             outfile_name = select_first([interval_list_name, "undefined"]),
-            disk_size_gb = select_first([interval_list_disk_size_gb, 1]),
+            disk_size_gb = interval_list_disk_size_gb,
         }
     }
 
