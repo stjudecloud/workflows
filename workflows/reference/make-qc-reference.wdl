@@ -81,9 +81,9 @@ workflow make_qc_reference {
             "UTR",
         ]
         Boolean protein = false
-        Int kraken_fastas_disk_size_gb = 10
         Int reference_fa_disk_size_gb = 10
         Int gtf_disk_size_gb = 10
+        Int kraken_fastas_disk_size_gb = 10
     }
 
     call util.download as reference_download { input:
