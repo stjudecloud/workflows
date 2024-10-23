@@ -23,11 +23,10 @@
     ],
     "make_qc_reference.kraken_fastas": [],
     "make_qc_reference.kraken_build_db.db_name": "custom_kraken2_db",
-    "make_qc_reference.kraken_build_db.kmer_len": "Int (default = if protein then 15 else 35)",
-    "make_qc_reference.kraken_build_db.minimizer_len": "Int (default = if protein then 12 else 31)",
-    "make_qc_reference.kraken_build_db.minimizer_spaces": "Int (default = if protein then 0 else 7)",
-    "make_qc_reference.kraken_build_db.max_db_size_gb": "Int (default = -1)",
-    "make_qc_reference.kraken_build_db.ncpu": "Int (default = 1)",
-    "make_qc_reference.kraken_build_db.use_all_cores": "Boolean (default = false)",
-    "make_qc_reference.max_retries": "Int?"
+    "make_qc_reference.kraken_build_db.kmer_len": 35,
+    "make_qc_reference.kraken_build_db.minimizer_len": 31,
+    "make_qc_reference.kraken_build_db.minimizer_spaces": 7,
+    "make_qc_reference.kraken_build_db.max_db_size_gb": -1,
+    "make_qc_reference.kraken_build_db.ncpu": 8,
+    "make_qc_reference.kraken_build_db.use_all_cores": false
 }
