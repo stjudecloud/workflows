@@ -149,7 +149,7 @@ workflow hicpro_core {
                 bowtie_db_tar_gz,
                 read_one_fastq_gz = pair.left,
                 prefix = fq_prefix + ".R1_global",
-                rg = tuple.right,
+                read_group = tuple.right,
                 write_unpaired_unaligned = true,
                 seed_substring = 30,  # -L
                 score_min = {
@@ -174,7 +174,7 @@ workflow hicpro_core {
                 bowtie_db_tar_gz,
                 read_one_fastq_gz = pair.right,
                 prefix = fq_prefix + ".R2_global",
-                rg = tuple.right,
+                read_group = tuple.right,
                 write_unpaired_unaligned = true,
                 seed_substring = 30,  # -L
                 score_min = {
@@ -234,7 +234,7 @@ workflow hicpro_core {
                     bowtie_db_tar_gz,
                     read_one_fastq_gz = trim_read1.cutsite_trimmed_fastq,
                     prefix = fq_prefix + ".R1_local",
-                    rg = tuple.right,
+                    read_group = tuple.right,
                     seed_substring = 20,  # -L
                     score_min = {
                         "function_type": "L",
@@ -258,7 +258,7 @@ workflow hicpro_core {
                     bowtie_db_tar_gz,
                     read_one_fastq_gz = trim_read2.cutsite_trimmed_fastq,
                     prefix = fq_prefix + ".R2_local",
-                    rg = tuple.right,
+                    read_group = tuple.right,
                     seed_substring = 20,  # -L
                     score_min = {
                         "function_type": "L",
