@@ -1,3 +1,5 @@
+#@ except: ContainerValue
+
 version 1.1
 
 import "../data_structures/read_group.wdl"
@@ -113,11 +115,11 @@ task align {
         norc: "Do not align to the reverse-complement strand of the reference"
         no_1mm_upfront: {
             description: "Do not allow 1 mismatch alignments before attempting to scan for the optimal seeded alignments",
-            help: "By default, Bowtie 2 will attempt to find either an exact or a 1-mismatch end-to-end alignment for the read before trying the multiseed heuristic. Such alignments can be found very quickly, and many short read alignments have exact or near-exact end-to-end alignments. However, this can lead to unexpected alignments when the user also sets options governing the multiseed heuristic, like `seed_subtring` and `seed_mismatch`. For instance, if the user specifies `seed_mismatch` 0 and `seed_substring` equal to the length of the read, the user will be surprised to find 1-mismatch alignments reported. This option prevents Bowtie 2 from searching for 1-mismatch end-to-end alignments before using the multiseed heuristic, which leads to the expected behavior when combined with options such as `seed_substring` and `seed_mismatch`. This comes at the expense of speed."
+            help: "By default, Bowtie 2 will attempt to find either an exact or a 1-mismatch end-to-end alignment for the read before trying the multiseed heuristic. Such alignments can be found very quickly, and many short read alignments have exact or near-exact end-to-end alignments. However, this can lead to unexpected alignments when the user also sets options governing the multiseed heuristic, like `seed_subtring` and `seed_mismatch`. For instance, if the user specifies `seed_mismatch` 0 and `seed_substring` equal to the length of the read, the user will be surprised to find 1-mismatch alignments reported. This option prevents Bowtie 2 from searching for 1-mismatch end-to-end alignments before using the multiseed heuristic, which leads to the expected behavior when combined with options such as `seed_substring` and `seed_mismatch`. This comes at the expense of speed.",
         }
         end_to_end: {
             description: "If true, entire read must align; no clipping. Else, local alignment; ends might be soft clipped",
-            help: "If true, Bowtie 2 requires that the entire read align from one end to the other, without any trimming (or soft clipping) of characters from either end. The match bonus always equals 0 in this mode, so all alignment scores are less than or equal to 0, and the greatest possible alignment score is 0. If false, Bowtie 2 does not require that the entire read align from one end to the other. Rather, some characters may be omitted (soft clipped) from the ends in order to achieve the greatest possible alignment score. The match bonus is used in this mode, and the best possible alignment score is equal to the match bonus times the length of the read."
+            help: "If true, Bowtie 2 requires that the entire read align from one end to the other, without any trimming (or soft clipping) of characters from either end. The match bonus always equals 0 in this mode, so all alignment scores are less than or equal to 0, and the greatest possible alignment score is 0. If false, Bowtie 2 does not require that the entire read align from one end to the other. Rather, some characters may be omitted (soft clipped) from the ends in order to achieve the greatest possible alignment score. The match bonus is used in this mode, and the best possible alignment score is equal to the match bonus times the length of the read.",
         }
         match_bonus: {
             description: "bonus for match (0 for end-to-end or 2 for local)",
@@ -170,7 +172,7 @@ task align {
         no_unal: "Suppress SAM records for unaligned reads."
         no_head: "Suppress header lines, i.e. lines starting with @."
         no_sq: "Suppress @SQ header lines."
-        rg: "Read group record to include in output SAM/BAM header"
+        read_group: "Read group record to include in output SAM/BAM header"
         addl_rg_text: "add <text> ('label:value') to @RG line of SAM header"
         omit_sec_seq: "When printing secondary alignments, Bowtie 2 by default will write out the SEQ and QUAL strings. Specifying this option causes Bowtie 2 to print an asterisk in those fields instead."
         sam_no_quane_trunc: "Suppress standard behavior of truncating readname at first whitespace at the expense of generating non-standard SAM."
@@ -191,7 +193,7 @@ task align {
         seed: "Seed for random number generator"
         non_deterministic: {
             description: "Seed random number generator arbitrarily instead of using read attributes",
-            help: "Normally, Bowtie 2 re-initializes its pseudo-random generator for each read. It seeds the generator with a number derived from (a) the read name, (b) the nucleotide sequence, (c) the quality sequence, (d) the value of the `seed` option. This means that if two reads are identical (same name, same nucleotides, same qualities) Bowtie 2 will find and report the same alignment(s) for both, even if there was ambiguity. When `non_deterministic` is specified, Bowtie 2 re-initializes its pseudo-random generator for each read using the current time. This means that Bowtie 2 will not necessarily report the same alignment for two identical reads. This is counter-intuitive for some users, but might be more appropriate in situations where the input consists of many identical reads."
+            help: "Normally, Bowtie 2 re-initializes its pseudo-random generator for each read. It seeds the generator with a number derived from (a) the read name, (b) the nucleotide sequence, (c) the quality sequence, (d) the value of the `seed` option. This means that if two reads are identical (same name, same nucleotides, same qualities) Bowtie 2 will find and report the same alignment(s) for both, even if there was ambiguity. When `non_deterministic` is specified, Bowtie 2 re-initializes its pseudo-random generator for each read using the current time. This means that Bowtie 2 will not necessarily report the same alignment for two identical reads. This is counter-intuitive for some users, but might be more appropriate in situations where the input consists of many identical reads.",
         }
         prefix: "Prefix to use for output files"
         score_min: {
@@ -215,7 +217,7 @@ task align {
     input {
         File bowtie_db_tar_gz
         File read_one_fastq_gz
-        ReadGroup rg
+        ReadGroup read_group
         String prefix
         File? read_two_fastq_gz
         String? addl_rg_text
@@ -224,15 +226,15 @@ task align {
         Int? upto
         Int? match_bonus
         Int? max_aln_report
-        Bowtie2Function score_min = {
-            "function_type": "L",
-            "constant": -0.6,
-            "coefficient": -0.6,
+        Bowtie2Function score_min = Bowtie2Function {
+            function_type: "L",
+            constant: -0.6,
+            coefficient: -0.6,
         }
-        Bowtie2Function interval_seed_substrings = {
-            "function_type": "S",
-            "constant": 1,
-            "coefficient": 1.15,
+        Bowtie2Function interval_seed_substrings = Bowtie2Function {
+            function_type: "S",
+            constant: 1,
+            coefficient: 1.15,
         }
         Pair[Int, Int] read_gap_open_extend = (5, 3)
         Pair[Int, Int] ref_gap_open_extend = (5, 3)
@@ -284,6 +286,7 @@ task align {
         Int repetitive_seeds = 2
     }
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -349,20 +352,20 @@ task align {
             ~{if no_unal then "--no-unal" else ""} \
             ~{if no_head then "--no-head" else ""} \
             ~{if no_sq then "--no-sq" else ""} \
-            --rg-id ~{rg.ID} \
-            ~{if defined(rg.BC) then "--rg BC:~{rg.BC}" else ""} \
-            ~{if defined(rg.CN) then "--rg CN:~{rg.CN}" else ""} \
-            ~{if defined(rg.DS) then "--rg DS:~{rg.DS}" else ""} \
-            ~{if defined(rg.DT) then "--rg DT:~{rg.DT}" else ""} \
-            ~{if defined(rg.FO) then "--rg FO:~{rg.FO}" else ""} \
-            ~{if defined(rg.KS) then "--rg KS:~{rg.KS}" else ""} \
-            ~{if defined(rg.LB) then "--rg LB:~{rg.LB}" else ""} \
-            ~{if defined(rg.PG) then "--rg PG:~{rg.PG}" else ""} \
-            ~{if defined(rg.PI) then "--rg PI:~{rg.PI}" else ""} \
-            ~{if defined(rg.PL) then "--rg PL:~{rg.PL}" else ""} \
-            ~{if defined(rg.PM) then "--rg PM:~{rg.PM}" else ""} \
-            ~{if defined(rg.PU) then "--rg PU:~{rg.PU}" else ""} \
-            ~{if defined(rg.SM) then "--rg SM:~{rg.SM}" else ""} \
+            --rg-id ~{read_group.ID} \
+            ~{if defined(read_group.BC) then "--rg BC:~{read_group.BC}" else ""} \
+            ~{if defined(read_group.CN) then "--rg CN:~{read_group.CN}" else ""} \
+            ~{if defined(read_group.DS) then "--rg DS:~{read_group.DS}" else ""} \
+            ~{if defined(read_group.DT) then "--rg DT:~{read_group.DT}" else ""} \
+            ~{if defined(read_group.FO) then "--rg FO:~{read_group.FO}" else ""} \
+            ~{if defined(read_group.KS) then "--rg KS:~{read_group.KS}" else ""} \
+            ~{if defined(read_group.LB) then "--rg LB:~{read_group.LB}" else ""} \
+            ~{if defined(read_group.PG) then "--rg PG:~{read_group.PG}" else ""} \
+            ~{if defined(read_group.PI) then "--rg PI:~{read_group.PI}" else ""} \
+            ~{if defined(read_group.PL) then "--rg PL:~{read_group.PL}" else ""} \
+            ~{if defined(read_group.PM) then "--rg PM:~{read_group.PM}" else ""} \
+            ~{if defined(read_group.PU) then "--rg PU:~{read_group.PU}" else ""} \
+            ~{if defined(read_group.SM) then "--rg SM:~{read_group.SM}" else ""} \
             ~{if defined(addl_rg_text) then "--rg ~{addl_rg_text}" else ""} \
             ~{if omit_sec_seq then "--omit-sec-seq" else ""} \
             ~{if sam_no_quane_trunc then "--sam-no-qname-trunc" else ""} \
@@ -376,16 +379,8 @@ task align {
             ~{if qc_filter then "--qc-filter" else ""} \
             --seed ~{seed} \
             ~{if non_deterministic then "--non-deterministic" else ""} \
-            ~{(
-                if defined(score_min)
-                then "--score-min ~{score_min.function_type},~{score_min.constant},~{score_min.coefficient}"
-                else ""
-            )} \
-            ~{(
-                if defined(interval_seed_substrings)
-                then "-i ~{interval_seed_substrings.function_type},~{interval_seed_substrings.constant},~{interval_seed_substrings.coefficient}"
-                else ""
-            )} \
+            ~{"--score-min ~{score_min.function_type},~{score_min.constant},~{score_min.coefficient}"} \
+            ~{"-i ~{interval_seed_substrings.function_type},~{interval_seed_substrings.constant},~{interval_seed_substrings.coefficient}"} \
             -D ~{max_failed_extends} \
             -R ~{repetitive_seeds} \
             -x bowtie_db/"$PREFIX" \
