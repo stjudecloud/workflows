@@ -9,6 +9,7 @@ import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "hicpro-core.wdl" as hicpro_core
+import "hic-post.wdl" as hicpro_post
 
 workflow hic_standard {
     meta {
@@ -117,64 +118,30 @@ workflow hic_standard {
         remove_duplicates = true,
     }
 
-    call hilow.converthic { input:
+    call hicpro_post.hic_post { input:
         all_valid_pairs = hicpro_core.all_valid_pairs,
         chromsizes,
-    }
-
-    if (defined(exclude_list)) {
-        call hilow.filter { input:
-            all_valid_pairs = hicpro_core.all_valid_pairs,
-            chromsizes,
-            exclude_list = select_first([exclude_list, ""]),
-        }
-    }
-
-    call hilow.qcreport { input:
+        exclude_list,
         prefix,
-        all_valid_pairs_stats = hicpro_core.contact_stats,
-        mapping_stats_read1 = hicpro_core.merged_read_one_mapping_stats,
-        mapping_stats_read2 = hicpro_core.merged_read_two_mapping_stats,
-        pairing_stats = hicpro_core.merged_pairing_stats,
-    }
-
-    call samtools.merge { input:
-        bams = hicpro_core.combined_bams,
-        prefix = prefix + ".merged",
-        attach_rg = false,
-    }
-
-    call samtools.fixmate { input:
-        bam = merge.merged_bam,
-    }
-
-    call samtools.sort { input:
-        bam = fixmate.fixmate_bam,
-    }
-
-    call samtools.markdup { input:
-        bam = sort.sorted_bam,
-        create_bam = true,
-        mark_supp_or_sec_or_unmapped_as_duplicates = true,
-        prefix,
-    }
-
-    call samtools.index { input:
-        bam = select_first([markdup.markdup_bam, ""]),
+        contact_stats = hicpro_core.contact_stats,
+        merged_read_one_mapping_stats = hicpro_core.merged_read_one_mapping_stats,
+        merged_read_two_mapping_stats = hicpro_core.merged_read_two_mapping_stats,
+        merged_pairing_stats = hicpro_core.merged_pairing_stats,
+        combined_bams = hicpro_core.combined_bams,
     }
 
     output {
-        File hic_file = converthic.hic_file
-        File? filtered_pairs = filter.filtered_pairs
+        File hic_file = hic_post.hic_file
+        File? filtered_pairs = hic_post.filtered_pairs
         File all_valid_pairs = hicpro_core.all_valid_pairs
-        File qc_report = qcreport.qc_report
+        File qc_report = hic_post.qc_report
         File? mapping_stats_plot = hicpro_core.mapping_stats_plot
         File? pairing_stats_plot = hicpro_core.pairing_stats_plot
         File? filtering_stats_plot = hicpro_core.filtering_stats_plot
         File? filtering_size_plot = hicpro_core.filtering_size_plot
         File? contacts_stats_plot = hicpro_core.contacts_stats_plot
         Array[File] ice_normalized_matrices = hicpro_core.ice_normalized_matrices
-        File combined_bam = select_first([markdup.markdup_bam, ""])
-        File combined_bam_index = index.bam_index
+        File combined_bam = hic_post.combined_bam
+        File combined_bam_index = hic_post.combined_bam_index
     }
 }
