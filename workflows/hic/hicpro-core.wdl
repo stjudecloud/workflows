@@ -91,6 +91,9 @@ workflow hicpro_core {
             description: "Minimum mapping quality. Reads with lower quality are discarded.",
             hicpro_field: "MIN_MAPQ",
         }
+        reads_per_file: {
+            description: "Number of reads to use when splitting FASTQs into smaller batches",
+        }
     }
 
     input {
@@ -124,16 +127,17 @@ workflow hicpro_core {
         Float precision = 0.1
         Int min_mapq = 10
         Int max_iter = 100
+        Int reads_per_file = 30000000
     }
 
     scatter (tuple in zip(zip(read_one_fastqs_gz, read_two_fastqs_gz), read_groups)) {
         call util.split_fastq as r1_split { input:
             fastq = tuple.left.left,
-            reads_per_file = 30000000,
+            reads_per_file,
         }
         call util.split_fastq as r2_split { input:
             fastq = tuple.left.right,
-            reads_per_file = 30000000,
+            reads_per_file,
         }
 
         scatter (pair in zip(r1_split.fastqs, r2_split.fastqs)) {
