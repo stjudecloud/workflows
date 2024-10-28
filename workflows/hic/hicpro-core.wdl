@@ -49,7 +49,7 @@ workflow hicpro_core {
             hicpro_field: "MAX_ITER",
         }
         bin_sizes: {
-            description: "Resolution of contact maps to generate ",
+            description: "Resolution of contact maps to generate",
             hicpro_field: "BIN_SIZE",
         }
         matrix_format: {

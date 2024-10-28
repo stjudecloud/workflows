@@ -1343,7 +1343,7 @@ task sort {
         bam: "Input BAM format file to sort"
         tag_sort: {
             description: "Sort by the value of the alignment tag specified in `tag_sort`. When specified, samtools sorts by the value of the alignment tag and then by either position or read name.",
-            external_help: "https://www.htslib.org/doc/samtools-sort.html"
+            external_help: "https://www.htslib.org/doc/samtools-sort.html",
         }
         prefix: "Prefix for the output file. The extension `.bam` will be added."
         uncompressed: "Output uncompressed BAM?"

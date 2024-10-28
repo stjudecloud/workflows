@@ -8,13 +8,13 @@ workflow make_hic_reference {
     meta {
         description: "Downloads and creates all reference files needed to run the `hic` workflow"
         outputs: {
-            reference_fasta: "FASTA format reference file used to generate `bowtie2_db_tar_gz`"
-            reference_fasta_index: "FASTA index file for `reference_fasta`"
-            reference_chromsizes: "Chromosome sizes file for `reference_fasta`"
-            genome_fragment: "BED file(s) with restriction fragments"
-            exclude_list: "BED file with regions to exclude from analysis"
-            bowtie2_db_tar_gz: "Gzipped tar archive of the Bowtie2 reference files. Files are at the root of the archive."
-            bowtie2_index_files: "Bowtie2 index files"
+            reference_fasta: "FASTA format reference file used to generate `bowtie2_db_tar_gz`",
+            reference_fasta_index: "FASTA index file for `reference_fasta`",
+            reference_chromsizes: "Chromosome sizes file for `reference_fasta`",
+            genome_fragment: "BED file(s) with restriction fragments",
+            exclude_list: "BED file with regions to exclude from analysis",
+            bowtie2_db_tar_gz: "Gzipped tar archive of the Bowtie2 reference files. Files are at the root of the archive.",
+            bowtie2_index_files: "Bowtie2 index files",
         }
         allowNestedInputs: true
     }
@@ -26,8 +26,8 @@ workflow make_hic_reference {
         exclude_list_name: "Name of output exclude list file"
         restriction_sites: {
             description: "List of restriction sites for which to extract restriction fragments"
-            help: "This uses HiC-Pro's `digest_genome.py` script to generate restriction fragments. Each site should be specified as a string of nucleotides. A carat (`^`) marks the cut site."
-            external_help: "https://github.com/nservant/HiC-Pro/blob/master/doc/UTILS.md#digest_genomepy-or-how-can-i-generate-the-list-of-restriction-fragments-after-genome-digestion-"
+            help: "This uses HiC-Pro's `digest_genome.py` script to generate restriction fragments. Each site should be specified as a string of nucleotides. A carat (`^`) marks the cut site.",
+            external_help: "https://github.com/nservant/HiC-Pro/blob/master/doc/UTILS.md#digest_genomepy-or-how-can-i-generate-the-list-of-restriction-fragments-after-genome-digestion-",
         }
         restriction_sites_names: "Names for the restriction sites to use in output files"
     }
