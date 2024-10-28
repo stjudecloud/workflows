@@ -112,10 +112,6 @@ workflow hic_standard {
         prefix,
         ligation_site,
         bin_sizes,
-        matrix_format = "upper",
-        remove_singleton = true,
-        remove_multimapper = true,
-        remove_duplicates = true,
     }
 
     call hicpro_post.hic_post { input:

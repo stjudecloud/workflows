@@ -7,7 +7,7 @@ import "../../tools/hilow.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "hicpro-core.wdl" as hicpro_core
-import "hicpro-post.wdl" as hicpro_post
+import "hic-post.wdl" as hicpro_post
 
 workflow hic_standard_fastq {
     meta {
@@ -91,10 +91,6 @@ workflow hic_standard_fastq {
         prefix,
         ligation_site,
         bin_sizes,
-        matrix_format = "upper",
-        remove_singleton = true,
-        remove_multimapper = true,
-        remove_duplicates = true,
     }
 
     call hicpro_post.hic_post { input:

@@ -1,3 +1,5 @@
+#@ except: ContainerValue
+
 version 1.1
 
 import "../../data_structures/flag_filter.wdl"
@@ -488,6 +490,7 @@ task bowtie_pairing {
         else 2
     )
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
         # merge pairs
@@ -647,6 +650,7 @@ task mapped_2hic_fragments {
     String outfile_name = basename(mapped_reads, ".bam") + ".validPairs"
     Int disk_size_gb = ceil(size(mapped_reads, "GiB") + (size(fragment, "GiB") * 4)) + 2
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -736,6 +740,7 @@ task merge_valid_interactions {
 
     Int disk_size_gb = ceil(size(interactions, "GiB")) + 2
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -898,8 +903,6 @@ task build_raw_maps {
         hic_file: "Hi-C file"
         bin_sizes: "Bin sizes for each contact counts file"
         prefix: "Prefix for the output files"
-        allele_specific_snp: "Use allele specific SNP"
-        capture_target: "Capture target file"
         genome_fragment: "Genome fragment file"
         matrix_format: "Matrix format"
     }
@@ -1064,6 +1067,7 @@ task qc_hic {
         size(contacts_stats, "GiB")
     ) + 2
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
