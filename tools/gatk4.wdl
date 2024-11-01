@@ -19,7 +19,6 @@ task split_n_cigar_reads {
         fasta: "Reference genome in FASTA format. Must be uncompressed."
         fasta_index: "Index for FASTA format genome"
         dict: "Dictionary file for FASTA format genome"
-        interval_list: "Interval list indicating regions in which to split reads"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -29,7 +28,6 @@ task split_n_cigar_reads {
     input {
         File bam
         File bam_index
-        File interval_list
         File fasta
         File fasta_index
         File dict

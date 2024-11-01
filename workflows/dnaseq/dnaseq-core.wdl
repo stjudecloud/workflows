@@ -7,7 +7,6 @@ import "../../tools/bwa.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
-import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "../general/samtools-merge.wdl" as samtools_merge_wf
 
 workflow dnaseq_core_experimental {
