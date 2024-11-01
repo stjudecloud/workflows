@@ -172,13 +172,13 @@
 <dt>description</dt>
 <dd>Performs read counting for a set of features in the input BAM file</dd>
 <dt>outputs</dt>
-<dd>{'feature_counts': 'A two column headerless TSV file. First column is feature names and second column is counts.'}</dd>
+<dd>{'feature_counts': 'A two column TSV file. First column is feature names and second column is counts. Presence of a header is determined by the <code>include_custom_header</code> parameter.'}</dd>
 </dl>
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to generate coverage for</li>
+<li><code>bam</code> (File, <strong>required</strong>): Input BAM format file to generate feature counts for</li>
 <li><code>gtf</code> (File, <strong>required</strong>): Input genomic features in gzipped GTF format to count reads for</li>
 <li><code>strandedness</code> (String, <strong>required</strong>); <strong>description</strong>: Strandedness protocol of the RNA-Seq experiment; <strong>external_help</strong>: https://htseq.readthedocs.io/en/latest/htseqcount.html#cmdoption-htseq-count-s; <strong>choices</strong>: ['yes', 'reverse', 'no']</li>
 </ul>
@@ -186,13 +186,13 @@
 <ul>
 <li><code>feature_type</code> (String, default="exon"); <strong>description</strong>: Feature type (3rd column in GTF file) to be used, all features of other type are ignored; <strong>common</strong>: true</li>
 <li><code>idattr</code> (String, default="gene_name"); <strong>description</strong>: GFF attribute to be used as feature ID; <strong>common</strong>: true</li>
-<li><code>include_custom_header</code> (Boolean, default=false); <strong>description</strong>: Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be <code>feature   ~{prefix}</code>. This may break downstream tools that expect the typical headerless HTSeq output format.; <strong>common</strong>: true</li>
+<li><code>include_custom_header</code> (Boolean, default=true); <strong>description</strong>: Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be <code>~{idattr}  ~{prefix}</code>. This may break downstream tools that expect the typical headerless HTSeq output format.; <strong>common</strong>: true</li>
 <li><code>minaqual</code> (Int, default=10); <strong>description</strong>: Skip all reads with alignment quality lower than the given minimum value; <strong>common</strong>: true</li>
 <li><code>mode</code> (String, default="union"); <strong>description</strong>: Mode to handle reads overlapping more than one feature. <code>union</code> is recommended for most use-cases.; <strong>external_help</strong>: https://htseq.readthedocs.io/en/latest/htseqcount.html#htseq-count-counting-reads-within-features; <strong>choices</strong>: ['union', 'intersection-strict', 'intersection-nonempty']</li>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
 <li><code>modify_memory_gb</code> (Int, default=0): Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.</li>
 <li><code>nonunique</code> (Boolean, default=false); <strong>description</strong>: Score reads that align to or are assigned to more than one feature?; <strong>common</strong>: true</li>
-<li><code>pos_sorted</code> (Boolean, default=true); <strong>description</strong>: Is the BAM position sorted (true) or name sorted (false)?; <strong>common</strong>: true</li>
+<li><code>pos_sorted</code> (Boolean, default=false); <strong>description</strong>: Is the BAM position sorted (true) or name sorted (false)? It is <strong>highly</strong> recommended to use a name sorted BAM file. This is because HTSeq will re-sort position-sorted BAMs with an inefficient algorithm, causing very large memory and disk space allocations (especially for large BAMs).; <strong>common</strong>: true</li>
 <li><code>prefix</code> (String, default=basename(bam,".bam")): Prefix for the feature counts file. The extension <code>.feature-counts.txt</code> will be added.</li>
 <li><code>secondary_alignments</code> (Boolean, default=false); <strong>description</strong>: Score secondary alignments (SAM flag 0x100)?; <strong>common</strong>: true</li>
 <li><code>supplementary_alignments</code> (Boolean, default=false); <strong>description</strong>: Score supplementary/chimeric alignments (SAM flag 0x800)?; <strong>common</strong>: true</li>
@@ -212,11 +212,12 @@
 <h4 id="required_1">Required</h4>
 <ul>
 <li><code>_runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>counts</code> (File, <strong>required</strong>): A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the <code>count</code> task.</li>
+<li><code>counts</code> (File, <strong>required</strong>): A two column TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the <code>count</code> task.</li>
 <li><code>gene_lengths</code> (File, <strong>required</strong>): A two column headered TSV file with gene names (matching those in the <code>counts</code> file) in the first column and feature lengths (as integers) in the second column. Can be generated with the <code>calc_gene_lengths</code> task in <code>util.wdl</code>.</li>
 </ul>
 <h4 id="defaults_1">Defaults</h4>
 <ul>
+<li><code>has_header</code> (Boolean, default=true): Does the <code>counts</code> file have a header line? If true, the first line will be ignored.</li>
 <li><code>prefix</code> (String, default=basename(counts,".feature-counts.txt")): Prefix for the TPM file. The extension <code>.TPM.txt</code> will be added.</li>
 </ul>
 <h3 id="outputs_1">Outputs</h3>
