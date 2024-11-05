@@ -14,7 +14,7 @@ task mark_duplicates {
             mark_duplicates_metrics: {
                 description: "The METRICS_FILE result of `picard MarkDuplicates`",
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics",
-            }
+            },
         }
     }
 
@@ -27,7 +27,7 @@ task mark_duplicates {
                 "SUM_OF_BASE_QUALITIES",
                 "TOTAL_MAPPED_REFERENCE_LENGTH",
                 "RANDOM"
-            ]
+            ],
         }
         read_name_regex: "Regular expression for extracting tile names, x coordinates, and y coordinates from read names. The default works for typical Illumina read names."
         tagging_policy: {
@@ -49,7 +49,7 @@ task mark_duplicates {
         }
         create_bam: {
             description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?",
-            common: true
+            common: true,
         }
         clear_dt: "Clear the `DT` tag from the input BAM? For increased performance, if the input BAM does not have the `DT` tag, set to `false`."
         remove_duplicates: "Remove duplicate reads from the output BAM? If `true`, the output BAM will not contain any duplicate reads."
@@ -142,7 +142,7 @@ task validate_bam {
         ignore_list: {
             description: "List of Picard errors and warnings to ignore. Possible values can be found on the GATK website (see `external_help`).",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile",
-            common: true
+            common: true,
         }
         outfile_name: "Name for the ValidateSamFile report file"
         validation_stringency: {
@@ -156,15 +156,15 @@ task validate_bam {
         }
         succeed_on_errors: {
             description: "Succeed the task even if errors *and/or* warnings are detected",
-            common: true
+            common: true,
         }
         succeed_on_warnings: {
             description: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`",
-            common: true
+            common: true,
         }
         summary_mode: {
             description: "Enable SUMMARY mode?",
-            common: true
+            common: true,
         }
         index_validation_stringency_less_exhaustive: "Set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE`?"
         max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
@@ -187,13 +187,17 @@ task validate_bam {
         Int modify_disk_size_gb = 0
     }
 
-    String reference_arg = if defined(reference_fasta)
+    String reference_arg = (
+        if defined(reference_fasta)
         then "-R ~{reference_fasta}"
         else ""
+    )
     String mode_arg = if (summary_mode) then "--MODE SUMMARY" else ""
-    String stringency_arg = if (index_validation_stringency_less_exhaustive)
+    String stringency_arg = (
+        if (index_validation_stringency_less_exhaustive)
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
+    )
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
@@ -256,7 +260,7 @@ task sort {
         outputs: {
             sorted_bam: "The input BAM after it has been sorted according to `sort_order`",
             sorted_bam_index: "The `.bai` BAM index file associated with `sorted_bam`",
-            sorted_bam_md5: "The md5sum of `sorted_bam`"
+            sorted_bam_md5: "The md5sum of `sorted_bam`",
         }
     }
 
@@ -269,7 +273,7 @@ task sort {
                 "coordinate",
                 "duplicate"
             ],
-            common: true
+            common: true,
         }
         prefix: "Prefix for the sorted BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
         validation_stringency: {
@@ -339,7 +343,7 @@ task merge_sam_files {
         outputs: {
             merged_bam: "The BAM resulting from merging all the input BAMs",
             merged_bam_index: "The `.bai` BAM index file associated with `merged_bam`",
-            merged_bam_md5: "The md5sum of `merged_bam`"
+            merged_bam_md5: "The md5sum of `merged_bam`",
         }
     }
 
@@ -354,7 +358,7 @@ task merge_sam_files {
                 "coordinate",
                 "duplicate"
             ],
-            common: true
+            common: true,
         }
         validation_stringency: {
             description: "Validation stringency for parsing the input BAM.",
@@ -426,7 +430,7 @@ task clean_sam {
         outputs: {
             cleaned_bam: "A cleaned version of the input BAM",
             cleaned_bam_index: "The `.bai` BAM index file associated with `cleaned_bam`",
-            cleaned_bam_md5: "The md5sum of `cleaned_bam`"
+            cleaned_bam_md5: "The md5sum of `cleaned_bam`",
         }
     }
 
@@ -494,7 +498,7 @@ task collect_wgs_metrics {
         outputs: {
             wgs_metrics: {
                 description: "Output report of `picard CollectWgsMetrics`",
-                external_help: "https://broadinstitute.github.io/picard/picard-metric-definitions.html#CollectWgsMetrics.WgsMetrics"
+                external_help: "https://broadinstitute.github.io/picard/picard-metric-definitions.html#CollectWgsMetrics.WgsMetrics",
             }
         }
     }
@@ -557,9 +561,9 @@ task collect_alignment_summary_metrics {
         outputs: {
             alignment_metrics: {
                 description: "The text file output of `CollectAlignmentSummaryMetrics`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics",
             },
-            alignment_metrics_pdf: "The PDF file output of `CollectAlignmentSummaryMetrics`"
+            alignment_metrics_pdf: "The PDF file output of `CollectAlignmentSummaryMetrics`",
         }
     }
 
@@ -619,13 +623,13 @@ task collect_gc_bias_metrics {
         outputs: {
             gc_bias_metrics: {
                 description: "The full text file output of `CollectGcBiasMetrics`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasDetailMetrics"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasDetailMetrics",
             },
             gc_bias_metrics_summary: {
                 description: "The summary text file output of `CollectGcBiasMetrics`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasSummaryMetrics"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasSummaryMetrics",
             },
-            gc_bias_metrics_pdf: "The PDF file output of `CollectGcBiasMetrics`"
+            gc_bias_metrics_pdf: "The PDF file output of `CollectGcBiasMetrics`",
         }
     }
 
@@ -690,9 +694,9 @@ task collect_insert_size_metrics {
         outputs: {
             insert_size_metrics: {
                 description: "The text file output of `CollectInsertSizeMetrics`",
-                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics"
+                external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics",
             },
-            insert_size_metrics_pdf: "The PDF file output of `CollectInsertSizeMetrics`"
+            insert_size_metrics_pdf: "The PDF file output of `CollectInsertSizeMetrics`",
         }
     }
 
@@ -751,7 +755,7 @@ task quality_score_distribution {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037057312-QualityScoreDistribution-Picard-"
         outputs: {
             quality_score_distribution_txt: "The text file output of `QualityScoreDistribution`",
-            quality_score_distribution_pdf: "The PDF file output of `QualityScoreDistribution`"
+            quality_score_distribution_pdf: "The PDF file output of `QualityScoreDistribution`",
         }
     }
 
@@ -816,7 +820,7 @@ task bam_to_fastq {
         prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
         paired: {
             description: "Is the data Paired-End (true) or Single-End (false)?",
-            common: true
+            common: true,
         }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -839,12 +843,12 @@ task bam_to_fastq {
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
             FASTQ=~{prefix}_R1.fastq \
-            ~{if paired then "SECOND_END_FASTQ="+prefix+"_R2.fastq" else ""} \
+            ~{if paired then "SECOND_END_FASTQ=" + prefix + "_R2.fastq" else ""} \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
 
         gzip ~{prefix}_R1.fastq \
-            ~{if paired then prefix+"_R2.fastq" else ""}
+            ~{if paired then prefix + "_R2.fastq" else ""}
     >>>
 
     output {
@@ -866,7 +870,7 @@ task merge_vcfs {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036713331-MergeVcfs-Picard"
         outputs: {
             output_vcf: "The merged VCF file",
-            output_vcf_index: "The index file associated with the merged VCF file"
+            output_vcf_index: "The index file associated with the merged VCF file",
         }
     }
 
@@ -912,7 +916,7 @@ task scatter_interval_list {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036897212-IntervalListTools-Picard"
         outputs: {
             interval_lists_scatter: "The split interval lists",
-            interval_count: "The number of split interval lists"
+            interval_count: "The number of split interval lists",
         }
     }
 
@@ -924,7 +928,7 @@ task scatter_interval_list {
                 "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW",
                 "INTERVAL_SUBDIVISION",
                 "BALANCING_WITHOUT_INTERVAL_SUBDIVISION"
-            ]
+            ],
         }
         unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
         sort: "Should the output interval lists be sorted? Sorts by coordinate."
@@ -952,17 +956,15 @@ task scatter_interval_list {
             --INPUT ~{interval_list} \
             --OUTPUT out
 
-        bash <<CODE
         I=0
         for list in out/*/*.interval_list
         do
-           I=\$((I+1))
-           dir=\$(dirname \$list)
-           name=\$(basename \$list)
-           mv \$list \${dir}/\${I}\${name}
+           I=$((I+1))
+           dir=$(dirname $list)
+           name=$(basename $list)
+           mv $list ${dir}/${I}${name}
         done
-        echo \$I > interval_count.txt
-        CODE
+        echo $I > interval_count.txt
     >>>
 
     output {
@@ -1018,12 +1020,12 @@ task create_sequence_dictionary {
             -R ~{fasta} \
             ~{(
                 if defined(assembly_name)
-                then "--GENOME_ASSEMBLY " + assembly_name
+                then "--GENOME_ASSEMBLY ~{assembly_name}"
                 else ""
             )} \
-            ~{if defined(fasta_url) then "--URI " + fasta_url else ""} \
-            ~{if defined(species) then "--SPECIES " + species else ""} \
-            > ~{outfile_name} \
+            ~{if defined(fasta_url) then "--URI ~{fasta_url}" else ""} \
+            ~{if defined(species) then "--SPECIES ~{species}" else ""} \
+            > ~{outfile_name}
     >>>
 
     output {
@@ -1035,6 +1037,175 @@ task create_sequence_dictionary {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.0--hdfd78af_0"
+        maxRetries: 1
+    }
+}
+
+task revert_sam {
+    meta {
+        description: "This WDL task removes all alignment information from the input BAM file, leaving only the read data."
+        outputs: {
+            reverted_bam: "The reverted BAM file"
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to revert"
+        attributes_to_clear: "List of attributes to clear from the SAM records"
+        attributes_to_reverse: "List of attributes on negative strand reads that need to be reversed."
+        attributes_to_reverse_complement: "List of attributes on negative strand reads that need to be reverse complemented."
+        prefix: "Prefix for the reverted BAM file. The extension `.reverted.bam` will be added."
+        sort_order: {
+            description: "Order by which to sort the input BAM",
+            choices: [
+                "queryname",
+                "coordinate"
+            ],
+            common: true,
+        }
+        library_name: "The library name to use in the reverted output file. This will override the existing sample alias in the file and is used only if all the read groups in the input file have the same library name."
+        sample_alias: "The sample alias to use in the reverted output file. This will override the existing sample alias in the file and is used only if all the read groups in the input file have the same sample alias."
+        keep_first_duplicate: "If `sanitize = true` keep the first record when we find more than one record with the same name for R1/R2/unpaired reads respectively. For paired end reads, keeps only the first R1 and R2 found respectively, and discards all unpaired reads. Duplicates do not refer to the duplicate flag in the FLAG field, but instead reads with the same name."
+        remove_alignment_information: "Remove all alignment information from the file."
+        remove_duplicate_information: "Remove duplicate read flags from all reads. Note that if this is false and `remove_alignment_informat = true`, the output may have the unusual but sometimes desirable trait of having unmapped reads that are marked as duplicates."
+        restore_hardclips: "Restore hard clipped bases to the sequence and quality strings for read containing XB and XQ tags."
+        restore_original_qualities: "Restore original qualities if available in the OQ tag."
+        sanitize: {
+            description: "Will discard problematic reads. Potentially destructive.",
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832764371227-RevertSam-Picard",
+        }
+        max_discard_fraction: "If `sanitize = true` and higher than `max_discard_fraction` reads are discarded due to sanitization then the program will exit with an Exception instead of exiting cleanly. Output BAM will still be valid."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        String? library_name
+        String? sample_alias
+        Array[String] attributes_to_clear = ["NM", "UQ", "PG", "MD", "MQ", "SA", "MC", "AS"]
+        Array[String] attributes_to_reverse = ["OQ", "U2"]
+        Array[String] attributes_to_reverse_complement = ["E2", "SQ"]
+        String prefix = basename(bam, ".bam")
+        String sort_order = "queryname"
+        Boolean keep_first_duplicate = false
+        Boolean remove_alignment_information = true
+        Boolean remove_duplicate_information = true
+        Boolean restore_hardclips = true
+        Boolean restore_original_qualities = true
+        Boolean sanitize = false
+        Float max_discard_fraction = 0.01
+        Int memory_gb = 8
+        Int modify_disk_size_gb = 0
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command <<<
+        set -euo pipefail
+
+        picard -Xmx~{java_heap_size}g RevertSam \
+            INPUT=~{bam} \
+            OUTPUT=~{prefix}.reverted.bam \
+            ATTRIBUTE_TO_CLEAR="~{sep(",", attributes_to_clear)}" \
+            ATTRIBUTE_TO_REVERSE="~{sep(",", attributes_to_reverse)}" \
+            ATTRIBUTE_TO_REVERSE_COMPLEMENT="~{sep(",", attributes_to_reverse_complement)}" \
+            KEEP_FIRST_DUPLICATE=~{keep_first_duplicate} \
+            ~{if defined(library_name) then "LIBRARY_NAME=" + library_name else ""} \
+            MAX_DISCARD_FRACTION=~{max_discard_fraction} \
+            REMOVE_ALIGNMENT_INFORMATION=~{remove_alignment_information} \
+            REMOVE_DUPLICATE_INFORMATION=~{remove_duplicate_information} \
+            RESTORE_HARDCLIPS=~{restore_hardclips} \
+            RESTORE_ORIGINAL_QUALITIES=~{restore_original_qualities} \
+            ~{if defined(sample_alias) then "SAMPLE_ALIAS=" + sample_alias else ""} \
+            SANITIZE=~{sanitize} \
+            SORT_ORDER=~{sort_order} \
+            VALIDATION_STRINGENCY=SILENT
+    >>>
+
+    output {
+        File reverted_bam = "~{prefix}.reverted.bam"
+    }
+
+    runtime{
+        memory: "~{memory_gb} GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
+        maxRetries: 1
+    }
+}
+
+task fastq_to_sam {
+    meta {
+        description: "This WDL task generates an unaligned BAM (uBAM) from FASTQ files."
+        outputs: {
+            unaligned_bam: "The unaligned BAM file"
+        }
+    }
+
+    parameter_meta {
+        read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
+        read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
+        prefix: "Prefix for the output file. The extension `.unmapped.bam` will be added."
+        read_group_name: "Name of the read group"
+        sample_name: "Sample name for the fastq files"
+        library_name: "Library name"
+        sequencing_center: "Sequencing center that produced the reads"
+        run_date: "Date the run was produced"
+        platform_unit: "Platform unit (e.g. flowcell-barcode.lane for Illumina)"
+        platform: "Platform/technology used to produce the reads (e.g. ILLUMINA)"
+        platform_model: "Model of the sequencing platform (e.g. HiSeq2000). Free-form text."
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File read_one_fastq_gz
+        File read_two_fastq_gz
+        String read_group_name
+        String sample_name
+        String library_name
+        String sequencing_center
+        String run_date
+        String prefix = basename(read_one_fastq_gz, ".fq.gz")
+        String platform_unit = ""
+        String platform = ""
+        String platform_model = ""
+        Int memory_gb = 8
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+    Int disk_size_gb = ceil(fastq_size * 2) + 10 + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command <<<
+        set -euo pipefail
+
+        picard -Xmx~{java_heap_size}g FastqToSam \
+            FASTQ=~{read_one_fastq_gz} \
+            FASTQ2=~{read_two_fastq_gz} \
+            OUTPUT=~{prefix}.unmapped.bam \
+            READ_GROUP_NAME=~{read_group_name} \
+            SAMPLE_NAME=~{sample_name} \
+            LIBRARY_NAME=~{library_name} \
+            SEQUENCING_CENTER=~{sequencing_center} \
+            RUN_DATE=~{run_date} \
+            ~{if platform_unit != "" then "PLATFORM_UNIT=" + platform_unit else ""} \
+            ~{if platform != "" then "PLATFORM=" + platform else ""} \
+            ~{if platform_model != "" then "PLATFORM_MODEL=" + platform_model else ""}
+    >>>
+
+    output {
+        File unaligned_bam = "~{prefix}.unmapped.bam"
+    }
+
+    runtime{
+        memory: "~{memory_gb} GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }

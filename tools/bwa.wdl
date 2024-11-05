@@ -16,15 +16,15 @@ task bwa_aln {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true
+            common: true,
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -102,25 +102,25 @@ task bwa_aln_pe {
     parameter_meta {
         read_one_fastq_gz: {
             description: "Input gzipped FASTQ read one file to align with bwa",
-            stream: false
+            stream: false,
         }
         read_two_fastq_gz: {
             description: "Input gzipped FASTQ read two file to align with bwa",
-            stream: false
+            stream: false,
         }
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true
+            common: true,
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -168,7 +168,7 @@ task bwa_aln_pe {
         ln -s ~{read_two_fastq_gz}
 
         bwa sampe \
-            ~{if read_group != "" then "-r '"+read_group+"'" else ""} \
+            ~{if read_group != "" then "-r '" + read_group + "'" else ""} \
             bwa_db/"$PREFIX" \
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_one_fastq_gz)}) \
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_two_fastq_gz)}) \
@@ -207,15 +207,19 @@ task bwa_mem {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true
+            common: true,
         }
+        skip_mate_rescue: "Skip mate rescue"
+        skip_pairing: "Skip pairing; mate rescue performed unless `skip_mate_rescue` also in use"
+        split_smallest: "For split alignment, take the alignment with the smallest coordinate as primary"
+        short_secondary: "Mark shorter split hits as secondary"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            common: true,
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -230,6 +234,10 @@ task bwa_mem {
             ""
         )
         String read_group = ""
+        Boolean skip_mate_rescue = false
+        Boolean skip_pairing = false
+        Boolean split_smallest = false
+        Boolean short_secondary = false
         Boolean use_all_cores = false
         Int ncpu = 4
         Int modify_disk_size_gb = 0
@@ -261,14 +269,18 @@ task bwa_mem {
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
         ln -sf ~{read_one_fastq_gz}
-        ~{if defined(read_two_fastq_gz) then "ln -sf "+read_two_fastq_gz+"" else ""}
+        ~{if defined(read_two_fastq_gz) then "ln -sf " + read_two_fastq_gz + "" else ""}
 
         bwa mem \
             -t "$n_cores" \
-            ~{if read_group != "" then "-R '"+read_group+"'" else ""} \
+            ~{if read_group != "" then "-R '" + read_group + "'" else ""} \
             bwa_db/"$PREFIX" \
             ~{basename(read_one_fastq_gz)} \
             ~{basename(read_two_file)} \
+            ~{if skip_mate_rescue then "-S" else ""} \
+            ~{if skip_pairing then "-P" else ""} \
+            ~{if split_smallest then "-5" else ""} \
+            ~{if short_secondary then "-M" else ""} \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 
@@ -300,7 +312,7 @@ task build_bwa_db {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
         db_name: {
             description: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added.",
-            common: true
+            common: true,
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
