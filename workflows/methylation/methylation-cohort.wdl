@@ -1,0 +1,257 @@
+version 1.1
+
+workflow methylation_cohort {
+    meta {
+        description: "Process methylation data for a cohort of samples"
+        outputs: {
+            combined_beta: "Combined beta values for all samples"
+            filtered_beta: "Filtered beta values for all samples"
+            umap_embedding: "UMAP embedding for all samples"
+            umap_plot: "UMAP plot for all samples"
+        }
+    }
+
+    parameter_meta {
+        unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
+    }
+
+    input {
+        Array[File] unfiltered_normalized_beta
+    }
+
+    call combine_data { input:
+        unfiltered_normalized_beta,
+    }
+
+    call filter_probes { input:
+        combined_beta_values = combine_data.combined_beta,
+    }
+
+    call generate_umap { input:
+        filtered_beta_values = filter_probes.filtered_beta_values,
+    }
+
+    call plot_umap { input:
+        umap = generate_umap.umap,
+    }
+
+    output {
+        File combined_beta = combine_data.combined_beta
+        File filtered_beta = filter_probes.filtered_beta_values
+        File umap_embedding = generate_umap.umap
+        File umap_plot = plot_umap.umap_plot
+    }
+}
+
+task combine_data {
+    meta {
+        description: "Combine data from multiple samples"
+        outputs: {
+            combined_beta: "Combined beta values for all samples"
+        }
+    }
+
+    parameter_meta {
+        unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
+    }
+
+    input {
+        Array[File] unfiltered_normalized_beta
+    }
+
+    Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2)
+
+    command <<<
+        echo "Combining data"
+        ln -s ~{sep(" ", unfiltered_normalized_beta)} .
+
+        cat <<SCRIPT > run.py
+        import sys
+        import argparse
+        import pandas as pd
+
+        def get_args():
+            parser = argparse.ArgumentParser(
+                description="Combine CSV files.")
+            parser.add_argument(
+                "csvs", type=str, nargs="+", help="List of CSV files.")
+
+            args = parser.parse_args()
+
+            return args
+        
+        def read(filename):
+            df = pd.read_csv(filename)
+            df.rename(columns={df.columns[0]: "probe"}, inplace=True)
+            df.set_index("probe", inplace=True)
+            return df
+
+        if __name__ == "__main__":
+            args = get_args()
+
+            # Combine data
+            df = pd.concat([read(f) for f in args.csvs], axis=1, join="inner")
+            df.to_csv("combined_beta.csv", index=True)
+        SCRIPT
+
+        python run.py *.beta_swan_norm_unfiltered.csv
+
+    >>>
+
+    output {
+        File combined_beta = "combined_beta.csv"
+    }
+
+    runtime {
+        container: "quay.io/biocontainers/pandas:2.2.1"
+        memory: "8 GB"
+        cpu: 1
+        disks: "~{disk_size_gb} GB"
+        maxRetries: 1
+    }
+}
+
+task filter_probes {
+    meta {
+        description: "Filter probes based on standard deviation"
+        outputs: {
+            filtered_beta_values: "Filtered beta values for all samples"
+        }
+    }
+
+    parameter_meta {
+        combined_beta_values: "Combined beta values for all samples"
+    }
+
+    input {
+        File combined_beta_values
+    }
+
+    Int disk_size_gb = ceil(size(combined_beta_values, "GiB") * 2)
+
+    command <<<
+        ln -s ~{combined_beta_values} beta.csv
+
+        python <<SCRIPT
+        import pandas as pd
+
+        # Read beta values
+        beta = pd.read_csv("beta.csv", index_col=0)
+
+        # Calculate standard deviation for each probe
+        beta["sd"] = beta.std(axis='columns')
+
+        # Filter to only the top 10,000 probes with the highest standard deviation
+        beta.sort_values(by="sd", ascending=False).head(10000).drop(columns={"sd"}).to_csv("filtered_beta.csv")
+        SCRIPT
+    >>>
+
+    output {
+        File filtered_beta_values = "filtered_beta.csv"
+    }
+
+    runtime {
+        container: "quay.io/biocontainers/pandas:2.2.1"
+        memory: "8 GB"
+        cpu: 1
+        disks: "~{disk_size_gb} GB"
+        maxRetries: 1
+    }
+}
+
+task generate_umap {
+    meta {
+        description: "Generate UMAP embedding"
+        outputs: {
+            umap: "UMAP embedding for all samples"
+        }
+    }
+
+    parameter_meta {
+        filtered_beta_values: "Filtered beta values for all samples"
+    }
+
+    input {
+        File filtered_beta_values
+    }
+
+    Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2)
+
+    command <<<
+        ln -s ~{filtered_beta_values} beta.csv
+
+        python <<SCRIPT
+        import pandas as pd
+        import umap
+
+        # Read beta values
+        beta = pd.read_csv("beta.csv", index_col=0)
+
+        # Perform UMAP
+        embedding = umap.UMAP().fit_transform(beta.T)
+
+        # Save UMAP embedding
+        umap = pd.DataFrame(data=embedding, index=beta.T.index, columns=["UMAP1", "UMAP2"])
+        umap.index_name = "sample"
+        umap.to_csv("umap.csv")
+        SCRIPT
+    >>>
+
+    output {
+        File umap = "umap.csv"
+    }
+
+    runtime {
+        container: "adthrasher/umap:0.5.7-1"
+        memory: "8 GB"
+        cpu: 1
+        disks: "~{disk_size_gb} GB"
+        maxRetries: 1
+    }
+}
+
+task plot_umap {
+    meta {
+        description: "Plot UMAP embedding"
+        outputs: {
+            umap_plot: "UMAP plot for all samples"
+        }
+    }
+
+    parameter_meta {
+        umap: "UMAP embedding for all samples"
+    }
+
+    input {
+        File umap
+    }
+
+    command <<<
+        python <<SCRIPT
+        import pandas as pd
+        import matplotlib.pyplot as plt
+
+        # Read UMAP embedding
+        umap = pd.read_csv("umap.csv", index_col=0)
+
+        # Plot UMAP
+        plt.scatter(umap["UMAP1"], umap["UMAP2"])
+        plt.xlabel("UMAP1")
+        plt.ylabel("UMAP2")
+        plt.title("UMAP Embedding")
+        plt.savefig("umap.png")    
+        SCRIPT
+    >>>
+
+    output {
+        File umap_plot = "umap.png"
+    }
+
+    runtime {
+        container: "adthrasher/python-plotting:1.0.0"
+        memory: "4 GB"
+        cpu: 1
+        disks: "4 GB"
+        maxRetries: 1
+    }
+}
