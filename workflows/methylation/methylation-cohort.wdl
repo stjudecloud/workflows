@@ -202,7 +202,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "adthrasher/umap:0.5.7-1"
+        container: "ghcr.io/stjudecloud/umap:branch-methylation-0.5.7-1"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -248,7 +248,7 @@ task plot_umap {
     }
 
     runtime {
-        container: "adthrasher/python-plotting:1.0.0"
+        container: "ghcr.io/stjudecloud/python-plotting:branch-methylation-1.0.0"
         memory: "4 GB"
         cpu: 1
         disks: "4 GB"

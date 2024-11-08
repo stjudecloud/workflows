@@ -154,8 +154,7 @@ task process_raw_idats {
     }
 
     runtime {
-        #container: "quay.io/biocontainers/bioconductor-minfi:1.48.0--r43hdfd78af_0"
-        container: "adthrasher/minfi:dev"
+        container: "ghcr.io/stjudecloud/minfi:branch-methylation-1.48.0-1"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
