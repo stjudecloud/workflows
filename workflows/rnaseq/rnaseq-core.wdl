@@ -45,7 +45,7 @@ workflow rnaseq_core {
             choices: [
                 "bwa aln",
                 "bwa mem",
-                "star",
+                "star"
             ],
         }
         strandedness: {
@@ -54,7 +54,7 @@ workflow rnaseq_core {
                 "",
                 "Stranded-Reverse",
                 "Stranded-Forward",
-                "Unstranded",
+                "Unstranded"
             ],
         }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
