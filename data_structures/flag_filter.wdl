@@ -155,5 +155,4 @@ workflow validate_flag_filter {
     output {
         String check = "passed"
     }
-
 }

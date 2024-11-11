@@ -25,6 +25,7 @@ workflow bam_to_fastqs {
         Boolean use_all_cores = false
     }
 
+    #@ except: UnusedCall
     call samtools.quickcheck { input: bam = bam }
     call samtools.split { input:
         bam,

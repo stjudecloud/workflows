@@ -9,7 +9,7 @@ workflow estimate {
         external_help: "https://bioinformatics.mdanderson.org/estimate/"
         outputs: {
             tpm: "Transcripts Per Million file",
-            estimate_result: "Final output of ESTIMATE"
+            estimate_result: "Final output of ESTIMATE",
         }
         deprecated: true
     }

@@ -124,7 +124,7 @@ workflow rnaseq_core {
             noncanonical_motifs: 5,
             GT_AG_and_CT_AC_motif: -1,
             GC_AG_and_CT_GC_motif: 5,
-            AT_AC_and_GT_AT_motif: 5
+            AT_AC_and_GT_AT_motif: 5,
         }
         String xenocp_aligner = "star"
         String strandedness = ""
@@ -148,7 +148,7 @@ workflow rnaseq_core {
         "Stranded-Forward": "yes",
         "Unstranded": "no",
         "Inconclusive": "undefined",
-        "": "undefined"
+        "": "undefined",
     }
 
     String provided_strandedness = strandedness
@@ -193,9 +193,11 @@ workflow rnaseq_core {
         gene_model = gtf,
     }
 
-    String htseq_strandedness = if (provided_strandedness != "")
+    String htseq_strandedness = (
+        if (provided_strandedness != "")
         then htseq_strandedness_map[provided_strandedness]
         else htseq_strandedness_map[ngsderive_strandedness.strandedness_string]
+    )
 
     call htseq.count as htseq_count { input:
         bam = alignment_post.processed_bam,

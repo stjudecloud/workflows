@@ -114,7 +114,7 @@ task split_string {
     }
 
     parameter_meta {
-        input_string: "String to split on occurences of `delimiter`"
+        string: "String to split on occurences of `delimiter`"
         delimiter: {
             description: "Delimiter on which to split `input_string`",
             common: true,
@@ -122,14 +122,14 @@ task split_string {
     }
 
     input {
-        String input_string
+        String string
         String delimiter = " , "
     }
 
     command <<<
         set -euo pipefail
 
-        echo ~{input_string} | sed 's/~{delimiter}/\n/g' > split_strings.txt
+        echo ~{string} | sed 's/~{delimiter}/\n/g' > split_strings.txt
     >>>
 
     output {

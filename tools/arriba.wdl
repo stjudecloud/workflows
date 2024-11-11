@@ -77,7 +77,7 @@ task arriba {
                 "intronic",
                 "in_vitro",
                 "intragenic_exonic",
-                "internal_tandem_duplication",
+                "internal_tandem_duplication"
             ],
         }
         feature_name: {
@@ -94,7 +94,7 @@ task arriba {
                 "auto",
                 "yes",
                 "no",
-                "reverse",
+                "reverse"
             ],
         }
         mark_duplicates: {
@@ -139,7 +139,7 @@ task arriba {
         File? wgs_svs
         Array[String] interesting_contigs = [
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-            "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y", "AC_*", "NC_*"
+            "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y", "AC_*", "NC_*",
         ]
         Array[String] viral_contigs = ["AC_*", "NC_*"]
         Array[String] disable_filters = []

@@ -19,7 +19,7 @@ task count {
             choices: [
                 "yes",
                 "reverse",
-                "no",
+                "no"
             ],
         }
         prefix: "Prefix for the feature counts file. The extension `.feature-counts.txt` will be added."
@@ -37,16 +37,16 @@ task count {
             choices: [
                 "union",
                 "intersection-strict",
-                "intersection-nonempty",
+                "intersection-nonempty"
             ],
         }
         include_custom_header: {
             description: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `~{idattr}\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format.",
-            common: true
+            common: true,
         }
         pos_sorted: {
             description: "Is the BAM position sorted (true) or name sorted (false)? It is **highly** recommended to use a name sorted BAM file. This is because HTSeq will re-sort position-sorted BAMs with an inefficient algorithm, causing very large memory and disk space allocations (especially for large BAMs).",
-            common: true
+            common: true,
         }
         nonunique: {
             description: "Score reads that align to or are assigned to more than one feature?",
@@ -93,7 +93,9 @@ task count {
 
     Int memory_gb = (if pos_sorted then ceil(bam_size) + 4 else 4) + modify_memory_gb
 
-    Int disk_size_gb = ceil((bam_size + gtf_size) * if pos_sorted then 4 else 1) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(
+        (bam_size + gtf_size) * if pos_sorted then 4 else 1
+    ) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

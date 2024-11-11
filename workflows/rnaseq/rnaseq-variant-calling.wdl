@@ -107,8 +107,8 @@ workflow rnaseq_variant_calling {
     }
 
     call gatk.variant_filtration { input:
-        vcf = merge_vcfs.output_vcf,
-        vcf_index = merge_vcfs.output_vcf_index,
+        vcf = merge_vcfs.merged_vcf,
+        vcf_index = merge_vcfs.merged_vcf_index,
         fasta,
         fasta_index,
         dict,

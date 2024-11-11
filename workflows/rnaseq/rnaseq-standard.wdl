@@ -68,9 +68,9 @@ workflow rnaseq_standard {
     }
 
     call parse_input { input:
-        input_strand = strandedness,
+        strand = strandedness,
         cleanse_xenograft,
-        contaminant_db = defined(contaminant_db)
+        contaminant_db = defined(contaminant_db),
     }
 
     if (validate_input) {
@@ -136,7 +136,7 @@ task parse_input {
     }
 
     parameter_meta {
-        input_strand: {
+        strand: {
             description: "Provided strandedness protocol of the RNA-Seq experiment",
             choices: [
                 "",
@@ -150,16 +150,16 @@ task parse_input {
     }
 
     input {
-        String input_strand
+        String strand
         Boolean cleanse_xenograft
         Boolean contaminant_db
     }
 
     command <<<
-        if [ -n "~{input_strand}" ] \
-            && [ "~{input_strand}" != "Stranded-Reverse" ] \
-            && [ "~{input_strand}" != "Stranded-Forward" ] \
-            && [ "~{input_strand}" != "Unstranded" ]
+        if [ -n "~{strand}" ] \
+            && [ "~{strand}" != "Stranded-Reverse" ] \
+            && [ "~{strand}" != "Stranded-Forward" ] \
+            && [ "~{strand}" != "Unstranded" ]
         then
             >&2 echo "strandedness must be:"
             >&2 echo "'', 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"

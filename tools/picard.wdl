@@ -872,8 +872,8 @@ task merge_vcfs {
         description: "Merges the input VCF files into a single VCF file"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036713331-MergeVcfs-Picard"
         outputs: {
-            output_vcf: "The merged VCF file",
-            output_vcf_index: "The index file associated with the merged VCF file",
+            merged_vcf: "The merged VCF file",
+            merged_vcf_index: "The index file associated with the merged VCF file",
         }
     }
 
@@ -901,8 +901,8 @@ task merge_vcfs {
     >>>
 
     output {
-        File output_vcf = output_vcf_name
-        File output_vcf_index = "~{output_vcf_name}.tbi"
+        File merged_vcf = output_vcf_name
+        File merged_vcf_index = "~{output_vcf_name}.tbi"
     }
 
     runtime {

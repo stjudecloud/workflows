@@ -84,6 +84,7 @@ task download_library {
 
     String db_name = "kraken2_" + library_name + "_library"
 
+    #@ except: ExpressionSpacing
     Int disk_size_gb = (
         (
             if library_name == "bacteria" then 300
@@ -328,6 +329,7 @@ task kraken {
     input {
         File read_one_fastq_gz
         File read_two_fastq_gz
+        #@ except: DisallowedInputName
         File db
         String prefix = sub(
             basename(read_one_fastq_gz),

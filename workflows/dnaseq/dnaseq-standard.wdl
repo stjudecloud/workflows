@@ -25,7 +25,10 @@ workflow dnaseq_standard_experimental {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"],
+            choices: [
+                "mem",
+                "aln"
+            ],
         }
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
@@ -103,7 +106,10 @@ task parse_input {
     parameter_meta {
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"],
+            choices: [
+                "mem",
+                "aln"
+            ],
         }
     }
 

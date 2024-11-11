@@ -28,7 +28,10 @@ workflow dnaseq_core_experimental {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"],
+            choices: [
+                "mem",
+                "aln"
+            ],
         }
         use_all_cores: "Use all cores? Recommended for cloud environments."
         sample_override: "Value to override the SM field of *every* read group."
@@ -66,7 +69,7 @@ workflow dnaseq_core_experimental {
                 PL: tuple.right.PL,
                 PM: tuple.right.PM,
                 PU: tuple.right.PU,
-                SM: sample_override
+                SM: sample_override,
             }
         }
 
@@ -78,12 +81,12 @@ workflow dnaseq_core_experimental {
 
         call util.split_fastq as read_ones { input:
             fastq = tuple.left.left,
-            reads_per_file = reads_per_file
+            reads_per_file,
         }
 
         call util.split_fastq as read_twos { input:
             fastq = tuple.left.right,
-            reads_per_file = reads_per_file
+            reads_per_file,
         }
 
         scatter (t in zip(read_ones.fastqs, read_twos.fastqs)) {
