@@ -8,6 +8,6 @@ jobs:
         steps:
         - uses: actions/checkout@v2
         - name: Run sprocket
-          uses: stjude-rust-labs/sprocket-action@v0.4.0
+          uses: stjude-rust-labs/sprocket-action@main
           with:
-            exclude-patterns: template
+            exclude-patterns: template,scrnaseq,cellranger
