@@ -31,7 +31,7 @@ workflow make_qc_reference {
                 "protozoa",
                 "nt",
                 "UniVec",
-                "UniVec_Core",
+                "UniVec_Core"
             ],
         }
         coverage_feature_types: {
@@ -45,7 +45,7 @@ workflow make_qc_reference {
                 "UTR",
                 "start_codon",
                 "stop_codon",
-                "Selenocysteine",
+                "Selenocysteine"
             ],
         }
         reference_fa_url: "URL to retrieve the reference FASTA file from"
@@ -122,8 +122,7 @@ workflow make_qc_reference {
     }
 
     Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.downloaded_file])
-    Array[File] empty_array = []  # this structure is required by the WDL v1.1 spec
-    if (custom_fastas != empty_array) {
+    if (length(custom_fastas) > 0) {
         call kraken2.create_library_from_fastas { input:
             fastas_gz = custom_fastas,
             protein,
