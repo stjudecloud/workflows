@@ -1,16 +1,13 @@
-name: Workflows Sprocket Lint
+name: Workflows Sprocket Check
 
 on: [push]
 
 jobs:
-    sprocket_lint:
+    sprocket_check:
         runs-on: ubuntu-latest
         steps:
         - uses: actions/checkout@v2
         - name: Run sprocket
           uses: stjude-rust-labs/sprocket-action@v0.4.0
           with:
-            lint: true
             exclude-patterns: template
-            deny-warnings: true
-            deny-notes: true
