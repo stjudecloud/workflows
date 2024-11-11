@@ -14,4 +14,4 @@ jobs:
             exclude-patterns: template,scrnaseq,cellranger
             deny-warnings: true
             deny-notes: true
-            except: TrailingCommas,ContainerValue
+            except: TrailingComma,ContainerValue
