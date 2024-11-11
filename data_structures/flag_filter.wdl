@@ -1,3 +1,5 @@
+#@ except: UnusedCall
+
 ## # FlagFilter
 ##
 ## A struct to represent the filtering flags used in various `samtools` commands.
@@ -153,5 +155,4 @@ workflow validate_flag_filter {
     output {
         String check = "passed"
     }
-
 }

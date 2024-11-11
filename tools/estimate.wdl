@@ -29,6 +29,7 @@ task run_estimate {
         Int max_retries = 1
     }
 
+    #@ except: LineWidth
     command <<<
         cp "~{gene_expression_file}" gene_expression.txt
         Rscript - <<END

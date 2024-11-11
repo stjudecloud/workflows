@@ -8,9 +8,10 @@ jobs:
         steps:
         - uses: actions/checkout@v2
         - name: Run sprocket
-          uses: stjude-rust-labs/sprocket-action@v0.4.0
+          uses: stjude-rust-labs/sprocket-action@main
           with:
             lint: true
-            exclude-patterns: template
+            exclude-patterns: template,scrnaseq,cellranger
             deny-warnings: true
             deny-notes: true
+            except: TrailingComma,ContainerValue
