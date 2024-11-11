@@ -484,31 +484,31 @@ task alignment {
             noncanonical_motifs: 30,
             GT_AG_and_CT_AC_motif: 12,
             GC_AG_and_CT_GC_motif: 12,
-            AT_AC_and_GT_AT_motif: 12,
+            AT_AC_and_GT_AT_motif: 12
         }
         SpliceJunctionMotifs out_sj_filter_count_unique_min = SpliceJunctionMotifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
-            AT_AC_and_GT_AT_motif: 1,
+            AT_AC_and_GT_AT_motif: 1
         }
         SpliceJunctionMotifs out_sj_filter_count_total_min = SpliceJunctionMotifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
-            AT_AC_and_GT_AT_motif: 1,
+            AT_AC_and_GT_AT_motif: 1
         }
         SpliceJunctionMotifs out_sj_filter_dist_to_other_sj_min = SpliceJunctionMotifs {
             noncanonical_motifs: 10,
             GT_AG_and_CT_AC_motif: 0,
             GC_AG_and_CT_GC_motif: 5,
-            AT_AC_and_GT_AT_motif: 10,
+            AT_AC_and_GT_AT_motif: 10
         }
         SpliceJunctionMotifs align_sj_stitch_mismatch_n_max = SpliceJunctionMotifs {
             noncanonical_motifs: 0,
             GT_AG_and_CT_AC_motif: -1,
             GC_AG_and_CT_GC_motif: 0,
-            AT_AC_and_GT_AT_motif: 0,
+            AT_AC_and_GT_AT_motif: 0
         }
         Pair[String, String] clip_3p_adapter_seq = ("None", "None")
         Pair[Float, Float] clip_3p_adapter_mmp = (0.1, 0.1)
@@ -669,31 +669,31 @@ task alignment {
                 out_sj_filter_overhang_min.noncanonical_motifs,
                 out_sj_filter_overhang_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_overhang_min.GC_AG_and_CT_GC_motif,
-                out_sj_filter_overhang_min.AT_AC_and_GT_AT_motif,
+                out_sj_filter_overhang_min.AT_AC_and_GT_AT_motif
             ]))} \
             --outSJfilterCountUniqueMin ~{sep(" ", quote([
                 out_sj_filter_count_unique_min.noncanonical_motifs,
                 out_sj_filter_count_unique_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_count_unique_min.GC_AG_and_CT_GC_motif,
-                out_sj_filter_count_unique_min.AT_AC_and_GT_AT_motif,
+                out_sj_filter_count_unique_min.AT_AC_and_GT_AT_motif
             ]))} \
             --outSJfilterCountTotalMin ~{sep(" ", quote([
                 out_sj_filter_count_total_min.noncanonical_motifs,
                 out_sj_filter_count_total_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_count_total_min.GC_AG_and_CT_GC_motif,
-                out_sj_filter_count_total_min.AT_AC_and_GT_AT_motif,
+                out_sj_filter_count_total_min.AT_AC_and_GT_AT_motif
             ]))} \
             --outSJfilterDistToOtherSJmin ~{sep(" ", quote([
                 out_sj_filter_dist_to_other_sj_min.noncanonical_motifs,
                 out_sj_filter_dist_to_other_sj_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_dist_to_other_sj_min.GC_AG_and_CT_GC_motif,
-                out_sj_filter_dist_to_other_sj_min.AT_AC_and_GT_AT_motif,
+                out_sj_filter_dist_to_other_sj_min.AT_AC_and_GT_AT_motif
             ]))} \
             --alignSJstitchMismatchNmax ~{sep(" ", quote([
                 align_sj_stitch_mismatch_n_max.noncanonical_motifs,
                 align_sj_stitch_mismatch_n_max.GT_AG_and_CT_AC_motif,
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
-                align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
+                align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif
             ]))} \
             --clip3pAdapterSeq ~{
                 clip_3p_adapter_seq.left + " " + clip_3p_adapter_seq.right

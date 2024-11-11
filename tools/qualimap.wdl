@@ -8,7 +8,7 @@ task rnaseq {
         outputs: {
             raw_summary: "Raw text summary of QualiMap's results. Can be parsed by MultiQC.",
             raw_coverage: "Raw text of QualiMap's coverage analysis results. Can be parsed by MultiQC.",
-            results: "Gzipped tar archive of all QualiMap output files",
+            results: "Gzipped tar archive of all QualiMap output files"
         }
     }
 
@@ -19,11 +19,11 @@ task rnaseq {
         memory_gb: "RAM to allocate for task"
         name_sorted: {
             description: "Is the BAM name sorted? QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to true.",
-            common: true,
+            common: true
         }
         paired_end: {
             description: "Is the BAM paired end?",
-            common: true,
+            common: true
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

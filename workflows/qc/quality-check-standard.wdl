@@ -178,11 +178,11 @@ workflow quality_check {
     # `subsample_n_reads` this will be `bam`
     File post_subsample_bam = select_first([
         subsample.sampled_bam,
-        bam,
+        bam
     ])
     File post_subsample_bam_index = select_first([
         subsample_index.bam_index,
-        bam_index,
+        bam_index
     ])
     String post_subsample_prefix = (
         if (defined(subsample.sampled_bam))
@@ -450,7 +450,7 @@ workflow quality_check {
         File validate_sam_file = validate_bam.validate_report
         File flagstat_report = select_first([
             markdups_post.flagstat_report,
-            flagstat.flagstat_report,
+            flagstat.flagstat_report
         ])
         File fastqc_results = fastqc.results
         File instrument_file = instrument.instrument_file
@@ -462,11 +462,11 @@ workflow quality_check {
             = collect_alignment_summary_metrics.alignment_metrics_pdf
         File insert_size_metrics = select_first([
             markdups_post.insert_size_metrics,
-            collect_insert_size_metrics.insert_size_metrics,
+            collect_insert_size_metrics.insert_size_metrics
         ])
         File insert_size_metrics_pdf = select_first([
             markdups_post.insert_size_metrics_pdf,
-            collect_insert_size_metrics.insert_size_metrics_pdf,
+            collect_insert_size_metrics.insert_size_metrics_pdf
         ])
         File quality_score_distribution_txt
             = quality_score_distribution.quality_score_distribution_txt
