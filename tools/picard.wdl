@@ -441,7 +441,7 @@ task clean_sam {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -511,7 +511,7 @@ task collect_wgs_metrics {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -641,7 +641,7 @@ task collect_gc_bias_metrics {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
