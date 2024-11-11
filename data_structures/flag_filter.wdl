@@ -1,3 +1,5 @@
+#@ except: UnusedCall
+
 ## # FlagFilter
 ##
 ## A struct to represent the filtering flags used in various `samtools` commands.

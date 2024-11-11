@@ -7,8 +7,11 @@ import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as b2fq
+#@ except: LineWidth
 import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl" as seaseq_map
+#@ except: LineWidth
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
+#@ except: LineWidth
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 
 workflow chipseq_standard {
@@ -73,6 +76,7 @@ workflow chipseq_standard {
         bam = selected_bam,
     }
 
+    #@ except: UnusedCall
     call ngsderive.read_length { input:
         bam = selected_bam,
         bam_index = samtools_index_input.bam_index,
@@ -107,7 +111,7 @@ workflow chipseq_standard {
         }
     }
 
-    Array[File] aligned_bams = select_first([single_end.tagged_bam, []])
+    Array[File] aligned_bams = single_end.tagged_bam
     scatter(aligned_bam in aligned_bams){
         call picard.clean_sam as picard_clean { input:
             bam = aligned_bam,
@@ -127,6 +131,7 @@ workflow chipseq_standard {
         bam = markdup.mkdupbam,
         use_all_cores,
     }
+    #@ except: UnusedCall
     call picard.validate_bam { input: bam = markdup.mkdupbam }
 
     call md5sum.compute_checksum { input:
