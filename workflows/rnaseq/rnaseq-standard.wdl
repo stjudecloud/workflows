@@ -142,7 +142,7 @@ task parse_input {
                 "",
                 "Stranded-Reverse",
                 "Stranded-Forward",
-                "Unstranded",
+                "Unstranded"
             ],
         }
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
