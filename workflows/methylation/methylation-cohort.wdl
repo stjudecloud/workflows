@@ -17,14 +17,47 @@ workflow methylation_cohort {
 
     input {
         Array[File] unfiltered_normalized_beta
+        Int max_length = 500
     }
 
-    call combine_data { input:
-        unfiltered_normalized_beta,
+    Int beta_length = length(unfiltered_normalized_beta)
+
+    if (beta_length > max_length){
+        scatter ( merge_num in range((beta_length / max_length) + 1)){
+            # Get the sublist of beta files
+            scatter ( beta_num in range(max_length)){
+                Int num = (
+                    if merge_num > 0
+                    then beta_num + (merge_num * max_length)
+                    else beta_num
+                )
+                if (num < beta_length){
+                    File bam_list = unfiltered_normalized_beta[num]
+                }
+            }
+        }
+        scatter (list in bam_list){
+            call combine_data as inner_merge { input:
+                unfiltered_normalized_beta = select_all(list),
+            }
+        }
+
+        call combine_data as final_merge { input:
+            unfiltered_normalized_beta = inner_merge.combined_beta,
+        }
     }
+
+    if (beta_length < max_length){
+        call combine_data as simple_merge { input:
+            unfiltered_normalized_beta,
+        }
+    }
+
+    File merged_beta = select_first([final_merge.combined_beta, simple_merge.combined_beta])
+
 
     call filter_probes { input:
-        combined_beta_values = combine_data.combined_beta,
+        combined_beta_values = merged_beta,
     }
 
     call generate_umap { input:
@@ -36,7 +69,7 @@ workflow methylation_cohort {
     }
 
     output {
-        File combined_beta = combine_data.combined_beta
+        File combined_beta = merged_beta
         File filtered_beta = filter_probes.filtered_beta_values
         File umap_embedding = generate_umap.umap
         File umap_plot = plot_umap.umap_plot
