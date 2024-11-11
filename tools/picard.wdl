@@ -930,7 +930,7 @@ task scatter_interval_list {
             choices: [
                 "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW",
                 "INTERVAL_SUBDIVISION",
-                "BALANCING_WITHOUT_INTERVAL_SUBDIVISION",
+                "BALANCING_WITHOUT_INTERVAL_SUBDIVISION"
             ],
         }
         unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
