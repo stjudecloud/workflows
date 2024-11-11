@@ -396,7 +396,7 @@ task mark_duplicates_spark {
             choices: [
                 "SUM_OF_BASE_QUALITIES",
                 "TOTAL_MAPPED_REFERENCE_LENGTH",
-                "RANDOM",
+                "RANDOM"
             ],
         }
         read_name_regex: "Regular expression for extracting tile names, x coordinates, and y coordinates from read names. The default works for typical Illumina read names."
@@ -405,7 +405,7 @@ task mark_duplicates_spark {
             choices: [
                 "DontTag",
                 "OpticalOnly",
-                "All",
+                "All"
             ],
         }
         validation_stringency: {
@@ -413,7 +413,7 @@ task mark_duplicates_spark {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
