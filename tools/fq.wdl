@@ -37,7 +37,7 @@ task fqlint {
             choices: [
                 "low",
                 "medium",
-                "high",
+                "high"
             ],
         }
         paired_read_validation_level: {
@@ -45,7 +45,7 @@ task fqlint {
             choices: [
                 "low",
                 "medium",
-                "high",
+                "high"
             ],
         }
         panic: {
