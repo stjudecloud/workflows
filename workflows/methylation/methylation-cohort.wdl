@@ -43,23 +43,26 @@ workflow methylation_cohort {
             }
         }
 
-        call combine_data as final_merge { input:
-            unfiltered_normalized_beta = inner_merge.combined_beta,
+        call filter_probes { input:
+            combined_beta_values = inner_merge.combined_beta,
         }
+
+        # call combine_data as final_merge { input:
+        #     unfiltered_normalized_beta = inner_merge.combined_beta,
+        # }
     }
 
     if (beta_length < max_length){
         call combine_data as simple_merge { input:
             unfiltered_normalized_beta,
         }
+
+        call filter_probes { input:
+            combined_beta_values = merged_beta,
+        }
     }
 
     File merged_beta = select_first([final_merge.combined_beta, simple_merge.combined_beta])
-
-
-    call filter_probes { input:
-        combined_beta_values = merged_beta,
-    }
 
     call generate_umap { input:
         filtered_beta_values = filter_probes.filtered_beta_values,
@@ -161,30 +164,124 @@ task filter_probes {
     }
 
     parameter_meta {
-        combined_beta_values: "Combined beta values for all samples"
+        beta_values: "Beta values for all samples"
+        num_probes: "Number of probes to retain after filtering"
     }
 
     input {
-        File combined_beta_values
+        Array[File] beta_values
+        Integer num_probes = 10000
     }
 
-    Int disk_size_gb = ceil(size(combined_beta_values, "GiB") * 2)
+    Int disk_size_gb = ceil(size(beta_values, "GiB") * 2)
 
     command <<<
-        ln -s ~{combined_beta_values} beta.csv
+        input_files=""
+        for file in ~{sep(" ", beta_values)}
+        do
+            ln -s $file .
+            input_files="${input_files} $(basename $file)"
+        done
 
-        python <<SCRIPT
+        # Comput the standard deviation for each probe
+        cat <<SCRIPT > stddev.py
         import pandas as pd
+        import os.path
+        import argparse
+        import sys
 
-        # Read beta values
-        beta = pd.read_csv("beta.csv", index_col=0)
+        def get_args():
+            parser = argparse.ArgumentParser(
+                description="Compute standard deviation of beta values.")
+            parser.add_argument(
+                "csv", type=str, help="CSV file")
 
-        # Calculate standard deviation for each probe
-        beta["sd"] = beta.std(axis='columns')
+            args = parser.parse_args()
 
-        # Filter to only the top 10,000 probes with the highest standard deviation
-        beta.sort_values(by="sd", ascending=False).head(10000).drop(columns={"sd"}).to_csv("filtered_beta.csv")
+            return args
+
+        if __name__ == "__main__":
+            args = get_args()
+            # Read beta values
+            beta = pd.read_csv(args.csv, index_col=0)
+
+            # Calculate standard deviation for each probe
+            beta["sd"] = beta.std(axis='columns')
+
+            df = beta[['sd']]
+
+            df.to_csv(os.path.splittext(args.csv)[0] + "_stddev.csv")
         SCRIPT
+
+        for file in $input_files
+        do
+            python stddev.py $file
+        done
+
+        # Combine the standard deviation files and filter the top 10,000 probes
+        cat <<SCRIPT > filter.py
+        import pandas as pd
+        import sys
+        import argparse
+
+        def get_args():
+            parser = argparse.ArgumentParser(
+                description="Compute filtered set of probes from CSV files with standard deviations.")
+            parser.add_argument(
+                "csvs", type=str, nargs="+", help="List of CSV files.")
+
+            args = parser.parse_args()
+
+            return args
+
+        if __name__ == "__main__":
+            args = get_args()
+
+            # Combine data
+            df = pd.concat([pd.read_csv(f, index_col=0) for f in args.csvs], axis=0, join="inner")
+
+            # Filter to only the top 10,000 probes with the highest standard deviation
+            df.sort_values(by="sd", ascending=False).head(~{num_probes}).drop(columns={"sd"}).to_csv("filtered_probes.csv")
+        SCRIPT
+
+        python filter.py *_stddev.csv
+
+        cat <<SCRIPT > combine_beta.py
+        import pandas as pd
+        import sys
+        import argparse
+
+        def get_args():
+            parser = argparse.ArgumentParser(
+                description="Combine beta values for all samples.")
+            parser.add_argument('-p', '--probes', type=str, help="Filtered probes file")
+            parser.add_argument(
+                "csvs", type=str, nargs="+", help="List of CSV files.")
+            
+
+            args = parser.parse_args()
+
+            return args
+
+        if __name__ == "__main__":
+            args = get_args()
+
+            # Read filtered probes
+            probes = pd.read_csv(args.probes, index_col=0)
+
+            # Combine data
+            data = []
+            for f in args.csvs:
+                df = pd.read_csv(f, index_col=0)
+                data.append(df.loc[probes.index])
+
+            
+            df = pd.DataFrame(data)
+
+            df.to_csv("filtered_beta.csv")
+        SCRIPT
+
+        python combine_beta.py -p filtered_probes.csv $input_files
     >>>
 
     output {
