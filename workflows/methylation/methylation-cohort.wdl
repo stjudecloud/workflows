@@ -36,9 +36,10 @@ workflow methylation_cohort {
                 }
             }
         }
-        scatter (list in bam_list){
+        scatter (iter in range(length(bam_list))){
             call combine_data as inner_merge { input:
-                unfiltered_normalized_beta = select_all(list),
+                unfiltered_normalized_beta = select_all(bam_list[iter]),
+                combined_file_name = iter + ".combined.csv"
             }
         }
 
@@ -90,13 +91,20 @@ task combine_data {
 
     input {
         Array[File] unfiltered_normalized_beta
+        String combined_file_name = "combined_beta.csv"
     }
 
     Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2)
 
     command <<<
         echo "Combining data"
-        ln -s ~{sep(" ", unfiltered_normalized_beta)} .
+        input_files=""
+        for file in ~{sep(" ", unfiltered_normalized_beta)}
+        do
+            #ln -s ~{sep(" ", unfiltered_normalized_beta)} .
+            ln -s $file .
+            input_files="${input_files} $(basename $file)"
+        done
 
         cat <<SCRIPT > run.py
         import sys
@@ -124,20 +132,20 @@ task combine_data {
 
             # Combine data
             df = pd.concat([read(f) for f in args.csvs], axis=1, join="inner")
-            df.to_csv("combined_beta.csv", index=True)
+            df.to_csv("~{combined_file_name}", index=True)
         SCRIPT
 
-        python run.py *.beta_swan_norm_unfiltered.csv
+        python run.py $input_files
 
     >>>
 
     output {
-        File combined_beta = "combined_beta.csv"
+        File combined_beta = combined_file_name
     }
 
     runtime {
         container: "quay.io/biocontainers/pandas:2.2.1"
-        memory: "8 GB"
+        memory: "78 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
         maxRetries: 1
@@ -185,7 +193,7 @@ task filter_probes {
 
     runtime {
         container: "quay.io/biocontainers/pandas:2.2.1"
-        memory: "8 GB"
+        memory: "178 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
         maxRetries: 1
