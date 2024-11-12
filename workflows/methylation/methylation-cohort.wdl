@@ -43,8 +43,8 @@ workflow methylation_cohort {
             }
         }
 
-        call filter_probes { input:
-            combined_beta_values = inner_merge.combined_beta,
+        call filter_probes as merge_filter { input:
+            beta_values = inner_merge.combined_beta,
         }
 
         # call combine_data as final_merge { input:
@@ -57,15 +57,15 @@ workflow methylation_cohort {
             unfiltered_normalized_beta,
         }
 
-        call filter_probes { input:
-            combined_beta_values = merged_beta,
+        call filter_probes as raw_filter { input:
+            beta_values = [simple_merge.combined_beta],
         }
     }
 
-    File merged_beta = select_first([final_merge.combined_beta, simple_merge.combined_beta])
+    File merged_beta = select_first([merge_filter.filtered_beta_values, raw_filter.filtered_beta_values])
 
     call generate_umap { input:
-        filtered_beta_values = filter_probes.filtered_beta_values,
+        filtered_beta_values = merged_beta,
     }
 
     call plot_umap { input:
@@ -73,8 +73,8 @@ workflow methylation_cohort {
     }
 
     output {
-        File combined_beta = merged_beta
-        File filtered_beta = filter_probes.filtered_beta_values
+        # File combined_beta = merged_beta
+        File filtered_beta = merged_beta
         File umap_embedding = generate_umap.umap
         File umap_plot = plot_umap.umap_plot
     }
@@ -170,7 +170,7 @@ task filter_probes {
 
     input {
         Array[File] beta_values
-        Integer num_probes = 10000
+        Int num_probes = 10000
     }
 
     Int disk_size_gb = ceil(size(beta_values, "GiB") * 2)
