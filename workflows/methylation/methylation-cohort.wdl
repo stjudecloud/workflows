@@ -210,7 +210,7 @@ task filter_probes {
 
             df = beta[['sd']]
 
-            df.to_csv(os.path.splittext(args.csv)[0] + "_stddev.csv")
+            df.to_csv(os.path.splitext(os.path.basename(args.csv))[0] + "_stddev.csv")
         SCRIPT
 
         for file in $input_files
@@ -273,9 +273,10 @@ task filter_probes {
             data = []
             for f in args.csvs:
                 df = pd.read_csv(f, index_col=0)
-                data.append(df.loc[probes.index])
+                keys = df.index.intersection(probes.index)
+                for key in keys:
+                    data.append(df.loc[key])
 
-            
             df = pd.DataFrame(data)
 
             df.to_csv("filtered_beta.csv")
