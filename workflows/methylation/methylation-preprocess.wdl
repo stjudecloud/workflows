@@ -135,11 +135,21 @@ task process_raw_idats {
             write.csv(beta_swan_norm, "~{out_base}.beta_swan_norm_unfiltered.csv")
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            #Write the normalized beta-values that have NOT yet had low-variance probes filtered out
+            #Filter to only those that are mappable to the genome.
+            RSet <- ratioConvert(GRset.swan_norm)
+            GRset <- mapToGenome(RSet)
+            beta_swan_norm <- getBeta(GRset)
+            write.csv(beta_swan_norm, "~{out_base}.beta_swan_norm_unfiltered.genomic.csv")
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
         SCRIPT
     >>>
 
     output {
         File beta_swan_norm_unfiltered = out_base + ".beta_swan_norm_unfiltered.csv"
+        File beta_swan_norm_unfiltered_genomic = out_base + ".beta_swan_norm_unfiltered.genomic.csv"
         File mset = out_base + ".MSet.rds"
         File rgset = out_base + ".RGSet.rds"
         File rset = out_base + ".RSet.rds"
