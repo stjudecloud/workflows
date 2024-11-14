@@ -54,12 +54,12 @@ workflow methylation_cohort {
         }
     }
 
-    call filter_probes as merge_filter { input:
+    call filter_probes { input:
         beta_values = select_first([final_merge.combined_beta, simple_merge.combined_beta]),
     }
 
     call generate_umap { input:
-        filtered_beta_values = merged_beta,
+        filtered_beta_values = filter_probes.filtered_beta_values,
     }
 
     call plot_umap { input:
@@ -67,8 +67,8 @@ workflow methylation_cohort {
     }
 
     output {
-        # File combined_beta = merged_beta
-        File filtered_beta = merged_beta
+        File combined_beta = select_first([final_merge.combined_beta, simple_merge.combined_beta])
+        File filtered_beta = filter_probes.filtered_beta_values
         File umap_embedding = generate_umap.umap
         File umap_plot = plot_umap.umap_plot
     }
