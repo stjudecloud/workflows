@@ -141,7 +141,7 @@ task process_raw_idats {
             RSet <- ratioConvert(GRset.swan_norm)
             GRset <- mapToGenome(RSet)
             beta_swan_norm <- getBeta(GRset)
-            write.csv(beta_swan_norm, "~{out_base}.beta_swan_norm_unfiltered.genomic.csv")
+            write.csv(beta_swan_norm[order(rownames(beta_swan_norm)),], "~{out_base}.beta_swan_norm_unfiltered.genomic.csv")
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         SCRIPT
