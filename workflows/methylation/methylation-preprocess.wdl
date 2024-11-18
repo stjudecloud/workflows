@@ -2,7 +2,22 @@ version 1.1
 
 workflow methylation_preprocess {
     meta {
-
+        description: "Process raw IDAT files from the Illumina methylation array for a single sample"
+        outputs: {
+            beta_swan_norm_unfiltered: "Normalized beta values for all probes",
+            beta_swan_norm_unfiltered_genomic: "Normalized beta values for all probes that map to the genome",
+            mset: "MethylSet object",
+            rgset: "RGSet object",
+            rset: "RatioSet object",
+            annotation: "Annotation object",
+            beta: "Beta values",
+            cn_values: "Copy number values",
+            m_values: "M values",
+            pheno: "Phenotype data",
+            pheno_data: "Phenotype data",
+            probe_names: "Probe names",
+            sample_names: "Sample names",
+        }
     }
 
     parameter_meta {
@@ -17,6 +32,7 @@ workflow methylation_preprocess {
         idats,
     }
 
+    #@ except: LineWidth
     output {
         File beta_swan_norm_unfiltered = process_raw_idats.beta_swan_norm_unfiltered
         File beta_swan_norm_unfiltered_genomic = process_raw_idats.beta_swan_norm_unfiltered_genomic
@@ -28,7 +44,7 @@ workflow methylation_preprocess {
         File cn_values = process_raw_idats.cn_values
         File m_values = process_raw_idats.m_values
         File pheno = process_raw_idats.pheno
-        File phenoData = process_raw_idats.phenoData
+        File pheno_data = process_raw_idats.pheno_data
         File probe_names = process_raw_idats.probe_names
         File sample_names = process_raw_idats.sample_names
     }
@@ -38,12 +54,25 @@ task process_raw_idats {
     meta {
         description: "Process raw IDAT files from the Illumina methylation array for a single sample"
         outputs: {
-
+            beta_swan_norm_unfiltered: "Normalized beta values for all probes",
+            beta_swan_norm_unfiltered_genomic: "Normalized beta values for all probes that map to the genome",
+            mset: "MethylSet object",
+            rgset: "RGSet object",
+            rset: "RatioSet object",
+            annotation: "Annotation object",
+            beta: "Beta values",
+            cn_values: "Copy number values",
+            m_values: "M values",
+            pheno: "Phenotype data",
+            pheno_data: "Phenotype data",
+            probe_names: "Probe names",
+            sample_names: "Sample names",
         }
     }
 
     parameter_meta {
         idats: "Array of raw IDAT files from the Illumina methlyation array"
+        disk_size_gb: "Disk size in GB"
     }
 
     input {
@@ -54,6 +83,7 @@ task process_raw_idats {
     String idat_base = basename(idats.left)
     String out_base = sub(idat_base, "(_Grn|_Red).idat", "")
 
+    #@ except: LineWidth
     command <<<
         echo "Processing IDAT files"
         ln -s ~{idats.left} ~{idats.right} .
@@ -80,7 +110,8 @@ task process_raw_idats {
             manifest <- getManifest(RGSet)
             manifest
 
-            # Load raw data into a MethylSet object be converting red/green channels into a matrix of methlyated and unmethylated signals.
+            # Load raw data into a MethylSet object be converting red/green
+            # channels into a matrix of methlyated and unmethylated signals.
             MSet <- preprocessRaw(RGSet)
             saveRDS(MSet, "~{out_base}.MSet.rds")
 
@@ -94,14 +125,14 @@ task process_raw_idats {
 
             # Take the genomic mapped RatioSet and fill Beta values (non-normalized).
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            #Get the NON-normalized beta values:
+            # Get the NON-normalized beta values:
             beta <- getBeta(GRset)
             write.csv(beta, "~{out_base}.beta.csv")
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
             # Get M-value matrix and copy-number matrix
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            #Get M and CN vals if interested:
+            # Get M and CN vals if interested:
             M <- getM(GRset)
             write.csv(M, "~{out_base}.m_values.csv")
             CN <- getCN(GRset)
@@ -125,20 +156,22 @@ task process_raw_idats {
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            #Perform SWAN normalization on beta values
+            # Perform SWAN normalization on beta values
             GRset.swan_norm <- preprocessSWAN(RGSet)
             write.csv(GRset.swan_norm, "~{out_base}.GRset.swan_norm.csv")
             beta_swan_norm <- getBeta(GRset.swan_norm)
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            #Write the normalized beta-values that have NOT yet had low-variance probes filtered out
+            # Write the normalized beta-values that have NOT yet had
+            # low-variance probes filtered out
             write.csv(beta_swan_norm, "~{out_base}.beta_swan_norm_unfiltered.csv")
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            #Write the normalized beta-values that have NOT yet had low-variance probes filtered out
-            #Filter to only those that are mappable to the genome.
+            # Write the normalized beta-values that have NOT yet had
+            # low-variance probes filtered out
+            # Filter to only those that are mappable to the genome.
             RSet <- ratioConvert(GRset.swan_norm)
             GRset <- mapToGenome(RSet)
             beta_swan_norm <- getBeta(GRset)
@@ -148,6 +181,7 @@ task process_raw_idats {
         SCRIPT
     >>>
 
+    #@ except: LineWidth
     output {
         File beta_swan_norm_unfiltered = out_base + ".beta_swan_norm_unfiltered.csv"
         File beta_swan_norm_unfiltered_genomic = out_base + ".beta_swan_norm_unfiltered.genomic.csv"
@@ -159,11 +193,12 @@ task process_raw_idats {
         File cn_values = out_base + ".cn_values.csv"
         File m_values = out_base + ".m_values.csv"
         File pheno = out_base + ".pheno.csv"
-        File phenoData = out_base + ".phenoData.csv"
+        File pheno_data = out_base + ".phenoData.csv"
         File probe_names = out_base + ".probeNames.csv"
         File sample_names = out_base + ".sampleNames.csv"
     }
 
+    #@ except: ContainerValue
     runtime {
         container: "ghcr.io/stjudecloud/minfi:branch-methylation-1.48.0-1"
         memory: "8 GB"
