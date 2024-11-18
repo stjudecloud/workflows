@@ -4,15 +4,17 @@ workflow methylation_cohort {
     meta {
         description: "Process methylation data for a cohort of samples"
         outputs: {
-            combined_beta: "Combined beta values for all samples"
-            filtered_beta: "Filtered beta values for all samples"
-            umap_embedding: "UMAP embedding for all samples"
-            umap_plot: "UMAP plot for all samples"
+            combined_beta: "Combined beta values for all samples",
+            filtered_beta: "Filtered beta values for all samples",
+            filtered_probes: "Probes that were retained after filtering",
+            umap_embedding: "UMAP embedding for all samples",
+            umap_plot: "UMAP plot for all samples",
         }
     }
 
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
+        max_length: "Maximum number of beta files to merge before using iteration"
     }
 
     input {
@@ -39,7 +41,7 @@ workflow methylation_cohort {
         scatter (iter in range(length(bam_list))){
             call combine_data as inner_merge { input:
                 unfiltered_normalized_beta = select_all(bam_list[iter]),
-                combined_file_name = iter + ".combined.csv"
+                combined_file_name = iter + ".combined.csv",
             }
         }
 
@@ -55,7 +57,12 @@ workflow methylation_cohort {
     }
 
     call filter_probes { input:
-        beta_values = select_first([final_merge.combined_beta, simple_merge.combined_beta]),
+        beta_values = select_first(
+            [
+                final_merge.combined_beta,
+                simple_merge.combined_beta,
+            ]
+        ),
     }
 
     call generate_umap { input:
@@ -67,7 +74,12 @@ workflow methylation_cohort {
     }
 
     output {
-        File combined_beta = select_first([final_merge.combined_beta, simple_merge.combined_beta])
+        File combined_beta = select_first(
+            [
+                final_merge.combined_beta,
+                simple_merge.combined_beta,
+            ]
+        )
         File filtered_beta = filter_probes.filtered_beta_values
         File filtered_probes = filter_probes.filtered_probes
         File umap_embedding = generate_umap.umap
@@ -145,6 +157,7 @@ task combine_data {
         File combined_beta = combined_file_name
     }
 
+    #@ except: ContainerValue
     runtime {
         container: "quay.io/biocontainers/pandas:2.2.1"
         memory: "~{memory_gb} GB"
@@ -158,7 +171,8 @@ task filter_probes {
     meta {
         description: "Filter probes based on standard deviation"
         outputs: {
-            filtered_beta_values: "Filtered beta values for all samples"
+            filtered_beta_values: "Filtered beta values for all samples",
+            filtered_probes: "Probes that were retained after filtering.",
         }
     }
 
@@ -174,6 +188,7 @@ task filter_probes {
 
     Int disk_size_gb = ceil(size(beta_values, "GiB") * 2)
 
+    #@ except: LineWidth
     command <<<
         ln -s ~{beta_values} beta.csv
 
@@ -235,6 +250,7 @@ task filter_probes {
         File filtered_probes = "filtered_probes.csv"
     }
 
+    #@ except: ContainerValue
     runtime {
         container: "quay.io/biocontainers/pandas:2.2.1"
         memory: "28 GB"
@@ -262,6 +278,7 @@ task generate_umap {
 
     Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2)
 
+    #@ except: LineWidth
     command <<<
         ln -s ~{filtered_beta_values} beta.csv
 
@@ -286,6 +303,7 @@ task generate_umap {
         File umap = "umap.csv"
     }
 
+    #@ except: ContainerValue
     runtime {
         container: "ghcr.io/stjudecloud/umap:branch-methylation-0.5.7-1"
         memory: "8 GB"
@@ -332,6 +350,7 @@ task plot_umap {
         File umap_plot = "umap.png"
     }
 
+    #@ except: ContainerValue
     runtime {
         container: "ghcr.io/stjudecloud/python-plotting:branch-methylation-1.0.0"
         memory: "4 GB"
