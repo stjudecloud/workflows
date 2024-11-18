@@ -123,7 +123,7 @@
   command: >-
     miniwdl run -d test-output/. --task merge_vcfs -i tests/tools/input_json/picard_merge_vcfs.json tools/picard.wdl
   files:
-    - path: test-output/out/output_vcf/test.vcf.gz
+    - path: test-output/out/merged_vcf/test.vcf.gz
 
 - name: picard_scatter_interval_list
   tags:

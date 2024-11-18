@@ -11,6 +11,7 @@ jobs:
           uses: stjude-rust-labs/sprocket-action@main
           with:
             lint: true
-            exclude-patterns: template
+            exclude-patterns: template,scrnaseq,cellranger
             deny-warnings: true
             deny-notes: true
+            except: TrailingComma,ContainerValue

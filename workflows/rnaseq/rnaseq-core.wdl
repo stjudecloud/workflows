@@ -17,7 +17,7 @@ workflow rnaseq_core {
             bigwig: "BigWig format coverage file generated from `bam`",
             feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts.",
             inferred_strandedness: "TSV file containing the `ngsderive strandedness` report",
-            inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`"
+            inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`",
         }
         allowNestedInputs: true
     }
@@ -37,8 +37,8 @@ workflow rnaseq_core {
                 noncanonical_motifs: 0,
                 GT_AG_and_CT_AC_motif: -1,
                 GC_AG_and_CT_GC_motif: 0,
-                AT_AC_and_GT_AT_motif: 0
-            }
+                AT_AC_and_GT_AT_motif: 0,
+            },
         }
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
@@ -46,7 +46,7 @@ workflow rnaseq_core {
                 "bwa aln",
                 "bwa mem",
                 "star"
-            ]
+            ],
         }
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
@@ -55,7 +55,7 @@ workflow rnaseq_core {
                 "Stranded-Reverse",
                 "Stranded-Forward",
                 "Unstranded"
-            ]
+            ],
         }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
@@ -63,52 +63,52 @@ workflow rnaseq_core {
         align_spliced_mate_map_l_min_over_l_mate: {
             description: "This overrides the STAR alignment default. alignSplicedMateMapLmin normalized to mate length",
             tool: "star",
-            tool_default: 0.66
+            tool_default: 0.66,
         }
         out_filter_multimap_n_max: {
             description: "This overrides the STAR alignment default. Maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out.",
             tool: "star",
             tool_default: 10,
-            common: true
+            common: true,
         }
         pe_overlap_n_bases_min: {
             description: "This overrides the STAR alignment default. Minimum number of overlap bases to trigger mates merging and realignment. Specify >0 value to switch on the 'merging of overlapping mates' algorithm.",
             tool: "star",
-            tool_default: 0
+            tool_default: 0,
         }
         chim_score_separation: {
             description: "This overrides the STAR alignment default. Minimum difference (separation) between the best chimeric score and the next one",
             tool: "star",
-            tool_default: 10
+            tool_default: 10,
         }
         chim_score_junction_nonGTAG: {
             description: "This overrides the STAR alignment default. Penalty for a non-GT/AG chimeric junction",
             tool: "star",
-            tool_default: -1
+            tool_default: -1,
         }
         chim_junction_overhang_min: {
             description: "This overrides the STAR alignment default. Minimum overhang for a chimeric junction",
             tool: "star",
             tool_default: 20,
-            common: true
+            common: true,
         }
         chim_segment_read_gap_max: {
             description: "This overrides the STAR alignment default. Maximum gap in the read sequence between chimeric segments",
             tool: "star",
             tool_default: 0,
-            common: true
+            common: true,
         }
         chim_multimap_n_max: {
             description: "This overrides the STAR alignment default. Maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments",
             tool: "star",
             tool_default: 0,
-            common: true
+            common: true,
         }
         chim_score_drop_max: {
             description: "max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length",
             tool: "star",
             tool_default: 20,
-            common: true
+            common: true,
         }
     }
 
@@ -124,7 +124,7 @@ workflow rnaseq_core {
             noncanonical_motifs: 5,
             GT_AG_and_CT_AC_motif: -1,
             GC_AG_and_CT_GC_motif: 5,
-            AT_AC_and_GT_AT_motif: 5
+            AT_AC_and_GT_AT_motif: 5,
         }
         String xenocp_aligner = "star"
         String strandedness = ""
@@ -148,7 +148,7 @@ workflow rnaseq_core {
         "Stranded-Forward": "yes",
         "Unstranded": "no",
         "Inconclusive": "undefined",
-        "": "undefined"
+        "": "undefined",
     }
 
     String provided_strandedness = strandedness
@@ -193,9 +193,11 @@ workflow rnaseq_core {
         gene_model = gtf,
     }
 
-    String htseq_strandedness = if (provided_strandedness != "")
+    String htseq_strandedness = (
+        if (provided_strandedness != "")
         then htseq_strandedness_map[provided_strandedness]
         else htseq_strandedness_map[ngsderive_strandedness.strandedness_string]
+    )
 
     call htseq.count as htseq_count { input:
         bam = alignment_post.processed_bam,
@@ -207,6 +209,7 @@ workflow rnaseq_core {
                 then ngsderive_strandedness.strandedness_string
                 else provided_strandedness
             ),
+        pos_sorted = true,
     }
 
     output {

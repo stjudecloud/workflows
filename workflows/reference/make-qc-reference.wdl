@@ -32,7 +32,7 @@ workflow make_qc_reference {
                 "nt",
                 "UniVec",
                 "UniVec_Core"
-            ]
+            ],
         }
         coverage_feature_types: {
             description: "List of feature types to use for coverage calculation",
@@ -46,7 +46,7 @@ workflow make_qc_reference {
                 "start_codon",
                 "stop_codon",
                 "Selenocysteine"
-            ]
+            ],
         }
         reference_fa_url: "URL to retrieve the reference FASTA file from"
         reference_fa_name: "Name of output reference FASTA file"
@@ -122,8 +122,7 @@ workflow make_qc_reference {
     }
 
     Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.downloaded_file])
-    Array[File] empty_array = []  # this structure is required by the WDL v1.1 spec
-    if (custom_fastas != empty_array) {
+    if (length(custom_fastas) > 0) {
         call kraken2.create_library_from_fastas { input:
             fastas_gz = custom_fastas,
             protein,
@@ -134,7 +133,7 @@ workflow make_qc_reference {
         tarballs = flatten([
             [download_taxonomy.taxonomy],
             download_library.library,
-            select_all([create_library_from_fastas.custom_library])
+            select_all([create_library_from_fastas.custom_library]),
         ]),
         protein,
     }
