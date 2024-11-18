@@ -69,6 +69,7 @@ workflow methylation_cohort {
     output {
         File combined_beta = select_first([final_merge.combined_beta, simple_merge.combined_beta])
         File filtered_beta = filter_probes.filtered_beta_values
+        File filtered_probes = filter_probes.filtered_probes
         File umap_embedding = generate_umap.umap
         File umap_plot = plot_umap.umap_plot
     }
@@ -213,6 +214,8 @@ task filter_probes {
             # Filter probes based on standard deviation
             filtered_probes = sd_df.sort_values("sd", ascending=False).head(args.num_probes).index
 
+            pd.Series(filtered_probes, index=filtered_probes).to_csv('filtered_probes.csv', index=False)
+
             # Filter beta values
             with open("beta.csv", "r") as f:
                 reader = csv.reader(f)
@@ -229,6 +232,7 @@ task filter_probes {
 
     output {
         File filtered_beta_values = "filtered_beta.csv"
+        File filtered_probes = "filtered_probes.csv"
     }
 
     runtime {
@@ -313,7 +317,7 @@ task plot_umap {
         import matplotlib.pyplot as plt
 
         # Read UMAP embedding
-        umap = pd.read_csv("umap.csv", index_col=0)
+        umap = pd.read_csv("~{umap}", index_col=0)
 
         # Plot UMAP
         plt.scatter(umap["UMAP1"], umap["UMAP2"])

@@ -19,6 +19,7 @@ workflow methylation_preprocess {
 
     output {
         File beta_swan_norm_unfiltered = process_raw_idats.beta_swan_norm_unfiltered
+        File beta_swan_norm_unfiltered_genomic = process_raw_idats.beta_swan_norm_unfiltered_genomic
         File mset = process_raw_idats.mset
         File rgset = process_raw_idats.rgset
         File rset = process_raw_idats.rset
