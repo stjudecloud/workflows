@@ -50,7 +50,7 @@ workflow methylation_cohort {
         }
     }
 
-    if (beta_length < max_length){
+    if (beta_length <= max_length){
         call combine_data as simple_merge { input:
             unfiltered_normalized_beta,
         }
