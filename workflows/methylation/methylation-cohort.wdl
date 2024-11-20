@@ -98,7 +98,7 @@ task combine_data {
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
         combined_file_name: "Name of the combined file"
-        addl_memory_gb: "Additional memory to allocate for the task (in GB)"
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
     }
 
     input {
