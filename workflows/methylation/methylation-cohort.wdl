@@ -115,7 +115,6 @@ task combine_data {
         input_files=""
         for file in ~{sep(" ", unfiltered_normalized_beta)}
         do
-            #ln -s ~{sep(" ", unfiltered_normalized_beta)} .
             ln -s $file .
             input_files="${input_files} $(basename $file)"
         done
