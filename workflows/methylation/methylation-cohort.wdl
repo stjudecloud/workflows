@@ -104,7 +104,7 @@ task combine_data {
     input {
         Array[File] unfiltered_normalized_beta
         String combined_file_name = "combined_beta.csv"
-        Int addl_memory_gb = 0
+        Int modify_memory_gb = 0
     }
 
     Int memory_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2) + addl_memory_gb
