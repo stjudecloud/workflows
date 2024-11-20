@@ -4,9 +4,9 @@ workflow methylation_cohort {
     meta {
         description: "Process methylation data for a cohort of samples"
         outputs: {
-            combined_beta: "Combined beta values for all samples",
-            filtered_beta: "Filtered beta values for all samples",
-            filtered_probes: "Probes that were retained after filtering",
+            combined_beta: "Matrix (in CSV format) containing beta values for every (common) probe on the array as rows and all of the input samples as columns.",
+            filtered_beta: "Matrix (in CSV format) containing only beta values for the retained probes (top N highest standard deviation) for all provided samples.",
+            filtered_probes: "List of probe names that were retained after filtering to the top N highest standard deviation",
             umap_embedding: "UMAP embedding for all samples",
             umap_plot: "UMAP plot for all samples",
         }
