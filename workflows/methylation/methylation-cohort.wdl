@@ -107,7 +107,7 @@ task combine_data {
         Int modify_memory_gb = 0
     }
 
-    Int memory_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2) + addl_memory_gb
+    Int memory_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2) + modify_memory_gb
     Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2)
 
     command <<<
