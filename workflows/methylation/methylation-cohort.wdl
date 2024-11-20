@@ -156,7 +156,6 @@ task combine_data {
         File combined_beta = combined_file_name
     }
 
-    #@ except: ContainerValue
     runtime {
         container: "quay.io/biocontainers/pandas:2.2.1"
         memory: "~{memory_gb} GB"
@@ -169,6 +168,7 @@ task combine_data {
 task filter_probes {
     meta {
         description: "Filter probes based on standard deviation"
+        help: "Probes are filtered by calculating the standard deviation of the beta value for each probe across all samples. The top N probes with the highest standard deviation are retained."
         outputs: {
             filtered_beta_values: "Filtered beta values for all samples",
             filtered_probes: "Probes that were retained after filtering.",
@@ -249,7 +249,6 @@ task filter_probes {
         File filtered_probes = "filtered_probes.csv"
     }
 
-    #@ except: ContainerValue
     runtime {
         container: "quay.io/biocontainers/pandas:2.2.1"
         memory: "28 GB"
@@ -302,7 +301,6 @@ task generate_umap {
         File umap = "umap.csv"
     }
 
-    #@ except: ContainerValue
     runtime {
         container: "ghcr.io/stjudecloud/umap:branch-methylation-0.5.7-1"
         memory: "8 GB"
@@ -349,7 +347,6 @@ task plot_umap {
         File umap_plot = "umap.png"
     }
 
-    #@ except: ContainerValue
     runtime {
         container: "ghcr.io/stjudecloud/python-plotting:branch-methylation-1.0.0"
         memory: "4 GB"

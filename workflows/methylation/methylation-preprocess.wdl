@@ -97,6 +97,12 @@ task process_raw_idats {
             library(IlluminaHumanMethylationEPICmanifest)
             library(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)
 
+            # These arrays have two types of probes (helpfully named Infinium type 1 and Infinium type 2).
+            # The probes also cover a varying number of CpG sites.
+            # The normalization method works by taking N probes of each type that each have 1, 2, or 3 CpGs.
+            # So it selects 6N probes in total. This selection is "random" if the seed is not fixed, of course.
+            # Since we're processing samples individually in this step instead of as a cohort,
+            # we want the seed to be consistent so the same set of probes is chosen for each sample.
             set.seed(1)
 
             dir=getwd()
@@ -198,7 +204,6 @@ task process_raw_idats {
         File sample_names = out_base + ".sampleNames.csv"
     }
 
-    #@ except: ContainerValue
     runtime {
         container: "ghcr.io/stjudecloud/minfi:branch-methylation-1.48.0-1"
         memory: "8 GB"
