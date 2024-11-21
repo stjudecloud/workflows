@@ -9,7 +9,7 @@ task split_n_cigar_reads {
         outputs: {
             split_n_reads_bam: "BAM file with reads split at N CIGAR elements and updated CIGAR strings.",
             split_n_reads_bam_index: "Index file for the split BAM",
-            split_n_reads_bam_md5: "MD5 checksum for the split BAM"
+            split_n_reads_bam_md5: "MD5 checksum for the split BAM",
         }
     }
 
@@ -158,9 +158,8 @@ task apply_bqsr {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360040097972-ApplyBQSRSpark-BETA"
         outputs: {
             recalibrated_bam: "Recalibrated BAM file",
-            recalibrated_bam_index: "Index file for the recalibrated BAM"
+            recalibrated_bam_index: "Index file for the recalibrated BAM",
         }
-
     }
 
     parameter_meta  {
@@ -222,7 +221,7 @@ task haplotype_caller {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller"
         outputs: {
             vcf: "VCF file containing called variants",
-            vcf_index: "Index file for the VCF"
+            vcf_index: "Index file for the VCF",
         }
     }
 
@@ -231,7 +230,7 @@ task haplotype_caller {
         bam_index: "BAM index file corresponding to the input BAM"
         interval_list: {
             description: "Interval list indicating regions in which to call variants",
-            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035531852-Intervals-and-interval-lists"
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035531852-Intervals-and-interval-lists",
         }
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
@@ -241,7 +240,7 @@ task haplotype_caller {
         prefix: "Prefix for the output VCF. The extension `.vcf.gz` will be added."
         stand_call_conf: {
             description: "Minimum confidence threshold for calling variants",
-            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller#--standard-min-confidence-threshold-for-calling"
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller#--standard-min-confidence-threshold-for-calling",
         }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
@@ -308,7 +307,7 @@ task variant_filtration {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration"
         outputs: {
             vcf_filtered: "Filtered VCF file",
-            vcf_filtered_index: "Index file for the filtered VCF"
+            vcf_filtered_index: "Index file for the filtered VCF",
         }
     }
 
@@ -321,11 +320,11 @@ task variant_filtration {
         prefix: "Prefix for the output filtered VCF. The extension `.filtered.vcf.gz` will be added."
         filter_names: {
             description: "Names of the filters to apply",
-            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-name"
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-name",
         }
         filter_expressions: {
             description: "Expressions for the filters",
-            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-expression"
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-expression",
         }
         cluster: "Number of SNPs that must be present in a window to filter"
         window: "Size of the window (in bases) for filtering"
@@ -385,7 +384,7 @@ task mark_duplicates_spark {
             mark_duplicates_metrics: {
                 description: "The METRICS_FILE result of `picard MarkDuplicates`",
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#DuplicationMetrics",
-            }
+            },
         }
     }
 
@@ -398,7 +397,7 @@ task mark_duplicates_spark {
                 "SUM_OF_BASE_QUALITIES",
                 "TOTAL_MAPPED_REFERENCE_LENGTH",
                 "RANDOM"
-            ]
+            ],
         }
         read_name_regex: "Regular expression for extracting tile names, x coordinates, and y coordinates from read names. The default works for typical Illumina read names."
         tagging_policy: {
@@ -420,7 +419,7 @@ task mark_duplicates_spark {
         }
         create_bam: {
             description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?",
-            common: true
+            common: true,
         }
         optical_distance: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`."
         modify_memory_gb: "Add to or subtract from the default memory allocation. Default memory allocation is determined by the size of the input BAM. Specified in GB."

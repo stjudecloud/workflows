@@ -11,20 +11,20 @@ task multiqc {
     }
 
     parameter_meta {
-        input_files: "An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
+        files: "An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
         prefix: "A string for the MultiQC output directory: <prefix>/ and <prefix>.tar.gz"
         config: "YAML file for configuring generated report"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
-        Array[File] input_files
+        Array[File] files
         String prefix
         File? config
         Int modify_disk_size_gb = 0
     }
 
-    Float input_size = size(input_files, "GiB")
+    Float input_size = size(files, "GiB")
     Int disk_size_gb = ceil(input_size) + 10 + modify_disk_size_gb
 
     String out_tar_gz = prefix + ".tar.gz"
@@ -36,7 +36,7 @@ task multiqc {
         export LC_ALL=C.UTF-8
         export LANG=C.UTF-8
 
-        echo "~{sep("\n", input_files)}" > file_list.txt
+        echo "~{sep("\n", files)}" > file_list.txt
 
         # --strict is too strict. It causes errors due
         # to how our config adds 'custom-content' to the report.

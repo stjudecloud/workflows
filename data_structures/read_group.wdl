@@ -189,7 +189,7 @@ task validate_read_group {
     String restrictive_pattern = "\\ "  # Disallow spaces
     Array[String] platforms = [
         "CAPILLARY", "DNBSEQ", "ELEMENT", "HELICOS", "ILLUMINA", "IONTORRENT", "LS454",
-        "ONT", "PACBIO", "SINGULAR", "SOLID", "ULTIMA"
+        "ONT", "PACBIO", "SINGULAR", "SOLID", "ULTIMA",
     ]
 
     command <<<

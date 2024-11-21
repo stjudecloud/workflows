@@ -31,7 +31,7 @@
     - miniwdl
     - util
   command: >-
-        miniwdl run --verbose -d test-output/. --task split_string tools/util.wdl input_string="rg1 , rg2"
+        miniwdl run --verbose -d test-output/. --task split_string tools/util.wdl string="rg1 , rg2"
   stdout:
     contains:
       - "rg1"
