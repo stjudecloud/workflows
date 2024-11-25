@@ -3,7 +3,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task quickcheck tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task quickcheck tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   stdout:
     contains_regex:
       - "passed"
@@ -39,7 +39,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task flagstat tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task flagstat tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/flagstat_report/test.bwa_aln_pe.flagstat.txt
       contains:
@@ -54,7 +54,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task index tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task index tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/bam_index/test.bwa_aln_pe.bam.bai
 
@@ -81,7 +81,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task addreplacerg tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam" read_group_id="test"
+    miniwdl run --verbose -d test-output/. --task addreplacerg tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" read_group_id="test"
   files:
     - path: test-output/out/tagged_bam/test.bwa_aln_pe.addreplacerg.bam
 
@@ -90,7 +90,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task collate tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task collate tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
 
@@ -99,7 +99,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task bam_to_fastq tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam" retain_collated_bam=true
+    miniwdl run --verbose -d test-output/. --task bam_to_fastq tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" retain_collated_bam=true
   files:
     - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
     - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.R1.fastq.gz

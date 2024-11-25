@@ -44,7 +44,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/input/genes.chrY_chrM.gtf.gz"
+    miniwdl run --verbose -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
     - path: test-output/out/gene_lengths/genes.genelengths.txt
       contains:
@@ -66,7 +66,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task compression_integrity tools/util.wdl bgzipped_file="tests/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task compression_integrity tools/util.wdl bgzipped_file="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   stdout:
     contains:
       - "passed"
@@ -77,7 +77,7 @@
     - miniwdl
     - util
   command: >-
-      miniwdl run --verbose -d test-output/. --task add_to_bam_header tools/util.wdl bam="tests/input/test.bwa_aln_pe.bam" additional_header="@RG	ID:3"
+      miniwdl run --verbose -d test-output/. --task add_to_bam_header tools/util.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" additional_header="@RG	ID:3"
   files:
     - path: "test-output/out/reheadered_bam/test.bwa_aln_pe.reheader.bam"
 
@@ -96,7 +96,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task make_coverage_regions_bed tools/util.wdl gtf="tests/input/genes.chrY_chrM.gtf.gz" feature_type="exon"
+    miniwdl run --verbose -d test-output/. --task make_coverage_regions_bed tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz" feature_type="exon"
   files:
     - path: "test-output/out/bed/genes.exon.bed"
 
@@ -105,7 +105,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task global_phred_scores tools/util.wdl bam="tests/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task global_phred_scores tools/util.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: "test-output/out/phred_scores/test.bwa_aln_pe.global_PHRED_scores.tsv"
 

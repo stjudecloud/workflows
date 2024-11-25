@@ -4,7 +4,7 @@
     - qualimap
     - deprecated
   command: >-
-    miniwdl run --verbose -d test-output/. --task bamqc tools/qualimap.wdl bam="tests/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task bamqc tools/qualimap.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/results/test.bwa_aln_pe.qualimap_bamqc_results.tar.gz
 
@@ -13,7 +13,7 @@
     - miniwdl
     - qualimap
   command: >-
-    miniwdl run --verbose -d test-output/. --task rnaseq tools/qualimap.wdl bam="tests/input/test.bwa_aln_pe.bam" gtf="tests/input/genes.chrY_chrM.gtf.gz"
+    miniwdl run --verbose -d test-output/. --task rnaseq tools/qualimap.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
     - path: test-output/out/results/test.bwa_aln_pe.qualimap_rnaseq_results.tar.gz
     - path: test-output/out/raw_summary/rnaseq_qc_results.txt

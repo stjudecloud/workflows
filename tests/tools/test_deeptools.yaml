@@ -3,6 +3,6 @@
     - miniwdl
     - deeptools
   command: >-
-    miniwdl run --verbose -d test-output/. --task bam_coverage tools/deeptools.wdl bam="tests/input/test.bwa_aln_pe.bam" bam_index="tests/input/test.bwa_aln_pe.bam.bai"
+    miniwdl run --verbose -d test-output/. --task bam_coverage tools/deeptools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai"
   files:
     - path: test-output/out/bigwig/test.bwa_aln_pe.bw
