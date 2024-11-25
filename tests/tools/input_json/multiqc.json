@@ -1,4 +1,4 @@
 {
     "files": ["tests/input/test.bwa_aln_pe.chrY_chrM.readlength.txt"],
-    "prefix": "test.bwa_aln_pe"
+    "prefix": "test.bwa_aln_pe.chrY_chrM"
 }
