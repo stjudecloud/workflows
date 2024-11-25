@@ -1,4 +1,4 @@
 {
-    "ngs_files": ["tests/tools/input/test.bwa_aln_pe.bam"],
+    "ngs_files": ["tests/input/test.bwa_aln_pe.bam"],
     "outfile_name": "test.bwa_aln_pe.encoding.tsv"
 }

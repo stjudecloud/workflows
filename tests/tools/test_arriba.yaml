@@ -13,7 +13,7 @@
     - miniwdl
     - arriba
   command: >-
-    miniwdl run -d test-output/. --task arriba_tsv_to_vcf tools/arriba.wdl fusions="tests/tools/input/fusions.tsv" reference_fasta="tests/tools/input/GRCh38.chr9_chr22.fa.gz"
+    miniwdl run -d test-output/. --task arriba_tsv_to_vcf tools/arriba.wdl fusions="tests/input/fusions.tsv" reference_fasta="tests/input/GRCh38.chr9_chr22.fa.gz"
   files:
     - path: test-output/out/fusions_vcf/fusions.vcf
 
@@ -22,7 +22,7 @@
     - miniwdl
     - arriba
   command: >-
-    miniwdl run -d test-output/. --task arriba_extract_fusion_supporting_alignments tools/arriba.wdl fusions="tests/tools/input/fusions.tsv" bam="tests/tools/input/Aligned.sortedByCoord.out.bam" bam_index="tests/tools/input/Aligned.sortedByCoord.out.bam.bai"
+    miniwdl run -d test-output/. --task arriba_extract_fusion_supporting_alignments tools/arriba.wdl fusions="tests/input/fusions.tsv" bam="tests/input/Aligned.sortedByCoord.out.bam" bam_index="tests/input/Aligned.sortedByCoord.out.bam.bai"
   files:
     - path: test-output/out/fusion_bams/0/fusions_1.bam
 
@@ -31,6 +31,6 @@
     - miniwdl
     - arriba
   command: >-
-    miniwdl run -d test-output/. --task arriba_annotate_exon_numbers tools/arriba.wdl fusions="tests/tools/input/fusions.tsv" gtf="tests/tools/input/gencode.v31.chr9_chr22.gtf.gz"
+    miniwdl run -d test-output/. --task arriba_annotate_exon_numbers tools/arriba.wdl fusions="tests/input/fusions.tsv" gtf="tests/input/gencode.v31.chr9_chr22.gtf.gz"
   files:
     - path: test-output/out/fusion_tsv/fusions.annotated.tsv

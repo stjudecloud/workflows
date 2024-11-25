@@ -1,7 +1,7 @@
 {
-    "bam": "tests/tools/input/Aligned.sortedByCoord.out.bam",
-    "gtf": "tests/tools/input/gencode.v31.chr9_chr22.gtf.gz",
-    "reference_fasta_gz": "tests/tools/input/GRCh38.chr9_chr22.fa.gz",
+    "bam": "tests/input/Aligned.sortedByCoord.out.bam",
+    "gtf": "tests/input/gencode.v31.chr9_chr22.gtf.gz",
+    "reference_fasta_gz": "tests/input/GRCh38.chr9_chr22.fa.gz",
     "disable_filters": ["blacklist"],
     "prefix": "fusions"
 }

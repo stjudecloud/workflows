@@ -44,7 +44,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/tools/input/genes.gtf.gz"
+    miniwdl run --verbose -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/input/genes.gtf.gz"
   files:
     - path: test-output/out/gene_lengths/genes.genelengths.txt
       contains:
@@ -57,7 +57,7 @@
    - util
    - deprecated
   command: >-
-   miniwdl run --verbose -d test-output/. --task qc_summary tools/util.wdl multiqc_tar_gz="tests/tools/input/SJBT031344_D1.Exome.multiqc.tar.gz"
+   miniwdl run --verbose -d test-output/. --task qc_summary tools/util.wdl multiqc_tar_gz="tests/input/SJBT031344_D1.Exome.multiqc.tar.gz"
   files:
     - path: "test-output/out/summary/SJBT031344_D1.Exome.qc_summary.json"
 
@@ -66,7 +66,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task compression_integrity tools/util.wdl bgzipped_file="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task compression_integrity tools/util.wdl bgzipped_file="tests/input/test.bwa_aln_pe.bam"
   stdout:
     contains:
       - "passed"
@@ -77,7 +77,7 @@
     - miniwdl
     - util
   command: >-
-      miniwdl run --verbose -d test-output/. --task add_to_bam_header tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" additional_header="@RG	ID:3"
+      miniwdl run --verbose -d test-output/. --task add_to_bam_header tools/util.wdl bam="tests/input/test.bwa_aln_pe.bam" additional_header="@RG	ID:3"
   files:
     - path: "test-output/out/reheadered_bam/test.bwa_aln_pe.reheader.bam"
 
@@ -86,7 +86,7 @@
     - miniwdl
     - util
   command: >-
-      miniwdl run --verbose -d test-output/. --task unpack_tarball tools/util.wdl tarball="tests/tools/input/test.tar.gz"
+      miniwdl run --verbose -d test-output/. --task unpack_tarball tools/util.wdl tarball="tests/input/test.tar.gz"
   files:
     - path: "test-output/out/tarball_contents/0/a"
     - path: "test-output/out/tarball_contents/1/b"
@@ -96,7 +96,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task make_coverage_regions_bed tools/util.wdl gtf="tests/tools/input/genes.gtf.gz" feature_type="exon"
+    miniwdl run --verbose -d test-output/. --task make_coverage_regions_bed tools/util.wdl gtf="tests/input/genes.gtf.gz" feature_type="exon"
   files:
     - path: "test-output/out/bed/genes.exon.bed"
 
@@ -105,7 +105,7 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task global_phred_scores tools/util.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task global_phred_scores tools/util.wdl bam="tests/input/test.bwa_aln_pe.bam"
   files:
     - path: "test-output/out/phred_scores/test.bwa_aln_pe.global_PHRED_scores.tsv"
 
@@ -114,6 +114,6 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run -d test-output/. --task split_fastq tools/util.wdl fastq="tests/tools/input/test_R1.fq.gz" prefix="test_R1."
+    miniwdl run -d test-output/. --task split_fastq tools/util.wdl fastq="tests/input/test_R1.fq.gz" prefix="test_R1."
   files:
     - path: "test-output/out/fastqs/0/test_R1.000000.fastq.gz"

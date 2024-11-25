@@ -3,7 +3,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task quickcheck tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task quickcheck tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam"
   stdout:
     contains_regex:
       - "passed"
@@ -13,7 +13,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/tools/input/test.bam"
+    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/input/test.bam"
   files:
     - path: test-output/out/split_bams/0/test.1.bam
     - path: test-output/out/split_bams/1/test.2.bam
@@ -23,7 +23,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/tools/input/test.unaccounted_read.bam"
+    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/input/test.unaccounted_read.bam"
   exit_code: 21
 
 - name: samtools_split_extra_RG
@@ -31,7 +31,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/tools/input/test.extra_RG.bam"
+    miniwdl run --verbose -d test-output/. --task split tools/samtools.wdl bam="tests/input/test.extra_RG.bam"
   exit_code: 42
 
 - name: samtools_flagstat
@@ -39,7 +39,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task flagstat tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task flagstat tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/flagstat_report/test.bwa_aln_pe.flagstat.txt
       contains:
@@ -54,7 +54,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task index tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task index tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/bam_index/test.bwa_aln_pe.bam.bai
 
@@ -81,7 +81,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task addreplacerg tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" read_group_id="test"
+    miniwdl run --verbose -d test-output/. --task addreplacerg tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam" read_group_id="test"
   files:
     - path: test-output/out/tagged_bam/test.bwa_aln_pe.addreplacerg.bam
 
@@ -90,7 +90,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task collate tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task collate tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
 
@@ -99,7 +99,7 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run --verbose -d test-output/. --task bam_to_fastq tools/samtools.wdl bam="tests/tools/input/test.bwa_aln_pe.bam" retain_collated_bam=true
+    miniwdl run --verbose -d test-output/. --task bam_to_fastq tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.bam" retain_collated_bam=true
   files:
     - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
     - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.R1.fastq.gz
@@ -110,6 +110,6 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task faidx tools/samtools.wdl fasta="tests/tools/input/test.fa"
+    miniwdl run -d test-output/. --task faidx tools/samtools.wdl fasta="tests/input/test.fa"
   files:
     - path: test-output/out/fasta_index/test.fa.fai

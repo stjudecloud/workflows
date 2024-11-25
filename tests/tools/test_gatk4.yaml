@@ -53,7 +53,7 @@
     - miniwdl
     - gatk4
   command: >-
-    miniwdl run --verbose -d test-output/. --task mark_duplicates_spark tools/gatk4.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task mark_duplicates_spark tools/gatk4.wdl bam="tests/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.MarkDuplicates.bam
     - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.MarkDuplicates.bam.bai

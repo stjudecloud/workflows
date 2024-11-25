@@ -3,7 +3,7 @@
     - miniwdl
     - fastqc
   command: >-
-    miniwdl run --verbose -d test-output/. --task fastqc tools/fastqc.wdl bam="tests/tools/input/test.bwa_aln_pe.bam"
+    miniwdl run --verbose -d test-output/. --task fastqc tools/fastqc.wdl bam="tests/input/test.bwa_aln_pe.bam"
   files:
     - path: test-output/out/raw_data/test.bwa_aln_pe_fastqc.zip
     - path: test-output/out/results/test.bwa_aln_pe.fastqc_results.tar.gz
