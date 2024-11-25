@@ -44,8 +44,8 @@ def test_samtools_collate(workflow_dir):
 
 @pytest.mark.workflow('samtools_bam_to_fastq', 'samtools_collate_to_fastq')
 def test_samtools_bam_to_fastq(workflow_dir):
-    fq1 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_one_fastq_gz/test.bwa_aln_pe.R1.fastq.gz'))
-    fq2 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_two_fastq_gz/test.bwa_aln_pe.R2.fastq.gz'))
+    fq1 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_one_fastq_gz/test.bwa_aln_pe.chrY_chrM.R1.fastq.gz'))
+    fq2 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_two_fastq_gz/test.bwa_aln_pe.chrY_chrM.R2.fastq.gz'))
 
     for r1, r2 in zip(fq1, fq2):
         assert r1.head.removesuffix("/1") == r2.head.removesuffix("/2")

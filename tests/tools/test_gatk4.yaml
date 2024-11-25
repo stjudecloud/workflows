@@ -55,6 +55,6 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task mark_duplicates_spark tools/gatk4.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.MarkDuplicates.bam
-    - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.MarkDuplicates.bam.bai
-    - path: test-output/out/mark_duplicates_metrics/test.bwa_aln_pe.MarkDuplicates.metrics.txt
+    - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam
+    - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam.bai
+    - path: test-output/out/mark_duplicates_metrics/test.bwa_aln_pe.chrY_chrM.MarkDuplicates.metrics.txt

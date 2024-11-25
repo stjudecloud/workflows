@@ -5,5 +5,5 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task coverage tools/mosdepth.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai"
   files:
-    - path: test-output/out/summary/test.bwa_aln_pe.mosdepth.summary.txt
-    - path: test-output/out/global_dist/test.bwa_aln_pe.mosdepth.global.dist.txt
+    - path: test-output/out/summary/test.bwa_aln_pe.chrY_chrM.mosdepth.summary.txt
+    - path: test-output/out/global_dist/test.bwa_aln_pe.chrY_chrM.mosdepth.global.dist.txt

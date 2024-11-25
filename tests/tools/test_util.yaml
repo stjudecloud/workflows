@@ -79,7 +79,7 @@
   command: >-
       miniwdl run --verbose -d test-output/. --task add_to_bam_header tools/util.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" additional_header="@RG	ID:3"
   files:
-    - path: "test-output/out/reheadered_bam/test.bwa_aln_pe.reheader.bam"
+    - path: "test-output/out/reheadered_bam/test.bwa_aln_pe.chrY_chrM.reheader.bam"
 
 - name: unpack_tarball
   tags:
@@ -107,7 +107,7 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task global_phred_scores tools/util.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: "test-output/out/phred_scores/test.bwa_aln_pe.global_PHRED_scores.tsv"
+    - path: "test-output/out/phred_scores/test.bwa_aln_pe.chrY_chrM.global_PHRED_scores.tsv"
 
 - name: split_fastq
   tags:
