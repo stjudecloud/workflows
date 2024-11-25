@@ -12,6 +12,8 @@
 *.jar
 miniwdl_call_cache/
 miniwdl_singularity_cache/
+_LAST
+202*/
 
 # Blacklist test directories
 test-output/
