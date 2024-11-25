@@ -42,13 +42,14 @@ task download_taxonomy {
         memory: "4 GB"
         disks: "60 GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
-        maxRetries: 3
+        maxRetries: 5
     }
 }
 
 task download_library {
     meta {
         description: "Downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available [here](https://ftp.ncbi.nlm.nih.gov/genomes/refseq/)"
+        warning: "This task is particularly prone to failure due to network issues; especially when downloading the larger libraries (bacteria, nr, and nt)."
         outputs: {
             library: "A library of reference genomes, which is needed by the `build_db` task. This output is not human-readable or meant for anything other than building a Kraken2 database."
         }
@@ -117,7 +118,7 @@ task download_library {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
-        maxRetries: 3
+        maxRetries: 5
     }
 }
 
