@@ -42,7 +42,7 @@ task download_taxonomy {
         memory: "4 GB"
         disks: "60 GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
-        maxRetries: 3
+        maxRetries: 5
     }
 }
 
@@ -118,7 +118,7 @@ task download_library {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
-        maxRetries: 3
+        maxRetries: 5
     }
 }
 
