@@ -1,5 +1,0 @@
-{
-    "fastqs_tar_gz": "tests/tools/input/pbmc_1k_v3.tar.gz",
-    "transcriptome_tar_gz": "tests/tools/input/GRCh38.tar.gz",
-    "id": "pbmc_1k_v3"
-}
