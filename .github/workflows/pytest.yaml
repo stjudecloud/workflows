@@ -12,7 +12,7 @@ jobs:
           uses: actions/checkout@v4
         - name: set tags
           id: set-tags
-          run: echo "tags=$(find tests -name '*.yaml' -exec yq --output-format yaml '.[].tags[] ' {} \;| sort | uniq | grep -vE 'deprecated|miniwdl|cellranger' | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
+          run: echo "tags=$(find tests -name '*.yaml' -exec yq --output-format yaml '.[].tags[] ' {} \;| sort | uniq | grep -vE 'deprecated|miniwdl' | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
   pytest_check:
     needs: list-tags
     runs-on: ubuntu-latest
@@ -33,7 +33,7 @@ jobs:
         pip install -r requirements-dev.txt
     - name: filter tests
       run: |
-        find tests -name '*.yaml' -exec yq --output-format yaml -i 'del(.[] | select(.tags[] | test("reference|deprecated|cellranger") ) )' {} \;
+        find tests -name '*.yaml' -exec yq --output-format yaml -i 'del(.[] | select(.tags[] | test("reference|deprecated") ) )' {} \;
     - name: Run pytest-workflow
       run: |
         pytest --git-aware --basetemp /home/runner/work/pytest --symlink --tag ${{ matrix.tag }}
