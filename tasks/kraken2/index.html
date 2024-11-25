@@ -191,6 +191,8 @@
 <dl>
 <dt>description</dt>
 <dd>Downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available <a href="https://ftp.ncbi.nlm.nih.gov/genomes/refseq/">here</a></dd>
+<dt>warning</dt>
+<dd>This task is particularly prone to failure due to network issues; especially when downloading the larger libraries (bacteria, nr, and nt).</dd>
 <dt>outputs</dt>
 <dd>{'library': 'A library of reference genomes, which is needed by the <code>build_db</code> task. This output is not human-readable or meant for anything other than building a Kraken2 database.'}</dd>
 </dl>
