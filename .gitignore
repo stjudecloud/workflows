@@ -17,6 +17,7 @@ _LAST
 
 # Blacklist test directories
 test-output/
+**/__pycache__
 
 # Blacklist OS generated files
 .DS_Store
