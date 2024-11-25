@@ -180,25 +180,23 @@
 <h3 id="inputs">Inputs</h3>
 <h4 id="required">Required</h4>
 <ul>
+<li><code>dbSNP_vcf_disk_size_gb</code> (Int, <strong>required</strong>): Disk size (in GB) to allocate for downloading the dbSNP VCF file.</li>
 <li><code>dbSNP_vcf_name</code> (String, <strong>required</strong>): Name of the dbSNP VCF file.</li>
 <li><code>dbSNP_vcf_url</code> (String, <strong>required</strong>): URL from which to retrieve the dbSNP VCF file.</li>
+<li><code>known_vcf_disk_size_gb</code> (Int, <strong>required</strong>): Disk size (in GB) to allocate for downloading the VCF files with known variants.</li>
 <li><code>known_vcf_names</code> (Array[String], <strong>required</strong>): Names of the VCF files with known variants. Order should match that of <code>known_vcf_urls</code>.</li>
 <li><code>known_vcf_urls</code> (Array[String], <strong>required</strong>): URLs from which to retrieve VCF files with known variants.</li>
+<li><code>reference_fa_disk_size_gb</code> (Int, <strong>required</strong>): Disk size (in GB) to allocate for downloading the reference FASTA file.</li>
 <li><code>reference_fa_md5</code> (String, <strong>required</strong>): MD5 checksum for the reference FASTA file.</li>
 <li><code>reference_fa_name</code> (String, <strong>required</strong>): Name of the output reference FASTA file.</li>
 <li><code>reference_fa_url</code> (String, <strong>required</strong>): URL from which to retrieve the reference FASTA file.</li>
 <li><code>create_sequence_dictionary._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>dbsnp._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>dbsnp.disk_size_gb</code> (Int, <strong>required</strong>)</li>
 <li><code>dbsnp_index._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>dbsnp_index.disk_size_gb</code> (Int, <strong>required</strong>)</li>
 <li><code>faidx._runtime</code> (Any, <strong>required</strong>)</li>
 <li><code>fasta_download._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>fasta_download.disk_size_gb</code> (Int, <strong>required</strong>)</li>
 <li><code>intervals._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>intervals.disk_size_gb</code> (Int, <strong>required</strong>)</li>
 <li><code>known_vcf._runtime</code> (Any, <strong>required</strong>)</li>
-<li><code>known_vcf.disk_size_gb</code> (Int, <strong>required</strong>)</li>
 </ul>
 <h4 id="optional">Optional</h4>
 <ul>
@@ -216,6 +214,8 @@
 </ul>
 <h4 id="defaults">Defaults</h4>
 <ul>
+<li><code>dbSNP_vcf_index_disk_size_gb</code> (Int, default=1): Disk size (in GB) to allocate for downloading the index for the dbSNP VCF file.</li>
+<li><code>interval_list_disk_size_gb</code> (Int, default=1): Disk size (in GB) to allocate for downloading the list of intervals to use when computing variants.</li>
 <li><code>create_sequence_dictionary.memory_gb</code> (Int, default=16)</li>
 <li><code>create_sequence_dictionary.modify_disk_size_gb</code> (Int, default=0)</li>
 <li><code>create_sequence_dictionary.outfile_name</code> (String, default=basename(fasta,".fa") + ".dict")</li>
