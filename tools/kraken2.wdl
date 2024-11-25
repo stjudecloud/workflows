@@ -49,6 +49,7 @@ task download_taxonomy {
 task download_library {
     meta {
         description: "Downloads a predefined library of reference genomes from NCBI. Detailed organism list for libraries (except nt) available [here](https://ftp.ncbi.nlm.nih.gov/genomes/refseq/)"
+        warning: "This task is particularly prone to failure due to network issues; especially when downloading the larger libraries (bacteria, nr, and nt)."
         outputs: {
             library: "A library of reference genomes, which is needed by the `build_db` task. This output is not human-readable or meant for anything other than building a Kraken2 database."
         }
