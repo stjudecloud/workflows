@@ -6,7 +6,7 @@ workflow methylation_cohort {
         outputs: {
             combined_beta: "Matrix (in CSV format) containing beta values for every (common) probe on the array as rows and all of the input samples as columns.",
             filtered_beta: "Matrix (in CSV format) containing only beta values for the retained probes (top N highest standard deviation) for all provided samples.",
-            filtered_probes: "List of probe names that were retained after filtering to the top N highest standard deviation",
+            filtered_probeset: "List of probe names that were retained after filtering to the top N highest standard deviation",
             umap_embedding: "UMAP embedding for all samples",
             umap_plot: "UMAP plot for all samples",
         }
@@ -42,6 +42,7 @@ workflow methylation_cohort {
             call combine_data as inner_merge { input:
                 unfiltered_normalized_beta = select_all(bam_list[iter]),
                 combined_file_name = iter + ".combined.csv",
+                modify_memory_gb = 25,
             }
         }
 
@@ -81,7 +82,7 @@ workflow methylation_cohort {
             ]
         )
         File filtered_beta = filter_probes.filtered_beta_values
-        File filtered_probes = filter_probes.filtered_probes
+        File filtered_probeset = filter_probes.filtered_probes
         File umap_embedding = generate_umap.umap
         File umap_plot = plot_umap.umap_plot
     }
@@ -107,7 +108,7 @@ task combine_data {
         Int modify_memory_gb = 0
     }
 
-    Int memory_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2) + modify_memory_gb
+    Int memory_gb = ceil(size(unfiltered_normalized_beta, "GiB")) + modify_memory_gb
     Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2)
 
     command <<<
