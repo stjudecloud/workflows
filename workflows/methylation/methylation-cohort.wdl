@@ -112,12 +112,6 @@ task combine_data {
 
     command <<<
         echo "Combining data"
-        input_files=""
-        for file in ~{sep(" ", unfiltered_normalized_beta)}
-        do
-            ln -s $file .
-            input_files="${input_files} $(basename $file)"
-        done
 
         cat <<SCRIPT > run.py
         import sys
@@ -148,7 +142,7 @@ task combine_data {
             df.to_csv("~{combined_file_name}", index=True)
         SCRIPT
 
-        python run.py $input_files
+        python run.py ~{sep(" ", unfiltered_normalized_beta)}
 
     >>>
 
@@ -251,7 +245,7 @@ task filter_probes {
 
     runtime {
         container: "quay.io/biocontainers/pandas:2.2.1"
-        memory: "28 GB"
+        memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
         maxRetries: 1
