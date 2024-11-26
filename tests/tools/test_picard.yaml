@@ -26,8 +26,8 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task bam_to_fastq tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe_R1.fastq.gz
-    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe_R2.fastq.gz
+    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.chrY_chrM_R1.fastq.gz
+    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe.chrY_chrM_R2.fastq.gz
 
 - name: picard_sort
   tags:
@@ -64,7 +64,7 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task clean_sam tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/cleaned_bam/test.bwa_aln_pe.cleaned.bam
+    - path: test-output/out/cleaned_bam/test.bwa_aln_pe.chrY_chrM.cleaned.bam
 
 - name: picard_collect_wgs_metrics
   tags:
@@ -73,7 +73,7 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task collect_wgs_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" reference_fasta="tests/input/GRCh38.chrY_chrM.fa.gz"
   files:
-    - path: test-output/out/wgs_metrics/test.bwa_aln_pe.CollectWgsMetrics.txt
+    - path: test-output/out/wgs_metrics/test.bwa_aln_pe.chrY_chrM.CollectWgsMetrics.txt
 
 - name: picard_collect_alignment_summary_metrics
   tags:
@@ -82,8 +82,8 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task collect_alignment_summary_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/alignment_metrics/test.bwa_aln_pe.CollectAlignmentSummaryMetrics.txt
-    - path: test-output/out/alignment_metrics_pdf/test.bwa_aln_pe.CollectAlignmentSummaryMetrics.pdf
+    - path: test-output/out/alignment_metrics/test.bwa_aln_pe.chrY_chrM.CollectAlignmentSummaryMetrics.txt
+    - path: test-output/out/alignment_metrics_pdf/test.bwa_aln_pe.chrY_chrM.CollectAlignmentSummaryMetrics.pdf
 
 - name: picard_collect_gc_bias_metrics
   tags:
@@ -92,9 +92,9 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task collect_gc_bias_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" reference_fasta=tests/input/GRCh38.chrY_chrM.fa.gz
   files:
-    - path: test-output/out/gc_bias_metrics/test.bwa_aln_pe.CollectGcBiasMetrics.txt
-    - path: test-output/out/gc_bias_metrics_summary/test.bwa_aln_pe.CollectGcBiasMetrics.summary.txt
-    - path: test-output/out/gc_bias_metrics_pdf/test.bwa_aln_pe.CollectGcBiasMetrics.pdf
+    - path: test-output/out/gc_bias_metrics/test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.txt
+    - path: test-output/out/gc_bias_metrics_summary/test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.summary.txt
+    - path: test-output/out/gc_bias_metrics_pdf/test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.pdf
 
 - name: picard_collect_insert_size_metrics
   tags:
@@ -103,8 +103,8 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task collect_insert_size_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/insert_size_metrics/test.bwa_aln_pe.CollectInsertSizeMetrics.txt
-    - path: test-output/out/insert_size_metrics_pdf/test.bwa_aln_pe.CollectInsertSizeMetrics.pdf
+    - path: test-output/out/insert_size_metrics/test.bwa_aln_pe.chrY_chrMCollectInsertSizeMetrics.txt
+    - path: test-output/out/insert_size_metrics_pdf/test.bwa_aln_pe.chrY_chrM.CollectInsertSizeMetrics.pdf
 
 - name: picard_quality_score_distribution
   tags:
