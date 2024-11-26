@@ -34,7 +34,7 @@ def test_samtools_merge(workflow_dir):
 
 @pytest.mark.workflow('samtools_collate', 'samtools_collate_to_fastq')
 def test_samtools_collate(workflow_dir):
-    bam = pathlib.Path(workflow_dir, 'test-output/out/collated_bam/test.bwa_aln_pe.collated.bam')
+    bam = pathlib.Path(workflow_dir, 'test-output/out/collated_bam/test.bwa_aln_pe.chrY_chrM.collated.bam')
     samfile = pysam.AlignmentFile(bam, "rb")
 
     reads = list(samfile.fetch(until_eof=True))

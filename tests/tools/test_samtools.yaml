@@ -92,7 +92,7 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task collate tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
+    - path: test-output/out/collated_bam/test.bwa_aln_pe.chrY_chrM.collated.bam
 
 - name: samtools_bam_to_fastq
   tags:
@@ -101,7 +101,7 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task bam_to_fastq tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" retain_collated_bam=true
   files:
-    - path: test-output/out/collated_bam/test.bwa_aln_pe.collated.bam
+    - path: test-output/out/collated_bam/test.bwa_aln_pe.chrY_chrM.collated.bam
     - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.chrY_chrM.R1.fastq.gz
     - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe.chrY_chrM.R2.fastq.gz
 
