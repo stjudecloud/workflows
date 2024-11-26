@@ -30,7 +30,7 @@ def test_samtools_merge(workflow_dir):
     read_groups = [read_group['ID'] for read_group in bam_header.get('RG', []) if 'ID' in read_group]
     assert len(read_groups) == 2
     assert read_groups[0] == "test2"
-    assert read_groups[1] == "test.bwa_aln_pe"
+    assert read_groups[1] == "test.bwa_aln_pe.chrY_chrM"
 
 @pytest.mark.workflow('samtools_collate', 'samtools_collate_to_fastq')
 def test_samtools_collate(workflow_dir):
