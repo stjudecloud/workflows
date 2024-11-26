@@ -46,7 +46,7 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
-    - path: test-output/out/gene_lengths/genes.genelengths.txt
+    - path: test-output/out/gene_lengths/gencode.v31.chrY_chrM.genelengths.txt
       contains:
         - "AL954722.1"
 
