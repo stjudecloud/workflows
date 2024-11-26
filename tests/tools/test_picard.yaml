@@ -71,7 +71,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run --verbose -d test-output/. --task collect_wgs_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" reference_fasta="tests/input/GRCh38.chrY_chrM.fa.gz"
+    miniwdl run --verbose -d test-output/. --task collect_wgs_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" reference_fasta="tests/input/GRCh38.chrY_chrM.fa"
   files:
     - path: test-output/out/wgs_metrics/test.bwa_aln_pe.chrY_chrM.CollectWgsMetrics.txt
 
@@ -90,7 +90,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run --verbose -d test-output/. --task collect_gc_bias_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" reference_fasta=tests/input/GRCh38.chrY_chrM.fa.gz
+    miniwdl run --verbose -d test-output/. --task collect_gc_bias_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" reference_fasta=tests/input/GRCh38.chrY_chrM.fa
   files:
     - path: test-output/out/gc_bias_metrics/test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.txt
     - path: test-output/out/gc_bias_metrics_summary/test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.summary.txt
@@ -103,7 +103,7 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task collect_insert_size_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/insert_size_metrics/test.bwa_aln_pe.chrY_chrMCollectInsertSizeMetrics.txt
+    - path: test-output/out/insert_size_metrics/test.bwa_aln_pe.chrY_chrM.CollectInsertSizeMetrics.txt
     - path: test-output/out/insert_size_metrics_pdf/test.bwa_aln_pe.chrY_chrM.CollectInsertSizeMetrics.pdf
 
 - name: picard_quality_score_distribution
@@ -141,6 +141,6 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --task create_sequence_dictionary tools/picard.wdl fasta="tests/input/GRCh38.chrY_chrM.fa.gz" outfile_name="GRCh38.chrY_chrM.dict"
+    miniwdl run -d test-output/. --task create_sequence_dictionary tools/picard.wdl fasta="tests/input/GRCh38.chrY_chrM.fa" outfile_name="GRCh38.chrY_chrM.dict"
   files:
     - path: test-output/out/dictionary/GRCh38.chrY_chrM.dict
