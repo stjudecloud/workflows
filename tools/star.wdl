@@ -116,7 +116,7 @@ task build_star_db {
 
         rm "$gtf_name" "$ref_fasta"
 
-        tar -czf ~{star_db_tar_gz} ~{db_name}
+        tar -C ~{db_name} -czf ~{star_db_tar_gz} .
     >>>
 
     output {
@@ -127,7 +127,7 @@ task build_star_db {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-0"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-1"
         maxRetries: 1
     }
 }
@@ -615,8 +615,6 @@ task alignment {
         Int modify_disk_size_gb = 0
     }
 
-    String star_db_dir = basename(star_db_tar_gz, ".tar.gz")
-
     Float read_one_fastqs_size = size(read_one_fastqs_gz, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs_gz, "GiB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
@@ -635,7 +633,8 @@ task alignment {
             n_cores=$(nproc)
         fi
 
-        tar -xzf ~{star_db_tar_gz}
+        mkdir star_db
+        tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
         # odd constructions a combination of needing white space properly parsed
         # and limitations of the WDL v1.1 spec
@@ -655,7 +654,7 @@ task alignment {
         read -ra read_group_args < read_groups_sorted.txt
         STAR --readFilesIn "${read_one_args[@]}" "${read_two_args[@]}" \
             --readFilesCommand "gunzip -c" \
-            --genomeDir ~{star_db_dir} \
+            --genomeDir star_db \
             --runThreadN "$n_cores" \
             --outSAMtype BAM Unsorted \
             --outMultimapperOrder Random \
@@ -814,7 +813,7 @@ task alignment {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-0"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-1"
         maxRetries: 1
     }
 }

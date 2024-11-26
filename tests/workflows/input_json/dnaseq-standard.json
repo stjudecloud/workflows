@@ -1,0 +1,4 @@
+{
+    "dnaseq_standard_experimental.bam": "tests/input/test.bwa_aln_pe.chrY_chrM.bam",
+    "dnaseq_standard_experimental.bwa_db": "tests/input/bwa_db.tar.gz"
+}

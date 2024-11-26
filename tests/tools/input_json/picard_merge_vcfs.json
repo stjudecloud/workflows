@@ -1,5 +1,5 @@
 {
-    "vcfs": ["tests/tools/input/test1.vcf.gz", "tests/tools/input/test2.vcf.gz"],
-    "vcfs_indexes": ["tests/tools/input/test1.vcf.gz.tbi", "tests/tools/input/test2.vcf.gz.tbi"],
+    "vcfs": ["tests/input/test1.vcf.gz", "tests/input/test2.vcf.gz"],
+    "vcfs_indexes": ["tests/input/test1.vcf.gz.tbi", "tests/input/test2.vcf.gz.tbi"],
     "output_vcf_name": "test.vcf.gz"
 }
