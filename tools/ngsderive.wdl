@@ -18,19 +18,19 @@ task strandedness {
         outfile_name: "Name for the strandedness TSV file"
         split_by_rg: {
             description: "Contain one entry in the output TSV per read group, in addition to an `overall` entry",
-            common: true,
+            group: "Common",
         }
         min_reads_per_gene: {
             description: "Filter any genes that don't have at least `min_reads_per_gene` reads mapping to them",
-            common: true,
+            group: "Common",
         }
         num_genes: {
             description: "How many genes to sample",
-            common: true,
+            group: "Common",
         }
         min_mapq: {
             description: "Minimum MAPQ to consider for supporting reads",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -103,7 +103,7 @@ task instrument {
         outfile_name: "Name for the instrument TSV file"
         num_reads: {
             description: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file.",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -156,11 +156,11 @@ task read_length {
         outfile_name: "Name for the readlen TSV file"
         majority_vote_cutoff: {
             description: "To call a majority readlen, the maximum read length must have at least `majority-vote-cutoff`% reads in support",
-            common: true,
+            group: "Common",
         }
         num_reads: {
             description: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file.",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -220,7 +220,7 @@ task encoding {
         outfile_name: "Name for the encoding TSV file"
         num_reads: {
             description: "How many reads to analyze from the start of the file(s). Any n < 1 to parse whole file(s).",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -300,19 +300,19 @@ task junction_annotation {
         prefix: "Prefix for the summary TSV and junction files. The extensions `.junction_summary.tsv` and `.junctions.tsv` will be added."
         min_intron: {
             description: "Minimum size of intron to be considered a splice",
-            common: true,
+            group: "Common",
         }
         min_mapq: {
             description: "Minimum MAPQ to consider for supporting reads",
-            common: true,
+            group: "Common",
         }
         min_reads: {
             description: "Filter any junctions that don't have at least `min_reads` reads supporting them",
-            common: true,
+            group: "Common",
         }
         fuzzy_junction_match_range: {
             description: "Consider found splices within `+-k` bases of a known splice event annotated",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -384,27 +384,27 @@ task endedness {
         outfile_name: "Name for the endedness TSV file"
         lenient: {
             description: "Return a zero exit code on unknown results",
-            common: true,
+            group: "Common",
         }
         calc_rpt: {
             description: "Calculate and output Reads-Per-Template. This will produce a more sophisticated estimate for endedness, but uses substantially more memory (can reach up to 200% of BAM size in memory consumption for some inputs).",
-            common: true,
+            group: "Common",
         }
         round_rpt: {
             description: "Round RPT to the nearest INT before comparing to expected values. Appropriate if using `--num-reads` > 0.",
-            common: true,
+            group: "Common",
         }
         split_by_rg: {
             description: "Contain one entry per read group",
-            common: true,
+            group: "Common",
         }
         paired_deviance: {
             description: "Distance from 0.5 split between number of f+l- reads and f-l+ reads allowed to be called 'Paired-End'. Default of `0.0` only appropriate if the whole file is being processed.",
-            common: true,
+            group: "Common",
         }
         num_reads: {
             description: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file.",
-            common: true,
+            group: "Common",
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by value of `calc_rpt` and the size of the input. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."

@@ -57,19 +57,19 @@ task split {
         prefix: "Prefix for the split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
         reject_unaccounted_reads: {
             description: "If true, error if there are reads present that do not have read group information matching the header.",
-            common: true,
+            group: "Common",
         }
         reject_empty_output: {
             description: "If true, error if any output BAMs are empty.",
-            common: true,
+            group: "Common",
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -168,11 +168,11 @@ task flagstat {
         outfile_name: "Name for the flagstat report file"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -225,11 +225,11 @@ task index {
         bam: "Input BAM format file to index"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -288,11 +288,11 @@ task subsample {
         prefix: "Prefix for the BAM file. The extension `.sampled.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -433,11 +433,11 @@ task filter {
         prefix: "Prefix for the filtered BAM file. The extension `.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -520,27 +520,27 @@ task merge {
         region: "Merge files in the specified region (Format: `chr:start-end`)"
         attach_rg: {
             description: "Attach an RG tag to each alignment. The tag value is inferred from file names.",
-            common: true,
+            group: "Common",
         }
         name_sorted: {
             description: "Are _all_ input BAMs `queryname` sorted (true)? Or are _all_ input BAMs `coordinate` sorted (false)?",
-            common: true,
+            group: "Common",
         }
         combine_rg: {
             description: "When several input files contain @RG headers with the same ID, emit only one of them (namely, the header line from the first file we find that ID in) to the merged output file. Combining these similar headers is usually the right thing to do when the files being merged originated from the same file. Without `-c`, all @RG headers appear in the output file, with random suffixes added to their IDs where necessary to differentiate them.",
-            common: true,
+            group: "Common",
         }
         combine_pg: {
             description: "Similarly to `combine_rg`: for each @PG ID in the set of files to merge, use the @PG line of the first file we find that ID in rather than adding a suffix to differentiate similar IDs.",
-            common: true,
+            group: "Common",
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -620,24 +620,24 @@ task addreplacerg {
         read_group_id: "Allows you to specify the read group ID of an existing @RG line and applies it to the reads specified by the `orphan_only` option"
         read_group_line: {
             description: "Allows you to specify a read group line to append to (or replace in) the header and applies it to the reads specified by the `orphan_only` option. Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM. Only **one** read group line can be supplied per invocation of this task.",
-            common: true,
+            group: "Common",
         }
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         orphan_only: {
             description: "Only add RG tags to orphans (true)? Or _also_ overwrite all existing RG tags (including any in the header) (false)?",
-            common: true,
+            group: "Common",
         }
         overwrite_header_record: {
             description: "Overwrite an existing @RG line, if a new one with the same ID value is provided?",
-            common: true,
+            group: "Common",
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -705,15 +705,15 @@ task collate {
         prefix: "Prefix for the collated BAM file. The extension `.bam` will be added."
         fast_mode: {
             description: "Use fast mode (output primary alignments only)?",
-            common: true,
+            group: "Common",
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -785,41 +785,41 @@ task bam_to_fastq {
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
         paired_end: {
             description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads.",
-            common: true,
+            group: "Common",
         }
         collated: {
             description: "Is the BAM collated (or name-sorted)? If `collated == true`, then the input BAM will be run through `samtools fastq` without preprocessing. If `collated == false`, then `samtools collate` must be run on the input BAM before conversion to FASTQ. Ignored if `paired_end == false`.",
-            common: true,
+            group: "Common",
         }
         retain_collated_bam: {
             description: "Save the collated BAM to disk and output it (true)? This slows performance and **substantially** increases storage requirements. Be aware that collated BAMs occupy much more space than either position sorted or name sorted BAMs (due to the compression algorithm). Ignored if `collated == true` **or** `paired_end == false`.",
-            common: true,
+            group: "Common",
         }
         fast_mode: {
             description: "Fast mode for `samtools collate`? If `true`, this **removes secondary and supplementary reads** during the `collate` step. If `false`, secondary and supplementary reads will be retained in the `collated_bam` output (if created). Defaults to the opposite of `retain_collated_bam`. Ignored if `collated == true` **or** `paired_end == false`.",
-            common: true,
+            group: "Common",
         }
         append_read_number: {
             description: "Append /1 and /2 suffixes to read names?",
-            common: true,
+            group: "Common",
         }
         interleaved: {
             description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end == false`.",
-            common: true,
+            group: "Common",
         }
         output_singletons: "Output singleton reads as their own FASTQ? Ignored if `paired_end == false`."
         fail_on_unexpected_reads: {
             description: "Should the task fail if reads with an unexpected `first`/`last` bit setting are discovered?",
             help: "The definition of 'unexpected' depends on whether the values of `paired_end` and `output_singletons` are true or false. If `paired_end` is `false`, no reads are considered unexpected, and _every_ read (not caught by `bitwise_filter`) will be present in the resulting FASTQ regardless of `first`/`last` bit settings. This setting will be ignored in that case. If `paired_end` is `true` then reads that don't satisfy `first` XOR `last` are considered unexpected (i.e. reads that have neither `first` nor `last` set or reads that have both `first` and `last` set). If `output_singletons` is `false`, singleton reads are considered unexpected. A singleton read is a read with either the `first` or the `last` bit set (but not both) and that possesses a _unique_ QNAME; i.e. it is a read without a pair when all reads are expected to be paired. But if `output_singletons` is `true`, these singleton reads will be output as their own FASTQ instead of causing the task to fail. If `fail_on_unexpected_reads` is `false`, then all the above cases will be ignored. Any 'unexpected' reads will be silently discarded.",
-            common: true,
+            group: "Common",
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -985,28 +985,28 @@ task fixmate {
                 ".bam",
                 ".cram"
             ],
-            common: true,
+            group: "Common",
         }
         add_cigar: {
             description: "Add template cigar `ct` tag",
             tool_default: false,
-            common: true,
+            group: "Common",
         }
         add_mate_score: {
             description: "Add mate score tags. These are used by `markdup` to select the best reads to keep.",
             tool_default: false,
-            common: true,
+            group: "Common",
         }
         disable_flag_sanitization: "Disable all flag sanitization?"
         disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]"
         remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -1075,28 +1075,28 @@ task position_sorted_fixmate {
         prefix: "Prefix for the output file. The extension `.bam` will be added."
         fast_mode: {
             description: "Use fast mode (output primary alignments only)?",
-            common: true,
+            group: "Common",
         }
         add_cigar: {
             description: "Add template cigar `ct` tag",
             tool_default: false,
-            common: true,
+            group: "Common",
         }
         add_mate_score: {
             description: "Add mate score tags. These are used by `markdup` to select the best reads to keep.",
             tool_default: false,
-            common: true,
+            group: "Common",
         }
         disable_flag_sanitization: "Disable all flag sanitization?"
         disable_proper_pair_check: "Disable proper pair check [ensure one forward and one reverse read in each pair]?"
         remove_unaligned_and_secondary: "Remove unmapped and secondary reads"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -1205,13 +1205,13 @@ task markdup {
         use_read_groups: "Only mark duplicates _within_ the same Read Group? Ignored if `create_bam == false`."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         max_readlen: "Expected maximum read length."
         optical_distance: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. Suggested settings of 100 for HiSeq style platforms or about 2500 for NovaSeq ones. When set above `0`, duplicate reads are tagged with `dt:Z:SQ` for optical duplicates and `dt:Z:LB` otherwise. Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_coords_regex`. If changing `read_coords_regex`, make sure that `coordinates_order` matches."
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
