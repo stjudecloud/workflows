@@ -24,7 +24,9 @@ import "./rnaseq-standard.wdl" as rnaseq_standard
 
 workflow rnaseq_standard_fastq {
     meta {
+        name: "RNA-Seq Standard (FASTQ)"
         description: "Runs the STAR RNA-Seq alignment workflow for St. Jude Cloud from FASTQ input"
+        category: "Harmonization"
         outputs: {
             bam: "Harmonized RNA-Seq BAM",
             bam_index: "BAI index file associated with `bam`",

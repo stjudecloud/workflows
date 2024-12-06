@@ -5,7 +5,9 @@ import "../../tools/picard.wdl"
 
 workflow rnaseq_variant_calling {
     meta {
+        name: "RNA-Seq Variant Calling"
         description: "Call short germline variants from RNA-Seq data. Produces a VCF file of variants. Based on GATK RNA-Seq short variant calling best practices pipeline."
+        category: "Variant Calling"
         outputs: {
             recalibrated_bam: "BAM that has undergone recalibration of base quality scores",
             recalibrated_bam_index: "Index file for recalibrated BAM file",

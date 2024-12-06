@@ -5,7 +5,9 @@ import "../../tools/util.wdl"
 
 workflow star_db_build {
     meta {
+        name: "STAR Database Build"
         description: "Builds a database suitable for running the STAR alignment program"
+        category: "Reference"
         outputs: {
             reference_fa: "FASTA format reference file",
             gtf: "GTF feature file",

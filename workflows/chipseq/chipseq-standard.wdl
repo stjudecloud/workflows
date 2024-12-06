@@ -16,7 +16,9 @@ import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seas
 
 workflow chipseq_standard {
     meta {
+        name: "ChIP-Seq Standard"
         description: "Runs the BWA ChIP-Seq alignment workflow for St. Jude Cloud."
+        category: "Harmonization"
         outputs: {
             harmonized_bam: "A harmonized BWA aligned ChIP-Seq BAM file",
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",

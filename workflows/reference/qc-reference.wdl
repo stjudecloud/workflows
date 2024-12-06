@@ -3,10 +3,12 @@ version 1.1
 import "../../tools/kraken2.wdl"
 import "../../tools/util.wdl"
 
-workflow make_qc_reference {
+workflow qc_reference {
     meta {
+        name: "Quality Check Reference"
         description: "Downloads and creates all reference files needed to run the `quality_check` workflow"
         warning: "See `kraken2.download_library.meta.warning` for information regarding common failures."
+        category: "Reference"
         outputs: {
             reference_fa: "FASTA format reference file",
             gtf: "GTF feature file",

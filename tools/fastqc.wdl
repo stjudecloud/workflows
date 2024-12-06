@@ -16,11 +16,11 @@ task fastqc {
         prefix: "Prefix for the FastQC results directory. The extension `.tar.gz` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

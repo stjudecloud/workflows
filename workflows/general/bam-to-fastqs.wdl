@@ -5,7 +5,9 @@ import "../../tools/samtools.wdl"
 
 workflow bam_to_fastqs {
     meta {
+        name: "BAM to FASTQs"
         description: "Converts an input BAM file to one or more FASTQ files, performing QC checks along the way"
+        category: "Utility"
         outputs: {
             read1s: "Array of FASTQ files corresponding to either `first` reads (if `paired_end = true`) or all reads (if `paired_end = false`)",
             read2s: "Array of FASTQ files corresponding to `last` reads (if `paired_end = true`)",
