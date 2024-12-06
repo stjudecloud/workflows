@@ -1,10 +1,10 @@
 {
-    "make_qc_reference.reference_fa_url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz",
-    "make_qc_reference.reference_fa_name": "GRCh38_no_alt.fa.gz",
-    "make_qc_reference.gtf_url": "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_31/gencode.v31.annotation.gtf.gz",
-    "make_qc_reference.gtf_name": "gencode.v31.gtf.gz",
-    "make_qc_reference.protein": false,
-    "make_qc_reference.kraken_libraries": [
+    "qc_reference.reference_fa_url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz",
+    "qc_reference.reference_fa_name": "GRCh38_no_alt.fa.gz",
+    "qc_reference.gtf_url": "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_31/gencode.v31.annotation.gtf.gz",
+    "qc_reference.gtf_name": "gencode.v31.gtf.gz",
+    "qc_reference.protein": false,
+    "qc_reference.kraken_libraries": [
         "archaea",
         "bacteria",
         "plasmid",
@@ -14,19 +14,19 @@
         "protozoa",
         "UniVec_Core"
     ],
-    "make_qc_reference.kraken_fasta_urls": [
+    "qc_reference.kraken_fasta_urls": [
         "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Mus_musculus/reference/GCF_000001635.27_GRCm39/GCF_000001635.27_GRCm39_genomic.fna.gz",
         "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Arabidopsis_thaliana/reference/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.fna.gz",
         "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_melanogaster/reference/GCF_000001215.4_Release_6_plus_ISO1_MT/GCF_000001215.4_Release_6_plus_ISO1_MT_genomic.fna.gz",
         "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/reference/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_genomic.fna.gz",
         "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_other/Danio_rerio/reference/GCF_000002035.6_GRCz11/GCF_000002035.6_GRCz11_genomic.fna.gz"
     ],
-    "make_qc_reference.kraken_fastas": [],
-    "make_qc_reference.kraken_build_db.db_name": "custom_kraken2_db",
-    "make_qc_reference.kraken_build_db.kmer_len": 35,
-    "make_qc_reference.kraken_build_db.minimizer_len": 31,
-    "make_qc_reference.kraken_build_db.minimizer_spaces": 7,
-    "make_qc_reference.kraken_build_db.max_db_size_gb": -1,
-    "make_qc_reference.kraken_build_db.ncpu": 8,
-    "make_qc_reference.kraken_build_db.use_all_cores": false
+    "qc_reference.kraken_fastas": [],
+    "qc_reference.kraken_build_db.db_name": "custom_kraken2_db",
+    "qc_reference.kraken_build_db.kmer_len": 35,
+    "qc_reference.kraken_build_db.minimizer_len": 31,
+    "qc_reference.kraken_build_db.minimizer_spaces": 7,
+    "qc_reference.kraken_build_db.max_db_size_gb": -1,
+    "qc_reference.kraken_build_db.ncpu": 8,
+    "qc_reference.kraken_build_db.use_all_cores": false
 }

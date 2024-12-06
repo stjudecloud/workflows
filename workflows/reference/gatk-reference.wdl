@@ -6,7 +6,9 @@ import "../../tools/util.wdl"
 
 workflow gatk_reference {
     meta {
+        name: "GATK Reference"
         description: "Fetches reference files for GATK."
+        category: "Reference"
         outputs: {
             fasta: "FASTA file for the reference genome.",
             fasta_index: "Index for the FASTA file for the reference genome.",
