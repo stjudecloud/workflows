@@ -3,7 +3,7 @@
     - miniwdl
     - fq
   command: >-
-    miniwdl run --verbose -d test-output/. --task fqlint tools/fq.wdl read_one_fastq=tests/tools/input/test_R1.fq.gz read_two_fastq=tests/tools/input/test_R2.fq.gz
+    miniwdl run --verbose -d test-output/. --task fqlint tools/fq.wdl read_one_fastq=tests/input/test_R1.fq.gz read_two_fastq=tests/input/test_R2.fq.gz
   stdout:
     contains_regex:
       - "passed"
@@ -13,7 +13,7 @@
     - miniwdl
     - fq
   command: >-
-    miniwdl run --verbose -d test-output/. --task subsample tools/fq.wdl read_one_fastq=tests/tools/input/test_R1.fq.gz read_two_fastq=tests/tools/input/test_R2.fq.gz record_count=1000
+    miniwdl run --verbose -d test-output/. --task subsample tools/fq.wdl read_one_fastq=tests/input/test_R1.fq.gz read_two_fastq=tests/input/test_R2.fq.gz record_count=1000
   files:
     - path: test-output/out/subsampled_read1/test_R1.subsampled.fastq.gz
     - path: test-output/out/subsampled_read2/test_R2.subsampled.fastq.gz
@@ -23,7 +23,7 @@
     - miniwdl
     - fq
   command: >-
-    miniwdl run --verbose -d test-output/. --task subsample tools/fq.wdl read_one_fastq=tests/tools/input/test_R1.fq.gz read_two_fastq=tests/tools/input/test_R2.fq.gz probability=0.01
+    miniwdl run --verbose -d test-output/. --task subsample tools/fq.wdl read_one_fastq=tests/input/test_R1.fq.gz read_two_fastq=tests/input/test_R2.fq.gz probability=0.01
   files:
     - path: test-output/out/subsampled_read1/test_R1.subsampled.fastq.gz
     - path: test-output/out/subsampled_read2/test_R2.subsampled.fastq.gz

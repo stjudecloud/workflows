@@ -81,13 +81,13 @@ task get_read_groups {
 
         if ~{format_for_star}; then
             samtools view -H ~{bam} \
-                | grep "@RG" \
+                | grep "^@RG" \
                 | cut -f 2- \
                 | sed -e 's/\t/ /g' \
                 | awk '{print}' ORS=' , ' \
                 | sed 's/ , $//' > read_groups.txt
         else
-            samtools view -H ~{bam} | grep "@RG" > read_groups.txt
+            samtools view -H ~{bam} | grep "^@RG" > read_groups.txt
         fi
     >>>
 
