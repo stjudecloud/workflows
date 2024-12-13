@@ -1,7 +1,7 @@
 {
-    "vcf": "tests/tools/input/test1.vcf.gz",
-    "vcf_index": "tests/tools/input/test1.vcf.gz.tbi",
-    "fasta": "tests/tools/input/GRCh38.chr1_chr19.fa",
-    "fasta_index": "tests/tools/input/GRCh38.chr1_chr19.fa.fai",
-    "dict": "tests/tools/input/GRCh38.chr1_chr19.dict"
+    "vcf": "tests/input/test1.vcf.gz",
+    "vcf_index": "tests/input/test1.vcf.gz.tbi",
+    "fasta": "tests/input/GRCh38.chr1_chr19.fa",
+    "fasta_index": "tests/input/GRCh38.chr1_chr19.fa.fai",
+    "dict": "tests/input/GRCh38.chr1_chr19.dict"
 }
