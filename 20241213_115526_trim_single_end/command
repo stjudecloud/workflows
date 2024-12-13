@@ -1,0 +1,5 @@
+
+cd /usr/local/share/trimmomatic-0.36-5
+pwd && ls -l
+java -jar trimmomatic.jar SE -phred33 /mnt/miniwdl_task_container/work/_miniwdl_inputs/0/HG005_GM24631_replicate1_mRNAseq_ILLUMINA_UNC_20220524_CTCACCAA-CTAGGCAA_R1_001.fastq.gz trimmomatic_output ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+    

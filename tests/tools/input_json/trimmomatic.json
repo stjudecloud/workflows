@@ -1,0 +1,9 @@
+{
+    "inputfile": "tests/tools/input/HG005_GM24631_replicate1_mRNAseq_ILLUMINA_UNC_20220524_CTCACCAA-CTAGGCAA_R1_001.fastq.gz",
+    "output_name": "trimmomatic_output",
+    "leading": 3,
+    "trailing": 3,
+    "window_size": 4,
+    "window_quality": 15,
+    "minlen": 36
+}
