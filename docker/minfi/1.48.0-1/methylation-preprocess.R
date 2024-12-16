@@ -26,7 +26,7 @@ set.seed(1)
 dir=getwd()
 
 RGSet <- read.metharray(args$idat_base, verbose = TRUE, force = TRUE)
-saveRDS(RGSet, paste(args$out_base, ".RGSet.rds"))
+saveRDS(RGSet, paste0(args$out_base, ".RGSet.rds"))
 
 # The manifest is needed by preprocessRAW
 manifest <- getManifest(RGSet)
@@ -35,48 +35,48 @@ manifest
 # Load raw data into a MethylSet object be converting red/green
 # channels into a matrix of methlyated and unmethylated signals.
 MSet <- preprocessRaw(RGSet)
-saveRDS(MSet, paste(args$out_base, ".MSet.rds"))
+saveRDS(MSet, paste0(args$out_base, ".MSet.rds"))
 
 # Convert to a RatioSet
 RSet <- ratioConvert(MSet, what = "both", keepCN = TRUE)
-saveRDS(RSet, paste(args$out_base, ".RSet.rds"))
+saveRDS(RSet, paste0(args$out_base, ".RSet.rds"))
 
 # Add genomic coordinates to each probe (plus additional annotation)
 GRset <- mapToGenome(RSet)
-saveRDS(GRSet, paste(args$out_base, ".GRSet.rds"))
+saveRDS(GRset, paste0(args$out_base, ".GRSet.rds"))
 
 # Take the genomic mapped RatioSet and fill Beta values (non-normalized).
 # Get the NON-normalized beta values:
 beta <- getBeta(GRset)
-write.csv(beta, paste(args$out_base, ".beta.csv"))
+write.csv(beta, paste0(args$out_base, ".beta.csv"))
 
 # Get M-value matrix and copy-number matrix
 # Get M and CN vals if interested:
 M <- getM(GRset)
-write.csv(M, paste(args$out_base, ".m_values.csv"))
+write.csv(M, paste0(args$out_base, ".m_values.csv"))
 CN <- getCN(GRset)
-write.csv(CN, paste(args$out_base, ".cn_values.csv"))
+write.csv(CN, paste0(args$out_base, ".cn_values.csv"))
 
 # Get sample names and probe names
 sampleNames <- sampleNames(GRset)
-write.csv(sampleNames, paste(args$out_base, ".sampleNames.csv"))
+write.csv(sampleNames, paste0(args$out_base, ".sampleNames.csv"))
 probeNames <- featureNames(GRset)
-write.csv(probeNames, paste(args$out_base, ".probeNames.csv"))
+write.csv(probeNames, paste0(args$out_base, ".probeNames.csv"))
 
 gr <- granges(GRset)
-write.csv(gr, paste(args$out_base, ".gr.csv"))
+write.csv(gr, paste0(args$out_base, ".gr.csv"))
 
 annotation <- getAnnotation(GRset)
-write.csv(annotation, paste(args$out_base, ".annotation.csv"))
+write.csv(annotation, paste0(args$out_base, ".annotation.csv"))
 
 # Perform SWAN normalization on beta values
 GRset.swan_norm <- preprocessSWAN(RGSet)
-write.csv(GRset.swan_norm, paste(args$out_base, ".GRset.swan_norm.csv"))
+write.csv(GRset.swan_norm, paste0(args$out_base, ".GRset.swan_norm.csv"))
 beta_swan_norm <- getBeta(GRset.swan_norm)
 
 # Write the normalized beta-values that have NOT yet had
 # low-variance probes filtered out
-write.csv(beta_swan_norm, paste(args$out_base, ".beta_swan_norm_unfiltered.csv"))
+write.csv(beta_swan_norm, paste0(args$out_base, ".beta_swan_norm_unfiltered.csv"))
 
 # Write the normalized beta-values that have NOT yet had
 # low-variance probes filtered out
@@ -85,4 +85,4 @@ RSet <- ratioConvert(GRset.swan_norm)
 GRset <- mapToGenome(RSet)
 beta_swan_norm <- getBeta(GRset)
 colnames(beta_swan_norm) <- colnames(CN)
-write.csv(beta_swan_norm[order(rownames(beta_swan_norm)),], paste(args$out_base, ".beta_swan_norm_unfiltered.genomic.csv"))
+write.csv(beta_swan_norm[order(rownames(beta_swan_norm)),], paste0(args$out_base, ".beta_swan_norm_unfiltered.genomic.csv"))
