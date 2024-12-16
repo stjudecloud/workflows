@@ -110,7 +110,7 @@ task subsample {
     parameter_meta {
         read_one_fastq: "Input FASTQ with read one. Can be gzipped or uncompressed."
         read_two_fastq: "Input FASTQ with read two. Can be gzipped or uncompressed."
-        prefix: "Prefix for the output FASTQ file(s). The extension `_R1.subsampled.fastq.gz` and `_R2.subsampled.fastq.gz` will be added."
+        prefix: "Prefix for the output FASTQ file(s). The extension `.R1.subsampled.fastq.gz` and `.R2.subsampled.fastq.gz` will be added."
         probability: {
             description: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable.",
             common: true,
@@ -147,8 +147,8 @@ task subsample {
     )
     String record_count_arg = if (record_count > 0) then "-n ~{record_count}" else ""
 
-    String r1_dst = prefix + "_R1.subsampled.fastq.gz"
-    String r2_dst = prefix + "_R2.subsampled.fastq.gz"
+    String r1_dst = prefix + ".R1.subsampled.fastq.gz"
+    String r2_dst = prefix + ".R2.subsampled.fastq.gz"
 
     command <<<
         fq subsample \
@@ -165,8 +165,8 @@ task subsample {
     >>>
 
     output {
-        File subsampled_read1 = prefix + "_R1.subsampled.fastq.gz"
-        File? subsampled_read2 = prefix + "_R2.subsampled.fastq.gz"
+        File subsampled_read1 = prefix + ".R1.subsampled.fastq.gz"
+        File? subsampled_read2 = prefix + ".R2.subsampled.fastq.gz"
     }
 
     runtime {
