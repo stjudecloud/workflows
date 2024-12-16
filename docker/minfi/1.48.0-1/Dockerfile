@@ -6,3 +6,5 @@ RUN R --no-save <<SCRIPT
     BiocManager::install("IlluminaHumanMethylationEPICmanifest")
     BiocManager::install("IlluminaHumanMethylationEPICanno.ilm10b4.hg19")
 SCRIPT
+
+COPY methylation-preprocess.R /usr/local/bin/methylation-preprocess.R
