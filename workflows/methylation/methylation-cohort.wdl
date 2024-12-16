@@ -114,37 +114,7 @@ task combine_data {
     command <<<
         echo "Combining data"
 
-        cat <<SCRIPT > run.py
-        import sys
-        import argparse
-        import pandas as pd
-
-        def get_args():
-            parser = argparse.ArgumentParser(
-                description="Combine CSV files.")
-            parser.add_argument(
-                "csvs", type=str, nargs="+", help="List of CSV files.")
-
-            args = parser.parse_args()
-
-            return args
-        
-        def read(filename):
-            df = pd.read_csv(filename)
-            df.rename(columns={df.columns[0]: "probe"}, inplace=True)
-            df.set_index("probe", inplace=True)
-            return df
-
-        if __name__ == "__main__":
-            args = get_args()
-
-            # Combine data
-            df = pd.concat([read(f) for f in args.csvs], axis=1, join="inner")
-            df.to_csv("~{combined_file_name}", index=True)
-        SCRIPT
-
-        python run.py ~{sep(" ", unfiltered_normalized_beta)}
-
+        python $(which combine.py) ~{sep(" ", unfiltered_normalized_beta)}
     >>>
 
     output {
@@ -152,7 +122,7 @@ task combine_data {
     }
 
     runtime {
-        container: "quay.io/biocontainers/pandas:2.2.1"
+        container: "ghcr.io/stjudecloud/pandas:branch-methylation-2.2.1-0"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -186,57 +156,7 @@ task filter_probes {
     command <<<
         ln -s ~{beta_values} beta.csv
 
-        cat <<SCRIPT > filter.py
-        import csv
-        import pandas as pd
-        import numpy as np
-        import sys
-        import argparse
-
-        def get_args():
-            parser = argparse.ArgumentParser(
-                description="Filter probes based on standard deviation.")
-            parser.add_argument(
-                "--num_probes", type=int, default=10000, help="Number of probes to retain after filtering.")
-            parser.add_argument(
-                "beta", type=str, help="Beta values CSV file.")
-
-            args = parser.parse_args()
-
-            return args
-
-        if __name__ == "__main__":
-            args = get_args()
-
-            # Read beta values and compute standard deviation
-            data = []
-            with open("beta.csv", "r") as f:
-                reader = csv.reader(f)
-                header = next(reader)
-                for i, line in enumerate(reader):
-                    probe = line[0]
-                    sd = np.std([float(x) for x in line[1:]])
-                    data.append([probe, sd])
-
-            sd_df = pd.DataFrame(data, columns=["probe", "sd"]).set_index("probe")
-
-            # Filter probes based on standard deviation
-            filtered_probes = sd_df.sort_values("sd", ascending=False).head(args.num_probes).index
-
-            pd.Series(filtered_probes, index=filtered_probes).to_csv('filtered_probes.csv', index=False)
-
-            # Filter beta values
-            with open("beta.csv", "r") as f:
-                reader = csv.reader(f)
-                header = next(reader)
-                header[0] = "probe"
-                beta_data = [line for line in reader if line[0] in filtered_probes]
-
-            bd = pd.DataFrame(beta_data, columns=header).set_index("probe")
-            bd.to_csv("filtered_beta.csv")
-        SCRIPT
-
-        python filter.py --num_probes ~{num_probes} beta.csv
+        python $(which filter.py) --num_probes ~{num_probes} beta.csv
     >>>
 
     output {
@@ -245,7 +165,7 @@ task filter_probes {
     }
 
     runtime {
-        container: "quay.io/biocontainers/pandas:2.2.1"
+        container: "ghcr.io/stjudecloud/pandas:branch-methylation-2.2.1-0"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -275,21 +195,7 @@ task generate_umap {
     command <<<
         ln -s ~{filtered_beta_values} beta.csv
 
-        python <<SCRIPT
-        import pandas as pd
-        import umap
-
-        # Read beta values
-        beta = pd.read_csv("beta.csv", index_col=0)
-
-        # Perform UMAP
-        embedding = umap.UMAP().fit_transform(beta.T)
-
-        # Save UMAP embedding
-        umap = pd.DataFrame(data=embedding, index=beta.T.index, columns=["UMAP1", "UMAP2"])
-        umap.index_name = "sample"
-        umap.to_csv("umap.csv")
-        SCRIPT
+        python $(which umap.py)
     >>>
 
     output {
@@ -322,20 +228,7 @@ task plot_umap {
     }
 
     command <<<
-        python <<SCRIPT
-        import pandas as pd
-        import matplotlib.pyplot as plt
-
-        # Read UMAP embedding
-        umap = pd.read_csv("~{umap}", index_col=0)
-
-        # Plot UMAP
-        plt.scatter(umap["UMAP1"], umap["UMAP2"])
-        plt.xlabel("UMAP1")
-        plt.ylabel("UMAP2")
-        plt.title("UMAP Embedding")
-        plt.savefig("umap.png")    
-        SCRIPT
+        python $(which plot_umap.py) ~{umap}
     >>>
 
     output {
