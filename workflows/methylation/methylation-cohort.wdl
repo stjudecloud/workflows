@@ -114,7 +114,7 @@ task combine_data {
     command <<<
         echo "Combining data"
 
-        python $(which combine.py) ~{sep(" ", unfiltered_normalized_beta)}
+        python $(which combine.py) --output-name ~{combined_file_name} ~{sep(" ", unfiltered_normalized_beta)}
     >>>
 
     output {
