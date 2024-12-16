@@ -213,7 +213,7 @@
 <h4 id="defaults_1">Defaults</h4>
 <ul>
 <li><code>modify_disk_size_gb</code> (Int, default=0): Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.</li>
-<li><code>prefix</code> (String, default=sub(basename(read_one_fastq),"([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$","")): Prefix for the output FASTQ file(s). The extension <code>_R1.subsampled.fastq.gz</code> and <code>_R2.subsampled.fastq.gz</code> will be added.</li>
+<li><code>prefix</code> (String, default=sub(basename(read_one_fastq),"([_\.][rR][12])?(\.subsampled)?\.(fastq|fq)(\.gz)?$","")): Prefix for the output FASTQ file(s). The extension <code>.R1.subsampled.fastq.gz</code> and <code>.R2.subsampled.fastq.gz</code> will be added.</li>
 <li><code>probability</code> (Float, default=1.0); <strong>description</strong>: The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with <code>record-count</code>. Any <code>probability&lt;=0.0</code> or <code>probability&gt;=1.0</code> to disable.; <strong>common</strong>: true</li>
 <li><code>record_count</code> (Int, default=-1); <strong>description</strong>: The exact number of records to keep. Cannot be used with <code>probability</code>. Any <code>record_count&lt;=0</code> to disable.; <strong>common</strong>: true</li>
 </ul>
