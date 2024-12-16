@@ -1,7 +1,0 @@
-/usr/local/share/trimmomatic-0.36-5
-total 172
--rw-rw-r--    1 root     root         35147 Sep  1  2017 LICENSE
-drwxr-xr-x    2 root     root          4096 Sep  1  2017 adapters
--rwxrwxr-x    1 root     root           450 Sep  1  2017 conda_build.sh
--rwxrwxr-x    1 root     root          1792 Sep  1  2017 trimmomatic
--rw-rw-r--    1 root     root        126230 Sep  1  2017 trimmomatic.jar

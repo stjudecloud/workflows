@@ -32,12 +32,12 @@ task trim_single_end {
 
     command <<<
         cd /usr/local/share/trimmomatic-0.36-5
-        pwd && ls -l
-        java -jar trimmomatic.jar SE -phred33 ~{inputfile} ~{output_name} ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:~{leading} TRAILING:~{trailing} SLIDINGWINDOW:~{window_size}:~{window_quality} MINLEN:~{minlen}
+        java -jar trimmomatic.jar SE -phred33 ~{inputfile} output.fq.gz ILLUMINACLIP:/usr/local/share/trimmomatic-0.36-5/adapters/TruSeq3-SE.fa:2:30:10 LEADING:~{leading} TRAILING:~{trailing} SLIDINGWINDOW:~{window_size}:~{window_quality} MINLEN:~{minlen}
+        ls -l
     >>>
 
     output {
-        File trimmed_reads = output_name
+        File trimmed_reads = "output.fq.gz"
     }
 
     runtime {
@@ -45,6 +45,6 @@ task trim_single_end {
         disks: "100 GB"
         container: "quay.io/biocontainers/trimmomatic:0.36--5"
         cpu: 8
-        maxRetries: 1
+        maxRetries: 0
     }
 }
