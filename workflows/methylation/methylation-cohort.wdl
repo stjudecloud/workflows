@@ -195,7 +195,7 @@ task generate_umap {
     command <<<
         ln -s ~{filtered_beta_values} beta.csv
 
-        python $(which umap.py)
+        python $(which generate_umap.py)
     >>>
 
     output {
