@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # Filter probes based on standard deviation
     filtered_probes = sd_df.sort_values("sd", ascending=False).head(args.num_probes).index
 
-    pd.Series(filtered_probes, index=filtered_probes).to_csv('filtered_probes.csv', index=False)
+    pd.Series(filtered_probes, index=filtered_probes).to_csv("filtered_probes.csv", index=False)
 
     # Filter beta values
     with open("beta.csv", "r") as f:
