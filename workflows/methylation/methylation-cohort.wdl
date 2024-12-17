@@ -140,11 +140,13 @@ task filter_probes {
 
     parameter_meta {
         beta_values: "Beta values for all samples"
+        output_prefix: "Prefix for the output files. The extensions `.beta.csv` and `.probes.csv` will be appended."
         num_probes: "Number of probes to retain after filtering"
     }
 
     input {
         File beta_values
+        String output_prefix = "filtered"
         Int num_probes = 10000
     }
 
@@ -153,12 +155,16 @@ task filter_probes {
     command <<<
         ln -s ~{beta_values} beta.csv
 
-        python $(which filter.py) --num_probes ~{num_probes} beta.csv
+        python $(which filter.py) \
+            --output-name ~{output_prefix}.beta.csv \
+            --filtered-probes ~{output_prefix}.probes.csv \
+            --num-probes ~{num_probes} \
+            beta.csv
     >>>
 
     output {
-        File filtered_beta_values = "filtered_beta.csv"
-        File filtered_probes = "filtered_probes.csv"
+        File filtered_beta_values = "~{output_prefix}.csv"
+        File filtered_probes = "~{output_prefix}.probes.csv"
     }
 
     runtime {

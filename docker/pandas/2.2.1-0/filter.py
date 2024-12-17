@@ -6,11 +6,20 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser(
-        description="Filter probes based on standard deviation.")
+        description="Filter probes based on standard deviation."
+    )
     parser.add_argument(
-        "--num_probes", type=int, default=10000, help="Number of probes to retain after filtering.")
+        "--num-probes", type=int, default=10000, help="Number of probes to retain after filtering."
+    )
     parser.add_argument(
-        "beta", type=str, help="Beta values CSV file.")
+        "--output-name", type=str, help="Name for output file."
+    )
+    parser.add_argument(
+        "--filtered-probes", type=str, help="Name for filtered probes file."
+    )
+    parser.add_argument(
+        "beta", type=str, help="Beta values CSV file."
+    )
 
     args = parser.parse_args()
 
@@ -21,7 +30,7 @@ if __name__ == "__main__":
 
     # Read beta values and compute standard deviation
     data = []
-    with open("beta.csv", "r") as f:
+    with open(args.beta, "r") as f:
         reader = csv.reader(f)
         header = next(reader)
         for i, line in enumerate(reader):
@@ -34,14 +43,14 @@ if __name__ == "__main__":
     # Filter probes based on standard deviation
     filtered_probes = sd_df.sort_values("sd", ascending=False).head(args.num_probes).index
 
-    pd.Series(filtered_probes, index=filtered_probes).to_csv("filtered_probes.csv", index=False)
+    pd.Series(filtered_probes, index=filtered_probes).to_csv(args.filtered_probes, index=False)
 
     # Filter beta values
-    with open("beta.csv", "r") as f:
+    with open(args.beta, "r") as f:
         reader = csv.reader(f)
         header = next(reader)
         header[0] = "probe"
         beta_data = [line for line in reader if line[0] in filtered_probes]
 
     bd = pd.DataFrame(beta_data, columns=header).set_index("probe")
-    bd.to_csv("filtered_beta.csv")
+    bd.to_csv(args.output_name)
