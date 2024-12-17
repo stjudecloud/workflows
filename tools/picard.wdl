@@ -841,22 +841,22 @@ task bam_to_fastq {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
-            FASTQ=~{prefix}_R1.fastq \
+            FASTQ=~{prefix}.R1.fastq \
             ~{(
                 if paired
-                then "SECOND_END_FASTQ=" + prefix + "_R2.fastq"
+                then "SECOND_END_FASTQ=" + prefix + ".R2.fastq"
                 else ""
             )} \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
 
-        gzip ~{prefix}_R1.fastq \
-            ~{if paired then prefix + "_R2.fastq" else ""}
+        gzip ~{prefix}.R1.fastq \
+            ~{if paired then prefix + ".R2.fastq" else ""}
     >>>
 
     output {
-        File read_one_fastq_gz = "~{prefix}_R1.fastq.gz"
-        File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
+        File read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
+        File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
     }
 
     runtime{

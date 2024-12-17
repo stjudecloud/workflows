@@ -780,7 +780,7 @@ task split_fastq {
             stream: true,
         }
         reads_per_file: "Number of reads to include in each output FASTQ file"
-        prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
+        prefix: "Prefix for the FASTQ files. The extension `.fastq.gz` (preceded by a split index) will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
     }
