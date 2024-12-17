@@ -140,31 +140,29 @@ task filter_probes {
 
     parameter_meta {
         beta_values: "Beta values for all samples"
-        output_prefix: "Prefix for the output files. The extensions `.beta.csv` and `.probes.csv` will be appended."
+        prefix: "Prefix for the output files. The extensions `.beta.csv` and `.probes.csv` will be appended."
         num_probes: "Number of probes to retain after filtering"
     }
 
     input {
         File beta_values
-        String output_prefix = "filtered"
+        String prefix = "filtered"
         Int num_probes = 10000
     }
 
     Int disk_size_gb = ceil(size(beta_values, "GiB") * 2)
 
     command <<<
-        ln -s ~{beta_values} beta.csv
-
         python $(which filter.py) \
-            --output-name ~{output_prefix}.beta.csv \
-            --filtered-probes ~{output_prefix}.probes.csv \
+            --output-name ~{prefix}.beta.csv \
+            --filtered-probes ~{prefix}.probes.csv \
             --num-probes ~{num_probes} \
-            beta.csv
+            ~{beta_values}
     >>>
 
     output {
-        File filtered_beta_values = "~{output_prefix}.csv"
-        File filtered_probes = "~{output_prefix}.probes.csv"
+        File filtered_beta_values = "~{prefix}.beta.csv"
+        File filtered_probes = "~{prefix}.probes.csv"
     }
 
     runtime {
@@ -186,22 +184,22 @@ task generate_umap {
 
     parameter_meta {
         filtered_beta_values: "Filtered beta values for all samples"
+        prefix: "Prefix for output file. The extension `.csv` will be appended."
     }
 
     input {
         File filtered_beta_values
+        String prefix = "umap"
     }
 
     Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2)
 
     command <<<
-        ln -s ~{filtered_beta_values} beta.csv
-
-        python $(which generate_umap.py)
+        python $(which generate_umap.py) --beta ~{filtered_beta_values} --output-name ~{prefix}.csv
     >>>
 
     output {
-        File umap = "umap.csv"
+        File umap = "~{prefix}.csv"
     }
 
     runtime {
