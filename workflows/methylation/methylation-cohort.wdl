@@ -25,7 +25,7 @@ workflow methylation_cohort {
     Int beta_length = length(unfiltered_normalized_beta)
 
     if (beta_length > max_length){
-        scatter ( merge_num in range((beta_length / max_length) + 1)){
+        scatter (merge_num in range((beta_length / max_length) + 1)){
             # Get the sublist of beta files
             scatter ( beta_num in range(max_length)){
                 Int num = (
