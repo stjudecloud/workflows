@@ -6,7 +6,7 @@ workflow methylation_preprocess {
         outputs: {
             beta_swan_norm_unfiltered: "Normalized beta values for all probes",
             beta_swan_norm_unfiltered_genomic: "Normalized beta values for all probes that map to the genome",
-            annotation: "Annotation table for probes.  Contains genomic coordinates and sequence and other information about the probes.",
+            annotation: "Annotation table for probes. Contains genomic coordinates and sequence and other information about the probes.",
             beta_unnorm: "Non-normalized beta values",
             cn_values: "Copy number values",
             m_values: "M values",
@@ -29,8 +29,10 @@ workflow methylation_preprocess {
 
     #@ except: LineWidth
     output {
-        File beta_swan_norm_unfiltered = process_raw_idats.beta_swan_norm_unfiltered
-        File beta_swan_norm_unfiltered_genomic = process_raw_idats.beta_swan_norm_unfiltered_genomic
+        File beta_swan_norm_unfiltered
+            = process_raw_idats.beta_swan_norm_unfiltered
+        File beta_swan_norm_unfiltered_genomic
+            = process_raw_idats.beta_swan_norm_unfiltered_genomic
         File annotation = process_raw_idats.annotation
         File beta_unnorm = process_raw_idats.beta_unnorm
         File cn_values = process_raw_idats.cn_values
@@ -70,7 +72,7 @@ task process_raw_idats {
 
     #@ except: LineWidth
     command <<<
-        echo "Processing IDAT files"
+        set -euo pipefail
         ln -s ~{idats.left} ~{idats.right} .
 
         Rscript $(which methylation-preprocess.R) --idat_base ~{idat_base} --out_base ~{out_base}

@@ -38,10 +38,10 @@ workflow methylation_cohort {
                 }
             }
         }
-        scatter (iter in range(length(bam_list))){
+        scatter (iter_index in range(length(bam_list))){
             call combine_data as inner_merge { input:
-                unfiltered_normalized_beta = select_all(bam_list[iter]),
-                combined_file_name = iter + ".combined.csv",
+                unfiltered_normalized_beta = select_all(bam_list[iter_index]),
+                combined_file_name = iter_index + ".combined.csv",
                 modify_memory_gb = 25,
             }
         }
@@ -112,8 +112,6 @@ task combine_data {
     Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2)
 
     command <<<
-        echo "Combining data"
-
         python $(which combine.py) --output-name ~{combined_file_name} ~{sep(" ", unfiltered_normalized_beta)}
     >>>
 
@@ -152,7 +150,6 @@ task filter_probes {
 
     Int disk_size_gb = ceil(size(beta_values, "GiB") * 2)
 
-    #@ except: LineWidth
     command <<<
         ln -s ~{beta_values} beta.csv
 
@@ -191,7 +188,6 @@ task generate_umap {
 
     Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2)
 
-    #@ except: LineWidth
     command <<<
         ln -s ~{filtered_beta_values} beta.csv
 
