@@ -1,5 +1,3 @@
-options(error = function() traceback(3))
-
 library(minfi)
 library(dplyr)
 library(data.table)
@@ -12,6 +10,7 @@ parser <- ArgumentParser()
 # specify options
 parser$add_argument("--idat_base", type="character", help="Base path to the idat files")
 parser$add_argument("--out_base", type="character", help="Base path to the output files")
+parser$add_argument("--seed", type="numeric", default=1, help="Seed for random number generation")
 # parse the arguments
 args <- parser$parse_args()
 
@@ -21,7 +20,7 @@ args <- parser$parse_args()
 # So it selects 6N probes in total. This selection is "random" if the seed is not fixed, of course.
 # Since we're processing samples individually in this step instead of as a cohort,
 # we want the seed to be consistent so the same set of probes is chosen for each sample.
-set.seed(1)
+set.seed(args$seed)
 
 dir=getwd()
 

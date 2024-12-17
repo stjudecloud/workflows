@@ -17,14 +17,17 @@ workflow methylation_preprocess {
 
     parameter_meta {
         idats: "Array of raw IDAT files from the Illumina methlyation array"
+        seed: "Random number generator seed for reproducibility. If processing samples independently, this should remain fixed for all runs that will be compared as a cohort."
     }
 
     input {
         Pair[File, File] idats
+        Int seed = 1
     }
 
     call process_raw_idats { input:
         idats,
+        seed,
     }
 
     #@ except: LineWidth
@@ -59,11 +62,13 @@ task process_raw_idats {
 
     parameter_meta {
         idats: "Array of raw IDAT files from the Illumina methlyation array"
+        seed: "Random number generator seed for reproducibility. If processing samples independently, this should remain fixed for all runs that will be compared as a cohort."
         disk_size_gb: "Disk size in GB"
     }
 
     input {
         Pair[File, File] idats
+        Int seed = 1
         Int disk_size_gb = 10
     }
 
@@ -75,7 +80,7 @@ task process_raw_idats {
         set -euo pipefail
         ln -s ~{idats.left} ~{idats.right} .
 
-        Rscript $(which methylation-preprocess.R) --idat_base ~{idat_base} --out_base ~{out_base}
+        Rscript $(which methylation-preprocess.R) --idat_base ~{idat_base} --out_base ~{out_base} --seed ~{seed}
     >>>
 
     #@ except: LineWidth
