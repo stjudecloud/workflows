@@ -223,18 +223,20 @@ task plot_umap {
 
     parameter_meta {
         umap: "UMAP embedding for all samples"
+        plot_file: "Name of the output plot file"
     }
 
     input {
         File umap
+        String plot_file = "umap.png"
     }
 
     command <<<
-        python $(which plot_umap.py) ~{umap}
+        python $(which plot_umap.py) --umap ~{umap} --output-name ~{plot_file}
     >>>
 
     output {
-        File umap_plot = "umap.png"
+        File umap_plot = "~{plot_file}"
     }
 
     runtime {
