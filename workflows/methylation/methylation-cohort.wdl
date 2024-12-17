@@ -112,7 +112,9 @@ task combine_data {
     Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2)
 
     command <<<
-        python $(which combine.py) --output-name ~{combined_file_name} ~{sep(" ", unfiltered_normalized_beta)}
+        python $(which combine.py) \
+            --output-name ~{combined_file_name} \
+            ~{sep(" ", unfiltered_normalized_beta)}
     >>>
 
     output {
@@ -195,7 +197,9 @@ task generate_umap {
     Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2)
 
     command <<<
-        python $(which generate_umap.py) --beta ~{filtered_beta_values} --output-name ~{prefix}.csv
+        python $(which generate_umap.py) \
+            --beta ~{filtered_beta_values} \
+            --output-name ~{prefix}.csv
     >>>
 
     output {

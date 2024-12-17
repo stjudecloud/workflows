@@ -51,12 +51,12 @@ task process_raw_idats {
         outputs: {
             beta_swan_norm_unfiltered: "Normalized beta values for all probes",
             beta_swan_norm_unfiltered_genomic: "Normalized beta values for all probes that map to the genome",
-            annotation: "Annotation object",
-            beta_unnorm: "Beta values",
+            annotation: "Annotation table for probes. Contains genomic coordinates and sequence and other information about the probes.",
+            beta_unnorm: "Non-normalized beta values",
             cn_values: "Copy number values",
             m_values: "M values",
-            probe_names: "Probe names",
-            sample_names: "Sample names",
+            probe_names: "Probe names found on the array",
+            sample_names: "Sample name found on the array",
         }
     }
 
@@ -75,18 +75,22 @@ task process_raw_idats {
     String idat_base = basename(idats.left)
     String out_base = sub(idat_base, "(_Grn|_Red).idat", "")
 
-    #@ except: LineWidth
     command <<<
         set -euo pipefail
+
         ln -s ~{idats.left} ~{idats.right} .
 
-        Rscript $(which methylation-preprocess.R) --idat_base ~{idat_base} --out_base ~{out_base} --seed ~{seed}
+        Rscript $(which methylation-preprocess.R) \
+            --idat_base ~{idat_base} \
+            --out_base ~{out_base} \
+            --seed ~{seed}
     >>>
 
-    #@ except: LineWidth
     output {
-        File beta_swan_norm_unfiltered = out_base + ".beta_swan_norm_unfiltered.csv"
-        File beta_swan_norm_unfiltered_genomic = out_base + ".beta_swan_norm_unfiltered.genomic.csv"
+        File beta_swan_norm_unfiltered
+            = out_base + ".beta_swan_norm_unfiltered.csv"
+        File beta_swan_norm_unfiltered_genomic
+            = out_base + ".beta_swan_norm_unfiltered.genomic.csv"
         File annotation = out_base + ".annotation.csv"
         File beta_unnorm = out_base + ".beta.csv"
         File cn_values = out_base + ".cn_values.csv"
