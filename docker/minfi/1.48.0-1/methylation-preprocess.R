@@ -15,7 +15,7 @@ parser$add_argument("--out_base", type="character", help="Base path to the outpu
 # parse the arguments
 args <- parser$parse_args()
 
-# These arrays have two types of probes (helpfully named Infinium type 1 and Infinium type 2).
+# These arrays have two types of probes (named Infinium type 1 and Infinium type 2).
 # The probes also cover a varying number of CpG sites.
 # The normalization method works by taking N probes of each type that each have 1, 2, or 3 CpGs.
 # So it selects 6N probes in total. This selection is "random" if the seed is not fixed, of course.
