@@ -90,7 +90,6 @@ workflow methylation_cohort {
     }
 }
 
-# TODO: The memory requirements of this task need additional testing.
 task combine_data {
     meta {
         description: "Combine data from multiple samples"
