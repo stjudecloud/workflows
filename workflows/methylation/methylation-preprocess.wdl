@@ -100,7 +100,7 @@ task process_raw_idats {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/minfi:branch-methylation-1.48.0-1"
+        container: "ghcr.io/stjudecloud/minfi:branch-methylation-1.48.0-0"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"

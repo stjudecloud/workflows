@@ -207,7 +207,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/umap:branch-methylation-0.5.7-1"
+        container: "ghcr.io/stjudecloud/umap:branch-methylation-0.5.7-0"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
