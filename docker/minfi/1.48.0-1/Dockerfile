@@ -8,4 +8,4 @@ RUN R --no-save <<SCRIPT
     BiocManager::install("IlluminaHumanMethylationEPICanno.ilm10b4.hg19")
 SCRIPT
 
-COPY --chmod=777 methylation-preprocess.R /usr/local/bin/methylation-preprocess.R
+COPY --from=scripts --chmod=777 methylation/methylation-preprocess.R /usr/local/bin/methylation-preprocess.R
