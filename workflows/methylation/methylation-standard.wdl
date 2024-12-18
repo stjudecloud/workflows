@@ -5,7 +5,9 @@ import "./methylation-preprocess.wdl" as preprocess
 
 workflow methylation {
     meta {
+        name: "Methylation Standard"
         description: "Run the methylation pipeline on a cohort of samples"
+        category: "Harmonization"
         outputs: {
             beta_swan_norm_unfiltered_genomic: "Normalized beta values for all probes that map to the genome",
             combined_beta: "Matrix (in CSV format) containing beta values for every (common) probe on the array as rows and all of the input samples as columns.",
@@ -27,19 +29,19 @@ workflow methylation {
     }
 
     scatter (pair in zip(green_idats, red_idats)) {
-        call preprocess.methylation_preprocess { input:
+        call preprocess.process_raw_idats { input:
             idats = pair
         }
     }
 
     call cohort.methylation_cohort { input:
         unfiltered_normalized_beta =
-            methylation_preprocess.beta_swan_norm_unfiltered_genomic,
+            process_raw_idats.beta_swan_norm_unfiltered_genomic,
     }
 
     output {
         Array[File] beta_swan_norm_unfiltered_genomic =
-            methylation_preprocess.beta_swan_norm_unfiltered_genomic
+            process_raw_idats.beta_swan_norm_unfiltered_genomic
         File combined_beta = methylation_cohort.combined_beta
         File filtered_beta = methylation_cohort.filtered_beta
         File filtered_probeset = methylation_cohort.filtered_probeset

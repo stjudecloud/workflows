@@ -2,6 +2,7 @@ version 1.1
 
 workflow methylation_cohort {
     meta {
+        name: "Methylation Cohort"
         description: "Process methylation data for a cohort of samples"
         outputs: {
             combined_beta: "Matrix (in CSV format) containing beta values for every (common) probe on the array as rows and all of the input samples as columns.",
@@ -40,7 +41,7 @@ workflow methylation_cohort {
         scatter (iter_index in range(length(bam_list))){
             call combine_data as inner_merge { input:
                 unfiltered_normalized_beta = select_all(bam_list[iter_index]),
-                combined_file_name = iter_index + ".combined.csv",
+                combined_file_name = "~{iter_index}.combined.csv",
                 modify_memory_gb = 25,
             }
         }
