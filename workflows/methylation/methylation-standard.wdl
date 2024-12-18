@@ -19,8 +19,8 @@ workflow methylation {
     }
 
     parameter_meta {
-        green_idats: "Array of raw green IDAT files from the Illumina methylation array"
-        red_idats: "Array of raw red IDAT files from the Illumina methylation array"
+        green_idats: "Array of raw green IDAT files from the Illumina methylation array. See NOTE in `process_raw_idats` task for naming convention."
+        red_idats: "Array of raw red IDAT files from the Illumina methylation array.  See NOTE in `process_raw_idats` task for naming convention."
     }
 
     input {

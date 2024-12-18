@@ -15,7 +15,7 @@ task process_raw_idats {
     }
 
     parameter_meta {
-        idats: "Array of raw IDAT files from the Illumina methlyation array"
+        idats: "Array of raw IDAT files from the Illumina methlyation array. NOTE: these files must follow the normal naming convention for Illumina array data, that is the sample name followed by the green or red channel (e.g. `5723646052_R02C02_Grn.idat` and `5723646052_R02C02_Red.idat`)."
         seed: "Random number generator seed for reproducibility. If processing samples independently, this should remain fixed for all runs that will be compared as a cohort."
         disk_size_gb: "Disk size in GB"
     }
