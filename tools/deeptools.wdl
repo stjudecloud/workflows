@@ -16,11 +16,11 @@ task bam_coverage {
         prefix: "Prefix for the BigWig file. The extension `.bw` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

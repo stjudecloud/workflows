@@ -14,11 +14,11 @@ task index {
         bam: "Input BAM format file to index"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
-            common: true,
+            group: "common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -72,11 +72,11 @@ task merge {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
-            common: true,
+            group: "common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -132,7 +132,7 @@ task sort {
         prefix: "Prefix for the sorted BAM file. The extension `.bam` will be added."
         queryname_sort: {
             description: "If true, sort the BAM by queryname. If false, sort by coordinate.",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
@@ -189,7 +189,7 @@ task markdup {
         prefix: "Prefix for the markdup result files. The extensions `markdup.bam` will be added."
         remove_duplicates: {
             description: "If true, remove duplicates instead of marking them.",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
@@ -243,11 +243,11 @@ task flagstat {
         outfile_name: "Name for the flagstat report file"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments.",
-            common: true,
+            group: "common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

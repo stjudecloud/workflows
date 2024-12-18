@@ -11,6 +11,7 @@ import "../general/samtools-merge.wdl" as samtools_merge_wf
 
 workflow dnaseq_core_experimental {
     meta {
+        name: "DNA-Seq Core (Experimental)"
         description: "Aligns DNA reads using bwa"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",

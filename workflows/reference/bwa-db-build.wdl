@@ -5,7 +5,9 @@ import "../../tools/util.wdl"
 
 workflow bwa_db_build {
     meta {
+        name: "BWA Database Build"
         description: "Generates a set of genome reference files usable by the BWA aligner from an input reference file in FASTA format."
+        category: "Reference"
         outputs: {
             reference_fa: "FASTA format reference file used to generate `bwa_db_tar_gz`",
             bwa_db_tar_gz: "Gzipped tar archive of the BWA reference files. Files are at the root of the archive.",

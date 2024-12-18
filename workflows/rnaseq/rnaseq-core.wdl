@@ -8,6 +8,7 @@ import "../general/alignment-post.wdl" as alignment_post_wf
 
 workflow rnaseq_core {
     meta {
+        name: "RNA-Seq Core"
         description: "Main processing of RNA-Seq data, starting with FASTQs. We recommend against calling this workflow directly, and would suggest instead running `rnaseq_standard` or `rnaseq_standard_fastq`. Both wrapper workflows provide a nicer user experience than this workflow and will get you equivalent results."
         outputs: {
             bam: "Harmonized RNA-Seq BAM",
@@ -69,7 +70,7 @@ workflow rnaseq_core {
             description: "This overrides the STAR alignment default. Maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out.",
             tool: "star",
             tool_default: 10,
-            common: true,
+            group: "common",
         }
         pe_overlap_n_bases_min: {
             description: "This overrides the STAR alignment default. Minimum number of overlap bases to trigger mates merging and realignment. Specify >0 value to switch on the 'merging of overlapping mates' algorithm.",
@@ -90,25 +91,25 @@ workflow rnaseq_core {
             description: "This overrides the STAR alignment default. Minimum overhang for a chimeric junction",
             tool: "star",
             tool_default: 20,
-            common: true,
+            group: "common",
         }
         chim_segment_read_gap_max: {
             description: "This overrides the STAR alignment default. Maximum gap in the read sequence between chimeric segments",
             tool: "star",
             tool_default: 0,
-            common: true,
+            group: "common",
         }
         chim_multimap_n_max: {
             description: "This overrides the STAR alignment default. Maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments",
             tool: "star",
             tool_default: 0,
-            common: true,
+            group: "common",
         }
         chim_score_drop_max: {
             description: "max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length",
             tool: "star",
             tool_default: 20,
-            common: true,
+            group: "common",
         }
     }
 
