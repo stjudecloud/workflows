@@ -6,7 +6,7 @@ import "../../tools/util.wdl"
 workflow qc_reference {
     meta {
         name: "Quality Check Reference"
-        description: "Downloads and creates all reference files needed to run the `quality_check` workflow"
+        description: "Downloads and creates all reference files needed to run the `quality_check_standard` workflow"
         warning: "See `kraken2.download_library.meta.warning` for information regarding common failures."
         category: "Reference"
         outputs: {

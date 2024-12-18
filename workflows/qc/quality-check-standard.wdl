@@ -15,9 +15,8 @@ import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "./markdups-post.wdl" as markdups_post_wf
 
-workflow quality_check {
+workflow quality_check_standard {
     meta {
-        name: "Quality Check Standard"
         description: "Performs comprehensive quality checks, aggregating all analyses and metrics into a final MultiQC report."
         category: "Harmonization"
         help: "Assumes that input BAM is position-sorted."
@@ -505,7 +504,7 @@ workflow quality_check {
 
 task parse_input {
     meta {
-        description: "Parses and validates the `quality_check` workflow's provided inputs"
+        description: "Parses and validates the `quality_check_standard` workflow's provided inputs"
         outputs: {
             labels: "An array of labels to use on the result coverage files associated with each coverage BED"
         }
