@@ -46,6 +46,7 @@ if __name__ == "__main__":
     pd.Series(filtered_probes, index=filtered_probes).to_csv(args.filtered_probes, index=False)
 
     # Filter beta values
+    # NOTE: we are iterating over the file a second time to avoid loading the entire file into memory
     with open(args.beta, "r") as f:
         reader = csv.reader(f)
         header = next(reader)
