@@ -2,7 +2,6 @@ version 1.1
 
 workflow methylation_cohort {
     meta {
-        name: "Methylation Cohort"
         description: "Process methylation data for a cohort of samples"
         outputs: {
             combined_beta: "Matrix (in CSV format) containing beta values for every (common) probe on the array as rows and all of the input samples as columns.",
