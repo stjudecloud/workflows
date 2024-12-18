@@ -15,9 +15,10 @@ import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "./markdups-post.wdl" as markdups_post_wf
 
-workflow quality_check {
+workflow quality_check_standard {
     meta {
         description: "Performs comprehensive quality checks, aggregating all analyses and metrics into a final MultiQC report."
+        category: "Harmonization"
         help: "Assumes that input BAM is position-sorted."
         external_help: "https://multiqc.info/"
         outputs: {
@@ -79,14 +80,14 @@ workflow quality_check {
     parameter_meta {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
-        kraken_db: "Kraken2 database. Can be generated with `../reference/make-qc-reference.wdl`. Must be a tarball without a root directory."
+        kraken_db: "Kraken2 database. Can be generated with `../reference/qc-reference.wdl`. Must be a tarball without a root directory."
+        coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions. Any regional analysis enabled by this option is _in addition_ to whole genome coverage, which is calculated regardless of this setting. An exon BED and a Coding Sequence BED are examples of regions you may wish to restrict coverage analysis to. Those two BEDs can be created with the workflow in `../reference/qc-reference.wdl`."
+        gtf: "GTF features file. Gzipped or uncompressed. **Required** for RNA-Seq data."
         standard_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2 and `librarian` (if `run_librarian == true`). This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the created FASTQs. **WARNING:** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults. **WARNING:** If you have set `run_librarian` to `true`, we **strongly** recommend leaving this filter at the default value. `librarian` is trained on a specific set of reads, and changing this filter may produce nonsensical results."
         comparative_filter: "Filter to apply to the input BAM while performing a second FASTQ conversion, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove unmapped, secondary, and supplementary reads** from the created FASTQs. **WARNING** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults."
-        gtf: "GTF features file. Gzipped or uncompressed. **Required** for RNA-Seq data."
         multiqc_config: "YAML file for configuring MultiQC"
         extra_multiqc_inputs: "An array of additional files to pass directly into MultiQC"
-        coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions. Any regional analysis enabled by this option is _in addition_ to whole genome coverage, which is calculated regardless of this setting. An exon BED and a Coding Sequence BED are examples of regions you may wish to restrict coverage analysis to. Those two BEDs can be created with the workflow in `../reference/make-qc-reference.wdl`."
-        coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used. If using the BEDs created by `../reference/make-qc-reference.wdl`, the labels [\"exon\", \"CDS\"] are appropriate. Make sure to provide the coverage BEDs **in the same order** as the labels."
+        coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used. If using the BEDs created by `../reference/qc-reference.wdl`, the labels [\"exon\", \"CDS\"] are appropriate. Make sure to provide the coverage BEDs **in the same order** as the labels."
         prefix: "Prefix for all results files"
         rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
         mark_duplicates: "Mark duplicates before select analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. If set to `true`, a BAM will be generated and passed to selected downstream analyses. For more details about what analyses are run, review `./markdups-post.wdl`. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
@@ -106,12 +107,12 @@ workflow quality_check {
         File bam
         File bam_index
         File kraken_db
+        Array[File]+ coverage_beds
         File? gtf
         #@ except: LineWidth
         File multiqc_config
             = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
         Array[File] extra_multiqc_inputs = []
-        Array[File] coverage_beds = []
         Array[String] coverage_labels = []
         FlagFilter standard_filter = {
             "include_if_all": "0x0",
@@ -503,7 +504,7 @@ workflow quality_check {
 
 task parse_input {
     meta {
-        description: "Parses and validates the `quality_check` workflow's provided inputs"
+        description: "Parses and validates the `quality_check_standard` workflow's provided inputs"
         outputs: {
             labels: "An array of labels to use on the result coverage files associated with each coverage BED"
         }
@@ -556,7 +557,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:1.3.0"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }

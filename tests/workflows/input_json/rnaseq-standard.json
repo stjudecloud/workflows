@@ -1,0 +1,6 @@
+{
+    "rnaseq_standard.bam": "tests/input/test.bwa_aln_pe.chrY_chrM.bam",
+    "rnaseq_standard.gtf": "tests/input/gencode.v31.chrY_chrM.gtf.gz",
+    "rnaseq_standard.star_db": "tests/input/star_db.chrY_chrM.tar.gz",
+    "rnaseq_standard.strandedness": "Unstranded"
+}

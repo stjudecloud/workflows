@@ -3,9 +3,12 @@ version 1.1
 import "../../tools/kraken2.wdl"
 import "../../tools/util.wdl"
 
-workflow make_qc_reference {
+workflow qc_reference {
     meta {
-        description: "Downloads and creates all reference files needed to run the `quality_check` workflow"
+        name: "Quality Check Reference"
+        description: "Downloads and creates all reference files needed to run the `quality_check_standard` workflow"
+        warning: "See `kraken2.download_library.meta.warning` for information regarding common failures."
+        category: "Reference"
         outputs: {
             reference_fa: "FASTA format reference file",
             gtf: "GTF feature file",
@@ -81,9 +84,9 @@ workflow make_qc_reference {
             "UTR",
         ]
         Boolean protein = false
-        Int kraken_fastas_disk_size_gb = 10
         Int reference_fa_disk_size_gb = 10
         Int gtf_disk_size_gb = 10
+        Int kraken_fastas_disk_size_gb = 10
     }
 
     call util.download as reference_download { input:

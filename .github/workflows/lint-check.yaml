@@ -71,6 +71,6 @@ jobs:
                 EXITCODE=2
                 ;;
             esac
-          done < <(awk '/docker: .*stjudecloud/' < "$file")
+          done < <(awk '/container: .*stjudecloud/' < "$file")
         done
         exit $EXITCODE

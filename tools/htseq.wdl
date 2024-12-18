@@ -25,11 +25,11 @@ task count {
         prefix: "Prefix for the feature counts file. The extension `.feature-counts.txt` will be added."
         feature_type: {
             description: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored",
-            common: true,
+            group: "common",
         }
         idattr: {
             description: "GFF attribute to be used as feature ID",
-            common: true,
+            group: "common",
         }
         mode: {
             description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases.",
@@ -42,27 +42,27 @@ task count {
         }
         include_custom_header: {
             description: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `~{idattr}\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format.",
-            common: true,
+            group: "common",
         }
         pos_sorted: {
             description: "Is the BAM position sorted (true) or name sorted (false)? It is **highly** recommended to use a name sorted BAM file. This is because HTSeq will re-sort position-sorted BAMs with an inefficient algorithm, causing very large memory and disk space allocations (especially for large BAMs).",
-            common: true,
+            group: "common",
         }
         nonunique: {
             description: "Score reads that align to or are assigned to more than one feature?",
-            common: true,
+            group: "common",
         }
         secondary_alignments: {
             description: "Score secondary alignments (SAM flag 0x100)?",
-            common: true,
+            group: "common",
         }
         supplementary_alignments: {
             description: "Score supplementary/chimeric alignments (SAM flag 0x800)?",
-            common: true,
+            group: "common",
         }
         minaqual: {
             description: "Skip all reads with alignment quality lower than the given minimum value",
-            common: true,
+            group: "common",
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -209,7 +209,7 @@ task calc_tpm {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:1.3.0"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }

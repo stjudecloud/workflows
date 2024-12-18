@@ -8,7 +8,9 @@ import "./rnaseq-core.wdl" as rnaseq_core_wf
 
 workflow rnaseq_standard {
     meta {
+        name: "RNA-Seq Standard"
         description: "Runs the STAR RNA-Seq alignment workflow for St. Jude Cloud"
+        category: "Harmonization"
         outputs: {
             harmonized_bam: "Harmonized RNA-Seq BAM",
             bam_index: "BAI index file associated with `bam`",
@@ -179,7 +181,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:1.3.0"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }
