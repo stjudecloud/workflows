@@ -20,7 +20,7 @@ task coverage {
         use_fast_mode: "Use Mosdepth's 'fast mode'? This enables the `-x` flag."
         min_mapping_quality: {
             description: "Minimum mapping quality to pass to the `-Q` flag of `mosdepth`",
-            group: "Common",
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
