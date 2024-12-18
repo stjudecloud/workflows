@@ -108,8 +108,8 @@ task combine_data {
         Int modify_memory_gb = 0
     }
 
-    Int memory_gb = ceil(size(unfiltered_normalized_beta, "GiB")) + modify_memory_gb
-    Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2)
+    Int memory_gb = ceil(size(unfiltered_normalized_beta, "GiB")) + modify_memory_gb + 2
+    Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2) + 2
 
     command <<<
         python $(which combine.py) \
@@ -152,7 +152,7 @@ task filter_probes {
         Int num_probes = 10000
     }
 
-    Int disk_size_gb = ceil(size(beta_values, "GiB") * 2)
+    Int disk_size_gb = ceil(size(beta_values, "GiB") * 2) + 2
 
     command <<<
         python $(which filter.py) \
@@ -194,7 +194,7 @@ task generate_umap {
         String prefix = "umap"
     }
 
-    Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2)
+    Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2) + 2
 
     command <<<
         python $(which generate_umap.py) \
