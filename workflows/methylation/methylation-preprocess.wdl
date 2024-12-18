@@ -11,7 +11,6 @@ task process_raw_idats {
             cn_values: "Copy number values",
             m_values: "M values",
             probe_names: "Probe names found on the array",
-            sample_names: "Sample name found on the array",
         }
     }
 
@@ -51,7 +50,6 @@ task process_raw_idats {
         File cn_values = out_base + ".cn_values.csv"
         File m_values = out_base + ".m_values.csv"
         File probe_names = out_base + ".probeNames.csv"
-        File sample_names = out_base + ".sampleNames.csv"
     }
 
     runtime {

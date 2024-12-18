@@ -15,10 +15,12 @@ workflow methylation_cohort {
 
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
+        num_probes: "Number of probes to retain after filtering"
     }
 
     input {
         Array[File] unfiltered_normalized_beta
+        Int num_probes = 10000
     }
 
     Int max_length = 500
@@ -64,6 +66,7 @@ workflow methylation_cohort {
                 simple_merge.combined_beta,
             ]
         ),
+        num_probes,
     }
 
     call generate_umap { input:
@@ -88,6 +91,7 @@ workflow methylation_cohort {
     }
 }
 
+# TODO: The memory requirements of this task need additional testing.
 task combine_data {
     meta {
         description: "Combine data from multiple samples"
@@ -133,7 +137,7 @@ task combine_data {
 task filter_probes {
     meta {
         description: "Filter probes based on standard deviation"
-        help: "Probes are filtered by calculating the standard deviation of the beta value for each probe across all samples. The top N probes with the highest standard deviation are retained."
+        help: "Probes are filtered by calculating the standard deviation of the beta value for each probe across all samples. The top `num_probes` probes with the highest standard deviation are retained."
         outputs: {
             filtered_beta_values: "Filtered beta values for all samples",
             filtered_probes: "Probes that were retained after filtering.",
