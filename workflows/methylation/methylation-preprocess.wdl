@@ -16,7 +16,7 @@ workflow methylation_preprocess {
     }
 
     parameter_meta {
-        idats: "Array of raw IDAT files from the Illumina methlyation array"
+        idats: "Pair of raw IDAT files from the Illumina methylation array"
         seed: "Random number generator seed for reproducibility. If processing samples independently, this should remain fixed for all runs that will be compared as a cohort."
     }
 
