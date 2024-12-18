@@ -15,7 +15,7 @@ workflow methylation_cohort {
 
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
-        num_probes: "Number of probes to retain after filtering"
+        num_probes: "Number of probes to use when filtering to the top `num_probes` probes with the highest standard deviation."
     }
 
     input {
