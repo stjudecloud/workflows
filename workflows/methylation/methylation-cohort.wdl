@@ -14,14 +14,13 @@ workflow methylation_cohort {
 
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
-        max_length: "Maximum number of beta files to merge before using iteration"
     }
 
     input {
         Array[File] unfiltered_normalized_beta
-        Int max_length = 500
     }
 
+    Int max_length = 500
     Int beta_length = length(unfiltered_normalized_beta)
 
     if (beta_length > max_length){
