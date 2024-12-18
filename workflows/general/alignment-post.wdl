@@ -8,7 +8,6 @@ import "https://raw.githubusercontent.com/stjude/XenoCP/4.0.0-alpha/wdl/workflow
 
 workflow alignment_post {
     meta {
-        name: "Alignment Post"
         description: "Runs a series of standard processing tools that should immediately follow alignment, regardless of data-type"
         outputs: {
             processed_bam: "Input BAM after being transformed by standard processing",
