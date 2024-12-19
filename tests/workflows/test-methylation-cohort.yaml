@@ -1,0 +1,36 @@
+- name: combine_data
+  tags:
+    - miniwdl
+    - methylation
+  command: >-
+    miniwdl run -d test-output/. --task combine_data -i tests/workflows/input_json/combine_data.json workflows/methylation/methylation-cohort.wdl
+  files:
+    - path: test-output/out/combined_beta/combined_beta.csv
+
+- name: filter_probes
+  tags:
+    - miniwdl
+    - methylation
+  command: >-
+    miniwdl run -d test-output/. --task filter_probes -i tests/workflows/input_json/filter_probes.json workflows/methylation/methylation-cohort.wdl
+  files:
+    - path: test-output/out/filtered_beta_values/filtered.beta.csv
+    - path: test-output/out/filtered_probes/filtered.probes.csv
+
+- name: generate_umap
+  tags:
+    - miniwdl
+    - methylation
+  command: >-
+    miniwdl run -d test-output/. --task generate_umap -i tests/workflows/input_json/generate_umap.json workflows/methylation/methylation-cohort.wdl
+  files:
+    - path: test-output/out/umap/umap.csv
+
+- name: plot_umap
+  tags:
+    - miniwdl
+    - methylation
+  command: >-
+    miniwdl run -d test-output/. --task plot_umap -i tests/workflows/input_json/plot_umap.json workflows/methylation/methylation-cohort.wdl
+  files:
+    - path: test-output/out/umap_plot/umap.png

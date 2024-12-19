@@ -47,6 +47,7 @@ jobs:
       - uses: docker/build-push-action@v4
         with:
           context: ${{ matrix.image }}
+          build-contexts: scripts=./scripts
           push: true
           ssh: default
           tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}

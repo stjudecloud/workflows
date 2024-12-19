@@ -1,0 +1,6 @@
+{
+    "idats": {
+        "left": "tests/input/201533520001_R03C01_Grn.idat",
+        "right": "tests/input/201533520001_R03C01_Red.idat"
+    }
+}
