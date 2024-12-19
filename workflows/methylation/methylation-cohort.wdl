@@ -124,7 +124,7 @@ task combine_data {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-methylation-2.2.1-0"
+        container: "ghcr.io/stjudecloud/pandas:branch-methylation-2.2.1-1"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -170,7 +170,7 @@ task filter_probes {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-methylation-2.2.1-0"
+        container: "ghcr.io/stjudecloud/pandas:branch-methylation-2.2.1-1"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -209,7 +209,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/umap:branch-methylation-0.5.7-0"
+        container: "ghcr.io/stjudecloud/umap:branch-methylation-0.5.7-1"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"

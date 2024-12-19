@@ -70,7 +70,6 @@ write.csv(annotation, paste0(args$out_base, ".annotation.csv"))
 
 # Perform SWAN normalization on beta values
 GRset.swan_norm <- preprocessSWAN(RGSet)
-write.csv(GRset.swan_norm, paste0(args$out_base, ".GRset.swan_norm.csv"))
 beta_swan_norm <- getBeta(GRset.swan_norm)
 
 # Write the normalized beta-values that have NOT yet had
