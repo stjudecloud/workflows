@@ -1,0 +1,9 @@
+{
+    "inputfile": "tests/input/test_R1.fq.gz",
+    "output_name": "trimmomatic_output.fastq.gz",
+    "leading": 3,
+    "trailing": 3,
+    "window_size": 4,
+    "window_quality": 15,
+    "minlen": 36
+}
