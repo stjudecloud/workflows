@@ -1,0 +1,4 @@
+{
+    "beta_values": "tests/input/combined_beta.csv",
+    "num_probes": 1000
+}

@@ -11,6 +11,6 @@ COPY --from=python /lib/x86_64-linux-gnu/libz.so.1 /lib/x86_64-linux-gnu/
 COPY --from=python /usr/lib/python3.7/ /usr/local/lib/python3.7/
 COPY --from=python /usr/bin/python3 /usr/local/bin/
 
-COPY ./sort_star_input.py /home
+COPY --from=scripts star/sort_star_input.py /home
 
 ENTRYPOINT ["STAR"]
