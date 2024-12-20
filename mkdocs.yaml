@@ -9,3 +9,5 @@ theme: readthedocs
 
 markdown_extensions:
     - def_list
+
+docs_dir: 'assets'
