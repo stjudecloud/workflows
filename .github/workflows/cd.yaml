@@ -21,7 +21,7 @@ jobs:
           python3 -m pip install wdldoc~=1.7.0
           python3 -m pip install mkdocs
       - name: Prepare Docs
-        run: cp README.md assets/index.md && sed -i.bak 's/\.\/assets/\.\//g' assets/index.md
+        run: cp README.md assets/index.md && sed -i.bak 's#./assets#./#g' assets/index.md
       - name: Build Docs
         run: |
           wdldoc -o assets .
