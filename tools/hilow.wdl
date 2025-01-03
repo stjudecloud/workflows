@@ -12,12 +12,14 @@ task active_regions_merge {
         promoters: "Promoter regions in BED format"
         loop_bed: "Loop anchors in BED format"
         bam: "BAM file"
+        ncpu: "Number of cores to allocate for task"
     }
 
     input {
         File promoters
         File loop_bed
         File bam
+        Int ncpu = 2
     }
 
     String outfile = basename(promoters, ".bed") + ".LoopAnchors.Enhs.combined.sort.bed"
@@ -75,7 +77,7 @@ task active_regions_merge {
     }
 
     runtime {
-        cpu: 8
+        cpu: ncpu
         memory: "20 GB"
         maxRetries: 1
         container: "ghcr.io/stjudecloud/bedtools:2.31.1"

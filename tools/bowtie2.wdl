@@ -141,7 +141,7 @@ task align {
             external_help: "https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#multiseed-heuristic",
             bowtie_option: "-L",
         }
-        dpad: "Include N extra reference characters on sides of dynamic programming table"
+        dpad: "Include N extra reference characters on sides of dynamic programming table. Set to 0 for gapless alignment."
         gbar: "Disallow gaps within N nucleotides of read ends"
         ignore_quals: "When calculating a mismatch penalty, always consider the quality value at the mismatched position to be the highest possible, regardless of the actual value. Treat all quality values as 30 on Phred scale."
         nofw: "Do not align to the forward (original) strand of the reference"
