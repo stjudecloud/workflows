@@ -33,12 +33,12 @@ workflow make_hic_reference {
     }
 
     input {
+        Array[String] restriction_sites
+        Array[String] restriction_sites_names
         String reference_fa_url
         String reference_fa_name
         String exclude_list_url
         String exclude_list_name
-        Array[String] restriction_sites
-        Array[String] restriction_sites_names
     }
 
     call parse_input { input:
@@ -89,7 +89,6 @@ workflow make_hic_reference {
         File bowtie2_db_tar_gz = build.bowtie_db_tar_gz
         Array[File] bowtie2_index_files = build.index_files
     }
-
 }
 
 task chromsizes {
@@ -136,6 +135,7 @@ task fragment_file {
     parameter_meta {
         reference_fasta: "Reference FASTA file"
         restriction_site: "Restriction site"
+        output_name: "Name of output fragment file"
     }
 
     input {
