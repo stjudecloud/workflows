@@ -1064,7 +1064,7 @@ task revert_sam {
                 "queryname",
                 "coordinate"
             ],
-            common: true,
+            group: "common",
         }
         library_name: "The library name to use in the reverted output file. This will override the existing sample alias in the file and is used only if all the read groups in the input file have the same library name."
         sample_alias: "The sample alias to use in the reverted output file. This will override the existing sample alias in the file and is used only if all the read groups in the input file have the same sample alias."

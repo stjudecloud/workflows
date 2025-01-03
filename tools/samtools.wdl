@@ -1339,7 +1339,8 @@ task sort {
         outputs: {
             sorted_bam: "The input BAM after it has been sorted",
             sorted_bam_index: "The `.bai` BAM index file associated with `sorted_bam`",
-        }    }
+        }
+    }
 
     parameter_meta {
         bam: "Input BAM format file to sort"
