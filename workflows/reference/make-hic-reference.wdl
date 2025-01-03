@@ -101,6 +101,7 @@ task chromsizes {
 
     parameter_meta {
         fasta_index: "Fasta index file from which to create chromsizes file"
+        output_name: "Name of output file containing chromosome sizes"
     }
 
     input {
