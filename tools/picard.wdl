@@ -26,7 +26,7 @@ task mark_duplicates {
             choices: [
                 "SUM_OF_BASE_QUALITIES",
                 "TOTAL_MAPPED_REFERENCE_LENGTH",
-                "RANDOM",
+                "RANDOM"
             ],
         }
         read_name_regex: "Regular expression for extracting tile names, x coordinates, and y coordinates from read names. The default works for typical Illumina read names."
@@ -35,7 +35,7 @@ task mark_duplicates {
             choices: [
                 "DontTag",
                 "OpticalOnly",
-                "All",
+                "All"
             ],
         }
         validation_stringency: {
@@ -43,7 +43,7 @@ task mark_duplicates {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -150,7 +150,7 @@ task validate_bam {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -270,7 +270,7 @@ task sort {
             choices: [
                 "queryname",
                 "coordinate",
-                "duplicate",
+                "duplicate"
             ],
             group: "common",
         }
@@ -280,7 +280,7 @@ task sort {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -355,7 +355,7 @@ task merge_sam_files {
                 "unsorted",
                 "queryname",
                 "coordinate",
-                "duplicate",
+                "duplicate"
             ],
             group: "common",
         }
@@ -364,7 +364,7 @@ task merge_sam_files {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -441,7 +441,7 @@ task clean_sam {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -511,7 +511,7 @@ task collect_wgs_metrics {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -574,7 +574,7 @@ task collect_alignment_summary_metrics {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -641,7 +641,7 @@ task collect_gc_bias_metrics {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -707,7 +707,7 @@ task collect_insert_size_metrics {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -766,7 +766,7 @@ task quality_score_distribution {
             choices: [
                 "STRICT",
                 "LENIENT",
-                "SILENT",
+                "SILENT"
             ],
             tool_default: "STRICT",
         }
@@ -930,7 +930,7 @@ task scatter_interval_list {
             choices: [
                 "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW",
                 "INTERVAL_SUBDIVISION",
-                "BALANCING_WITHOUT_INTERVAL_SUBDIVISION",
+                "BALANCING_WITHOUT_INTERVAL_SUBDIVISION"
             ],
         }
         unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
@@ -1062,7 +1062,7 @@ task revert_sam {
             description: "Order by which to sort the input BAM",
             choices: [
                 "queryname",
-                "coordinate",
+                "coordinate"
             ],
             group: "common",
         }
