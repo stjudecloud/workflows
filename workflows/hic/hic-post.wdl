@@ -7,7 +7,11 @@ workflow hic_post {
     meta {
         description: "Post-processing of Hi-C data."
         outputs: {
-
+            hic_file: "Interactions in .hic format",
+            filtered_pairs: "File with filtered list of interaction pairs",
+            qc_report: "QC report for Hi-C experiment",
+            combined_bam: "Merged and duplicate marked BAM file",
+            combined_bam_index: "Index for the combined BAM file",
         }
     }
 
@@ -28,14 +32,13 @@ workflow hic_post {
     input {
         File all_valid_pairs
         File chromsizes
-        File? exclude_list
-        String prefix
         File contact_stats
         File merged_read_one_mapping_stats
         File merged_read_two_mapping_stats
         File merged_pairing_stats
         Array[File] combined_bams
-
+        String prefix
+        File? exclude_list
     }
 
     call hilow.converthic { input:

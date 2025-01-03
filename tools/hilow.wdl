@@ -22,6 +22,7 @@ task active_regions_merge {
 
     String outfile = basename(promoters, ".bed") + ".LoopAnchors.Enhs.combined.sort.bed"
 
+    #@ except: LineWidth
     command <<<
         prom=~{basename(promoters,".bed")}
         sort \
@@ -99,6 +100,7 @@ task extract_promoters {
 
     String base = basename(annotation, ".gz")
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -156,6 +158,7 @@ task extract_genes {
 
     String base = basename(annotation, ".gz")
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -230,6 +233,7 @@ task qcreport {
         size(fithichip_q01_bed, "GiB")
     ) + 2
 
+    #@ except: LineWidth
     command <<<
         python <<CODE
         import os
@@ -342,19 +346,18 @@ task filter {
         File chromsizes
         File exclude_list
         Int padding = 50
-
     }
 
     String base = basename(exclude_list, ".gz")
     String prefix = basename(all_valid_pairs, ".AllValidPairs")
     Int disk_size_gb = ceil(size(all_valid_pairs, "GiB")) + 2
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
         gunzip -c ~{exclude_list} > ~{base} \
            || ln -sf ~{exclude_list} ~{base}
-
 
         #left bed
         awk -F "\t" -v OFS="\t" '{print $2,$3,$3,$1}' ~{all_valid_pairs} \

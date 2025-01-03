@@ -1,8 +1,8 @@
 version 1.1
 
 import "../../data_structures/read_group.wdl"
-import "hicpro-core.wdl" as hicpro_core
 import "hic-post.wdl" as hicpro_post
+import "hicpro-core.wdl" as hicpro_core
 
 workflow hic_standard_fastq {
     meta {

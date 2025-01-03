@@ -4,8 +4,8 @@ import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
-import "hicpro-core.wdl" as hicpro_core
 import "hic-post.wdl" as hicpro_post
+import "hicpro-core.wdl" as hicpro_core
 
 workflow hic_standard {
     meta {

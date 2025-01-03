@@ -389,7 +389,7 @@ task make_coverage_regions_bed {
                 "UTR",
                 "start_codon",
                 "stop_codon",
-                "Selenocysteine"
+                "Selenocysteine",
             ],
         }
         outfile_name: "Name of the output BED file"
