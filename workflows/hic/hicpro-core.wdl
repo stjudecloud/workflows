@@ -55,7 +55,7 @@ workflow hicpro_core {
             description: "Format of the output matrix",
             choices: [
                 "complete",
-                "upper",
+                "upper"
             ],
             hicpro_field: "MATRIX_FORMAT",
         }
@@ -1042,7 +1042,7 @@ task qc_hic {
                 "mapping",
                 "pairing",
                 "filtering",
-                "contacts",
+                "contacts"
             ],
         }
         sample_name: "Sample name to use in plot labels"
