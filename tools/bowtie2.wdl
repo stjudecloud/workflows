@@ -132,14 +132,14 @@ task align {
             help: "Sets the maximum (MX) and minimum (MN) mismatch penalties, both integers. A number less than or equal to MX and greater than or equal to MN is subtracted from the alignment score for each position where a read character aligns to a reference character, the characters do not match, and neither is an N. If `ignore_quals` is specified, the number subtracted quals MX. Otherwise, the number subtracted is MN + floor( (MX-MN)(MIN(Q, 40.0)/40.0) ) where Q is the Phred quality value.",
             bowtie2_option: "mp",
         }
-        non_actg_penalty: "penalty for non-A/C/G/Ts in read/reference"
+        non_actg_penalty: "penalty for non-A/C/G/Ts (e.g. ambiguous character `N`) in read/reference"
         read_gap_open_extend: "Sets the read gap open and extend penalties. A read gap of length N gets a penalty of <int1> + N * <int2>."
         ref_gap_open_extend: "Sets the reference gap open and extend penalties. A reference gap of length N gets a penalty of <int1> + N * <int2>."
         max_aln_report: {
-            description: "Report up to N alignments per read; MAPQ not meaningful",
+            description: "Report up to N alignments per read; MAPQ not meaningful. Mutualyl exclusive with `report_all_alignments`.",
             help: "When specified, bowtie2 searches for at most N distinct, valid alignments for each read. The search terminates when it can't find more distinct valid alignments, or when it finds <int>, whichever happens first. All alignments found are reported in descending order by alignment score. The alignment score for a paired-end alignment equals the sum of the alignment scores of the individual mates. Each reported read or pair alignment beyond the first has the SAM 'secondary' bit (which equals 256) set in its FLAGS field. For reads that have more than N distinct, valid alignments, bowtie2 does not guarantee that the N alignments reported are the best possible in terms of alignment score.",
         }
-        report_all_alignments: "Report all alignments; very slow, MAPQ not meaningful"
+        report_all_alignments: "Report all alignments; very slow, MAPQ not meaningful. Mutually exclusive with `max_aln_report`."
         min_fragment_len: {
             description: "The minimum fragment length for valid paired-end alignments.",
             bowtie2_option: "I|minins",
@@ -318,7 +318,7 @@ task align {
             --rdg ~{read_gap_open_extend.left},~{read_gap_open_extend.right} \
             --rfg ~{ref_gap_open_extend.left},~{ref_gap_open_extend.right} \
             ~{if defined(max_aln_report) then "-k ~{max_aln_report}" else ""} \
-            ~{if report_all_alignments then "--all" else ""} \
+            ~{if report_all_alignments then "-a" else ""} \
             --minins ~{min_fragment_len} \
             --maxins ~{max_fragment_len} \
             ~{if no_mixed then "--no-mixed" else ""} \
