@@ -82,12 +82,12 @@ task align {
         description: "Aligns reads to a reference genome using Bowtie2"
         outputs: {
             aligned_bam: "Aligned reads in BAM format",
-            unpaired_unaligned: "Unpaired reads that didn't align",
-            unpaired_aligned: "Unpaired reads that aligned at least once",
-            paired_discordant_read_one: "Read one from pairs that didn't align concordantly",
-            paired_discordant_read_two: "Read two from pairs that didn't align concordantly",
-            paired_concordant_read_one: "Read one from pairs that aligned concordantly at least once",
-            paired_concordant_read_two: "Read two from pairs that aligned concordantly at least once",
+            unpaired_unaligned: "Unpaired reads that didn't align, in FASTQ format",
+            unpaired_aligned: "Unpaired reads that aligned at least once, in FASTQ format",
+            paired_discordant_read_one: "Read one from pairs that didn't align concordantly, in FASTQ format",
+            paired_discordant_read_two: "Read two from pairs that didn't align concordantly, in FASTQ format",
+            paired_concordant_read_one: "Read one from pairs that aligned concordantly at least once, in FASTQ format",
+            paired_concordant_read_two: "Read two from pairs that aligned concordantly at least once, in FASTQ format",
             metrics: "Metrics file",
         }
     }
