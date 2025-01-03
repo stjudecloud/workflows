@@ -1,6 +1,7 @@
 version 1.1
 
 import "../../data_structures/read_group.wdl"
+import "../../tools/fq.wdl"
 import "../../tools/picard.wdl"
 import "../general/samtools-merge.wdl" as samtools_merge_wf
 
@@ -31,6 +32,17 @@ workflow fastq_to_ubam_core {
         Boolean use_all_cores = false
     }
 
+    if (validate_input) {
+        scatter (reads in
+            zip(read_one_fastqs_gz, read_two_fastqs_gz)
+        ) {
+            call fq.fqlint { input:
+                read_one_fastq = reads.left,
+                read_two_fastq = reads.right,
+            }
+        }
+    }
+
     scatter (tuple in zip(
         zip(read_one_fastqs_gz, read_two_fastqs_gz),
         read_groups
@@ -39,7 +51,7 @@ workflow fastq_to_ubam_core {
             read_one_fastq_gz = tuple.left.left,
             read_two_fastq_gz = tuple.left.right,
             prefix = basename(tuple.left.left, ".fastq.gz"),
-            read_group_name = select_first([tuple.right.ID, ""]),
+            read_group_name = tuple.right.ID,
             sample_name = select_first([tuple.right.SM, ""]),
             library_name = select_first([tuple.right.LB, ""]),
             sequencing_center = select_first([tuple.right.CN, ""]),

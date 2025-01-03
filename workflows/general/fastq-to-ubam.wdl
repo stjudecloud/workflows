@@ -67,6 +67,7 @@ workflow fastq_to_ubam {
         read_two_fastqs_gz,
         read_groups,
         prefix,
+        validate_input,
         use_all_cores,
     }
 
@@ -112,7 +113,6 @@ task parse_input {
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
         Array[ReadGroup] read_groups
-        String genome_id
     }
 
     command <<<

@@ -23,9 +23,6 @@ workflow bam_to_ubam {
 
     input {
         File bam
-        File bwa_db
-        File? restriction_sites
-        String genome_id = "hg38"
         String prefix = basename(bam, ".bam")
         Boolean validate_input = true
         Boolean use_all_cores = false
