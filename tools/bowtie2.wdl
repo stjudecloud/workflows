@@ -169,15 +169,13 @@ task align {
         write_paired_concordant: "Write pairs that aligned concordantly at least once to a file in gzipped FASTQ format. These reads correspond to the SAM records with the FLAGS 0x4 bit unset and either the 0x40 or 0x80 bit set (depending on whether it's mate #1 or #2)."
         quiet: "Print nothing besides alignments and serious errors."
         metrics_file: "Write bowtie2 alignment metrics to file. Useful for debugging."
-        metrics_stderr: "Write  bowtie2 alignment metrics to STDERR. Not mutually exclusive with `metrics_file`."
+        metrics_stderr: "Write bowtie2 alignment metrics to STDERR. Not mutually exclusive with `metrics_file`."
         metrics_interval: "Report internal counters & metrics every N seconds. Only used if `metrics_file` and/or `metrics_stderr` is specified."
         no_unal: "Suppress SAM records for unaligned reads."
-        no_head: "Suppress header lines, i.e. lines starting with @."
-        no_sq: "Suppress @SQ header lines."
         read_group: "Read group record to include in output SAM/BAM header"
         addl_rg_text: "add <text> ('label:value') to @RG line of SAM header"
         omit_sec_seq: "When printing secondary alignments, Bowtie 2 by default will write out the SEQ and QUAL strings. Specifying this option causes Bowtie 2 to print an asterisk in those fields instead."
-        sam_no_quane_trunc: "Suppress standard behavior of truncating readname at first whitespace at the expense of generating non-standard SAM."
+        sam_no_qname_trunc: "Suppress standard behavior of truncating readname at first whitespace at the expense of generating non-standard SAM."
         xeq: "Use '='/'X', instead of 'M,' to specify matches/mismatches in SAM record"
         soft_clipped_unmapped_tlen: "Exclude soft-clipped bases when reporting TLEN (template length). Only used if `end_to_end` is false."
         sam_append_comment: "Append FASTA/FASTQ comment to SAM record, where a comment is everything after the first space in the read name."
@@ -262,10 +260,8 @@ task align {
         Boolean metrics_file = false
         Boolean metrics_stderr = false
         Boolean no_unal = false
-        Boolean no_head = false
-        Boolean no_sq = false
         Boolean omit_sec_seq = false
-        Boolean sam_no_quane_trunc = false
+        Boolean sam_no_qname_trunc = false
         Boolean xeq = false
         Boolean soft_clipped_unmapped_tlen = false
         Boolean sam_append_comment = false
@@ -352,8 +348,6 @@ task align {
             ~{if metrics_stderr then "--met-stderr" else ""} \
             --met ~{metrics_interval} \
             ~{if no_unal then "--no-unal" else ""} \
-            ~{if no_head then "--no-head" else ""} \
-            ~{if no_sq then "--no-sq" else ""} \
             --rg-id ~{read_group.ID} \
             ~{if defined(read_group.BC) then "--rg BC:~{read_group.BC}" else ""} \
             ~{if defined(read_group.CN) then "--rg CN:~{read_group.CN}" else ""} \
@@ -370,7 +364,7 @@ task align {
             ~{if defined(read_group.SM) then "--rg SM:~{read_group.SM}" else ""} \
             ~{if defined(addl_rg_text) then "--rg ~{addl_rg_text}" else ""} \
             ~{if omit_sec_seq then "--omit-sec-seq" else ""} \
-            ~{if sam_no_quane_trunc then "--sam-no-qname-trunc" else ""} \
+            ~{if sam_no_qname_trunc then "--sam-no-qname-trunc" else ""} \
             ~{if xeq then "--xeq" else ""} \
             ~{if soft_clipped_unmapped_tlen then "--soft-clipped-unmapped-tlen" else ""} \
             ~{if sam_append_comment then "--sam-append-comment" else ""} \
