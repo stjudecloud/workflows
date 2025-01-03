@@ -77,6 +77,37 @@ task build {
     }
 }
 
+# Several bowtie2 options are intentionally omitted from the task definition.
+# These include:
+# `--mm` as memory-mapped I/O does not work with WDL and containerization.
+# `--no-hd` and `--no-sq` as they produce malformed BAM files.
+# `--interleaved` as reads should be in separate files.
+# `--sra-acc` as an internet connection cannot be guaranteed.
+# `-b` because WDL does not handle exclusive options well.
+# `-S` as output is passed through `samtools` and written as BAM.
+# `--tab5` as it is an antiquated format.
+# `--tab6` as it is an antiquated format.
+# `--qseq` as it is an antiquated format.
+# `-f` as reads cannot have quality scores in FASTA.
+# `-f` as it is an antiquated format.
+# `-c` as it is not recommended for use.
+# `-F` as it is not conducive to quality BAM output.
+# `--phred33` and `--phred64` as they are non-standard.
+# `--solexa-quals` as it is non-standard.
+# `--int-quals` as it is non-standard.
+# `--very-fast`, `--fast`, `--sensitive`, and `--very-sensitive` as they are convenience options.
+# `--very-fast-local`, `--fast-local`, `--sensitive-local`, and `--very-sensitive-local` as they are convenience options.
+# `-n-ceil`
+# `--align-paired-read` as BAM input is not supported.
+# `--preserve-tags` as BAM input is not supported.
+# `-o|--offrate` as this should be set when building the index.
+# Other options only expose one option:
+# `--un-gz` - omits `--un`, `--un-bz2`, and `--un-lz4`
+# `--al-gz` - omits `--al`, `--al-bz2`, and `--al-lz4`
+# `--un-conc-gz` - omits `--un-conc`, `--un-conc-bz2`, and `--un-conc-lz4`
+# `--al-conc-gz` - omits `--al-conc`, `--al-conc-bz2`, and `--al-conc-lz4`
+# `--trim-to` as `-5|--trim5` and `-3|--trim3` are supported instead.
+# `--fr` - omits `--rf` and `--ff`
 task align {
     meta {
         description: "Aligns reads to a reference genome using Bowtie2"
@@ -211,6 +242,10 @@ task align {
             description: "For reads with repetitive seeds, try N sets of seeds",
             help: "N is the maximum number of times Bowtie 2 will re-seed reads with repetitive seeds. When re-seeding, Bowtie 2 simply chooses a new set of reads (same length, same number of mismatches allowed) at different offsets and searches for more alignments. A read is considered to have repetitive seeds if the total number of seed hits divided by the number of seeds that aligned at least once is greater than 300.",
         }
+        n_ceil: {
+            description: "func for maximum number of non-A/C/G/Ts permitted in alignment",
+            help: "Sets a function governing the maximum number of ambiguous characters (usually Ns and/or .s) allowed in a read as a function of read length. For instance, specifying -L,0,0.15 sets the N-ceiling function f to f(x) = 0 + 0.15 * x, where x is the read length. Reads exceeding this ceiling are filtered out."
+        }
     }
 
     input {
@@ -234,6 +269,11 @@ task align {
             function_type: "S",
             constant: 1,
             coefficient: 1.15,
+        }
+        Bowtie2Function n_ceil = Bowtie2Function {
+            function_type: "L",
+            constant: 0,
+            coefficient: 0.15,
         }
         Pair[Int, Int] read_gap_open_extend = (5, 3)
         Pair[Int, Int] ref_gap_open_extend = (5, 3)
@@ -374,6 +414,7 @@ task align {
             ~{if non_deterministic then "--non-deterministic" else ""} \
             ~{"--score-min ~{score_min.function_type},~{score_min.constant},~{score_min.coefficient}"} \
             ~{"-i ~{interval_seed_substrings.function_type},~{interval_seed_substrings.constant},~{interval_seed_substrings.coefficient}"} \
+            ~{"--n-ceil ~{n_ceil.function_type},~{n_ceil.constant},~{n_ceil.coefficient}"} \
             -D ~{max_failed_extends} \
             -R ~{repetitive_seeds} \
             -x bowtie_db/"$PREFIX" \
