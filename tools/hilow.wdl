@@ -233,82 +233,20 @@ task qcreport {
         size(fithichip_q01_bed, "GiB")
     ) + 2
 
-    #@ except: LineWidth
     command <<<
-        python <<CODE
-        import os
-        FILES = ["~{all_valid_pairs_stats}", "~{pairing_stats}", "~{mapping_stats_read1}", "~{mapping_stats_read2}"]
-        VARIABLE = ["valid_interaction", "cis_shortRange", "cis_longRange", "Total_pairs_processed", "Reported_pairs", "total_R2", "mapped_R2", "total_R1", "mapped_R1"]
-        RESULTS = {}
-        for eachfile in FILES:
-            with open(eachfile) as f:
-                for line in f:
-                    array = line.split()
-                    if array[0] in VARIABLE:
-                        RESULTS[array[0]] = int(array[1])
-
-        PERCENTAGES = {}
-        COUNTS = {}
-        VERDICT = {}
-        REP_VAR = ["R1_aligned", "R2_aligned", "valid_interactionPairs", "cis_shortRange", "cis_longRange"]
-
-        if os.path.isfile('~{fithichip_bed}'):
-            with open('~{fithichip_q01_bed}') as fithichip:
-                LOOPS_SIGNIFICANT = len(fithichip.readlines())-1
-            with open('~{fithichip_bed}') as fithichip:
-                LOOPS = len(fithichip.readlines())-1
-        if os.path.isfile("~{peaks_bed}"):
-            with open("~{peaks_bed}") as peaks:
-                PEAKS = len(peaks.readlines())-1
-
-        PERCENTAGES["R1_aligned"] = round((RESULTS["mapped_R1"]*100)/RESULTS["total_R1"])
-        PERCENTAGES["R2_aligned"] = round((RESULTS["mapped_R2"]*100)/RESULTS["total_R2"])
-        PERCENTAGES["valid_interactionPairs"] = round((RESULTS["valid_interaction"]*100)/RESULTS["Reported_pairs"])
-        PERCENTAGES["cis_shortRange"] = round((RESULTS["cis_shortRange"]*100)/RESULTS["valid_interaction"])
-        PERCENTAGES["cis_longRange"] = round((RESULTS["cis_longRange"]*100)/RESULTS["valid_interaction"])
-        COUNTS["R1_aligned"] = RESULTS["mapped_R1"]
-        COUNTS["R2_aligned"] = RESULTS["mapped_R2"]
-        COUNTS["valid_interactionPairs"] = RESULTS["valid_interaction"]
-        COUNTS["cis_shortRange"] = RESULTS["cis_shortRange"]
-        COUNTS["cis_longRange"] = RESULTS["cis_longRange"]
-
-        for aligned in ["R1_aligned", "R2_aligned"]:
-            if PERCENTAGES[aligned] > 80:
-                VERDICT[aligned] = "GOOD"
-            else:
-                VERDICT[aligned] = "BAD"
-
-        if PERCENTAGES["valid_interactionPairs"] > 50:
-            VERDICT["valid_interactionPairs"] = "GOOD"
-        else:
-            VERDICT["valid_interactionPairs"] = "BAD"
-
-        if PERCENTAGES["cis_shortRange"] > 50:
-            VERDICT["cis_shortRange"] = "BAD"
-        elif PERCENTAGES["cis_shortRange"] > 30:
-            VERDICT["cis_shortRange"] = "MARGINAL"
-        else:
-            VERDICT["cis_shortRange"] = "GOOD"
-
-        if PERCENTAGES["cis_longRange"] > 40:
-            VERDICT["cis_longRange"] = "GOOD"
-        elif PERCENTAGES["cis_longRange"] > 20:
-            VERDICT["cis_longRange"] = "MARGINAL"
-        else:
-            VERDICT["cis_longRange"] = "BAD"
-
-        REPORT = open("~{prefix}_QCreport.txt", 'w')
-        REPORT.write("STAT\tCOUNTS\tPERCENTAGE\tVERDICT\n")
-        REPORT.write("Total_pairs_processed\t" + str(RESULTS["Total_pairs_processed"]) + "\n")
-        for var in REP_VAR:
-            REPORT.write(var + "\t" + str(COUNTS[var]) + "\t" + str(PERCENTAGES[var]) + "\t" + VERDICT[var] + '\n')
-
-        if os.path.isfile("~{peaks_bed}"):
-            REPORT.write("peaks\t" + str(PEAKS) + "\n")
-        if os.path.isfile('~{fithichip_bed}'):
-            REPORT.write("loops\t" + str(LOOPS) + "\n")
-            REPORT.write("loops_significant\t" + str(LOOPS_SIGNIFICANT) + "\n")
-        CODE
+        python /usr/local/bin/qc_hic.py \
+            --all_valid_pairs_stats ~{all_valid_pairs_stats} \
+            --mapping_stats_read1 ~{mapping_stats_read1} \
+            --mapping_stats_read2 ~{mapping_stats_read2} \
+            --pairing_stats ~{pairing_stats} \
+            ~{if defined(peaks_bed) then "--peaks_bed ~{peaks_bed}" else ""} \
+            ~{if defined(fithichip_bed) then "--fithichip_bed ~{fithichip_bed}" else ""} \
+            ~{(
+                if defined(fithichip_q01_bed)
+                then "--fithichip_q01_bed ~{fithichip_q01_bed}"
+                else ""
+            )} \
+            --prefix ~{prefix}
     >>>
 
     output {
@@ -316,7 +254,7 @@ task qcreport {
     }
 
     runtime {
-        container: "python:3.9.19"
+        container: "ghcr.io/stjudecloud/hilow:1.0.0"
         cpu: 1
         disks: "~{disk_size_gb} GB"
         memory: "4 GB"
