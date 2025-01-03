@@ -49,7 +49,7 @@ task mark_duplicates {
         }
         create_bam: {
             description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?",
-            common: true,
+            group: "common",
         }
         clear_dt: "Clear the `DT` tag from the input BAM? For increased performance, if the input BAM does not have the `DT` tag, set to `false`."
         remove_duplicates: "Remove duplicate reads from the output BAM? If `true`, the output BAM will not contain any duplicate reads."
@@ -142,7 +142,7 @@ task validate_bam {
         ignore_list: {
             description: "List of Picard errors and warnings to ignore. Possible values can be found on the GATK website (see `external_help`).",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile",
-            common: true,
+            group: "common",
         }
         outfile_name: "Name for the ValidateSamFile report file"
         validation_stringency: {
@@ -156,15 +156,15 @@ task validate_bam {
         }
         succeed_on_errors: {
             description: "Succeed the task even if errors *and/or* warnings are detected",
-            common: true,
+            group: "common",
         }
         succeed_on_warnings: {
             description: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`",
-            common: true,
+            group: "common",
         }
         summary_mode: {
             description: "Enable SUMMARY mode?",
-            common: true,
+            group: "common",
         }
         index_validation_stringency_less_exhaustive: "Set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE`?"
         max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
@@ -198,7 +198,6 @@ task validate_bam {
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
     )
-
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -273,7 +272,7 @@ task sort {
                 "coordinate",
                 "duplicate"
             ],
-            common: true,
+            group: "common",
         }
         prefix: "Prefix for the sorted BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
         validation_stringency: {
@@ -358,7 +357,7 @@ task merge_sam_files {
                 "coordinate",
                 "duplicate"
             ],
-            common: true,
+            group: "common",
         }
         validation_stringency: {
             description: "Validation stringency for parsing the input BAM.",
@@ -820,7 +819,7 @@ task bam_to_fastq {
         prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
         paired: {
             description: "Is the data Paired-End (true) or Single-End (false)?",
-            common: true,
+            group: "common",
         }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -842,18 +841,22 @@ task bam_to_fastq {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
-            FASTQ=~{prefix}_R1.fastq \
-            ~{if paired then "SECOND_END_FASTQ=" + prefix + "_R2.fastq" else ""} \
+            FASTQ=~{prefix}.R1.fastq \
+            ~{(
+                if paired
+                then "SECOND_END_FASTQ=" + prefix + ".R2.fastq"
+                else ""
+            )} \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
 
-        gzip ~{prefix}_R1.fastq \
-            ~{if paired then prefix + "_R2.fastq" else ""}
+        gzip ~{prefix}.R1.fastq \
+            ~{if paired then prefix + ".R2.fastq" else ""}
     >>>
 
     output {
-        File read_one_fastq_gz = "~{prefix}_R1.fastq.gz"
-        File? read_two_fastq_gz = "~{prefix}_R2.fastq.gz"
+        File read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
+        File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
     }
 
     runtime{
@@ -869,8 +872,8 @@ task merge_vcfs {
         description: "Merges the input VCF files into a single VCF file"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036713331-MergeVcfs-Picard"
         outputs: {
-            output_vcf: "The merged VCF file",
-            output_vcf_index: "The index file associated with the merged VCF file",
+            merged_vcf: "The merged VCF file",
+            merged_vcf_index: "The index file associated with the merged VCF file",
         }
     }
 
@@ -898,8 +901,8 @@ task merge_vcfs {
     >>>
 
     output {
-        File output_vcf = output_vcf_name
-        File output_vcf_index = "~{output_vcf_name}.tbi"
+        File merged_vcf = output_vcf_name
+        File merged_vcf_index = "~{output_vcf_name}.tbi"
     }
 
     runtime {

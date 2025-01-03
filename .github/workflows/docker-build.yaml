@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
       - name: set matrix
         id: set-matrix
-        run: echo "images=$(find docker -maxdepth 2 -mindepth 2 -not -path "*/cellranger/*" | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+        run: echo "images=$(find docker -maxdepth 2 -mindepth 2 | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
   build-images:
     needs: list-images
@@ -47,6 +47,7 @@ jobs:
       - uses: docker/build-push-action@v4
         with:
           context: ${{ matrix.image }}
+          build-contexts: scripts=./scripts
           push: true
           ssh: default
           tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}

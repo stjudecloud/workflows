@@ -7,18 +7,19 @@ import "../../tools/bwa.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
-import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "../general/samtools-merge.wdl" as samtools_merge_wf
 
 workflow dnaseq_core_experimental {
     meta {
+        name: "DNA-Seq Core (Experimental)"
         description: "Aligns DNA reads using bwa"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
-            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file"
+            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
@@ -28,11 +29,15 @@ workflow dnaseq_core_experimental {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"]
+            choices: [
+                "mem",
+                "aln"
+            ],
         }
         use_all_cores: "Use all cores? Recommended for cloud environments."
         sample_override: "Value to override the SM field of *every* read group."
     }
+
     input {
         File bwa_db
         Array[File] read_one_fastqs_gz
@@ -65,7 +70,7 @@ workflow dnaseq_core_experimental {
                 PL: tuple.right.PL,
                 PM: tuple.right.PM,
                 PU: tuple.right.PU,
-                SM: sample_override
+                SM: sample_override,
             }
         }
 
@@ -77,12 +82,12 @@ workflow dnaseq_core_experimental {
 
         call util.split_fastq as read_ones { input:
             fastq = tuple.left.left,
-            reads_per_file = reads_per_file
+            reads_per_file,
         }
 
         call util.split_fastq as read_twos { input:
             fastq = tuple.left.right,
-            reads_per_file = reads_per_file
+            reads_per_file,
         }
 
         scatter (t in zip(read_ones.fastqs, read_twos.fastqs)) {

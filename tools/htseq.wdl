@@ -6,12 +6,12 @@ task count {
     meta {
         description: "Performs read counting for a set of features in the input BAM file"
         outputs: {
-            feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts."
+            feature_counts: "A two column TSV file. First column is feature names and second column is counts. Presence of a header is determined by the `include_custom_header` parameter."
         }
     }
 
     parameter_meta {
-        bam: "Input BAM format file to generate coverage for"
+        bam: "Input BAM format file to generate feature counts for"
         gtf: "Input genomic features in gzipped GTF format to count reads for"
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment",
@@ -20,16 +20,16 @@ task count {
                 "yes",
                 "reverse",
                 "no"
-            ]
+            ],
         }
         prefix: "Prefix for the feature counts file. The extension `.feature-counts.txt` will be added."
         feature_type: {
             description: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored",
-            common: true
+            group: "common",
         }
         idattr: {
             description: "GFF attribute to be used as feature ID",
-            common: true
+            group: "common",
         }
         mode: {
             description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases.",
@@ -38,31 +38,31 @@ task count {
                 "union",
                 "intersection-strict",
                 "intersection-nonempty"
-            ]
+            ],
         }
         include_custom_header: {
-            description: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `feature\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format.",
-            common: true
+            description: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `~{idattr}\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format.",
+            group: "common",
         }
         pos_sorted: {
-            description: "Is the BAM position sorted (true) or name sorted (false)?",
-            common: true
+            description: "Is the BAM position sorted (true) or name sorted (false)? It is **highly** recommended to use a name sorted BAM file. This is because HTSeq will re-sort position-sorted BAMs with an inefficient algorithm, causing very large memory and disk space allocations (especially for large BAMs).",
+            group: "common",
         }
         nonunique: {
             description: "Score reads that align to or are assigned to more than one feature?",
-            common: true
+            group: "common",
         }
         secondary_alignments: {
             description: "Score secondary alignments (SAM flag 0x100)?",
-            common: true
+            group: "common",
         }
         supplementary_alignments: {
             description: "Score supplementary/chimeric alignments (SAM flag 0x800)?",
-            common: true
+            group: "common",
         }
         minaqual: {
             description: "Skip all reads with alignment quality lower than the given minimum value",
-            common: true
+            group: "common",
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -76,8 +76,8 @@ task count {
         String feature_type = "exon"
         String idattr = "gene_name"
         String mode = "union"
-        Boolean include_custom_header = false
-        Boolean pos_sorted = true
+        Boolean include_custom_header = true
+        Boolean pos_sorted = false
         Boolean nonunique = false
         Boolean secondary_alignments = false
         Boolean supplementary_alignments = false
@@ -91,15 +91,17 @@ task count {
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
 
-    Int memory_gb = ceil(bam_size) + 5 + modify_memory_gb
+    Int memory_gb = (if pos_sorted then ceil(bam_size) + 4 else 4) + modify_memory_gb
 
-    Int disk_size_gb = ceil((bam_size + gtf_size) * 4) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(
+        (bam_size + gtf_size) * if pos_sorted then 4 else 1
+    ) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
 
         if ~{include_custom_header}; then
-            echo -e "feature\t~{prefix}" > ~{outfile_name}
+            echo -e "~{idattr}\t~{prefix}" > ~{outfile_name}
         else
             true > ~{outfile_name}  # ensure file is empty
         fi
@@ -146,15 +148,17 @@ task calc_tpm {
     }
 
     parameter_meta {
-        counts: "A two column headerless TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the `count` task."
+        counts: "A two column TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the `count` task."
         gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with the `calc_gene_lengths` task in `util.wdl`."
         prefix: "Prefix for the TPM file. The extension `.TPM.txt` will be added."
+        has_header: "Does the `counts` file have a header line? If true, the first line will be ignored."
     }
 
     input {
         File counts
         File gene_lengths
         String prefix = basename(counts, ".feature-counts.txt")
+        Boolean has_header = true
     }
 
     String outfile_name = prefix + ".TPM.txt"
@@ -166,6 +170,8 @@ task calc_tpm {
 
         counts_file = open(os.environ['COUNTS'], 'r')
         counts = {}
+        if "~{has_header}" == "true":
+            counts_file.readline()
         for line in counts_file:
             gene, count = line.split('\t')
             if gene[0:2] == '__':
@@ -203,7 +209,7 @@ task calc_tpm {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:1.3.0"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }

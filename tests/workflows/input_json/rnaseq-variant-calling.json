@@ -1,0 +1,16 @@
+{
+    "rnaseq_variant_calling.bam": "tests/input/test.bwa_aln_pe.chrY_chrM.bam",
+    "rnaseq_variant_calling.bam_index": "tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai",
+    "rnaseq_variant_calling.fasta": "tests/input/GRCh38.chrY_chrM.fa",
+    "rnaseq_variant_calling.fasta_index": "tests/input/GRCh38.chrY_chrM.fa.fai",
+    "rnaseq_variant_calling.dict": "tests/input/GRCh38.chrY_chrM.dict",
+    "rnaseq_variant_calling.calling_interval_list": "tests/input/wgs_calling_regions.hg38.interval_list",
+    "rnaseq_variant_calling.known_vcfs": [
+        "tests/input/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
+    ],
+    "rnaseq_variant_calling.known_vcf_indexes": [
+        "tests/input/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"
+    ],
+    "rnaseq_variant_calling.dbSNP_vcf": "tests/input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf",
+    "rnaseq_variant_calling.dbSNP_vcf_index": "tests/input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf.idx"
+}

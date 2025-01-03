@@ -7,18 +7,23 @@ import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as b2fq
+#@ except: LineWidth
 import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl" as seaseq_map
+#@ except: LineWidth
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
+#@ except: LineWidth
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 
 workflow chipseq_standard {
     meta {
+        name: "ChIP-Seq Standard"
         description: "Runs the BWA ChIP-Seq alignment workflow for St. Jude Cloud."
+        category: "Harmonization"
         outputs: {
             harmonized_bam: "A harmonized BWA aligned ChIP-Seq BAM file",
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
             bam_index: "BAI index file associated with `harmonized_bam`",
-            bigwig: "BigWig format coverage file"
+            bigwig: "BigWig format coverage file",
         }
         allowNestedInputs: true
     }
@@ -73,6 +78,7 @@ workflow chipseq_standard {
         bam = selected_bam,
     }
 
+    #@ except: UnusedCall
     call ngsderive.read_length { input:
         bam = selected_bam,
         bam_index = samtools_index_input.bam_index,
@@ -86,13 +92,13 @@ workflow chipseq_standard {
             fastqfile = pair.left,
             index_files = bowtie_indexes,
             metricsfile = basic_stats.metrics_out,
-            blacklist = excludelist
+            blacklist = excludelist,
         }
         File chosen_bam = select_first(
             [
                 bowtie_single_end_mapping.bklist_bam,
                 bowtie_single_end_mapping.mkdup_bam,
-                bowtie_single_end_mapping.sorted_bam
+                bowtie_single_end_mapping.sorted_bam,
             ]
         )
         call util.add_to_bam_header { input:
@@ -107,7 +113,7 @@ workflow chipseq_standard {
         }
     }
 
-    Array[File] aligned_bams = select_first([single_end.tagged_bam, []])
+    Array[File] aligned_bams = single_end.tagged_bam
     scatter(aligned_bam in aligned_bams){
         call picard.clean_sam as picard_clean { input:
             bam = aligned_bam,
@@ -121,12 +127,13 @@ workflow chipseq_standard {
 
     call seaseq_samtools.markdup { input:
         bamfile = picard_merge.merged_bam,
-        outputfile = prefix + ".bam"
+        outputfile = prefix + ".bam",
     }
     call samtools.index as samtools_index { input:
         bam = markdup.mkdupbam,
         use_all_cores,
     }
+    #@ except: UnusedCall
     call picard.validate_bam { input: bam = markdup.mkdupbam }
 
     call md5sum.compute_checksum { input:

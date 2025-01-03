@@ -8,7 +8,9 @@ import "./rnaseq-core.wdl" as rnaseq_core_wf
 
 workflow rnaseq_standard {
     meta {
+        name: "RNA-Seq Standard"
         description: "Runs the STAR RNA-Seq alignment workflow for St. Jude Cloud"
+        category: "Harmonization"
         outputs: {
             harmonized_bam: "Harmonized RNA-Seq BAM",
             bam_index: "BAI index file associated with `bam`",
@@ -17,7 +19,7 @@ workflow rnaseq_standard {
             bigwig: "BigWig format coverage file generated from `bam`",
             feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts.",
             inferred_strandedness: "TSV file containing the `ngsderive strandedness` report",
-            inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`"
+            inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`",
         }
         allowNestedInputs: true
     }
@@ -34,7 +36,7 @@ workflow rnaseq_standard {
                 "bwa aln",
                 "bwa mem",
                 "star"
-            ]
+            ],
         }
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
@@ -43,7 +45,7 @@ workflow rnaseq_standard {
                 "Stranded-Reverse",
                 "Stranded-Forward",
                 "Unstranded"
-            ]
+            ],
         }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
@@ -68,9 +70,9 @@ workflow rnaseq_standard {
     }
 
     call parse_input { input:
-        input_strand = strandedness,
+        strand = strandedness,
         cleanse_xenograft,
-        contaminant_db = defined(contaminant_db)
+        contaminant_db = defined(contaminant_db),
     }
 
     if (validate_input) {
@@ -136,30 +138,30 @@ task parse_input {
     }
 
     parameter_meta {
-        input_strand: {
+        strand: {
             description: "Provided strandedness protocol of the RNA-Seq experiment",
             choices: [
                 "",
                 "Stranded-Reverse",
                 "Stranded-Forward",
                 "Unstranded"
-            ]
+            ],
         }
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
         contaminant_db: "Was a `contaminant_db` supplied by the user? Must `true` if `cleanse_xenograft` is `true`."
     }
 
     input {
-        String input_strand
+        String strand
         Boolean cleanse_xenograft
         Boolean contaminant_db
     }
 
     command <<<
-        if [ -n "~{input_strand}" ] \
-            && [ "~{input_strand}" != "Stranded-Reverse" ] \
-            && [ "~{input_strand}" != "Stranded-Forward" ] \
-            && [ "~{input_strand}" != "Unstranded" ]
+        if [ -n "~{strand}" ] \
+            && [ "~{strand}" != "Stranded-Reverse" ] \
+            && [ "~{strand}" != "Stranded-Forward" ] \
+            && [ "~{strand}" != "Unstranded" ]
         then
             >&2 echo "strandedness must be:"
             >&2 echo "'', 'Stranded-Reverse', 'Stranded-Forward', or 'Unstranded'"
@@ -179,7 +181,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:1.3.0"
+        container: "ghcr.io/stjudecloud/util:1.4.0"
         maxRetries: 1
     }
 }

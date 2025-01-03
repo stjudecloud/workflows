@@ -3,6 +3,7 @@ version 1.1
 import "../../tools/md5sum.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
+#@ except: LineWidth
 import "https://raw.githubusercontent.com/stjude/XenoCP/4.0.0-alpha/wdl/workflows/xenocp.wdl" as xenocp_wf
 
 workflow alignment_post {
@@ -12,7 +13,7 @@ workflow alignment_post {
             processed_bam: "Input BAM after being transformed by standard processing",
             bam_index: "BAI index associated with `processed_bam`",
             bam_checksum:  "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
-            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged."
+            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
         }
         allowNestedInputs: true
     }
@@ -27,7 +28,7 @@ workflow alignment_post {
                 "bwa aln",
                 "bwa mem",
                 "star"
-            ]
+            ],
         }
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
         use_all_cores: "Use all cores for multi-core steps?"
@@ -55,7 +56,7 @@ workflow alignment_post {
             input_bai = pre_xenocp_index.bam_index,
             reference_tar_gz = select_first([contaminant_db, ""]),
             aligner = xenocp_aligner,
-            skip_duplicate_marking = true
+            skip_duplicate_marking = true,
         }
     }
     if (mark_duplicates) {
@@ -67,7 +68,7 @@ workflow alignment_post {
     File aligned_bam = select_first([
         picard_markdup.duplicate_marked_bam,
         xenocp.bam,
-        picard_sort.sorted_bam
+        picard_sort.sorted_bam,
     ])
 
     call samtools.index as samtools_index { input:

@@ -43,6 +43,6 @@
     - miniwdl
     - kraken
   command: >-
-    miniwdl run --verbose -d test-output/. --task kraken tools/kraken2.wdl read_one_fastq_gz="tests/tools/input/test_R1.fq.gz" read_two_fastq_gz="tests/tools/input/test_R2.fq.gz" db="tests/tools/input/kraken2_db.tar.gz"
+    miniwdl run --verbose -d test-output/. --task kraken tools/kraken2.wdl read_one_fastq_gz="tests/input/test_R1.fq.gz" read_two_fastq_gz="tests/input/test_R2.fq.gz" db="tests/input/kraken2_db.tar.gz"
   files:
     - path: test-output/out/report/test.kraken2.txt

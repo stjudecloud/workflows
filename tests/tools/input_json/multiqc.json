@@ -1,4 +1,4 @@
 {
-    "input_files": ["tests/tools/input/test.bwa_aln_pe.readlength.txt"],
-    "prefix": "test.bwa_aln_pe"
+    "files": ["tests/input/test.bwa_aln_pe.chrY_chrM.readlength.txt"],
+    "prefix": "test.bwa_aln_pe.chrY_chrM"
 }

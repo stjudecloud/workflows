@@ -5,11 +5,12 @@ import "../../tools/htseq.wdl"
 
 workflow estimate {
     meta {
+        name: "ESTIMATE"
         description: "**[DEPRECATED]** Runs the ESTIMATE software package on a feature counts file"
         external_help: "https://bioinformatics.mdanderson.org/estimate/"
         outputs: {
             tpm: "Transcripts Per Million file",
-            estimate_result: "Final output of ESTIMATE"
+            estimate_result: "Final output of ESTIMATE",
         }
         deprecated: true
     }

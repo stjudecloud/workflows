@@ -58,11 +58,11 @@ task get_read_groups {
     parameter_meta {
         bam: {
             description: "Input BAM format file to get read groups from",
-            stream: true
+            stream: true,
         }
         format_for_star: {
             description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`.",
-            common: true
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -81,13 +81,13 @@ task get_read_groups {
 
         if ~{format_for_star}; then
             samtools view -H ~{bam} \
-                | grep "@RG" \
+                | grep "^@RG" \
                 | cut -f 2- \
                 | sed -e 's/\t/ /g' \
                 | awk '{print}' ORS=' , ' \
                 | sed 's/ , $//' > read_groups.txt
         else
-            samtools view -H ~{bam} | grep "@RG" > read_groups.txt
+            samtools view -H ~{bam} | grep "^@RG" > read_groups.txt
         fi
     >>>
 
@@ -114,22 +114,22 @@ task split_string {
     }
 
     parameter_meta {
-        input_string: "String to split on occurences of `delimiter`"
+        string: "String to split on occurences of `delimiter`"
         delimiter: {
             description: "Delimiter on which to split `input_string`",
-            common: true
+            group: "common",
         }
     }
 
     input {
-        String input_string
+        String string
         String delimiter = " , "
     }
 
     command <<<
         set -euo pipefail
 
-        echo ~{input_string} | sed 's/~{delimiter}/\n/g' > split_strings.txt
+        echo ~{string} | sed 's/~{delimiter}/\n/g' > split_strings.txt
     >>>
 
     output {
@@ -158,7 +158,7 @@ task calc_gene_lengths {
         outfile_name: "Name of the gene lengths file"
         idattr: {
             description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.",
-            common: true
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -390,7 +390,7 @@ task make_coverage_regions_bed {
                 "start_codon",
                 "stop_codon",
                 "Selenocysteine"
-            ]
+            ],
         }
         outfile_name: "Name of the output BED file"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -777,10 +777,10 @@ task split_fastq {
     parameter_meta {
         fastq: {
             description: "Gzipped FASTQ file to split",
-            stream: true
+            stream: true,
         }
         reads_per_file: "Number of reads to include in each output FASTQ file"
-        prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
+        prefix: "Prefix for the FASTQ files. The extension `.fastq.gz` (preceded by a split index) will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
     }

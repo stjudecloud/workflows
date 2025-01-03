@@ -24,7 +24,9 @@ import "./rnaseq-standard.wdl" as rnaseq_standard
 
 workflow rnaseq_standard_fastq {
     meta {
+        name: "RNA-Seq Standard (FASTQ)"
         description: "Runs the STAR RNA-Seq alignment workflow for St. Jude Cloud from FASTQ input"
+        category: "Harmonization"
         outputs: {
             bam: "Harmonized RNA-Seq BAM",
             bam_index: "BAI index file associated with `bam`",
@@ -33,7 +35,7 @@ workflow rnaseq_standard_fastq {
             bigwig: "BigWig format coverage file generated from `bam`",
             feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts.",
             inferred_strandedness: "TSV file containing the `ngsderive strandedness` report",
-            inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`"
+            inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`",
         }
         allowNestedInputs: true
     }
@@ -60,8 +62,8 @@ workflow rnaseq_standard_fastq {
                 PL: "Platform/technology used to produce the reads. Valid values: CAPILLARY, DNBSEQ (MGI/BGI), ELEMENT, HELICOS, ILLUMINA, IONTORRENT, LS454, ONT (Oxford Nanopore), PACBIO (Pacific Biosciences), SINGULAR, SOLID, and ULTIMA. This field should be omitted when the technology is not in this list (though the PM field may still be present in this case) or is unknown.",
                 PM: "Platform model. Free-form text providing further details of the platform/technology used.",
                 PU: "Platform unit (e.g., flowcell-barcode.lane for Illumina or slide for SOLiD). Unique identifier.",
-                SM: "Sample. Use pool name where a pool is being sequenced."
-            }
+                SM: "Sample. Use pool name where a pool is being sequenced.",
+            },
         }
         prefix: "Prefix for output files"
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
@@ -71,7 +73,7 @@ workflow rnaseq_standard_fastq {
                 "bwa aln",
                 "bwa mem",
                 "star"
-            ]
+            ],
         }
         strandedness: {
             description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
@@ -80,7 +82,7 @@ workflow rnaseq_standard_fastq {
                 "Stranded-Reverse",
                 "Stranded-Forward",
                 "Unstranded"
-            ]
+            ],
         }
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
@@ -107,9 +109,9 @@ workflow rnaseq_standard_fastq {
     }
 
     call rnaseq_standard.parse_input { input:
-        input_strand = strandedness,
+        strand = strandedness,
         cleanse_xenograft,
-        contaminant_db = defined(contaminant_db)
+        contaminant_db = defined(contaminant_db),
     }
 
     scatter (rg in read_groups) {
@@ -140,12 +142,12 @@ workflow rnaseq_standard_fastq {
     }
     Array[File] selected_read_one_fastqs = select_first([
         subsample.subsampled_read1,
-        read_one_fastqs_gz
+        read_one_fastqs_gz,
     ])
     Array[File] selected_read_two_fastqs = select_all(
         select_first([
             subsample.subsampled_read2,
-            read_two_fastqs_gz
+            read_two_fastqs_gz,
         ])
     )
 

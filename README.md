@@ -1,11 +1,8 @@
 <p align="center">
-  <a href="https://github.com/stjudecloud/workflows"><img src="./docs/workflows-banner-flowchart.jpg" width="800" title="St. Jude Cloud Workflows"></a>
+  <a href="https://github.com/stjudecloud/workflows"><img src="./assets/workflows-banner-flowchart.jpg" width="800" title="St. Jude Cloud Workflows"></a>
   <br />
   <a href="https://actions-badge.atrox.dev/stjudecloud/workflows/goto?ref=main">
     <img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fstjudecloud%2Fworkflows%2Fbadge%3Fref%3Dmain&style=flat" />
-  </a>
-  <a href="https://stjudecloud.github.io/workflows/" target="_blank">
-    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
   </a>
   <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
@@ -40,7 +37,7 @@ The workflows and tasks in this repository should require minimal set-up and con
 
 The exact steps for installation, configuration, and execution are going to depend on you environment and preferred engine. There are a variety of WDL engines you could use, though our team prefers [miniwdl](https://github.com/chanzuckerberg/miniwdl). We also make use of the [`miniwdl-lsf` plugin](https://pypi.org/project/miniwdl-lsf/) for running on our LSF cluster.
 
-Most WDL runners are capable of running a WDL file from a URL. This is how we most commonly execute our workflows and tasks. The below command could be used to submit a run of our rnaseq-standard workflow using `miniwdl`:
+Most WDL runners are capable of running a WDL file from a URL. This is how we most commonly execute our workflows and tasks. The below command is a mock example of of what could be used to submit a run of our rnaseq-standard workflow using `miniwdl`:
 
 ```bash
 miniwdl run --verbose --input inputs.json https://raw.githubusercontent.com/stjudecloud/workflows/rnaseq-standard/v3.0.1/workflows/rnaseq/rnaseq-standard.wdl

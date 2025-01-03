@@ -14,6 +14,7 @@ import "../../tools/samtools.wdl"
 
 workflow markdups_post {
     meta {
+        name: "Mark Duplicates Post"
         description: "Runs QC analyses which are impacted by duplicate marking"
         outputs: {
             insert_size_metrics: "`*.txt` output file of `picard collectInsertSizeMetrics`",
@@ -22,7 +23,7 @@ workflow markdups_post {
             mosdepth_global_summary: "Summary of whole genome coverage produced by `mosdepth`",
             mosdepth_global_dist: "Distribution of whole genome coverage produced by `mosdepth`",
             mosdepth_region_summary: "Summaries of coverage corresponding to the regions defined by `coverage_beds` input, produced by `mosdepth`",
-            mosdepth_region_dist: "Distributions of coverage corresponding to the regions defined by `coverage_beds` input, produced by `mosdepth`"
+            mosdepth_region_dist: "Distributions of coverage corresponding to the regions defined by `coverage_beds` input, produced by `mosdepth`",
         }
         allowNestedInputs: true
     }

@@ -7,17 +7,20 @@ import "../../tools/samtools.wdl"
 workflow samtools_merge {
     meta{
         description: "Runs `samtools merge`, with optional iteration to avoid maximum command line argument length"
+        category: "Utility"
         outputs: {
             merged_bam: "The BAM resulting from merging all the input BAMs"
         }
         allowNestedInputs: true
     }
+
     parameter_meta{
         bams: "BAMs to merge into a final BAM"
         max_length: "Maximum number of BAMs to merge before using iteration"
         prefix: "Prefix for output BAM."
         use_all_cores: "Use all cores? Recommended for cloud environments."
     }
+
     input {
         Array[File] bams
         String prefix

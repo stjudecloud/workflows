@@ -15,11 +15,11 @@ task build_star_db {
         gtf: "GTF format feature file"
         db_name: {
             description: "Name for output in compressed, archived format. The suffix `.tar.gz` will be added.",
-            common: true
+            group: "common",
         }
         sjdb_gtf_chr_prefix: {
             description: "prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSEMBL annotations with UCSC genomes)",
-            common: true
+            group: "common",
         }
         sjdb_gtf_feature_exon: "feature type in GTF file to be used as exons for building transcripts"
         sjdb_gtf_tag_exon_parant_transcript: "GTF attribute name for parent transcript ID"
@@ -28,7 +28,7 @@ task build_star_db {
         sjdb_gtf_tag_exon_parent_gene_type: "GTF attribute name for parent gene type"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            group: "common",
         }
         genome_chr_bin_n_bits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
         genome_SA_index_n_bases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
@@ -36,11 +36,11 @@ task build_star_db {
         genome_suffix_length_max: "maximum length of the suffixes, has to be longer than read length. -1 = infinite."
         sjdb_overhang: {
             description: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). **[STAR default]**: `100`. **[WDL default]**: `125`.",
-            common: true
+            group: "common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            group: "common",
         }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -116,7 +116,7 @@ task build_star_db {
 
         rm "$gtf_name" "$ref_fasta"
 
-        tar -czf ~{star_db_tar_gz} ~{db_name}
+        tar -C ~{db_name} -czf ~{star_db_tar_gz} .
     >>>
 
     output {
@@ -127,7 +127,7 @@ task build_star_db {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-0"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-1"
         maxRetries: 1
     }
 }
@@ -148,10 +148,10 @@ task alignment {
         read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
         prefix: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added."
-        read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`. These two read groups could be associated with the following four FASTQs: `sample1.rg1_R1.fastq,sample1.rg2_R1.fastq` and `sample1.rg1_R2.fastq,sample1.rg2_R2.fastq`"
+        read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`. These two read groups could be associated with the following four FASTQs: `sample1.rg1.R1.fastq,sample1.rg2.R1.fastq` and `sample1.rg1.R2.fastq,sample1.rg2.R2.fastq`"
         read_two_fastqs_gz: {
             description: "An array of gzipped FASTQ files containing read two information",
-            common: true
+            group: "common",
         }
         out_sj_filter_intron_max_vs_read_n: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions."
         out_sj_filter_overhang_min: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions."
@@ -164,17 +164,17 @@ task alignment {
             choices: {
                 None: "No 3p adapter trimming will be performed",
                 sequence: "A nucleotide sequence string of any length, matching the regex `/[ATCG]+/`",
-                polyA: "polyA sequence with the length equal to read length"
+                polyA: "polyA sequence with the length equal to read length",
             },
-            common: true
+            group: "common",
         }
         clip_3p_adapter_mmp: "max proportion of mismatches for 3p adapter clipping for each mate. `left` applies to read one and `right` applies to read two."
         align_ends_protrude: {
             description: "allow protrusion of alignment ends, i.e. start (end) of the +strand mate downstream of the start (end) of the -strand mate. `left`: maximum number of protrusion bases allowed. `right`: see `choices` below.",
             choices: {
                 ConcordantPair: "report alignments with non-zero protrusion as concordant pairs",
-                DiscordantPair: "report alignments with non-zero protrusion as discordant pairs"
-            }
+                DiscordantPair: "report alignments with non-zero protrusion as discordant pairs",
+            },
         }
         clip_3p_n_bases: "number of bases to clip from 3p of each mate. `left` applies to read one and `right` applies to read two."
         clip_3p_after_adapter_n_bases: "number of bases to clip from 3p of each mate after the adapter clipping. `left` applies to read one and `right` applies to read two."
@@ -185,16 +185,16 @@ task alignment {
             choices: {
                 Hamming: "adapter clipping based on Hamming distance, with the number of mismatches controlled by --clip5pAdapterMMp",
                 CellRanger4: "5p and 3p adapter clipping similar to CellRanger4. Utilizes Opal package by Martin Šošić: https://github.com/Martinsos/opal",
-                None: "no adapter clipping, all other clip* parameters are disregarded"
-            }
+                None: "no adapter clipping, all other clip* parameters are disregarded",
+            },
         }
         out_sam_strand_field: {
             description: "Cufflinks-like strand field flag",
             choices: {
                 None: "not used",
-                intronMotif: "strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out."
+                intronMotif: "strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out.",
             },
-            common: true
+            group: "common",
         }
         out_sam_attributes: {
             description: "a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order. **[STAR defaults]**: `NH HI AS nM`. **[WDL default]**: `NH HI AS nM NM MD XS`.",
@@ -210,70 +210,70 @@ task alignment {
                 XS: "alignment strand according to --outSAMstrandField.",
                 MC: "mate's CIGAR string. Standard SAM tag.",
                 ch: "marks all segments of all chimeric alignments for --chimOutType WithinBAM output.",
-                cN: "number of bases clipped from the read ends: 5' and 3'"
+                cN: "number of bases clipped from the read ends: 5' and 3'",
             },
-            common: true
+            group: "common",
         }
         out_sam_unmapped: {
             description: "output of unmapped reads in the SAM format.",
             choices: {
                 None: "no output **[STAR default]**",
-                Within: "output unmapped reads within the main SAM file (i.e. Aligned.out.sam) **[WDL default]**"
-            }
+                Within: "output unmapped reads within the main SAM file (i.e. Aligned.out.sam) **[WDL default]**",
+            },
         }
         out_sam_order: {
             description: "type of sorting for the SAM output",
             choices: {
                 Paired: "one mate after the other for all paired alignments",
-                PairedKeepInputOrder: "one mate after the other for all paired alignments, the order is kept the same as in the input FASTQ files"
-            }
+                PairedKeepInputOrder: "one mate after the other for all paired alignments, the order is kept the same as in the input FASTQ files",
+            },
         }
         out_sam_read_id: {
             description: "read ID record type",
             choices: {
                 Standard: "first word (until space) from the FASTx read ID line, removing /1,/2 from the end",
-                Number: "read number (index) in the FASTx file"
-            }
+                Number: "read number (index) in the FASTx file",
+            },
         }
         out_sam_tlen: {
             description: "calculation method for the TLEN field in the SAM/BAM files",
             choices: {
                 left_plus: "leftmost base of the (+)strand mate to rightmost base of the (-)mate. (+)sign for the (+)strand mate",
-                left_any: "leftmost base of any mate to rightmost base of any mate. (+)sign for the mate with the leftmost base. This is different from `left_plus` for overlapping mates with protruding ends"
-            }
+                left_any: "leftmost base of any mate to rightmost base of any mate. (+)sign for the mate with the leftmost base. This is different from `left_plus` for overlapping mates with protruding ends",
+            },
         }
         out_filter_type: {
             description: "type of filtering",
             choices: {
                 Normal: "standard filtering using only current alignment",
-                BySJout: "keep only those reads that contain junctions that passed filtering into SJ.out.tab"
+                BySJout: "keep only those reads that contain junctions that passed filtering into SJ.out.tab",
             },
-            common: true
+            group: "common",
         }
         out_filter_intron_motifs: {
             description: "filter alignment using their motifs",
             choices: {
                 None: "no filtering",
                 RemoveNoncanonical: "filter out alignments that contain non-canonical junctions",
-                RemoveNoncanonicalUnannotated: "filter out alignments that contain non-canonical unannotated junctions when using annotated splice junctions database. The annotated non-canonical junctions will be kept."
+                RemoveNoncanonicalUnannotated: "filter out alignments that contain non-canonical unannotated junctions when using annotated splice junctions database. The annotated non-canonical junctions will be kept.",
             },
-            common: true
+            group: "common",
         }
         out_filter_intron_strands: {
             description: "filter alignments",
             choices: {
                 None: "no filtering",
-                RemoveInconsistentStrands: "remove alignments that have junctions with inconsistent strands"
+                RemoveInconsistentStrands: "remove alignments that have junctions with inconsistent strands",
             },
-            common: true
+            group: "common",
         }
         out_sj_filter_reads: {
             description: "which reads to consider for collapsed splice junctions output",
             choices: {
                 All: "all reads, unique- and multi-mappers",
-                Unique: "uniquely mapping reads only"
+                Unique: "uniquely mapping reads only",
             },
-            common: true
+            group: "common",
         }
         align_ends_type: {
             description: "type of read ends alignment",
@@ -281,61 +281,61 @@ task alignment {
                 Local: "standard local alignment with soft-clipping allowed",
                 EndToEnd: "force end-to-end read alignment, do not soft-clip",
                 Extend5pOfRead1: "fully extend only the 5p of the read1, all other ends: local alignment",
-                Extend5pOfReads12: "fully extend only the 5p of the both read1 and read2, all other ends: local alignment"
-            }
+                Extend5pOfReads12: "fully extend only the 5p of the both read1 and read2, all other ends: local alignment",
+            },
         }
         align_soft_clip_at_reference_ends: {
             description: "allow the soft-clipping of the alignments past the end of the chromosomes",
             choices: {
                 Yes: "allow",
-                No: "prohibit, useful for compatibility with Cufflinks"
+                No: "prohibit, useful for compatibility with Cufflinks",
             },
-            common: true
+            group: "common",
         }
         align_insertion_flush: {
             description: "how to flush ambiguous insertion positions",
             choices: {
                 None: "insertions are not flushed",
-                Right: "insertions are flushed to the right"
+                Right: "insertions are flushed to the right",
             },
-            common: true
+            group: "common",
         }
         chim_out_type: {
             description: "type of chimeric output",
             choices: {
                 Junctions: "Chimeric.out.junction",
                 WithinBAM_HardClip: "output into main aligned BAM files (Aligned.*.bam). Hard-clipping in the CIGAR for supplemental chimeric alignments.",
-                WithinBAM_SoftClip: "output into main aligned BAM files (Aligned.*.bam). Soft-clipping in the CIGAR for supplemental chimeric alignments."
+                WithinBAM_SoftClip: "output into main aligned BAM files (Aligned.*.bam). Soft-clipping in the CIGAR for supplemental chimeric alignments.",
             },
             tool_default: "Junctions",
-            common: true
+            group: "common",
         }
         chim_filter: {
             description: "different filters for chimeric alignments",
             choices: {
                 None: "no filtering",
-                banGenomicN: "Ns are not allowed in the genome sequence around the chimeric junction"
-            }
+                banGenomicN: "Ns are not allowed in the genome sequence around the chimeric junction",
+            },
         }
         chim_out_junction_format: {
             description: "formatting type for the Chimeric.out.junction file",
             choices: {
                 plain: "no comment lines/headers",
-                comments: "comment lines at the end of the file: command line and Nreads: total, unique/multi-mapping"
+                comments: "comment lines at the end of the file: command line and Nreads: total, unique/multi-mapping",
             },
-            common: true
+            group: "common",
         }
         twopass_mode: {
             description: "2-pass mapping mode",
             choices: {
                 None: "1-pass mapping **[STAR default]**",
-                Basic: "basic 2-pass mapping, with all 1st pass junctions inserted into the genome indices on the fly **[WDL default]**"
+                Basic: "basic 2-pass mapping, with all 1st pass junctions inserted into the genome indices on the fly **[WDL default]**",
             },
-            common: true
+            group: "common",
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true
+            group: "common",
         }
         out_filter_mismatch_n_over_l_max: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
         out_filter_mismatch_n_over_read_l_max: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
@@ -347,15 +347,15 @@ task alignment {
         pe_overlap_mmp: "maximum proportion of mismatched bases in the overlap area"
         run_rng_seed: {
             description: "random number generator seed",
-            common: true
+            group: "common",
         }
         sjdb_score: {
             description: "extra alignment score for alignments that cross database junctions",
-            common: true
+            group: "common",
         }
         read_map_number: {
             description: "number of reads to map from the beginning of the file. -1 to map all reads",
-            common: true
+            group: "common",
         }
         read_quality_score_base: "number to be subtracted from the ASCII code to get Phred quality score"
         limit_out_sj_one_read: "max number of junctions for one read (including all multi-mappers)"
@@ -369,19 +369,19 @@ task alignment {
         out_filter_multimap_score_range: "the score range below the maximum score for multimapping alignments"
         out_filter_multimap_n_max: {
             description: "maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. **[STAR default]**: `10`. **[WDL default]**: `20`.",
-            common: true
+            group: "common",
         }
         out_filter_mismatch_n_max: {
             description: "alignment will be output only if it has no more mismatches than this value",
-            common: true
+            group: "common",
         }
         out_filter_score_min: {
             description: "alignment will be output only if its score is higher than or equal to this value",
-            common: true
+            group: "common",
         }
         out_filter_match_n_min: {
             description: "alignment will be output only if the number of matched bases is higher than or equal to this value",
-            common: true
+            group: "common",
         }
         score_gap: "splice junction penalty (independent on intron motif)"
         score_gap_noncanon: "non-canonical junction penalty (in addition to scoreGap)"
@@ -402,23 +402,23 @@ task alignment {
         seed_map_min: "min length of seeds to be mapped"
         align_intron_min: {
             description: "minimum intron size: genomic gap is considered intron if its length>=alignIntronMin, otherwise it is considered Deletion",
-            common: true
+            group: "common",
         }
         align_intron_max: {
             description: "maximum intron size, if 0, max intron size will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `500000`.",
-            common: true
+            group: "common",
         }
         align_mates_gap_max: {
             description: "maximum gap between two mates, if 0, max intron gap will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `1000000`",
-            common: true
+            group: "common",
         }
         align_sj_overhang_min: {
             description: "minimum overhang (i.e. block size) for spliced alignments",
-            common: true
+            group: "common",
         }
         align_sjdb_overhang_min: {
             description: "minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments. **[STAR default]**: `3`. **[WDL default]**: `1`.",
-            common: true
+            group: "common",
         }
         align_spliced_mate_map_l_min: "minimum mapped length for a read mate that is spliced"
         align_windows_per_read_n_max: "max number of windows per read"
@@ -432,43 +432,43 @@ task alignment {
         chim_segment_min: {
             description: "minimum length of chimeric segment length, if ==0, no chimeric output",
             tool_default: 0,
-            common: true
+            group: "common",
         }
         chim_score_min: {
             description: "minimum total (summed) score of the chimeric segments",
-            common: true
+            group: "common",
         }
         chim_score_drop_max: {
             description: "max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length",
-            common: true
+            group: "common",
         }
         chim_score_separation: "minimum difference (separation) between the best chimeric score and the next one"
         chim_score_junction_nonGTAG: "penalty for a non-GT/AG chimeric junction"
         chim_junction_overhang_min: {
             description: "minimum overhang for a chimeric junction",
-            common: true
+            group: "common",
         }
         chim_segment_read_gap_max: {
             description: "maximum gap in the read sequence between chimeric segments",
-            common: true
+            group: "common",
         }
         chim_main_segment_multi_n_max: {
             description: "maximum number of multi-alignments for the main chimeric segment. =1 will prohibit multimapping main segments.",
-            common: true
+            group: "common",
         }
         chim_multimap_n_max: {
             description: "maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments",
-            common: true
+            group: "common",
         }
         chim_multimap_score_range: "the score range for multi-mapping chimeras below the best chimeric score. Only works with --chimMultimapNmax > 1."
         chim_nonchim_score_drop_min: "to trigger chimeric detection, the drop in the best non-chimeric alignment score with respect to the read length has to be greater than this value"
         twopass1_reads_n: {
             description: "number of reads to process for the 1st step. Use default (`-1`) to map all reads in the first step",
-            common: true
+            group: "common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -484,31 +484,31 @@ task alignment {
             noncanonical_motifs: 30,
             GT_AG_and_CT_AC_motif: 12,
             GC_AG_and_CT_GC_motif: 12,
-            AT_AC_and_GT_AT_motif: 12
+            AT_AC_and_GT_AT_motif: 12,
         }
         SpliceJunctionMotifs out_sj_filter_count_unique_min = SpliceJunctionMotifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
-            AT_AC_and_GT_AT_motif: 1
+            AT_AC_and_GT_AT_motif: 1,
         }
         SpliceJunctionMotifs out_sj_filter_count_total_min = SpliceJunctionMotifs {
             noncanonical_motifs: 3,
             GT_AG_and_CT_AC_motif: 1,
             GC_AG_and_CT_GC_motif: 1,
-            AT_AC_and_GT_AT_motif: 1
+            AT_AC_and_GT_AT_motif: 1,
         }
         SpliceJunctionMotifs out_sj_filter_dist_to_other_sj_min = SpliceJunctionMotifs {
             noncanonical_motifs: 10,
             GT_AG_and_CT_AC_motif: 0,
             GC_AG_and_CT_GC_motif: 5,
-            AT_AC_and_GT_AT_motif: 10
+            AT_AC_and_GT_AT_motif: 10,
         }
         SpliceJunctionMotifs align_sj_stitch_mismatch_n_max = SpliceJunctionMotifs {
             noncanonical_motifs: 0,
             GT_AG_and_CT_AC_motif: -1,
             GC_AG_and_CT_GC_motif: 0,
-            AT_AC_and_GT_AT_motif: 0
+            AT_AC_and_GT_AT_motif: 0,
         }
         Pair[String, String] clip_3p_adapter_seq = ("None", "None")
         Pair[Float, Float] clip_3p_adapter_mmp = (0.1, 0.1)
@@ -615,8 +615,6 @@ task alignment {
         Int modify_disk_size_gb = 0
     }
 
-    String star_db_dir = basename(star_db_tar_gz, ".tar.gz")
-
     Float read_one_fastqs_size = size(read_one_fastqs_gz, "GiB")
     Float read_two_fastqs_size = size(read_two_fastqs_gz, "GiB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
@@ -625,8 +623,6 @@ task alignment {
             ceil(read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size) * 3
         ) + 10 + modify_disk_size_gb
     )
-
-    Array[File] empty_array = []  # odd construction forced by WDL v1.1 spec
 
     #@ except: LineWidth
     command <<<
@@ -637,31 +633,28 @@ task alignment {
             n_cores=$(nproc)
         fi
 
-        tar -xzf ~{star_db_tar_gz}
+        mkdir star_db
+        tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
         # odd constructions a combination of needing white space properly parsed
         # and limitations of the WDL v1.1 spec
         python3 /home/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
-            ~{if (read_two_fastqs_gz != empty_array) then "--read-two-fastqs" else ""} "~{
-                sep(",", (
-                    if (read_two_fastqs_gz != empty_array)
-                    then read_two_fastqs_gz
-                    else []
-                ))
+            ~{if (length(read_two_fastqs_gz) != 0) then "--read-two-fastqs" else ""} "~{
+                sep(",", (read_two_fastqs_gz))
             }" \
-            ~{if defined(read_groups) then "--read-groups" else ""} "~{
+            ~{if defined(read_groups) then "--read-groups" else ""} "~{(
                 if defined(read_groups)
                 then read_groups
                 else ""
-            }"
+            )}"
 
         read -ra read_one_args < read_one_fastqs_sorted.txt
         read -ra read_two_args < read_two_fastqs_sorted.txt
         read -ra read_group_args < read_groups_sorted.txt
         STAR --readFilesIn "${read_one_args[@]}" "${read_two_args[@]}" \
             --readFilesCommand "gunzip -c" \
-            --genomeDir ~{star_db_dir} \
+            --genomeDir star_db \
             --runThreadN "$n_cores" \
             --outSAMtype BAM Unsorted \
             --outMultimapperOrder Random \
@@ -675,31 +668,31 @@ task alignment {
                 out_sj_filter_overhang_min.noncanonical_motifs,
                 out_sj_filter_overhang_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_overhang_min.GC_AG_and_CT_GC_motif,
-                out_sj_filter_overhang_min.AT_AC_and_GT_AT_motif
+                out_sj_filter_overhang_min.AT_AC_and_GT_AT_motif,
             ]))} \
             --outSJfilterCountUniqueMin ~{sep(" ", quote([
                 out_sj_filter_count_unique_min.noncanonical_motifs,
                 out_sj_filter_count_unique_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_count_unique_min.GC_AG_and_CT_GC_motif,
-                out_sj_filter_count_unique_min.AT_AC_and_GT_AT_motif
+                out_sj_filter_count_unique_min.AT_AC_and_GT_AT_motif,
             ]))} \
             --outSJfilterCountTotalMin ~{sep(" ", quote([
                 out_sj_filter_count_total_min.noncanonical_motifs,
                 out_sj_filter_count_total_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_count_total_min.GC_AG_and_CT_GC_motif,
-                out_sj_filter_count_total_min.AT_AC_and_GT_AT_motif
+                out_sj_filter_count_total_min.AT_AC_and_GT_AT_motif,
             ]))} \
             --outSJfilterDistToOtherSJmin ~{sep(" ", quote([
                 out_sj_filter_dist_to_other_sj_min.noncanonical_motifs,
                 out_sj_filter_dist_to_other_sj_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_dist_to_other_sj_min.GC_AG_and_CT_GC_motif,
-                out_sj_filter_dist_to_other_sj_min.AT_AC_and_GT_AT_motif
+                out_sj_filter_dist_to_other_sj_min.AT_AC_and_GT_AT_motif,
             ]))} \
             --alignSJstitchMismatchNmax ~{sep(" ", quote([
                 align_sj_stitch_mismatch_n_max.noncanonical_motifs,
                 align_sj_stitch_mismatch_n_max.GT_AG_and_CT_AC_motif,
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
-                align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif
+                align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
             ]))} \
             --clip3pAdapterSeq ~{
                 clip_3p_adapter_seq.left + " " + clip_3p_adapter_seq.right
@@ -722,13 +715,13 @@ task alignment {
             --outSAMunmapped ~{out_sam_unmapped} \
             --outSAMorder ~{out_sam_order} \
             --outSAMreadID ~{out_sam_read_id} \
-            --outSAMtlen ~{
+            --outSAMtlen ~{(
                 if (out_sam_tlen == "left_plus")
                 then "1"
                 else (
                     if (out_sam_tlen == "left_any") then "2" else "error"
                 )
-            } \
+            )} \
             --outFilterType ~{out_filter_type} \
             --outFilterIntronMotifs ~{out_filter_intron_motifs} \
             --outFilterIntronStrands ~{out_filter_intron_strands} \
@@ -820,7 +813,7 @@ task alignment {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-0"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-1"
         maxRetries: 1
     }
 }

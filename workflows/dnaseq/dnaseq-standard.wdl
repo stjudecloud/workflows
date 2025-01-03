@@ -10,27 +10,34 @@ import "./dnaseq-core.wdl" as dnaseq_core_wf
 
 workflow dnaseq_standard_experimental {
     meta {
+        name: "DNA-Seq Standard (Experimental)"
         description: "Aligns DNA reads using bwa"
+        category: "Harmonization"
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
-            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file"
+            harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",
         }
         allowNestedInputs: true
     }
+
     parameter_meta {
         bam: "Input BAM to realign"
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-        reads_per_file: "Controls the number of reads per FASTQ file for internal split to run BWA in parallel."
+        sample_override: "Value to override the SM field of *every* read group."
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"]
+            choices: [
+                "mem",
+                "aln"
+            ],
         }
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
+        reads_per_file: "Controls the number of reads per FASTQ file for internal split to run BWA in parallel."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
-        sample_override: "Value to override the SM field of *every* read group."
     }
+
     input {
         File bam
         File bwa_db
@@ -101,7 +108,10 @@ task parse_input {
     parameter_meta {
         aligner: {
             description: "BWA aligner to use",
-            choices: ["mem", "aln"]
+            choices: [
+                "mem",
+                "aln"
+            ],
         }
     }
 
