@@ -311,34 +311,10 @@ task filter {
 
         cat <(cut -f 4 left.bed) <(cut -f 4 right.bed)|sort -u > filter.pair
 
-        python <<CODE
-            from collections import defaultdict
-            f=open("filter.pair")
-            blackID=defaultdict(int)
-            while True:
-                line=f.readline()
-                if not line:
-                    break
-                cols=line.strip().split("\t")
-                ID=cols[0]
-                blackID[ID]=1
-
-            f2=open("~{all_valid_pairs}")
-            outfile1="~{prefix}.allValidPairs.filtered"
-            outfile2="~{prefix}.allValidPairs.removed"
-            of1=open(outfile1,'w')
-            of2=open(outfile2,'w')
-            while True:
-                line=f2.readline()
-                if not line:
-                    break
-                cols=line.strip().split("\t")
-                id=cols[0]
-                if id in blackID:
-                    of2.write(line)
-                else:
-                    of1.write(line)
-        CODE
+        python /usr/local/bin/filter_hic.py \
+            --all_valid_pairs ~{all_valid_pairs} \
+            --filter_pair filter.pair \
+            --prefix ~{prefix}
 
         all=$(wc -l ~{all_valid_pairs} |cut -d " " -f 1)
         filtered=$(wc -l ~{prefix}.allValidPairs.removed | cut -d " " -f 1)
