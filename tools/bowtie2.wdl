@@ -84,8 +84,10 @@ task align {
             aligned_bam: "Aligned reads in BAM format",
             unpaired_unaligned: "Unpaired reads that didn't align",
             unpaired_aligned: "Unpaired reads that aligned at least once",
-            paired_discordant: "Pairs that didn't align concordantly",
-            paired_concordant: "Pairs that aligned concordantly at least once",
+            paired_discordant_read_one: "Read one from pairs that didn't align concordantly",
+            paired_discordant_read_two: "Read two from pairs that didn't align concordantly",
+            paired_concordant_read_one: "Read one from pairs that aligned concordantly at least once",
+            paired_concordant_read_two: "Read two from pairs that aligned concordantly at least once",
             metrics: "Metrics file",
         }
     }
@@ -332,17 +334,17 @@ task align {
             )} \
             ~{(
                 if write_unpaired_aligned
-                then "--al-gz ~{prefix}.unpaired_aligned.gz"
+                then "--al-gz ~{prefix}.unpaired_aligned.fastq.gz"
                 else ""
             )} \
             ~{(
                 if write_paired_discordant
-                then "--un-conc-gz ~{prefix}.paired_discordant.gz"
+                then "--un-conc-gz ~{prefix}.paired_discordant.fastq.gz"
                 else ""
             )} \
             ~{(
                 if write_paired_concordant
-                then "--al-conc-gz ~{prefix}.paired_concordant.gz"
+                then "--al-conc-gz ~{prefix}.paired_concordant.fastq.gz"
                 else ""
             )} \
             ~{if quiet then "--quiet" else ""} \
@@ -396,9 +398,11 @@ task align {
     output {
         File aligned_bam = prefix + ".bam"
         File? unpaired_unaligned = prefix + ".unpaired_unaligned.fastq.gz"
-        File? unpaired_aligned = prefix + ".unpaired_aligned.gz"
-        File? paired_discordant = prefix + ".paired_discordant.gz"
-        File? paired_concordant = prefix + ".paired_concordant.gz"
+        File? unpaired_aligned = prefix + ".unpaired_aligned.fastq.gz"
+        File? paired_discordant_read_one = prefix + ".paired_discordant.fastq.1.gz"
+        File? paired_discordant_read_two = prefix + ".paired_discordant.fastq.2.gz"
+        File? paired_concordant_read_one = prefix + ".paired_concordant.fastq.1.gz"
+        File? paired_concordant_read_two = prefix + ".paired_concordant.fastq.2.gz"
         File? metrics = prefix + ".metrics.txt"
     }
 
