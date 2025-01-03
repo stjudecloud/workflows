@@ -180,10 +180,10 @@ task align {
         soft_clipped_unmapped_tlen: "Exclude soft-clipped bases when reporting TLEN (template length). Only used if `end_to_end` is false."
         sam_append_comment: "Append FASTA/FASTQ comment to SAM record, where a comment is everything after the first space in the read name."
         sam_opt_config: "Toggle optional SAM fields. Prefix fields with `-` to turn off. Example: '-MD,YP,-AS' will disable the `MD` and `AS` fields and enable the `YP` field."
-        threads: "Number of threads to use for alignment. Threads will synchronize when parsing reads and outputting alignments. Searching for alignments is highly parallel, and speedup is close to linear. Increasing threads increases Bowtie 2's memory footprint."
+        ncpu: "Number of threads to use for alignment. Threads will synchronize when parsing reads and outputting alignments. Searching for alignments is highly parallel, and speedup is close to linear. Increasing threads increases Bowtie 2's memory footprint."
         reorder: {
             description: "Force SAM output order to match order of input reads",
-            help: "Guarantees that output SAM records are printed in an order corresponding to the order of the reads in the original input file, even when `threads` is set greater than 1. Specifying `reorder` and setting `threads` greater than 1 causes Bowtie 2 to run somewhat slower and use somewhat more memory than if `reorder` were not specified. Has no effect if `threads` is set to 1, since output order will naturally correspond to input order in that case.",
+            help: "Guarantees that output SAM records are printed in an order corresponding to the order of the reads in the original input file, even when `ncpu` is set greater than 1. Specifying `reorder` and setting `ncpu` greater than 1 causes Bowtie 2 to run somewhat slower and use somewhat more memory than if `reorder` were not specified. Has no effect if `ncpu` is set to 1, since output order will naturally correspond to input order in that case.",
         }
         memory_map: "use memory-mapped I/O for index; many 'bowtie's can share"
         qc_filter: {
@@ -278,7 +278,7 @@ task align {
         Int min_fragment_len = 0
         Int max_fragment_len = 500
         Int metrics_interval = 1
-        Int threads = 1
+        Int ncpu = 1
         Int seed = 0
         Int max_failed_extends = 15
         Int repetitive_seeds = 2
@@ -369,7 +369,7 @@ task align {
             ~{if soft_clipped_unmapped_tlen then "--soft-clipped-unmapped-tlen" else ""} \
             ~{if sam_append_comment then "--sam-append-comment" else ""} \
             ~{if defined(sam_opt_config) then "--sam-opt ~{sam_opt_config}" else ""} \
-            -p ~{threads} \
+            -p ~{ncpu} \
             ~{if reorder then "--reorder" else ""} \
             ~{if memory_map then "--mm" else ""} \
             ~{if qc_filter then "--qc-filter" else ""} \
@@ -402,7 +402,7 @@ task align {
 
     runtime {
         container: "ghcr.io/stjudecloud/bowtie2:2.5.4"
-        cpu: threads
+        cpu: ncpu
         memory: "20 GB"
     }
 }
