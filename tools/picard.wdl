@@ -1094,7 +1094,7 @@ task revert_sam {
             "MQ",
             "SA",
             "MC",
-            "AS",
+            "AS"
         ]
         Array[String] attributes_to_reverse = ["OQ", "U2"]
         Array[String] attributes_to_reverse_complement = ["E2", "SQ"]
