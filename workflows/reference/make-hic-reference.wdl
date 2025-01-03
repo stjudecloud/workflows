@@ -25,7 +25,7 @@ workflow make_hic_reference {
         exclude_list_url: "URL from which to retrieve the exclude list file"
         exclude_list_name: "Name of output exclude list file"
         restriction_sites: {
-            description: "List of restriction sites for which to extract restriction fragments"
+            description: "List of restriction sites for which to extract restriction fragments",
             help: "This uses HiC-Pro's `digest_genome.py` script to generate restriction fragments. Each site should be specified as a string of nucleotides. A carat (`^`) marks the cut site.",
             external_help: "https://github.com/nservant/HiC-Pro/blob/master/doc/UTILS.md#digest_genomepy-or-how-can-i-generate-the-list-of-restriction-fragments-after-genome-digestion-",
         }
@@ -178,9 +178,9 @@ task parse_input {
 
     parameter_meta {
         restriction_sites: {
-            description: "List of restriction sites for which to extract restriction fragments"
-            help: "This uses HiC-Pro's `digest_genome.py` script to generate restriction fragments. Each site should be specified as a string of nucleotides. A carat (`^`) marks the cut site."
-            external_help: "https://github.com/nservant/HiC-Pro/blob/master/doc/UTILS.md#digest_genomepy-or-how-can-i-generate-the-list-of-restriction-fragments-after-genome-digestion-"
+            description: "List of restriction sites for which to extract restriction fragments",
+            help: "This uses HiC-Pro's `digest_genome.py` script to generate restriction fragments. Each site should be specified as a string of nucleotides. A carat (`^`) marks the cut site.",
+            external_help: "https://github.com/nservant/HiC-Pro/blob/master/doc/UTILS.md#digest_genomepy-or-how-can-i-generate-the-list-of-restriction-fragments-after-genome-digestion-",
         }
         restriction_sites_names: "Names for the restriction sites to use in output files"
     }

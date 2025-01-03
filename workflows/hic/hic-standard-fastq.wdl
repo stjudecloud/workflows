@@ -1,11 +1,6 @@
 version 1.1
 
-import "../../data_structures/flag_filter.wdl"
 import "../../data_structures/read_group.wdl"
-import "../../tools/bowtie2.wdl"
-import "../../tools/hilow.wdl"
-import "../../tools/samtools.wdl"
-import "../../tools/util.wdl"
 import "hicpro-core.wdl" as hicpro_core
 import "hic-post.wdl" as hicpro_post
 

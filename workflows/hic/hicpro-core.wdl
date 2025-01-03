@@ -5,7 +5,6 @@ version 1.1
 import "../../data_structures/flag_filter.wdl"
 import "../../data_structures/read_group.wdl"
 import "../../tools/bowtie2.wdl"
-import "../../tools/hilow.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 
@@ -152,20 +151,20 @@ workflow hicpro_core {
                 read_group = tuple.right,
                 write_unpaired_unaligned = true,
                 seed_substring = 30,  # -L
-                score_min = {
-                    "function_type": "L",
-                    "constant": -0.6,
-                    "coefficient": -0.2,
+                score_min = Bowtie2Function {
+                    function_type: "L",
+                    constant: -0.6,
+                    coefficient: -0.2,
                 },
                 end_to_end = true,
                 reorder = true,
                 max_failed_extends = 20,  # -D
                 repetitive_seeds = 3,  # -R
                 seed_mismatch = 0,  # -N
-                interval_seed_substrings = {
-                    "function_type": "S",
-                    "constant": 1,
-                    "coefficient": 0.50,
+                interval_seed_substrings = Bowtie2Function {
+                    function_type: "S",
+                    constant: 1,
+                    coefficient: 0.50,
                 },  # -i
                 metrics_file = true,
             }
@@ -177,20 +176,20 @@ workflow hicpro_core {
                 read_group = tuple.right,
                 write_unpaired_unaligned = true,
                 seed_substring = 30,  # -L
-                score_min = {
-                    "function_type": "L",
-                    "constant": -0.6,
-                    "coefficient": -0.2,
+                score_min = Bowtie2Function {
+                    function_type: "L",
+                    constant: -0.6,
+                    coefficient: -0.2,
                 },
                 end_to_end = true,
                 reorder = true,
                 max_failed_extends = 20,  # -D
                 repetitive_seeds = 3,  # -R
                 seed_mismatch = 0,  # -N
-                interval_seed_substrings = {
-                    "function_type": "S",
-                    "constant": 1,
-                    "coefficient": 0.50,
+                interval_seed_substrings = Bowtie2Function {
+                    function_type: "S",
+                    constant: 1,
+                    coefficient: 0.50,
                 },  # -i
                 metrics_file = true,
             }
@@ -236,20 +235,20 @@ workflow hicpro_core {
                     prefix = fq_prefix + ".R1_local",
                     read_group = tuple.right,
                     seed_substring = 20,  # -L
-                    score_min = {
-                        "function_type": "L",
-                        "constant": -0.6,
-                        "coefficient": -0.2,
+                    score_min = Bowtie2Function {
+                        function_type: "L",
+                        constant: -0.6,
+                        coefficient: -0.2,
                     },
                     end_to_end = true,
                     reorder = true,
                     max_failed_extends = 20,  # -D
                     repetitive_seeds = 3,  # -R
                     seed_mismatch = 0,  # -N
-                    interval_seed_substrings = {
-                        "function_type": "S",
-                        "constant": 1,
-                        "coefficient": 0.50,
+                    interval_seed_substrings = Bowtie2Function {
+                        function_type: "S",
+                        constant: 1,
+                        coefficient: 0.50,
                     },  # -i
                     metrics_file = true,
                 }
@@ -260,20 +259,20 @@ workflow hicpro_core {
                     prefix = fq_prefix + ".R2_local",
                     read_group = tuple.right,
                     seed_substring = 20,  # -L
-                    score_min = {
-                        "function_type": "L",
-                        "constant": -0.6,
-                        "coefficient": -0.2,
+                    score_min = Bowtie2Function {
+                        function_type: "L",
+                        constant: -0.6,
+                        coefficient: -0.2,
                     },
                     end_to_end = true,
                     reorder = true,
                     max_failed_extends = 20,  # -D
                     repetitive_seeds = 3,  # -R
                     seed_mismatch = 0,  # -N
-                    interval_seed_substrings = {
-                        "function_type": "S",
-                        "constant": 1,
-                        "coefficient": 0.50,
+                    interval_seed_substrings = Bowtie2Function {
+                        function_type: "S",
+                        constant: 1,
+                        coefficient: 0.50,
                     },  # -i
                     metrics_file = true,
                 }
