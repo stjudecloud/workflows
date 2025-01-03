@@ -185,7 +185,6 @@ task align {
             description: "Force SAM output order to match order of input reads",
             help: "Guarantees that output SAM records are printed in an order corresponding to the order of the reads in the original input file, even when `ncpu` is set greater than 1. Specifying `reorder` and setting `ncpu` greater than 1 causes Bowtie 2 to run somewhat slower and use somewhat more memory than if `reorder` were not specified. Has no effect if `ncpu` is set to 1, since output order will naturally correspond to input order in that case.",
         }
-        memory_map: "use memory-mapped I/O for index; many 'bowtie's can share"
         qc_filter: {
             description: "Filter out reads that are bad according to QSEQ filter. Only has an effect when read format is --qseq.",
             common: false,
@@ -266,7 +265,6 @@ task align {
         Boolean soft_clipped_unmapped_tlen = false
         Boolean sam_append_comment = false
         Boolean reorder = false
-        Boolean memory_map = false
         Boolean qc_filter = false
         Int trim5 = 0
         Int trim3 = 0
@@ -371,7 +369,6 @@ task align {
             ~{if defined(sam_opt_config) then "--sam-opt ~{sam_opt_config}" else ""} \
             -p ~{ncpu} \
             ~{if reorder then "--reorder" else ""} \
-            ~{if memory_map then "--mm" else ""} \
             ~{if qc_filter then "--qc-filter" else ""} \
             --seed ~{seed} \
             ~{if non_deterministic then "--non-deterministic" else ""} \
