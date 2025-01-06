@@ -33,11 +33,6 @@ workflow hic_standard_fastq {
         prefix: "Prefix for the BAM"
         exclude_list: "BED file with regions to exclude from analysis"
         fragment_file: "BED file with restriction fragments"
-        capture_bed: "BED file of target regions for capture Hi-C data"
-        allele_specific_snp: {
-            description: "VCF file of SNPs to use in distinguishing parental origin",
-            external_help: "https://nservant.github.io/HiC-Pro/AS.html#as",
-        }
         ligation_site: "Ligation site sequence used for reads trimming."
         read_two_fastqs_gz: {
             description: "An array of gzipped FASTQ files containing read two information",
@@ -57,8 +52,6 @@ workflow hic_standard_fastq {
         String prefix
         File? exclude_list
         File? fragment_file
-        File? capture_bed
-        File? allele_specific_snp
         String? ligation_site = "GATCGATC"
         Array[File] read_two_fastqs_gz = []
         Array[Int] bin_sizes = [
@@ -81,8 +74,6 @@ workflow hic_standard_fastq {
         bowtie_db_tar_gz,
         chromsizes,
         fragment_file,
-        capture_bed,
-        allele_specific_snp,
         prefix,
         ligation_site,
         bin_sizes,
