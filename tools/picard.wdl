@@ -1121,11 +1121,17 @@ task revert_sam {
         picard -Xmx~{java_heap_size}g RevertSam \
             INPUT=~{bam} \
             OUTPUT=~{prefix}.reverted.bam \
-            ATTRIBUTE_TO_CLEAR="~{sep(",", attributes_to_clear)}" \
-            ATTRIBUTE_TO_REVERSE="~{sep(",", attributes_to_reverse)}" \
-            ATTRIBUTE_TO_REVERSE_COMPLEMENT="~{
-                sep(",", attributes_to_reverse_complement)
-            }" \
+            ~{sep(" ", prefix("ATTRIBUTE_TO_CLEAR=", attributes_to_clear))} \
+            ~{sep(" ", prefix("ATTRIBUTE_TO_REVERSE=", attributes_to_reverse))} \
+            ~{
+                sep(
+                    " ",
+                    prefix(
+                        "ATTRIBUTE_TO_REVERSE_COMPLEMENT=",
+                        attributes_to_reverse_complement
+                    )
+                )
+            } \
             KEEP_FIRST_DUPLICATE=~{keep_first_duplicate} \
             ~{if defined(library_name) then "LIBRARY_NAME=" + library_name else ""} \
             MAX_DISCARD_FRACTION=~{max_discard_fraction} \
