@@ -3,6 +3,7 @@ version 1.1
 task active_regions_merge {
     meta {
         description: "Merge active regions"
+        help: "Get promoters from `promoters` GTF file, reformat, and sort. Get read counts from BAM for each promoter. Compute the top 2/3. Then get activity in enhancers outside the promoter regions."
         outputs: {
             combined_promoters: "Merged active regions"
         }
