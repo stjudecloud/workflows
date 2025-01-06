@@ -1,0 +1,9 @@
+{
+    "bowtie_db_tar_gz": "tests/input/bowtie2_index.tar.gz",
+    "read_one_fastq_gz": "tests/input/test_R1.fq.gz",
+    "read_two_fastq_gz": "tests/input/test_R2.fq.gz",
+    "prefix": "test",
+    "read_group": {
+        "ID": "test"
+    }
+}
