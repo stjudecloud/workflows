@@ -4,32 +4,6 @@ version 1.1
 
 import "../data_structures/read_group.wdl"
 
-### Bowtie2 accepts several function parameters.
-### The first term is a function type. Available function types are:
-### - C - constant
-### - L - linear
-### - S - square-root
-### - G - natural logarithm
-### The constant and coefficient types may be negative and/or floating point numbers.
-###
-### An example input JSON entry might look like:
-### ```
-### {
-###     "interval_seed_substrings": {
-###         "function_type": "S",
-###         "constant": 1,
-###         "coefficient": 0.50,
-###     },
-### }
-### ```
-### See the function documentation in bowtie2
-### (https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#setting-function-options)
-struct Bowtie2Function {
-    String function_type
-    Float constant
-    Float coefficient
-}
-
 task build {
     meta {
         description: "Builds a Bowtie2 index from a FASTA file"
@@ -78,6 +52,7 @@ task build {
 }
 
 # Several bowtie2 options are intentionally omitted from the task definition.
+# For more information on these parameters see `meta.external_help`.
 # These include:
 # `--mm` as memory-mapped I/O does not work with WDL and containerization.
 # `--no-hd` and `--no-sq` as they produce malformed BAM files.
@@ -111,6 +86,7 @@ task build {
 task align {
     meta {
         description: "Aligns reads to a reference genome using Bowtie2"
+        external_help: "https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml"
         outputs: {
             aligned_bam: "Aligned reads in BAM format",
             unpaired_unaligned: "Unpaired reads that didn't align, in FASTQ format",
@@ -443,4 +419,30 @@ task align {
         cpu: ncpu
         memory: "20 GB"
     }
+}
+
+# Bowtie2 accepts several function parameters.
+# The first term is a function type. Available function types are:
+# - C - constant
+# - L - linear
+# - S - square-root
+# - G - natural logarithm
+# The constant and coefficient types may be negative and/or floating point numbers.
+#
+# An example input JSON entry might look like:
+# ```
+# {
+#     "interval_seed_substrings": {
+#         "function_type": "S",
+#         "constant": 1,
+#         "coefficient": 0.50,
+#     },
+# }
+# ```
+# See the function documentation in bowtie2
+# (https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#setting-function-options)
+struct Bowtie2Function {
+    String function_type
+    Float constant
+    Float coefficient
 }
