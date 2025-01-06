@@ -36,11 +36,6 @@ workflow hicpro_core {
             description: "An array of gzipped FASTQ files containing read two information",
             common: true,
         }
-        capture_bed: "BED file of target regions for capture Hi-C data"
-        allele_specific_snp: {
-            description: "VCF file of SNPs to use in distinguishing parental origin",
-            external_help: "https://nservant.github.io/HiC-Pro/AS.html#as",
-        }
         fragment_file: "BED file with restriction fragments"
         ligation_site: "Ligation site sequence used for reads trimming. Multiple sites can be specified if comma-separated."
         max_iter: {
@@ -102,8 +97,6 @@ workflow hicpro_core {
         Array[ReadGroup] read_groups
         String prefix
         File? fragment_file
-        File? capture_bed
-        File? allele_specific_snp
         String? ligation_site
         Array[File] read_two_fastqs_gz = []
         Array[Int] bin_sizes = [

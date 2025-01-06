@@ -194,7 +194,8 @@ task parse_input {
     command <<<
         if [ ~{length(restriction_sites)} -ne ~{length(restriction_sites_names)} ]
         then
-            >&2 echo "Length of restriction_sites and restriction_sites_names must be equal"
+            >&2 echo -n "Length of restriction_sites "
+            >&2 echo "and restriction_sites_names must be equal"
             exit 1
         fi
     >>>
