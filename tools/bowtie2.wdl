@@ -70,8 +70,10 @@ task build {
 # `--phred33` and `--phred64` as they are non-standard.
 # `--solexa-quals` as it is non-standard.
 # `--int-quals` as it is non-standard.
-# `--very-fast`, `--fast`, `--sensitive`, and `--very-sensitive` as they are convenience options.
-# `--very-fast-local`, `--fast-local`, `--sensitive-local`, and `--very-sensitive-local` as they are convenience options.
+# `--very-fast`, `--fast`,
+# `--sensitive`, and `--very-sensitive` as they are convenience options.
+# `--very-fast-local`, `--fast-local`,
+# `--sensitive-local`, and `--very-sensitive-local` as they are convenience options.
 # `-n-ceil`
 # `--align-paired-read` as BAM input is not supported.
 # `--preserve-tags` as BAM input is not supported.
