@@ -87,6 +87,7 @@ task active_regions_merge {
 task extract_promoters {
     meta {
         description: "Extract promoters from a GTF file"
+        help: "Find all transcripts, excluding the mitochondrial chromosome. Add a 2000bp buffer to the transcription start site to include promoter. Extract gene_id and transcript_id ($10 and $12). Subtract the suffix from the transcript ID. Convert to BED format"
         outputs: {
             promoter: "Promoter regions in BED format"
         }
@@ -112,11 +113,6 @@ task extract_promoters {
 
         sed -i 's/ /\t/g' ~{base}
 
-        # Find all transcripts, excluding the mitochondrial chromosome
-        # Add a 2000bp buffer to the transcription start site to include promoter
-        # Extract gene_id and transcript_id ($10 and $12).
-        # Subtract the suffix from the trasncript ID.
-        # Convert to BED format
         awk -F\\t '{ if($3 == "transcript" && $1 !~ "chrM")
             if($7 =="+")
                 print $1 "++" $4-2000 "++" $4+2000 "++" substr($12,2,length($12)-5) "|" substr($10,2,length($10)-3)
@@ -145,6 +141,7 @@ task extract_promoters {
 task extract_genes {
     meta {
         description: "Extract genes from a GTF file"
+        help: "Find all transcripts, excluding the mitochondrial chromosome. Extract gene_id and transcript_id ($10 and $12). Subtract the suffix from the transcript ID. Convert to BED format"
         outputs: {
             genes: "Gene regions in BED format"
         }
@@ -152,10 +149,12 @@ task extract_genes {
 
     parameter_meta {
         annotation: "GTF (optionally gzip compressed) file containing gene annotations"
+        prefix: "Prefix for output regions file. The extension `.bed` will be added."
     }
 
     input {
         File annotation
+        String prefix = "gene_regions"
     }
 
     String base = basename(annotation, ".gz")
@@ -169,10 +168,6 @@ task extract_genes {
 
         sed -i 's/ /\t/g' ~{base}
 
-        # Find all transcripts, excluding the mitochondrial chromosome
-        # Extract gene_id and transcript_id ($10 and $12).
-        # Subtract the suffix from the trasncript ID.
-        # Convert to BED format
         awk -F\\t '{ if($3 == "transcript" && $1 !~ "chrM") 
             print $1 "++" $4 "++" $5 "++" substr($12,2,length($12)-5) "|" substr($10,2,length($10)-3)}' \
             ~{base} \
@@ -180,11 +175,11 @@ task extract_genes {
             | sort \
             | uniq \
             | sed s/\+\+/\\t/g \
-            | sort -k1,1 -k2,2n > gene_regions.bed
+            | sort -k1,1 -k2,2n > ~{prefix}.bed
     >>>
 
     output {
-        File genes = "gene_regions.bed"
+        File genes = prefix + ".bed"
     }
 
     runtime {
