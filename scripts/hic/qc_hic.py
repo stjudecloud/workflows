@@ -43,12 +43,12 @@ if __name__ == "__main__":
     VERDICT = {}
     REP_VAR = ["R1_aligned", "R2_aligned", "valid_interactionPairs", "cis_shortRange", "cis_longRange"]
 
-    if os.path.isfile(args.fithichip_bed):
+    if args.fithichip_bed is not None and os.path.isfile(args.fithichip_bed):
         with open(args.fithichip_q01_bed) as fithichip:
             LOOPS_SIGNIFICANT = len(fithichip.readlines())-1
         with open(args.fithichip_bed) as fithichip:
             LOOPS = len(fithichip.readlines())-1
-    if os.path.isfile(args.peaks_bed):
+    if args.peaks_bed is not None and os.path.isfile(args.peaks_bed):
         with open(args.peaks_bed) as peaks:
             PEAKS = len(peaks.readlines())-1
 
@@ -94,8 +94,8 @@ if __name__ == "__main__":
     for var in REP_VAR:
         REPORT.write(var + "\t" + str(COUNTS[var]) + "\t" + str(PERCENTAGES[var]) + "\t" + VERDICT[var] + '\n')
 
-    if os.path.isfile(args.peaks_bed):
+    if args.peaks_bed is not None and os.path.isfile(args.peaks_bed):
         REPORT.write("peaks\t" + str(PEAKS) + "\n")
-    if os.path.isfile(args.fithichip_bed):
+    if args.fithichip_bed is not None and os.path.isfile(args.fithichip_bed):
         REPORT.write("loops\t" + str(LOOPS) + "\n")
         REPORT.write("loops_significant\t" + str(LOOPS_SIGNIFICANT) + "\n")
