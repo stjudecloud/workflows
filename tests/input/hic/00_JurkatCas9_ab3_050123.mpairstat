@@ -1,0 +1,15 @@
+## merge_statfiles.py
+## dir= pairs
+## pattern= *.pairstat
+## Merging 1 files
+## Use /mnt/miniwdl_task_container/work/pairs/00_JurkatCas9_ab3_050123.00_JurkatCas9_ab3_050123.R1.000000.bwt2pairs.pairstat as template
+Total_pairs_processed	30000000	100.0
+Unmapped_pairs	2536152	8.454
+Low_qual_pairs	3408758	11.363
+Unique_paired_alignments	9704558	32.349
+Multiple_pairs_alignments	0	0.0
+Pairs_with_singleton	14350532	47.835
+Low_qual_singleton	0	0.0
+Unique_singleton_alignments	0	0.0
+Multiple_singleton_alignments	0	0.0
+Reported_pairs	9704558	32.349

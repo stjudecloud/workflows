@@ -4,4 +4,7 @@ FROM python:3.13.0
 COPY --from=bedtools /usr/local/bin/ /usr/local/bin/
 COPY --from=scripts --chmod=777 hic/filter_hic.py /usr/local/bin/filter_hic.py
 
+RUN apt update && \
+    apt install bc
+
 ENTRYPOINT [ "bash" ]

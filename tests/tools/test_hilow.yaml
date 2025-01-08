@@ -1,0 +1,57 @@
+- name: hilow_active_regions_merge
+  tags:
+    - miniwdl
+    - hilow
+  command: >-
+    miniwdl run --verbose -d test-output/. --task active_regions_merge tools/hilow.wdl
+  files:
+    - path: test-output/out/combined_promoters/promoters.LoopAnchors.Enhs.combined.sort.bed
+
+- name: hilow_extract_promoters
+  tags:
+    - miniwdl
+    - hilow
+  command: >-
+    miniwdl run --verbose -d test-output/. --task extract_promoters tools/hilow.wdl annotation="tests/input/gencode.v31.chr9_chr22.gtf.gz"
+  files:
+    - path: test-output/out/promoter/promoter_regions.bed
+
+- name: hilow_extract_genes
+  tags:
+    - miniwdl
+    - hilow
+  command: >-
+    miniwdl run --verbose -d test-output/. --task extract_genes tools/hilow.wdl annotation="tests/input/gencode.v31.chr9_chr22.gtf.gz"
+  files:
+    - path: test-output/out/genes/gene_regions.bed
+
+- name: hilow_qcreport
+  tags:
+    - miniwdl
+    - hilow
+  command: >-
+    miniwdl run --verbose -d test-output/. --task qcreport -i tests/tools/input_json/hilow_qcreport.json tools/hilow.wdl
+  files:
+    - path: test-output/out/qc_report/00_JurkatCas9_ab3_050123_QCreport.txt
+
+- name: hilow_filter
+  tags:
+    - miniwdl
+    - hilow
+  command: >-
+    miniwdl run --verbose -d test-output/. --task filter -i tests/tools/input_json/hilow_filter.json tools/hilow.wdl
+  files:
+    - path: test-output/out/filtered_pairs/00_JurkatCas9_ab3_050123.subset.allValidPairs.filtered
+    - path: test-output/out/removed_pairs/00_JurkatCas9_ab3_050123.subset.allValidPairs.removed
+    - path: test-output/out/filtered_stats/00_JurkatCas9_ab3_050123.subset.allValidPairs.stats
+
+- name: hilow_converthic
+  tags:
+    - miniwdl
+    - hilow
+  command: >-
+    miniwdl run --verbose -d test-output/. --task converthic tools/hilow.wdl all_valid_pairs="tests/input/hic/00_JurkatCas9_ab3_050123.subset.allValidPairs" chromsizes="tests/input/GRCh38_no_alt.chromsizes.tab"
+  files:
+    - path: test-output/out/hic_file/00_JurkatCas9_ab3_050123.subset.allValidPairs.hic
+
+

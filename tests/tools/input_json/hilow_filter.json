@@ -1,0 +1,5 @@
+{
+    "all_valid_pairs": "tests/input/hic/00_JurkatCas9_ab3_050123.subset.allValidPairs",
+    "chromsizes": "tests/input/GRCh38_no_alt.chromsizes.tab",
+    "exclude_list": "tests/input/hg38-blacklist.v2.bed.gz"
+}
