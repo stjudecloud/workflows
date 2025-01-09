@@ -209,8 +209,8 @@ task bwa_mem {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             group: "common",
         }
-        skip_mate_rescue: "Skip mate rescue"
-        skip_pairing: "Skip pairing; mate rescue performed unless `skip_mate_rescue` also in use"
+        skip_mate_rescue: "Skip mate rescue. By default, if one read maps and the other does not, `bwa` will perform a Smith-Waterman alignment to attempt to 'rescue' the mate and produce an alignment. For certain data types (e.g. Hi-C), it may be desirable to disable mate rescue as the mates are not expected to conform to assumptions."
+        skip_pairing: "Skip pairing; mate rescue performed unless `skip_mate_rescue` also in use. With `skip_pairing` enabled, `bwa` will allow hits for paired data that do not fit the definition of a proper pair."
         split_smallest: "For split alignment, take the alignment with the smallest coordinate as primary"
         short_secondary: "Mark shorter split hits as secondary"
         use_all_cores: {
