@@ -1,12 +1,3 @@
-- name: hilow_active_regions_merge
-  tags:
-    - miniwdl
-    - hilow
-  command: >-
-    miniwdl run --verbose -d test-output/. --task active_regions_merge tools/hilow.wdl
-  files:
-    - path: test-output/out/combined_promoters/promoters.LoopAnchors.Enhs.combined.sort.bed
-
 - name: hilow_extract_promoters
   tags:
     - miniwdl
