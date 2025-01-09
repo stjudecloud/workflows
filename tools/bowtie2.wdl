@@ -78,6 +78,8 @@ task build {
 # `--align-paired-read` as BAM input is not supported.
 # `--preserve-tags` as BAM input is not supported.
 # `-o|--offrate` as this should be set when building the index.
+# `--time` this is hardcoded to on so timing information is always available.
+# `--quiet` as this is hardcoded to off so information is always captured in the logs.
 # Other options only expose one option:
 # `--un-gz` - omits `--un`, `--un-bz2`, and `--un-lz4`
 # `--al-gz` - omits `--al`, `--al-bz2`, and `--al-lz4`
@@ -171,12 +173,10 @@ task align {
             description: "If one mate alignment overlaps the other at all, consider that to be non-concordant.",
             external_help: "https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
         }
-        time: "Print the wall-clock time required to load the index files and align the reads to STDERR."
         write_unpaired_unaligned: "Write unpaired reads that didn't align to a file in gzipped FASTQ format. These reads correspond to the SAM records with the FLAGS 0x4 bit set and neither the 0x40 nor 0x80 bits set."
         write_unpaired_aligned: "Write unpaired reads that aligned at least once to a file in gzipped FASTQ format. These reads correspond to the SAM records with the FLAGS 0x4, 0x40, and 0x80 bits unset."
         write_paired_discordant: "Write pairs that didn't align concordantly to a file in gzipped FASTQ format. These reads correspond to the SAM records with the FLAGS 0x4 bit set and either the 0x40 or 0x80 bit set (depending on whether it's mate #1 or #2)."
         write_paired_concordant: "Write pairs that aligned concordantly at least once to a file in gzipped FASTQ format. These reads correspond to the SAM records with the FLAGS 0x4 bit unset and either the 0x40 or 0x80 bit set (depending on whether it's mate #1 or #2)."
-        quiet: "Print nothing besides alignments and serious errors."
         metrics_file: "Write bowtie2 alignment metrics to file. Useful for debugging."
         metrics_stderr: "Write bowtie2 alignment metrics to STDERR. Not mutually exclusive with `metrics_file`."
         metrics_interval: "Report internal counters & metrics every N seconds. Only used if `metrics_file` and/or `metrics_stderr` is specified."
@@ -268,12 +268,10 @@ task align {
         Boolean dovetail = false
         Boolean no_contain = false
         Boolean no_overlap = false
-        Boolean time = false
         Boolean write_unpaired_unaligned = false
         Boolean write_unpaired_aligned = false
         Boolean write_paired_discordant = false
         Boolean write_paired_concordant = false
-        Boolean quiet = false
         Boolean metrics_file = false
         Boolean metrics_stderr = false
         Boolean no_unal = false
@@ -338,7 +336,6 @@ task align {
             ~{if dovetail then "--dovetail" else ""} \
             ~{if no_contain then "--no-contain" else ""} \
             ~{if no_overlap then "--no-overlap" else ""} \
-            ~{if time then "--time" else ""} \
             ~{(
                 if write_unpaired_unaligned
                 then "--un-gz ~{prefix}.unpaired_unaligned.fastq.gz"
@@ -359,7 +356,6 @@ task align {
                 then "--al-conc-gz ~{prefix}.paired_concordant.fastq.gz"
                 else ""
             )} \
-            ~{if quiet then "--quiet" else ""} \
             ~{if metrics_file then "--met-file ~{prefix}.metrics.txt" else ""} \
             ~{if metrics_stderr then "--met-stderr" else ""} \
             --met ~{metrics_interval} \
@@ -389,6 +385,7 @@ task align {
             ~{if reorder then "--reorder" else ""} \
             ~{if qc_filter then "--qc-filter" else ""} \
             --seed ~{seed} \
+            --time \
             ~{if non_deterministic then "--non-deterministic" else ""} \
             ~{"--score-min ~{score_min.function_type},~{score_min.constant},~{score_min.coefficient}"} \
             ~{"-i ~{interval_seed_substrings.function_type},~{interval_seed_substrings.constant},~{interval_seed_substrings.coefficient}"} \
