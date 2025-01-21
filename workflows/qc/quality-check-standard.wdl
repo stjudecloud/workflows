@@ -267,7 +267,7 @@ workflow quality_check_standard {
         db = kraken_db,
         store_sequences = store_kraken_sequences,
         prefix = post_subsample_prefix,
-        use_all_cores = use_all_cores,
+        use_all_cores,
     }
     if (run_librarian) {
         call libraran_tasks.librarian after fqlint { input:
@@ -293,7 +293,7 @@ workflow quality_check_standard {
             fast_mode = true,
             paired_end = true,  # matches default but prevents user from overriding
             interleaved = false,  # matches default but prevents user from overriding
-            use_all_cores = use_all_cores,
+            use_all_cores,
         }
         call fq.fqlint as alt_filtered_fqlint { input:
             read_one_fastq
@@ -309,7 +309,7 @@ workflow quality_check_standard {
             db = kraken_db,
             store_sequences = store_kraken_sequences,
             prefix = post_subsample_prefix + ".alt_filtered",
-            use_all_cores = use_all_cores,
+            use_all_cores,
         }
     }
 
@@ -367,7 +367,7 @@ workflow quality_check_standard {
                 markdups.duplicate_marked_bam_index,
                 "undefined",
             ]),
-            coverage_beds = coverage_beds,
+            coverage_beds,
             coverage_labels = parse_input.labels,
             prefix = post_subsample_prefix + ".MarkDuplicates",
         }
