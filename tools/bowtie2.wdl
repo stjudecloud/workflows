@@ -46,7 +46,7 @@ task build {
     runtime {
         cpu: ncpu
         memory: "20 GB"
-        container: "ghcr.io/stjudecloud/bowtie2:branch-hic_workflow-2.5.4"
+        container: "ghcr.io/stjudecloud/bowtie2:branch-hic_workflow-2.5.4-0"
         maxRetries: 1
     }
 }
@@ -292,7 +292,7 @@ task align {
         Int min_fragment_len = 0
         Int max_fragment_len = 500
         Int metrics_interval = 1
-        Int ncpu = 1
+        Int ncpu = 8
         Int seed = 0
         Int max_failed_extends = 15
         Int repetitive_seeds = 2
@@ -414,7 +414,7 @@ task align {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/bowtie2:branch-hic_workflow-2.5.4"
+        container: "ghcr.io/stjudecloud/bowtie2:branch-hic_workflow-2.5.4-0"
         cpu: ncpu
         memory: "20 GB"
     }

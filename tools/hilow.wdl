@@ -243,7 +243,7 @@ task filter {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/bedtools:branch-hic_workflow-2.31.1"
+        container: "ghcr.io/stjudecloud/bedtools:branch-hic_workflow-2.31.1-0"
         cpu: 1
         disks: "~{disk_size_gb} GB"
         memory: "4 GB"

@@ -61,7 +61,6 @@ workflow make_hic_reference {
     call bowtie2.build { input:
         reference = reference_download.downloaded_file,
         prefix = basename(reference_fa_name, ".fa.gz"),
-        ncpu = 10,
     }
 
     call samtools.faidx { input:
