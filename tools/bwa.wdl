@@ -209,6 +209,10 @@ task bwa_mem {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             group: "common",
         }
+        skip_mate_rescue: "Skip mate rescue. By default, if one read maps and the other does not, `bwa` will perform a Smith-Waterman alignment to attempt to 'rescue' the mate and produce an alignment. For certain data types (e.g. Hi-C), it may be desirable to disable mate rescue as the mates are not expected to conform to assumptions."
+        skip_pairing: "Skip pairing; mate rescue performed unless `skip_mate_rescue` also in use. With `skip_pairing` enabled, `bwa` will allow hits for paired data that do not fit the definition of a proper pair."
+        split_smallest: "For split alignment, take the alignment with the smallest coordinate as primary"
+        short_secondary: "Mark shorter split hits as secondary"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             group: "common",
@@ -230,6 +234,10 @@ task bwa_mem {
             ""
         )
         String read_group = ""
+        Boolean skip_mate_rescue = false
+        Boolean skip_pairing = false
+        Boolean split_smallest = false
+        Boolean short_secondary = false
         Boolean use_all_cores = false
         Int ncpu = 4
         Int modify_disk_size_gb = 0
@@ -269,6 +277,10 @@ task bwa_mem {
             bwa_db/"$PREFIX" \
             ~{basename(read_one_fastq_gz)} \
             ~{basename(read_two_file)} \
+            ~{if skip_mate_rescue then "-S" else ""} \
+            ~{if skip_pairing then "-P" else ""} \
+            ~{if split_smallest then "-5" else ""} \
+            ~{if short_secondary then "-M" else ""} \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > ~{output_bam}
 

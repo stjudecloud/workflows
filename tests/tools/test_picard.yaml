@@ -144,3 +144,21 @@
     miniwdl run -d test-output/. --task create_sequence_dictionary tools/picard.wdl fasta="tests/input/GRCh38.chrY_chrM.fa" outfile_name="GRCh38.chrY_chrM.dict"
   files:
     - path: test-output/out/dictionary/GRCh38.chrY_chrM.dict
+
+- name: picard_revert_sam
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --task revert_sam tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+  files:
+    - path: test-output/out/reverted_bam/test.bwa_aln_pe.chrY_chrM.reverted.bam
+
+- name: picard_fastq_to_sam
+  tags:
+    - miniwdl
+    - picard
+  command: >-
+    miniwdl run -d test-output/. --task fastq_to_sam tools/picard.wdl read_one_fastq_gz="tests/input/test_R1.fq.gz" read_two_fastq_gz="tests/input/test_R2.fq.gz" read_group_name="test" sample_name="test" library_name="test" sequencing_center="STJUDE" run_date="20240101" prefix="test"
+  files:
+    - path: test-output/out/unaligned_bam/test.unmapped.bam

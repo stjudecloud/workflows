@@ -1,0 +1,18 @@
+- name: bowtie2_build
+  tags:
+    - miniwdl
+    - bowtie2
+    - reference
+  command: >-
+    miniwdl run --verbose -d test-output/. --task build tools/bowtie2.wdl reference="tests/input/GRCh38.chr9_chr22.fa.gz" prefix="bowtie2_index"
+  files:
+    - path: test-output/out/bowtie_db_tar_gz/bowtie2_index.tar.gz
+  
+- name: bowtie2_align
+  tags:
+    - miniwdl
+    - bowtie2
+  command: >-
+    miniwdl run --verbose -d test-output/. --task align -i tests/tools/input_json/bowtie2_align.json tools/bowtie2.wdl
+  files:
+    - path: test-output/out/aligned_bam/test.bam

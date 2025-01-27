@@ -1,0 +1,9 @@
+## merge_statfiles.py
+## dir= read1
+## pattern= *.R1*.mapstat
+## Merging 1 files
+## Use /mnt/miniwdl_task_container/work/read1/00_JurkatCas9_ab3_050123.00_JurkatCas9_ab3_050123.R1.000000.R1.mapstat as template
+total_R1	30000000
+mapped_R1	20644728
+global_R1	17380291
+local_R1	3264437
