@@ -6,4 +6,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
  
 ## Unreleased
 
-- Added `black` formatting and `pyright` validation [#201](https://github.com/stjudecloud/workflows/pull/201)
+- Added `black` formatting and `pyright` validation for Python scripts [#201](https://github.com/stjudecloud/workflows/pull/201)
