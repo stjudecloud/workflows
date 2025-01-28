@@ -15,7 +15,9 @@ def get_args():
 
 def read(filename):
     df = pd.read_csv(filename)
-    df.rename(columns={df.columns[0]: "probe"}, inplace=True) # pyright: ignore [reportUnhashable]
+    df.rename(
+        columns={df.columns[0]: "probe"}, inplace=True
+    )  # pyright: ignore [reportUnhashable]
     df.set_index("probe", inplace=True)
     return df
 
