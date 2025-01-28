@@ -133,7 +133,7 @@ if __name__ == "__main__":
         read2_fastqs = args.read_two_fastqs.split(",")
 
     if args.read_two_fastqs:
-        if len(read1_fastqs) != len(read2_fastqs):
+        if len(read1_fastqs) != len(read2_fastqs): # pyright: ignore [reportPossiblyUnboundVariable]
             raise SystemExit(
                 "Must have the same number of read one FASTQs as read two FASTQs"
             )
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     sorted_read1_fastqs = sort_fastqs(read1_fastqs)
     sorted_read2_fastqs = tuple("")
     if args.read_two_fastqs:
-        sorted_read2_fastqs = sort_fastqs(read2_fastqs)
+        sorted_read2_fastqs = sort_fastqs(read2_fastqs) # pyright: ignore [reportPossiblyUnboundVariable]
 
     sorted_read_group_strs = tuple("-")  # Indicates default to STAR
     if args.read_groups:
