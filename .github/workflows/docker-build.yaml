@@ -45,6 +45,7 @@ jobs:
           context: ${{ matrix.image }}
           build-contexts: scripts=./scripts
           push: true
+          ssh: default
           tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache,mode=max
