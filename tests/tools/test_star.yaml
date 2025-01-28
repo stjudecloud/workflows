@@ -17,3 +17,13 @@
   files:
     - path: test-output/out/star_log/test.Log.final.out
     - path: test-output/out/star_bam/test.Aligned.out.bam
+
+- name: star_alignment_SE
+  tags:
+    - miniwdl
+    - star
+  command: >-
+    miniwdl run --verbose -d test-output/. --task alignment tools/star.wdl read_one_fastqs_gz=tests/input/test_R1.fq.gz prefix=test
+  files:
+    - path: test-output/out/star_log/test.Log.final.out
+    - path: test-output/out/star_bam/test.Aligned.out.bam
