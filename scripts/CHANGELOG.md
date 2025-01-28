@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
  
  ## NOTICE
  
- Any change to the `scripts/` directory should be accompanied by version increases in the `docker/` directory! If you are editing this file, please ensure these changes propogate!
+ Any change to the `scripts/` directory should be accompanied by version increases in the `docker/` directory! If you are editing this file, please ensure these changes propagate!
+
 ## Unreleased
 
 - Added `black` formatting and `pyright` validation for Python scripts [#201](https://github.com/stjudecloud/workflows/pull/201)
