@@ -7,5 +7,5 @@ Before submitting this PR, please make sure:
 - [ ] You have added at least one relevant code reviewer to the PR.
 - [ ] The code passes all CI tests without any errors or warnings.
 - [ ] You have added tests (when appropriate).
-- [ ] You have added an entry in any releavant CHANGELOGs (when appropriate).
+- [ ] You have added an entry in any relevant CHANGELOGs (when appropriate).
 - [ ] You have updated the README or other documentation to account for these changes (when appropriate).
