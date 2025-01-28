@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
       - name: set matrix
         id: set-matrix
-        run: echo "images=$(find docker -maxdepth 2 -mindepth 2 | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+        run: echo "images=$(find docker -maxdepth 1 -mindepth 1 | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
   build-images:
     needs: list-images
@@ -29,9 +29,8 @@ jobs:
     steps:
       - name: Set Env
         run: |
-          echo "TOOL=$(basename `dirname "${{ matrix.image }}"` | awk '{print tolower($0)}')" >> $GITHUB_ENV
-          echo "SEMVER=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$(basename "${{ matrix.image }}")" >> $GITHUB_ENV
+          echo "TOOL=$(jq -r .name ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
+          echo "SEMVER=$(jq -r .version ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
           echo "GH_REF=${GITHUB_REF##*/}" >> $GITHUB_ENV
       - name: Set Branch Tag
         if: github.ref != 'refs/heads/main'
@@ -39,9 +38,6 @@ jobs:
       - uses: actions/checkout@v3
       - name: Log in to the Container registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
-      - uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.STJUDE_SEQERR_READONLY_DEPLOY_KEY }}
       - uses: docker/setup-qemu-action@v2
       - uses: docker/setup-buildx-action@v2
       - uses: docker/build-push-action@v4
