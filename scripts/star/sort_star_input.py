@@ -16,6 +16,9 @@ from typing import List, Tuple
 
 def sort_fastqs(fastq_files: List[str]) -> Tuple[str, ...]:
     """Sort and return a list of file paths according to their basename."""
+    if fastq_files == []:
+        return ()
+
     fastq_basenames = [fastq.split(os.sep)[-1] for fastq in fastq_files]
 
     sorted_filepaths, _sorted_basenames = zip(
