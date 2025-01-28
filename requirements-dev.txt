@@ -1,9 +1,5 @@
 fastq==2.0.4
 miniFasta==3.0.3
-miniwdl==1.12.1
-pysam==0.22.1
-pytest-workflow==2.1.0
-pandas==2.2.3
-numpy==2.2.2
-matplotlib==3.10.0
-umap-learn==0.5.7
+miniwdl==1.12.0
+pysam==0.21.0
+pytest-workflow==2.0.1
