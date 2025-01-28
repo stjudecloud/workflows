@@ -27,12 +27,12 @@ jobs:
       matrix:
         image: ${{ fromJson(needs.list-images.outputs.images) }}
     steps:
+      - uses: actions/checkout@v3
       - name: Set Env
         run: |
           echo "TOOL=$(jq -r .name ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
           echo "SEMVER=$(jq -r .version ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
           echo "GH_REF=${GITHUB_REF##*/}" >> $GITHUB_ENV
-      - uses: actions/checkout@v3
       - name: Set Branch Tag
         if: github.ref != 'refs/heads/main'
         run: echo "IMAGE_TAG=branch-${GITHUB_REF##*/}-${{ env.SEMVER }}" >> $GITHUB_ENV
