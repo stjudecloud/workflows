@@ -8,7 +8,6 @@ The simplest solution for this was to first pass exactly what would be passed
 to STAR into this program, sort it correctly, and write the reordered
 arguments out to files which can be supplied to STAR via the `cat` command.
 """
-# TODO relax checks if only 1 RG passed
 import argparse
 import os
 from typing import List, Tuple
@@ -41,14 +40,14 @@ def sort_read_groups(
             after `--outSAMattrRGline`.
 
     Returns:
-        list: A list consisting of the input string split on ' , ',
+        tuple: A list consisting of the input string split on ' , ',
             and then sorted by the read group ID values.
-        list: A sorted list of values to the 'ID' key.
+        tuple: A sorted list of values to the 'ID' key.
     """
     read_groups = [rg for rg in read_groups_string.split(" , ")]
     rgids = [
-        flags.split(" ")[0].split(":")[1] for flags in read_groups
-    ]  # TODO this breaks if flags are out of expected order
+        flag.split(":")[1] for flag in [rg.split(",") for rg in read_groups] if "ID" in flag
+    ]
 
     sorted_read_groups, sorted_rgids = zip(
         *sorted(zip(read_groups, rgids), key=lambda item: item[1])
@@ -69,11 +68,11 @@ def validate(
     present in a synced FASTQ pair.
 
     Args:
-        read_one_fastqs (list): list of file paths
-        read_two_fastqs (list): list of file paths
-        rgids (list): list of values to the 'ID' key
+        read_one_fastqs (tuple): list of file paths
+        read_two_fastqs (tuple): list of file paths
+        rgids (tuple): list of values to the 'ID' key
     """
-    if len(read_one_fastqs) != len(rgids):
+    if len(rgids) != 0 and len(read_one_fastqs) != len(rgids):
         raise SystemExit("Must have same number of read groups as FASTQ pairs")
 
     for i, rgid in enumerate(rgids):
@@ -129,27 +128,28 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     read1_fastqs = args.read_one_fastqs.split(",")
+    read2_fastqs = []
     if args.read_two_fastqs:
         read2_fastqs = args.read_two_fastqs.split(",")
 
-    if args.read_two_fastqs:
+    if read2_fastqs != []:
         if len(read1_fastqs) != len(read2_fastqs):
             raise SystemExit(
                 "Must have the same number of read one FASTQs as read two FASTQs"
             )
 
     sorted_read1_fastqs = sort_fastqs(read1_fastqs)
-    sorted_read2_fastqs = tuple("")
-    if args.read_two_fastqs:
-        sorted_read2_fastqs = sort_fastqs(read2_fastqs)
+    sorted_read2_fastqs = sort_fastqs(read2_fastqs)
 
     sorted_read_group_strs = tuple("-")  # Indicates default to STAR
+    sorted_read_group_ids = tuple()
     if args.read_groups:
         sorted_read_group_strs, sorted_read_group_ids = sort_read_groups(
             args.read_groups
         )
-        validate(
-            sorted_read1_fastqs, sorted_read2_fastqs, sorted_read_group_ids
-        )  # TODO breaks if no read2
+
+    validate(
+        sorted_read1_fastqs, sorted_read2_fastqs, sorted_read_group_ids
+    )
 
     write_outfiles(sorted_read1_fastqs, sorted_read2_fastqs, sorted_read_group_strs)
