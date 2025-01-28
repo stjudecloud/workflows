@@ -33,6 +33,9 @@ jobs:
           echo "TOOL=$(jq -r .name ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
           echo "SEMVER=$(jq -r .version ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
           echo "GH_REF=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      - name: Set Main Tag
+        if: github.ref == 'refs/heads/main'
+        run: echo "IMAGE_TAG=${{ env.SEMVER }}" >> $GITHUB_ENV
       - name: Set Branch Tag
         if: github.ref != 'refs/heads/main'
         run: echo "IMAGE_TAG=branch-${GITHUB_REF##*/}-${{ env.SEMVER }}" >> $GITHUB_ENV
