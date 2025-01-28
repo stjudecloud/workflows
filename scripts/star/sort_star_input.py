@@ -8,6 +8,7 @@ The simplest solution for this was to first pass exactly what would be passed
 to STAR into this program, sort it correctly, and write the reordered
 arguments out to files which can be supplied to STAR via the `cat` command.
 """
+
 import argparse
 import os
 from typing import List, Tuple
@@ -152,8 +153,6 @@ if __name__ == "__main__":
             args.read_groups
         )
 
-    validate(
-        sorted_read1_fastqs, sorted_read2_fastqs, sorted_read_group_ids
-    )
+    validate(sorted_read1_fastqs, sorted_read2_fastqs, sorted_read_group_ids)
 
     write_outfiles(sorted_read1_fastqs, sorted_read2_fastqs, sorted_read_group_strs)
