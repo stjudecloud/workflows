@@ -1,4 +1,4 @@
-pandas==2.2.3
-numpy==2.2.2
-matplotlib==3.10.0
+pandas==1.5.2
+numpy==1.26.4
+matplotlib==3.8.4
 umap-learn==0.5.7
