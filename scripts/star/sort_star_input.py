@@ -45,9 +45,13 @@ def sort_read_groups(
         tuple: A sorted list of values to the 'ID' key.
     """
     read_groups = [rg for rg in read_groups_string.split(" , ")]
-    rgids = [
-        flag.split(":")[1] for flag in [rg.split(",") for rg in read_groups] if "ID" in flag
-    ]
+    rgids = []
+    for rg in read_groups:
+        if "ID" not in rg:
+            raise SystemExit("Read group information must contain 'ID' key")
+        for flag in rg.split(","):
+            if "ID" in flag:
+                rgids.append(flag.split(":")[1])
 
     sorted_read_groups, sorted_rgids = zip(
         *sorted(zip(read_groups, rgids), key=lambda item: item[1])
