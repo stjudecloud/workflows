@@ -66,6 +66,7 @@ jobs:
             echo "Digests do not match!"
             echo "Remote: $remote_digest"
             echo "Local: $local_digest"
+            echo "Should you increment the version number?"
             exit 1
           fi
       - name: Push image
