@@ -81,7 +81,9 @@ def validate(
         raise SystemExit("Must have same number of read groups as FASTQ pairs")
 
     for i, rgid in enumerate(rgids):
-        if (rgid not in read_one_fastqs[i]) or (rgid not in read_two_fastqs[i]):
+        if (rgid not in read_one_fastqs[i]) or (
+            len(read_two_fastqs) > 0 and rgid not in read_two_fastqs[i]
+        ):
             raise SystemExit(
                 "Error: There's a mismatch between "
                 + "read group IDs and FASTQ file names"
