@@ -75,7 +75,7 @@ jobs:
       - name: Check digest
         run: |
           docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} || true
-          remote_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} --format='{{index .RepoDigests 0}}' || echo -n '')
+          remote_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} --format='{{index .RepoDigests 0}}' | cut -d '@' -f 2 || echo -n '')
           local_digest=${{ steps.build.outputs.digest }}
           if [ "$remote_digest" != "" ] && [ "$remote_digest" != "$local_digest" ]; then
             echo "Digests do not match!"
