@@ -12,8 +12,9 @@ Any change to the `scripts/` directory should be accompanied by version increase
 
 ### Added
 
-- Added `black` formatting and `pyright` validation for Python scripts [#201](https://github.com/stjudecloud/workflows/pull/201)
+- Added `black` formatting and `pyright` validation for Python scripts [#201](https://github.com/stjudecloud/workflows/pull/201).
 
 ### Fixed
 
-- Fixed processing of STAR inputs [#202](https://github.com/stjudecloud/workflows/pull/202)
+- Fixed processing of STAR inputs [#202](https://github.com/stjudecloud/workflows/pull/202).
+- _Actually_ fixed processing of STAR inputs [#205](https://github.com/stjudecloud/workflows/pull/205).
