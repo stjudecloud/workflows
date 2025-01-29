@@ -13,4 +13,4 @@ else
   replacement='container: "ghcr.io/stjudecloud/\1:branch-'$target'-\2"'
 fi
 
-sed -Eri '' "s,$search_pattern,$replacement,g" **/*.wdl
+sed -Eri '' "s,$search_pattern,$replacement,g" ./**/*.wdl
