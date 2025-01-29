@@ -49,6 +49,10 @@ jobs:
         for json in $jsons; do
           tool=$(jq -r .name "$json")
           version=$(jq -r .version "$json")
+          revision=$(jq -r .revision "$json")
+          if [ "$revision" != "null" ]; then
+            version="$version-$revision"
+          fi
           echo "$tool:$version" >> valid_dockerimages.txt
         done
         files=$(find . -name '*.wdl')
