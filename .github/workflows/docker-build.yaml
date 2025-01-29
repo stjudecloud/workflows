@@ -39,16 +39,20 @@ jobs:
         run: |
           if [ ${{ env.REVISION }} != "null" ]; then
             echo "IMAGE_TAG=${{ env.SEMVER }}-${{ env.REVISION }}" >> $GITHUB_ENV
+            echo "TAG_TO_CHECK=${{ env.SEMVER }}-${{ env.REVISION }}" >> $GITHUB_ENV
           else
             echo "IMAGE_TAG=${{ env.SEMVER }}" >> $GITHUB_ENV
+            echo "TAG_TO_CHECK=${{ env.SEMVER }}" >> $GITHUB_ENV
           fi
       - name: Set Branch Tag
         if: github.ref != 'refs/heads/main'
         run: |
           if [ ${{ env.REVISION }} != "null" ]; then
             echo "IMAGE_TAG=branch-${{ env.GH_REF }}-${{ env.SEMVER }}-${{ env.REVISION }}" >> $GITHUB_ENV
+            echo "TAG_TO_CHECK=${{ env.SEMVER }}-${{ env.REVISION }}" >> $GITHUB_ENV
           else
             echo "IMAGE_TAG=branch-${{ env.GH_REF }}-${{ env.SEMVER }}" >> $GITHUB_ENV
+            echo "TAG_TO_CHECK=${{ env.SEMVER }}" >> $GITHUB_ENV
           fi
       - name: Log in to the Container registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
@@ -69,9 +73,8 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache,mode=max
       - name: Check digest
-        if: github.ref == 'refs/heads/main'
         run: |
-          remote_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }} --format='{{index .RepoDigests 0}}')
+          remote_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} --format='{{index .RepoDigests 0}}')
           local_digest=${{ steps.build.outputs.digest }}
           if [ "$remote_digest" != "$local_digest" ]; then
             echo "Digests do not match!"
