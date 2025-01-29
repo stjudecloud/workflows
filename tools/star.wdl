@@ -636,8 +636,6 @@ task alignment {
         mkdir star_db
         tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
-        # odd constructions a combination of needing white space properly parsed
-        # and limitations of the WDL v1.1 spec
         python3 /home/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
             ~{(
