@@ -51,7 +51,7 @@ task get_read_groups {
     meta {
         description: "Gets read group information from a BAM file and writes it out to as a string"
         outputs: {
-            read_groups: "An array of strings containing read group information. If `format_for_star = true`, all found read groups are contained in one string (`read_groups[0]`). If `format_for_star = false`, each found @RG line will be its own entry in output array `read_groups`."
+            read_groups: "An array of strings containing read group information. If `clean = true`, the `@RG\t` prefix is stripped and tabs are replaced with spaces. If `clean = false`, each unmodified @RG line will be its own entry in output array `read_groups`."
         }
     }
 
@@ -60,8 +60,8 @@ task get_read_groups {
             description: "Input BAM format file to get read groups from",
             stream: true,
         }
-        format_for_star: {
-            description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`.",
+        clean: {
+            description: "Clean @RG lines to remove the `@RG\t` prefix and use spaces instead of tabs (true) or output @RG lines of the header without further processing (false)?",
             group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -69,7 +69,7 @@ task get_read_groups {
 
     input {
         File bam
-        Boolean format_for_star = true
+        Boolean clean = true
         Int modify_disk_size_gb = 0
     }
 
@@ -79,13 +79,12 @@ task get_read_groups {
     command <<<
         set -euo pipefail
 
-        if ~{format_for_star}; then
+        if ~{clean}; then
             samtools view -H ~{bam} \
                 | grep "^@RG" \
                 | cut -f 2- \
                 | sed -e 's/\t/ /g' \
-                | awk '{print}' ORS=' , ' \
-                | sed 's/ , $//' > read_groups.txt
+                > read_groups.txt
         else
             samtools view -H ~{bam} | grep "^@RG" > read_groups.txt
         fi

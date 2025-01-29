@@ -65,7 +65,7 @@ workflow chipseq_standard {
 
     call util.get_read_groups { input:
         bam = selected_bam,
-        format_for_star = false,
+        clean = false,
     }
 
     call b2fq.bam_to_fastqs { input:

@@ -477,8 +477,8 @@ task alignment {
         File star_db_tar_gz
         Array[File] read_one_fastqs_gz
         String prefix
-        String? read_groups
         Array[File] read_two_fastqs_gz = []
+        Array[String] read_groups = []
         Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
         SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,
@@ -636,18 +636,18 @@ task alignment {
         mkdir star_db
         tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
-        # odd constructions a combination of needing white space properly parsed
-        # and limitations of the WDL v1.1 spec
         python3 /home/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
-            ~{if (length(read_two_fastqs_gz) != 0) then "--read-two-fastqs" else ""} "~{
-                sep(",", (read_two_fastqs_gz))
-            }" \
-            ~{if defined(read_groups) then "--read-groups" else ""} "~{(
-                if defined(read_groups)
-                then read_groups
+            ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then "--read-two-fastqs '~{sep(",", read_two_fastqs_gz)}'"
                 else ""
-            )}"
+            )} \
+            ~{(
+                if (length(read_groups) != 0)
+                then "--read-groups '~{sep(" , ", read_groups)}'"
+                else ""
+            )}
 
         read -ra read_one_args < read_one_fastqs_sorted.txt
         read -ra read_two_args < read_two_fastqs_sorted.txt
