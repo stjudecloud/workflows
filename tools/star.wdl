@@ -640,16 +640,16 @@ task alignment {
         # and limitations of the WDL v1.1 spec
         python3 /home/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
-            ~{
+            ~{(
                 if (length(read_two_fastqs_gz) != 0)
                 then "--read-two-fastqs '~{sep(",", (read_two_fastqs_gz))}'"
                 else ""
-            } \
-            ~{
+            )} \
+            ~{(
                 if defined(read_groups)
                 then "--read-groups '~{read_groups}'"
                 else ""
-            }
+            )}
 
         read -ra read_one_args < read_one_fastqs_sorted.txt
         read -ra read_two_args < read_two_fastqs_sorted.txt
