@@ -94,6 +94,9 @@ jobs:
         with:
           image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
           args: --file=${{ matrix.image }}/Dockerfile
+      - name: Clean Snyk SARIF file
+        run: |
+          sed -i 's/"security-severity": "null"/"security-severity": "0"/g' snyk.sarif
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
