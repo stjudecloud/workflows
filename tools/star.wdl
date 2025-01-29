@@ -127,7 +127,7 @@ task build_star_db {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-1"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-2"
         maxRetries: 1
     }
 }
@@ -636,18 +636,18 @@ task alignment {
         mkdir star_db
         tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
-        # odd constructions a combination of needing white space properly parsed
-        # and limitations of the WDL v1.1 spec
         python3 /home/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
-            ~{if (length(read_two_fastqs_gz) != 0) then "--read-two-fastqs" else ""} "~{
-                sep(",", (read_two_fastqs_gz))
-            }" \
-            ~{if defined(read_groups) then "--read-groups" else ""} "~{(
-                if defined(read_groups)
-                then read_groups
+            ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then "--read-two-fastqs '~{sep(",", (read_two_fastqs_gz))}'"
                 else ""
-            )}"
+            )} \
+            ~{(
+                if defined(read_groups)
+                then "--read-groups '~{read_groups}'"
+                else ""
+            )}
 
         read -ra read_one_args < read_one_fastqs_sorted.txt
         read -ra read_two_args < read_two_fastqs_sorted.txt
@@ -694,20 +694,36 @@ task alignment {
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
             ]))} \
-            --clip3pAdapterSeq ~{
-                clip_3p_adapter_seq.left + " " + clip_3p_adapter_seq.right
-            } \
-            --clip3pAdapterMMp ~{
-                "~{clip_3p_adapter_mmp.left} ~{clip_3p_adapter_mmp.right}"
-            } \
-            --alignEndsProtrude ~{
-                "~{align_ends_protrude.left} ~{align_ends_protrude.right}"
-            } \
-            --clip3pNbases ~{"~{clip_3p_n_bases.left} ~{clip_3p_n_bases.right}"} \
-            --clip3pAfterAdapterNbases ~{
-                "~{clip_3p_after_adapter_n_bases.left} ~{clip_3p_after_adapter_n_bases.right}"
-            } \
-            --clip5pNbases ~{"~{clip_5p_n_bases.left} ~{clip_5p_n_bases.right}"} \
+            --clip3pAdapterSeq ~{clip_3p_adapter_seq.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_adapter_seq.right
+                else ""
+            )} \
+            --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_adapter_mmp.right
+                else None
+            )} \
+            --alignEndsProtrude ~{align_ends_protrude.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then align_ends_protrude.right
+                else None
+            )} \
+            --clip3pNbases ~{clip_3p_n_bases.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_n_bases.right
+                else None
+            )} \
+            --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_after_adapter_n_bases.right
+                else None
+            )} \
+            --clip5pNbases ~{clip_5p_n_bases.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_5p_n_bases.right
+                else None
+            )} \
             --readNameSeparator ~{read_name_separator} \
             --clipAdapterType ~{clip_adapter_type} \
             --outSAMstrandField ~{out_sam_strand_field} \
@@ -813,7 +829,7 @@ task alignment {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-1"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-2"
         maxRetries: 1
     }
 }
