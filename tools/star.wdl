@@ -703,28 +703,28 @@ task alignment {
             )} \
             --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
                 if (length(read_two_fastqs_gz) != 0)
-                then "~{clip_3p_adapter_mmp.right}"
-                else ""
+                then clip_3p_adapter_mmp.right
+                else None
             )} \
             --alignEndsProtrude ~{align_ends_protrude.left} ~{(
                 if (length(read_two_fastqs_gz) != 0)
-                then "~{align_ends_protrude.right}"
-                else ""
+                then align_ends_protrude.right
+                else None
             )} \
             --clip3pNbases ~{clip_3p_n_bases.left} ~{(
                 if (length(read_two_fastqs_gz) != 0)
-                then "~{clip_3p_n_bases.right}"
-                else ""
+                then clip_3p_n_bases.right
+                else None
             )} \
             --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{(
                 if (length(read_two_fastqs_gz) != 0)
-                then " ~{clip_3p_after_adapter_n_bases.right}"
-                else ""
+                then clip_3p_after_adapter_n_bases.right
+                else None
             )} \
             --clip5pNbases ~{clip_5p_n_bases.left} ~{(
                 if (length(read_two_fastqs_gz) != 0)
-                then "~{clip_5p_n_bases.right}"
-                else ""
+                then clip_5p_n_bases.right
+                else None
             )} \
             --readNameSeparator ~{read_name_separator} \
             --clipAdapterType ~{clip_adapter_type} \
