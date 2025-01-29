@@ -53,7 +53,7 @@ def sort_read_groups(
     for rg in read_groups:
         if "ID" not in rg:
             raise SystemExit("Read group information must contain 'ID' key")
-        for flag in rg.split(","):
+        for flag in rg.split(" "):
             if "ID" in flag:
                 rgids.append(flag.split(":")[1])
 
