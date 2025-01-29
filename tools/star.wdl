@@ -829,7 +829,7 @@ task alignment {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-2"
+        container: "ghcr.io/stjudecloud/star:branch-star-2.7.11b-2"
         maxRetries: 1
     }
 }
