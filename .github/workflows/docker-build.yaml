@@ -74,8 +74,8 @@ jobs:
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache,mode=max
       - name: Check digest
         run: |
-          remote_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} --format='{{index .RepoDigests 0}}' || echo "Digest not found")
-          local_digest=${{ steps.build.outputs.digest }}
+          remote_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} --format='{{index .RepoDigests 0}}' || echo -n "Digest not found")
+          local_digest=${{ steps.build.outputs.Digest }}
           if [ "$remote_digest" != "Digest not found" ] && [ "$remote_digest" != "$local_digest" ]; then
             echo "Digests do not match!"
             echo "Remote: $remote_digest"
