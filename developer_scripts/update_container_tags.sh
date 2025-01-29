@@ -13,4 +13,4 @@ else
   replacement='container: "ghcr.io/stjudecloud/\1:branch-'$target'-\2"'
 fi
 
-find . -name '*.wdl' | xargs sed -Eri '' "s,$search_pattern,$replacement,g"
+find . -not -path '.git' -a -type f -name '*.wdl' | xargs sed -Eri '' "s,$search_pattern,$replacement,g"
