@@ -694,20 +694,36 @@ task alignment {
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
             ]))} \
-            --clip3pAdapterSeq ~{
-                clip_3p_adapter_seq.left + " " + clip_3p_adapter_seq.right
-            } \
-            --clip3pAdapterMMp ~{
-                "~{clip_3p_adapter_mmp.left} ~{clip_3p_adapter_mmp.right}"
-            } \
-            --alignEndsProtrude ~{
-                "~{align_ends_protrude.left} ~{align_ends_protrude.right}"
-            } \
-            --clip3pNbases ~{"~{clip_3p_n_bases.left} ~{clip_3p_n_bases.right}"} \
-            --clip3pAfterAdapterNbases ~{
-                "~{clip_3p_after_adapter_n_bases.left} ~{clip_3p_after_adapter_n_bases.right}"
-            } \
-            --clip5pNbases ~{"~{clip_5p_n_bases.left} ~{clip_5p_n_bases.right}"} \
+            --clip3pAdapterSeq ~{clip_3p_adapter_seq.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_adapter_seq.right
+                else ""
+            )} \
+            --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_adapter_mmp.right
+                else None
+            )} \
+            --alignEndsProtrude ~{align_ends_protrude.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then align_ends_protrude.right
+                else None
+            )} \
+            --clip3pNbases ~{clip_3p_n_bases.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_n_bases.right
+                else None
+            )} \
+            --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_after_adapter_n_bases.right
+                else None
+            )} \
+            --clip5pNbases ~{clip_5p_n_bases.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_5p_n_bases.right
+                else None
+            )} \
             --readNameSeparator ~{read_name_separator} \
             --clipAdapterType ~{clip_adapter_type} \
             --outSAMstrandField ~{out_sam_strand_field} \
