@@ -84,6 +84,20 @@ jobs:
             echo "Should you increment the version number?"
             exit 1
           fi
+      - name: Run Snyk to check Docker image for vulnerabilities
+        # Snyk can be used to break the build when it detects vulnerabilities.
+        # In this case we want to upload the issues to GitHub Code Scanning
+        continue-on-error: true
+        uses: snyk/actions/docker@0.4.0
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
+          args: --file=${{ matrix.image }}/Dockerfile
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk.sarif
       - name: Push image
         run: |
           docker tag ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}
