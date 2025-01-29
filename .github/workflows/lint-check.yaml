@@ -1,4 +1,4 @@
-name: Workflows Lint Check
+name: Workflows Pull Check
 
 on:
   push:
