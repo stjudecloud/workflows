@@ -1,12 +1,10 @@
-name: Workflows Lint Check
+name: Workflows Pull Check
 
 on:
   push:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
 jobs:
   import_syntax_check:
@@ -47,9 +45,15 @@ jobs:
     - name: Ensure current SemVer'd docker images are being pulled
       run: |
         EXITCODE=0
-        files=$(find docker/ -name Dockerfile)
-        for file in $files; do
-          echo "$file" | awk -F '/' '{print tolower($2) ":" $3}' >> valid_dockerimages.txt
+        jsons=$(find docker/ -name package.json)
+        for json in $jsons; do
+          tool=$(jq -r .name "$json")
+          version=$(jq -r .version "$json")
+          revision=$(jq -r .revision "$json")
+          if [ "$revision" != "null" ]; then
+            version="$version-$revision"
+          fi
+          echo "$tool:$version" >> valid_dockerimages.txt
         done
         files=$(find . -name '*.wdl')
         for file in $files; do
