@@ -3,6 +3,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
     list-images:
@@ -26,6 +27,7 @@ jobs:
             matrix:
                 image: ${{ fromJson(needs.list-images.outputs.images) }}
         steps:
+          - uses: actions/checkout@v3
           - name: Set Env
             run: |
               echo "TOOL=$(jq -r .name ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
@@ -34,7 +36,9 @@ jobs:
               echo "GH_REF=${GITHUB_REF##*/}" >> $GITHUB_ENV
           - name: Get versions to delete
             run: | # NOTE: This will delete any images for branch names that contain the current branch name as a prefix.
-               gh api /orgs/${{ github.repository_owner }}/packages/container/${{ env.TOOL }}/versions | jq -r '.[] | select(isempty(.metadata.container.tags[] or (.metadata.container.tags[] | contains(${{ env.GH_REF }}))) | .id' > versions.txt
+               REF="${{ github.event.ref }}"
+               REF="${REF##*/}"
+               gh api /orgs/${{ github.repository_owner }}/packages/container/${{ env.TOOL }}/versions | jq -r '.[] | select(isempty(.metadata.container.tags[]) or (.metadata.container.tags[] | contains("branch-${REF}"))) | .id' > versions.txt
                echo "IDS=$(tr -s '\n' ',' < versions.txt | sed 's/,$//')" >> $GITHUB_ENV
           - uses: actions/delete-package-versions@v5
             with: 
