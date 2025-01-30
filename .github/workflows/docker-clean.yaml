@@ -27,6 +27,7 @@ jobs:
             matrix:
                 image: ${{ fromJson(needs.list-images.outputs.images) }}
         steps:
+          - uses: actions/checkout@v3
           - name: Set Env
             run: |
               echo "TOOL=$(jq -r .name ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
