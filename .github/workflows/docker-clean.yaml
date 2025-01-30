@@ -3,6 +3,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
     list-images:
