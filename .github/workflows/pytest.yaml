@@ -1,6 +1,11 @@
 name: pytest-workflow Check
 
-on: [push]
+# Only trigger, when the build workflow succeeded
+on:
+  workflow_run:
+    workflows: ["Workflows Docker Build"]
+    types:
+      - completed
 
 jobs:
   list-tags:
