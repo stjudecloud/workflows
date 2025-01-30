@@ -62,6 +62,7 @@ task get_read_groups {
         }
         clean: {
             description: "Clean @RG lines to remove the `@RG\t` prefix and use spaces instead of tabs (true) or output @RG lines of the header without further processing (false)?",
+            help: "`clean = true` output matches the formatting of the `read_group_to_string` task in `../data_structures/read_group.wdl`",
             group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
