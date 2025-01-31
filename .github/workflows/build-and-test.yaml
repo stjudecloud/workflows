@@ -5,6 +5,6 @@ on:
 
 jobs:
     call-build:
-        uses: ./workflows/docker-build.yaml
+        uses: ./.github/workflows/docker-build.yaml
     call-test:
-        uses: ./workflows/pytest.yaml
+        uses: ./.github/workflows/pytest.yaml
