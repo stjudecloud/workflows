@@ -1,7 +1,7 @@
 name: Workflows Docker Build
 
 on:
-  push:
+  workflow_call:
 
 env:
   REGISTRY: ghcr.io
@@ -92,9 +92,11 @@ jobs:
           image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
           args: --file=${{ matrix.image }}/Dockerfile
       - name: Clean Snyk SARIF file
+        continue-on-error: true
         run: |
           sed -i 's/"security-severity": "null"/"security-severity": "0"/g' snyk.sarif
       - name: Upload result to GitHub Code Scanning
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
