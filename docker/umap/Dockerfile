@@ -1,4 +1,4 @@
-FROM python:3.12.7
+FROM python:3.13.1-alpine
 
 RUN pip install umap-learn==0.5.7 pandas
 
