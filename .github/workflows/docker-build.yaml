@@ -62,7 +62,7 @@ jobs:
         id: build
         with:
           context: ${{ matrix.image }}
-          build-contexts: scripts=./docker_scripts
+          build-contexts: scripts=./scripts
           push: false
           load: true
           tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local

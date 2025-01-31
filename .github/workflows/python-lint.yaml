@@ -10,7 +10,7 @@ jobs:
         - name: Python Black
           uses: cytopia/docker-black@0.11
           with:
-            path: 'docker_scripts/'
+            path: 'scripts/'
     python-lint:
         runs-on: ubuntu-latest
         steps:
@@ -26,4 +26,4 @@ jobs:
         - name: Pyright
           uses: jakebailey/pyright-action@v2
           with:
-            working-directory: 'docker_scripts/'
+            working-directory: 'scripts/'
