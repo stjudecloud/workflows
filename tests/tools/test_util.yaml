@@ -128,6 +128,6 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run -d test-output/. --task split_fastq tools/util.wdl fastq="tests/input/test_R1.fq.gz" prefix="test.R1."
+    miniwdl run --verbose -d test-output/. --task split_fastq tools/util.wdl fastq="tests/input/test_R1.fq.gz" prefix="test.R1."
   files:
     - path: "test-output/out/fastqs/0/test.R1.000000.fastq.gz"
