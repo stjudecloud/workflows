@@ -3,5 +3,5 @@
     "read_two_fastqs_gz": ["tests/input/test_R2.fq.gz"],
     "star_db_tar_gz": "tests/input/star_db.chrY_chrM.tar.gz",
     "prefix": "test",
-    "read_groups": "ID:test"
+    "read_groups": ["ID:test SM:test PL:ILLUMINA"]
 }
