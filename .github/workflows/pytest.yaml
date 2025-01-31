@@ -1,6 +1,6 @@
 name: pytest-workflow Check
 
-# Only trigger, when the build workflow succeeded
+# Only trigger when the build workflow succeeded
 on:
   workflow_run:
     workflows: ["Workflows Docker Build"]
@@ -8,6 +8,16 @@ on:
       - completed
 
 jobs:
+  on-success:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - run: echo 'The build workflow passed, starting tests'
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo 'The build workflow failed, skipping tests' && exit 1
   list-tags:
     runs-on: ubuntu-latest
     outputs:
