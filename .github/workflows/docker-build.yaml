@@ -56,9 +56,6 @@ jobs:
           fi
       - name: Log in to the Container registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
-      - uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.STJUDE_SEQERR_READONLY_DEPLOY_KEY }}
       - uses: docker/setup-qemu-action@v2
       - uses: docker/setup-buildx-action@v2
       - uses: docker/build-push-action@v4
@@ -68,16 +65,16 @@ jobs:
           build-contexts: scripts=./scripts
           push: false
           load: true
-          ssh: default
           tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache,mode=max
       - name: Check digest
         run: |
           docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} || true
-          remote_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} --format='{{index .RepoDigests 0}}' | cut -d '@' -f 2 || echo -n '')
-          local_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local --format='{{index .RepoDigests 0}}' | cut -d '@' -f 2)
-          if [ "$remote_digest" != "" ] && [ "$remote_digest" != "$local_digest" ]; then
+          remote_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} --format='{{index .RepoDigests 0}}' | cut -d '@' -f 2 || true)
+          local_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local --format='{{index .RepoDigests 0}}' | cut -d '@' -f 2 || true)
+          # below check "in english": we should fail if remote_digest is populated and does not equal local_digest, OR if local_digest is empty and remote_digest is populated
+          if [ "$remote_digest" != "" ] && [ "$remote_digest" != "$local_digest" ] || [ "$local_digest" == "" ] && [ "$remote_digest" != "" ]; then
             echo "Digests do not match!"
             echo "Remote: $remote_digest"
             echo "Local: $local_digest"
