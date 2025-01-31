@@ -1,3 +1,5 @@
+name: Clean Docker images
+
 on:
     delete
 
@@ -42,6 +44,7 @@ jobs:
                echo "IDS=$(tr -s '\n' ',' < versions.txt | sed 's/,$//')" >> $GITHUB_ENV
           - uses: actions/delete-package-versions@v5
             with: 
-                package-name: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}
+                owner: '${{ github.repository_owner }}'
+                package-name: '${{ env.TOOL }}'
                 package-type: 'container'
-                package-version-ids: ${{ env.IDS }}
+                package-version-ids: '${{ env.IDS }}'
