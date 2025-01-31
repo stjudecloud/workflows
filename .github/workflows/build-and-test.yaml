@@ -1,0 +1,10 @@
+name: Build and Test
+
+on:
+    push:
+
+jobs:
+    call-build:
+        uses: ./workflows/docker-build.yaml
+    call-test:
+        uses: ./workflows/pytest.yaml

@@ -1,7 +1,7 @@
 name: Workflows Docker Build
 
 on:
-  push:
+  workflow_call:
 
 env:
   REGISTRY: ghcr.io

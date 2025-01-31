@@ -1,10 +1,7 @@
 name: pytest-workflow Check
 
 on:
-  workflow_run:
-    workflows: ["Workflows Docker Build"]
-    types:
-      - completed
+  workflow_call:
 
 jobs:
   on-success:
