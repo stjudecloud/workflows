@@ -8,3 +8,4 @@ jobs:
         uses: ./.github/workflows/docker-build.yaml
     call-test:
         uses: ./.github/workflows/pytest.yaml
+        needs: call-build
