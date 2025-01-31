@@ -6,6 +6,7 @@ on:
 jobs:
     call-build:
         uses: ./.github/workflows/docker-build.yaml
+        secrets: inherit
     call-test:
         uses: ./.github/workflows/pytest.yaml
         needs: call-build
