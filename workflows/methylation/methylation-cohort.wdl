@@ -199,7 +199,7 @@ task generate_umap {
     Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2) + 2
 
     command <<<
-        python $(which generate_umap.py) \
+        python /usr/local/bin/generate_umap.py \
             --beta ~{filtered_beta_values} \
             --output-name ~{prefix}.csv
     >>>
@@ -236,7 +236,7 @@ task plot_umap {
     }
 
     command <<<
-        python $(which plot_umap.py) --umap ~{umap} --output-name ~{plot_file}
+        python /usr/local/bin/plot_umap.py --umap ~{umap} --output-name ~{plot_file}
     >>>
 
     output {
