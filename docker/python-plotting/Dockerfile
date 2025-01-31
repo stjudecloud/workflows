@@ -1,4 +1,4 @@
-FROM python:3.13.1-slim
+FROM python:3.13.1-alpine
 
 RUN pip install pandas numpy matplotlib seaborn plotly
 
