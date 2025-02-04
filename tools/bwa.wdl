@@ -86,7 +86,7 @@ task bwa_aln {
         cpu: ncpu
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/bwa:branch-update_images-0.7.17-2"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-2"
         maxRetries: 1
     }
 }
@@ -187,7 +187,7 @@ task bwa_aln_pe {
         cpu: ncpu
         memory: "17 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/bwa:branch-update_images-0.7.17-2"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-2"
         maxRetries: 1
     }
 }
@@ -283,7 +283,7 @@ task bwa_mem {
         cpu: ncpu
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/bwa:branch-update_images-0.7.17-2"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-2"
         maxRetries: 1
     }
 }
@@ -334,7 +334,7 @@ task build_bwa_db {
     runtime {
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/bwa:branch-update_images-0.7.17-2"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-2"
         maxRetries: 1
     }
 }
