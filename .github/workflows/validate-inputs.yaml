@@ -12,4 +12,4 @@ jobs:
           with:
             action: validate-inputs
             wdl_files: "workflows/reference/bwa-db-build.wdl,workflows/reference/gatk-reference.wdl,workflows/reference/qc-reference.wdl,workflows/reference/star-db-build.wdl,workflows/reference/star-db-build.wdl"
-            inputs_files: "workflows/reference/inputs/bwa-db-build-inputs.json,workflows/reference/inputs/gatk-reference-inputs.json,workflows/reference/inputs/qc-reference-inputs.json,workflows/reference/inputs/star-db-buuild-inputs.json,workflows/reference/inputs/star-db-build-mouse-contaminant-inputs.json"
+            inputs_files: "workflows/reference/inputs/bwa-db-build-inputs.json,workflows/reference/inputs/gatk-reference-inputs.json,workflows/reference/inputs/qc-reference-inputs.json,workflows/reference/inputs/star-db-build-inputs.json,workflows/reference/inputs/star-db-build-mouse-contaminant-inputs.json"
