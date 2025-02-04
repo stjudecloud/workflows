@@ -26,6 +26,8 @@ jobs:
     strategy:
       matrix:
         image: ${{ fromJson(needs.list-images.outputs.images) }}
+      fail-fast: false
+      
     steps:
       - uses: actions/checkout@v3
       - name: Set Env
