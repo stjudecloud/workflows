@@ -3,7 +3,7 @@
     - miniwdl
     - methylation
   command: >-
-    miniwdl run -d test-output/. --task process_raw_idats -i tests/workflows/input_json/process_raw_idats.json workflows/methylation/methylation-preprocess.wdl
+    miniwdl run --verbose -d test-output/. --task process_raw_idats -i tests/workflows/input_json/process_raw_idats.json workflows/methylation/methylation-preprocess.wdl
   files:
     - path: test-output/out/beta_swan_norm_unfiltered/201533520001_R03C01.beta_swan_norm_unfiltered.csv
     - path: test-output/out/beta_swan_norm_unfiltered_genomic/201533520001_R03C01.beta_swan_norm_unfiltered.genomic.csv

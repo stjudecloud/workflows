@@ -110,6 +110,6 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task faidx tools/samtools.wdl fasta="tests/input/test.fa"
+    miniwdl run --verbose -d test-output/. --task faidx tools/samtools.wdl fasta="tests/input/test.fa"
   files:
     - path: test-output/out/fasta_index/test.fa.fai
