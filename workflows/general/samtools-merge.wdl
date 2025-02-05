@@ -7,6 +7,7 @@ import "../../tools/samtools.wdl"
 workflow samtools_merge {
     meta{
         description: "Runs `samtools merge`, with optional iteration to avoid maximum command line argument length"
+        category: "Utility"
         outputs: {
             merged_bam: "The BAM resulting from merging all the input BAMs"
         }

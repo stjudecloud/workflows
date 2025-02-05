@@ -88,7 +88,7 @@ task validate_string_is_12bit_oct_dec_or_hex {
     }
 
     command <<<
-        if [[ "~{number}" =~ ^[1-9][0-9]+$ ]]; then
+        if [[ "~{number}" =~ ^[1-9][0-9]*$ ]]; then
             # number is in decimal
             if [ "~{number}" -lt 4096 ]; then
                 >&2 echo "Input number (~{number}) is valid"
@@ -118,13 +118,14 @@ task validate_string_is_12bit_oct_dec_or_hex {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:1.4.0"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
         maxRetries: 1
     }
 }
 
 workflow validate_flag_filter {
     meta {
+        name: "Validate FlagFilter"
         description: "Validates a FlagFilter struct."
         outputs: {
             check: "Dummy output to enable caching."

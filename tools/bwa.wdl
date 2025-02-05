@@ -16,15 +16,15 @@ task bwa_aln {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true,
+            group: "common",
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -86,7 +86,7 @@ task bwa_aln {
         cpu: ncpu
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-2"
         maxRetries: 1
     }
 }
@@ -112,15 +112,15 @@ task bwa_aln_pe {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true,
+            group: "common",
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -187,7 +187,7 @@ task bwa_aln_pe {
         cpu: ncpu
         memory: "17 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-2"
         maxRetries: 1
     }
 }
@@ -207,15 +207,15 @@ task bwa_mem {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            common: true,
+            group: "common",
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            common: true,
+            group: "common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -283,7 +283,7 @@ task bwa_mem {
         cpu: ncpu
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-2"
         maxRetries: 1
     }
 }
@@ -300,7 +300,7 @@ task build_bwa_db {
         reference_fasta: "Input reference Fasta file to index with bwa. Should be compressed with gzip."
         db_name: {
             description: "Name of the output gzipped tar archive of the bwa reference files. The extension `.tar.gz` will be added.",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -334,7 +334,7 @@ task build_bwa_db {
     runtime {
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/bwa:0.7.17-0"
+        container: "ghcr.io/stjudecloud/bwa:0.7.17-2"
         maxRetries: 1
     }
 }

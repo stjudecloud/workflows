@@ -8,7 +8,9 @@ import "./rnaseq-core.wdl" as rnaseq_core_wf
 
 workflow rnaseq_standard {
     meta {
+        name: "RNA-Seq Standard"
         description: "Runs the STAR RNA-Seq alignment workflow for St. Jude Cloud"
+        category: "Harmonization"
         outputs: {
             harmonized_bam: "Harmonized RNA-Seq BAM",
             bam_index: "BAI index file associated with `bam`",
@@ -90,7 +92,7 @@ workflow rnaseq_standard {
 
     call util.get_read_groups after parse_input { input:
         bam = selected_bam,
-        format_for_star = true,  # matches default but prevents user from overriding
+        clean = true,  # matches default but prevents user from overriding
     }
     call bam_to_fastqs_wf.bam_to_fastqs after parse_input { input:
         bam = selected_bam,
@@ -101,9 +103,7 @@ workflow rnaseq_standard {
     call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
-        # format_for_star=true in get_read_groups puts
-        # all found RG info in read_groups[0]
-        read_groups = get_read_groups.read_groups[0],
+        read_groups = get_read_groups.read_groups,
         prefix,
         gtf,
         star_db,
@@ -179,7 +179,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:1.4.0"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
         maxRetries: 1
     }
 }

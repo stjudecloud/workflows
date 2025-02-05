@@ -1,6 +1,7 @@
 name: pytest-workflow Check
 
-on: [push]
+on:
+  workflow_call:
 
 jobs:
   list-tags:

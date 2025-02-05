@@ -19,11 +19,11 @@ task rnaseq {
         memory_gb: "RAM to allocate for task"
         name_sorted: {
             description: "Is the BAM name sorted? QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to true.",
-            common: true,
+            group: "common",
         }
         paired_end: {
             description: "Is the BAM paired end?",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

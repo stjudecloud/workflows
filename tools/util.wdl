@@ -42,7 +42,7 @@ task download {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:1.4.0"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
         maxRetries: 1
     }
 }
@@ -51,7 +51,7 @@ task get_read_groups {
     meta {
         description: "Gets read group information from a BAM file and writes it out to as a string"
         outputs: {
-            read_groups: "An array of strings containing read group information. If `format_for_star = true`, all found read groups are contained in one string (`read_groups[0]`). If `format_for_star = false`, each found @RG line will be its own entry in output array `read_groups`."
+            read_groups: "An array of strings containing read group information. If `clean = true`, the `@RG\t` prefix is stripped and tabs are replaced with spaces. If `clean = false`, each unmodified @RG line will be its own entry in output array `read_groups`."
         }
     }
 
@@ -60,16 +60,17 @@ task get_read_groups {
             description: "Input BAM format file to get read groups from",
             stream: true,
         }
-        format_for_star: {
-            description: "Format read group information for the STAR aligner (true) or output @RG lines of the header without further processing (false)? STAR formatted results will be an array of length 1, where all found read groups are contained in one string (`read_groups[0]`). If no processing is selected, each found @RG line will be its own entry in output array `read_groups`.",
-            common: true,
+        clean: {
+            description: "Clean @RG lines to remove the `@RG\t` prefix and use spaces instead of tabs (true) or output @RG lines of the header without further processing (false)?",
+            help: "`clean = true` output matches the formatting of the `read_group_to_string` task in `../data_structures/read_group.wdl`",
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File bam
-        Boolean format_for_star = true
+        Boolean clean = true
         Int modify_disk_size_gb = 0
     }
 
@@ -79,13 +80,12 @@ task get_read_groups {
     command <<<
         set -euo pipefail
 
-        if ~{format_for_star}; then
+        if ~{clean}; then
             samtools view -H ~{bam} \
                 | grep "^@RG" \
                 | cut -f 2- \
                 | sed -e 's/\t/ /g' \
-                | awk '{print}' ORS=' , ' \
-                | sed 's/ , $//' > read_groups.txt
+                > read_groups.txt
         else
             samtools view -H ~{bam} | grep "^@RG" > read_groups.txt
         fi
@@ -117,7 +117,7 @@ task split_string {
         string: "String to split on occurences of `delimiter`"
         delimiter: {
             description: "Delimiter on which to split `input_string`",
-            common: true,
+            group: "common",
         }
     }
 
@@ -139,7 +139,7 @@ task split_string {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:1.4.0"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
         maxRetries: 1
     }
 }
@@ -158,7 +158,7 @@ task calc_gene_lengths {
         outfile_name: "Name of the gene lengths file"
         idattr: {
             description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.",
-            common: true,
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -363,7 +363,7 @@ task unpack_tarball {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:1.4.0"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
         maxRetries: 1
     }
 }
@@ -683,7 +683,7 @@ task global_phred_scores {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:1.4.0"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
         maxRetries: 1
     }
 }
@@ -761,7 +761,7 @@ task qc_summary {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:1.4.0"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
         maxRetries: 1
     }
 }
@@ -780,7 +780,7 @@ task split_fastq {
             stream: true,
         }
         reads_per_file: "Number of reads to include in each output FASTQ file"
-        prefix: "Prefix for the FASTQ file. The extension `.fq.gz` will be added."
+        prefix: "Prefix for the FASTQ files. The extension `.fastq.gz` (preceded by a split index) will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
     }
@@ -822,7 +822,7 @@ task split_fastq {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:1.4.0"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
         maxRetries: 1
     }
 }

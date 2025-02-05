@@ -1,0 +1,14 @@
+- name: process_raw_idats
+  tags:
+    - miniwdl
+    - methylation
+  command: >-
+    miniwdl run --verbose -d test-output/. --task process_raw_idats -i tests/workflows/input_json/process_raw_idats.json workflows/methylation/methylation-preprocess.wdl
+  files:
+    - path: test-output/out/beta_swan_norm_unfiltered/201533520001_R03C01.beta_swan_norm_unfiltered.csv
+    - path: test-output/out/beta_swan_norm_unfiltered_genomic/201533520001_R03C01.beta_swan_norm_unfiltered.genomic.csv
+    - path: test-output/out/annotation/201533520001_R03C01.annotation.csv
+    - path: test-output/out/beta_unnorm/201533520001_R03C01.beta.csv
+    - path: test-output/out/cn_values/201533520001_R03C01.cn_values.csv
+    - path: test-output/out/m_values/201533520001_R03C01.m_values.csv
+    - path: test-output/out/probe_names/201533520001_R03C01.probeNames.csv

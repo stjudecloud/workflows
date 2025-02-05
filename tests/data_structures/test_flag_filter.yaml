@@ -5,6 +5,13 @@
   command: >-
     miniwdl run --verbose -d test-output/. --task validate_string_is_12bit_oct_dec_or_hex data_structures/flag_filter.wdl number="0x900"
 
+- name: flag_filter_5
+  tags:
+    - miniwdl
+    - flag_filter
+  command: >-
+    miniwdl run --verbose -d test-output/. --task validate_string_is_12bit_oct_dec_or_hex data_structures/flag_filter.wdl number="5"
+
 - name: flag_filter_01
   tags:
     - miniwdl
