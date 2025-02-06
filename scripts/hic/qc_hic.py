@@ -135,7 +135,19 @@ if __name__ == "__main__":
         )
 
     if args.peaks_bed is not None and os.path.isfile(args.peaks_bed):
-        REPORT.write("peaks\t" + str(PEAKS) + "\n")  # pyright: ignore [reportPossiblyUnboundVariable]
+        REPORT.write(
+            "peaks\t"
+            + str(PEAKS)  # pyright: ignore [reportPossiblyUnboundVariable]
+            + "\n"
+        )
     if args.fithichip_bed is not None and os.path.isfile(args.fithichip_bed):
-        REPORT.write("loops\t" + str(LOOPS) + "\n")  # pyright: ignore [reportPossiblyUnboundVariable]
-        REPORT.write("loops_significant\t" + str(LOOPS_SIGNIFICANT) + "\n")  # pyright: ignore [reportPossiblyUnboundVariable]
+        REPORT.write(
+            "loops\t"
+            + str(LOOPS)  # pyright: ignore [reportPossiblyUnboundVariable]
+            + "\n"
+        )
+        REPORT.write(
+            "loops_significant\t"
+            + str(LOOPS_SIGNIFICANT)  # pyright: ignore [reportPossiblyUnboundVariable]
+            + "\n"
+        )
