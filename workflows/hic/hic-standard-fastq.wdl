@@ -68,8 +68,8 @@ workflow hic_standard_fastq {
     }
 
     call hicpro_core.hicpro_core { input:
-        read_one_fastqs_gz = read_one_fastqs_gz,
-        read_two_fastqs_gz = read_two_fastqs_gz,
+        read_one_fastqs_gz,
+        read_two_fastqs_gz,
         read_groups,
         bowtie_db_tar_gz,
         chromsizes,

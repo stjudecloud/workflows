@@ -42,13 +42,13 @@ workflow hic_post {
     }
 
     call hilow.converthic { input:
-        all_valid_pairs = all_valid_pairs,
+        all_valid_pairs,
         chromsizes,
     }
 
     if (defined(exclude_list)) {
         call hilow.filter { input:
-            all_valid_pairs = all_valid_pairs,
+            all_valid_pairs,
             chromsizes,
             exclude_list = select_first([exclude_list, ""]),
         }

@@ -69,7 +69,7 @@ workflow hic_standard {
 
     if (validate_input) {
         call picard.validate_bam as validate_input_bam { input:
-            bam = bam,
+            bam,
         }
     }
 

@@ -57,7 +57,7 @@ workflow fastq_to_ubam {
 
     scatter (read_group in read_groups) {
         call read_group.validate_read_group as validate_readgroups { input:
-            read_group = read_group,
+            read_group,
             required_fields = ["ID", "SM", "LB", "CN", "DT"]
         }
     }
