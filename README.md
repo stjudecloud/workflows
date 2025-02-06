@@ -25,7 +25,9 @@ The repository is laid out as follows:
 * `tools/` - All tools we have wrapped as individual WDL tasks.
 * `data_structures/` - WDL `struct` definitions and tasks or workflows related to their construction, parsing, or validation.
 * `docker/` - Dockerfiles used in our workflows. All docker images are published to the [GitHub Container Registy](https://github.com/orgs/stjudecloud/packages?repo_name=workflows) as a part of our CI and are versioned.
+* `scripts/` - This directory is passed to the docker build step as a context, and contains scripts that can be copied to our docker containers.
 * `tests/` - Home to all of our testing infrastructure. We use [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/) for validating our code.
+* `developer_scripts` - Home to any scripts that ease the development process.
 * `bin/` - **no longer in use** Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations in `conf` with Cromwell.
 * `conf/` - **no longer in use** Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
 

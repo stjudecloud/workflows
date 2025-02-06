@@ -117,9 +117,6 @@ workflow rnaseq_standard_fastq {
     scatter (rg in read_groups) {
         call read_group.read_group_to_string after parse_input { input: read_group = rg }
     }
-    String stringified_read_groups = sep(
-        " , ", read_group_to_string.stringified_read_group
-    )
 
     if (validate_input){
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
@@ -154,7 +151,7 @@ workflow rnaseq_standard_fastq {
     call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,
-        read_groups = stringified_read_groups,
+        read_groups = read_group_to_string.stringified_read_group,
         prefix,
         gtf,
         star_db,

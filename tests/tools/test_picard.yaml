@@ -121,7 +121,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --task merge_vcfs -i tests/tools/input_json/picard_merge_vcfs.json tools/picard.wdl
+    miniwdl run --verbose -d test-output/. --task merge_vcfs -i tests/tools/input_json/picard_merge_vcfs.json tools/picard.wdl
   files:
     - path: test-output/out/merged_vcf/test.vcf.gz
 
@@ -130,7 +130,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --task scatter_interval_list tools/picard.wdl interval_list="tests/input/wgs_calling_regions.hg38.interval_list" scatter_count=3
+    miniwdl run --verbose -d test-output/. --task scatter_interval_list tools/picard.wdl interval_list="tests/input/wgs_calling_regions.hg38.interval_list" scatter_count=3
   files:
     - path: test-output/out/interval_lists_scatter/0/1scattered.interval_list
     - path: test-output/out/interval_lists_scatter/1/2scattered.interval_list
@@ -141,7 +141,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --task create_sequence_dictionary tools/picard.wdl fasta="tests/input/GRCh38.chrY_chrM.fa" outfile_name="GRCh38.chrY_chrM.dict"
+    miniwdl run --verbose -d test-output/. --task create_sequence_dictionary tools/picard.wdl fasta="tests/input/GRCh38.chrY_chrM.fa" outfile_name="GRCh38.chrY_chrM.dict"
   files:
     - path: test-output/out/dictionary/GRCh38.chrY_chrM.dict
 

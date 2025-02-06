@@ -2,20 +2,16 @@ import pandas as pd
 import umap
 import argparse
 
+
 def get_args():
-    parser = argparse.ArgumentParser(
-        description="Generate UMAP coordinates."
-    )
-    parser.add_argument(
-        "--output-name", type=str, help="Name for output file."
-    )
-    parser.add_argument(
-        "--beta", type=str, help="File with beta values."
-    )
+    parser = argparse.ArgumentParser(description="Generate UMAP coordinates.")
+    parser.add_argument("--output-name", type=str, help="Name for output file.")
+    parser.add_argument("--beta", type=str, help="File with beta values.")
 
     args = parser.parse_args()
 
     return args
+
 
 if __name__ == "__main__":
     args = get_args()

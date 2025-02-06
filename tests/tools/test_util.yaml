@@ -13,18 +13,32 @@
       contains:
         - "MIT License"
 
-- name: get_read_groups
+- name: get_read_groups_without_clean
   tags:
     - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_get_read_groups.json --task get_read_groups tools/util.wdl
+    miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_get_read_groups.json --task get_read_groups tools/util.wdl clean=false
   stdout:
       contains:
         - "@RG\\tID:1"
         - "@RG\\tID:2"
       must_not_contain:
         - "@RG\\tID:3"
+
+- name: get_read_groups_with_clean
+  tags:
+    - miniwdl
+    - util
+  command: >-
+    miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_get_read_groups.json --task get_read_groups tools/util.wdl clean=true
+  stdout:
+      contains:
+        - "ID:1"
+        - "ID:2"
+      must_not_contain:
+        - "@RG"
+
 
 - name: split_string
   tags:
@@ -114,6 +128,6 @@
     - miniwdl
     - util
   command: >-
-    miniwdl run -d test-output/. --task split_fastq tools/util.wdl fastq="tests/input/test_R1.fq.gz" prefix="test.R1."
+    miniwdl run --verbose -d test-output/. --task split_fastq tools/util.wdl fastq="tests/input/test_R1.fq.gz" prefix="test.R1."
   files:
     - path: "test-output/out/fastqs/0/test.R1.000000.fastq.gz"

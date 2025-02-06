@@ -124,7 +124,7 @@ task combine_data {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:2.2.1-0"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-3"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -170,7 +170,7 @@ task filter_probes {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:2.2.1-0"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-3"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -199,7 +199,7 @@ task generate_umap {
     Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2) + 2
 
     command <<<
-        python $(which generate_umap.py) \
+        python /usr/local/bin/generate_umap.py \
             --beta ~{filtered_beta_values} \
             --output-name ~{prefix}.csv
     >>>
@@ -209,7 +209,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/umap:0.5.7-0"
+        container: "ghcr.io/stjudecloud/umap:0.5.7-4"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -236,7 +236,7 @@ task plot_umap {
     }
 
     command <<<
-        python $(which plot_umap.py) --umap ~{umap} --output-name ~{plot_file}
+        python /usr/local/bin/plot_umap.py --umap ~{umap} --output-name ~{plot_file}
     >>>
 
     output {
@@ -244,7 +244,7 @@ task plot_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/python-plotting:1.0.0"
+        container: "ghcr.io/stjudecloud/python-plotting:2.0.0"
         memory: "4 GB"
         cpu: 1
         disks: "4 GB"

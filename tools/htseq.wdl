@@ -209,7 +209,7 @@ task calc_tpm {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:1.4.0"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
         maxRetries: 1
     }
 }

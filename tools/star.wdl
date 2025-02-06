@@ -127,7 +127,7 @@ task build_star_db {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-1"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-5"
         maxRetries: 1
     }
 }
@@ -148,7 +148,11 @@ task alignment {
         read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
         prefix: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added."
-        read_groups: "A string containing the read group information to output in the BAM file. If including multiple read group fields per-read group, they should be space delimited. Read groups should be comma separated, with a space on each side (i.e. ' , '). The ID field must come first for each read group and must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1 , ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1`. These two read groups could be associated with the following four FASTQs: `sample1.rg1.R1.fastq,sample1.rg2.R1.fastq` and `sample1.rg1.R2.fastq,sample1.rg2.R2.fastq`"
+        read_groups: {
+            description: "An array of `String`s where each `String` corresponds to one read group.",
+            help: "Each read group string should start with the `ID` field followed by any other read group fields, where fields are delimited by a space. See `../data_structures/read_group.wdl` for information about possible fields and utility tasks for constructing, validating, and \"stringifying\" read groups.",
+            warning: "The `ID` field for each read group _must_ be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `[\"ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1\", \"ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1\"]`. These two read groups could be associated with the following four FASTQs: `[\"sample1.rg1.R1.fastq\", \"sample1.rg2.R1.fastq\"]` and `[\"sample1.rg1.R2.fastq\", \"sample1.rg2.R2.fastq\"]`",
+        }
         read_two_fastqs_gz: {
             description: "An array of gzipped FASTQ files containing read two information",
             group: "common",
@@ -477,8 +481,8 @@ task alignment {
         File star_db_tar_gz
         Array[File] read_one_fastqs_gz
         String prefix
-        String? read_groups
         Array[File] read_two_fastqs_gz = []
+        Array[String] read_groups = []
         Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
         SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,
@@ -636,18 +640,18 @@ task alignment {
         mkdir star_db
         tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
-        # odd constructions a combination of needing white space properly parsed
-        # and limitations of the WDL v1.1 spec
         python3 /home/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
-            ~{if (length(read_two_fastqs_gz) != 0) then "--read-two-fastqs" else ""} "~{
-                sep(",", (read_two_fastqs_gz))
-            }" \
-            ~{if defined(read_groups) then "--read-groups" else ""} "~{(
-                if defined(read_groups)
-                then read_groups
+            ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then "--read-two-fastqs '~{sep(",", read_two_fastqs_gz)}'"
                 else ""
-            )}"
+            )} \
+            ~{(
+                if (length(read_groups) != 0)
+                then "--read-groups '~{sep(" , ", read_groups)}'"
+                else ""
+            )}
 
         read -ra read_one_args < read_one_fastqs_sorted.txt
         read -ra read_two_args < read_two_fastqs_sorted.txt
@@ -694,20 +698,36 @@ task alignment {
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
             ]))} \
-            --clip3pAdapterSeq ~{
-                clip_3p_adapter_seq.left + " " + clip_3p_adapter_seq.right
-            } \
-            --clip3pAdapterMMp ~{
-                "~{clip_3p_adapter_mmp.left} ~{clip_3p_adapter_mmp.right}"
-            } \
-            --alignEndsProtrude ~{
-                "~{align_ends_protrude.left} ~{align_ends_protrude.right}"
-            } \
-            --clip3pNbases ~{"~{clip_3p_n_bases.left} ~{clip_3p_n_bases.right}"} \
-            --clip3pAfterAdapterNbases ~{
-                "~{clip_3p_after_adapter_n_bases.left} ~{clip_3p_after_adapter_n_bases.right}"
-            } \
-            --clip5pNbases ~{"~{clip_5p_n_bases.left} ~{clip_5p_n_bases.right}"} \
+            --clip3pAdapterSeq ~{clip_3p_adapter_seq.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_adapter_seq.right
+                else ""
+            )} \
+            --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_adapter_mmp.right
+                else None
+            )} \
+            --alignEndsProtrude ~{align_ends_protrude.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then align_ends_protrude.right
+                else None
+            )} \
+            --clip3pNbases ~{clip_3p_n_bases.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_n_bases.right
+                else None
+            )} \
+            --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_3p_after_adapter_n_bases.right
+                else None
+            )} \
+            --clip5pNbases ~{clip_5p_n_bases.left} ~{(
+                if (length(read_two_fastqs_gz) != 0)
+                then clip_5p_n_bases.right
+                else None
+            )} \
             --readNameSeparator ~{read_name_separator} \
             --clipAdapterType ~{clip_adapter_type} \
             --outSAMstrandField ~{out_sam_strand_field} \
@@ -813,7 +833,7 @@ task alignment {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-1"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-5"
         maxRetries: 1
     }
 }
