@@ -50,7 +50,7 @@ task extract_promoters {
         cpu: 1
         memory: "4 GB"
         maxRetries: 1
-        container: "ubuntu:22.04"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
     }
 }
 
@@ -102,7 +102,7 @@ task extract_genes {
         cpu: 1
         memory: "4 GB"
         maxRetries: 1
-        container: "ubuntu:22.04"
+        container: "ghcr.io/stjudecloud/util:2.0.0"
     }
 }
 
