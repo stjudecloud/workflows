@@ -285,7 +285,7 @@ task converthic {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/juicertools:branch-hic_workflow-1.6.2"
+        container: "ghcr.io/stjudecloud/juicertools:branch-hic_workflow-2.0.1-0"
         cpu: 1
         disks: "~{disk_size_gb} GB"
         memory: "18 GB"
