@@ -1198,7 +1198,7 @@ task fastq_to_sam {
     }
 
     Float fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
-    Int disk_size_gb = ceil(fastq_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(fastq_size * 2) + 20 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
