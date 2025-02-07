@@ -1,6 +1,7 @@
 version 1.1
 
 import "../../tools/hilow.wdl"
+import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 
 workflow hic_post {
@@ -72,26 +73,32 @@ workflow hic_post {
         bam = merge.merged_bam,
     }
 
-    call samtools.sort { input:
+    call picard.sort as query_sort { input:
         bam = fixmate.fixmate_bam,
+        sort_order = "queryname",
+        prefix = prefix + ".querysorted",
     }
 
-    call samtools.markdup { input:
-        bam = sort.sorted_bam,
-        create_bam = true,
-        mark_supp_or_sec_or_unmapped_as_duplicates = true,
-        prefix,
+    call picard.mark_duplicates { input:
+        bam = query_sort.sorted_bam,
+        prefix = prefix + ".markduplicates",
+    }
+
+    call picard.sort as coordinate_sort { input:
+        bam = select_first([mark_duplicates.duplicate_marked_bam, ""]),
+        sort_order = "coordinate",
+        prefix = prefix + ".sorted",
     }
 
     call samtools.index { input:
-        bam = select_first([markdup.markdup_bam, ""]),
+        bam = coordinate_sort.sorted_bam,
     }
 
     output {
         File hic_file = converthic.hic_file
         File? filtered_pairs = filter.filtered_pairs
         File qc_report = qcreport.qc_report
-        File combined_bam = select_first([markdup.markdup_bam, ""])
+        File combined_bam = coordinate_sort.sorted_bam
         File combined_bam_index = index.bam_index
     }
 }
