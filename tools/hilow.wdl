@@ -229,7 +229,7 @@ task filter {
 
         all=$(wc -l ~{all_valid_pairs} |cut -d " " -f 1)
         filtered=$(wc -l ~{prefix}.allValidPairs.removed | cut -d " " -f 1)
-        percentage=$(echo "$filtered/$all*100"|bc -l)
+        percentage=$(echo "$filtered/$all*100" | bc -l)
         echo -e "$filtered read pairs are filtered out from a total of $all, accounting for ${percentage} %\n" \
             | tee \
             > ~{prefix}.allValidPairs.stats

@@ -119,6 +119,6 @@
     - miniwdl
     - samtools
   command: >-
-    miniwdl run -d test-output/. --task sort tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    miniwdl run --verbose -d test-output/. --task sort tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/sorted_bam/test.bwa_aln_pe.chrY_chrM.sorted.bam

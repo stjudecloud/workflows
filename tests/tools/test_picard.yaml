@@ -150,7 +150,7 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --task revert_sam tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    miniwdl run --verbose -d test-output/. --task revert_sam tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/reverted_bam/test.bwa_aln_pe.chrY_chrM.reverted.bam
 
@@ -159,6 +159,6 @@
     - miniwdl
     - picard
   command: >-
-    miniwdl run -d test-output/. --task fastq_to_sam tools/picard.wdl read_one_fastq_gz="tests/input/test_R1.fq.gz" read_two_fastq_gz="tests/input/test_R2.fq.gz" read_group_name="test" sample_name="test" library_name="test" sequencing_center="STJUDE" run_date="20240101" prefix="test"
+    miniwdl run --verbose -d test-output/. --task fastq_to_sam tools/picard.wdl read_one_fastq_gz="tests/input/test_R1.fq.gz" read_two_fastq_gz="tests/input/test_R2.fq.gz" read_group_name="test" sample_name="test" library_name="test" sequencing_center="STJUDE" run_date="20240101" prefix="test"
   files:
     - path: test-output/out/unaligned_bam/test.unmapped.bam
