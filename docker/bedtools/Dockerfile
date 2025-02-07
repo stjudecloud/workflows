@@ -15,6 +15,5 @@ RUN wget https://github.com/arq5x/bedtools2/releases/download/v2.31.1/bedtools-2
 FROM python:3.13.1-alpine
 
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
-COPY --from=scripts --chmod=777 hic/filter_hic.py /usr/local/bin/filter_hic.py
 
 RUN apk add --no-cache bc bash
