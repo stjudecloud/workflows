@@ -97,8 +97,8 @@ task align {
             unpaired_aligned: "Unpaired reads that aligned at least once, in FASTQ format",
             paired_discordant_read_one: "Read one from pairs that didn't align concordantly, in FASTQ format",
             paired_discordant_read_two: "Read two from pairs that didn't align concordantly, in FASTQ format",
-            paired_concordant_read_one: "Read one from pairs that aligned concordantly at least once, in FASTQ format",
-            paired_concordant_read_two: "Read two from pairs that aligned concordantly at least once, in FASTQ format",
+            paired_concordant_read_one: "Read one from pairs that aligned concordantly at least once, in FASTQ format. Reads are also present in the BAM.",
+            paired_concordant_read_two: "Read two from pairs that aligned concordantly at least once, in FASTQ format. Reads are also present in the BAM.",
             metrics: "Metrics file",
         }
     }
