@@ -1,30 +1,27 @@
-
 - name: bwa_aln
   tags:
     - miniwdl
     - bwa
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task bwa_aln -i tests/tools/input_json/bwa_aln.json tools/bwa.wdl
+    miniwdl run --verbose -d test-output/. --task bwa_aln -i tests/tools/input_json/bwa_aln.json tools/bwa.wdl
   files:
     - path: test-output/out/bam/test.bam
-
 
 - name: bwa_aln_pe
   tags:
     - miniwdl
     - bwa
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task bwa_aln_pe -i tests/tools/input_json/bwa_aln_pe.json tools/bwa.wdl
+    miniwdl run --verbose -d test-output/. --task bwa_aln_pe -i tests/tools/input_json/bwa_aln_pe.json tools/bwa.wdl
   files:
     - path: test-output/out/bam/test.bam
-
 
 - name: bwa_mem
   tags:
     - miniwdl
     - bwa
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task bwa_mem -i tests/tools/input_json/bwa_mem.json tools/bwa.wdl
+    miniwdl run --verbose -d test-output/. --task bwa_mem -i tests/tools/input_json/bwa_mem.json tools/bwa.wdl
   files:
     - path: test-output/out/bam/test.bam
 
@@ -34,16 +31,6 @@
     - bwa
     - reference
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task build_bwa_db tools/bwa.wdl reference_fasta="tests/tools/input/GRCh38.chrY_chrM.fa.gz"
+    miniwdl run --verbose -d test-output/. --task build_bwa_db tools/bwa.wdl reference_fasta="tests/input/GRCh38.chrY_chrM.fa.gz"
   files:
     - path: test-output/out/bwa_db_tar_gz/bwa_db.tar.gz
-
-- name: format_rg_for_bwa
-  tags:
-    - miniwdl
-    - bwa
-  command: >-
-    miniwdl run -d test-output/. --copy-input-files --task format_rg_for_bwa tools/bwa.wdl read_group="ID:test SM:test"
-  stdout:
-    contains:
-      - '@RG\\tID:test\\tSM:test'

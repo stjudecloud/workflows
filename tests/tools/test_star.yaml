@@ -1,11 +1,10 @@
-
 - name: build_star_db
   tags:
     - miniwdl
     - star
     - reference
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task build_star_db tools/star.wdl reference_fasta=tests/tools/input/GRCh38.chrY_chrM.fa.gz gtf=tests/tools/input/genes.gtf.gz
+    miniwdl run --verbose -d test-output/. --task build_star_db tools/star.wdl reference_fasta=tests/input/GRCh38.chrY_chrM.fa gtf=tests/input/gencode.v31.chrY_chrM.gtf.gz
   files:
     - path: test-output/out/star_db/star_db.tar.gz
 
@@ -14,7 +13,17 @@
     - miniwdl
     - star
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task alignment -i tests/tools/input_json/star_alignment.json tools/star.wdl
+    miniwdl run --verbose -d test-output/. --task alignment -i tests/tools/input_json/star_alignment.json tools/star.wdl
+  files:
+    - path: test-output/out/star_log/test.Log.final.out
+    - path: test-output/out/star_bam/test.Aligned.out.bam
+
+- name: star_alignment_SE
+  tags:
+    - miniwdl
+    - star
+  command: >-
+    miniwdl run --verbose -d test-output/. --task alignment tools/star.wdl read_one_fastqs_gz=tests/input/test_R1.fq.gz prefix=test star_db_tar_gz="tests/input/star_db.chrY_chrM.tar.gz"
   files:
     - path: test-output/out/star_log/test.Log.final.out
     - path: test-output/out/star_bam/test.Aligned.out.bam

@@ -1,0 +1,15 @@
+name: Validate Inputs
+
+on: [push]
+
+jobs:
+    validate_inputs:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v2
+        - name: Validate Reference Inputs
+          uses: stjude-rust-labs/sprocket-action@main
+          with:
+            action: validate-inputs
+            wdl_files: "workflows/reference/bwa-db-build.wdl,workflows/reference/gatk-reference.wdl,workflows/reference/qc-reference.wdl,workflows/reference/star-db-build.wdl,workflows/reference/star-db-build.wdl"
+            inputs_files: "workflows/reference/inputs/bwa-db-build-inputs.json,workflows/reference/inputs/gatk-reference-inputs.json,workflows/reference/inputs/qc-reference-inputs.json,workflows/reference/inputs/star-db-build-inputs.json,workflows/reference/inputs/star-db-build-mouse-contaminant-inputs.json"

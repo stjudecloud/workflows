@@ -1,0 +1,9 @@
+- name: librarian
+  tags:
+    - miniwdl
+    - librarian
+  command: >-
+    miniwdl run --verbose -d test-output/. --task librarian tools/librarian.wdl read_one_fastq="tests/input/test_R1.fq.gz"
+  files:
+    - path: test-output/out/report/test.librarian.tar.gz
+    - path: test-output/out/raw_data/librarian_heatmap.txt

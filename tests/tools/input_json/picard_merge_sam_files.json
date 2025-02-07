@@ -1,4 +1,4 @@
 {
-    "bams": ["tests/tools/input/test2.bam", "tests/tools/input/test.bwa_aln_pe.bam"],
+    "bams": ["tests/input/possorted_genome_bam.bam", "tests/input/test.bwa_aln_pe.chrY_chrM.bam"],
     "prefix": "test"
 }

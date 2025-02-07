@@ -3,10 +3,8 @@ PERMITTED META DESCRIPTIONS:
         disk_size_gb: "Disk space to allocate for task, specified in GB"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        use_all_cores: "Use all cores? Recommended for cloud environments."
         ncpu: "Number of cores to allocate for task"
-        use_all_cores: "Use all cores? Recommended for cloud environments. Not recommended for cluster environments."
-        max_retries: "<for a task> Number of times to retry in case of failure"
-        max_retries: "<for a workflow> Number of times to retry failed steps. Overrides task level defaults."
         outfile_name: "Name for the <type of file> file"
         prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
         gtf: "GTF features file. Gzipped or uncompressed."
@@ -15,7 +13,7 @@ PERMITTED META DESCRIPTIONS:
         bam_index: "BAM index file corresponding to the input BAM"
         reference_fasta_gz: "Gzipped reference genome in FASTA format"
         strandedness: {
-            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
+            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`."
             choices: [
                 '',
                 'Stranded-Reverse',
@@ -27,7 +25,7 @@ PERMITTED META DESCRIPTIONS:
         read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
         read_one_fastqs_gz: "Array of gzipped FASTQ files with 1st reads in pair"
         read_two_fastqs_gz: "Array of gzipped FASTQ files with 2nd reads in pair"
-        paired_end: "Is the data paired-end?"
+        paired_end: "Is the data Paired-End?"
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
 
 BANNED META DESCRIPTIONS:

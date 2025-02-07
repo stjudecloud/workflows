@@ -1,0 +1,8 @@
+{
+    "quality_check_standard.bam": "tests/input/test.bwa_aln_pe.chrY_chrM.bam",
+    "quality_check_standard.bam_index": "tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai",
+    "quality_check_standard.kraken_db": "tests/input/kraken2_db.tar.gz",
+    "quality_check_standard.coverage_beds": [
+        "tests/input/gencode.v31.chrY_chrM.gene.bed"
+    ]
+}

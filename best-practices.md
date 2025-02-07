@@ -4,10 +4,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
 
 ## Rules
 
-- All WDL should be written in v1.0
-  - This is to enable the broadest base of support of your workflows
-  - This recommendation is subject to change come broader support for WDL v1.1
-- Variables should be in "snake_case"
+- All WDL should be written in v1.1
 - See `template/common-parameter-meta.txt` for common description strings.
   - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
 - Check all assumptions made about workflow inputs before beginning long running executions
@@ -15,7 +12,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - This can commonly be handled by a `parse_input` task (defined in the same file as the workflow in question)
     - When possible, avoid passing in entire files to the `parse_input` task. Coerce files to `Boolean`s or `String`s to avoid unnecessary disk space usage
 - All tasks with multiple commands (including any pipes (`|`)) should have `set -euo pipefail` before any other commands.
-- Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-templates.wdl`)
+- Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-examples.wdl.template`)
   - they should also fail quickly with an informative error message if an invalid input is provided
     - In most cases, just passing the parameter to the underlying tool should produce a satisfactory error, but this must be checked for each tool
   - While redundant, it is still best practice to validate these strings in the `parse_input` task of any workflow which calls the task
@@ -24,19 +21,11 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - see the various tasks in the template directory for possible ways to allocate resources
     - Contributors can mix and match the available templates, copy and pasting subsections as appropriate
     - It is allowed to have one resource allocated dynamically, and another allocated statically in the same task.
-    - It is *not* allowed to have a resource which can be allocated *either* statically or dynamically.
-      - This is technically feasible, but is too complicated for maintenance and end-users.
-      - e.g. `memory_gb` and `modify_memory_gb` cannot be present in the same task.
-- All tasks and workflows should have a `max_retries` input.
-  - This should be defaulted to `1` for nearly all tasks
-  - Some tasks are particularly error prone and can have a higher default `max_retries`
-  - **rule specific to workflows:** `max_retries` should be an optional `Int?`
-    - This allows each task to have it's own specific default `max_retries`
-      - If a user does not supply `max_retries`, those task level defaults will get used
-      - If a user does supply `max_retries`, it should override the default for *every* task called
-- multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-templates.wdl`)
+- multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-examples.wdl.template`)
   - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter
-- Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-templates.wdl`)
+  - Note that future versions of WDL will likely cause a change to this convention.
+    - We plan to deprecate the `ncpu` param in favor of accessing the runtime section directly (`n_cores=~{task.runtime.cpu}`)
+- Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-examples.wdl.template`)
   - This is to accomodate as many backends as possible
 - output file names should *always* be determined with either the `outfile_name` parameter or the `prefix` parameter.
   - `outfile_name` should be preferred if no downstream tasks/tools rely on the file name/extension
@@ -44,8 +33,16 @@ All rules below should be followed by contributors to this repo. Contributors sh
 - After the input sorting rules in `style-guide.md` have been applied, follow the below rules for further sorting.
   - "sample" files come before "reference" files
   - If present, `use_all_cores` should be the last `Boolean` in its block
-  - the `ncpu` parameter comes before inputs that allocate memory, which come before inputs that allocate disk space, which come before `max_retries`
-    - This block of 3-4 inputs should come after all other inputs.
+  - the `ncpu` parameter comes before inputs that allocate memory, which come before inputs that allocate disk space
+    - This block of 2-3 inputs should come after all other inputs.
+- Most tasks should have a default `maxRetries` of 1
+  - Certain tasks are prone to intermittent failure (often if an internet connection is involved) and can have a higher default `maxRetries`. This value should not exceed 3.
+- There are lower bounds for resource allocation
+  - Memory should be allocated a minimum of 4gb
+  - Disk size should be allocated a minimum of 10gb
+  - If the task is multi-cored, it should use at least 2 cpu by default
+  - These bounds were selected somewhat arbitrarily, but consistency is important for quickly identifying our light-weight tasks
+  - These bounds are subject to change pending a more empirical investigation
 - All tasks should have an output
   - This may be a hardcoded "dummy" output such as `String check = "passed"`
   - This ensures the task can be cached by runners. Tasks without outputs may be required to rerun on the same input due to a cache miss.

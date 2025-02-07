@@ -1,0 +1,8 @@
+{
+    "bam": "tests/input/test.bam",
+    "bam_index": "tests/input/test.bam.bai",
+    "fasta": "tests/input/GRCh38.chr1_chr19.fa",
+    "fasta_index": "tests/input/GRCh38.chr1_chr19.fa.fai",
+    "dict": "tests/input/GRCh38.chr1_chr19.dict",
+    "prefix": "split"
+}

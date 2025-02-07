@@ -3,6 +3,6 @@
     - miniwdl
     - multiqc
   command: >-
-    miniwdl run -d test-output/. --copy-input-files --task multiqc -i tests/tools/input_json/multiqc.json tools/multiqc.wdl
+    miniwdl run --verbose -d test-output/. --task multiqc -i tests/tools/input_json/multiqc.json tools/multiqc.wdl
   files:
-    - path: test-output/out/multiqc_report/test.bwa_aln_pe.tar.gz
+    - path: test-output/out/multiqc_report/test.bwa_aln_pe.chrY_chrM.tar.gz

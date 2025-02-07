@@ -3,12 +3,21 @@
 **/*.fa
 **/*.gtf
 **/*.bam
+**/*.sam
 **/*.log
 
-# Blacklist Cromwell and Womtool files
+# Blacklist Cromwell and Womtool and miniwdl files
 **/cromwell*
 **/womtool*
 *.jar
+miniwdl_call_cache/
+miniwdl_singularity_cache/
+_LAST
+202*/
+
+# Blacklist test directories
+test-output/
+**/__pycache__
 
 # Blacklist OS generated files
 .DS_Store

@@ -1,0 +1,46 @@
+- name: sambamba_index
+  tags:
+    - miniwdl
+    - sambamba
+  command: >-
+    miniwdl run --verbose -d test-output/. --task index tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+  files:
+    - path: test-output/out/bam_index/test.bwa_aln_pe.chrY_chrM.bam.bai
+
+- name: sambamba_merge
+  tags:
+    - miniwdl
+    - sambamba
+  command: >-
+    miniwdl run --verbose -d test-output/. --task merge -i tests/tools/input_json/sambamba_merge.json tools/sambamba.wdl
+  files:
+    - path: test-output/out/merged_bam/test.bam
+
+- name: sambamba_sort
+  tags:
+    - miniwdl
+    - sambamba
+  command: >-
+    miniwdl run --verbose -d test-output/. --task sort tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+  files:
+    - path: test-output/out/sorted_bam/test.bwa_aln_pe.chrY_chrM.sorted.bam
+
+- name: sambamba_flagstat
+  tags:
+    - miniwdl
+    - sambamba
+  command: >-
+    miniwdl run --verbose -d test-output/. --task flagstat tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+  files:
+    - path: test-output/out/flagstat_report/test.bwa_aln_pe.chrY_chrM.flagstat.txt
+
+- name: sambamba_markdup
+  tags:
+    - miniwdl
+    - sambamba
+  command: >-
+    miniwdl run --verbose -d test-output/. --task markdup tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+  files:
+    - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.chrY_chrM.markdup.bam
+    - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.chrY_chrM.markdup.bam.bai
+    - path: test-output/out/markdup_log/test.bwa_aln_pe.chrY_chrM.markdup_log.txt

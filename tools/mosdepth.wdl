@@ -1,24 +1,38 @@
-## # Mosdepth
-##
-## This WDL file wraps the [mosdepth tool](https://github.com/brentp/mosdepth).
+## [Homepage](https://github.com/brentp/mosdepth)
 
 version 1.1
 
 task coverage {
     meta {
-        description: "This WDL task wraps the Mosdepth tool for calculating coverage"
+        description: "Runs the Mosdepth tool for calculating coverage"
+        outputs: {
+            summary: "A summary of mean depths per chromosome and within specified regions per chromosome",
+            global_dist: "The `$prefix.mosdepth.global.dist.txt` file contains a cumulative distribution indicating the proportion of total bases that were covered for at least a given coverage value. It does this for each chromosome, and for the whole genome.",
+            region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by `coverage_bed` that were covered for at least a given coverage value",
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to calculate coverage for"
+        bam_index: "BAM index file corresponding to the input BAM"
+        coverage_bed: "BED file to pass to the `-b` flag of `mosdepth`. This will restrict coverage analysis to regions defined by the BED file."
+        prefix: "Prefix for the `mosdepth` report files. The extensions `.mosdepth.summary.txt`, `.mosdepth.global.dist.txt` and `.mosdepth.region.dist.txt` will be added."
+        use_fast_mode: "Use Mosdepth's 'fast mode'? This enables the `-x` flag."
+        min_mapping_quality: {
+            description: "Minimum mapping quality to pass to the `-Q` flag of `mosdepth`",
+            group: "common",
+        }
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         File bam
         File bam_index
         File? coverage_bed
-        String prefix = basename(bam, '.bam')
+        String prefix = basename(bam, ".bam")
         Boolean use_fast_mode = true
         Int min_mapping_quality = 20
-        Int memory_gb = 8 
         Int modify_disk_size_gb = 0
-        Int max_retries = 1
     }
 
     Float bam_size = size(bam, "GiB")
@@ -28,8 +42,6 @@ task coverage {
         set -euo pipefail
 
         # localize BAM and BAI to CWD
-        # some backends prevent writing to the inputs directories
-        # to accomodate this, create symlinks in CWD
         CWD_BAM=~{basename(bam)}
         ln -s ~{bam} "$CWD_BAM"
         ln -s ~{bam_index} "$CWD_BAM".bai
@@ -52,9 +64,9 @@ task coverage {
     }
 
     runtime {
-        memory: "~{memory_gb} GB"
-        disk: "~{disk_size_gb} GB"
-        docker: 'quay.io/biocontainers/mosdepth:0.3.3--h37c5b7d_2'
-        maxRetries: max_retries
+        memory: "8 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/mosdepth:0.3.6--hd299d5a_0"
+        maxRetries: 1
     }
 }
