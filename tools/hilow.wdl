@@ -277,7 +277,7 @@ task converthic {
         /HiC-Pro_3.0.0/bin/utils/hicpro2juicebox.sh \
             -i ~{all_valid_pairs} \
             -g ~{chromsizes} \
-            -j /opt/juicer-1.6.2/CPU/common/juicer_tools.1.7.6_jcuda.0.8.jar
+            -j /opt/juicer/CPU/common/juicer_tools.jar
     >>>
 
     output {
