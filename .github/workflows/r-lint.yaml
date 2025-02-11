@@ -21,7 +21,7 @@ jobs:
           with:
             packages: styler
         - name: Style
-          run: styler::style_pkg()
+          run: styler::style_dir()
           shell: Rscript {0}
     lint:
       runs-on: ubuntu-latest
