@@ -1,5 +1,7 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+name: R CI
+
 on: [push]
   
 jobs:
@@ -17,8 +19,7 @@ jobs:
         - name: Install dependencies
           uses: r-lib/actions/setup-r-dependencies@v2
           with:
-            extra-packages: any::styler, any::roxygen2
-            needs: styler  
+            packages: styler
         - name: Style
           run: styler::style_pkg()
           shell: Rscript {0}
@@ -34,7 +35,7 @@ jobs:
         - name: Install dependencies
           uses: r-lib/actions/setup-r-dependencies@v2
           with:
-            needs: lintr
+            packages: lintr
         - name: Lint
           run: lintr::lint_dir()
           shell: Rscript {0}
