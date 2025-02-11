@@ -29,7 +29,7 @@ jobs:
               echo "No changes to the code style"
             else
               echo "Code style differences detected"
-              git status
+              git status --porcelain
               git diff
               exit 1
             fi
@@ -49,3 +49,5 @@ jobs:
         - name: Lint
           run: lintr::lint_dir()
           shell: Rscript {0}
+          env:
+            LINTR_ERROR_ON_LINT: true
