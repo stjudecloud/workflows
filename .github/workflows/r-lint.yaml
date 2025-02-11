@@ -23,6 +23,16 @@ jobs:
         - name: Style
           run: styler::style_dir()
           shell: Rscript {0}
+        - name: Check differences
+          run: |
+            if [ -z "$(git status --porcelain)" ]; then
+              echo "No changes to the code style"
+            else
+              echo "Code style differences detected"
+              git status
+              git diff
+              exit 1
+            fi
     lint:
       runs-on: ubuntu-latest
       steps:
