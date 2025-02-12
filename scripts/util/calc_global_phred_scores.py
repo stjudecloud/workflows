@@ -21,6 +21,7 @@ def stats_from_dict(score_dict):
     median_pos = (total_freq + 1) / 2
     cumul_freq = 0
     median_found = False
+    median = None
     sum_freq_times_score_sqrd = 0
     for score, freq in freq_table:
         cumul_freq += freq
@@ -38,10 +39,9 @@ def stats_from_dict(score_dict):
 def main(bam_path, prefix, fast_mode):
     bam = pysam.AlignmentFile(bam_path, "rb")
 
-    if not fast_mode:
-        tot_quals = defaultdict(lambda: 0)
-        mapped_quals = defaultdict(lambda: 0)
-        unmapped_quals = defaultdict(lambda: 0)
+    tot_quals = defaultdict(lambda: 0)
+    mapped_quals = defaultdict(lambda: 0)
+    unmapped_quals = defaultdict(lambda: 0)
     first_tot_quals = defaultdict(lambda: 0)
     first_mapped_quals = defaultdict(lambda: 0)
     first_unmapped_quals = defaultdict(lambda: 0)
