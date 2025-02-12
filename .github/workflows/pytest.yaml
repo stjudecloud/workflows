@@ -20,6 +20,7 @@ jobs:
     strategy:
       matrix:
         tag: ${{ fromJson(needs.list-tags.outputs.tags) }}
+      fail-fast: false
     steps:
     - uses: actions/checkout@v4
       with:
