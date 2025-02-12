@@ -459,9 +459,9 @@ task global_phred_scores {
         set -euo pipefail
 
         python3 /scripts/util/calc_global_phred_scores.py \
-            ~{if fast_mode then "--fast-mode" else ""}
+            ~{if fast_mode then "--fast-mode" else ""} \
             ~{bam} \
-            ~{prefix} \
+            ~{prefix}
     >>>
 
     output {
