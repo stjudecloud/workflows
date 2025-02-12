@@ -174,72 +174,20 @@ task calc_gene_lengths {
     Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
-        set -euo pipefail
-
-        GTF="~{gtf}" OUTFILE="~{outfile_name}" IDATTR="~{idattr}" python - <<END
-        import os  # lint-check: ignore
-        import gtfparse  # lint-check: ignore
-        import numpy as np  # lint-check: ignore
-        from collections import defaultdict  # lint-check: ignore
-
-        gtf_name = os.environ["GTF"]
-        outfile = open(os.environ["OUTFILE"], "w")
-        id_attr = os.environ["IDATTR"]
-
-        gtf = gtfparse.read_gtf(gtf_name)
-
-        only_exons = gtf[gtf["feature"] == "exon"]
-        exon_starts = defaultdict(lambda: [])
-        exon_ends = defaultdict(lambda: [])
-        gene_start_offset = {}
-        gene_end_offset = {}
-        gene_exon_intersection = {}
-
-        for _index, value in only_exons.iterrows():
-            feature_id = value[id_attr]
-            start = value["start"]
-            end = value["end"] + 1  # end is inclusive in GTF
-            exon_starts[feature_id].append(start)
-            exon_ends[feature_id].append(end)
-            if feature_id not in gene_start_offset:
-                gene_start_offset[feature_id] = start
-                gene_end_offset[feature_id] = end
-            else:
-                gene_start_offset[feature_id] = min(gene_start_offset[feature_id], start)
-                gene_end_offset[feature_id] = max(gene_end_offset[feature_id], end)
-
-        for feature_id in exon_starts:
-            gene_exon_intersection[feature_id] = np.full(
-                gene_end_offset[feature_id] - gene_start_offset[feature_id], False
-            )
-
-            for start, end in zip(exon_starts[feature_id], exon_ends[feature_id]):
-                gene_exon_intersection[feature_id][
-                    start - gene_start_offset[feature_id]
-                    : end - gene_start_offset[feature_id]
-                ] = True
-
-        print("feature\tlength", file=outfile)
-        for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
-            # np.count_nonzero() is faster than sum
-            # np.count_nonzero() evaluates the "truthfulness" of
-            # of all elements (by calling their '.__bool__()' method)
-            length = np.count_nonzero(exonic_intersection)
-            print(f"{gene}\t{length}", file=outfile)
-
-        outfile.close()
-
-        END
+        python3 /scripts/util/calc_gene_lengths.py \
+            --id_attr ~{idattr} \
+            ~{gtf} \
+            ~{outfile_name}
     >>>
 
     output {
-        File gene_lengths = "~{outfile_name}"
+        File gene_lengths = outfile_name
     }
 
     runtime {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0"
+        container: "ghcr.io/stjudecloud/util:branch-scripts-2.1.0"
         maxRetries: 1
     }
 }
