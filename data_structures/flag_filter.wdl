@@ -118,7 +118,7 @@ task validate_string_is_12bit_oct_dec_or_hex {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:branch-scripts-2.1.0"
+        container: "ghcr.io/stjudecloud/util:2.1.0"
         maxRetries: 1
     }
 }

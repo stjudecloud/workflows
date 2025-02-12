@@ -124,7 +124,7 @@ task combine_data {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-scripts-2.2.1-4"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-4"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -170,7 +170,7 @@ task filter_probes {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-scripts-2.2.1-4"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-4"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -209,7 +209,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/umap:branch-scripts-0.5.7-5"
+        container: "ghcr.io/stjudecloud/umap:0.5.7-5"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -244,7 +244,7 @@ task plot_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/python-plotting:branch-scripts-2.0.1"
+        container: "ghcr.io/stjudecloud/python-plotting:2.0.1"
         memory: "4 GB"
         cpu: 1
         disks: "4 GB"
