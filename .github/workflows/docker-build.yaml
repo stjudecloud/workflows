@@ -87,7 +87,7 @@ jobs:
         run: |
           curl -LO https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64 && \
           chmod +x container-diff-linux-amd64 && \
-          ./container-diff-linux-amd64 diff daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
+          ./container-diff-linux-amd64 diff daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
       - name: Run Snyk to check Docker image for vulnerabilities
         # Snyk can be used to break the build when it detects vulnerabilities.
         # In this case we want to upload the issues to GitHub Code Scanning
