@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
+
+## 2025 February
+
+### Changed
+
+- `ngsderive.encoding` removed the `String inferred_encoding` output [#216](https://github.com/stjudecloud/workflows/pull/216).
  
 ## 2025 January
 

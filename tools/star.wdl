@@ -127,7 +127,7 @@ task build_star_db {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-5"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-6"
         maxRetries: 1
     }
 }
@@ -640,7 +640,7 @@ task alignment {
         mkdir star_db
         tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
-        python3 /home/sort_star_input.py \
+        python3 /scripts/star/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
             ~{(
                 if (length(read_two_fastqs_gz) != 0)
@@ -833,7 +833,7 @@ task alignment {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-5"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-6"
         maxRetries: 1
     }
 }
