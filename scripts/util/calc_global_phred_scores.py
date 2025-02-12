@@ -232,7 +232,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--fast_mode",
         action="store_true",
-        help="Only calculate the first, middle, and last position PHRED scores isntead of also calculating PHRED scores for _every_ position",
+        help="Only calculate the first, middle, and last position PHRED scores instead of also calculating PHRED scores for _every_ position",
     )
     args = parser.parse_args()
 
