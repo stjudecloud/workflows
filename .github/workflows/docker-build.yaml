@@ -83,6 +83,11 @@ jobs:
             echo "Should you increment the version number?"
             # exit 1
           fi
+      - name: container diff
+        run: |
+          curl -LO https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64 && \
+          chmod +x container-diff-linux-amd64 && \
+          ./container-diff-linux-amd64 daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
       - name: Run Snyk to check Docker image for vulnerabilities
         # Snyk can be used to break the build when it detects vulnerabilities.
         # In this case we want to upload the issues to GitHub Code Scanning
