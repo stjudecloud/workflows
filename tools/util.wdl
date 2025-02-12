@@ -42,7 +42,7 @@ task download {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:branch-scripts-2.1.0"
         maxRetries: 1
     }
 }
@@ -139,7 +139,7 @@ task split_string {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:branch-scripts-2.1.0"
         maxRetries: 1
     }
 }
@@ -363,7 +363,7 @@ task unpack_tarball {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:branch-scripts-2.1.0"
         maxRetries: 1
     }
 }
@@ -471,7 +471,7 @@ task global_phred_scores {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:branch-scripts-2.1.0"
         maxRetries: 1
     }
 }
@@ -549,7 +549,7 @@ task qc_summary {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:branch-scripts-2.1.0"
         maxRetries: 1
     }
 }
@@ -610,7 +610,7 @@ task split_fastq {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:branch-scripts-2.1.0"
         maxRetries: 1
     }
 }
