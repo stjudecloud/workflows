@@ -13,7 +13,10 @@ def main(gtf_path, outfile_path, id_attr):
     gene_end_offset = {}
     gene_exon_intersection = {}
 
-    for _index, value in only_exons.iterrows():
+    for (
+        _index,
+        value,
+    ) in only_exons.iterrows():  # pyright: ignore [reportAttributeAccessIssue]
         feature_id = value[id_attr]
         start = value["start"]
         end = value["end"] + 1  # end is inclusive in GTF
@@ -23,7 +26,9 @@ def main(gtf_path, outfile_path, id_attr):
             gene_start_offset[feature_id] = start
             gene_end_offset[feature_id] = end
         else:
-            gene_start_offset[feature_id] = min(gene_start_offset[feature_id], start)
+            gene_start_offset[feature_id] = min(
+                gene_start_offset[feature_id], start
+            )  # pyright: ignore [reportArgumentType]
             gene_end_offset[feature_id] = max(gene_end_offset[feature_id], end)
 
     for feature_id in exon_starts:
