@@ -12,7 +12,7 @@ Any change to the `scripts/` directory should be accompanied by version increase
 
 ### Added
 
-- Added `calc_global_phred_scores.py` script [#216](https://github.com/stjudecloud/workflows/pull/216).
+- Added `calc_global_phred_scores.py` and `calc_gene_lengths.py` scripts [#216](https://github.com/stjudecloud/workflows/pull/216).
 
 ## 2025 January
 
