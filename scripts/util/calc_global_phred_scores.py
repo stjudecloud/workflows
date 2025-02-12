@@ -184,9 +184,11 @@ def main(bam_path, prefix, fast_mode):
     print(f"{middle_mapped_median}", file=outfile, end="\t")
     print(f"{middle_mapped_stdev}", file=outfile, end="\t")
 
-    middle_unmapped_avg, middle_unmapped_median, middle_unmapped_stdev = (
-        stats_from_dict(middle_unmapped_quals)
-    )
+    (
+        middle_unmapped_avg,
+        middle_unmapped_median,
+        middle_unmapped_stdev,
+    ) = stats_from_dict(middle_unmapped_quals)
     print(f"{middle_unmapped_avg}", file=outfile, end="\t")
     print(f"{middle_unmapped_median}", file=outfile, end="\t")
     print(f"{middle_unmapped_stdev}", file=outfile, end="\t")
