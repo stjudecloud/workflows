@@ -309,6 +309,8 @@ task add_to_bam_header {
     String outfile_name = prefix + ".bam"
 
     command <<<
+        set -euo pipefail
+
         samtools view -H ~{bam} > header.sam
         echo "~{additional_header}" >> header.sam
         samtools reheader -P header.sam ~{bam} > ~{outfile_name}
@@ -456,8 +458,6 @@ task global_phred_scores {
 
     #@ except: LineWidth
     command <<<
-        set -euo pipefail
-
         python3 /scripts/util/calc_global_phred_scores.py \
             ~{if fast_mode then "--fast_mode" else ""} \
             ~{bam} \
