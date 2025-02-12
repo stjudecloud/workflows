@@ -114,7 +114,7 @@ task combine_data {
     Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2) + 2
 
     command <<<
-        python $(which combine.py) \
+        python /scripts/methylation/combine.py \
             --output-name ~{combined_file_name} \
             ~{sep(" ", unfiltered_normalized_beta)}
     >>>
@@ -124,7 +124,7 @@ task combine_data {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:2.2.1-3"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-4"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -157,7 +157,7 @@ task filter_probes {
     Int disk_size_gb = ceil(size(beta_values, "GiB") * 2) + 2
 
     command <<<
-        python $(which filter.py) \
+        python /scripts/methylation/filter.py \
             --output-name ~{prefix}.beta.csv \
             --filtered-probes ~{prefix}.probes.csv \
             --num-probes ~{num_probes} \
@@ -170,7 +170,7 @@ task filter_probes {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:2.2.1-3"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-4"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -199,7 +199,7 @@ task generate_umap {
     Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2) + 2
 
     command <<<
-        python /usr/local/bin/generate_umap.py \
+        python /scripts/methylation/generate_umap.py \
             --beta ~{filtered_beta_values} \
             --output-name ~{prefix}.csv
     >>>
@@ -209,7 +209,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/umap:0.5.7-4"
+        container: "ghcr.io/stjudecloud/umap:0.5.7-5"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -236,7 +236,7 @@ task plot_umap {
     }
 
     command <<<
-        python /usr/local/bin/plot_umap.py --umap ~{umap} --output-name ~{plot_file}
+        python /scripts/methylation/plot_umap.py --umap ~{umap} --output-name ~{plot_file}
     >>>
 
     output {
@@ -244,7 +244,7 @@ task plot_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/python-plotting:2.0.0"
+        container: "ghcr.io/stjudecloud/python-plotting:2.0.1"
         memory: "4 GB"
         cpu: 1
         disks: "4 GB"

@@ -4,4 +4,4 @@ RUN apk add --no-cache bash
 
 RUN pip install pandas numpy matplotlib seaborn plotly
 
-COPY --from=scripts --chmod=777 methylation/plot_umap.py /usr/local/bin/plot_umap.py
+COPY --from=scripts --chmod=777 methylation/plot_umap.py /scripts/methylation/plot_umap.py

@@ -34,7 +34,7 @@ task process_raw_idats {
 
         ln -s ~{idats.left} ~{idats.right} .
 
-        Rscript $(which methylation-preprocess.R) \
+        Rscript /scripts/methylation/methylation-preprocess.R \
             --idat_base ~{idat_base} \
             --out_base ~{out_base} \
             --seed ~{seed}
@@ -53,7 +53,7 @@ task process_raw_idats {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/minfi:1.48.0-2"
+        container: "ghcr.io/stjudecloud/minfi:1.48.0-3"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"

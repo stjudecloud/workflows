@@ -640,7 +640,7 @@ task alignment {
         mkdir star_db
         tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
-        python3 /home/sort_star_input.py \
+        python3 /scripts/star/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
             ~{(
                 if (length(read_two_fastqs_gz) != 0)

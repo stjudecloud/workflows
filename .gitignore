@@ -1,4 +1,4 @@
-# Blacklist common bioinformatics formats used in these workflows.
+# Ignore common bioinformatics formats used in these workflows.
 **/*.fastq.gz
 **/*.fa
 **/*.gtf
@@ -6,7 +6,7 @@
 **/*.sam
 **/*.log
 
-# Blacklist Cromwell and Womtool and miniwdl files
+# Ignore Cromwell and Womtool and miniwdl files
 **/cromwell*
 **/womtool*
 *.jar
@@ -15,15 +15,18 @@ miniwdl_singularity_cache/
 _LAST
 202*/
 
-# Blacklist test directories
+# Ignore test directories
 test-output/
 **/__pycache__
 
-# Blacklist OS generated files
+# Ignore OS generated files
 .DS_Store
 
 # Commonly used folder for putting miniwdl results in during testing
 results/
+
+# Ignore `sprocket doc` dir
+docs/
 
 # ignore any tags files that are generated
 tags
