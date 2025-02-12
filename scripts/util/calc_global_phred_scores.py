@@ -3,6 +3,38 @@ from collections import defaultdict
 import pysam
 
 
+def stats_from_dict(score_dict):
+    total_score = 0
+    total_freq = 0
+    freq_table = []
+    for score, freq in score_dict.items():
+        total_score += score * freq
+        total_freq += freq
+        freq_table.append((score, freq))
+
+    if total_freq == 0:
+        return -1, -1, -1
+    avg = total_score / total_freq
+
+    freq_table.sort(key=lambda entry: entry[0])
+
+    median_pos = (total_freq + 1) / 2
+    cumul_freq = 0
+    median_found = False
+    sum_freq_times_score_sqrd = 0
+    for score, freq in freq_table:
+        cumul_freq += freq
+        if cumul_freq >= median_pos:
+            if not median_found:
+                median = score
+            median_found = True
+        sum_freq_times_score_sqrd += freq * (score**2)
+
+    stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2)) ** 0.5
+
+    return avg, median, stdev
+
+
 def main(bam_path, prefix, fast_mode):
     bam = pysam.AlignmentFile(bam_path, "rb")
 
@@ -103,39 +135,6 @@ def main(bam_path, prefix, fast_mode):
     )
     print(prefix, file=outfile, end="\t")
 
-
-    def stats_from_dict(score_dict):
-        total_score = 0
-        total_freq = 0
-        freq_table = []
-        for score, freq in score_dict.items():
-            total_score += score * freq
-            total_freq += freq
-            freq_table.append((score, freq))
-
-        if total_freq == 0:
-            return -1, -1, -1
-        avg = total_score / total_freq
-
-        freq_table.sort(key=lambda entry: entry[0])
-
-        median_pos = (total_freq + 1) / 2
-        cumul_freq = 0
-        median_found = False
-        sum_freq_times_score_sqrd = 0
-        for score, freq in freq_table:
-            cumul_freq += freq
-            if cumul_freq >= median_pos:
-                if not median_found:
-                    median = score
-                median_found = True
-            sum_freq_times_score_sqrd += freq * (score**2)
-
-        stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2)) ** 0.5
-
-        return avg, median, stdev
-
-
     if not fast_mode:
         tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
         print(f"{tot_avg}", file=outfile, end="\t")
@@ -171,7 +170,9 @@ def main(bam_path, prefix, fast_mode):
     print(f"{first_unmapped_median}", file=outfile, end="\t")
     print(f"{first_unmapped_stdev}", file=outfile, end="\t")
 
-    middle_tot_avg, middle_tot_median, middle_tot_stdev = stats_from_dict(middle_tot_quals)
+    middle_tot_avg, middle_tot_median, middle_tot_stdev = stats_from_dict(
+        middle_tot_quals
+    )
     print(f"{middle_tot_avg}", file=outfile, end="\t")
     print(f"{middle_tot_median}", file=outfile, end="\t")
     print(f"{middle_tot_stdev}", file=outfile, end="\t")
@@ -183,8 +184,8 @@ def main(bam_path, prefix, fast_mode):
     print(f"{middle_mapped_median}", file=outfile, end="\t")
     print(f"{middle_mapped_stdev}", file=outfile, end="\t")
 
-    middle_unmapped_avg, middle_unmapped_median, middle_unmapped_stdev = stats_from_dict(
-        middle_unmapped_quals
+    middle_unmapped_avg, middle_unmapped_median, middle_unmapped_stdev = (
+        stats_from_dict(middle_unmapped_quals)
     )
     print(f"{middle_unmapped_avg}", file=outfile, end="\t")
     print(f"{middle_unmapped_median}", file=outfile, end="\t")
@@ -210,6 +211,7 @@ def main(bam_path, prefix, fast_mode):
     print(f"{last_unmapped_stdev}", file=outfile)  # end="\n"
 
     outfile.close()
+
 
 if __name__ == "__main__":
     import argparse
