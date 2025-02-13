@@ -34,7 +34,7 @@ task process_raw_idats {
 
         ln -s ~{idats.left} ~{idats.right} .
 
-        Rscript $(which methylation-preprocess.R) \
+        Rscript /scripts/methylation/methylation-preprocess.R \
             --idat_base ~{idat_base} \
             --out_base ~{out_base} \
             --seed ~{seed}
