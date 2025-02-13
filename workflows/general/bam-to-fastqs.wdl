@@ -33,6 +33,7 @@ workflow bam_to_fastqs {
         bam,
         use_all_cores,
     }
+
     scatter (split_bam in split.split_bams) {
         call samtools.bam_to_fastq { input:
             bam = split_bam,
