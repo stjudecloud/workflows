@@ -97,9 +97,9 @@ jobs:
             changed=1
           fi
           # check file diff result
-          additions=$(jq ".[] | select(.DiffType == "File") | if .Diff.Adds != null then .Diff.Adds[].Name else 0 end" comparison.json)
-          deletions=$(jq ".[] | select(.DiffType == "File") | if .Diff.Dels != null then .Diff.Dels[].Name else 0 end" comparison.json)
-          modifications=$(jq ".[] | select(.DiffType == "File") | if .Diff.Mods != null then .Diff.Mods[].Name else 0 end" comparison.json)
+          additions=$(jq '.[] | select(.DiffType == "File") | if .Diff.Adds != null then .Diff.Adds[].Name else 0 end' comparison.json)
+          deletions=$(jq '.[] | select(.DiffType == "File") | if .Diff.Dels != null then .Diff.Dels[].Name else 0 end' comparison.json)
+          modifications=$(jq '.[] | select(.DiffType == "File") | if .Diff.Mods != null then .Diff.Mods[].Name else 0 end' comparison.json)
           if [ "$additions" != "0" ]
           then
             echo "Files have been added"
