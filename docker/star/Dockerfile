@@ -1,4 +1,4 @@
-FROM debian:10 AS python
+FROM debian:12.5-slim AS python
 
 RUN apt-get update \
     && apt-get --yes install --no-install-recommends python3 \
