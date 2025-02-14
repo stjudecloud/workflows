@@ -156,17 +156,36 @@ task alignment {
             description: "An array of `String`s where each `String` corresponds to one read group.",
             help: "Each read group string should start with the `ID` field followed by any other read group fields, where fields are delimited by a space. See `../data_structures/read_group.wdl` for information about possible fields and utility tasks for constructing, validating, and \"stringifying\" read groups.",
             warning: "The `ID` field for each read group _must_ be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `[\"ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1\", \"ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1\"]`. These two read groups could be associated with the following four FASTQs: `[\"sample1.rg1.R1.fastq\", \"sample1.rg2.R1.fastq\"]` and `[\"sample1.rg1.R2.fastq\", \"sample1.rg2.R2.fastq\"]`",
+            group: "common",
         }
         read_two_fastqs_gz: {
             description: "An array of gzipped FASTQ files containing read two information",
             group: "common",
         }
-        out_sj_filter_intron_max_vs_read_n: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions."
-        out_sj_filter_overhang_min: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions."
-        out_sj_filter_count_unique_min: "minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
-        out_sj_filter_count_total_min: "minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
-        out_sj_filter_dist_to_other_sj_min: "minimum allowed distance to other junctions' donor/acceptor for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. Does not apply to annotated junctions."
-        align_sj_stitch_mismatch_n_max: "maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif"
+        out_sj_filter_intron_max_vs_read_n: {
+            description: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions.",
+            group: "Splice Junctions",
+        }
+        out_sj_filter_overhang_min: {
+            description: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions.",
+            group: "Splice Junctions",
+        }
+        out_sj_filter_count_unique_min: {
+            description: "minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions.",
+            group: "Splice Junctions",
+        }
+        out_sj_filter_count_total_min: {
+            description: "minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions.",
+            group: "Splice Junctions",
+        }
+        out_sj_filter_dist_to_other_sj_min: {
+            description: "minimum allowed distance to other junctions' donor/acceptor for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. Does not apply to annotated junctions.",
+            group: "Splice Junctions",
+        }
+        align_sj_stitch_mismatch_n_max: {
+            description: "maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif",
+            group: "Splice Junctions",
+        }
         clip_3p_adapter_seq: {
             description: "adapter sequences to clip from 3p of each mate. `left` applies to read one and `right` applies to read two.",
             choices: {
@@ -343,7 +362,7 @@ task alignment {
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            group: "common",
+            group: "Resources",
         }
         out_filter_mismatch_n_over_l_max: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
         out_filter_mismatch_n_over_read_l_max: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
@@ -476,9 +495,12 @@ task alignment {
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            group: "common",
+            group: "Resources",
         }
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: {
+            description: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.",
+            group: "Resources",
+        }
     }
 
     input {
