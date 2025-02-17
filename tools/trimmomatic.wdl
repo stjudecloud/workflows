@@ -31,8 +31,13 @@ task trim_single_end {
     }
 
     command <<<
-        cd /usr/local/share/trimmomatic-0.36-5
-        java -jar trimmomatic.jar SE -phred33 ~{inputfile} output.fq.gz ILLUMINACLIP:/usr/local/share/trimmomatic-0.36-5/adapters/TruSeq3-SE.fa:2:30:10 LEADING:~{leading} TRAILING:~{trailing} SLIDINGWINDOW:~{window_size}:~{window_quality} MINLEN:~{minlen}
+        trimmomatic SE -phred33 -threads 8 \
+        -trimlog trimlog.txt ~{inputfile} output.fq.gz \
+        ILLUMINACLIP:/usr/local/share/trimmomatic-0.36-5/adapters/TruSeq3-SE.fa:2:30:10 \
+        LEADING:~{leading} \
+        TRAILING:~{trailing} \
+        SLIDINGWINDOW:~{window_size}:~{window_quality} \
+        MINLEN:~{minlen} 
         ls -l
     >>>
 
