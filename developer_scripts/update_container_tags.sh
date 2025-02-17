@@ -13,4 +13,12 @@ else
   replacement='container: "ghcr.io/stjudecloud/\1:branch-'$target'-\3"'
 fi
 
-find . -not -path '.git' -a -type f -name '*.wdl' | xargs sed -Eri '' "s,$search_pattern,$replacement,g"
+# freeBSD sed (including the Mac version) requires a space and then an argument to -i
+if [ "$(uname)" == "Darwin" ]
+then
+  inplace_arg='-i ""'
+else
+  inplace_arg='-i'
+fi
+
+find . -not -path '.git' -a -type f -name '*.wdl' | xargs sed -Er $inplace_arg "s,$search_pattern,$replacement,g"
