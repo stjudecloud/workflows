@@ -28,7 +28,7 @@ task build_star_db {
         sjdb_gtf_tag_exon_parent_gene_type: "GTF attribute name for parent gene type"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            group: "Common",
+            group: "Resources",
         }
         genome_chr_bin_n_bits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
         genome_SA_index_n_bases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
@@ -40,10 +40,16 @@ task build_star_db {
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            group: "Common",
+            group: "Resources",
         }
-        memory_gb: "RAM to allocate for task, specified in GB"
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        memory_gb: {
+            description: "RAM to allocate for task, specified in GB",
+            group: "Resources",
+        }
+        modify_disk_size_gb: {
+            description: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.",
+            group: "Resources",
+        }
     }
 
     input {
