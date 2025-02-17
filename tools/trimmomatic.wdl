@@ -23,36 +23,31 @@ task trim {
     input {
         File read_one
         File? read_two
-        String outfile_name_one = (
-            if defined(read_two) then
-                basename(read_one, ".fastq.gz") + ".forward.trimmed.fastq.gz"
-            else
-                basename(read_one, ".fastq.gz") + ".trimmed.fastq.gz"
-        )
-        String outfile_name_two = (
-            if defined(read_two) then
-                basename(read_two, ".fastq.gz") + ".reverse.trimmed.fastq.gz"
-            else
-                ""
-        )
         String? illumina_clip
+        String prefix = sub(
+            basename(read_one),
+            "([_\\.][rR][12])?[_\\.](.*)\\.(fastq|fq)(\\.gz)?$",
+            ""
+        )
+        String outfile_name_one = "~{prefix}.R1.trimmed.fastq.gz"
+        String outfile_name_two = "~{prefix}.R2.trimmed.fastq.gz"
         Int? crop
         Int? headcrop
         Int? leading
         Int minlen
         Int threads = 8
         Int? trailing
-        Int window_size
         Int window_quality
-        Boolean? phred64 = false
+        Int window_size
+        Boolean phred64 = false
     }
 
     command <<<
         ls -l /usr/local/share/trimmomatic-0.36-5/adapters/
         trimmomatic ~{if defined(read_two) then "PE" else "SE"} -threads ~{threads} \
         -trimlog trimlog.txt ~{read_one} ~{if defined(read_two) then "~{read_two}" else ""} \
-        ~{outfile_name_one} ~{outfile_name_two} \
-        ~{if defined(phred64) then "-phred64" else "-phred33"} \
+        ~{outfile_name_one} ~{if defined(read_two) then "~{outfile_name_two}" else ""} \
+        ~{if defined(phred64) && phred64 then "-phred64" else ""} \
         ~{if defined(illumina_clip) then "ILLUMINACLIP:~{illumina_clip}" else ""} \
         ~{if defined(leading) then "LEADING:~{leading}" else ""} \
         ~{if defined(trailing) then "TRAILING:~{trailing}" else ""} \

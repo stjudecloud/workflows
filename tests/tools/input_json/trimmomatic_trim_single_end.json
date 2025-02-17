@@ -6,6 +6,5 @@
     "window_size": 4,
     "window_quality": 15,
     "minlen": 36,
-    "illumina_clip": "TruSeq3-SE:2:30:10",
-    "phred64": false
+    "illumina_clip": "TruSeq3-SE:2:30:10"
 }
