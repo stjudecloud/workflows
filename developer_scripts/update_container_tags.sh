@@ -9,7 +9,7 @@ if [[ "$target" == "main" ]]; then
   search_pattern='container: "ghcr\.io/stjudecloud/([^:]*):branch-[^-]*-(.*)"'
   replacement='container: "ghcr.io/stjudecloud/\1:\2"'
 else
-  search_pattern='container: "ghcr\.io/stjudecloud/([^:]*):(branch-'$target'-)?(.*)"'
+  search_pattern='container: "ghcr\.io/stjudecloud/([^:]*):(branch-[^-]*-)?(.*)"'
   replacement='container: "ghcr.io/stjudecloud/\1:branch-'$target'-\3"'
 fi
 
