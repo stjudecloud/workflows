@@ -1,5 +1,5 @@
 {
-    "input_file": "tests/tools/input/subsampled_output_R1_100000.fastq.gz",
+    "read_one": "tests/tools/input/subsampled_output_R1_100000.fastq.gz",
     "leading": 3,
     "trailing": 3,
     "threads": 10,
