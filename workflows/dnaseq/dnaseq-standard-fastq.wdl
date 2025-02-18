@@ -45,7 +45,11 @@ workflow dnaseq_standard_fastq_experimental {
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
         Array[ReadGroup] read_groups
-        String prefix
+        String prefix = sub(
+            basename(read_one_fastqs_gz[0]),
+            "(([_\\.][rR][12])((?:[_\\.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            ""  # Once replacing with capturing groups is supported, replace with group 3
+        )
         String aligner = "mem"
         Boolean validate_input = true
         Boolean use_all_cores = false

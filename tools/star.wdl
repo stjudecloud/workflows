@@ -480,7 +480,11 @@ task alignment {
     input {
         File star_db_tar_gz
         Array[File] read_one_fastqs_gz
-        String prefix
+        String prefix = sub(
+            basename(read_one_fastqs_gz[0]),
+            "(([_\\.][rR][12])((?:[_\\.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            ""  # Once replacing with capturing groups is supported, replace with group 3
+        )
         Array[File] read_two_fastqs_gz = []
         Array[String] read_groups = []
         Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]

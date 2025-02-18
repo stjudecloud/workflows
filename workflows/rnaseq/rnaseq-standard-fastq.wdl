@@ -97,7 +97,11 @@ workflow rnaseq_standard_fastq {
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
         Array[ReadGroup] read_groups
-        String prefix
+        String prefix = sub(
+            basename(read_one_fastqs_gz[0]),
+            "(([_\\.][rR][12])((?:[_\\.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            ""  # Once replacing with capturing groups is supported, replace with group 3
+        )
         File? contaminant_db
         String xenocp_aligner = "star"
         String strandedness = ""
