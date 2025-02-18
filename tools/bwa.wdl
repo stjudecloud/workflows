@@ -34,8 +34,8 @@ task bwa_aln {
         File bwa_db_tar_gz
         String prefix = sub(
             basename(fastq),
-            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
-            ""
+            "(([_\\.][rR][12])((?:[_\\.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         String read_group = ""
         Boolean use_all_cores = false

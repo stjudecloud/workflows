@@ -127,8 +127,8 @@ task subsample {
         File? read_two_fastq
         String prefix = sub(
             basename(read_one_fastq),
-            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
-            ""
+            "(([_\\.][rR][12])((?:[_\\.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         Float probability = 1.0
         Int record_count = -1
