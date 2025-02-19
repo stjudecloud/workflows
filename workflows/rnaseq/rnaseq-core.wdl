@@ -33,7 +33,11 @@ workflow rnaseq_core {
             help: "Each read group string should start with the `ID` field followed by any other read group fields, where fields are delimited by a space. See `../data_structures/read_group.wdl` for information about possible fields and utility tasks for constructing, validating, and \"stringifying\" read groups.",
             warning: "The `ID` field for each read group _must_ be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `[\"ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1\", \"ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1\"]`. These two read groups could be associated with the following four FASTQs: `[\"sample1.rg1.R1.fastq\", \"sample1.rg2.R1.fastq\"]` and `[\"sample1.rg1.R2.fastq\", \"sample1.rg2.R2.fastq\"]`",
         }
-        prefix: "Prefix for output files"
+        prefix: {
+            description: "Prefix for output files",
+            help: "See `../../README.md` for more information on the default prefix evaluation.",
+            group: "Common",
+        }
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         align_sj_stitch_mismatch_n_max: {
             description: "This overrides the STAR alignment default. Maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif",
@@ -123,7 +127,6 @@ workflow rnaseq_core {
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
         Array[String] read_groups
-        String prefix
         File? contaminant_db
         SpliceJunctionMotifs align_sj_stitch_mismatch_n_max = SpliceJunctionMotifs {
             noncanonical_motifs: 5,
@@ -131,6 +134,11 @@ workflow rnaseq_core {
             GC_AG_and_CT_GC_motif: 5,
             AT_AC_and_GT_AT_motif: 5,
         }
+        String prefix = sub(
+            basename(read_one_fastqs_gz[0]),
+            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            ""  # Once replacing with capturing groups is supported, replace with group 3
+        )
         String xenocp_aligner = "star"
         String strandedness = ""
         Boolean mark_duplicates = false

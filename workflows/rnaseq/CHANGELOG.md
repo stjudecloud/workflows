@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- Added a default `prefix` calculation for `rnaseq-standard-fastq` [#220](https://github.com/stjudecloud/workflows/pull/220).
+- Added a default `prefix` calculation for `rnaseq-standard-fastq` and `rnaseq-core` [#220](https://github.com/stjudecloud/workflows/pull/220).
  
 ## 2025 January
 
