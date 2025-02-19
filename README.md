@@ -31,6 +31,35 @@ The repository is laid out as follows:
 * `bin/` - **no longer in use** Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations in `conf` with Cromwell.
 * `conf/` - **no longer in use** Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
 
+## Expected FASTQ file name conventions
+
+The tasks and workflows in this repository which have one or more FASTQ files as an input will also have a `prefix` input which will determine the filenames for any output files. The `prefix` input can be specified manually, or it can be left at the default value. The default value will attempt to strip common file suffixes from one of the input FASTQs and determine an appropriate basename to be used by all output files. That evaluation is most commonly performed using the POSIX ERE Regular Expression `(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\.(fastq|fq)(\.gz)?$`. In plain English, this REGEX will at a minimum search for and remove the file extensions `.fastq` and `.fq` with or without a `.gz` GZIP extension. Additionally, if the FASTQ filename contains a "read number" signifier (`R1`/`R2`/`r1`/`r2`/`read1`/`read2`) somewhere before the FASTQ extension, that will be truncated off the basename. This means that _everything_ after the read indicator will be removed. If there is important information encoded in your filenames _between the read number and the final extension,_ we recommend you manually specify an appropriate `prefix` value.
+
+### Examples
+
+Every filename in the following list will have the evaluated `prefix` "`sample`" if no override value is provided.
+
+```
+sample_R1_100000.fastq.gz
+sample_R2.fq
+sample.fq.gz
+sample.r1_100000.trimmed.fastq.gz
+sample.R2_100000.trimmed-kebab.fastq.gz
+sample_r1.100000.trimmed-kebab.terriblename.fastq.gz
+sample.Read2_100000.trimmed-kebab.fastq
+sample_read1.100000.trimmed-kebab.fq
+```
+
+A FASTQ with the filename `sample.100000-kebab.foobar.fastq.gz` would have a default `prefix` value of "`sample.100000-kebab.foobar`".
+
+The following filenames will not result in _any_ trimming of the filename, and should likely be either renamed or have a manually specified `prefix`:
+
+```
+sample_R_one.FASTQ.gz
+sampleR1.Fq
+sample_read_two.fq.zip
+```
+
 ## Bootstrap guide
 
 This repository implements workflows using the Workflow Description Language (WDL). If unfamiliar with WDL, a short overview is available in the [WDL spec](https://github.com/openwdl/wdl/blob/main/versions/1.1/SPEC.md#introduction).
