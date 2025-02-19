@@ -308,7 +308,11 @@ task kraken {
         read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair"
         read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair"
         db: "Kraken2 database. Can be generated with `qc-reference.wdl`. Must be a tarball without a root directory."
-        prefix: "Prefix for the Kraken2 output files. The extensions `.kraken2.txt` and `.kraken2.sequences.txt.gz` will be added."
+        prefix: {
+            description: "Prefix for the Kraken2 output files. The extensions `.kraken2.txt` and `.kraken2.sequences.txt.gz` will be added.",
+            help: "See `../README.md` for more information on the default prefix evaluation.",
+            group: "common",
+        }
         store_sequences: {
             description: "Store and output main Kraken2 output in addition to the summary report?",
             group: "common",

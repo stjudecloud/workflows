@@ -147,7 +147,11 @@ task alignment {
     parameter_meta {
         read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
-        prefix: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added."
+        prefix: {
+            description: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added.",
+            help: "See `../README.md` for more information on the default prefix evaluation.",
+            group: "common",
+        }
         read_groups: {
             description: "An array of `String`s where each `String` corresponds to one read group.",
             help: "Each read group string should start with the `ID` field followed by any other read group fields, where fields are delimited by a space. See `../data_structures/read_group.wdl` for information about possible fields and utility tasks for constructing, validating, and \"stringifying\" read groups.",

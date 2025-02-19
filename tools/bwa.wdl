@@ -13,7 +13,11 @@ task bwa_aln {
     parameter_meta {
         fastq: "Input FASTQ file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
+        prefix: {
+            description: "Prefix for the BAM file. The extension `.bam` will be added.",
+            help: "See `../README.md` for more information on the default prefix evaluation.",
+            group: "common",
+        }
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             group: "common",
