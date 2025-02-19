@@ -17,7 +17,7 @@ task librarian {
         prefix: {
             description: "Name of the output tar archive. The extension `.tar.gz` will be added.",
             help: "See `../README.md` for more information on the default prefix evaluation.",
-            group: "Common",
+            group: "common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

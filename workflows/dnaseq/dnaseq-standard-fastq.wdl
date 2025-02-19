@@ -30,7 +30,7 @@ workflow dnaseq_standard_fastq_experimental {
         prefix: {
             description: "Prefix for the BAM file. The extension `.bam` will be added.",
             help: "See `../../README.md` for more information on the default prefix evaluation.",
-            group: "Common",
+            group: "common",
         }
         aligner: {
             description: "BWA aligner to use",

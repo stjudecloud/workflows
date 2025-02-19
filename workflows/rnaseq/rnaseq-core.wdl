@@ -36,7 +36,7 @@ workflow rnaseq_core {
         prefix: {
             description: "Prefix for output files",
             help: "See `../../README.md` for more information on the default prefix evaluation.",
-            group: "Common",
+            group: "common",
         }
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         align_sj_stitch_mismatch_n_max: {
