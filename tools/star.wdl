@@ -521,7 +521,7 @@ task alignment {
         Pair[Int, Int] clip_5p_n_bases = (0, 0)
         String prefix = sub(
             basename(read_one_fastqs_gz[0]),
-            "(([_.][rR][12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         String read_name_separator = "/"

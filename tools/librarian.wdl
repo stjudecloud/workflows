@@ -22,7 +22,7 @@ task librarian {
         File read_one_fastq
         String prefix = sub(
             basename(read_one_fastq),
-            "(([_.][rR][12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         ) + ".librarian"
         Int modify_disk_size_gb = 0
