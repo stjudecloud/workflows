@@ -37,7 +37,7 @@ The tasks and worfklows in this repository which have one or more FASTQ files as
 
 ### Examples
 
-Every filename in the following list will have the calculated `prefix` "`sample`" if no override value is provided.
+Every filename in the following list will have the evaluated `prefix` "`sample`" if no override value is provided.
 
 ```
 sample_R1_100000.fastq.gz
