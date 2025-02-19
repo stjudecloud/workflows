@@ -36,6 +36,9 @@ jobs:
     - name: filter tests
       run: |
         find tests -name '*.yaml' -exec yq --output-format yaml -i 'del(.[] | select(.tags[] | test("reference|deprecated") ) )' {} \;
+    - name: Update containers
+      run: |
+        ./developer_scripts/update_container_tags.sh ${GITHUB_REF##*/}
     - name: Run pytest-workflow
       run: |
         pytest --git-aware --basetemp /home/runner/work/pytest --symlink --tag ${{ matrix.tag }}

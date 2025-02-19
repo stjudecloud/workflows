@@ -70,19 +70,47 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache,mode=max
-      - name: Check digest
+      - name: container diff
         run: |
           docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} || true
-          remote_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} --format='{{index .RepoDigests 0}}' | cut -d '@' -f 2 || true)
-          local_digest=$(docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local --format='{{index .RepoDigests 0}}' | cut -d '@' -f 2 || true)
-          # below check "in english": we should fail if remote_digest is populated and does not equal local_digest, OR if local_digest is empty and remote_digest is populated
-          if [ "$remote_digest" != "" ] && [ "$remote_digest" != "$local_digest" ] || [ "$local_digest" == "" ] && [ "$remote_digest" != "" ]; then
-            echo "Digests do not match!"
-            echo "Remote: $remote_digest"
-            echo "Local: $local_digest"
-            echo "Should you increment the version number?"
-            exit 1
+          if [ -z "$(docker images -q ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }})" ]; then
+            echo "Prior image not found in registry, skipping container-diff"
+            exit 0
           fi
+          curl -LO https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64 && \
+          chmod +x container-diff-linux-amd64 && \
+          ./container-diff-linux-amd64 diff --json daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local --type=history --type=file --type=size | tee comparison.json
+          # check overall size result
+          changed=0
+          size_diff=$(jq '.[] | select(.DiffType == "Size") | if .Diff[0].Size1 == .Diff[0].Size2 then 1 else 0 end' comparison.json)
+          if [ $size_diff -eq 0 ]
+          then
+            echo "Size of the image has changed"
+            changed=1
+          fi
+          # check file diff result
+          additions=$(jq '.[] | select(.DiffType == "File") | if .Diff.Adds != null then .Diff.Adds[].Name else 0 end' comparison.json)
+          deletions=$(jq '.[] | select(.DiffType == "File") | if .Diff.Dels != null then .Diff.Dels[].Name else 0 end' comparison.json)
+          modifications=$(jq '.[] | select(.DiffType == "File") | if .Diff.Mods != null then .Diff.Mods[].Name else 0 end' comparison.json)
+          if [ "$additions" != "0" ]
+          then
+            echo "Files have been added"
+            echo $additions
+            changed=1
+          fi
+          if [ "$deletions" != "0" ]
+          then
+            echo "Files have been deleted"
+            echo $deletions
+            changed=1
+          fi
+          if [ "$modifications" != "0" ]
+          then
+            echo "Files have been modified"
+            echo $modifications
+            changed=1
+          fi
+          exit $changed
       - name: Run Snyk to check Docker image for vulnerabilities
         # Snyk can be used to break the build when it detects vulnerabilities.
         # In this case we want to upload the issues to GitHub Code Scanning
