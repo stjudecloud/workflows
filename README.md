@@ -31,6 +31,10 @@ The repository is laid out as follows:
 * `bin/` - **no longer in use** Scripts used by Cromwell configuration settings. Add this to `$PATH` prior to using configurations in `conf` with Cromwell.
 * `conf/` - **no longer in use** Cromwell configuration files created for various environments that we use across our team. Feel free to use/fork/suggest improvements.
 
+## Expected FASTQ file name conventions
+
+The tasks and worfklows in this repository which have one or more FASTQ files as an input will also have a `prefix` input which will determine the filenames for any output files. The `prefix` input can be specified manually, or it can be left at the default value. The default value will attempt to strip common file suffixes from one of the input FASTQs and calculate an appropriate basename to be used by all output files. That calculation is performed using the POSIX ERE Regular Expression `(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$`. In plain english, this REGEX will at a minimum search for and remove the file extensions `.fastq` and `fq` with or without a `.gz` GZIP extension. Additionally, if the FASTQ filename contains a "read number" signifier (`R1`/`R2`/`r1`/`r2`/`read1`/`read2`) somewhere before the FASTQ extension, that will be truncated off the basename.
+
 ## Bootstrap guide
 
 This repository implements workflows using the Workflow Description Language (WDL). If unfamiliar with WDL, a short overview is available in the [WDL spec](https://github.com/openwdl/wdl/blob/main/versions/1.1/SPEC.md#introduction).
