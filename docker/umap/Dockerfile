@@ -7,4 +7,4 @@ RUN apk add --no-cache build-base llvm15-dev bash \
 
 RUN pip install umap-learn==0.5.7 pandas
 
-COPY --from=scripts --chmod=777 methylation/generate_umap.py /usr/local/bin/generate_umap.py
+COPY --from=scripts --chmod=777 methylation/generate_umap.py /scripts/methylation/generate_umap.py

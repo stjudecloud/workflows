@@ -42,7 +42,7 @@ task download {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.0.0"
+        container: "ghcr.io/stjudecloud/util:2.1.0"
         maxRetries: 1
     }
 }
@@ -139,7 +139,7 @@ task split_string {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.0.0"
+        container: "ghcr.io/stjudecloud/util:2.1.0"
         maxRetries: 1
     }
 }
@@ -174,72 +174,20 @@ task calc_gene_lengths {
     Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
-        set -euo pipefail
-
-        GTF="~{gtf}" OUTFILE="~{outfile_name}" IDATTR="~{idattr}" python - <<END
-        import os  # lint-check: ignore
-        import gtfparse  # lint-check: ignore
-        import numpy as np  # lint-check: ignore
-        from collections import defaultdict  # lint-check: ignore
-
-        gtf_name = os.environ["GTF"]
-        outfile = open(os.environ["OUTFILE"], "w")
-        id_attr = os.environ["IDATTR"]
-
-        gtf = gtfparse.read_gtf(gtf_name)
-
-        only_exons = gtf[gtf["feature"] == "exon"]
-        exon_starts = defaultdict(lambda: [])
-        exon_ends = defaultdict(lambda: [])
-        gene_start_offset = {}
-        gene_end_offset = {}
-        gene_exon_intersection = {}
-
-        for _index, value in only_exons.iterrows():
-            feature_id = value[id_attr]
-            start = value["start"]
-            end = value["end"] + 1  # end is inclusive in GTF
-            exon_starts[feature_id].append(start)
-            exon_ends[feature_id].append(end)
-            if feature_id not in gene_start_offset:
-                gene_start_offset[feature_id] = start
-                gene_end_offset[feature_id] = end
-            else:
-                gene_start_offset[feature_id] = min(gene_start_offset[feature_id], start)
-                gene_end_offset[feature_id] = max(gene_end_offset[feature_id], end)
-
-        for feature_id in exon_starts:
-            gene_exon_intersection[feature_id] = np.full(
-                gene_end_offset[feature_id] - gene_start_offset[feature_id], False
-            )
-
-            for start, end in zip(exon_starts[feature_id], exon_ends[feature_id]):
-                gene_exon_intersection[feature_id][
-                    start - gene_start_offset[feature_id]
-                    : end - gene_start_offset[feature_id]
-                ] = True
-
-        print("feature\tlength", file=outfile)
-        for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
-            # np.count_nonzero() is faster than sum
-            # np.count_nonzero() evaluates the "truthfulness" of
-            # of all elements (by calling their '.__bool__()' method)
-            length = np.count_nonzero(exonic_intersection)
-            print(f"{gene}\t{length}", file=outfile)
-
-        outfile.close()
-
-        END
+        python3 /scripts/util/calc_gene_lengths.py \
+            --id_attr ~{idattr} \
+            ~{gtf} \
+            ~{outfile_name}
     >>>
 
     output {
-        File gene_lengths = "~{outfile_name}"
+        File gene_lengths = outfile_name
     }
 
     runtime {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gtfparse:1.2.1--pyh864c0ab_0"
+        container: "ghcr.io/stjudecloud/util:2.1.0"
         maxRetries: 1
     }
 }
@@ -309,6 +257,8 @@ task add_to_bam_header {
     String outfile_name = prefix + ".bam"
 
     command <<<
+        set -euo pipefail
+
         samtools view -H ~{bam} > header.sam
         echo "~{additional_header}" >> header.sam
         samtools reheader -P header.sam ~{bam} > ~{outfile_name}
@@ -363,7 +313,7 @@ task unpack_tarball {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.0.0"
+        container: "ghcr.io/stjudecloud/util:2.1.0"
         maxRetries: 1
     }
 }
@@ -456,224 +406,10 @@ task global_phred_scores {
 
     #@ except: LineWidth
     command <<<
-        set -euo pipefail
-
-        BAM="~{bam}" PREFIX="~{prefix}" FAST_MODE=~{fast_mode} python3 - <<END
-        import os  # lint-check: ignore
-        from collections import defaultdict  # lint-check: ignore
-
-        import pysam  # lint-check: ignore
-
-        bam_path = os.environ["BAM"]
-        bam = pysam.AlignmentFile(bam_path, "rb")
-
-        fast_mode = os.environ["FAST_MODE"] == "true"
-
-        if not fast_mode:
-            tot_quals = defaultdict(lambda: 0)
-            mapped_quals = defaultdict(lambda: 0)
-            unmapped_quals = defaultdict(lambda: 0)
-        first_tot_quals = defaultdict(lambda: 0)
-        first_mapped_quals = defaultdict(lambda: 0)
-        first_unmapped_quals = defaultdict(lambda: 0)
-        middle_tot_quals = defaultdict(lambda: 0)
-        middle_mapped_quals = defaultdict(lambda: 0)
-        middle_unmapped_quals = defaultdict(lambda: 0)
-        last_tot_quals = defaultdict(lambda: 0)
-        last_mapped_quals = defaultdict(lambda: 0)
-        last_unmapped_quals = defaultdict(lambda: 0)
-        for read in bam:
-            # only count primary alignments and unmapped reads
-            if (read.is_secondary or read.is_supplementary) and not read.is_unmapped:
-                continue
-
-            cur_quals = read.query_qualities  # array of phred scores
-            if not fast_mode:
-                for qual in cur_quals:
-                    tot_quals[qual] += 1
-                    if read.is_unmapped:
-                        unmapped_quals[qual] += 1
-                    else:
-                        mapped_quals[qual] += 1
-
-            first_score = cur_quals[0]
-            first_tot_quals[first_score] += 1
-
-            middle_pos = len(cur_quals) // 2  # middle base of read
-            middle_score = cur_quals[middle_pos]
-            middle_tot_quals[middle_score] += 1
-
-            last_score = cur_quals[-1]
-            last_tot_quals[last_score] += 1
-
-            if read.is_unmapped:
-                first_unmapped_quals[first_score] += 1
-                middle_unmapped_quals[middle_score] += 1
-                last_unmapped_quals[last_score] += 1
-            else:
-                first_mapped_quals[first_score] += 1
-                middle_mapped_quals[middle_score] += 1
-                last_mapped_quals[last_score] += 1
-
-        prefix = os.environ["PREFIX"]
-        outfile = open(prefix + ".global_PHRED_scores.tsv", "w")
-
-        # print header
-        header = ["sample"]
-        if not fast_mode:
-            header += [
-                "total average",
-                "total median",
-                "total stdev",
-                "mapped average",
-                "mapped median",
-                "mapped stdev",
-                "unmapped average",
-                "unmapped median",
-                "unmapped stdev",
-            ]
-        header += [
-            "first position total average",
-            "first position total median",
-            "first position total stdev",
-            "first position mapped average",
-            "first position mapped median",
-            "first position mapped stdev",
-            "first position unmapped average",
-            "first position unmapped median",
-            "first position unmapped stdev",
-            "middle position total average",
-            "middle position total median",
-            "middle position total stdev",
-            "middle position mapped average",
-            "middle position mapped median",
-            "middle position mapped stdev",
-            "middle position unmapped average",
-            "middle position unmapped median",
-            "middle position unmapped stdev",
-            "last position total average",
-            "last position total median",
-            "last position total stdev",
-            "last position mapped average",
-            "last position mapped median",
-            "last position mapped stdev",
-            "last position unmapped average",
-            "last position unmapped median",
-            "last position unmapped stdev",
-        ]
-        print(
-            "\t".join(header),
-            file=outfile,
-        )
-        print(prefix, file=outfile, end="\t")
-
-        def stats_from_dict(score_dict):
-            total_score = 0
-            total_freq = 0
-            freq_table = []
-            for score, freq in score_dict.items():
-                total_score += score * freq
-                total_freq += freq
-                freq_table.append((score, freq))
-
-            if total_freq == 0:
-                return -1, -1, -1
-            avg = total_score / total_freq
-
-            freq_table.sort(key=lambda entry: entry[0])
-
-            median_pos = (total_freq + 1) / 2
-            cumul_freq = 0
-            median_found = False
-            sum_freq_times_score_sqrd = 0
-            for score, freq in freq_table:
-                cumul_freq += freq
-                if cumul_freq >= median_pos:
-                    if not median_found:
-                        median = score
-                    median_found = True
-                sum_freq_times_score_sqrd += freq * (score**2)
-
-            stdev = ((sum_freq_times_score_sqrd / total_freq) - (avg**2)) ** 0.5
-
-            return avg, median, stdev
-
-        if not fast_mode:
-            tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
-            print(f"{tot_avg}", file=outfile, end="\t")
-            print(f"{tot_median}", file=outfile, end="\t")
-            print(f"{tot_stdev}", file=outfile, end="\t")
-
-            mapped_avg, mapped_median, mapped_stdev = stats_from_dict(mapped_quals)
-            print(f"{mapped_avg}", file=outfile, end="\t")
-            print(f"{mapped_median}", file=outfile, end="\t")
-            print(f"{mapped_stdev}", file=outfile, end="\t")
-
-            unmapped_avg, unmapped_median, unmapped_stdev = stats_from_dict(unmapped_quals)
-            print(f"{unmapped_avg}", file=outfile, end="\t")
-            print(f"{unmapped_median}", file=outfile, end="\t")
-            print(f"{unmapped_stdev}", file=outfile, end="\t")
-
-        first_tot_avg, first_tot_median, first_tot_stdev = stats_from_dict(first_tot_quals)
-        print(f"{first_tot_avg}", file=outfile, end="\t")
-        print(f"{first_tot_median}", file=outfile, end="\t")
-        print(f"{first_tot_stdev}", file=outfile, end="\t")
-
-        first_mapped_avg, first_mapped_median, first_mapped_stdev = stats_from_dict(
-            first_mapped_quals
-        )
-        print(f"{first_mapped_avg}", file=outfile, end="\t")
-        print(f"{first_mapped_median}", file=outfile, end="\t")
-        print(f"{first_mapped_stdev}", file=outfile, end="\t")
-
-        first_unmapped_avg, first_unmapped_median, first_unmapped_stdev = stats_from_dict(
-            first_unmapped_quals
-        )
-        print(f"{first_unmapped_avg}", file=outfile, end="\t")
-        print(f"{first_unmapped_median}", file=outfile, end="\t")
-        print(f"{first_unmapped_stdev}", file=outfile, end="\t")
-
-        middle_tot_avg, middle_tot_median, middle_tot_stdev = stats_from_dict(middle_tot_quals)
-        print(f"{middle_tot_avg}", file=outfile, end="\t")
-        print(f"{middle_tot_median}", file=outfile, end="\t")
-        print(f"{middle_tot_stdev}", file=outfile, end="\t")
-
-        middle_mapped_avg, middle_mapped_median, middle_mapped_stdev = stats_from_dict(
-            middle_mapped_quals
-        )
-        print(f"{middle_mapped_avg}", file=outfile, end="\t")
-        print(f"{middle_mapped_median}", file=outfile, end="\t")
-        print(f"{middle_mapped_stdev}", file=outfile, end="\t")
-
-        middle_unmapped_avg, middle_unmapped_median, middle_unmapped_stdev = stats_from_dict(
-            middle_unmapped_quals
-        )
-        print(f"{middle_unmapped_avg}", file=outfile, end="\t")
-        print(f"{middle_unmapped_median}", file=outfile, end="\t")
-        print(f"{middle_unmapped_stdev}", file=outfile, end="\t")
-
-        last_tot_avg, last_tot_median, last_tot_stdev = stats_from_dict(last_tot_quals)
-        print(f"{last_tot_avg}", file=outfile, end="\t")
-        print(f"{last_tot_median}", file=outfile, end="\t")
-        print(f"{last_tot_stdev}", file=outfile, end="\t")
-
-        last_mapped_avg, last_mapped_median, last_mapped_stdev = stats_from_dict(
-            last_mapped_quals
-        )
-        print(f"{last_mapped_avg}", file=outfile, end="\t")
-        print(f"{last_mapped_median}", file=outfile, end="\t")
-        print(f"{last_mapped_stdev}", file=outfile, end="\t")
-
-        last_unmapped_avg, last_unmapped_median, last_unmapped_stdev = stats_from_dict(
-            last_unmapped_quals
-        )
-        print(f"{last_unmapped_avg}", file=outfile, end="\t")
-        print(f"{last_unmapped_median}", file=outfile, end="\t")
-        print(f"{last_unmapped_stdev}", file=outfile)  # end="\n"
-
-        outfile.close()
-
-        END
+        python3 /scripts/util/calc_global_phred_scores.py \
+            ~{if fast_mode then "--fast_mode" else ""} \
+            ~{bam} \
+            ~{prefix}
     >>>
 
     output {
@@ -683,7 +419,7 @@ task global_phred_scores {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.0.0"
+        container: "ghcr.io/stjudecloud/util:2.1.0"
         maxRetries: 1
     }
 }
@@ -761,7 +497,7 @@ task qc_summary {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.0.0"
+        container: "ghcr.io/stjudecloud/util:2.1.0"
         maxRetries: 1
     }
 }
@@ -780,7 +516,10 @@ task split_fastq {
             stream: true,
         }
         reads_per_file: "Number of reads to include in each output FASTQ file"
-        prefix: "Prefix for the FASTQ files. The extension `.fastq.gz` (preceded by a split index) will be added."
+        prefix: {
+            description: "Prefix for the FASTQ files. The extension `.fastq.gz` (preceded by a split index) will be added.",
+            group: "common",
+        }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
     }
@@ -822,7 +561,7 @@ task split_fastq {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.0.0"
+        container: "ghcr.io/stjudecloud/util:2.1.0"
         maxRetries: 1
     }
 }

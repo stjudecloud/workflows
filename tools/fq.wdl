@@ -110,7 +110,11 @@ task subsample {
     parameter_meta {
         read_one_fastq: "Input FASTQ with read one. Can be gzipped or uncompressed."
         read_two_fastq: "Input FASTQ with read two. Can be gzipped or uncompressed."
-        prefix: "Prefix for the output FASTQ file(s). The extension `.R1.subsampled.fastq.gz` and `.R2.subsampled.fastq.gz` will be added."
+        prefix: {
+            description: "Prefix for the output FASTQ file(s). The extension `.R1.subsampled.fastq.gz` and `.R2.subsampled.fastq.gz` will be added.",
+            help: "See `../README.md` for more information on the default prefix evaluation.",
+            group: "common",
+        }
         probability: {
             description: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable.",
             group: "common",
@@ -127,8 +131,8 @@ task subsample {
         File? read_two_fastq
         String prefix = sub(
             basename(read_one_fastq),
-            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
-            ""
+            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         Float probability = 1.0
         Int record_count = -1

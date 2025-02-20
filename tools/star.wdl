@@ -127,7 +127,7 @@ task build_star_db {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-5"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-7"
         maxRetries: 1
     }
 }
@@ -147,7 +147,11 @@ task alignment {
     parameter_meta {
         read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
-        prefix: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added."
+        prefix: {
+            description: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added.",
+            help: "See `../README.md` for more information on the default prefix evaluation.",
+            group: "common",
+        }
         read_groups: {
             description: "An array of `String`s where each `String` corresponds to one read group.",
             help: "Each read group string should start with the `ID` field followed by any other read group fields, where fields are delimited by a space. See `../data_structures/read_group.wdl` for information about possible fields and utility tasks for constructing, validating, and \"stringifying\" read groups.",
@@ -480,7 +484,6 @@ task alignment {
     input {
         File star_db_tar_gz
         Array[File] read_one_fastqs_gz
-        String prefix
         Array[File] read_two_fastqs_gz = []
         Array[String] read_groups = []
         Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
@@ -520,6 +523,11 @@ task alignment {
         Pair[Int, Int] clip_3p_n_bases = (0, 0)
         Pair[Int, Int] clip_3p_after_adapter_n_bases = (0, 0)
         Pair[Int, Int] clip_5p_n_bases = (0, 0)
+        String prefix = sub(
+            basename(read_one_fastqs_gz[0]),
+            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            ""  # Once replacing with capturing groups is supported, replace with group 3
+        )
         String read_name_separator = "/"
         String clip_adapter_type = "Hamming"
         String out_sam_strand_field = "intronMotif"
@@ -640,7 +648,7 @@ task alignment {
         mkdir star_db
         tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
-        python3 /home/sort_star_input.py \
+        python3 /scripts/star/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
             ~{(
                 if (length(read_two_fastqs_gz) != 0)
@@ -833,7 +841,7 @@ task alignment {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/star:2.7.11b-5"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-7"
         maxRetries: 1
     }
 }
