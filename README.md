@@ -45,7 +45,7 @@ sample_R2.fq
 sample.fq.gz
 sample.r1_100000.trimmed.fastq.gz
 sample.R2_100000.trimmed-kebab.fastq.gz
-sample_r1.100000.trimmed-kebab.terriblename.fastq.gz
+sample_r1.100000.trimmed-kebab.foobar.fastq.gz
 sample.Read2_100000.trimmed-kebab.fastq
 sample_read1.100000.trimmed-kebab.fq
 ```
