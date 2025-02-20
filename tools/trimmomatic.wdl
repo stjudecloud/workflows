@@ -26,8 +26,8 @@ task trim {
         String? illumina_clip
         String prefix = sub(
             basename(read_one),
-            "([_\\.][rR][12])?[_\\.](.*)\\.(fastq|fq)(\\.gz)?$",
-            ""
+            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         String outfile_name_one = "~{prefix}.R1.trimmed.fastq.gz"
         String outfile_name_two = "~{prefix}.R2.trimmed.fastq.gz"
@@ -47,7 +47,7 @@ task trim {
         trimmomatic ~{if defined(read_two) then "PE" else "SE"} -threads ~{threads} \
         -trimlog trimlog.txt ~{read_one} ~{if defined(read_two) then "~{read_two}" else ""} \
         ~{outfile_name_one} ~{if defined(read_two) then "~{outfile_name_two}" else ""} \
-        ~{if defined(phred64) && phred64 then "-phred64" else ""} \
+        ~{if defined(phred64) && phred64 then "-phred64" else "-phred33"} \
         ~{if defined(illumina_clip) then "ILLUMINACLIP:~{illumina_clip}" else ""} \
         ~{if defined(leading) then "LEADING:~{leading}" else ""} \
         ~{if defined(trailing) then "TRAILING:~{trailing}" else ""} \
