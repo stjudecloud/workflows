@@ -39,7 +39,6 @@
       must_not_contain:
         - "@RG"
 
-
 - name: split_string
   tags:
     - miniwdl

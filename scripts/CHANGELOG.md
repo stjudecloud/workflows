@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 Any change to the `scripts/` directory should be accompanied by version increases in the `docker/` directory! If you are editing this file, please ensure these changes propagate!
 
+## 2025 February
+
+### Added
+
+- Added `calc_global_phred_scores.py` and `calc_gene_lengths.py` scripts [#216](https://github.com/stjudecloud/workflows/pull/216).
+
 ## 2025 January
 
 ### Added
