@@ -29,8 +29,8 @@ task trim {
             "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
-        String outfile_name_one = "~{prefix}.R1.trimmed.fastq.gz"
-        String outfile_name_two = "~{prefix}.R2.trimmed.fastq.gz"
+        String read_one_name = "~{prefix}.R1.trimmed.fastq.gz"
+        String read_two_name = "~{prefix}.R2.trimmed.fastq.gz"
         Int? crop
         Int? headcrop
         Int? leading
@@ -43,23 +43,22 @@ task trim {
     }
 
     command <<<
-        ls -l /usr/local/share/trimmomatic-0.36-5/adapters/
         trimmomatic ~{if defined(read_two) then "PE" else "SE"} -threads ~{threads} \
-        -trimlog trimlog.txt ~{read_one} ~{if defined(read_two) then "~{read_two}" else ""} \
-        ~{outfile_name_one} ~{if defined(read_two) then "~{outfile_name_two}" else ""} \
-        ~{if defined(phred64) && phred64 then "-phred64" else "-phred33"} \
-        ~{if defined(illumina_clip) then "ILLUMINACLIP:~{illumina_clip}" else ""} \
-        ~{if defined(leading) then "LEADING:~{leading}" else ""} \
-        ~{if defined(trailing) then "TRAILING:~{trailing}" else ""} \
-        SLIDINGWINDOW:~{window_size}:~{window_quality} \
-        MINLEN:~{minlen} \
-        ~{if defined(crop) then "CROP:~{crop}" else ""} \
-        ~{if defined(headcrop) then "HEADCROP:~{headcrop}" else ""} 
+            -trimlog trimlog.txt ~{read_one} ~{if defined(read_two) then "~{read_two}" else ""} \
+            ~{read_one_name} ~{if defined(read_two) then "~{read_two_name}" else ""} \
+            ~{if defined(phred64) && phred64 then "-phred64" else "-phred33"} \
+            ~{if defined(illumina_clip) then "ILLUMINACLIP:~{illumina_clip}" else ""} \
+            ~{if defined(leading) then "LEADING:~{leading}" else ""} \
+            ~{if defined(trailing) then "TRAILING:~{trailing}" else ""} \
+            SLIDINGWINDOW:~{window_size}:~{window_quality} \
+            MINLEN:~{minlen} \
+            ~{if defined(crop) then "CROP:~{crop}" else ""} \
+            ~{if defined(headcrop) then "HEADCROP:~{headcrop}" else ""} 
     >>>
 
     output {
-        File trimmed_read_one = "~{outfile_name_one}"
-        File? trimmed_read_two = "~{outfile_name_two}"
+        File trimmed_read_one = "~{read_one_name}"
+        File? trimmed_read_two = "~{read_two_name}"
     }
 
     runtime {
