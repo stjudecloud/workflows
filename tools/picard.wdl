@@ -1116,8 +1116,6 @@ task revert_sam {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
-        set -euo pipefail
-
         picard -Xmx~{java_heap_size}g RevertSam \
             INPUT=~{bam} \
             OUTPUT=~{prefix}.reverted.bam \

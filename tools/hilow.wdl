@@ -212,13 +212,13 @@ task filter {
 
         #left bed
         awk -F "\t" -v OFS="\t" '{print $2,$3,$3,$1}' ~{all_valid_pairs} \
-        | slopBed -i stdin -b ~{padding} -g ~{chromsizes} \
-        | intersectBed -a stdin -b ~{base} -u > left.bed
+            | slopBed -i stdin -b ~{padding} -g ~{chromsizes} \
+            | intersectBed -a stdin -b ~{base} -u > left.bed
 
         #right bed
         awk -F "\t" -v OFS="\t" '{print $5,$6,$6,$1}' ~{all_valid_pairs} \
-        | slopBed -i stdin -b ~{padding} -g ~{chromsizes} \
-        | intersectBed -a stdin -b ~{base} -u > right.bed
+            | slopBed -i stdin -b ~{padding} -g ~{chromsizes} \
+            | intersectBed -a stdin -b ~{base} -u > right.bed
 
         cat <(cut -f 4 left.bed) <(cut -f 4 right.bed)|sort -u > filter.pair
 
@@ -272,8 +272,6 @@ task converthic {
     Int disk_size_gb = ceil(size(all_valid_pairs, "GiB")) * 2
 
     command <<<
-        set -euo pipefail
-
         /HiC-Pro_3.0.0/bin/utils/hicpro2juicebox.sh \
             -i ~{all_valid_pairs} \
             -g ~{chromsizes} \
