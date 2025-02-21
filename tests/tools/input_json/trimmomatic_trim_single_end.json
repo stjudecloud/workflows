@@ -1,0 +1,10 @@
+{
+    "read_one": "tests/tools/input/subsampled_output_R1_100000.fastq.gz",
+    "leading": 3,
+    "trailing": 3,
+    "threads": 10,
+    "window_size": 4,
+    "window_quality": 15,
+    "minlen": 36,
+    "illumina_clip": "TruSeq3-SE:2:30:10"
+}
