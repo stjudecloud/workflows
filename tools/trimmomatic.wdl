@@ -29,8 +29,6 @@ task trim {
             "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
-        String read_one_name = "~{prefix}.R1.trimmed.fastq.gz"
-        String read_two_name = "~{prefix}.R2.trimmed.fastq.gz"
         Int? crop
         Int? headcrop
         Int? leading
@@ -41,6 +39,9 @@ task trim {
         Int window_size
         Boolean phred64 = false
     }
+
+    String read_one_name = "~{prefix}.R1.trimmed.fastq.gz"
+    String read_two_name = "~{prefix}.R2.trimmed.fastq.gz"
 
     command <<<
         trimmomatic ~{if defined(read_two) then "PE" else "SE"} -threads ~{threads} \
