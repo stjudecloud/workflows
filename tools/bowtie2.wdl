@@ -46,7 +46,7 @@ task build {
     runtime {
         cpu: ncpu
         memory: "20 GB"
-        container: "ghcr.io/stjudecloud/bowtie2:branch-hic_workflow-2.5.4-0"
+        container: "ghcr.io/stjudecloud/bowtie2:2.5.4-0"
         maxRetries: 1
     }
 }
@@ -414,7 +414,7 @@ task align {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/bowtie2:branch-hic_workflow-2.5.4-0"
+        container: "ghcr.io/stjudecloud/bowtie2:2.5.4-0"
         cpu: ncpu
         memory: "20 GB"
     }

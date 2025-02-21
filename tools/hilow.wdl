@@ -167,7 +167,7 @@ task qcreport {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/hilow:branch-hic_workflow-1.0.0"
+        container: "ghcr.io/stjudecloud/hilow:1.0.0"
         cpu: 1
         disks: "~{disk_size_gb} GB"
         memory: "4 GB"
@@ -242,7 +242,7 @@ task filter {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/hilow:branch-hic_workflow-1.0.0"
+        container: "ghcr.io/stjudecloud/hilow:1.0.0"
         cpu: 1
         disks: "~{disk_size_gb} GB"
         memory: "4 GB"
@@ -285,7 +285,7 @@ task converthic {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/juicertools:branch-hic_workflow-2.0.1-0"
+        container: "ghcr.io/stjudecloud/juicertools:2.0.1-0"
         cpu: 1
         disks: "~{disk_size_gb} GB"
         memory: "18 GB"
