@@ -5,5 +5,5 @@ RUN apk add --no-cache bash
 
 COPY --from=bedtools /usr/local/bin/ /usr/local/bin/
 
-COPY --from=scripts --chmod=777 hic/qc_hic.py /usr/local/bin/qc_hic.py
-COPY --from=scripts --chmod=777 hic/filter_hic.py /usr/local/bin/filter_hic.py
+COPY --from=scripts --chmod=777 hic/qc_hic.py /scripts/hic/qc_hic.py
+COPY --from=scripts --chmod=777 hic/filter_hic.py /scripts/hic/filter_hic.py

@@ -147,7 +147,7 @@ task qcreport {
     ) + 2
 
     command <<<
-        python /usr/local/bin/qc_hic.py \
+        python /scripts/hic/qc_hic.py \
             --all_valid_pairs_stats ~{all_valid_pairs_stats} \
             --mapping_stats_read1 ~{mapping_stats_read1} \
             --mapping_stats_read2 ~{mapping_stats_read2} \
@@ -222,7 +222,7 @@ task filter {
 
         cat <(cut -f 4 left.bed) <(cut -f 4 right.bed)|sort -u > filter.pair
 
-        python /usr/local/bin/filter_hic.py \
+        python /scripts/hic/filter_hic.py \
             --all_valid_pairs ~{all_valid_pairs} \
             --filter_pair filter.pair \
             --prefix ~{prefix}
