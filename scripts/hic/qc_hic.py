@@ -117,37 +117,37 @@ if __name__ == "__main__":
     else:
         VERDICT["cis_longRange"] = "BAD"
 
-    REPORT = open(args.prefix + "_QCreport.txt", "w")
-    REPORT.write("STAT\tCOUNTS\tPERCENTAGE\tVERDICT\n")
-    REPORT.write(
-        "Total_pairs_processed\t" + str(RESULTS["Total_pairs_processed"]) + "\n"
-    )
-    for var in REP_VAR:
+    with open(args.prefix + "_QCreport.txt", "w") as REPORT:
+        REPORT.write("STAT\tCOUNTS\tPERCENTAGE\tVERDICT\n")
         REPORT.write(
-            var
-            + "\t"
-            + str(COUNTS[var])
-            + "\t"
-            + str(PERCENTAGES[var])
-            + "\t"
-            + VERDICT[var]
-            + "\n"
+            "Total_pairs_processed\t" + str(RESULTS["Total_pairs_processed"]) + "\n"
         )
+        for var in REP_VAR:
+            REPORT.write(
+                var
+                + "\t"
+                + str(COUNTS[var])
+                + "\t"
+                + str(PERCENTAGES[var])
+                + "\t"
+                + VERDICT[var]
+                + "\n"
+            )
 
-    if args.peaks_bed is not None and os.path.isfile(args.peaks_bed):
-        REPORT.write(
-            "peaks\t"
-            + str(PEAKS)  # pyright: ignore [reportPossiblyUnboundVariable]
-            + "\n"
-        )
-    if args.fithichip_bed is not None and os.path.isfile(args.fithichip_bed):
-        REPORT.write(
-            "loops\t"
-            + str(LOOPS)  # pyright: ignore [reportPossiblyUnboundVariable]
-            + "\n"
-        )
-        REPORT.write(
-            "loops_significant\t"
-            + str(LOOPS_SIGNIFICANT)  # pyright: ignore [reportPossiblyUnboundVariable]
-            + "\n"
-        )
+        if args.peaks_bed is not None and os.path.isfile(args.peaks_bed):
+            REPORT.write(
+                "peaks\t"
+                + str(PEAKS)  # pyright: ignore [reportPossiblyUnboundVariable]
+                + "\n"
+            )
+        if args.fithichip_bed is not None and os.path.isfile(args.fithichip_bed):
+            REPORT.write(
+                "loops\t"
+                + str(LOOPS)  # pyright: ignore [reportPossiblyUnboundVariable]
+                + "\n"
+            )
+            REPORT.write(
+                "loops_significant\t"
+                + str(LOOPS_SIGNIFICANT)  # pyright: ignore [reportPossiblyUnboundVariable]
+                + "\n"
+            )
