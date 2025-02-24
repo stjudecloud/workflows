@@ -1,4 +1,3 @@
-from collections import defaultdict
 import argparse
 
 
@@ -15,28 +14,16 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
-    f = open(args.filter_pairs)
-    exclude_ID = defaultdict(int)
-    while True:
-        line = f.readline()
-        if not line:
-            break
-        cols = line.strip().split("\t")
-        ID = cols[0]
-        exclude_ID[ID] = 1
+    exclude_ID = set()
+    with open(args.filter_pairs) as file:
+        for line in file:
+            exclude_ID.add(line.strip().split("\t")[0])
 
-    f2 = open(args.all_valid_pairs)
     outfile1 = args.prefix + ".allValidPairs.filtered"
     outfile2 = args.prefix + ".allValidPairs.removed"
-    of1 = open(outfile1, "w")
-    of2 = open(outfile2, "w")
-    while True:
-        line = f2.readline()
-        if not line:
-            break
-        cols = line.strip().split("\t")
-        id = cols[0]
-        if id in exclude_ID:
-            of2.write(line)
-        else:
-            of1.write(line)
+    with open(args.all_valid_pairs, 'r') as pairs_file, open(outfile1, 'w') as of1, open(outfile2, 'w') as of2:
+        for line in pairs_file:
+            if line.strip().split("\t")[0] in exclude_ID:
+                of2.write(line)
+            else:
+                of1.write(line)
