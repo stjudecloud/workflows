@@ -9,7 +9,7 @@ task extract_promoters {
         }
     }
 
-       parameter_meta {
+    parameter_meta {
         annotation: "GTF (optionally gzip compressed) file containing gene annotations"
     }
 
@@ -220,7 +220,7 @@ task filter {
             | slopBed -i stdin -b ~{padding} -g ~{chromsizes} \
             | intersectBed -a stdin -b ~{base} -u > right.bed
 
-        cat <(cut -f 4 left.bed) <(cut -f 4 right.bed)|sort -u > filter.pair
+        cat <(cut -f 4 left.bed) <(cut -f 4 right.bed) | sort -u > filter.pair
 
         python /scripts/hic/filter_hic.py \
             --all_valid_pairs ~{all_valid_pairs} \

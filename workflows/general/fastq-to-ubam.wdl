@@ -35,8 +35,8 @@ workflow fastq_to_ubam {
     }
 
     call parse_input { input:
-        read_one_fastqs_gz,
-        read_two_fastqs_gz,
+        read_one_fastqs = length(read_one_fastqs_gz),
+        read_two_fastqs = length(read_two_fastqs_gz),
         read_groups,
     }
 
@@ -70,35 +70,36 @@ task parse_input {
     }
 
     parameter_meta {
-        read_one_fastqs_gz: "Array of gzipped FASTQ files with 1st reads in pair"
-        read_two_fastqs_gz: "Array of gzipped FASTQ files with 2nd reads in pair"
         read_groups: {
             description: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz` if non-zero. Only the `ID` field is required, and it must be unique for each read group defined. See top of file for help formatting your input JSON.",  # Does not currently handle unknown RG case
             help: "See ../../data_structures/read_group.wdl for additional documentation.",
             external_help: "https://samtools.github.io/hts-specs/SAMv1.pdf",
         }
+        read_one_fastqs: "Number of gzipped FASTQ files with 1st reads in pair"
+        read_two_fastqs: "Number of gzipped FASTQ files with 2nd reads in pair"
     }
 
     input {
-        Array[File] read_one_fastqs_gz
-        Array[File] read_two_fastqs_gz
         Array[ReadGroup] read_groups
+        Int read_one_fastqs
+        Int read_two_fastqs
     }
 
+    #@ except: LineWidth
     command <<<
-        if [ ~{length(read_one_fastqs_gz)} -ne ~{length(read_two_fastqs_gz)} ]
+        if [ ~{read_one_fastqs} -ne ~{read_two_fastqs} ]
         then
-            >&2 echo "Length of read_one_fastqs_gz and read_two_fastqs_gz must be equal"
+            >&2 echo "Number of entries in read_one_fastqs_gz and read_two_fastqs_gz must be equal"
             exit 1
         fi
-        if [ ~{length(read_one_fastqs_gz)} -ne ~{length(read_groups)} ]
+        if [ ~{read_one_fastqs} -ne ~{length(read_groups)} ]
         then
-            >&2 echo "Length of read_one_fastqs_gz and read_groups must be equal"
+            >&2 echo "Number of entries read_one_fastqs_gz and read_groups must be equal"
             exit 1
         fi
-        if [ ~{length(read_two_fastqs_gz)} -ne ~{length(read_groups)} ]
+        if [ ~{read_two_fastqs} -ne ~{length(read_groups)} ]
         then
-            >&2 echo "Length of read_two_fastqs_gz and read_groups must be equal"
+            >&2 echo "Number of entries read_two_fastqs_gz and read_groups must be equal"
             exit 1
         fi
     >>>
