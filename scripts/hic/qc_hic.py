@@ -62,15 +62,6 @@ if __name__ == "__main__":
         "cis_longRange",
     ]
 
-    if args.fithichip_bed is not None and os.path.isfile(args.fithichip_bed):
-        with open(args.fithichip_q01_bed) as fithichip:
-            LOOPS_SIGNIFICANT = len(fithichip.readlines()) - 1
-        with open(args.fithichip_bed) as fithichip:
-            LOOPS = len(fithichip.readlines()) - 1
-    if args.peaks_bed is not None and os.path.isfile(args.peaks_bed):
-        with open(args.peaks_bed) as peaks:
-            PEAKS = len(peaks.readlines()) - 1
-
     PERCENTAGES["R1_aligned"] = round(
         (RESULTS["mapped_R1"] * 100) / RESULTS["total_R1"]
     )
@@ -135,19 +126,13 @@ if __name__ == "__main__":
             )
 
         if args.peaks_bed is not None and os.path.isfile(args.peaks_bed):
-            REPORT.write(
-                "peaks\t"
-                + str(PEAKS)  # pyright: ignore [reportPossiblyUnboundVariable]
-                + "\n"
-            )
+            with open(args.peaks_bed) as peaks:
+                PEAKS = len(peaks.readlines()) - 1
+            REPORT.write("peaks\t" + str(PEAKS) + "\n")
         if args.fithichip_bed is not None and os.path.isfile(args.fithichip_bed):
-            REPORT.write(
-                "loops\t"
-                + str(LOOPS)  # pyright: ignore [reportPossiblyUnboundVariable]
-                + "\n"
-            )
-            REPORT.write(
-                "loops_significant\t"
-                + str(LOOPS_SIGNIFICANT)  # pyright: ignore [reportPossiblyUnboundVariable]
-                + "\n"
-            )
+            with open(args.fithichip_q01_bed) as fithichip:
+                LOOPS_SIGNIFICANT = len(fithichip.readlines()) - 1
+            with open(args.fithichip_bed) as fithichip:
+                LOOPS = len(fithichip.readlines()) - 1
+            REPORT.write("loops\t" + str(LOOPS) + "\n")
+            REPORT.write("loops_significant\t" + str(LOOPS_SIGNIFICANT) + "\n")

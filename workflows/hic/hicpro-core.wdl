@@ -562,7 +562,7 @@ task mapping_stats {
 
         global_mapped_reads=$(samtools view -c -F 4 ~{global_bam})
 
-        if ~{if defined(local_bam) then true else false}
+        if ~{defined(local_bam)}
         then
             local_mapped_reads=$(samtools view -c -F 4 ~{local_bam})
         fi
@@ -660,32 +660,32 @@ task mapped_2hic_fragments {
             then "python /HiC-Pro_3.0.0/scripts/mapped_2hic_fragments.py -f $frag"  # Fragment file found
             else "python /HiC-Pro_3.0.0/scripts/mapped_2hic_dnase.py"  # DNAse
         )} \
-        -v \
-        -r ~{mapped_reads} \
-        ~{if defined(fragment) && sam then "-S" else ""} \
-        ~{if addl_output then "-a" else ""} \
-        ~{if min_cis_distance > 0 then "-d ~{min_cis_distance}" else ""} \
-        ~{if genotype_tag then "-g XA" else ""} \
-        ~{(
-            if defined(fragment) && shortest_insert_size > 0
-            then "-s ~{shortest_insert_size}"
-            else ""
-        )} \
-        ~{(
-            if defined(fragment) && longest_insert_size > 0
-            then "-l ~{longest_insert_size}"
-            else ""
-        )} \
-        ~{(
-            if defined(fragment) && shortest_fragment_length > 0
-            then "-t ~{shortest_fragment_length}"
-            else ""
-        )} \
-        ~{(
-            if defined(fragment) && longest_fragment_length > 0
-            then "-m ~{longest_fragment_length}"
-            else ""
-        )}
+            -v \
+            -r ~{mapped_reads} \
+            ~{if defined(fragment) && sam then "-S" else ""} \
+            ~{if addl_output then "-a" else ""} \
+            ~{if min_cis_distance > 0 then "-d ~{min_cis_distance}" else ""} \
+            ~{if genotype_tag then "-g XA" else ""} \
+            ~{(
+                if defined(fragment) && shortest_insert_size > 0
+                then "-s ~{shortest_insert_size}"
+                else ""
+            )} \
+            ~{(
+                if defined(fragment) && longest_insert_size > 0
+                then "-l ~{longest_insert_size}"
+                else ""
+            )} \
+            ~{(
+                if defined(fragment) && shortest_fragment_length > 0
+                then "-t ~{shortest_fragment_length}"
+                else ""
+            )} \
+            ~{(
+                if defined(fragment) && longest_fragment_length > 0
+                then "-m ~{longest_fragment_length}"
+                else ""
+            )}
 
         LANG=en; sort -k2,2V -k3,3n -k5,5V -k6,6n -o ~{outfile_name} ~{outfile_name}
     >>>

@@ -21,7 +21,11 @@ if __name__ == "__main__":
 
     outfile1 = args.prefix + ".allValidPairs.filtered"
     outfile2 = args.prefix + ".allValidPairs.removed"
-    with open(args.all_valid_pairs, 'r') as pairs_file, open(outfile1, 'w') as of1, open(outfile2, 'w') as of2:
+    with (
+        open(args.all_valid_pairs, "r") as pairs_file,
+        open(outfile1, "w") as of1,
+        open(outfile2, "w") as of2,
+    ):
         for line in pairs_file:
             if line.strip().split("\t")[0] in exclude_ID:
                 of2.write(line)
