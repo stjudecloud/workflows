@@ -21,6 +21,11 @@ def get_args():
 
     args = parser.parse_args()
 
+    if args.fithichip_bed is not None and args.fithichip_q01_bed is None:
+        parser.error(
+            "The --fithichip_q01_bed argument is required when --fithichip_bed is provided."
+        )
+
     return args
 
 
