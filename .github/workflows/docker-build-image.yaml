@@ -1,0 +1,118 @@
+name: Workflows Docker Build Image
+
+on:
+  workflow_call:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Set Env
+              run: |
+                echo "TOOL=$(jq -r .name ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
+                echo "SEMVER=$(jq -r .version ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
+                echo "REVISION=$(jq -r .revision ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
+                echo "GH_REF=${GITHUB_REF##*/}" >> $GITHUB_ENV
+            - name: Set Main Tag
+              if: github.ref == 'refs/heads/main'
+              run: |
+                if [ ${{ env.REVISION }} != "null" ]; then
+                  echo "IMAGE_TAG=${{ env.SEMVER }}-${{ env.REVISION }}" >> $GITHUB_ENV
+                  echo "TAG_TO_CHECK=${{ env.SEMVER }}-${{ env.REVISION }}" >> $GITHUB_ENV
+                else
+                  echo "IMAGE_TAG=${{ env.SEMVER }}" >> $GITHUB_ENV
+                  echo "TAG_TO_CHECK=${{ env.SEMVER }}" >> $GITHUB_ENV
+                fi
+            - name: Set Branch Tag
+              if: github.ref != 'refs/heads/main'
+              run: |
+                if [ ${{ env.REVISION }} != "null" ]; then
+                  echo "IMAGE_TAG=branch-${{ env.GH_REF }}-${{ env.SEMVER }}-${{ env.REVISION }}" >> $GITHUB_ENV
+                  echo "TAG_TO_CHECK=${{ env.SEMVER }}-${{ env.REVISION }}" >> $GITHUB_ENV
+                else
+                  echo "IMAGE_TAG=branch-${{ env.GH_REF }}-${{ env.SEMVER }}" >> $GITHUB_ENV
+                  echo "TAG_TO_CHECK=${{ env.SEMVER }}" >> $GITHUB_ENV
+                fi
+            - name: Log in to the Container registry
+              run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
+            - uses: docker/setup-qemu-action@v2
+            - uses: docker/setup-buildx-action@v2
+            - uses: docker/build-push-action@v4
+              id: build
+              with:
+                context: ${{ matrix.image }}
+                build-contexts: scripts=./scripts
+                push: false
+                load: true
+                tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
+                cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache
+                cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache,mode=max
+            - name: container diff
+              run: |
+                docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} || true
+                if [ -z "$(docker images -q ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }})" ]; then
+                  echo "Prior image not found in registry, skipping container-diff"
+                  exit 0
+                fi
+                curl -LO https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64 && \
+                chmod +x container-diff-linux-amd64 && \
+                ./container-diff-linux-amd64 diff --json daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local --type=history --type=file --type=size | tee comparison.json
+                # check overall size result
+                changed=0
+                size_diff=$(jq '.[] | select(.DiffType == "Size") | if .Diff[0].Size1 == .Diff[0].Size2 then 1 else 0 end' comparison.json)
+                if [ $size_diff -eq 0 ]
+                then
+                  echo "Size of the image has changed"
+                  changed=1
+                fi
+                # check file diff result
+                additions=$(jq '.[] | select(.DiffType == "File") | if .Diff.Adds != null then .Diff.Adds[].Name else 0 end' comparison.json)
+                deletions=$(jq '.[] | select(.DiffType == "File") | if .Diff.Dels != null then .Diff.Dels[].Name else 0 end' comparison.json)
+                modifications=$(jq '.[] | select(.DiffType == "File") | if .Diff.Mods != null then .Diff.Mods[].Name else 0 end' comparison.json)
+                if [ "$additions" != "0" ]
+                then
+                  echo "Files have been added"
+                  echo $additions
+                  changed=1
+                fi
+                if [ "$deletions" != "0" ]
+                then
+                  echo "Files have been deleted"
+                  echo $deletions
+                  changed=1
+                fi
+                if [ "$modifications" != "0" ]
+                then
+                  echo "Files have been modified"
+                  echo $modifications
+                  changed=1
+                fi
+                exit $changed
+            - name: Run Snyk to check Docker image for vulnerabilities
+              # Snyk can be used to break the build when it detects vulnerabilities.
+              # In this case we want to upload the issues to GitHub Code Scanning
+              continue-on-error: true
+              uses: snyk/actions/docker@0.4.0
+              env:
+                SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+              with:
+                image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
+                args: --file=${{ matrix.image }}/Dockerfile
+            - name: Clean Snyk SARIF file
+              continue-on-error: true
+              run: |
+                sed -i 's/"security-severity": "null"/"security-severity": "0"/g' snyk.sarif
+            - name: Upload result to GitHub Code Scanning
+              continue-on-error: true
+              uses: github/codeql-action/upload-sarif@v3
+              with:
+                sarif_file: snyk.sarif
+            - name: Push image
+              run: |
+                docker tag ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}
+                docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}
+      
