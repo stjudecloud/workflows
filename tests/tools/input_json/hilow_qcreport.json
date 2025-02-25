@@ -1,0 +1,6 @@
+{
+    "all_valid_pairs_stats": "tests/input/hic/00_JurkatCas9_ab3_050123_allValidPairs.mergestat",
+    "mapping_stats_read1": "tests/input/hic/00_JurkatCas9_ab3_050123_R1.mmapstat",
+    "mapping_stats_read2": "tests/input/hic/00_JurkatCas9_ab3_050123_R2.mmapstat",
+    "pairing_stats": "tests/input/hic/00_JurkatCas9_ab3_050123.mpairstat"
+}
