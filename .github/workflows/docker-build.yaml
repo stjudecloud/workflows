@@ -26,7 +26,7 @@ jobs:
       matrix:
         image: ${{ fromJson(needs.list-images.outputs.images) }}
         exclude:
-          - image: 'hilow'
+          - image: 'docker/hilow'
       fail-fast: false
     uses: ./.github/workflows/docker-build-image.yaml
     secrets: inherit
