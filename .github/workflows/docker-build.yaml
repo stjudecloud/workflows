@@ -30,6 +30,8 @@ jobs:
       fail-fast: false
     uses: ./.github/workflows/docker-build-image.yaml
     secrets: inherit
+    with:
+      image: ${{ matrix.image }}
 
   build-dependent-images:
     needs: build-images
@@ -39,3 +41,5 @@ jobs:
       fail-fast: false
     uses: ./.github/workflows/docker-build-image.yaml
     secrets: inherit
+    with:
+      image: ${{ matrix.image }}
