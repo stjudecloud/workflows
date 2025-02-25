@@ -37,7 +37,7 @@ jobs:
     needs: build-images
     strategy:
       matrix:
-        image: [hilow]
+        image: [docker/hilow]
       fail-fast: false
     uses: ./.github/workflows/docker-build-image.yaml
     secrets: inherit
