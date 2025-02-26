@@ -131,7 +131,11 @@ workflow hicpro_core {
         }
 
         scatter (pair in zip(r1_split.fastqs, r2_split.fastqs)) {
-            String fq_prefix = sub(basename(pair.left), ".fastq.gz|.fq.gz|.fastq|.fq", "")
+            String fq_prefix = sub(
+                basename(pair.left),
+                "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+                ""
+            )
             # do end-to-end bowtie alignment
             # retain unmapped reads
             # align read 1, save unaligned reads (--un-gz)
