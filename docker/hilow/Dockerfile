@@ -1,4 +1,4 @@
-FROM ghcr.io/stjudecloud/bedtools:branch-hic_workflow-2.31.1-0 AS bedtools
+FROM ghcr.io/stjudecloud/bedtools:2.31.1-0 AS bedtools
 FROM python:3.13.1-alpine
 
 RUN apk add --no-cache bash
