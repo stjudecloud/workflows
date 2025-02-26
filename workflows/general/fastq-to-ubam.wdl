@@ -34,10 +34,14 @@ workflow fastq_to_ubam {
         Boolean use_all_cores = false
     }
 
+    scatter (rg in read_groups) {
+        call read_group.read_group_to_string { input: read_group = rg }
+    }
+
     call parse_input { input:
-        read_one_fastqs = length(read_one_fastqs_gz),
-        read_two_fastqs = length(read_two_fastqs_gz),
-        read_groups,
+        read_one_fastqs = read_one_fastqs_gz,
+        read_two_fastqs = read_two_fastqs_gz,
+        read_groups = read_group_to_string.stringified_read_group,
     }
 
     scatter (read_group in read_groups) {
@@ -80,28 +84,41 @@ task parse_input {
     }
 
     input {
-        Array[ReadGroup] read_groups
-        Int read_one_fastqs
-        Int read_two_fastqs
+        Array[String] read_one_fastqs
+        Array[String] read_two_fastqs
+        Array[String] read_groups
     }
 
     #@ except: LineWidth
     command <<<
-        if [ ~{read_one_fastqs} -ne ~{read_two_fastqs} ]
+        if [ ~{length(read_one_fastqs)} -ne ~{length(read_two_fastqs)} ]
         then
             >&2 echo "Number of entries in read_one_fastqs_gz and read_two_fastqs_gz must be equal"
             exit 1
         fi
-        if [ ~{read_one_fastqs} -ne ~{length(read_groups)} ]
+        if [ ~{length(read_one_fastqs)} -ne ~{length(read_groups)} ]
         then
             >&2 echo "Number of entries read_one_fastqs_gz and read_groups must be equal"
             exit 1
         fi
-        if [ ~{read_two_fastqs} -ne ~{length(read_groups)} ]
+        if [ ~{length(read_two_fastqs)} -ne ~{length(read_groups)} ]
         then
             >&2 echo "Number of entries read_two_fastqs_gz and read_groups must be equal"
             exit 1
         fi
+
+        python3 /scripts/star/sort_star_input.py \
+            --read-one-fastqs '~{sep(",", read_one_fastqs)}' \
+            ~{(
+                if (length(read_two_fastqs) != 0)
+                then "--read-two-fastqs '~{sep(",", read_two_fastqs)}'"
+                else ""
+            )} \
+            ~{(
+                if (length(read_groups) != 0)
+                then "--read-groups '~{sep(" , ", read_groups)}'"
+                else ""
+            )}
     >>>
 
     output {
@@ -111,7 +128,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/star:2.7.11b-7"
         maxRetries: 1
     }
 }
