@@ -16,9 +16,7 @@ fi
 # freeBSD sed (including the Mac version) requires a space and then an argument to -i
 if [ "$(uname)" == "Darwin" ]
 then
-  inplace_arg='-i ""'
+  find . -not -path '.git' -a -type f -name '*.wdl' | xargs sed -Er -i '' "s,$search_pattern,$replacement,g"
 else
-  inplace_arg='-i'
+  find . -not -path '.git' -a -type f -name '*.wdl' | xargs sed -Er -i'' "s,$search_pattern,$replacement,g"
 fi
-
-find . -not -path '.git' -a -type f -name '*.wdl' | xargs sed -Er $inplace_arg "s,$search_pattern,$replacement,g"
