@@ -1327,7 +1327,90 @@ task faidx {
         cpu: 1
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/samtools:1.17--h00cdaf9_0"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 1
+    }
+}
+
+task sort {
+    meta {
+        description: "Sorts the input BAM file"
+        external_help: "https://www.htslib.org/doc/samtools-sort.html"
+        outputs: {
+            sorted_bam: "The input BAM after it has been sorted",
+            sorted_bam_index: "The `.bai` BAM index file associated with `sorted_bam`",
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to sort"
+        tag_sort: {
+            description: "Sort by the value of the alignment tag specified in `tag_sort`. When specified, samtools sorts by the value of the alignment tag and then by either position or read name.",
+            external_help: "https://www.htslib.org/doc/samtools-sort.html",
+        }
+        prefix: "Prefix for the output file. The extension `.bam` will be added."
+        uncompressed: "Output uncompressed BAM?"
+        natural_name_sort: "Sort by read name in alphanumeric order"
+        ascii_name_sort: "Sort by read name in ASCII order (lexicographic)"
+        index: "Create an index for the output BAM?"
+        use_all_cores: "Use all cores? Recommended for cloud environments."
+        compression_level: "Compression level for output BAM file. 0 is no compression, 9 is maximum compression."
+        ncpu: "Number of cores to allocate for task"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        String? tag_sort
+        String prefix = basename(bam, ".bam") + ".sorted"
+        Boolean uncompressed = false
+        Boolean natural_name_sort = false
+        Boolean ascii_name_sort = false
+        Boolean index = false
+        Boolean use_all_cores = false
+        Int compression_level = 6
+        Int ncpu = 2
+        Int modify_disk_size_gb = 0
+        Int modify_memory_gb = 0
+    }
+
+    Int memory_gb = ceil(size(bam, "GiB") * 0.2) + 4 + modify_memory_gb
+    Int disk_size_gb = ceil(size(bam, "GiB") * 2) + 10 + modify_disk_size_gb
+    Int max_mem_per_thread = memory_gb * 1024 / ncpu
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        let "n_cores -= 1"
+
+        samtools sort \
+            --threads $n_cores \
+            ~{if uncompressed then "-u" else "-l ~{compression_level}"} \
+            -m ~{max_mem_per_thread}M \
+            ~{if natural_name_sort then "-n" else ""} \
+            ~{if ascii_name_sort then "-N" else ""} \
+            ~{if defined(tag_sort) then "-t " + tag_sort else ""} \
+            ~{if index then "--write-index" else ""} \
+            -o ~{prefix}.bam \
+            ~{bam}
+    >>>
+
+    output {
+        File sorted_bam = prefix + ".bam"
+        File? sorted_bam_index = prefix + ".bam.bai"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "~{memory_gb} GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
