@@ -19,10 +19,9 @@ workflow dnaseq_standard_fastq_experimental {
     }
 
     parameter_meta {
+        bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
-        bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-        reads_per_file: "Controls the number of reads per FASTQ file for internal split to run BWA in parallel."
         read_groups: {
             description: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz` if non-zero. Only the `ID` field is required, and it must be unique for each read group defined. See data_structures/read_group.wdl for help formatting your input JSON.",
             external_help: "https://samtools.github.io/hts-specs/SAMv1.pdf",
@@ -41,6 +40,7 @@ workflow dnaseq_standard_fastq_experimental {
         }
         validate_input: "Ensure input FASTQs ares well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
+        reads_per_file: "Controls the number of reads per FASTQ file for internal split to run BWA in parallel."
         subsample_n_reads: "Only process a random sampling of `n` reads. Any `n`<=`0` for processing entire input."
     }
 
@@ -127,6 +127,7 @@ task parse_input {
     }
 
     parameter_meta {
+        array_lengths: "Expected to be an array of length 3, containing the lengths of `read_one_fastqs_gz`, `read_two_fastqs_gz`, and `read_groups`"
         aligner: {
             description: "BWA aligner to use",
             choices: [
@@ -134,10 +135,10 @@ task parse_input {
                 "aln"
             ],
         }
-        array_lengths: "Expected to be an array of length 3, containing the lengths of `read_one_fastqs_gz`, `read_two_fastqs_gz`, and `read_groups`"
     }
 
     input {
+        #@ except: DisallowedDeclarationName
         Array[Int] array_lengths
         String aligner
     }

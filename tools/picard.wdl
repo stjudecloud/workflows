@@ -925,6 +925,7 @@ task scatter_interval_list {
 
     parameter_meta  {
         interval_list: "Input interval list to split"
+        scatter_count: "Number of interval lists to create"
         subdivision_mode: {
             description: "How to subdivide the intervals",
             choices: [
@@ -935,7 +936,6 @@ task scatter_interval_list {
         }
         unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
         sort: "Should the output interval lists be sorted? Sorts by coordinate."
-        scatter_count: "Number of interval lists to create"
     }
 
     input {
@@ -996,10 +996,10 @@ task create_sequence_dictionary {
 
     parameter_meta {
         fasta: "Input FASTA format file from which to create dictionary"
-        outfile_name: "Name for the CreateSequenceDictionary dictionary file"
         assembly_name: "Value to put in AS field of sequence dictionary"
         fasta_url: "Value to put in UR field of sequence dictionary"
         species: "Value to put in SP field of sequence dictionary"
+        outfile_name: "Name for the CreateSequenceDictionary dictionary file"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

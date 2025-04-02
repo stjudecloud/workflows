@@ -83,7 +83,6 @@ task base_recalibrator {
     parameter_meta  {
         bam: "Input BAM format file on which to recabilbrate base quality scores"
         bam_index: "BAM index file corresponding to the input BAM"
-        outfile_name: "Name for the output recalibration report."
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
         dict: "Dictionary file for FASTA format genome"
@@ -91,10 +90,11 @@ task base_recalibrator {
         dbSNP_vcf_index: "dbSNP VCF index file"
         known_indels_sites_vcfs: "List of VCF files containing known indels"
         known_indels_sites_indices: "List of VCF index files corresponding to the VCF files in `known_indels_sites_vcfs`"
+        outfile_name: "Name for the output recalibration report."
+        use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
-        use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
     }
 
     input {
@@ -167,10 +167,10 @@ task apply_bqsr {
         bam_index: "BAM index file corresponding to the input BAM"
         recalibration_report: "Recalibration report file"
         prefix: "Prefix for the output recalibrated BAM. The extension `.bqsr.bam` will be added."
+        use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
-        use_original_quality_scores: "Use original quality scores from the input BAM. Default is to use recalibrated quality scores."
     }
 
     input {
@@ -238,6 +238,7 @@ task haplotype_caller {
         dbSNP_vcf: "dbSNP VCF file"
         dbSNP_vcf_index: "dbSNP VCF index file"
         prefix: "Prefix for the output VCF. The extension `.vcf.gz` will be added."
+        use_soft_clipped_bases: "Use soft clipped bases in variant calling. Default is to ignore soft clipped bases."
         stand_call_conf: {
             description: "Minimum confidence threshold for calling variants",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller#--standard-min-confidence-threshold-for-calling",
@@ -245,7 +246,6 @@ task haplotype_caller {
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
-        use_soft_clipped_bases: "Use soft clipped bases in variant calling. Default is to ignore soft clipped bases."
     }
 
     input {
@@ -317,7 +317,6 @@ task variant_filtration {
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
         dict: "Dictionary file for FASTA format genome"
-        prefix: "Prefix for the output filtered VCF. The extension `.filtered.vcf.gz` will be added."
         filter_names: {
             description: "Names of the filters to apply",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-name",
@@ -326,6 +325,7 @@ task variant_filtration {
             description: "Expressions for the filters",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037434691-VariantFiltration#--filter-expression",
         }
+        prefix: "Prefix for the output filtered VCF. The extension `.filtered.vcf.gz` will be added."
         cluster: "Number of SNPs that must be present in a window to filter"
         window: "Size of the window (in bases) for filtering"
         modify_disk_size_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
