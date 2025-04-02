@@ -19,6 +19,10 @@ workflow qc_reference {
     }
 
     parameter_meta {
+        reference_fa_url: "URL to retrieve the reference FASTA file from"
+        reference_fa_name: "Name of output reference FASTA file"
+        gtf_url: "URL to retrieve the reference GTF file from"
+        gtf_name: "Name of output GTF file"
         kraken_fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
         kraken_fasta_urls: "URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database. This allows the addition of individual genomes (or other sequences) of interest."
         kraken_libraries: {
@@ -51,14 +55,10 @@ workflow qc_reference {
                 "Selenocysteine"
             ],
         }
-        reference_fa_url: "URL to retrieve the reference FASTA file from"
-        reference_fa_name: "Name of output reference FASTA file"
-        gtf_url: "URL to retrieve the reference GTF file from"
-        gtf_name: "Name of output GTF file"
         protein: "Construct a protein database?"
-        kraken_fastas_disk_size_gb: "Disk size (in GB) to allocate for downloading the FASTA files"
         reference_fa_disk_size_gb: "Disk size (in GB) to allocate for downloading the reference FASTA file"
         gtf_disk_size_gb: "Disk size (in GB) to allocate for downloading the GTF file"
+        kraken_fastas_disk_size_gb: "Disk size (in GB) to allocate for downloading the FASTA files"
     }
 
     input {

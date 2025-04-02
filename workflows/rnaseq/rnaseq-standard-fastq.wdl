@@ -65,12 +65,12 @@ workflow rnaseq_standard_fastq {
                 SM: "Sample. Use pool name where a pool is being sequenced.",
             },
         }
+        contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         prefix: {
             description: "Prefix for output files",
             help: "See `../../README.md` for more information on the default prefix evaluation.",
             group: "common",
         }
-        contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
             choices: [
