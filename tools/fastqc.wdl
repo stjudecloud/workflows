@@ -33,7 +33,6 @@ task fastqc {
         Int modify_disk_size_gb = 0
     }
 
-    # Sanitize the prefix to avoid path traversal and special character issues
     String sanitized_prefix = sub(prefix, "[^a-zA-Z0-9_.-]", "_")
     String out_tar_gz = sanitized_prefix + ".tar.gz"
     String bam_basename = basename(bam, ".bam")
@@ -51,8 +50,7 @@ task fastqc {
         fi
 
         mkdir ~{sanitized_prefix}
-        
-        # Run FastQC with the sanitized output directory
+    
         fastqc -f bam \
             -o ~{sanitized_prefix} \
             -t "$n_cores" \
@@ -66,7 +64,7 @@ task fastqc {
             exit 1
         fi
 
-        # Create the tar archive
+        # tar achieve
         tar -czf ~{out_tar_gz} ~{sanitized_prefix}
     >>>
 
