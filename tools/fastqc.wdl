@@ -33,7 +33,11 @@ task fastqc {
         Int modify_disk_size_gb = 0
     }
 
-    String out_tar_gz = prefix + ".tar.gz"
+    # Sanitize the prefix to avoid path traversal and special character issues
+    String sanitized_prefix = sub(prefix, "[^a-zA-Z0-9_.-]", "_")
+    String out_tar_gz = sanitized_prefix + ".tar.gz"
+    String bam_basename = basename(bam, ".bam")
+    String expected_zip_name = bam_basename + "_fastqc.zip"
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
@@ -46,17 +50,28 @@ task fastqc {
             n_cores=$(nproc)
         fi
 
-        mkdir ~{prefix}
+        mkdir ~{sanitized_prefix}
+        
+        # Run FastQC with the sanitized output directory
         fastqc -f bam \
-            -o ~{prefix} \
+            -o ~{sanitized_prefix} \
             -t "$n_cores" \
             ~{bam}
+            
+        # Create a checkpoint for the output exist
+        if [ ! -f "~{sanitized_prefix}/~{expected_zip_name}" ]; then
+            echo "ERROR: FastQC output file not found at expected location: ~{sanitized_prefix}/~{expected_zip_name}"
+            # List contents to aid debugging
+            ls -la ~{sanitized_prefix}/
+            exit 1
+        fi
 
-        tar -czf ~{out_tar_gz} ~{prefix}
+        # Create the tar archive
+        tar -czf ~{out_tar_gz} ~{sanitized_prefix}
     >>>
 
     output {
-        File raw_data = "~{prefix}/~{basename(bam, ".bam")}_fastqc.zip"
+        File raw_data = "~{sanitized_prefix}/~{bam_basename}_fastqc.zip"
         File results = out_tar_gz
     }
 
@@ -68,3 +83,8 @@ task fastqc {
         maxRetries: 1
     }
 }
+
+
+# Problem: if the prefic contain the special character or delimeter, it can casue the file path to interpreted incorectly
+#Solution : we trying to use the prefix with sanitized_prefix --> update output section and validation
+
