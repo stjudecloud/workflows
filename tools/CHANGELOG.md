@@ -23,3 +23,5 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - `util.get_read_groups` had the param `format_for_star` reworked to a more generic `clean` parameter [#205](https://github.com/stjudecloud/workflows/pull/205).
 - `star.allignment` now takes an `Array[String]` for `read_groups` instead of a single `String` [#205](https://github.com/stjudecloud/workflows/pull/205).
+- Fixed handling of special characters in `fastqc` task's `prefix` parameter by implementing proper sanitization [#169](https://github.com/stjudecloud/workflows/issues/169).
+- Split `picard.wdl` into three files for better organization: `picard.wdl` (imports only), `picard-qc.wdl` (QC tasks) and `picard-manipulation.wdl` (BAM manipulation tasks).
