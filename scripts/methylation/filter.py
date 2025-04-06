@@ -60,8 +60,3 @@ if __name__ == "__main__":
 
     bd = pd.DataFrame(beta_data, columns=header).set_index("probe")
     bd.to_csv(args.output_name)
-
-
-#TO DO:
-# - add a check to make sure the filtered probes file is not empty
-# - add a check to make sure the output file is not empty
