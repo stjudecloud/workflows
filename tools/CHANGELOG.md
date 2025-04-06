@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - `ngsderive.encoding` removed the `String inferred_encoding` output [#216](https://github.com/stjudecloud/workflows/pull/216).
 - Improved the REGEX used to calculate a prefix for FASTQ input files in various tools [#220](https://github.com/stjudecloud/workflows/pull/220).
+- Fixed handling of special characters in `fastqc` task's `prefix` parameter by implementing proper sanitization [#169](https://github.com/stjudecloud/workflows/issues/169).
  
 ## 2025 January
 
