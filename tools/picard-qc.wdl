@@ -8,8 +8,8 @@ task validate_bam {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360057440611-ValidateSamFile-Picard-"
         outputs: {
             validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
-        }
-    }
+       }
+   }
 
     parameter_meta {
         bam: "Input BAM format file to validate"
@@ -18,7 +18,7 @@ task validate_bam {
             description: "List of Picard errors and warnings to ignore. Possible values can be found on the GATK website (see `external_help`).",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile",
             group: "common",
-        }
+       }
         outfile_name: "Name for the ValidateSamFile report file"
         validation_stringency: {
             description: "Validation stringency for parsing the input BAM.",
@@ -28,24 +28,24 @@ task validate_bam {
                 "SILENT"
             ],
             tool_default: "STRICT",
-        }
+       }
         succeed_on_errors: {
             description: "Succeed the task even if errors *and/or* warnings are detected",
             group: "common",
-        }
+       }
         succeed_on_warnings: {
             description: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`",
             group: "common",
-        }
+       }
         summary_mode: {
             description: "Enable SUMMARY mode?",
             group: "common",
-        }
+       }
         index_validation_stringency_less_exhaustive: "Set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE`?"
         max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
+   }
 
     input {
         File bam
@@ -60,7 +60,7 @@ task validate_bam {
         Int max_errors = 2147483647  # max 32-bit INT
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
-    }
+   }
 
     String reference_arg = (
         if defined(reference_fasta)
@@ -117,14 +117,14 @@ task validate_bam {
 
     output {
         File validate_report = outfile_name
-    }
+   }
 
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
-    }
+   }
 }
 
 task collect_wgs_metrics {
@@ -135,9 +135,9 @@ task collect_wgs_metrics {
             wgs_metrics: {
                 description: "Output report of `picard CollectWgsMetrics`",
                 external_help: "https://broadinstitute.github.io/picard/picard-metric-definitions.html#CollectWgsMetrics.WgsMetrics",
-            }
-        }
-    }
+           }
+       }
+   }
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate WGS metrics"
@@ -151,10 +151,10 @@ task collect_wgs_metrics {
                 "SILENT"
             ],
             tool_default: "STRICT",
-        }
+       }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
+   }
 
     input {
         File bam
@@ -163,7 +163,7 @@ task collect_wgs_metrics {
         String validation_stringency = "SILENT"
         Int memory_gb = 12
         Int modify_disk_size_gb = 0
-    }
+   }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
@@ -180,14 +180,14 @@ task collect_wgs_metrics {
 
     output {
         File wgs_metrics = outfile_name
-    }
+   }
 
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
-    }
+   }
 }
 
 task collect_alignment_summary_metrics {
@@ -200,8 +200,8 @@ task collect_alignment_summary_metrics {
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#AlignmentSummaryMetrics",
             },
             alignment_metrics_pdf: "The PDF file output of `CollectAlignmentSummaryMetrics`",
-        }
-    }
+       }
+   }
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate alignment metrics"
@@ -214,10 +214,10 @@ task collect_alignment_summary_metrics {
                 "SILENT"
             ],
             tool_default: "STRICT",
-        }
+       }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
+   }
 
     input {
         File bam
@@ -225,7 +225,7 @@ task collect_alignment_summary_metrics {
         String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
-    }
+   }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
@@ -242,14 +242,14 @@ task collect_alignment_summary_metrics {
     output {
         File alignment_metrics = prefix + ".txt"
         File alignment_metrics_pdf = prefix + ".pdf"
-    }
+   }
 
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
-    }
+   }
 }
 
 task collect_gc_bias_metrics {
@@ -266,8 +266,8 @@ task collect_gc_bias_metrics {
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasSummaryMetrics",
             },
             gc_bias_metrics_pdf: "The PDF file output of `CollectGcBiasMetrics`",
-        }
-    }
+       }
+   }
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate GC bias metrics"
@@ -281,10 +281,10 @@ task collect_gc_bias_metrics {
                 "SILENT"
             ],
             tool_default: "STRICT",
-        }
+       }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
+   }
 
     input {
         File bam
@@ -293,7 +293,7 @@ task collect_gc_bias_metrics {
         String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
-    }
+   }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
@@ -313,14 +313,14 @@ task collect_gc_bias_metrics {
         File gc_bias_metrics = prefix + ".txt"
         File gc_bias_metrics_summary = prefix + ".summary.txt"
         File gc_bias_metrics_pdf = prefix + ".pdf"
-    }
+   }
 
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
-    }
+   }
 }
 
 task collect_insert_size_metrics {
@@ -333,8 +333,8 @@ task collect_insert_size_metrics {
                 external_help: "http://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics",
             },
             insert_size_metrics_pdf: "The PDF file output of `CollectInsertSizeMetrics`",
-        }
-    }
+       }
+   }
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate insert size metrics"
@@ -347,10 +347,10 @@ task collect_insert_size_metrics {
                 "SILENT"
             ],
             tool_default: "STRICT",
-        }
+       }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
+   }
 
     input {
         File bam
@@ -358,7 +358,7 @@ task collect_insert_size_metrics {
         String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
-    }
+   }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
@@ -375,14 +375,14 @@ task collect_insert_size_metrics {
     output {
         File insert_size_metrics = prefix + ".txt"
         File insert_size_metrics_pdf = prefix + ".pdf"
-    }
+   }
 
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
-    }
+   }
 }
 
 task quality_score_distribution {
@@ -392,8 +392,8 @@ task quality_score_distribution {
         outputs: {
             quality_score_distribution_txt: "The text file output of `QualityScoreDistribution`",
             quality_score_distribution_pdf: "The PDF file output of `QualityScoreDistribution`",
-        }
-    }
+       }
+   }
 
     parameter_meta {
         bam: "Input BAM format file for which to calculate quality score distribution"
@@ -406,10 +406,10 @@ task quality_score_distribution {
                 "SILENT"
             ],
             tool_default: "STRICT",
-        }
+       }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
+   }
 
     input {
         File bam
@@ -417,7 +417,7 @@ task quality_score_distribution {
         String validation_stringency = "SILENT"
         Int memory_gb = 8
         Int modify_disk_size_gb = 0
-    }
+   }
 
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
@@ -434,12 +434,12 @@ task quality_score_distribution {
     output {
         File quality_score_distribution_txt = prefix + ".txt"
         File quality_score_distribution_pdf = prefix + ".pdf"
-    }
+   }
 
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
-    }
-} 
+   }
+}
