@@ -36,6 +36,9 @@ jobs:
           echo "SEMVER=$(jq -r .version ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
           echo "REVISION=$(jq -r .revision ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
           echo "GH_REF=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      - name: Set lowercase repository owner
+        run: |
+          echo "REPO_OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
       - name: Set Main Tag
         if: github.ref == 'refs/heads/main'
         run: |
@@ -67,19 +70,19 @@ jobs:
           build-contexts: scripts=./scripts
           push: false
           load: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache,mode=max
+          tags: ${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:local
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:buildcache,mode=max
       - name: container diff
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} || true
-          if [ -z "$(docker images -q ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }})" ]; then
+          docker pull ${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} || true
+          if [ -z "$(docker images -q ${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }})" ]; then
             echo "Prior image not found in registry, skipping container-diff"
             exit 0
           fi
           curl -LO https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64 && \
           chmod +x container-diff-linux-amd64 && \
-          ./container-diff-linux-amd64 diff --json daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local --type=history --type=file --type=size | tee comparison.json
+          ./container-diff-linux-amd64 diff --json daemon://${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} daemon://${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:local --type=history --type=file --type=size | tee comparison.json
           # check overall size result
           changed=0
           size_diff=$(jq '.[] | select(.DiffType == "Size") | if .Diff[0].Size1 == .Diff[0].Size2 then 1 else 0 end' comparison.json)
@@ -119,7 +122,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local
+          image: ${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:local
           args: --file=${{ matrix.image }}/Dockerfile
       - name: Clean Snyk SARIF file
         continue-on-error: true
@@ -132,5 +135,5 @@ jobs:
           sarif_file: snyk.sarif
       - name: Push image
         run: |
-          docker tag ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}
-          docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}
+          docker tag ${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:local ${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.TOOL }}:${{ env.IMAGE_TAG }}
