@@ -1030,7 +1030,7 @@ task create_sequence_dictionary {
             )} \
             ~{if defined(fasta_url) then "--URI " + fasta_url else ""} \
             ~{if defined(species) then "--SPECIES " + species else ""} \
-            > ~{outfile_name} \
+            > ~{outfile_name}
     >>>
 
     output {
