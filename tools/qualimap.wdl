@@ -16,15 +16,15 @@ task rnaseq {
         bam: "Input BAM format file to run qualimap rnaseq on"
         gtf: "GTF features file. Gzipped or uncompressed."
         prefix: "Prefix for the results directory and output tarball. The extension `.qualimap_rnaseq_results.tar.gz` will be added."
-        memory_gb: "RAM to allocate for task"
         name_sorted: {
             description: "Is the BAM name sorted? QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to true.",
-            group: "common",
+            group: "Common",
         }
         paired_end: {
             description: "Is the BAM paired end?",
-            group: "common",
+            group: "Common",
         }
+        memory_gb: "RAM to allocate for task"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 

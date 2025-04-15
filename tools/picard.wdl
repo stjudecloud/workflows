@@ -49,7 +49,7 @@ task mark_duplicates {
         }
         create_bam: {
             description: "Enable BAM creation (true)? Or only output MarkDuplicates metrics (false)?",
-            group: "common",
+            group: "Common",
         }
         clear_dt: "Clear the `DT` tag from the input BAM? For increased performance, if the input BAM does not have the `DT` tag, set to `false`."
         remove_duplicates: "Remove duplicate reads from the output BAM? If `true`, the output BAM will not contain any duplicate reads."
@@ -142,7 +142,7 @@ task validate_bam {
         ignore_list: {
             description: "List of Picard errors and warnings to ignore. Possible values can be found on the GATK website (see `external_help`).",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035891231-Errors-in-SAM-or-BAM-files-can-be-diagnosed-with-ValidateSamFile",
-            group: "common",
+            group: "Common",
         }
         outfile_name: "Name for the ValidateSamFile report file"
         validation_stringency: {
@@ -156,15 +156,15 @@ task validate_bam {
         }
         succeed_on_errors: {
             description: "Succeed the task even if errors *and/or* warnings are detected",
-            group: "common",
+            group: "Common",
         }
         succeed_on_warnings: {
             description: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`",
-            group: "common",
+            group: "Common",
         }
         summary_mode: {
             description: "Enable SUMMARY mode?",
-            group: "common",
+            group: "Common",
         }
         index_validation_stringency_less_exhaustive: "Set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE`?"
         max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
@@ -272,7 +272,7 @@ task sort {
                 "coordinate",
                 "duplicate"
             ],
-            group: "common",
+            group: "Common",
         }
         prefix: "Prefix for the sorted BAM file and accessory files. The extensions `.bam`, `.bam.bai`, and `.bam.md5` will be added."
         validation_stringency: {
@@ -357,7 +357,7 @@ task merge_sam_files {
                 "coordinate",
                 "duplicate"
             ],
-            group: "common",
+            group: "Common",
         }
         validation_stringency: {
             description: "Validation stringency for parsing the input BAM.",
@@ -819,7 +819,7 @@ task bam_to_fastq {
         prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
         paired: {
             description: "Is the data Paired-End (true) or Single-End (false)?",
-            group: "common",
+            group: "Common",
         }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -925,6 +925,7 @@ task scatter_interval_list {
 
     parameter_meta  {
         interval_list: "Input interval list to split"
+        scatter_count: "Number of interval lists to create"
         subdivision_mode: {
             description: "How to subdivide the intervals",
             choices: [
@@ -935,7 +936,6 @@ task scatter_interval_list {
         }
         unique: "Should the output interval lists contain unique intervals? Implies sort=true. Merges overlapping or adjacent intervals."
         sort: "Should the output interval lists be sorted? Sorts by coordinate."
-        scatter_count: "Number of interval lists to create"
     }
 
     input {
@@ -996,10 +996,10 @@ task create_sequence_dictionary {
 
     parameter_meta {
         fasta: "Input FASTA format file from which to create dictionary"
-        outfile_name: "Name for the CreateSequenceDictionary dictionary file"
         assembly_name: "Value to put in AS field of sequence dictionary"
         fasta_url: "Value to put in UR field of sequence dictionary"
         species: "Value to put in SP field of sequence dictionary"
+        outfile_name: "Name for the CreateSequenceDictionary dictionary file"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -1030,7 +1030,7 @@ task create_sequence_dictionary {
             )} \
             ~{if defined(fasta_url) then "--URI " + fasta_url else ""} \
             ~{if defined(species) then "--SPECIES " + species else ""} \
-            > ~{outfile_name} \
+            > ~{outfile_name}
     >>>
 
     output {

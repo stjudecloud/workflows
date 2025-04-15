@@ -15,11 +15,11 @@ task build_star_db {
         gtf: "GTF format feature file"
         db_name: {
             description: "Name for output in compressed, archived format. The suffix `.tar.gz` will be added.",
-            group: "common",
+            group: "Common",
         }
         sjdb_gtf_chr_prefix: {
             description: "prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSEMBL annotations with UCSC genomes)",
-            group: "common",
+            group: "Common",
         }
         sjdb_gtf_feature_exon: "feature type in GTF file to be used as exons for building transcripts"
         sjdb_gtf_tag_exon_parant_transcript: "GTF attribute name for parent transcript ID"
@@ -28,7 +28,7 @@ task build_star_db {
         sjdb_gtf_tag_exon_parent_gene_type: "GTF attribute name for parent gene type"
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            group: "common",
+            group: "Resources",
         }
         genome_chr_bin_n_bits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
         genome_SA_index_n_bases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
@@ -36,14 +36,20 @@ task build_star_db {
         genome_suffix_length_max: "maximum length of the suffixes, has to be longer than read length. -1 = infinite."
         sjdb_overhang: {
             description: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). **[STAR default]**: `100`. **[WDL default]**: `125`.",
-            group: "common",
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            group: "common",
+            group: "Resources",
         }
-        memory_gb: "RAM to allocate for task, specified in GB"
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        memory_gb: {
+            description: "RAM to allocate for task, specified in GB",
+            group: "Resources",
+        }
+        modify_disk_size_gb: {
+            description: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.",
+            group: "Resources",
+        }
     }
 
     input {
@@ -145,28 +151,42 @@ task alignment {
     }
 
     parameter_meta {
-        read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
-        prefix: {
-            description: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added.",
-            help: "See `../README.md` for more information on the default prefix evaluation.",
-            group: "common",
+        read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
+        read_two_fastqs_gz: {
+            description: "An array of gzipped FASTQ files containing read two information",
+            group: "Common",
         }
         read_groups: {
             description: "An array of `String`s where each `String` corresponds to one read group.",
             help: "Each read group string should start with the `ID` field followed by any other read group fields, where fields are delimited by a space. See `../data_structures/read_group.wdl` for information about possible fields and utility tasks for constructing, validating, and \"stringifying\" read groups.",
             warning: "The `ID` field for each read group _must_ be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `[\"ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1\", \"ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1\"]`. These two read groups could be associated with the following four FASTQs: `[\"sample1.rg1.R1.fastq\", \"sample1.rg2.R1.fastq\"]` and `[\"sample1.rg1.R2.fastq\", \"sample1.rg2.R2.fastq\"]`",
+            group: "Common",
         }
-        read_two_fastqs_gz: {
-            description: "An array of gzipped FASTQ files containing read two information",
-            group: "common",
+        out_sj_filter_intron_max_vs_read_n: {
+            description: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions.",
+            group: "Splice Junctions",
         }
-        out_sj_filter_intron_max_vs_read_n: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions."
-        out_sj_filter_overhang_min: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions."
-        out_sj_filter_count_unique_min: "minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
-        out_sj_filter_count_total_min: "minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions."
-        out_sj_filter_dist_to_other_sj_min: "minimum allowed distance to other junctions' donor/acceptor for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. Does not apply to annotated junctions."
-        align_sj_stitch_mismatch_n_max: "maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif"
+        out_sj_filter_overhang_min: {
+            description: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions.",
+            group: "Splice Junctions",
+        }
+        out_sj_filter_count_unique_min: {
+            description: "minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions.",
+            group: "Splice Junctions",
+        }
+        out_sj_filter_count_total_min: {
+            description: "minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions.",
+            group: "Splice Junctions",
+        }
+        out_sj_filter_dist_to_other_sj_min: {
+            description: "minimum allowed distance to other junctions' donor/acceptor for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. Does not apply to annotated junctions.",
+            group: "Splice Junctions",
+        }
+        align_sj_stitch_mismatch_n_max: {
+            description: "maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif",
+            group: "Splice Junctions",
+        }
         clip_3p_adapter_seq: {
             description: "adapter sequences to clip from 3p of each mate. `left` applies to read one and `right` applies to read two.",
             choices: {
@@ -174,7 +194,7 @@ task alignment {
                 sequence: "A nucleotide sequence string of any length, matching the regex `/[ATCG]+/`",
                 polyA: "polyA sequence with the length equal to read length",
             },
-            group: "common",
+            group: "Common",
         }
         clip_3p_adapter_mmp: "max proportion of mismatches for 3p adapter clipping for each mate. `left` applies to read one and `right` applies to read two."
         align_ends_protrude: {
@@ -187,6 +207,11 @@ task alignment {
         clip_3p_n_bases: "number of bases to clip from 3p of each mate. `left` applies to read one and `right` applies to read two."
         clip_3p_after_adapter_n_bases: "number of bases to clip from 3p of each mate after the adapter clipping. `left` applies to read one and `right` applies to read two."
         clip_5p_n_bases: "number of bases to clip from 5p of each mate. `left` applies to read one and `right` applies to read two."
+        prefix: {
+            description: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added.",
+            help: "See `../README.md` for more information on the default prefix evaluation.",
+            group: "Common",
+        }
         read_name_separator: "character(s) separating the part of the read names that will be trimmed in output (read name after space is always trimmed)"
         clip_adapter_type: {
             description: "adapter clipping type",
@@ -202,7 +227,7 @@ task alignment {
                 None: "not used",
                 intronMotif: "strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out.",
             },
-            group: "common",
+            group: "Common",
         }
         out_sam_attributes: {
             description: "a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order. **[STAR defaults]**: `NH HI AS nM`. **[WDL default]**: `NH HI AS nM NM MD XS`.",
@@ -220,7 +245,7 @@ task alignment {
                 ch: "marks all segments of all chimeric alignments for --chimOutType WithinBAM output.",
                 cN: "number of bases clipped from the read ends: 5' and 3'",
             },
-            group: "common",
+            group: "Common",
         }
         out_sam_unmapped: {
             description: "output of unmapped reads in the SAM format.",
@@ -256,7 +281,7 @@ task alignment {
                 Normal: "standard filtering using only current alignment",
                 BySJout: "keep only those reads that contain junctions that passed filtering into SJ.out.tab",
             },
-            group: "common",
+            group: "Common",
         }
         out_filter_intron_motifs: {
             description: "filter alignment using their motifs",
@@ -265,7 +290,7 @@ task alignment {
                 RemoveNoncanonical: "filter out alignments that contain non-canonical junctions",
                 RemoveNoncanonicalUnannotated: "filter out alignments that contain non-canonical unannotated junctions when using annotated splice junctions database. The annotated non-canonical junctions will be kept.",
             },
-            group: "common",
+            group: "Common",
         }
         out_filter_intron_strands: {
             description: "filter alignments",
@@ -273,7 +298,7 @@ task alignment {
                 None: "no filtering",
                 RemoveInconsistentStrands: "remove alignments that have junctions with inconsistent strands",
             },
-            group: "common",
+            group: "Common",
         }
         out_sj_filter_reads: {
             description: "which reads to consider for collapsed splice junctions output",
@@ -281,7 +306,7 @@ task alignment {
                 All: "all reads, unique- and multi-mappers",
                 Unique: "uniquely mapping reads only",
             },
-            group: "common",
+            group: "Common",
         }
         align_ends_type: {
             description: "type of read ends alignment",
@@ -298,7 +323,7 @@ task alignment {
                 Yes: "allow",
                 No: "prohibit, useful for compatibility with Cufflinks",
             },
-            group: "common",
+            group: "Common",
         }
         align_insertion_flush: {
             description: "how to flush ambiguous insertion positions",
@@ -306,7 +331,7 @@ task alignment {
                 None: "insertions are not flushed",
                 Right: "insertions are flushed to the right",
             },
-            group: "common",
+            group: "Common",
         }
         chim_out_type: {
             description: "type of chimeric output",
@@ -316,7 +341,7 @@ task alignment {
                 WithinBAM_SoftClip: "output into main aligned BAM files (Aligned.*.bam). Soft-clipping in the CIGAR for supplemental chimeric alignments.",
             },
             tool_default: "Junctions",
-            group: "common",
+            group: "Common",
         }
         chim_filter: {
             description: "different filters for chimeric alignments",
@@ -331,7 +356,7 @@ task alignment {
                 plain: "no comment lines/headers",
                 comments: "comment lines at the end of the file: command line and Nreads: total, unique/multi-mapping",
             },
-            group: "common",
+            group: "Common",
         }
         twopass_mode: {
             description: "2-pass mapping mode",
@@ -339,11 +364,11 @@ task alignment {
                 None: "1-pass mapping **[STAR default]**",
                 Basic: "basic 2-pass mapping, with all 1st pass junctions inserted into the genome indices on the fly **[WDL default]**",
             },
-            group: "common",
+            group: "Common",
         }
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
-            group: "common",
+            group: "Resources",
         }
         out_filter_mismatch_n_over_l_max: "alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value"
         out_filter_mismatch_n_over_read_l_max: "alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value"
@@ -355,15 +380,15 @@ task alignment {
         pe_overlap_mmp: "maximum proportion of mismatched bases in the overlap area"
         run_rng_seed: {
             description: "random number generator seed",
-            group: "common",
+            group: "Common",
         }
         sjdb_score: {
             description: "extra alignment score for alignments that cross database junctions",
-            group: "common",
+            group: "Common",
         }
         read_map_number: {
             description: "number of reads to map from the beginning of the file. -1 to map all reads",
-            group: "common",
+            group: "Common",
         }
         read_quality_score_base: "number to be subtracted from the ASCII code to get Phred quality score"
         limit_out_sj_one_read: "max number of junctions for one read (including all multi-mappers)"
@@ -377,19 +402,19 @@ task alignment {
         out_filter_multimap_score_range: "the score range below the maximum score for multimapping alignments"
         out_filter_multimap_n_max: {
             description: "maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. **[STAR default]**: `10`. **[WDL default]**: `20`.",
-            group: "common",
+            group: "Common",
         }
         out_filter_mismatch_n_max: {
             description: "alignment will be output only if it has no more mismatches than this value",
-            group: "common",
+            group: "Common",
         }
         out_filter_score_min: {
             description: "alignment will be output only if its score is higher than or equal to this value",
-            group: "common",
+            group: "Common",
         }
         out_filter_match_n_min: {
             description: "alignment will be output only if the number of matched bases is higher than or equal to this value",
-            group: "common",
+            group: "Common",
         }
         score_gap: "splice junction penalty (independent on intron motif)"
         score_gap_noncanon: "non-canonical junction penalty (in addition to scoreGap)"
@@ -410,23 +435,23 @@ task alignment {
         seed_map_min: "min length of seeds to be mapped"
         align_intron_min: {
             description: "minimum intron size: genomic gap is considered intron if its length>=alignIntronMin, otherwise it is considered Deletion",
-            group: "common",
+            group: "Common",
         }
         align_intron_max: {
             description: "maximum intron size, if 0, max intron size will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `500000`.",
-            group: "common",
+            group: "Common",
         }
         align_mates_gap_max: {
             description: "maximum gap between two mates, if 0, max intron gap will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `1000000`",
-            group: "common",
+            group: "Common",
         }
         align_sj_overhang_min: {
             description: "minimum overhang (i.e. block size) for spliced alignments",
-            group: "common",
+            group: "Common",
         }
         align_sjdb_overhang_min: {
             description: "minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments. **[STAR default]**: `3`. **[WDL default]**: `1`.",
-            group: "common",
+            group: "Common",
         }
         align_spliced_mate_map_l_min: "minimum mapped length for a read mate that is spliced"
         align_windows_per_read_n_max: "max number of windows per read"
@@ -440,45 +465,48 @@ task alignment {
         chim_segment_min: {
             description: "minimum length of chimeric segment length, if ==0, no chimeric output",
             tool_default: 0,
-            group: "common",
+            group: "Common",
         }
         chim_score_min: {
             description: "minimum total (summed) score of the chimeric segments",
-            group: "common",
+            group: "Common",
         }
         chim_score_drop_max: {
             description: "max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length",
-            group: "common",
+            group: "Common",
         }
         chim_score_separation: "minimum difference (separation) between the best chimeric score and the next one"
         chim_score_junction_nonGTAG: "penalty for a non-GT/AG chimeric junction"
         chim_junction_overhang_min: {
             description: "minimum overhang for a chimeric junction",
-            group: "common",
+            group: "Common",
         }
         chim_segment_read_gap_max: {
             description: "maximum gap in the read sequence between chimeric segments",
-            group: "common",
+            group: "Common",
         }
         chim_main_segment_multi_n_max: {
             description: "maximum number of multi-alignments for the main chimeric segment. =1 will prohibit multimapping main segments.",
-            group: "common",
+            group: "Common",
         }
         chim_multimap_n_max: {
             description: "maximum number of chimeric multi-alignments. `0`: use the old scheme for chimeric detection which only considered unique alignments",
-            group: "common",
+            group: "Common",
         }
         chim_multimap_score_range: "the score range for multi-mapping chimeras below the best chimeric score. Only works with --chimMultimapNmax > 1."
         chim_nonchim_score_drop_min: "to trigger chimeric detection, the drop in the best non-chimeric alignment score with respect to the read length has to be greater than this value"
         twopass1_reads_n: {
             description: "number of reads to process for the 1st step. Use default (`-1`) to map all reads in the first step",
-            group: "common",
+            group: "Common",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
-            group: "common",
+            group: "Resources",
         }
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: {
+            description: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.",
+            group: "Resources",
+        }
     }
 
     input {

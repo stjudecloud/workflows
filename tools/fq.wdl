@@ -50,7 +50,7 @@ task fqlint {
         }
         panic: {
             description: "Panic on first error (true) or log all errors (false)?",
-            group: "common",
+            group: "Common",
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -113,15 +113,15 @@ task subsample {
         prefix: {
             description: "Prefix for the output FASTQ file(s). The extension `.R1.subsampled.fastq.gz` and `.R2.subsampled.fastq.gz` will be added.",
             help: "See `../README.md` for more information on the default prefix evaluation.",
-            group: "common",
+            group: "Common",
         }
         probability: {
             description: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable.",
-            group: "common",
+            group: "Common",
         }
         record_count: {
             description: "The exact number of records to keep. Cannot be used with `probability`. Any `record_count<=0` to disable.",
-            group: "common",
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

@@ -42,7 +42,7 @@ task download {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:2.1.1"
         maxRetries: 1
     }
 }
@@ -63,7 +63,7 @@ task get_read_groups {
         clean: {
             description: "Clean @RG lines to remove the `@RG\t` prefix and use spaces instead of tabs (true) or output @RG lines of the header without further processing (false)?",
             help: "`clean = true` output matches the formatting of the `read_group_to_string` task in `../data_structures/read_group.wdl`",
-            group: "common",
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -117,7 +117,7 @@ task split_string {
         string: "String to split on occurences of `delimiter`"
         delimiter: {
             description: "Delimiter on which to split `input_string`",
-            group: "common",
+            group: "Common",
         }
     }
 
@@ -139,7 +139,7 @@ task split_string {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:2.1.1"
         maxRetries: 1
     }
 }
@@ -158,7 +158,7 @@ task calc_gene_lengths {
         outfile_name: "Name of the gene lengths file"
         idattr: {
             description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.",
-            group: "common",
+            group: "Common",
         }
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -187,7 +187,7 @@ task calc_gene_lengths {
     runtime {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:2.1.1"
         maxRetries: 1
     }
 }
@@ -313,7 +313,7 @@ task unpack_tarball {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:2.1.1"
         maxRetries: 1
     }
 }
@@ -419,7 +419,7 @@ task global_phred_scores {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:2.1.1"
         maxRetries: 1
     }
 }
@@ -497,7 +497,7 @@ task qc_summary {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:2.1.1"
         maxRetries: 1
     }
 }
@@ -515,11 +515,11 @@ task split_fastq {
             description: "Gzipped FASTQ file to split",
             stream: true,
         }
-        reads_per_file: "Number of reads to include in each output FASTQ file"
         prefix: {
             description: "Prefix for the FASTQ files. The extension `.fastq.gz` (preceded by a split index) will be added.",
-            group: "common",
+            group: "Common",
         }
+        reads_per_file: "Number of reads to include in each output FASTQ file"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
     }
@@ -561,7 +561,7 @@ task split_fastq {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.0"
+        container: "ghcr.io/stjudecloud/util:2.1.1"
         maxRetries: 1
     }
 }
