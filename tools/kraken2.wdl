@@ -311,7 +311,7 @@ task kraken {
         prefix: {
             description: "Prefix for the Kraken2 output files. The extensions `.kraken2.txt` and `.kraken2.sequences.txt.gz` will be added.",
             help: "See `../README.md` for more information on the default prefix evaluation.",
-            group: "common",
+            group: "Common",
         }
         store_sequences: {
             description: "Store and output main Kraken2 output in addition to the summary report?",

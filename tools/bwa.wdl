@@ -16,7 +16,7 @@ task bwa_aln {
         prefix: {
             description: "Prefix for the BAM file. The extension `.bam` will be added.",
             help: "See `../README.md` for more information on the default prefix evaluation.",
-            group: "common",
+            group: "Common",
         }
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",

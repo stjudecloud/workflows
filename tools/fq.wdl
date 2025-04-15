@@ -113,7 +113,7 @@ task subsample {
         prefix: {
             description: "Prefix for the output FASTQ file(s). The extension `.R1.subsampled.fastq.gz` and `.R2.subsampled.fastq.gz` will be added.",
             help: "See `../README.md` for more information on the default prefix evaluation.",
-            group: "common",
+            group: "Common",
         }
         probability: {
             description: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable.",

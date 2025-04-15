@@ -47,7 +47,7 @@ workflow rnaseq_core {
         prefix: {
             description: "Prefix for output files",
             help: "See `../../README.md` for more information on the default prefix evaluation.",
-            group: "common",
+            group: "Common",
         }
         xenocp_aligner: {
             description: "Aligner to use to map reads to the host genome for detecting contamination",
