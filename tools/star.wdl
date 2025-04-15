@@ -210,7 +210,7 @@ task alignment {
         prefix: {
             description: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added.",
             help: "See `../README.md` for more information on the default prefix evaluation.",
-            group: "common",
+            group: "Common",
         }
         read_name_separator: "character(s) separating the part of the read names that will be trimmed in output (read name after space is always trimmed)"
         clip_adapter_type: {
