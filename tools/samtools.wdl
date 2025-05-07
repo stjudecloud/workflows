@@ -1166,7 +1166,7 @@ task position_sorted_fixmate {
     }
 }
 
-#@ except: NonmatchingOutput
+#@ except: MatchingOutputMeta
 task markdup {
     meta {
         description: "**[DEPRECATED]** Runs `samtools markdup` on the position-sorted input BAM file. This creates a report and optionally a new BAM with duplicate reads marked."

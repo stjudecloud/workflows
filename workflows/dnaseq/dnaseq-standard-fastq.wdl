@@ -138,7 +138,7 @@ task parse_input {
     }
 
     input {
-        #@ except: DisallowedDeclarationName
+        #@ except: DeclarationName
         Array[Int] array_lengths
         String aligner
     }

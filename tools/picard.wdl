@@ -807,7 +807,7 @@ task quality_score_distribution {
     }
 }
 
-#@ except: NonmatchingOutput
+#@ except: MatchingOutputMeta
 task bam_to_fastq {
     meta {
         description: "**[Deprecated]** This WDL task converts the input BAM file into FASTQ format files. This task has been deprecated in favor of `samtools.bam_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
