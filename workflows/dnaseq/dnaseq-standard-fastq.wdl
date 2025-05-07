@@ -168,7 +168,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.1"
+        container: "ghcr.io/stjudecloud/util:2.1.2"
         maxRetries: 0
     }
 }
