@@ -334,7 +334,7 @@ task kraken {
     input {
         File read_one_fastq_gz
         File read_two_fastq_gz
-        #@ except: DisallowedInputName
+        #@ except: InputName
         File db
         String prefix = sub(
             basename(read_one_fastq_gz),
