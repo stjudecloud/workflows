@@ -827,11 +827,11 @@ task bam_to_fastq {
 
     input {
         File bam
-        FlagFilter bitwise_filter = {
-            "include_if_all": "0x0",
-            "exclude_if_any": "0x900",
-            "include_if_any": "0x0",
-            "exclude_if_all": "0x0",
+        FlagFilter bitwise_filter = FlagFilter {
+            include_if_all: "0x0",
+            exclude_if_any: "0x900",
+            include_if_any: "0x0",
+            exclude_if_all: "0x0",
         }
         String prefix = basename(bam, ".bam")
         Boolean paired_end = true
