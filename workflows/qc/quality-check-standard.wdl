@@ -114,18 +114,18 @@ workflow quality_check_standard {
             = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
         Array[File] extra_multiqc_inputs = []
         Array[String] coverage_labels = []
-        FlagFilter standard_filter = {
-            "include_if_all": "0x0",
-            "exclude_if_any": "0x900",  # 0x100 (secondary) || 0x800 (supplementary)
-            "include_if_any": "0x0",
-            "exclude_if_all": "0x0",
+        FlagFilter standard_filter = FlagFilter {
+            include_if_all: "0x0",
+            exclude_if_any: "0x900",  # 0x100 (secondary) || 0x800 (supplementary)
+            include_if_any: "0x0",
+            exclude_if_all: "0x0",
         }
-        FlagFilter comparative_filter = {
-            "include_if_all": "0x0",
+        FlagFilter comparative_filter = FlagFilter {
+            include_if_all: "0x0",
             # 0x4 (unmapped) || 0x100 (secondary) || 0x800 (supplementary)
-            "exclude_if_any": "0x904",
-            "include_if_any": "0x0",
-            "exclude_if_all": "0x0",
+            exclude_if_any: "0x904",
+            include_if_any: "0x0",
+            exclude_if_all: "0x0",
         }
         String prefix = basename(bam, ".bam")
         Boolean rna = false
