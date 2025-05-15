@@ -4,4 +4,8 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
  
-## Unreleased
+## 2025 May
+
+### Changed
+
+ * Allow nested inputs [#229](https://github.com/stjudecloud/workflows/pull/229)
