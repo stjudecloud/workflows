@@ -14,6 +14,7 @@ workflow rnaseq_variant_calling {
             variant_filtered_vcf: "VCF file after variant filters have been applied",
             variant_filtered_vcf_index: "Index for filtered variant VCF file",
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {

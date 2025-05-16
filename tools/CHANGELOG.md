@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2025 May
+
+### Fixed
+
+- Replace an object to struct coercion in `samtools.wdl` with the proper struct type [#227](https://github.com/stjudecloud/workflows/pull/227).
+
 ## 2025 February
 
 ## Added

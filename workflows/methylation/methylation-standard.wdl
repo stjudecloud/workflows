@@ -16,6 +16,7 @@ workflow methylation {
             umap_embedding: "UMAP embedding for all samples",
             umap_plot: "UMAP plot for all samples",
         }
+        allowNestedInputs: true
     }
 
     parameter_meta {
