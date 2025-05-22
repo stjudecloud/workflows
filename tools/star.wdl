@@ -767,7 +767,7 @@ task alignment {
             --readNameSeparator "~{read_name_separator}" \
             --clipAdapterType "~{clip_adapter_type}" \
             --outSAMstrandField "~{out_sam_strand_field}" \
-            --outSAMattributes "~{out_sam_attributes}" \
+            --outSAMattributes ~{out_sam_attributes} \
             --outSAMunmapped "~{out_sam_unmapped}" \
             --outSAMorder "~{out_sam_order}" \
             --outSAMreadID "~{out_sam_read_id}" \
@@ -785,7 +785,7 @@ task alignment {
             --alignEndsType "~{align_ends_type}" \
             --alignSoftClipAtReferenceEnds "~{align_soft_clip_at_reference_ends}" \
             --alignInsertionFlush "~{align_insertion_flush}" \
-            --chimOutType "~{chim_out_type}" \
+            --chimOutType ~{chim_out_type} \
             --chimFilter "~{chim_filter}" \
             --chimOutJunctionFormat "~{chim_out_junction_format}" \
             --outFilterMismatchNoverLmax ~{out_filter_mismatch_n_over_l_max} \

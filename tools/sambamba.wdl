@@ -103,7 +103,7 @@ task merge {
         sambamba merge \
             --nthreads "$n_cores" \
             "~{prefix}.bam" \
-            "~{sep(" ", bams)}"
+            ~{sep(" ", bams)}
     >>>
 
     output {
