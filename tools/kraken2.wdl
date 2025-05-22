@@ -70,7 +70,7 @@ task download_library {
                 "nt",
                 "nr",
                 "UniVec",
-                "UniVec_Core"
+                "UniVec_Core",
             ],
         }
         protein: "Construct a protein database?"

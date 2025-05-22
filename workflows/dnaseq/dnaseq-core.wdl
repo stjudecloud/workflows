@@ -31,7 +31,7 @@ workflow dnaseq_core_experimental {
             description: "BWA aligner to use",
             choices: [
                 "mem",
-                "aln"
+                "aln",
             ],
         }
         use_all_cores: "Use all cores? Recommended for cloud environments."

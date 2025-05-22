@@ -35,7 +35,7 @@ workflow dnaseq_standard_fastq_experimental {
             description: "BWA aligner to use",
             choices: [
                 "mem",
-                "aln"
+                "aln",
             ],
         }
         validate_input: "Ensure input FASTQs ares well-formed before beginning harmonization?"
@@ -132,7 +132,7 @@ task parse_input {
             description: "BWA aligner to use",
             choices: [
                 "mem",
-                "aln"
+                "aln",
             ],
         }
     }

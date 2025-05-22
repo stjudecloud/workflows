@@ -77,7 +77,7 @@ task arriba {
                 "intronic",
                 "in_vitro",
                 "intragenic_exonic",
-                "internal_tandem_duplication"
+                "internal_tandem_duplication",
             ],
         }
         feature_name: {
@@ -94,7 +94,7 @@ task arriba {
                 "auto",
                 "yes",
                 "no",
-                "reverse"
+                "reverse",
             ],
         }
         mark_duplicates: {
