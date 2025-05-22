@@ -117,7 +117,7 @@ task combine_data {
     command <<<
         python /scripts/methylation/combine.py \
             --output-name "~{combined_file_name}" \
-            "~{sep(" ", unfiltered_normalized_beta)}"
+            ~{sep(" ", unfiltered_normalized_beta)}
     >>>
 
     output {

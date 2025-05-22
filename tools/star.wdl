@@ -677,17 +677,17 @@ task alignment {
         tar -xzf "~{star_db_tar_gz}" -C star_db/ --no-same-owner
 
         python3 /scripts/star/sort_star_input.py \
-            --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
-            "~{(
+            --read-one-fastqs ~{sep(",", read_one_fastqs_gz)} \
+            ~{(
                 if (length(read_two_fastqs_gz) != 0)
                 then "--read-two-fastqs '~{sep(",", read_two_fastqs_gz)}'"
                 else ""
-            )}" \
-            "~{(
+            )} \
+            ~{(
                 if (length(read_groups) != 0)
                 then "--read-groups '~{sep(" , ", read_groups)}'"
                 else ""
-            )}"
+            )}
 
         read -ra read_one_args < read_one_fastqs_sorted.txt
         read -ra read_two_args < read_two_fastqs_sorted.txt
@@ -701,44 +701,44 @@ task alignment {
             --outFileNamePrefix "~{prefix + "."}" \
             --twopassMode "~{twopass_mode}" \
             --outSAMattrRGline "${read_group_args[@]}" \
-            --outSJfilterIntronMaxVsReadN "~{
+            --outSJfilterIntronMaxVsReadN ~{
                 sep(" ", quote(out_sj_filter_intron_max_vs_read_n))
-            }" \
-            --outSJfilterOverhangMin "~{sep(" ", quote([
+            } \
+            --outSJfilterOverhangMin ~{sep(" ", quote([
                 out_sj_filter_overhang_min.noncanonical_motifs,
                 out_sj_filter_overhang_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_overhang_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_overhang_min.AT_AC_and_GT_AT_motif,
-            ]))}" \
-            --outSJfilterCountUniqueMin "~{sep(" ", quote([
+            ]))} \
+            --outSJfilterCountUniqueMin ~{sep(" ", quote([
                 out_sj_filter_count_unique_min.noncanonical_motifs,
                 out_sj_filter_count_unique_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_count_unique_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_count_unique_min.AT_AC_and_GT_AT_motif,
-            ]))}" \
-            --outSJfilterCountTotalMin "~{sep(" ", quote([
+            ]))} \
+            --outSJfilterCountTotalMin ~{sep(" ", quote([
                 out_sj_filter_count_total_min.noncanonical_motifs,
                 out_sj_filter_count_total_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_count_total_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_count_total_min.AT_AC_and_GT_AT_motif,
-            ]))}" \
-            --outSJfilterDistToOtherSJmin "~{sep(" ", quote([
+            ]))} \
+            --outSJfilterDistToOtherSJmin ~{sep(" ", quote([
                 out_sj_filter_dist_to_other_sj_min.noncanonical_motifs,
                 out_sj_filter_dist_to_other_sj_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_dist_to_other_sj_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_dist_to_other_sj_min.AT_AC_and_GT_AT_motif,
-            ]))}" \
-            --alignSJstitchMismatchNmax "~{sep(" ", quote([
+            ]))} \
+            --alignSJstitchMismatchNmax ~{sep(" ", quote([
                 align_sj_stitch_mismatch_n_max.noncanonical_motifs,
                 align_sj_stitch_mismatch_n_max.GT_AG_and_CT_AC_motif,
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
-            ]))}" \
-            --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" "~{(
+            ]))} \
+            --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{(
                 if (length(read_two_fastqs_gz) != 0)
                 then clip_3p_adapter_seq.right
                 else ""
-            )}" \
+            )} \
             --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
                 if (length(read_two_fastqs_gz) != 0)
                 then clip_3p_adapter_mmp.right
@@ -771,13 +771,13 @@ task alignment {
             --outSAMunmapped "~{out_sam_unmapped}" \
             --outSAMorder "~{out_sam_order}" \
             --outSAMreadID "~{out_sam_read_id}" \
-            --outSAMtlen "~{(
+            --outSAMtlen ~{(
                 if (out_sam_tlen == "left_plus")
                 then "1"
                 else (
                     if (out_sam_tlen == "left_any") then "2" else "error"
                 )
-            )}" \
+            )} \
             --outFilterType "~{out_filter_type}" \
             --outFilterIntronMotifs "~{out_filter_intron_motifs}" \
             --outFilterIntronStrands "~{out_filter_intron_strands}" \

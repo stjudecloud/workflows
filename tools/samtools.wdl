@@ -584,12 +584,12 @@ task merge {
 
         samtools merge \
             --threads "$n_cores" \
-            "~{if defined(new_header) then "-h " + new_header else ""}" \
-            "~{if name_sorted then "-n" else ""}" \
-            "~{if (region != "") then "-R " + region else ""}" \
-            "~{if attach_rg then "-r" else ""}" \
-            "~{if combine_rg then "-c" else ""}" \
-            "~{if combine_pg then "-p" else ""}" \
+            ~{if defined(new_header) then "-h " + new_header else ""} \
+            ~{if name_sorted then "-n" else ""} \
+            ~{if (region != "") then "-R " + region else ""} \
+            ~{if attach_rg then "-r" else ""} \
+            ~{if combine_rg then "-c" else ""} \
+            ~{if combine_pg then "-p" else ""} \
             "~{prefix}.bam" \
             "$bams"
     >>>
@@ -671,10 +671,10 @@ task addreplacerg {
 
         samtools addreplacerg \
             --threads "$n_cores" \
-            "~{sep(" ", prefix("-r ", squote(read_group_line)))}" \
-            "~{if defined(read_group_id) then "-R " + read_group_id else ""}" \
-            -m "~{if orphan_only then "orphan_only" else "overwrite_all"}" \
-            "~{if overwrite_header_record then "-w" else ""}" \
+            ~{sep(" ", prefix("-r ", squote(read_group_line)))} \
+            ~{if defined(read_group_id) then "-R " + read_group_id else ""} \
+            -m ~{if orphan_only then "orphan_only" else "overwrite_all"} \
+            ~{if overwrite_header_record then "-w" else ""} \
             -o "~{outfile_name}" \
             "~{bam}"
     >>>
@@ -747,7 +747,7 @@ task collate {
 
         samtools collate \
             --threads "$n_cores" \
-            "~{if fast_mode then "-f" else ""}" \
+            ~{if fast_mode then "-f" else ""} \
             -o "~{outfile_name}" \
             "~{bam}"
     >>>
@@ -873,12 +873,12 @@ task bam_to_fastq {
         mkfifo bam_pipe
         if ! ~{collated} && ~{paired_end}; then
             samtools collate \
-                "~{if retain_collated_bam then "" else "-u"}" \
+                ~{if retain_collated_bam then "" else "-u"} \
                 --threads "$n_cores" \
-                "~{if fast_mode then "-f" else ""}" \
+                ~{if fast_mode then "-f" else ""} \
                 -O \
                 "~{bam}" \
-                | tee "~{if retain_collated_bam then prefix + ".collated.bam" else ""}" \
+                | tee ~{if retain_collated_bam then prefix + ".collated.bam" else ""} \
                 > bam_pipe \
                 &
         else
@@ -891,12 +891,12 @@ task bam_to_fastq {
             -F "~{bitwise_filter.exclude_if_any}" \
             --rf "~{bitwise_filter.include_if_any}" \
             -G "~{bitwise_filter.exclude_if_all}" \
-            "~{(
+            ~{(
                 if append_read_number
                 then "-N"
                 else "-n"
-            )}" \
-            -1 "~{(
+            )} \
+            -1 ~{(
                 if paired_end
                 then (
                     if interleaved
@@ -904,15 +904,15 @@ task bam_to_fastq {
                     else prefix + ".R1.fastq.gz"
                 )
                 else prefix + ".fastq.gz"
-            )}" \
-            -2 "~{(
+            )} \
+            -2 ~{(
                 if paired_end
                 then (
                     if interleaved then prefix + ".fastq.gz" else prefix + ".R2.fastq.gz"
                 )
                 else prefix + ".fastq.gz"
-            )}" \
-            "~{(
+            )} \
+            ~{(
                 if paired_end
                 then (
                     if output_singletons
@@ -920,12 +920,12 @@ task bam_to_fastq {
                     else "-s junk.singleton.fastq.gz"
                 )
                 else ""
-            )}" \
-            -0 "~{(
+            )} \
+            -0 ~{(
                 if paired_end
                 then "junk.unknown_bit_setting.fastq.gz"
                 else prefix + ".fastq.gz"
-            )}" \
+            )} \
             bam_pipe
 
         rm bam_pipe

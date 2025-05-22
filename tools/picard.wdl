@@ -841,7 +841,7 @@ task bam_to_fastq {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT="~{bam}" \
-            FASTQ="~{prefix}.R1." \
+            FASTQ="~{prefix}.R1.fastq" \
             ~{(
                 if paired
                 then "SECOND_END_FASTQ=" + prefix + ".R2.fastq"
