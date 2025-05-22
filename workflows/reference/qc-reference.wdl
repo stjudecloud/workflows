@@ -38,7 +38,7 @@ workflow qc_reference {
                 "protozoa",
                 "nt",
                 "UniVec",
-                "UniVec_Core"
+                "UniVec_Core",
             ],
         }
         coverage_feature_types: {
@@ -52,7 +52,7 @@ workflow qc_reference {
                 "UTR",
                 "start_codon",
                 "stop_codon",
-                "Selenocysteine"
+                "Selenocysteine",
             ],
         }
         protein: "Construct a protein database?"

@@ -19,7 +19,7 @@ task count {
             choices: [
                 "yes",
                 "reverse",
-                "no"
+                "no",
             ],
         }
         prefix: "Prefix for the feature counts file. The extension `.feature-counts.txt` will be added."
@@ -37,7 +37,7 @@ task count {
             choices: [
                 "union",
                 "intersection-strict",
-                "intersection-nonempty"
+                "intersection-nonempty",
             ],
         }
         include_custom_header: {

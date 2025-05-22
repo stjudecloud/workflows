@@ -29,7 +29,7 @@ workflow dnaseq_standard_experimental {
             description: "BWA aligner to use",
             choices: [
                 "mem",
-                "aln"
+                "aln",
             ],
         }
         validate_input: "Ensure input BAM is well-formed before beginning harmonization?"
@@ -110,7 +110,7 @@ task parse_input {
             description: "BWA aligner to use",
             choices: [
                 "mem",
-                "aln"
+                "aln",
             ],
         }
     }

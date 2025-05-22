@@ -27,7 +27,7 @@ workflow alignment_post {
             choices: [
                 "bwa aln",
                 "bwa mem",
-                "star"
+                "star",
             ],
         }
         cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
