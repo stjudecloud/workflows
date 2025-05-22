@@ -40,10 +40,10 @@ task librarian {
     command <<<
         set -euo pipefail
 
-        mkdir ~{prefix}
-        /app/librarian --local --raw -o ~{prefix} ~{read_one_fastq}
+        mkdir "{prefix}"
+        /app/librarian --local --raw -o "~{prefix}" "~{read_one_fastq}"
 
-        tar -czf ~{prefix}.tar.gz ~{prefix}
+        tar -czf "~{prefix}.tar.gz" "~{prefix}"
     >>>
 
     output {

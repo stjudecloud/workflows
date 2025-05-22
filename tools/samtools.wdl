@@ -26,7 +26,7 @@ task quickcheck {
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
-        samtools quickcheck ~{bam}
+        samtools quickcheck "~{bam}"
     >>>
 
     output {
@@ -95,19 +95,19 @@ task split {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
         samtools split \
             --threads "$n_cores" \
-            -u ~{prefix}.unaccounted_reads.bam \
+            -u "~{prefix}.unaccounted_reads.bam" \
             -f '~{prefix}.%!.bam' \
-            ~{bam}
+            "~{bam}"
 
         samtools head \
             --threads "$n_cores" \
             -h 0 \
             -n 1 \
-            ~{prefix}.unaccounted_reads.bam \
+            "~{prefix}.unaccounted_reads.bam" \
             > first_unaccounted_read.sam
 
         EXITCODE=0
@@ -115,7 +115,7 @@ task split {
             >&2 echo "There are reads present with bad or missing RG tags!"
             EXITCODE=21
         else
-            rm ~{prefix}.unaccounted_reads.bam
+            rm "~{prefix}.unaccounted_reads.bam"
         fi
         rm first_unaccounted_read.sam
 
@@ -196,9 +196,9 @@ task flagstat {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
-        samtools flagstat --threads "$n_cores" ~{bam} > ~{outfile_name}
+        samtools flagstat --threads "$n_cores" "~{bam}" > "~{outfile_name}"
     >>>
 
     output {
@@ -254,9 +254,9 @@ task index {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
-        samtools index --threads "$n_cores" ~{bam} ~{outfile_name}
+        samtools index --threads "$n_cores" "~{bam}" "~{outfile_name}"
     >>>
 
     output {
@@ -319,7 +319,7 @@ task subsample {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
         if [[ ~{desired_reads} -le 0 ]]; then
             >&2 echo "'desired_reads' must be greater than zero!"
@@ -330,7 +330,7 @@ task subsample {
         read_count="$(samtools view \
             --threads "$n_cores" \
             --count \
-            ~{bam}
+            "~{bam}"
         )"
 
         if [[ "$read_count" -eq 0 ]]; then
@@ -355,8 +355,8 @@ task subsample {
                 --threads "$n_cores" \
                 -hb \
                 -s "$frac" \
-                ~{bam} \
-                > ~{suffixed}.bam
+                "~{bam}" \
+                > "~{suffixed}.bam"
 
             # Report the original read count.
             # Use 'prefix' as the entry name.
@@ -366,7 +366,7 @@ task subsample {
             {
                 echo -e "sample\toriginal read count"
                 echo -e "~{prefix}\t$read_count"
-            } > ~{suffixed}.orig_read_count.tsv
+            } > "~{suffixed}.orig_read_count.tsv"
         else
             # the BAM has less than or equal to ~{desired_reads} reads,
             # meaning we should just use it directly without subsampling.
@@ -380,17 +380,17 @@ task subsample {
             {
                 echo -e "sample\toriginal read count"
                 echo -e "~{prefix}\t-"
-            } > ~{prefix}.orig_read_count.tsv
+            } > "~{prefix}.orig_read_count.tsv"
         fi
 
         # Check that if output was created,
         # it contains at least one read.
-        if [ -e ~{suffixed}.bam ]; then
+        if [ -e "~{suffixed}.bam" ]; then
             samtools head \
                 --threads "$n_cores" \
                 -h 0 \
                 -n 1 \
-                ~{suffixed}.bam \
+                "~{suffixed}.bam" \
                 > first_read.sam
 
             if [ ! -s first_read.sam ]; then
@@ -462,23 +462,23 @@ task filter {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
         samtools view \
             --threads "$n_cores" \
             -hb \
-            -f ~{bitwise_filter.include_if_all} \
-            -F ~{bitwise_filter.exclude_if_any} \
-            --rf ~{bitwise_filter.include_if_any} \
-            -G ~{bitwise_filter.exclude_if_all} \
-            ~{bam} \
-            > ~{prefix}.bam
+            -f "~{bitwise_filter.include_if_all}" \
+            -F "~{bitwise_filter.exclude_if_any}" \
+            --rf "~{bitwise_filter.include_if_any}" \
+            -G "~{bitwise_filter.exclude_if_all}" \
+            "~{bam}" \
+            > "~{prefix}.bam"
 
         samtools head \
             --threads "$n_cores" \
             -h 0 \
             -n 1 \
-            ~{prefix}.bam \
+            "~{prefix}.bam" \
             > first_read.sam
 
         if [ ! -s first_read.sam ]; then
@@ -571,27 +571,27 @@ task merge {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
         bams=""
         for file in ~{sep(" ", bams)}
         do
           # This will fail (intentionally) if there are duplicate names
           # in the input BAM array.
-          ln -s $file
-          bams+=" $(basename $file)"
+          ln -s "$file" .
+          bams+=" $(basename "$file")"
         done
 
         samtools merge \
             --threads "$n_cores" \
-            ~{if defined(new_header) then "-h " + new_header else ""} \
-            ~{if name_sorted then "-n" else ""} \
-            ~{if (region != "") then "-R " + region else ""} \
-            ~{if attach_rg then "-r" else ""} \
-            ~{if combine_rg then "-c" else ""} \
-            ~{if combine_pg then "-p" else ""} \
-            ~{prefix}.bam \
-            $bams
+            "~{if defined(new_header) then "-h " + new_header else ""}" \
+            "~{if name_sorted then "-n" else ""}" \
+            "~{if (region != "") then "-R " + region else ""}" \
+            "~{if attach_rg then "-r" else ""}" \
+            "~{if combine_rg then "-c" else ""}" \
+            "~{if combine_pg then "-p" else ""}" \
+            "~{prefix}.bam" \
+            "$bams"
     >>>
 
     output {
@@ -667,16 +667,16 @@ task addreplacerg {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
         samtools addreplacerg \
             --threads "$n_cores" \
-            ~{sep(" ", prefix("-r ", squote(read_group_line)))} \
-            ~{if defined(read_group_id) then "-R " + read_group_id else ""} \
-            -m ~{if orphan_only then "orphan_only" else "overwrite_all"} \
-            ~{if overwrite_header_record then "-w" else ""} \
-            -o ~{outfile_name} \
-            ~{bam}
+            "~{sep(" ", prefix("-r ", squote(read_group_line)))}" \
+            "~{if defined(read_group_id) then "-R " + read_group_id else ""}" \
+            -m "~{if orphan_only then "orphan_only" else "overwrite_all"}" \
+            "~{if overwrite_header_record then "-w" else ""}" \
+            -o "~{outfile_name}" \
+            "~{bam}"
     >>>
 
     output {
@@ -743,13 +743,13 @@ task collate {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
         samtools collate \
             --threads "$n_cores" \
-            ~{if fast_mode then "-f" else ""} \
-            -o ~{outfile_name} \
-            ~{bam}
+            "~{if fast_mode then "-f" else ""}" \
+            -o "~{outfile_name}" \
+            "~{bam}"
     >>>
 
     output {
@@ -868,35 +868,35 @@ task bam_to_fastq {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
         mkfifo bam_pipe
         if ! ~{collated} && ~{paired_end}; then
             samtools collate \
-                ~{if retain_collated_bam then "" else "-u"} \
+                "~{if retain_collated_bam then "" else "-u"}" \
                 --threads "$n_cores" \
-                ~{if fast_mode then "-f" else ""} \
+                "~{if fast_mode then "-f" else ""}" \
                 -O \
-                ~{bam} \
-                | tee ~{if retain_collated_bam then prefix + ".collated.bam" else ""} \
+                "~{bam}" \
+                | tee "~{if retain_collated_bam then prefix + ".collated.bam" else ""}" \
                 > bam_pipe \
                 &
         else
-            samtools view -h --threads "$n_cores" ~{bam} > bam_pipe &
+            samtools view -h --threads "$n_cores" "~{bam}" > bam_pipe &
         fi
 
         samtools fastq \
             --threads "$n_cores" \
-            -f ~{bitwise_filter.include_if_all} \
-            -F ~{bitwise_filter.exclude_if_any} \
-            --rf ~{bitwise_filter.include_if_any} \
-            -G ~{bitwise_filter.exclude_if_all} \
-            ~{(
+            -f "~{bitwise_filter.include_if_all}" \
+            -F "~{bitwise_filter.exclude_if_any}" \
+            --rf "~{bitwise_filter.include_if_any}" \
+            -G "~{bitwise_filter.exclude_if_all}" \
+            "~{(
                 if append_read_number
                 then "-N"
                 else "-n"
-            )} \
-            -1 ~{(
+            )}" \
+            -1 "~{(
                 if paired_end
                 then (
                     if interleaved
@@ -904,15 +904,15 @@ task bam_to_fastq {
                     else prefix + ".R1.fastq.gz"
                 )
                 else prefix + ".fastq.gz"
-            )} \
-            -2 ~{(
+            )}" \
+            -2 "~{(
                 if paired_end
                 then (
                     if interleaved then prefix + ".fastq.gz" else prefix + ".R2.fastq.gz"
                 )
                 else prefix + ".fastq.gz"
-            )} \
-            ~{(
+            )}" \
+            "~{(
                 if paired_end
                 then (
                     if output_singletons
@@ -920,18 +920,18 @@ task bam_to_fastq {
                     else "-s junk.singleton.fastq.gz"
                 )
                 else ""
-            )} \
-            -0 ~{(
+            )}" \
+            -0 "~{(
                 if paired_end
                 then "junk.unknown_bit_setting.fastq.gz"
                 else prefix + ".fastq.gz"
-            )} \
+            )}" \
             bam_pipe
 
         rm bam_pipe
 
         # Check that some output is non-empty
-        if [ -z "$(gunzip -c ~{prefix}*.fastq.gz | head -c 1 | tr '\0\n' __)" ]; then
+        if [ -z "$(gunzip -c "~{prefix}*.fastq.gz" | head -c 1 | tr '\0\n' __)" ]; then
             >&2 echo "No reads are in any output FASTQ"
             >&2 echo "Command failed!"
             exit 42
@@ -1036,7 +1036,7 @@ task fixmate {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
         samtools fixmate \
             --threads "$n_cores" \
@@ -1045,8 +1045,8 @@ task fixmate {
             ~{if add_cigar then "-c" else ""} \
             ~{if add_mate_score then "-m" else ""} \
             ~{if disable_flag_sanitization then "-z off" else ""} \
-            ~{bam} \
-            ~{prefix}~{extension}
+            "~{bam}" \
+            "~{prefix}~{extension}"
     >>>
 
     output {
@@ -1129,14 +1129,14 @@ task position_sorted_fixmate {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
         samtools collate \
             --threads "$n_cores" \
             ~{if fast_mode then "-f" else ""} \
             -u \
             -O \
-            ~{bam} \
+            "~{bam}" \
             | samtools fixmate \
                 --threads "$n_cores" \
                 -u \
@@ -1149,7 +1149,7 @@ task position_sorted_fixmate {
                 - \
                 | samtools sort \
                     --threads "$n_cores" \
-                    -o ~{prefix + ".bam"} \
+                    -o "~{prefix + ".bam"}" \
                     -
     >>>
 
@@ -1251,13 +1251,13 @@ task markdup {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "n_cores -= 1"
+        (( n_cores -= 1 ))
 
         samtools markdup \
             --threads "$n_cores" \
             -f "~{prefix + if json then ".json" else ".txt"}" \
             --read-coords '~{read_coords_regex}' \
-            --coords-order ~{coordinates_order} \
+            --coords-order "~{coordinates_order}" \
             ~{if remove_duplicates then "-r" else ""} \
             ~{if mark_supp_or_sec_or_unmapped_as_duplicates then "-S" else ""} \
             ~{if mark_duplicates_with_do_tag then "-t" else ""} \
@@ -1268,7 +1268,7 @@ task markdup {
             -l ~{max_readlen} \
             -d ~{optical_distance} \
             -c \
-            ~{bam} \
+            "~{bam}" \
             "~{if create_bam then prefix + ".bam" else "/dev/null"}"
     >>>
 
@@ -1313,10 +1313,10 @@ task faidx {
         set -euo pipefail
 
         ref_fasta=~{basename(fasta, ".gz")}
-        gunzip -c ~{fasta} > "$ref_fasta" \
-            || ln -sf ~{fasta} "$ref_fasta"
+        gunzip -c "~{fasta}" > "$ref_fasta" \
+            || ln -sf "~{fasta}" "$ref_fasta"
 
-        samtools faidx -o ~{outfile_name} $ref_fasta
+        samtools faidx -o "~{outfile_name}" "$ref_fasta"
     >>>
 
     output {

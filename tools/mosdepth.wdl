@@ -43,15 +43,15 @@ task coverage {
 
         # localize BAM and BAI to CWD
         CWD_BAM=~{basename(bam)}
-        ln -s ~{bam} "$CWD_BAM"
-        ln -s ~{bam_index} "$CWD_BAM".bai
+        ln -s "~{bam}" "$CWD_BAM"
+        ln -s "~{bam_index}" "$CWD_BAM".bai
 
         mosdepth \
             -n \
-            ~{if defined(coverage_bed) then "-b" else ""} ~{coverage_bed} \
+            ~{if defined(coverage_bed) then "-b" else ""} "~{coverage_bed}" \
             -Q ~{min_mapping_quality} \
             ~{if (use_fast_mode) then "-x" else ""} \
-            ~{prefix} \
+            "~{prefix}" \
             "$CWD_BAM"
 
         rm "$CWD_BAM" "$CWD_BAM".bai

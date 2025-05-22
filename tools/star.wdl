@@ -95,25 +95,25 @@ task build_star_db {
         fi
 
         gtf_name=~{basename(gtf, ".gz")}
-        gunzip -c ~{gtf} > "$gtf_name" || ln -sf ~{gtf} "$gtf_name"
+        gunzip -c "~{gtf}" > "$gtf_name" || ln -sf "~{gtf}" "$gtf_name"
 
-        ref_fasta=~{basename(reference_fasta, ".gz")}
-        gunzip -c ~{reference_fasta} > "$ref_fasta" \
-            || ln -sf ~{reference_fasta} "$ref_fasta"
+        ref_fasta="~{basename(reference_fasta, ".gz")}"
+        gunzip -c "~{reference_fasta}" > "$ref_fasta" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta"
 
-        mkdir ~{db_name};
+        mkdir "~{db_name}"
         STAR --runMode genomeGenerate \
-            --genomeDir ~{db_name} \
+            --genomeDir "~{db_name}" \
             --runThreadN "$n_cores" \
-            --limitGenomeGenerateRAM ~{memory_limit_bytes} \
+            --limitGenomeGenerateRAM "~{memory_limit_bytes}" \
             --genomeFastaFiles "$ref_fasta" \
             --sjdbGTFfile "$gtf_name" \
-            --sjdbGTFchrPrefix ~{sjdb_gtf_chr_prefix} \
-            --sjdbGTFfeatureExon ~{sjdb_gtf_feature_exon} \
-            --sjdbGTFtagExonParentTranscript ~{sjdb_gtf_tag_exon_parant_transcript} \
-            --sjdbGTFtagExonParentGene ~{sjdb_gtf_tag_exon_parent_gene} \
-            --sjdbGTFtagExonParentGeneName ~{sjdb_gtf_tag_exon_parent_gene_name} \
-            --sjdbGTFtagExonParentGeneType ~{sjdb_gtf_tag_exon_parent_gene_type} \
+            --sjdbGTFchrPrefix "~{sjdb_gtf_chr_prefix}" \
+            --sjdbGTFfeatureExon "~{sjdb_gtf_feature_exon}" \
+            --sjdbGTFtagExonParentTranscript "~{sjdb_gtf_tag_exon_parant_transcript}" \
+            --sjdbGTFtagExonParentGene "~{sjdb_gtf_tag_exon_parent_gene}" \
+            --sjdbGTFtagExonParentGeneName "~{sjdb_gtf_tag_exon_parent_gene_name}" \
+            --sjdbGTFtagExonParentGeneType "~{sjdb_gtf_tag_exon_parent_gene_type}" \
             --genomeChrBinNbits ~{genome_chr_bin_n_bits} \
             --genomeSAindexNbases ~{genome_SA_index_n_bases} \
             --genomeSAsparseD ~{genome_SA_sparse_d} \
@@ -122,7 +122,7 @@ task build_star_db {
 
         rm "$gtf_name" "$ref_fasta"
 
-        tar -C ~{db_name} -czf ~{star_db_tar_gz} .
+        tar -C "~{db_name}" -czf "~{star_db_tar_gz}" .
     >>>
 
     output {
@@ -674,20 +674,20 @@ task alignment {
         fi
 
         mkdir star_db
-        tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
+        tar -xzf "~{star_db_tar_gz}" -C star_db/ --no-same-owner
 
         python3 /scripts/star/sort_star_input.py \
             --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
-            ~{(
+            "~{(
                 if (length(read_two_fastqs_gz) != 0)
                 then "--read-two-fastqs '~{sep(",", read_two_fastqs_gz)}'"
                 else ""
-            )} \
-            ~{(
+            )}" \
+            "~{(
                 if (length(read_groups) != 0)
                 then "--read-groups '~{sep(" , ", read_groups)}'"
                 else ""
-            )}
+            )}"
 
         read -ra read_one_args < read_one_fastqs_sorted.txt
         read -ra read_two_args < read_two_fastqs_sorted.txt
@@ -698,57 +698,57 @@ task alignment {
             --runThreadN "$n_cores" \
             --outSAMtype BAM Unsorted \
             --outMultimapperOrder Random \
-            --outFileNamePrefix ~{prefix + "."} \
-            --twopassMode ~{twopass_mode} \
+            --outFileNamePrefix "~{prefix + "."}" \
+            --twopassMode "~{twopass_mode}" \
             --outSAMattrRGline "${read_group_args[@]}" \
-            --outSJfilterIntronMaxVsReadN ~{
+            --outSJfilterIntronMaxVsReadN "~{
                 sep(" ", quote(out_sj_filter_intron_max_vs_read_n))
-            } \
-            --outSJfilterOverhangMin ~{sep(" ", quote([
+            }" \
+            --outSJfilterOverhangMin "~{sep(" ", quote([
                 out_sj_filter_overhang_min.noncanonical_motifs,
                 out_sj_filter_overhang_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_overhang_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_overhang_min.AT_AC_and_GT_AT_motif,
-            ]))} \
-            --outSJfilterCountUniqueMin ~{sep(" ", quote([
+            ]))}" \
+            --outSJfilterCountUniqueMin "~{sep(" ", quote([
                 out_sj_filter_count_unique_min.noncanonical_motifs,
                 out_sj_filter_count_unique_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_count_unique_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_count_unique_min.AT_AC_and_GT_AT_motif,
-            ]))} \
-            --outSJfilterCountTotalMin ~{sep(" ", quote([
+            ]))}" \
+            --outSJfilterCountTotalMin "~{sep(" ", quote([
                 out_sj_filter_count_total_min.noncanonical_motifs,
                 out_sj_filter_count_total_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_count_total_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_count_total_min.AT_AC_and_GT_AT_motif,
-            ]))} \
-            --outSJfilterDistToOtherSJmin ~{sep(" ", quote([
+            ]))}" \
+            --outSJfilterDistToOtherSJmin "~{sep(" ", quote([
                 out_sj_filter_dist_to_other_sj_min.noncanonical_motifs,
                 out_sj_filter_dist_to_other_sj_min.GT_AG_and_CT_AC_motif,
                 out_sj_filter_dist_to_other_sj_min.GC_AG_and_CT_GC_motif,
                 out_sj_filter_dist_to_other_sj_min.AT_AC_and_GT_AT_motif,
-            ]))} \
-            --alignSJstitchMismatchNmax ~{sep(" ", quote([
+            ]))}" \
+            --alignSJstitchMismatchNmax "~{sep(" ", quote([
                 align_sj_stitch_mismatch_n_max.noncanonical_motifs,
                 align_sj_stitch_mismatch_n_max.GT_AG_and_CT_AC_motif,
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
-            ]))} \
-            --clip3pAdapterSeq ~{clip_3p_adapter_seq.left} ~{(
+            ]))}" \
+            --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" "~{(
                 if (length(read_two_fastqs_gz) != 0)
                 then clip_3p_adapter_seq.right
                 else ""
-            )} \
+            )}" \
             --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
                 if (length(read_two_fastqs_gz) != 0)
                 then clip_3p_adapter_mmp.right
                 else None
             )} \
-            --alignEndsProtrude ~{align_ends_protrude.left} ~{(
+            --alignEndsProtrude ~{align_ends_protrude.left} "~{(
                 if (length(read_two_fastqs_gz) != 0)
                 then align_ends_protrude.right
                 else None
-            )} \
+            )}" \
             --clip3pNbases ~{clip_3p_n_bases.left} ~{(
                 if (length(read_two_fastqs_gz) != 0)
                 then clip_3p_n_bases.right
@@ -764,30 +764,30 @@ task alignment {
                 then clip_5p_n_bases.right
                 else None
             )} \
-            --readNameSeparator ~{read_name_separator} \
-            --clipAdapterType ~{clip_adapter_type} \
-            --outSAMstrandField ~{out_sam_strand_field} \
-            --outSAMattributes ~{out_sam_attributes} \
-            --outSAMunmapped ~{out_sam_unmapped} \
-            --outSAMorder ~{out_sam_order} \
-            --outSAMreadID ~{out_sam_read_id} \
-            --outSAMtlen ~{(
+            --readNameSeparator "~{read_name_separator}" \
+            --clipAdapterType "~{clip_adapter_type}" \
+            --outSAMstrandField "~{out_sam_strand_field}" \
+            --outSAMattributes "~{out_sam_attributes}" \
+            --outSAMunmapped "~{out_sam_unmapped}" \
+            --outSAMorder "~{out_sam_order}" \
+            --outSAMreadID "~{out_sam_read_id}" \
+            --outSAMtlen "~{(
                 if (out_sam_tlen == "left_plus")
                 then "1"
                 else (
                     if (out_sam_tlen == "left_any") then "2" else "error"
                 )
-            )} \
-            --outFilterType ~{out_filter_type} \
-            --outFilterIntronMotifs ~{out_filter_intron_motifs} \
-            --outFilterIntronStrands ~{out_filter_intron_strands} \
-            --outSJfilterReads ~{out_sj_filter_reads} \
-            --alignEndsType ~{align_ends_type} \
-            --alignSoftClipAtReferenceEnds ~{align_soft_clip_at_reference_ends} \
-            --alignInsertionFlush ~{align_insertion_flush} \
-            --chimOutType ~{chim_out_type} \
-            --chimFilter ~{chim_filter} \
-            --chimOutJunctionFormat ~{chim_out_junction_format} \
+            )}" \
+            --outFilterType "~{out_filter_type}" \
+            --outFilterIntronMotifs "~{out_filter_intron_motifs}" \
+            --outFilterIntronStrands "~{out_filter_intron_strands}" \
+            --outSJfilterReads "~{out_sj_filter_reads}" \
+            --alignEndsType "~{align_ends_type}" \
+            --alignSoftClipAtReferenceEnds "~{align_soft_clip_at_reference_ends}" \
+            --alignInsertionFlush "~{align_insertion_flush}" \
+            --chimOutType "~{chim_out_type}" \
+            --chimFilter "~{chim_filter}" \
+            --chimOutJunctionFormat "~{chim_out_junction_format}" \
             --outFilterMismatchNoverLmax ~{out_filter_mismatch_n_over_l_max} \
             --outFilterMismatchNoverReadLmax ~{out_filter_mismatch_n_over_read_l_max} \
             --outFilterScoreMinOverLread ~{out_filter_score_min_over_l_read} \

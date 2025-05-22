@@ -32,11 +32,11 @@ task process_raw_idats {
     command <<<
         set -euo pipefail
 
-        ln -s ~{idats.left} ~{idats.right} .
+        ln -s "~{idats.left}" "~{idats.right}" .
 
         Rscript /scripts/methylation/methylation-preprocess.R \
-            --idat_base ~{idat_base} \
-            --out_base ~{out_base} \
+            --idat_base "~{idat_base}" \
+            --out_base "~{out_base}" \
             --seed ~{seed}
     >>>
 

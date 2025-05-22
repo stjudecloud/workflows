@@ -116,8 +116,8 @@ task combine_data {
 
     command <<<
         python /scripts/methylation/combine.py \
-            --output-name ~{combined_file_name} \
-            ~{sep(" ", unfiltered_normalized_beta)}
+            --output-name "~{combined_file_name}" \
+            "~{sep(" ", unfiltered_normalized_beta)}"
     >>>
 
     output {
@@ -159,10 +159,10 @@ task filter_probes {
 
     command <<<
         python /scripts/methylation/filter.py \
-            --output-name ~{prefix}.beta.csv \
-            --filtered-probes ~{prefix}.probes.csv \
+            --output-name "~{prefix}.beta.csv" \
+            --filtered-probes "~{prefix}.probes.csv" \
             --num-probes ~{num_probes} \
-            ~{beta_values}
+            "~{beta_values}"
     >>>
 
     output {
@@ -201,8 +201,8 @@ task generate_umap {
 
     command <<<
         python /scripts/methylation/generate_umap.py \
-            --beta ~{filtered_beta_values} \
-            --output-name ~{prefix}.csv
+            --beta "~{filtered_beta_values}" \
+            --output-name "~{prefix}.csv"
     >>>
 
     output {
@@ -237,7 +237,9 @@ task plot_umap {
     }
 
     command <<<
-        python /scripts/methylation/plot_umap.py --umap ~{umap} --output-name ~{plot_file}
+        python /scripts/methylation/plot_umap.py \
+            --umap "~{umap}" \
+            --output-name "~{plot_file}"
     >>>
 
     output {
