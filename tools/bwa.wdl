@@ -72,7 +72,7 @@ task bwa_aln {
         bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{fastq}" > sai
 
         bwa samse \
-            ~{if read_group != "" then "-r '" + read_group + "'" else ""} \
+            ~{if read_group != "" then "-r '~{read_group}'" else ""} \
             bwa_db/"$PREFIX" \
             sai \
             "~{fastq}" \
