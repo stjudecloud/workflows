@@ -90,7 +90,7 @@ task validate_string_is_12bit_oct_dec_or_hex {
     command <<<
         if [[ "~{number}" =~ ^[1-9][0-9]*$ ]]; then
             # number is in decimal
-            if [ ~{number} -lt 4096 ]; then
+            if [ "~{number}" -lt 4096 ]; then
                 >&2 echo "Input number (~{number}) is valid"
             else
                 >&2 echo "Input number (~{number}) interpreted as decimal"
