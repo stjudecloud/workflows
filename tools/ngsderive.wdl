@@ -55,22 +55,22 @@ task strandedness {
 
         # localize BAM and BAI to CWD
         CWD_BAM=~{basename(bam)}
-        ln -s ~{bam} "$CWD_BAM"
-        ln -s ~{bam_index} "$CWD_BAM".bai
+        ln -s "~{bam}" "$CWD_BAM"
+        ln -s "~{bam_index}" "$CWD_BAM".bai
 
         ngsderive strandedness --verbose \
             ~{if split_by_rg then "--split-by-rg" else ""} \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
             -q ~{min_mapq} \
-            -g ~{gene_model} \
+            -g "~{gene_model}" \
             "$CWD_BAM" \
-            > ~{outfile_name}
+            > "~{outfile_name}"
 
         if ~{split_by_rg}; then
             echo "N/A" > strandedness.txt
         else
-            awk 'NR > 1' ~{outfile_name} | cut -f 5 > strandedness.txt
+            awk 'NR > 1' "~{outfile_name}" | cut -f 5 > strandedness.txt
         fi
 
         rm "$CWD_BAM" "$CWD_BAM".bai
@@ -123,10 +123,10 @@ task instrument {
 
         ngsderive instrument --verbose \
             -n ~{num_reads} \
-            ~{bam} \
-            > ~{outfile_name}
+            "~{bam}" \
+            > "~{outfile_name}"
 
-        awk 'NR > 1' ~{outfile_name} | cut -f 2 > instrument.txt
+        awk 'NR > 1' "~{outfile_name}" | cut -f 2 > instrument.txt
     >>>
 
     output {
@@ -182,14 +182,14 @@ task read_length {
 
         # localize BAM and BAI to CWD
         CWD_BAM=~{basename(bam)}
-        ln -s ~{bam} "$CWD_BAM"
-        ln -s ~{bam_index} "$CWD_BAM".bai
+        ln -s "~{bam}" "$CWD_BAM"
+        ln -s "~{bam_index}" "$CWD_BAM".bai
 
         ngsderive readlen --verbose \
             -c ~{majority_vote_cutoff} \
             -n ~{num_reads} \
             "$CWD_BAM" \
-            > ~{outfile_name}
+            > "~{outfile_name}"
 
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
@@ -239,7 +239,7 @@ task encoding {
         ngsderive encoding --verbose \
             -n ~{num_reads} \
             ~{sep(" ", ngs_files)} \
-            > ~{outfile_name}
+            > "~{outfile_name}"
     >>>
 
     output {
@@ -308,23 +308,23 @@ task junction_annotation {
 
         # localize BAM and BAI to CWD
         CWD_BAM=~{basename(bam)}
-        ln -s ~{bam} "$CWD_BAM"
-        ln -s ~{bam_index} "$CWD_BAM".bai
+        ln -s "~{bam}" "$CWD_BAM"
+        ln -s "~{bam_index}" "$CWD_BAM".bai
 
         ngsderive junction-annotation --verbose \
-            -g ~{gene_model} \
+            -g "~{gene_model}" \
             -i ~{min_intron} \
             -q ~{min_mapq} \
             -m ~{min_reads} \
             -k ~{fuzzy_junction_match_range} \
-            -o ~{prefix}.junction_summary.tsv \
+            -o "~{prefix}.junction_summary.tsv" \
             "$CWD_BAM"
 
         # junction-annotation accepts multiple BAMs, and allows for
         # renaming the cohort level summary report, but not the BAM
         # level junctions file. So we rename it here to match with prefix.
-        mv "$(basename ~{bam}.junctions.tsv)" "~{prefix}.junctions.tsv"
-        gzip ~{prefix}.junctions.tsv
+        mv "$(basename "~{bam}.junctions.tsv")" "~{prefix}.junctions.tsv"
+        gzip "~{prefix}.junctions.tsv"
 
         rm "$CWD_BAM" "$CWD_BAM".bai
     >>>
@@ -412,8 +412,8 @@ task endedness {
             ~{if split_by_rg then "--split-by-rg" else ""} \
             --paired-deviance ~{paired_deviance} \
             -n ~{num_reads} \
-            ~{bam} \
-            > ~{outfile_name}
+            "~{bam}" \
+            > "~{outfile_name}"
     >>>
 
     output {
