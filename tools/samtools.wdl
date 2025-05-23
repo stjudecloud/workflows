@@ -931,7 +931,7 @@ task bam_to_fastq {
         rm bam_pipe
 
         # Check that some output is non-empty
-        if [ -z "$(gunzip -c ~{prefix}*.fastq.gz | head -c 1 | tr '\0\n' __)" ]; then
+        if [ -z "$(gunzip -c "~{prefix}"*.fastq.gz | head -c 1 | tr '\0\n' __)" ]; then
             >&2 echo "No reads are in any output FASTQ"
             >&2 echo "Command failed!"
             exit 42
