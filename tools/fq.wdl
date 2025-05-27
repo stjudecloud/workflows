@@ -78,7 +78,7 @@ task fqlint {
 
     command <<<
         fq lint \
-            ~{sep(" ", prefix("--disable-validator ", disable_validator_codes))} \
+            ~{sep(" ", prefix("--disable-validator ", squote(disable_validator_codes)))} \
             --single-read-validation-level "~{single_read_validation_level}" \
             --paired-read-validation-level "~{paired_read_validation_level}" \
             --lint-mode ~{if panic then "panic" else "log"} \

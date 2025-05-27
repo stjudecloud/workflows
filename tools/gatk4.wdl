@@ -135,7 +135,7 @@ task base_recalibrator {
             )} \
             -O "~{outfile_name}" \
             --known-sites "~{dbSNP_vcf}" \
-            ~{sep(" ", prefix("--known-sites ", known_indels_sites_vcfs))} \
+            ~{sep(" ", prefix("--known-sites ", squote(known_indels_sites_vcfs)))} \
             --spark-master local[~{ncpu}]
     >>>
 
@@ -355,7 +355,7 @@ task variant_filtration {
             --V "~{vcf}" \
             --window ~{window} \
             --cluster ~{cluster} \
-                ~{sep(" ", prefix("--filter-name ", filter_names))} \
+                ~{sep(" ", prefix("--filter-name ", quote(filter_names)))} \
                 ~{sep(" ", prefix("--filter-expression ", squote(filter_expressions)))} \
             -O "~{prefix}.filtered.vcf.gz"
     >>>

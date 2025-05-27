@@ -238,7 +238,7 @@ task encoding {
     command <<<
         ngsderive encoding --verbose \
             -n ~{num_reads} \
-            ~{sep(" ", ngs_files)} \
+            ~{sep(" ", squote(ngs_files))} \
             > "~{outfile_name}"
     >>>
 

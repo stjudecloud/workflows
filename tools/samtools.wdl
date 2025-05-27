@@ -574,7 +574,7 @@ task merge {
         (( n_cores -= 1 ))
 
         bams=""
-        for file in ~{sep(" ", bams)}
+        for file in ~{sep(" ", squote(bams))}
         do
           # This will fail (intentionally) if there are duplicate names
           # in the input BAM array.

@@ -212,7 +212,7 @@ task validate_bam {
             ~{mode_arg} \
             ~{stringency_arg} \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
-            ~{sep(" ", prefix("--IGNORE ", ignore_list))} \
+            ~{sep(" ", prefix("--IGNORE ", squote(ignore_list)))} \
             --MAX_OUTPUT ~{max_errors} \
             > "~{outfile_name}" \
             || rc=$?
@@ -387,7 +387,7 @@ task merge_sam_files {
     Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    Array[String] input_arg = prefix("--INPUT ", bams)
+    Array[String] input_arg = prefix("--INPUT ", squote(bams))
 
     String outfile_name = prefix + ".bam"
 
@@ -896,7 +896,7 @@ task merge_vcfs {
     command <<<
         picard -Xms2000m \
             MergeVcfs \
-            ~{sep(" ", prefix("--INPUT ", vcfs))} \
+            ~{sep(" ", prefix("--INPUT ", squote(vcfs)))} \
             --OUTPUT "~{output_vcf_name}"
     >>>
 

@@ -677,7 +677,7 @@ task alignment {
         tar -xzf "~{star_db_tar_gz}" -C star_db/ --no-same-owner
 
         python3 /scripts/star/sort_star_input.py \
-            --read-one-fastqs ~{sep(",", read_one_fastqs_gz)} \
+            --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
             ~{(
                 if (length(read_two_fastqs_gz) != 0)
                 then "--read-two-fastqs '~{sep(",", read_two_fastqs_gz)}'"
