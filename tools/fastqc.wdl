@@ -46,13 +46,13 @@ task fastqc {
             n_cores=$(nproc)
         fi
 
-        mkdir ~{prefix}
+        mkdir "~{prefix}"
         fastqc -f bam \
-            -o ~{prefix} \
+            -o "~{prefix}" \
             -t "$n_cores" \
-            ~{bam}
+            "~{bam}"
 
-        tar -czf ~{out_tar_gz} ~{prefix}
+        tar -czf "~{out_tar_gz}" "~{prefix}"
     >>>
 
     output {

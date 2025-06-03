@@ -61,19 +61,19 @@ task rnaseq {
 
         orig=~{gtf}
         gtf_name=$(basename "${orig%.gz}")
-        gunzip -c ~{gtf} > "$gtf_name" || ln -sf ~{gtf} "$gtf_name"
+        gunzip -c "~{gtf}" > "$gtf_name" || ln -sf "~{gtf}" "$gtf_name"
 
         # '-oc qualimap_counts.txt' puts the file in '-outdir'
-        qualimap rnaseq -bam ~{bam} \
+        qualimap rnaseq -bam "~{bam}" \
                         -oc qualimap_counts.txt \
                         -gtf "$gtf_name" \
-                        -outdir ~{prefix} \
+                        -outdir "~{prefix}" \
                         ~{name_sorted_arg} \
                         ~{paired_end_arg} \
                         --java-mem-size=~{java_heap_size}G
         rm "$gtf_name"
 
-        tar -czf ~{out_tar_gz} ~{prefix}
+        tar -czf "~{out_tar_gz}" "~{prefix}"
     >>>
 
     output {
@@ -132,8 +132,8 @@ task bamqc {
             n_cores=$(nproc)
         fi
 
-        qualimap bamqc -bam ~{bam} \
-            -outdir ~{out_directory} \
+        qualimap bamqc -bam "~{bam}" \
+            -outdir "~{out_directory}" \
             -nt "$n_cores" \
             -nw 400 \
             --java-mem-size=~{java_heap_size}g
@@ -143,7 +143,7 @@ task bamqc {
             exit 42
         fi
 
-        tar -czf ~{out_tar_gz} ~{out_directory}
+        tar -czf "~{out_tar_gz}" "~{out_directory}"
     >>>
 
     output {

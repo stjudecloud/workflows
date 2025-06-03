@@ -43,7 +43,7 @@ task index {
             n_cores=$(nproc)
         fi
 
-        sambamba index --nthreads "$n_cores" ~{bam} ~{outfile_name}
+        sambamba index --nthreads "$n_cores" "~{bam}" "~{outfile_name}"
     >>>
 
     output {
@@ -102,8 +102,8 @@ task merge {
 
         sambamba merge \
             --nthreads "$n_cores" \
-            ~{prefix}.bam \
-            ~{sep(" ", bams)}
+            "~{prefix}.bam" \
+            ~{sep(" ", squote(bams))}
     >>>
 
     output {
@@ -156,9 +156,9 @@ task sort {
 
         sambamba sort \
             --nthreads ~{ncpu} \
-            -o ~{outfile_name} \
+            -o "~{outfile_name}" \
             ~{if queryname_sort then "-n" else ""} \
-            ~{bam}
+            "~{bam}"
     >>>
 
     output {
@@ -210,9 +210,9 @@ task markdup {
         sambamba markdup \
             --nthreads ~{ncpu} \
             ~{if remove_duplicates then "--remove-duplicates" else ""} \
-            ~{bam} \
-            ~{prefix}.markdup.bam \
-            > ~{prefix}.markdup_log.txt
+            "~{bam}" \
+            "~{prefix}.markdup.bam" \
+            > "~{prefix}.markdup_log.txt"
     >>>
 
     output {
@@ -271,7 +271,7 @@ task flagstat {
             n_cores=$(nproc)
         fi
 
-        sambamba flagstat --nthreads "$n_cores" ~{bam} > ~{outfile_name}
+        sambamba flagstat --nthreads "$n_cores" "~{bam}" > "~{outfile_name}"
     >>>
 
     output {
