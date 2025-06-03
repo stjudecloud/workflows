@@ -104,7 +104,7 @@ task read_group_to_string {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
+        container: "ghcr.io/stjudecloud/util:branch-shellcheck-2.1.3"
         maxRetries: 1
     }
 }
@@ -441,7 +441,7 @@ task validate_read_group {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
+        container: "ghcr.io/stjudecloud/util:branch-shellcheck-2.1.3"
         maxRetries: 0
     }
 }
