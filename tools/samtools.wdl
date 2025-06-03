@@ -1327,7 +1327,7 @@ task faidx {
         cpu: 1
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/samtools:1.17--h00cdaf9_0"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
 }
