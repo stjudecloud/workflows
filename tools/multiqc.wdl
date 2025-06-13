@@ -46,7 +46,7 @@ task multiqc {
         # run after multiqc is finished.
         multiqc -v \
             --no-ansi \
-            ~{if defined(config) then "-c " + config else ""} \
+            ~{if defined(config) then "-c '" + config + "'" else ""} \
             --file-list file_list.txt \
             -o "~{prefix}"
 

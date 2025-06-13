@@ -161,7 +161,7 @@ task subsample {
             --r1-dst "~{r1_dst}" \
             ~{(
                 if defined(read_two_fastq)
-                then "--r2-dst " + r2_dst
+                then "--r2-dst '" + r2_dst + "'"
                 else ""
             )} \
             "~{read_one_fastq}" \

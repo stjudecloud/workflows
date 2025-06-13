@@ -851,7 +851,7 @@ task bam_to_fastq {
             VALIDATION_STRINGENCY=SILENT
 
         gzip "~{prefix}.R1.fastq" \
-            ~{if paired then prefix + ".R2.fastq" else ""}
+            ~{if paired then "'" + prefix + ".R2.fastq'" else ""}
     >>>
 
     output {
@@ -1025,11 +1025,11 @@ task create_sequence_dictionary {
             -R "~{fasta}" \
             ~{(
                 if defined(assembly_name)
-                then "--GENOME_ASSEMBLY " + assembly_name
+                then "--GENOME_ASSEMBLY '" + assembly_name + "'"
                 else ""
             )} \
-            ~{if defined(fasta_url) then "--URI " + fasta_url else ""} \
-            ~{if defined(species) then "--SPECIES " + species else ""} \
+            ~{if defined(fasta_url) then "--URI '" + fasta_url + "'" else ""} \
+            ~{if defined(species) then "--SPECIES '" + species + "'" else ""} \
             > "~{outfile_name}"
     >>>
 

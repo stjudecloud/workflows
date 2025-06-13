@@ -260,7 +260,7 @@ task build_db {
             --minimizer-spaces ~{minimizer_spaces} \
             ~{(
                 if (max_db_size_gb > 0)
-                then "--max-db-size " + max_db_size_bytes
+                then "--max-db-size '" + max_db_size_bytes + "'"
                 else ""
             )} \
             --threads "$n_cores" \
@@ -380,7 +380,7 @@ task kraken {
 
         kraken2 --db kraken2_db/ \
             --paired \
-            --output ~{if store_sequences then out_sequences else "-"} \
+            --output ~{if store_sequences then "'" + out_sequences + "'" else "-"} \
             --threads "$n_cores" \
             --minimum-base-quality ~{min_base_quality} \
             --report "~{out_report}" \
