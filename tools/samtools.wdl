@@ -584,9 +584,9 @@ task merge {
 
         samtools merge \
             --threads "$n_cores" \
-            ~{if defined(new_header) then "-h " + new_header else ""} \
+            ~{if defined(new_header) then "-h \"" + new_header + "\"" else ""} \
             ~{if name_sorted then "-n" else ""} \
-            ~{if (region != "") then "-R " + region else ""} \
+            ~{if (region != "") then "-R \"" + region + "\"" else ""} \
             ~{if attach_rg then "-r" else ""} \
             ~{if combine_rg then "-c" else ""} \
             ~{if combine_pg then "-p" else ""} \
@@ -672,7 +672,7 @@ task addreplacerg {
         samtools addreplacerg \
             --threads "$n_cores" \
             ~{sep(" ", prefix("-r ", squote(read_group_line)))} \
-            ~{if defined(read_group_id) then "-R " + read_group_id else ""} \
+            ~{if defined(read_group_id) then "-R \"" + read_group_id + "\"" else ""} \
             -m ~{if orphan_only then "orphan_only" else "overwrite_all"} \
             ~{if overwrite_header_record then "-w" else ""} \
             -o "~{outfile_name}" \
@@ -878,7 +878,7 @@ task bam_to_fastq {
                 ~{if fast_mode then "-f" else ""} \
                 -O \
                 "~{bam}" \
-                | tee ~{if retain_collated_bam then prefix + ".collated.bam" else ""} \
+                | tee ~{if retain_collated_bam then "\"" + prefix + ".collated.bam\"" else ""} \
                 > bam_pipe \
                 &
         else
@@ -900,23 +900,25 @@ task bam_to_fastq {
                 if paired_end
                 then (
                     if interleaved
-                    then prefix + ".fastq.gz"
-                    else prefix + ".R1.fastq.gz"
+                    then "\"" + prefix + ".fastq.gz\""
+                    else "\"" + prefix + ".R1.fastq.gz\""
                 )
-                else prefix + ".fastq.gz"
+                else "\"" + prefix + ".fastq.gz\""
             )} \
             -2 ~{(
                 if paired_end
                 then (
-                    if interleaved then prefix + ".fastq.gz" else prefix + ".R2.fastq.gz"
+                    if interleaved
+                    then "\"" + prefix + ".fastq.gz\""
+                    else "\"" + prefix + ".R2.fastq.gz\""
                 )
-                else prefix + ".fastq.gz"
+                else "\"" + prefix + ".fastq.gz\""
             )} \
             ~{(
                 if paired_end
                 then (
                     if output_singletons
-                    then "-s " + prefix + ".singleton.fastq.gz"
+                    then "-s \"" + prefix + ".singleton.fastq.gz\""
                     else "-s junk.singleton.fastq.gz"
                 )
                 else ""
@@ -924,7 +926,7 @@ task bam_to_fastq {
             -0 ~{(
                 if paired_end
                 then "junk.unknown_bit_setting.fastq.gz"
-                else prefix + ".fastq.gz"
+                else "\"" + prefix + ".fastq.gz\""
             )} \
             bam_pipe
 

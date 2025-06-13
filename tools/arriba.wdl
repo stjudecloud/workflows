@@ -200,13 +200,13 @@ task arriba {
             -s "~{strandedness}" \
             ~{(
                 if length(interesting_contigs) > 0
-                then "-i " + sep(",", interesting_contigs)
+                then "-i " + sep(",", quote(interesting_contigs))
                 else ""
             )} \
-            ~{if length(viral_contigs) > 0 then "-v " + sep(",", viral_contigs) else ""} \
+            ~{if length(viral_contigs) > 0 then "-v " + sep(",", quote(viral_contigs)) else ""} \
             ~{(
                 if length(disable_filters) > 0
-                then "-f " + sep(",", disable_filters)
+                then "-f " + sep(",", quote(disable_filters))
                 else ""
             )} \
             -E ~{max_e_value} \

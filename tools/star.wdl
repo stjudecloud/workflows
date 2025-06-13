@@ -736,7 +736,7 @@ task alignment {
             ]))} \
             --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{(
                 if (length(read_two_fastqs_gz) != 0)
-                then clip_3p_adapter_seq.right
+                then "~{clip_3p_adapter_seq.right}"
                 else ""
             )} \
             --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
