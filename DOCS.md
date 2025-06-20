@@ -20,7 +20,7 @@ The repository contains workflows from multiple categories:
 * `Reference` - These workflows are used to generate the necessary reference file inputs for our other workflows.
 * `Utility` - These workflows are generally called as subworkflows of other workflows, but may have utility on their own.
 * `Variant Calling` - These workflows are used to call a set of variants for a sample.
-* `Other` - These workflows subworkflows of other workflows that should not be called in isolation or experimental workflows.
+* `Other` - These workflows are typically subworkflows of other workflows that should not be called in isolation or they are experimental workflows.
 * `External` - These workflows are hosted in other repositories, but are used by one (or more) of the workflows in this repository.
 
 ## Expected FASTQ file name conventions
@@ -60,7 +60,7 @@ sample_read_two.fq.zip
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
+Contributions, issues and feature requests are welcome!<br />Feel free to check the [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
 
 ## 📝 License
 
