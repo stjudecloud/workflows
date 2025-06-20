@@ -35,6 +35,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/workflows
           $GITHUB_WORKSPACE/sprocket/target/release/sprocket dev doc -v .
+          ls
+          pwd
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
