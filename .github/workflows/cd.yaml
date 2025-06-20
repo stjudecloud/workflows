@@ -35,10 +35,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/workflows
           $GITHUB_WORKSPACE/sprocket/target/release/sprocket dev doc -v .
-          ls
-          pwd
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: ./docs
+          publish_dir: ./workflows/docs
