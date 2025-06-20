@@ -34,7 +34,8 @@ jobs:
       - name: Build Docs
         run: |
           cd $GITHUB_WORKSPACE/workflows
-          $GITHUB_WORKSPACE/sprocket/target/release/sprocket dev doc -v .
+          $GITHUB_WORKSPACE/sprocket/target/release/sprocket dev doc -v --homepage DOCS.md .
+          cp -r assets docs/
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
