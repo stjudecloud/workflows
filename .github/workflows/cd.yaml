@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: workflows
-      - name: Checkout WDL
+      - name: Checkout wdl crates
         uses: actions/checkout@v4
         with:
           repository: stjude-rust-labs/wdl
