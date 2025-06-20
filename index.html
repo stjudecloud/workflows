@@ -2809,4 +2809,56 @@
                                         current: false,
                                         icon: 'assets/workflow-unselected.svg',
                                     }
-                                }" class="left-sidebar__workflow" x-bind:class="node.current ? 'bg-slate-800' : hover ? 'bg-slate-700' : ''"><div class="left-sidebar__workflow-indent-hidden"></div><div class="left-sidebar__workflow-indent"></div><div class="left-sidebar__workflow-container" x-on:mouseenter="hover = true" x-on:mouseleave="hover = false"><img x-bind:src="node.icon" class="left-sidebar__icon" alt="Workflow icon"><sprocket-tooltip content="mapping" class="" x-bind:class="node.current ? 'text-slate-50' : 'hover:text-slate-50'"><a href="external/stjude/seaseq/2.3/workflows/workflows/mapping/mapping-workflow.html">mapping</a></sprocket-tooltip></div></li></ul></li></ul></div></div></div><div class="layout__main-center"><button type="button" class="layout__mobile-menu-button" x-on:click="open = !open" aria-label="Toggle menu"><svg viewBox="0 0 100 80" width="40" height="40" stroke="none" fill="currentColor"><rect width="100" height="15"></rect><rect y="35" width="100" height="15"></rect><rect y="70" width="100" height="15"></rect></svg></button><div class="main__section--empty"><img src="assets/missing-home.svg" class="size-12" alt="Missing home icon"><h2 class="main__section-header">There's nothing to see on this page</h2><p>The markdown file for this page wasn't supplied.</p></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
+                                }" class="left-sidebar__workflow" x-bind:class="node.current ? 'bg-slate-800' : hover ? 'bg-slate-700' : ''"><div class="left-sidebar__workflow-indent-hidden"></div><div class="left-sidebar__workflow-indent"></div><div class="left-sidebar__workflow-container" x-on:mouseenter="hover = true" x-on:mouseleave="hover = false"><img x-bind:src="node.icon" class="left-sidebar__icon" alt="Workflow icon"><sprocket-tooltip content="mapping" class="" x-bind:class="node.current ? 'text-slate-50' : 'hover:text-slate-50'"><a href="external/stjude/seaseq/2.3/workflows/workflows/mapping/mapping-workflow.html">mapping</a></sprocket-tooltip></div></li></ul></li></ul></div></div></div><div class="layout__main-center"><button type="button" class="layout__mobile-menu-button" x-on:click="open = !open" aria-label="Toggle menu"><svg viewBox="0 0 100 80" width="40" height="40" stroke="none" fill="currentColor"><rect width="100" height="15"></rect><rect y="35" width="100" height="15"></rect><rect y="70" width="100" height="15"></rect></svg></button><div class="main__section"><div class="markdown-body"><p>
+  <a href="https://github.com/stjudecloud/workflows" rel="noopener noreferrer"><img src="./assets/workflows-banner-flowchart.jpg" width="800" title="St. Jude Cloud Workflows"></a>
+  <br>
+  <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md" rel="noopener noreferrer">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
+  </a>
+</p>
+<blockquote>
+<p>This repository contains all bioinformatics workflows used on the St. Jude Cloud project. Officially, the repository is in beta — the project is adding workflows as they are developed and put into production.</p>
+</blockquote>
+<p>Resources requirements have been optimized to minimize failures in our computing environment, but they may not reflect the best settings for your use case. Please ensure that you tailor these parameters to fit your needs.</p>
+<h3>🏠 <a href="https://stjude.cloud" rel="noopener noreferrer">Homepage</a></h3>
+<h2>Workflows Structure</h2>
+<p>The repository contains workflows from multiple categories:</p>
+<ul>
+<li><code>Harmonization</code> - These workflows are standard entrypoints used by the St. Jude Cloud team to harmonize data for release on stjude.cloud.</li>
+<li><code>Reference</code> - These workflows are used to generate the necessary reference file inputs for our other workflows.</li>
+<li><code>Utility</code> - These workflows are generally called as subworkflows of other workflows, but may have utility on their own.</li>
+<li><code>Variant Calling</code> - These workflows are used to call a set of variants for a sample.</li>
+<li><code>Other</code> - These workflows subworkflows of other workflows that should not be called in isolation or experimental workflows.</li>
+<li><code>External</code> - These workflows are hosted in other repositories, but are used by one (or more) of the workflows in this repository.</li>
+</ul>
+<h2>Expected FASTQ file name conventions</h2>
+<p>The tasks and workflows in this repository which have one or more FASTQ files as an input will also have a <code>prefix</code> input which will determine the filenames for any output files. The <code>prefix</code> input can be specified manually, or it can be left at the default value. The default value will attempt to strip common file suffixes from one of the input FASTQs and determine an appropriate basename to be used by all output files. That evaluation is most commonly performed using the POSIX ERE Regular Expression <code>(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\.(fastq|fq)(\.gz)?$</code>. In plain English, this REGEX will at a minimum search for and remove the file extensions <code>.fastq</code> and <code>.fq</code> with or without a <code>.gz</code> GZIP extension. Additionally, if the FASTQ filename contains a "read number" signifier (<code>R1</code>/<code>R2</code>/<code>r1</code>/<code>r2</code>/<code>read1</code>/<code>read2</code>) somewhere before the FASTQ extension, that will be truncated off the basename. This means that <em>everything</em> after the read indicator will be removed. If there is important information encoded in your filenames <em>between the read number and the final extension,</em> we recommend you manually specify an appropriate <code>prefix</code> value.</p>
+<h3>Examples</h3>
+<p>Every filename in the following list will have the evaluated <code>prefix</code> "<code>sample</code>" if no override value is provided.</p>
+<pre><code>sample_R1_100000.fastq.gz
+sample_R2.fq
+sample.fq.gz
+sample.r1_100000.trimmed.fastq.gz
+sample.R2_100000.trimmed-kebab.fastq.gz
+sample_r1.100000.trimmed-kebab.foobar.fastq.gz
+sample.Read2_100000.trimmed-kebab.fastq
+sample_read1.100000.trimmed-kebab.fq
+</code></pre>
+<p>A FASTQ with the filename <code>sample.100000-kebab.foobar.fastq.gz</code> would have a default <code>prefix</code> value of "<code>sample.100000-kebab.foobar</code>".</p>
+<p>The following filenames will not result in <em>any</em> trimming of the filename, and should likely be either renamed or have a manually specified <code>prefix</code>:</p>
+<pre><code>sample_R_one.FASTQ.gz
+sampleR1.Fq
+sample_read_two.fq.zip
+</code></pre>
+<p>👤 <strong>St. Jude Cloud Team</strong></p>
+<ul>
+<li>Website: https://stjude.cloud</li>
+<li>Github: <a href="https://github.com/stjudecloud" rel="noopener noreferrer">@stjudecloud</a></li>
+<li>Twitter: <a href="https://twitter.com/StJudeResearch" rel="noopener noreferrer">@StJudeResearch</a></li>
+</ul>
+<h2>🤝 Contributing</h2>
+<p>Contributions, issues and feature requests are welcome!<br>Feel free to check <a href="https://github.com/stjudecloud/workflows/issues" rel="noopener noreferrer">issues page</a>. You can also take a look at the <a href="https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md" rel="noopener noreferrer">contributing guide</a>.</p>
+<h2>📝 License</h2>
+<p>Copyright © 2020-Present <a href="https://github.com/stjudecloud" rel="noopener noreferrer">St. Jude Cloud Team</a>.<br>
+This project is <a href="https://github.com/stjudecloud/workflows/blob/master/LICENSE.md" rel="noopener noreferrer">MIT</a> licensed.</p>
+</div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
