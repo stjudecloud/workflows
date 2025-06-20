@@ -92,7 +92,7 @@ The command for running our tests should be executed at the root of the repo: `p
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
+Contributions, issues and feature requests are welcome!<br />Feel free to check the [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
 
 ## Links worth checking out
 
