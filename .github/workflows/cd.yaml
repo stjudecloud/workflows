@@ -2,32 +2,41 @@ name: Workflows CD
 
 on:
   push:
-    branches:
-      - main
+    # branches:
+    #   - main
 
 jobs:
   gh-pages:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+      - name: Checkout WDL
+        uses: actions/checkout@v4
+        with:
+          repository: stjude-rust-labs/wdl
+          ref: feat/wdl-doc-styling
+      - name: Checkout Sprocket
+        uses: actions/checkout@v4
+        with:
+          repository: stjude-rust-labs/sprocket
+          ref: feat/dev-commands
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
           python-version: '3.8'
-      - name: Install Dependencies
+      - name: Update Rust
+        run: rustup update stable && rustup default stable
+      - name: Build Sprocket
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install wdldoc~=1.7.0
-          python3 -m pip install mkdocs
-      - name: Prepare Docs
-        run: cp README.md assets/index.md && sed -i.bak 's#./assets#./#g' assets/index.md
+          cd $GITHUB_WORKSPACE/sprocket
+          cargo build --release
       - name: Build Docs
         run: |
-          wdldoc -o assets .
-          mkdocs build
+          cd $GITHUB_WORKSPACE/workflows
+          $GITHUB_WORKSPACE/sprocket/target/release/sprocket dev doc .
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: ./site
+          publish_dir: ./docs
