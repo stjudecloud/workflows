@@ -1225,13 +1225,10 @@
       }
     }
   }
-  .hover\:bg-slate-800\/50 {
+  .hover\:bg-slate-700 {
     &:hover {
       @media (hover: hover) {
-        background-color: color-mix(in srgb, oklch(27.9% 0.041 260.031) 50%, transparent);
-        @supports (color: color-mix(in lab, red, red)) {
-          background-color: color-mix(in oklab, var(--color-slate-800) 50%, transparent);
-        }
+        background-color: var(--color-slate-700);
       }
     }
   }
@@ -1748,22 +1745,6 @@
     border-width: 1px;
     border-color: var(--color-gray-800);
   }
-  .left-sidebar__workflow-indent-hidden {
-    margin-right: calc(var(--spacing) * 2);
-    height: 100%;
-    width: 1px;
-    flex: none;
-  }
-  .left-sidebar__workflow-indent {
-    margin-right: calc(var(--spacing) * 2);
-    height: 100%;
-    width: 1px;
-    flex: none;
-    border-radius: 0;
-    border-style: var(--tw-border-style);
-    border-width: 1px;
-    border-color: var(--color-gray-700);
-  }
   .left-sidebar__container {
     display: flex;
     width: 100%;
@@ -1886,11 +1867,6 @@
     padding-top: calc(var(--spacing) * 2);
     padding-left: calc(var(--spacing) * 2);
     color: var(--color-slate-50);
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-slate-800);
-      }
-    }
   }
   .left-sidebar__search-result-item-container {
     margin-bottom: calc(var(--spacing) * 2);
