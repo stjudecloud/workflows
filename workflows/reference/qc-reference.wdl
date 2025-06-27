@@ -115,13 +115,19 @@ workflow qc_reference {
         }
     }
 
-    call kraken2.download_taxonomy { input: protein }
-
     scatter (lib in kraken_libraries) {
         call kraken2.download_library { input:
             library_name = lib,
             protein,
         }
+    }
+
+    if (
+        (length(kraken_fastas) > 0)
+        || (length(kraken_fasta_urls) > 0)
+        || (length(kraken_libraries) > 0)
+    ) {
+        call kraken2.download_taxonomy { input: protein }
     }
 
     Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.downloaded_file])
@@ -133,7 +139,7 @@ workflow qc_reference {
     }
 
     Array[File] kraken_tarballs = flatten([
-        [download_taxonomy.taxonomy],
+        select_all([download_taxonomy.taxonomy]),
         download_library.library,
         select_all([create_library_from_fastas.custom_library]),
     ])
