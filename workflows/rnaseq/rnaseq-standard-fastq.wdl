@@ -1,6 +1,7 @@
 ## # RNA-Seq Standard from FASTQ
 ##
 ## An example input JSON entry for `read_groups` might look like this:
+## ```json
 ## {
 ##     ...
 ##     "rnaseq_standard_fastq.read_groups": [
@@ -14,6 +15,7 @@
 ##     ],
 ##     ...
 ## }
+## ```
 
 version 1.1
 
