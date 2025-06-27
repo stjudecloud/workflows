@@ -2786,18 +2786,19 @@
                                         icon: '../../../assets/workflow-unselected.svg',
                                     }
                                 }" class="left-sidebar__content-item" x-bind:class="node.current ? 'bg-slate-800 is-scrolled-to' : 'hover:bg-slate-700'"><div class="left-sidebar__indent"></div><div class="left-sidebar__content-item-container crop-ellipsis"><img x-bind:src="node.icon" class="left-sidebar__icon" alt="Workflow icon"><sprocket-tooltip content="mapping" class="crop-ellipsis" x-bind:class="node.current ? 'text-slate-50' : 'group-hover:text-slate-50'"><span>mapping</span></sprocket-tooltip></div></a></ul></li></ul></div></div></div><div class="layout__main-center"><div class="layout__breadcrumbs"><div class="layout__breadcrumb-container"><a class="layout__breadcrumb-clickable" href="../../../index.html">docs</a><span> / </span><span class="layout__breadcrumb-inactive">workflows</span><span> / </span><span class="layout__breadcrumb-inactive">rnaseq</span><span> / </span><span class="layout__breadcrumb-inactive">rnaseq-standard-fastq</span></div></div><button type="button" class="layout__mobile-menu-button" x-on:click="open = !open" aria-label="Toggle menu"><svg viewBox="0 0 100 80" width="40" height="40" stroke="none" fill="currentColor"><rect width="100" height="15"></rect><rect y="35" width="100" height="15"></rect><rect y="70" width="100" height="15"></rect></svg></button><div class="main__container"><h1 id="title" class="main__title">rnaseq-standard-fastq</h1><div class="main__badge-container"><div class="main__badge"><span class="main__badge-text">WDL Version</span><div class="main__badge-inner"><span class="main__badge-inner-text">1.1</span></div></div></div><div id="preamble" class="main__section"><div class="markdown-body"><h1>RNA-Seq Standard from FASTQ</h1>
-<p>An example input JSON entry for <code>read_groups</code> might look like this:
-{
-...
-"rnaseq_standard_fastq.read_groups": [
-{
-"ID": "rg1",
-"PI": 150,
-"PL": "ILLUMINA",
-"SM": "Sample",
-"LB": "Sample"
+<p>An example input JSON entry for <code>read_groups</code> might look like this:</p>
+<pre><code>{
+    ...
+    "rnaseq_standard_fastq.read_groups": [
+        {
+            "ID": "rg1",
+            "PI": 150,
+            "PL": "ILLUMINA",
+            "SM": "Sample",
+            "LB": "Sample"
+        }
+    ],
+    ...
 }
-],
-...
-}</p>
+</code></pre>
 </div></div><div class="main__section"><h2 id="toc" class="main__section-header">Table of Contents</h2><div class="main__grid-container"><div class="main__grid-toc-container"><div class="main__grid-header-cell">Page</div><div class="main__grid-header-cell">Type</div><div class="main__grid-header-cell">Description</div><div class="main__grid-header-separator"></div><div class="main__grid-row" x-data="{ description_expanded: false }"><div class="main__grid-cell"><a class="text-emerald-400 hover:text-emerald-300" href="rnaseq_standard_fastq-workflow.html">RNA-Seq Standard (FASTQ)</a></div><div class="main__grid-cell"><code>workflow</code></div><div class="main__grid-cell">Runs the STAR RNA-Seq alignment workflow for St. Jude Cloud from FASTQ input</div><div x-show="description_expanded" class="main__grid-full-width-cell">Runs the STAR RNA-Seq alignment workflow for St. Jude Cloud from FASTQ input</div></div></div></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#preamble" class="right-sidebar__section-header">Preamble</a><a href="#toc" class="right-sidebar__section-header">Table of Contents</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
