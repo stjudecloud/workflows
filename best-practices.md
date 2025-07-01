@@ -1,6 +1,6 @@
 # WDL Best Practices
 
-All rules below should be followed by contributors to this repo. Contributors should also follow the rules enforced by Sprocket. Pull Requests which do not conform to these specifications will be asked to change.
+All rules below should be followed by contributors to this repo. Contributors should also follow the rules enforced by [Sprocket](https://sprocket.bio/). Pull Requests which do not conform to these specifications will be asked to change.
 
 ## Rules
 
@@ -54,10 +54,11 @@ All rules below should be followed by contributors to this repo. Contributors sh
       - If the Docker image gets updated, *without* updating the base tool's version, increment the number by one
       - If the Docker image gets updated, *including* updating the base tool's version, revert back to zero
 - general purpose tasks can use the `util` image maintained in this repo
-- The `description` should be in active voice, beginning the first sentence with a verb
+- The `description` key in WDL meta sections should be in active voice, beginning the first sentence with a verb
   - Each task/workflow is _doing_ something. The first sentence should be a succinct description of what that "something" is.
-- If documenting a workflow, task, input, or output and you need to be more verbose than is appropriate in a `description:` field, you may include _in addition_ an `external_help:` key with a URL
-  - `external_help` is _not_ a substitute for internal documentation, although it may allow the internal documentation to be briefer
+  - The `description` key should be succinct. Generally, one sentence about 100 characters long is appropriate.
+- If documenting a workflow, task, input, or output and you need to be more verbose than is appropriate in a `description` field, you may include _in addition_ a `help` key with extended prose or an `external_help` key with a URL
+  - the presence of `help` or `external_help` is _not_ a substitute for a `description`
 - All tasks should run in a persistently versioned container
   - This ensures reproducibility across time and environments
 - Any tasks which are deprecated should have a `deprecated: true` key in their `meta` section
