@@ -4,7 +4,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
 
 ## Rules
 
-- All WDL should be written in v1.1
+- All WDL should be written in v1.1+
 - See `template/common-parameter-meta.txt` for common description strings.
   - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
 - Check all assumptions made about workflow inputs before beginning long running executions

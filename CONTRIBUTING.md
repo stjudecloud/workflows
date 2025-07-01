@@ -5,14 +5,51 @@ email, or any other method with the owners of this repository before making a ch
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
-## Pull Request Process
+## How can I start contributing?
 
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
-   build.
-2. Update the README.md with details of changes to the interface, this includes new environment 
-   variables, exposed ports, useful file locations and container parameters.
-3. Increase the version numbers in any relevant workflow files and the README.md to the new version that this
-   Pull Request would represent. When versioning is enabled, the scheme we use is [SemVer](http://semver.org/).
+### I don't want to write code, can I still contribute?
+
+Sure!
+
+We welcome bug reports. If you discover a flaw in our codebase, please review the list of open issues to ensure that it is not a duplicate. Please also attempt to debug the issue locally and ensure that it is not a configuration issue. Once you have done both, please file a new issue providing the relevant information in the issue. Please provide the exact steps to reproduce the problem, specific example(s) that demonstrate the steps, and the behavior you observe as well as the behavior you expected to observe. For terminal-based use cases, a copy and paste of the command and error log (please use markdown formatting appropriately) is preferred.
+
+We also appreciate feedback on our documentation. Feel free to look over any of our `*.md` files and note any issues you find. You can also find a rendered version of our documentation at https://stjudecloud.github.io/workflows/. This is built from the embedded documentation in the various WDL files.
+
+The maintainers reserve the right to close issues and discussions as deemed necessary as well as to delete comments and interactions within the repository.
+
+### Your first code contribution
+
+We encourage you to reach out to the core team prior to writing up a pull request. **This is to ensure there isn't any wasted effort or duplication of work caused by miscommunication. Failure to do so may result in the rejection of the pull request.** You can get in touch with us via the [issues][issues] or hop over to the [discussions][discussions]. We are also active on the [openwdl Slack workspace](https://openwdl.slack.com).
+
+We encourage contributors to comment on open issues that they intend to work on to help avoid duplication of effort. If multiple individuals are interested in solving the same issue, we recommend reaching out to one another to gauge if there is potential for a collaboration.
+
+That being said, we will not assign issues to external contributors, and commenting on an issue does not guarantee exclusive rights to work on that issue. If multiple PRs are received for the same issue, the PR that (a) most thoroughly addresses the problem being solved and (b) has the best implementation by judgement of the St. Jude Rust Labs team will be accepted in favor of the other submitted PRs.
+
+### Review Policy
+
+Our pull request template has an extensive checklist that must be completed prior to review. Our policy is that any PRs submitted with an incomplete checklist will not be reviewed. Part of this checklist includes ensuring that our CI checks pass. Additional guidance for satisfying the CI checks can be [found below](#the-ci-has-turned-red-how-do-i-make-it-green-again-ci-green).
+
+Note that the maintainers reserve the right to close any submission without review for any reason.
+
+## FAQs
+
+### Can I use Artificial Intelligence (AI)?
+
+We have found that AI, while helpful in some contexts, causes more confusion and work for all parties involved when interacting with a large, complex codebase such as the `workflows` WDL repository. To that end, no PRs including AI-generated content—whether that be generated code, generated documentation, generated discussion via GitHub comments, or any other AI generated content—will be accepted from external contributors. Any submissions deemed to be AI-generated from external contributors will be closed without review.
+
+### What IDE should I use?
+
+Most of this team uses VScode with the `sprocket` extension but that preference is not hardcoded anywhere. Feel free to use any IDE you want!
+
+### What's a good first issue?
+
+We will try to keep a handful of [issues][issues] marked `good first issue` open and ready for new contributors.
+
+### The CI has turned red. How do I make it green again?
+
+The Sprocket Lint check is the most common failure. We encourage contributors to run Sprocket locally via the VSCode extension. Then address any WDL style issues before committing.
+
+The Docker Pull Check also fails when an image version is incremented, but the corresponding change has not made it to the `main` branch to build the docker image. These failures can be ignored if the pull request is responsible for creating the new docker image version.
 
 ## Code of Conduct
 
