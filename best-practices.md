@@ -36,13 +36,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - the `ncpu` parameter comes before inputs that allocate memory, which come before inputs that allocate disk space
     - This block of 2-3 inputs should come after all other inputs.
 - Most tasks should have a default `maxRetries` of 1
-  - Certain tasks are prone to intermittent failure (often if an internet connection is involved) and can have a higher default `maxRetries`. This value should not exceed 3.
-- There are lower bounds for resource allocation
-  - Memory should be allocated a minimum of 4gb
-  - Disk size should be allocated a minimum of 10gb
-  - If the task is multi-cored, it should use at least 2 cpu by default
-  - These bounds were selected somewhat arbitrarily, but consistency is important for quickly identifying our light-weight tasks
-  - These bounds are subject to change pending a more empirical investigation
+  - Certain tasks are prone to intermittent failure (often if an internet connection is involved) and can have a higher default `maxRetries`.
 - All tasks should have an output
   - This may be a hardcoded "dummy" output such as `String check = "passed"`
   - This ensures the task can be cached by runners. Tasks without outputs may be required to rerun on the same input due to a cache miss.
@@ -52,11 +46,23 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - To disambiguate a task or workflow file from it's contents, you can respectively add the `_tasks` or `_wf` suffix in the import section
 - Whenever possible, prefer a Docker image maintained by an external source (such as BioContainers) rather than creating your own image
 - When adding a Dockerfile to this repository, follow the below conventions
-  - The `Dockerfile` should be nested under the `docker/` directory, a folder with a name for the image (in most cases the name of the primary tool), and finally a folder named after the version being built.
+  - Create a directory under the `docker/` directory and choose an appropriate name (likely shared with the underlying tool). The `Dockerfile` should be nested under this new directory. Then create a `package.json` alongside the `Dockerfile`. The `package.json` file is required to contain two JSON fields (`name` and `version`). It can optionally contain a `revision` field.
   - Docker images should be versioned according to the following convention
-    - Start with the version of whatever tool is named in the path to the `Dockerfile`
+    - The `version` should be shared with whatever underlying tool is being used
       - If no specific tool is named (e.g. the `util` image), default to SemVer. Ignore the next 3 bullet points.
-    - Followed by a dash-zero (`-0`)
-      - If the Docker image gets updated, *without* updating the base tool's version, increment the number after the dash (`-`) by one
-      - If the Docker image gets updated, *including* updating the base tool's version, revert back to a dash-zero (`-0`)
+    - The revision should start with zero (`0`)
+      - If the Docker image gets updated, *without* updating the base tool's version, increment the number by one
+      - If the Docker image gets updated, *including* updating the base tool's version, revert back to zero
 - general purpose tasks can use the `util` image maintained in this repo
+- The `description` should be in active voice, beginning the first sentence with a verb
+  - Each task/workflow is _doing_ something. The first sentence should be a succinct description of what that "something" is.
+- If documenting a workflow, task, input, or output and you need to be more verbose than is appropriate in a `description:` field, you may include _in addition_ an `external_help:` key with a URL
+  - `external_help` is _not_ a substitute for internal documentation, although it may allow the internal documentation to be briefer
+- All tasks should run in a persistently versioned container
+  - This ensures reproducibility across time and environments
+- Any tasks which are deprecated should have a `deprecated: true` key in their `meta` section
+  - It is allowed (but redundant and discouraged) to include a `deprecated: false` key in any production tasks. All tasks are assumed to not be deprecated unless otherwise noted.
+  - In addition, the `description` key of deprecated tasks should start with `**[DEPRECATED]**`
+    - These two rules allow for a task's deprecated status to be communicated in multiple ways, ensuring no user misses the notice
+- Deprecated tasks should be placed at the end of their file
+- While WDL allows embedded scripts in the `command` block sections, this repository requires scripts (e.g. R, Python) to be separate and placed in the `scripts` folder. The relevant Docker image build for your task should then include the script during the build so the task can access it. This separation of concerns improves the developer experience by improving syntax highlighting in the WDL document and enabling linting and formatting checks for the scripting languages.
