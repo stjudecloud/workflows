@@ -1,6 +1,6 @@
 # WDL Best Practices
 
-All rules below should be followed by contributors to this repo. Contributors should also follow the rules outlined in `style-guide.md`. Pull Requests which do not conform to these specifications will be asked to change.
+All rules below should be followed by contributors to this repo. Contributors should also follow the rules enforced by Sprocket. Pull Requests which do not conform to these specifications will be asked to change.
 
 ## Rules
 
