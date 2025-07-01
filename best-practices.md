@@ -30,7 +30,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
 - output file names should *always* be determined with either the `outfile_name` parameter or the `prefix` parameter.
   - `outfile_name` should be preferred if no downstream tasks/tools rely on the file name/extension
   - tasks with multiple outputs should always use the `prefix` convention
-- After the input sorting rules in `style-guide.md` have been applied, follow the below rules for further sorting.
+- After the input sorting rules in `sprocket lint` have been applied, follow the below rules for further sorting.
   - "sample" files come before "reference" files
   - If present, `use_all_cores` should be the last `Boolean` in its block
   - the `ncpu` parameter comes before inputs that allocate memory, which come before inputs that allocate disk space
