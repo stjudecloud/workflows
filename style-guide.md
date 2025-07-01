@@ -15,3 +15,4 @@ All rules below should be followed by contributors to this repo. Pull Requests w
   - In addition, the `description` key of deprecated tasks should start with `**[DEPRECATED]**`
     - These two rules allow for a task's deprecated status to be communicated in multiple ways, ensuring no user misses the notice
 - Deprecated tasks should be placed at the end of their file
+- While WDL allows embedded scripts in the `command` block sections, this repository requires scripts (e.g. R, Python) to be separate and placed in the `scripts` folder. The relevant Docker image build for your task should then include the script during the build so the task can access it. This separation of concerns improves the developer experience by improving syntax highlighting in the WDL document and enabling linting and formatting checks for the scripting languages.
