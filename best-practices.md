@@ -56,7 +56,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
 - general purpose tasks can use the `util` image maintained in this repo
 - The `description` key in WDL meta sections should be in active voice, beginning the first sentence with a verb
   - Each task/workflow is _doing_ something. The first sentence should be a succinct description of what that "something" is.
-  - The `description` key should be succinct. Generally, one sentence about 100 characters long is appropriate.
+  - The `description` key should be succinct. Generally, one sentence shorter than 140 characters is appropriate.
 - If documenting a workflow, task, input, or output and you need to be more verbose than is appropriate in a `description` field, you may include _in addition_ a `help` key with extended prose or an `external_help` key with a URL
   - the presence of `help` or `external_help` is _not_ a substitute for a `description`
 - All tasks should run in a persistently versioned container
