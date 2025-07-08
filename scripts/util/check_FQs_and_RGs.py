@@ -34,7 +34,7 @@ def validate(
             checking_r2 and rgid not in read2_fastqs[i]
         ):
             raise SystemExit(f"{rgid} not found in corresponding FASTQ basename")
-    
+
     if len(rgids) != len(set(rgids)):
         raise SystemExit("Each ID field must be unique")
 

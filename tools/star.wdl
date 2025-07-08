@@ -676,23 +676,7 @@ task alignment {
         mkdir star_db
         tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
-        python3 /scripts/star/sort_star_input.py \
-            --read-one-fastqs "~{sep(",", read_one_fastqs_gz)}" \
-            ~{(
-                if (length(read_two_fastqs_gz) != 0)
-                then "--read-two-fastqs '~{sep(",", read_two_fastqs_gz)}'"
-                else ""
-            )} \
-            ~{(
-                if (length(read_groups) != 0)
-                then "--read-groups '~{sep(" , ", read_groups)}'"
-                else ""
-            )}
-
-        read -ra read_one_args < read_one_fastqs_sorted.txt
-        read -ra read_two_args < read_two_fastqs_sorted.txt
-        read -ra read_group_args < read_groups_sorted.txt
-        STAR --readFilesIn "${read_one_args[@]}" "${read_two_args[@]}" \
+        STAR --readFilesIn "~{sep(",", read_one_fastqs_gz)}" "~{sep(",", read_two_fastqs_gz)}" \
             --readFilesCommand "gunzip -c" \
             --genomeDir star_db \
             --runThreadN "$n_cores" \
@@ -700,7 +684,7 @@ task alignment {
             --outMultimapperOrder Random \
             --outFileNamePrefix ~{prefix + "."} \
             --twopassMode ~{twopass_mode} \
-            --outSAMattrRGline "${read_group_args[@]}" \
+            --outSAMattrRGline '~{sep(" , ", read_groups)}' \
             --outSJfilterIntronMaxVsReadN ~{
                 sep(" ", quote(out_sj_filter_intron_max_vs_read_n))
             } \
