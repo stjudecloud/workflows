@@ -49,3 +49,11 @@
   stderr:
     contains:
       - "SM must not match pattern"
+
+- name: get_read_groups
+  tags:
+    - miniwdl
+    - read_group
+  command: >-
+    miniwdl run --verbose -d test-output/. --task get_read_groups -i tests/data_structures/input_json/get_read_groups.json data_structures/read_group.wdl
+  exit_code: 0
