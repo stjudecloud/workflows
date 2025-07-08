@@ -64,7 +64,8 @@ struct ReadGroup {
 
 task inner_read_group_to_string {
     meta {
-        description: "TODO"
+        description: "Converts a ReadGroup struct to a `String` **without any validation**."
+        warning: "Please use the `read_group_to_string` workflow, which has validation of the ReadGroup's contents."
         outputs: {
             stringified_read_group: "Input ReadGroup as a string"
         }
@@ -180,7 +181,7 @@ task validate_read_group {
     parameter_meta {
         read_group: "ReadGroup struct to validate"
         required_fields: "Array of read group fields that must be defined. The ID field is always required and does not need to be specified."
-        restrictive: "If true, run a less permissive validation of field values. Otherwise, check against SAM spec-defined values."
+        restrictive: "If true, run a stricter validation of field values. Otherwise, check against SAM spec-defined values."
     }
 
     input {
@@ -398,17 +399,17 @@ task validate_read_group {
 
 workflow read_group_to_string {
     meta {
-        description: "TODO"
+        description: "Validates a ReadGroup struct is well-formed and then converts it to a `String`"
         outputs: {
-            validated_read_group: "TODO",
+            validated_read_group: "The validated input ReadGroup as a `String`",
         }
     }
 
     parameter_meta {
-        read_group: "TODO"
-        required_fields: "TODO"
-        format_as_sam_record: "TODO"
-        restrictive: "TODO"
+        read_group: "Input `ReadGroup` struct"
+        required_fields: "Array of read group fields that must be defined. The ID field is always required and does not need to be specified."
+        format_as_sam_record: "Format the ReadGroup as a SAM record? If `true`, the read group string will be prefixed with `@RG` and tab delimiters will be used instead of space delimiters."
+        restrictive: "If true, run a stricter validation of field values. Otherwise, check against SAM spec-defined values."
     }
 
     input {

@@ -369,28 +369,38 @@ task global_phred_scores {
 
 task check_fastq_and_rg_concordance {
     meta {
-        description: "TODO"
+        description: "Validates FASTQs and read group records are concordant"
+        help: "Each read1 FASTQ must correspond to exactly one read group record. This correspondance is encoded in two ways, both of which must match. 1) the FASTQ and its read group share the same index of their respective lists and 2) the `ID` field value must be contained somewhere within the FASTQ file basename. If `read_two_names` is non-empty, the same checks are performed on each of these names as well (i.e. all 3 of the read1 FASTQ, read2 FASTQ, and read group ID must match and be in the same position of their list. Additionally, the `ID` field must be the first field of the read group record, and each `ID` value must be unique."
         outputs: {
-            check: "TODO",
+            check: "Dummy output to enable caching."
         }
     }
 
     parameter_meta {
-        read_one_basenames: "TODO"
-        read_two_basenames: "TODO"
-        read_groups: "TODO"
+        read_one_names: {
+            description: "Filenames of every read1 FASTQ to validate.",
+            help: "Either basenames or full paths are acceptable. Must be non-empty.",
+        }
+        read_two_names: {
+            description: "Filenames of every read2 FASTQ to validate.",
+            help: "Either basenames or full paths are acceptable. May be empty or the exact same length as `read_one_names` and `read_groups`.",
+        }
+        read_groups: {
+            description: "Read group records that correspond to the FASTQs being validated.",
+            help: "Read group records may be optionally prefixed with `@RG` and may use either tabs or spaces as delimiters.",
+        }
     }
 
     input {
-        Array[String] read_one_basenames
-        Array[String] read_two_basenames
+        Array[String] read_one_names
+        Array[String] read_two_names
         Array[String] read_groups
     }
 
     command <<<
         python /scripts/util/check_FQs_and_RGs.py \
-            --read-one-fastqs "~{sep(",", read_one_basenames)}" \
-            --read-two-fastqs "~{sep(",", read_two_basenames)}" \
+            --read-one-fastqs "~{sep(",", read_one_names)}" \
+            --read-two-fastqs "~{sep(",", read_two_names)}" \
             --read-groups "~{sep(",", read_groups)}"
     >>>
 

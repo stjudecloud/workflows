@@ -12,6 +12,7 @@ workflow dnaseq_core_experimental {
     meta {
         name: "DNA-Seq Core (Experimental)"
         description: "Aligns DNA reads using bwa"
+        help: "We recommend against calling this workflow directly, and would suggest instead running `dnaseq_standard` or `dnaseq_standard_fastq`. Both wrapper workflows provide a nicer user experience than this workflow and will get you equivalent results."
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
             harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",
@@ -23,7 +24,10 @@ workflow dnaseq_core_experimental {
         bwa_db: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
-        read_groups: "TODO"
+        read_groups: {
+            description: "This is functionally an array of SAM `@RG` header records.",
+            warning: "You should not write this input manually, but instead rely on the `ReadGroup` struct defined in `data_structures/read_group.wdl` and the utility workflow `read_group_to_string`.",
+        }
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
             description: "BWA aligner to use",
@@ -48,16 +52,16 @@ workflow dnaseq_core_experimental {
     }
 
     scatter (fq in read_one_fastqs_gz) {
-        String read_one_basenames = basename(fq)
+        String read_one_names = basename(fq)
     }
     scatter (fq in read_two_fastqs_gz) {
-        String read_two_basenames = basename(fq)
+        String read_two_names = basename(fq)
     }
 
     #@ except: UnusedCall
     call util.check_fastq_and_rg_concordance { input:
-        read_one_basenames,
-        read_two_basenames,
+        read_one_names,
+        read_two_names,
         read_groups,
     }
 

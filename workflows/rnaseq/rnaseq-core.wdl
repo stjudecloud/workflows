@@ -168,15 +168,15 @@ workflow rnaseq_core {
     String provided_strandedness = strandedness
 
     scatter (fq in read_one_fastqs_gz) {
-        String read_one_basenames = basename(fq)
+        String read_one_names = basename(fq)
     }
     scatter (fq in read_two_fastqs_gz) {
-        String read_two_basenames = basename(fq)
+        String read_two_names = basename(fq)
     }
     #@ except: UnusedCall
     call util.check_fastq_and_rg_concordance { input:
-        read_one_basenames,
-        read_two_basenames,
+        read_one_names,
+        read_two_names,
         read_groups,
     }
 
