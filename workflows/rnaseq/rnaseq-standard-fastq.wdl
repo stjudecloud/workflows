@@ -91,7 +91,9 @@ workflow rnaseq_standard_fastq {
     }
 
     scatter (rg in read_groups) {
-        call read_group.read_group_to_string after parse_input { input: read_group = rg }
+        call read_group.read_group_to_string after parse_input { input:
+            read_group = rg,
+        }
     }
 
     if (validate_input){
