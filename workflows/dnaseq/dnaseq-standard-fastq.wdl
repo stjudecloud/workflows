@@ -5,6 +5,7 @@ version 1.1
 import "../../data_structures/read_group.wdl"
 import "../../tools/fq.wdl"
 import "./dnaseq-core.wdl" as dnaseq_core_wf
+import "./dnaseq-standard.wdl" as dnaseq_standard
 
 workflow dnaseq_standard_fastq_experimental {
     meta {
@@ -62,18 +63,19 @@ workflow dnaseq_standard_fastq_experimental {
     }
 
     #@ except: UnusedCall
-    call parse_input { input:
+    call dnaseq_standard.parse_input { input:
         aligner,
-        array_lengths = [
-            length(read_one_fastqs_gz),
-            length(read_two_fastqs_gz),
-            length(read_groups),
-        ],
     }
 
-    if (validate_input){
+    scatter (rg in read_groups) {
+        call read_group.read_group_to_string after parse_input { input:
+            read_group = rg,
+        }
+    }
+
+    if (validate_input) {
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-            call fq.fqlint { input:
+            call fq.fqlint after read_group_to_string { input:
                 read_one_fastq = reads.left,
                 read_two_fastq = reads.right,
             }
@@ -83,7 +85,7 @@ workflow dnaseq_standard_fastq_experimental {
     if (subsample_n_reads > 0) {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-            call fq.subsample { input:
+            call fq.subsample after fqlint { input:
                 read_one_fastq = reads.left,
                 read_two_fastq = reads.right,
                 record_count = reads_per_pair,
@@ -101,12 +103,12 @@ workflow dnaseq_standard_fastq_experimental {
         ])
     )
 
-    call dnaseq_core_wf.dnaseq_core_experimental { input:
+    call dnaseq_core_wf.dnaseq_core_experimental after fqlint { input:
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,
         bwa_db,
         reads_per_file,
-        read_groups,
+        read_groups = read_group_to_string.validated_read_group,
         prefix,
         aligner,
         use_all_cores,
@@ -115,60 +117,5 @@ workflow dnaseq_standard_fastq_experimental {
     output {
         File harmonized_bam = dnaseq_core_experimental.harmonized_bam
         File harmonized_bam_index = dnaseq_core_experimental.harmonized_bam_index
-    }
-}
-
-task parse_input {
-    meta {
-        description: "Parses and validates the `dnaseq_standard` workflow's provided inputs"
-        outputs: {
-            check: "Dummy output to indicate success and to enable call-caching"
-        }
-    }
-
-    parameter_meta {
-        array_lengths: "Expected to be an array of length 3, containing the lengths of `read_one_fastqs_gz`, `read_two_fastqs_gz`, and `read_groups`"
-        aligner: {
-            description: "BWA aligner to use",
-            choices: [
-                "mem",
-                "aln",
-            ],
-        }
-    }
-
-    input {
-        #@ except: DeclarationName
-        Array[Int] array_lengths
-        String aligner
-    }
-
-    command <<<
-        if [ "~{aligner}" != "mem" ] \
-            && [ "~{aligner}" != "aln" ]
-        then
-            >&2 echo "Aligner must be:"
-            >&2 echo "'mem' or 'aln'"
-            exit 1
-        fi
-
-        if [ "~{array_lengths[0]}" != "~{array_lengths[1]}" ] \
-        || [ "~{array_lengths[1]}" != "~{array_lengths[2]}" ]
-        then
-            >&2 echo "Length of read_one_fastqs_gz must equal"
-            >&2 echo "length of read_two_fastqs_gz and read_groups"
-            exit 1
-        fi
-    >>>
-
-    output {
-        String check = "passed"
-    }
-
-    runtime {
-        memory: "4 GB"
-        disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
-        maxRetries: 0
     }
 }

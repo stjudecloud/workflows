@@ -4,6 +4,7 @@ import "../../tools/deeptools.wdl"
 import "../../tools/htseq.wdl"
 import "../../tools/ngsderive.wdl"
 import "../../tools/star.wdl"
+import "../../tools/util.wdl"
 import "../general/alignment-post.wdl" as alignment_post_wf
 
 workflow rnaseq_core {
@@ -165,6 +166,19 @@ workflow rnaseq_core {
     }
 
     String provided_strandedness = strandedness
+
+    scatter (fq in read_one_fastqs_gz) {
+        String read_one_basenames = basename(fq)
+    }
+    scatter (fq in read_two_fastqs_gz) {
+        String read_two_basenames = basename(fq)
+    }
+    #@ except: UnusedCall
+    call util.check_fastq_and_rg_concordance { input:
+        read_one_basenames,
+        read_two_basenames,
+        read_groups,
+    }
 
     call star.alignment { input:
         read_one_fastqs_gz,

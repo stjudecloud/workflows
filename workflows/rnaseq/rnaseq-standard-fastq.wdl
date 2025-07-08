@@ -1,6 +1,7 @@
 ## # RNA-Seq Standard from FASTQ
 ##
 ## An example input JSON entry for `read_groups` might look like this:
+## ```json
 ## {
 ##     ...
 ##     "rnaseq_standard_fastq.read_groups": [
@@ -14,6 +15,7 @@
 ##     ],
 ##     ...
 ## }
+## ```
 
 version 1.1
 
@@ -159,7 +161,7 @@ workflow rnaseq_standard_fastq {
     call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,
-        read_groups = read_group_to_string.stringified_read_group,
+        read_groups = read_group_to_string.validated_read_group,
         prefix,
         gtf,
         star_db,

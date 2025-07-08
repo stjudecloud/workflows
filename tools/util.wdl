@@ -47,62 +47,6 @@ task download {
     }
 }
 
-task get_read_groups {
-    meta {
-        description: "Gets read group information from a BAM file and writes it out to as a string"
-        outputs: {
-            read_groups: "An array of strings containing read group information. If `clean = true`, the `@RG\t` prefix is stripped and tabs are replaced with spaces. If `clean = false`, each unmodified @RG line will be its own entry in output array `read_groups`."
-        }
-    }
-
-    parameter_meta {
-        bam: {
-            description: "Input BAM format file to get read groups from",
-            stream: true,
-        }
-        clean: {
-            description: "Clean @RG lines to remove the `@RG\t` prefix and use spaces instead of tabs (true) or output @RG lines of the header without further processing (false)?",
-            help: "`clean = true` output matches the formatting of the `read_group_to_string` task in `../data_structures/read_group.wdl`",
-            group: "Common",
-        }
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
-
-    input {
-        File bam
-        Boolean clean = true
-        Int modify_disk_size_gb = 0
-    }
-
-    Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
-
-    command <<<
-        set -euo pipefail
-
-        if ~{clean}; then
-            samtools view -H ~{bam} \
-                | grep "^@RG" \
-                | cut -f 2- \
-                | sed -e 's/\t/ /g' \
-                > read_groups.txt
-        else
-            samtools view -H ~{bam} | grep "^@RG" > read_groups.txt
-        fi
-    >>>
-
-    output {
-        Array[String] read_groups = read_lines("read_groups.txt")
-    }
-
-    runtime {
-        memory: "4 GB"
-        disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
-        maxRetries: 1
-    }
-}
-
 task split_string {
     # Currently (v1.1) no way to do this using the WDL standard library.
     # Revisit task in future version updates, can hopefully be replaced.
@@ -404,7 +348,6 @@ task global_phred_scores {
 
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
-    #@ except: LineWidth
     command <<<
         python3 /scripts/util/calc_global_phred_scores.py \
             ~{if fast_mode then "--fast_mode" else ""} \
@@ -419,6 +362,45 @@ task global_phred_scores {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
+        container: "ghcr.io/stjudecloud/util:2.1.2"
+        maxRetries: 1
+    }
+}
+
+task check_fastq_and_rg_concordance {
+    meta {
+        description: "TODO"
+        outputs: {
+            check: "TODO",
+        }
+    }
+
+    parameter_meta {
+        read_one_basenames: "TODO"
+        read_two_basenames: "TODO"
+        read_groups: "TODO"
+    }
+
+    input {
+        Array[String] read_one_basenames
+        Array[String] read_two_basenames
+        Array[String] read_groups
+    }
+
+    command <<<
+        python /scripts/util/check_FQs_and_RGs.py \
+            --read-one-fastqs "~{sep(",", read_one_basenames)}" \
+            --read-two-fastqs "~{sep(",", read_two_basenames)}" \
+            --read-groups "~{sep(",", read_groups)}"
+    >>>
+
+    output {
+        String check = "passed"
+    }
+
+    runtime {
+        memory: "4 GB"
+        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.1.2"
         maxRetries: 1
     }

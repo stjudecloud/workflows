@@ -1,8 +1,8 @@
 version 1.1
 
+import "../../data_structures/read_group.wdl"
 import "../../tools/deeptools.wdl"
 import "../../tools/md5sum.wdl"
-import "../../tools/ngsderive.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
@@ -63,25 +63,14 @@ workflow chipseq_standard {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call util.get_read_groups { input:
+    call read_group.get_read_groups { input:
         bam = selected_bam,
-        clean = false,
     }
 
     call b2fq.bam_to_fastqs { input:
         bam = selected_bam,
         paired_end = false,
         use_all_cores,
-    }
-
-    call samtools.index as samtools_index_input { input:
-        bam = selected_bam,
-    }
-
-    #@ except: UnusedCall
-    call ngsderive.read_length { input:
-        bam = selected_bam,
-        bam_index = samtools_index_input.bam_index,
     }
 
     scatter (pair in zip(bam_to_fastqs.read1s, get_read_groups.read_groups)){
@@ -101,15 +90,18 @@ workflow chipseq_standard {
                 bowtie_single_end_mapping.sorted_bam,
             ]
         )
+
+        call read_group.read_group_to_string { input:
+            read_group = pair.right,
+            format_as_sam_record = true,
+        }
         call util.add_to_bam_header { input:
             bam = chosen_bam,
-            additional_header = pair.right,
+            additional_header = read_group_to_string.validated_read_group,
         }
-        String rg_id_field = sub(sub(pair.right, ".*ID:", "ID:"), "\t.*", "")
-        String rg_id = sub(rg_id_field, "ID:", "")
         call samtools.addreplacerg as single_end { input:
             bam = add_to_bam_header.reheadered_bam,
-            read_group_id = rg_id,
+            read_group_id = pair.right.ID,
         }
     }
 

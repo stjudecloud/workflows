@@ -55,13 +55,13 @@ workflow dnaseq_standard_experimental {
     }
 
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
+        call picard.validate_bam as validate_input_bam after parse_input { input:
             bam,
         }
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample after parse_input { input:
+        call samtools.subsample after validate_input_bam { input:
             bam,
             desired_reads = subsample_n_reads,
             use_all_cores,
@@ -71,6 +71,31 @@ workflow dnaseq_standard_experimental {
 
     call read_group.get_read_groups { input:
         bam = selected_bam,
+    }
+    scatter (rg in get_read_groups.read_groups) {
+        if (defined(sample_override)) {
+            ReadGroup overriden_rg = ReadGroup {
+                ID: rg.ID,
+                BC: rg.BC,
+                CN: rg.CN,
+                DS: rg.DS,
+                DT: rg.DT,
+                FO: rg.FO,
+                KS: rg.KS,
+                LB: rg.LB,
+                PG: rg.PG,
+                PI: rg.PI,
+                PL: rg.PL,
+                PM: rg.PM,
+                PU: rg.PU,
+                SM: sample_override,
+            }
+        }
+        ReadGroup selected_rg = select_first([overriden_rg, rg])
+        call read_group.read_group_to_string { input:
+            read_group = selected_rg,
+            format_as_sam_record = true,
+        }
     }
 
     call bam_to_fastqs_wf.bam_to_fastqs { input:
@@ -84,11 +109,10 @@ workflow dnaseq_standard_experimental {
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
         bwa_db,
         reads_per_file,
-        read_groups = get_read_groups.read_groups,
+        read_groups = read_group_to_string.validated_read_group,
         prefix,
         aligner,
         use_all_cores,
-        sample_override,
     }
 
     output {
@@ -137,6 +161,6 @@ task parse_input {
         memory: "4 GB"
         disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.1.2"
-        maxRetries: 0
+        maxRetries: 1
     }
 }
