@@ -67,7 +67,7 @@ workflow rnaseq_standard_fastq {
         File gtf
         File star_db
         Array[File]+ read_one_fastqs_gz
-        Array[File] read_two_fastqs_gz
+        Array[File]+ read_two_fastqs_gz
         Array[ReadGroup]+ read_groups
         File? contaminant_db
         String prefix = sub(

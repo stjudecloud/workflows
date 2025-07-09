@@ -512,7 +512,7 @@ task alignment {
         File star_db_tar_gz
         Array[File]+ read_one_fastqs_gz
         Array[String]+ read_groups
-        Array[File] read_two_fastqs_gz = []
+        Array[File]+? read_two_fastqs_gz
         Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
         SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,
@@ -663,7 +663,8 @@ task alignment {
         ) + 10 + modify_disk_size_gb
     )
 
-    #@ except: LineWidth
+    Array[File] read_twos = select_first([read_two_fastqs_gz, []])
+
     command <<<
         set -euo pipefail
 
@@ -675,7 +676,9 @@ task alignment {
         mkdir star_db
         tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
-        STAR --readFilesIn ~{sep(",", squote(read_one_fastqs_gz))} ~{sep(",", squote(read_two_fastqs_gz))} \
+        STAR --readFilesIn \
+            ~{sep(",", squote(read_one_fastqs_gz))} \
+            ~{sep(",", squote(read_twos))} \
             --readFilesCommand "gunzip -c" \
             --genomeDir star_db \
             --runThreadN "$n_cores" \
@@ -718,32 +721,32 @@ task alignment {
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
             ]))} \
             --clip3pAdapterSeq ~{clip_3p_adapter_seq.left} ~{(
-                if (length(read_two_fastqs_gz) != 0)
+                if (length(read_twos) != 0)
                 then clip_3p_adapter_seq.right
                 else ""
             )} \
             --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
-                if (length(read_two_fastqs_gz) != 0)
+                if (length(read_twos) != 0)
                 then clip_3p_adapter_mmp.right
                 else None
             )} \
             --alignEndsProtrude ~{align_ends_protrude.left} ~{(
-                if (length(read_two_fastqs_gz) != 0)
+                if (length(read_twos) != 0)
                 then align_ends_protrude.right
                 else None
             )} \
             --clip3pNbases ~{clip_3p_n_bases.left} ~{(
-                if (length(read_two_fastqs_gz) != 0)
+                if (length(read_twos) != 0)
                 then clip_3p_n_bases.right
                 else None
             )} \
             --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{(
-                if (length(read_two_fastqs_gz) != 0)
+                if (length(read_twos) != 0)
                 then clip_3p_after_adapter_n_bases.right
                 else None
             )} \
             --clip5pNbases ~{clip_5p_n_bases.left} ~{(
-                if (length(read_two_fastqs_gz) != 0)
+                if (length(read_twos) != 0)
                 then clip_5p_n_bases.right
                 else None
             )} \
@@ -777,7 +780,8 @@ task alignment {
             --outFilterMatchNminOverLread ~{out_filter_match_n_min_over_l_read} \
             --scoreGenomicLengthLog2scale ~{score_genomic_length_log2_scale} \
             --seedSearchStartLmaxOverLread ~{seed_search_start_l_max_over_l_read} \
-            --alignSplicedMateMapLminOverLmate ~{align_spliced_mate_map_l_min_over_l_mate} \
+            --alignSplicedMateMapLminOverLmate \
+                ~{align_spliced_mate_map_l_min_over_l_mate} \
             --peOverlapMMp ~{pe_overlap_mmp} \
             --runRNGseed ~{run_rng_seed} \
             --sjdbScore ~{sjdb_score} \
