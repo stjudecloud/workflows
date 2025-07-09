@@ -82,7 +82,7 @@ workflow rnaseq_standard {
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample after validate_input_bam after parse_input { input:
+        call samtools.subsample after validate_input_bam { input:
             bam,
             desired_reads = subsample_n_reads,
             use_all_cores,
@@ -90,7 +90,7 @@ workflow rnaseq_standard {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call read_group.get_read_groups after validate_input_bam after parse_input { input:
+    call read_group.get_read_groups after validate_input_bam { input:
         bam = selected_bam,
     }
     scatter (rg in get_read_groups.read_groups) {
@@ -98,9 +98,7 @@ workflow rnaseq_standard {
             read_group = rg,
         }
     }
-    call bam_to_fastqs_wf.bam_to_fastqs
-        after validate_input_bam after parse_input
-    { input:
+    call bam_to_fastqs_wf.bam_to_fastqs after validate_input_bam { input:
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding
         use_all_cores,

@@ -85,7 +85,7 @@ workflow dnaseq_standard_fastq_experimental {
     if (subsample_n_reads > 0) {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-            call fq.subsample after fqlint after read_group_to_string { input:
+            call fq.subsample after fqlint { input:
                 read_one_fastq = reads.left,
                 read_two_fastq = reads.right,
                 record_count = reads_per_pair,
@@ -104,7 +104,7 @@ workflow dnaseq_standard_fastq_experimental {
     )
 
     call dnaseq_core_wf.dnaseq_core_experimental
-        after fqlint after read_group_to_string
+        after fqlint
     { input:
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,

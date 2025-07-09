@@ -98,9 +98,7 @@ workflow dnaseq_standard_experimental {
         }
     }
 
-    call bam_to_fastqs_wf.bam_to_fastqs
-        after validate_input_bam after parse_input
-    { input:
+    call bam_to_fastqs_wf.bam_to_fastqs after validate_input_bam { input:
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding
         use_all_cores,
