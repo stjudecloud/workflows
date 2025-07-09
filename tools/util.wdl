@@ -381,13 +381,13 @@ task check_fastq_and_rg_concordance {
             description: "Filenames of every read1 FASTQ to validate.",
             help: "Either basenames or full paths are acceptable. Must be non-empty.",
         }
-        read_two_names: {
-            description: "Filenames of every read2 FASTQ to validate.",
-            help: "Either basenames or full paths are acceptable. May be empty or the exact same length as `read_one_names` and `read_groups`.",
-        }
         read_groups: {
             description: "Read group records that correspond to the FASTQs being validated.",
             help: "Read group records may be optionally prefixed with `@RG` and may use either tabs or spaces as delimiters.",
+        }
+        read_two_names: {
+            description: "Filenames of every read2 FASTQ to validate.",
+            help: "Either basenames or full paths are acceptable. May be empty or the exact same length as `read_one_names` and `read_groups`.",
         }
     }
 

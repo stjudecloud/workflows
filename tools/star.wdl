@@ -153,14 +153,13 @@ task alignment {
     parameter_meta {
         star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
         read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
-        read_two_fastqs_gz: {
-            description: "An array of gzipped FASTQ files containing read two information",
-            group: "Common",
-        }
         read_groups: {
             description: "An array of `String`s where each `String` corresponds to one read group.",
             help: "Each read group string should start with the `ID` field followed by any other read group fields, where fields are delimited by a space. See `../data_structures/read_group.wdl` for information about possible fields and utility tasks for constructing, validating, and \"stringifying\" read groups.",
             warning: "The `ID` field for each read group _must_ be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `[\"ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1\", \"ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1\"]`. These two read groups could be associated with the following four FASTQs: `[\"sample1.rg1.R1.fastq\", \"sample1.rg2.R1.fastq\"]` and `[\"sample1.rg1.R2.fastq\", \"sample1.rg2.R2.fastq\"]`",
+        }
+        read_two_fastqs_gz: {
+            description: "An array of gzipped FASTQ files containing read two information",
             group: "Common",
         }
         out_sj_filter_intron_max_vs_read_n: {
@@ -511,9 +510,9 @@ task alignment {
 
     input {
         File star_db_tar_gz
-        Array[File] read_one_fastqs_gz
+        Array[File]+ read_one_fastqs_gz
+        Array[String]+ read_groups
         Array[File] read_two_fastqs_gz = []
-        Array[String] read_groups = []
         Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
         SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,
