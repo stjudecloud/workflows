@@ -26,7 +26,7 @@ workflow dnaseq_core_experimental {
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
         read_groups: {
             description: "This is functionally an array of SAM `@RG` header records.",
-            warning: "You should not write this input manually, but instead rely on the `ReadGroup` struct defined in `data_structures/read_group.wdl` and the utility workflow `read_group_to_string`.",
+            warning: "You should not write this input manually, but instead rely on the `ReadGroup` struct defined in `data_structures/read_group.wdl` and the utility workflow `read_group_to_string` with `format_as_sam_record = true`.",
         }
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         aligner: {
@@ -42,8 +42,8 @@ workflow dnaseq_core_experimental {
 
     input {
         File bwa_db
-        Array[File] read_one_fastqs_gz
-        Array[File] read_two_fastqs_gz
+        Array[File]+ read_one_fastqs_gz
+        Array[File]+ read_two_fastqs_gz
         Array[String] read_groups
         String prefix
         String aligner = "mem"
@@ -59,7 +59,7 @@ workflow dnaseq_core_experimental {
     }
 
     #@ except: UnusedCall
-    call util.check_fastq_and_rg_concordance { input:
+    call util.check_fastq_and_rg_concordance as validate { input:
         read_one_names,
         read_two_names,
         read_groups,
@@ -69,12 +69,12 @@ workflow dnaseq_core_experimental {
         zip(read_one_fastqs_gz, read_two_fastqs_gz),
         read_groups
     )) {
-        call util.split_fastq as read_ones { input:
+        call util.split_fastq as read_ones after validate { input:
             fastq = tuple.left.left,
             reads_per_file,
         }
 
-        call util.split_fastq as read_twos { input:
+        call util.split_fastq as read_twos after validate { input:
             fastq = tuple.left.right,
             reads_per_file,
         }

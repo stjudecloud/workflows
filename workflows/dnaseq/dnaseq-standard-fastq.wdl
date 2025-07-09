@@ -24,7 +24,7 @@ workflow dnaseq_standard_fastq_experimental {
         read_one_fastqs_gz: "Input gzipped FASTQ format file(s) with 1st read in pair to align"
         read_two_fastqs_gz: "Input gzipped FASTQ format file(s) with 2nd read in pair to align"
         read_groups: {
-            description: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz` if non-zero. Only the `ID` field is required, and it must be unique for each read group defined. See data_structures/read_group.wdl for help formatting your input JSON.",
+            description: "An Array of structs defining read groups to include in the harmonized BAM. Must correspond to input FASTQs. Each read group ID must be contained in the basename of a pair of FASTQ files. This requirement means the length of `read_groups` must equal the length of `read_one_fastqs_gz` and the length of `read_two_fastqs_gz`. Only the `ID` field is required, and it must be unique for each read group defined. See data_structures/read_group.wdl for help formatting your input JSON.",
             external_help: "https://samtools.github.io/hts-specs/SAMv1.pdf",
         }
         prefix: {
@@ -47,9 +47,9 @@ workflow dnaseq_standard_fastq_experimental {
 
     input {
         File bwa_db
-        Array[File] read_one_fastqs_gz
-        Array[File] read_two_fastqs_gz
-        Array[ReadGroup] read_groups
+        Array[File]+ read_one_fastqs_gz
+        Array[File]+ read_two_fastqs_gz
+        Array[ReadGroup]+ read_groups
         String prefix = sub(
             basename(read_one_fastqs_gz[0]),
             "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
@@ -85,7 +85,7 @@ workflow dnaseq_standard_fastq_experimental {
     if (subsample_n_reads > 0) {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-            call fq.subsample after fqlint { input:
+            call fq.subsample after fqlint after read_group_to_string { input:
                 read_one_fastq = reads.left,
                 read_two_fastq = reads.right,
                 record_count = reads_per_pair,
@@ -103,7 +103,9 @@ workflow dnaseq_standard_fastq_experimental {
         ])
     )
 
-    call dnaseq_core_wf.dnaseq_core_experimental after fqlint { input:
+    call dnaseq_core_wf.dnaseq_core_experimental
+        after fqlint after read_group_to_string
+    { input:
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,
         bwa_db,

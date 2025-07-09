@@ -370,7 +370,7 @@ task global_phred_scores {
 task check_fastq_and_rg_concordance {
     meta {
         description: "Validates FASTQs and read group records are concordant"
-        help: "Each read1 FASTQ must correspond to exactly one read group record. This correspondance is encoded in two ways, both of which must match. 1) the FASTQ and its read group share the same index of their respective lists and 2) the `ID` field value must be contained somewhere within the FASTQ file basename. If `read_two_names` is non-empty, the same checks are performed on each of these names as well (i.e. all 3 of the read1 FASTQ, read2 FASTQ, and read group ID must match and be in the same position of their list. Additionally, the `ID` field must be the first field of the read group record, and each `ID` value must be unique."
+        help: "Each read1 FASTQ must correspond to exactly one read group record. This correspondance is encoded in two ways, both of which must match. 1) the FASTQ and its read group share the same index of their respective lists and 2) the `ID` field value must be contained somewhere within the FASTQ file basename. If `read_two_names` is non-empty, the same checks are performed on each of these names as well (i.e. all 3 of the read1 FASTQ, read2 FASTQ, and read group ID must match and be in the same position of their list). Additionally, the `ID` field must be the first field of the read group record, and each `ID` value must be unique."
         outputs: {
             check: "Dummy output to enable caching."
         }
@@ -392,9 +392,9 @@ task check_fastq_and_rg_concordance {
     }
 
     input {
-        Array[String] read_one_names
+        Array[String]+ read_one_names
+        Array[String]+ read_groups
         Array[String] read_two_names
-        Array[String] read_groups
     }
 
     command <<<

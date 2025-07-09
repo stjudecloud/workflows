@@ -69,7 +69,7 @@ workflow dnaseq_standard_experimental {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call read_group.get_read_groups { input:
+    call read_group.get_read_groups after parse_input { input:
         bam = selected_bam,
     }
     scatter (rg in get_read_groups.read_groups) {
@@ -98,7 +98,9 @@ workflow dnaseq_standard_experimental {
         }
     }
 
-    call bam_to_fastqs_wf.bam_to_fastqs { input:
+    call bam_to_fastqs_wf.bam_to_fastqs
+        after validate_input_bam after parse_input
+    { input:
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding
         use_all_cores,
