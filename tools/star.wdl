@@ -675,7 +675,7 @@ task alignment {
         mkdir star_db
         tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
 
-        STAR --readFilesIn "~{sep(",", read_one_fastqs_gz)}" "~{sep(",", read_two_fastqs_gz)}" \
+        STAR --readFilesIn ~{sep(",", squote(read_one_fastqs_gz))} ~{sep(",", squote(read_two_fastqs_gz))} \
             --readFilesCommand "gunzip -c" \
             --genomeDir star_db \
             --runThreadN "$n_cores" \
@@ -683,7 +683,7 @@ task alignment {
             --outMultimapperOrder Random \
             --outFileNamePrefix ~{prefix + "."} \
             --twopassMode ~{twopass_mode} \
-            --outSAMattrRGline '~{sep(" , ", read_groups)}' \
+            --outSAMattrRGline ~{sep(" , ", squote(read_groups))} \
             --outSJfilterIntronMaxVsReadN ~{
                 sep(" ", quote(out_sj_filter_intron_max_vs_read_n))
             } \
