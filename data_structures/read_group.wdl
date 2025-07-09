@@ -61,60 +61,42 @@ struct ReadGroup {
     String? SM
 }
 
-task inner_read_group_to_string {
+workflow read_group_to_string {
     meta {
-        description: "Converts a `ReadGroup` struct to a `String` **without any validation**."
-        warning: "Please use the `read_group_to_string` workflow, which has validation of the `ReadGroup` contents."
+        description: "Validates a `ReadGroup` struct is well-formed and then converts it to a `String`"
         outputs: {
-            stringified_read_group: "Input `ReadGroup` as a string"
+            validated_read_group: "The validated input `ReadGroup` as a `String`",
         }
     }
 
     parameter_meta {
-        read_group: "`ReadGroup` struct to stringify"
+        read_group: "Input `ReadGroup` struct"
+        required_fields: "Array of read group fields that must be defined. The ID field is always required and does not need to be specified."
         format_as_sam_record: "Format the `ReadGroup` as a SAM record? If `true`, the read group string will be prefixed with `@RG` and tab delimiters will be used instead of space delimiters."
+        restrictive: "If true, run a stricter validation of field values. Otherwise, check against SAM spec-defined values."
     }
 
     input {
         ReadGroup read_group
+        Array[String] required_fields = []
         Boolean format_as_sam_record = false
+        Boolean restrictive = true
     }
 
-    String delimiter = if format_as_sam_record then "\t" else " "
-
-    command <<<
-        if ~{format_as_sam_record}; then
-            echo -n "@RG~{delimiter}" > out.txt
-        fi
-        {
-            echo -n "~{"ID:~{read_group.ID}"}"  # required field. All others optional
-            # if any individual placeholder of an interpolated String evaluates to None
-            # the entire parent String will evaluate to the empty String.
-            echo -n "~{"~{delimiter}BC:~{read_group.BC}"}"
-            echo -n "~{"~{delimiter}CN:~{read_group.CN}"}"
-            echo -n "~{"~{delimiter}DS:~{read_group.DS}"}"
-            echo -n "~{"~{delimiter}DT:~{read_group.DT}"}"
-            echo -n "~{"~{delimiter}FO:~{read_group.FO}"}"
-            echo -n "~{"~{delimiter}KS:~{read_group.KS}"}"
-            echo -n "~{"~{delimiter}LB:~{read_group.LB}"}"
-            echo -n "~{"~{delimiter}PG:~{read_group.PG}"}"
-            echo -n "~{"~{delimiter}PI:~{read_group.PI}"}"
-            echo -n "~{"~{delimiter}PL:~{read_group.PL}"}"
-            echo -n "~{"~{delimiter}PM:~{read_group.PM}"}"
-            echo -n "~{"~{delimiter}PU:~{read_group.PU}"}"
-            echo "~{"~{delimiter}SM:~{read_group.SM}"}"
-        } >> out.txt
-    >>>
+    #@ except: UnusedCall
+    call validate_read_group { input:
+        read_group,
+        required_fields,
+        restrictive,
+    }
+    call inner_read_group_to_string after validate_read_group { input:
+        read_group,
+        format_as_sam_record,
+    }
 
     output {
-        String stringified_read_group = read_string("out.txt")
-    }
-
-    runtime {
-        memory: "4 GB"
-        disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.2.0"
-        maxRetries: 1
+        String validated_read_group
+            = inner_read_group_to_string.stringified_read_group
     }
 }
 
@@ -397,41 +379,59 @@ task validate_read_group {
     }
 }
 
-workflow read_group_to_string {
+task inner_read_group_to_string {
     meta {
-        description: "Validates a `ReadGroup` struct is well-formed and then converts it to a `String`"
+        description: "Converts a `ReadGroup` struct to a `String` **without any validation**."
+        warning: "Please use the `read_group_to_string` workflow, which has validation of the `ReadGroup` contents."
         outputs: {
-            validated_read_group: "The validated input `ReadGroup` as a `String`",
+            stringified_read_group: "Input `ReadGroup` as a string"
         }
     }
 
     parameter_meta {
-        read_group: "Input `ReadGroup` struct"
-        required_fields: "Array of read group fields that must be defined. The ID field is always required and does not need to be specified."
+        read_group: "`ReadGroup` struct to stringify"
         format_as_sam_record: "Format the `ReadGroup` as a SAM record? If `true`, the read group string will be prefixed with `@RG` and tab delimiters will be used instead of space delimiters."
-        restrictive: "If true, run a stricter validation of field values. Otherwise, check against SAM spec-defined values."
     }
 
     input {
         ReadGroup read_group
-        Array[String] required_fields = []
         Boolean format_as_sam_record = false
-        Boolean restrictive = true
     }
 
-    #@ except: UnusedCall
-    call validate_read_group { input:
-        read_group,
-        required_fields,
-        restrictive,
-    }
-    call inner_read_group_to_string after validate_read_group { input:
-        read_group,
-        format_as_sam_record,
-    }
+    String delimiter = if format_as_sam_record then "\t" else " "
+
+    command <<<
+        if ~{format_as_sam_record}; then
+            echo -n "@RG~{delimiter}" > out.txt
+        fi
+        {
+            echo -n "~{"ID:~{read_group.ID}"}"  # required field. All others optional
+            # if any individual placeholder of an interpolated String evaluates to None
+            # the entire parent String will evaluate to the empty String.
+            echo -n "~{"~{delimiter}BC:~{read_group.BC}"}"
+            echo -n "~{"~{delimiter}CN:~{read_group.CN}"}"
+            echo -n "~{"~{delimiter}DS:~{read_group.DS}"}"
+            echo -n "~{"~{delimiter}DT:~{read_group.DT}"}"
+            echo -n "~{"~{delimiter}FO:~{read_group.FO}"}"
+            echo -n "~{"~{delimiter}KS:~{read_group.KS}"}"
+            echo -n "~{"~{delimiter}LB:~{read_group.LB}"}"
+            echo -n "~{"~{delimiter}PG:~{read_group.PG}"}"
+            echo -n "~{"~{delimiter}PI:~{read_group.PI}"}"
+            echo -n "~{"~{delimiter}PL:~{read_group.PL}"}"
+            echo -n "~{"~{delimiter}PM:~{read_group.PM}"}"
+            echo -n "~{"~{delimiter}PU:~{read_group.PU}"}"
+            echo "~{"~{delimiter}SM:~{read_group.SM}"}"
+        } >> out.txt
+    >>>
 
     output {
-        String validated_read_group
-            = inner_read_group_to_string.stringified_read_group
+        String stringified_read_group = read_string("out.txt")
+    }
+
+    runtime {
+        memory: "4 GB"
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:2.2.0"
+        maxRetries: 1
     }
 }
