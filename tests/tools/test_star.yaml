@@ -8,12 +8,22 @@
   files:
     - path: test-output/out/star_db/star_db.tar.gz
 
-- name: star_alignment
+- name: star_alignment_PE_1_pair
   tags:
     - miniwdl
     - star
   command: >-
-    miniwdl run --verbose -d test-output/. --task alignment -i tests/tools/input_json/star_alignment.json tools/star.wdl
+    miniwdl run --verbose -d test-output/. --task alignment -i tests/tools/input_json/star_alignment_PE_1_pair.json tools/star.wdl
+  files:
+    - path: test-output/out/star_log/test.Log.final.out
+    - path: test-output/out/star_bam/test.Aligned.out.bam
+
+- name: star_alignment_PE_2_pairs
+  tags:
+    - miniwdl
+    - star
+  command: >-
+    miniwdl run --verbose -d test-output/. --task alignment -i tests/tools/input_json/star_alignment_PE_2_pairs.json tools/star.wdl
   files:
     - path: test-output/out/star_log/test.Log.final.out
     - path: test-output/out/star_bam/test.Aligned.out.bam
