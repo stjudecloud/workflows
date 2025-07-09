@@ -44,7 +44,7 @@ workflow dnaseq_core_experimental {
         File bwa_db
         Array[File]+ read_one_fastqs_gz
         Array[File]+ read_two_fastqs_gz
-        Array[String] read_groups
+        Array[String]+ read_groups
         String prefix
         String aligner = "mem"
         Boolean use_all_cores = false

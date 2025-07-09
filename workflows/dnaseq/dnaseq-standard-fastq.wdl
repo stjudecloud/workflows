@@ -103,9 +103,7 @@ workflow dnaseq_standard_fastq_experimental {
         ])
     )
 
-    call dnaseq_core_wf.dnaseq_core_experimental
-        after fqlint
-    { input:
+    call dnaseq_core_wf.dnaseq_core_experimental after fqlint { input:
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,
         bwa_db,

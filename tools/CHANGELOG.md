@@ -18,8 +18,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Removed
 
 - `star.alignment` no longer sorts inputs prior to passing to STAR [#235](https://github.com/stjudecloud/workflows/pull/235).
-    - This means you have to ensure the FASTQs and RG records are concordant in your input JSONs!
+    - This means you have to ensure the FASTQs and RG records are concordant in your inputs!
 - `util.get_read_groups` has been removed [#235](https://github.com/stjudecloud/workflows/pull/235).
+    - see `data_structures/read_group.wdl` for an alternative.
 
 ## 2025 May
 
