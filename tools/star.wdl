@@ -686,7 +686,7 @@ task alignment {
             --outMultimapperOrder Random \
             --outFileNamePrefix ~{prefix + "."} \
             --twopassMode ~{twopass_mode} \
-            --outSAMattrRGline ~{sep(" , ", squote(read_groups))} \
+            --outSAMattrRGline ~{sep(" , ", read_groups)} \
             --outSJfilterIntronMaxVsReadN ~{
                 sep(" ", quote(out_sj_filter_intron_max_vs_read_n))
             } \
