@@ -42,63 +42,7 @@ task download {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
-        maxRetries: 1
-    }
-}
-
-task get_read_groups {
-    meta {
-        description: "Gets read group information from a BAM file and writes it out to as a string"
-        outputs: {
-            read_groups: "An array of strings containing read group information. If `clean = true`, the `@RG\t` prefix is stripped and tabs are replaced with spaces. If `clean = false`, each unmodified @RG line will be its own entry in output array `read_groups`."
-        }
-    }
-
-    parameter_meta {
-        bam: {
-            description: "Input BAM format file to get read groups from",
-            stream: true,
-        }
-        clean: {
-            description: "Clean @RG lines to remove the `@RG\t` prefix and use spaces instead of tabs (true) or output @RG lines of the header without further processing (false)?",
-            help: "`clean = true` output matches the formatting of the `read_group_to_string` task in `../data_structures/read_group.wdl`",
-            group: "Common",
-        }
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
-
-    input {
-        File bam
-        Boolean clean = true
-        Int modify_disk_size_gb = 0
-    }
-
-    Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
-
-    command <<<
-        set -euo pipefail
-
-        if ~{clean}; then
-            samtools view -H ~{bam} \
-                | grep "^@RG" \
-                | cut -f 2- \
-                | sed -e 's/\t/ /g' \
-                > read_groups.txt
-        else
-            samtools view -H ~{bam} | grep "^@RG" > read_groups.txt
-        fi
-    >>>
-
-    output {
-        Array[String] read_groups = read_lines("read_groups.txt")
-    }
-
-    runtime {
-        memory: "4 GB"
-        disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }
 }
@@ -139,7 +83,7 @@ task split_string {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
+        container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }
 }
@@ -187,7 +131,7 @@ task calc_gene_lengths {
     runtime {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
+        container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }
 }
@@ -313,7 +257,7 @@ task unpack_tarball {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
+        container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }
 }
@@ -404,7 +348,6 @@ task global_phred_scores {
 
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
-    #@ except: LineWidth
     command <<<
         python3 /scripts/util/calc_global_phred_scores.py \
             ~{if fast_mode then "--fast_mode" else ""} \
@@ -419,7 +362,56 @@ task global_phred_scores {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
+        container: "ghcr.io/stjudecloud/util:2.2.0"
+        maxRetries: 1
+    }
+}
+
+task check_fastq_and_rg_concordance {
+    meta {
+        description: "Validates FASTQs and read group records are concordant"
+        help: "Each read1 FASTQ must correspond to exactly one read group record. This correspondance is encoded in two ways, both of which must match. 1) the FASTQ and its read group share the same index of their respective lists and 2) the `ID` field value must be contained somewhere within the FASTQ file basename. If `read_two_names` is non-empty, the same checks are performed on each of these names as well (i.e. all 3 of the read1 FASTQ, read2 FASTQ, and read group ID must match and be in the same position of their list). Additionally, the `ID` field must be the first field of the read group record, and each `ID` value must be unique."
+        outputs: {
+            check: "Dummy output to enable caching."
+        }
+    }
+
+    parameter_meta {
+        read_one_names: {
+            description: "Filenames of every read1 FASTQ to validate.",
+            help: "Either basenames or full paths are acceptable. Must be non-empty.",
+        }
+        read_groups: {
+            description: "Read group records that correspond to the FASTQs being validated.",
+            help: "Read group records may be optionally prefixed with `@RG` and may use either tabs or spaces as delimiters.",
+        }
+        read_two_names: {
+            description: "Filenames of every read2 FASTQ to validate.",
+            help: "Either basenames or full paths are acceptable. May be empty or the exact same length as `read_one_names` and `read_groups`.",
+        }
+    }
+
+    input {
+        Array[String]+ read_one_names
+        Array[String]+ read_groups
+        Array[String] read_two_names
+    }
+
+    command <<<
+        python /scripts/util/check_FQs_and_RGs.py \
+            --read-one-fastqs "~{sep(",", read_one_names)}" \
+            --read-two-fastqs "~{sep(",", read_two_names)}" \
+            --read-groups "~{sep(",", read_groups)}"
+    >>>
+
+    output {
+        String check = "passed"
+    }
+
+    runtime {
+        memory: "4 GB"
+        disks: "10 GB"
+        container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }
 }
@@ -497,7 +489,7 @@ task qc_summary {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
+        container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }
 }
@@ -561,7 +553,7 @@ task split_fastq {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
+        container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }
 }

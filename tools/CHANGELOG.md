@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2025 July
+
+### Added
+
+- Added `util.check_fastq_and_rg_concordance` task for alignment pre-processing [#235](https://github.com/stjudecloud/workflows/pull/235).
+
+### Changed
+
+- `star.alignment` now specifies `read_one_fastqs_gz` and `read_groups` must be non-empty [#235](https://github.com/stjudecloud/workflows/pull/235).
+- `star.alignment` input `read_two_fastqs_gz` is now an `Array[File]+?`, allowing it to be omitted entirely [#235](https://github.com/stjudecloud/workflows/pull/235).
+
+### Removed
+
+- `star.alignment` no longer sorts inputs prior to passing to STAR [#235](https://github.com/stjudecloud/workflows/pull/235).
+    - This means you have to ensure the FASTQs and RG records are concordant in your inputs!
+- `util.get_read_groups` has been removed [#235](https://github.com/stjudecloud/workflows/pull/235).
+    - see `data_structures/read_group.wdl` for an alternative.
+
 ## 2025 May
 
 ### Fixed
