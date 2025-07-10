@@ -1,0 +1,7 @@
+{
+    "read_one_fastqs_gz": ["tests/input/test_R1.fq.gz", "tests/input/test_R1_copy.fq.gz"],
+    "read_two_fastqs_gz": ["tests/input/test_R2.fq.gz", "tests/input/test_R2_copy.fq.gz"],
+    "star_db_tar_gz": "tests/input/star_db.chrY_chrM.tar.gz",
+    "prefix": "test",
+    "read_groups": ["ID:test SM:test PL:ILLUMINA", "ID:copy"]
+}

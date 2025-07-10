@@ -234,7 +234,6 @@ task encoding {
     Float files_size = size(ngs_files, "GiB")
     Int disk_size_gb = ceil(files_size) + 10 + modify_disk_size_gb
 
-    #@ except: LineWidth
     command <<<
         ngsderive encoding --verbose \
             -n ~{num_reads} \

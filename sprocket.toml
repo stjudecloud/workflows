@@ -1,0 +1,3 @@
+[check]
+except = ["ContainerUri", "ShellCheck"]
+deny_notes = true
