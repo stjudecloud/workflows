@@ -99,6 +99,48 @@ task use_all_cores_task {
     }
 }
 
+task localize_files_task {
+    meta {
+        description: "This template is appropriate for tasks which assume multiple files share the same basename with specific extensions and/or that these files are in the same directory (this task will use BAM and BAI files as an example)."
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to <brief description of task>"
+        bam_index: "BAM index file corresponding to the input BAM"
+    }
+
+    input {
+        File bam
+        File bam_index
+    }
+
+    command <<<
+        set -euo pipefail
+
+        # localize BAM and BAI to CWD
+        CWD_BAM=~{basename(bam)}
+        ln -s ~{bam} "$CWD_BAM"
+        ln -s ~{bam_index} "$CWD_BAM".bai
+
+        # from now on we will use `"$CWD_BAM"` instead of `~{bam}`
+        ...
+        # After task completion, the symlinks will be broken.
+        # So we should delete them when we're done.
+        rm "$CWD_BAM" "$CWD_BAM".bai
+    >>>
+
+    output {
+
+    }
+
+    runtime {
+        memory: "4 GB"
+        disks: "10 GB"
+        container: ""
+        maxRetries: 1
+    }
+}
+
 task outfile_name_task {
     meta {
         description: "This template is appropriate for tasks where naming of the output file doesn't effect downstream analysis. Update the `parameter_meta` for `outfile_name` with the type of file in question, but do not change the variable name of `outfile_name`. Change `<output name>` to something short but descriptive."
