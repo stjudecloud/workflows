@@ -2,8 +2,8 @@ name: Workflows CD
 
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
 
 jobs:
   gh-pages:
