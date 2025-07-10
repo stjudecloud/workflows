@@ -1,26 +1,22 @@
-# SPDX-License-Identifier: MIT
-# Copyright St. Jude Children's Research Hospital
 version 1.1
 
 task static_disk_and_ram_task {
     meta {
         description: "This template is appropriate for tasks with static disk space and RAM requirements."
+        outputs: {
+        }
     }
 
     parameter_meta {
-
     }
 
     input {
-
     }
 
     command <<<
-
     >>>
 
     output {
-
     }
 
     runtime {
@@ -34,6 +30,8 @@ task static_disk_and_ram_task {
 task dynamic_disk_and_ram_task {
     meta {
         description: "This template is appropriate for tasks with dynamic disk and RAM requirements. Ensure the dynamic allocation of disk space and memory is sane."
+        outputs: {
+        }
     }
 
     parameter_meta {
@@ -52,11 +50,9 @@ task dynamic_disk_and_ram_task {
     Int disk_size_gb = ceil(input_size_gb * Y) + modify_disk_size_gb
 
     command <<<
-
     >>>
 
     output {
-
     }
 
     runtime {
@@ -69,7 +65,9 @@ task dynamic_disk_and_ram_task {
 
 task use_all_cores_task {
     meta {
-        description: "This template is appropriate for all tasks which can be run on multiple cores. Update the default disk and RAM allocations, or copy and paste from `dynamic_disk_and_ram_task` as appropriate."
+        description: "This template is appropriate for all tasks which can be run on multiple cores. Add default disk and RAM allocations, or copy and paste from `dynamic_disk_and_ram_task` as appropriate."
+        outputs: {
+        }
     }
 
     parameter_meta {
@@ -92,55 +90,10 @@ task use_all_cores_task {
     >>>
 
     output {
-
     }
 
     runtime {
         cpu: ncpu
-        memory: "4 GB"
-        disks: "10 GB"
-        container: ""
-        maxRetries: 1
-    }
-}
-
-task localize_files_task {
-    meta {
-        description: "This template is appropriate for tasks which assume multiple files share the same basename with specific extensions and/or that these files are in the same directory (this task will use BAM and BAI files as an example)."
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to <brief description of task>"
-        bam_index: "BAM index file corresponding to the input BAM"
-    }
-
-    input {
-        File bam
-        File bam_index
-    }
-
-    command <<<
-        set -euo pipefail
-
-        # localize BAM and BAI to CWD
-        CWD_BAM=~{basename(bam)}
-        ln -s ~{bam} "$CWD_BAM"
-        ln -s ~{bam_index} "$CWD_BAM".bai
-
-        # from now on we will use `"$CWD_BAM"` instead of `~{bam}`
-        ...
-        # After task completion, the symlinks will be broken.
-        # So we should delete them when we're done.
-        rm "$CWD_BAM" "$CWD_BAM".bai
-    >>>
-
-    output {
-
-    }
-
-    runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -149,6 +102,9 @@ task localize_files_task {
 task outfile_name_task {
     meta {
         description: "This template is appropriate for tasks where naming of the output file doesn't effect downstream analysis. Update the `parameter_meta` for `outfile_name` with the type of file in question, but do not change the variable name of `outfile_name`. Change `<output name>` to something short but descriptive."
+        outputs: {
+            <output name>: ""
+        }
     }
 
     parameter_meta {
@@ -160,7 +116,6 @@ task outfile_name_task {
     }
 
     command <<<
-
     >>>
 
     output {
@@ -168,8 +123,6 @@ task outfile_name_task {
     }
 
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -178,6 +131,9 @@ task outfile_name_task {
 task prefix_task {
     meta {
         description: "This template is appropriate for tasks where the extension of the output file name effects downstream analysis. Update the `parameter_meta` for `prefix` with the type of file in question and the extension that will be added, but do not change the variable name of `prefix`. Change `<output name>` to something short but descriptive."
+        outputs: {
+            <output name>: ""
+        }
     }
 
     parameter_meta {
@@ -189,7 +145,6 @@ task prefix_task {
     }
 
     command <<<
-
     >>>
 
     output {
@@ -197,8 +152,6 @@ task prefix_task {
     }
 
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: ""
         maxRetries: 1
     }
@@ -207,6 +160,8 @@ task prefix_task {
 task string_choices_task {
     meta {
         description: "This template is appropriate for tasks that have a string parameter for which only >2 choices are valid. If there are 2 possible choices, consider constructing a Boolean instead. Task should fail quickly if an invalid choice is input."
+        outputs: {
+        }
     }
 
     parameter_meta {
@@ -234,16 +189,12 @@ task string_choices_task {
     }
 
     command <<<
-
     >>>
 
     output {
-
     }
 
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: ""
         maxRetries: 1
     }
