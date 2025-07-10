@@ -8,7 +8,7 @@
 
 > This repository contains all bioinformatics workflows used on the St. Jude Cloud project. Officially, the repository is in beta — the project is adding workflows as they are developed and put into production.
 
-Resources requirements have been optimized to minimize failures in our computing environment, but they may not reflect the best settings for your use case. Please ensure that you tailor these parameters to fit your needs.
+Resources requirements and task parallelization have been optimized to minimize failures, but they may not reflect the best settings for your use case. Please ensure that you tailor these parameters to fit your needs.
 
 ### 🏠 [Homepage](https://stjude.cloud)
 
