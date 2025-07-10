@@ -398,7 +398,7 @@ task check_fastq_and_rg_concordance {
     }
 
     command <<<
-        python /scripts/util/check_FQs_and_RGs.py \
+        python3 /scripts/util/check_FQs_and_RGs.py \
             --read-one-fastqs "~{sep(",", read_one_names)}" \
             --read-two-fastqs "~{sep(",", read_two_names)}" \
             --read-groups "~{sep(",", read_groups)}"
