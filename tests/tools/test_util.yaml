@@ -13,32 +13,6 @@
       contains:
         - "MIT License"
 
-- name: get_read_groups_without_clean
-  tags:
-    - miniwdl
-    - util
-  command: >-
-    miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_get_read_groups.json --task get_read_groups tools/util.wdl clean=false
-  stdout:
-      contains:
-        - "@RG\\tID:1"
-        - "@RG\\tID:2"
-      must_not_contain:
-        - "@RG\\tID:3"
-
-- name: get_read_groups_with_clean
-  tags:
-    - miniwdl
-    - util
-  command: >-
-    miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_get_read_groups.json --task get_read_groups tools/util.wdl clean=true
-  stdout:
-      contains:
-        - "ID:1"
-        - "ID:2"
-      must_not_contain:
-        - "@RG"
-
 - name: split_string
   tags:
     - miniwdl

@@ -32,9 +32,9 @@ workflow samtools_merge {
 
     if (bam_length > max_length){
         # Find the number of merges required
-        scatter ( merge_num in range((bam_length / max_length) + 1)){
+        scatter (merge_num in range((bam_length / max_length) + 1)){
             # Get the sublist of bams
-            scatter ( bam_num in range(max_length)){
+            scatter (bam_num in range(max_length)){
                 Int num = (
                     if merge_num > 0
                     then bam_num + (merge_num * max_length)
