@@ -27,8 +27,6 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter
   - Note that future versions of WDL will likely cause a change to this convention.
     - We plan to deprecate the `ncpu` param in favor of accessing the runtime section directly (`n_cores=~{task.runtime.cpu}`)
-- Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-examples.wdl.template`)
-  - This is to accommodate as many backends as possible
 - output file names should *always* be determined with either the `outfile_name` parameter or the `prefix` parameter.
   - `outfile_name` should be preferred if no downstream tasks/tools rely on the file name/extension
   - tasks with multiple outputs should always use the `prefix` convention
