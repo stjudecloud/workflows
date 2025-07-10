@@ -138,22 +138,19 @@ workflow qc_reference {
         }
     }
 
-    Array[File] kraken_tarballs = flatten([
-        select_all([download_taxonomy.taxonomy]),
-        download_library.library,
-        select_all([create_library_from_fastas.custom_library]),
-    ])
-    if (length(kraken_tarballs) > 0) {
-        call kraken2.build_db as kraken_build_db { input:
-            tarballs = kraken_tarballs,
-            protein,
-        }
+    call kraken2.build_db as kraken_build_db { input:
+        tarballs = flatten([
+            [download_taxonomy.taxonomy],
+            download_library.library,
+            select_all([create_library_from_fastas.custom_library]),
+        ]),
+        protein,
     }
 
     output {
         File reference_fa = reference_download.downloaded_file
         File gtf = gtf_download.downloaded_file
-        File? kraken_db = kraken_build_db.built_db
+        File kraken_db = kraken_build_db.built_db
         Array[File] coverage_beds = make_coverage_regions_bed.bed
     }
 }
