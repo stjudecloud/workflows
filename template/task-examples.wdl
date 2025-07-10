@@ -102,6 +102,8 @@ task use_all_cores_task {
 task localize_files_task {
     meta {
         description: "This template is appropriate for tasks which assume multiple files share the same basename with specific extensions and/or that these files are in the same directory (this task will use BAM and BAI files as an example)."
+        outputs: {
+        }
     }
 
     parameter_meta {
@@ -130,12 +132,9 @@ task localize_files_task {
     >>>
 
     output {
-
     }
 
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: ""
         maxRetries: 1
     }
