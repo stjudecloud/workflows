@@ -10,24 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-      - name: Setup Python
-        uses: actions/setup-python@v1
+        uses: actions/checkout@v4
         with:
-          python-version: '3.8'
-      - name: Install Dependencies
+          path: workflows
+      - name: Update Rust
+        run: rustup update stable && rustup default stable
+      - name: Build Sprocket
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install wdldoc~=1.7.0
-          python3 -m pip install mkdocs
-      - name: Prepare Docs
-        run: cp README.md assets/index.md && sed -i.bak 's#./assets#./#g' assets/index.md
+          cargo install sprocket --locked
       - name: Build Docs
         run: |
-          wdldoc -o assets .
-          mkdocs build
+          cd $GITHUB_WORKSPACE/workflows
+          sprocket dev doc -v --homepage assets/DOCS.md .
+          cp -r assets docs/
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: ./site
+          publish_dir: ./workflows/docs

@@ -1,62 +1,67 @@
 # WDL Best Practices
 
-All rules below should be followed by contributors to this repo. Contributors should also follow the rules outlined in `style-guide.md`. Pull Requests which do not conform to these specifications will be asked to change.
+All rules below should be followed by contributors to this repo. Contributors should also follow the rules enforced by [Sprocket](https://sprocket.bio/). Pull Requests which do not conform to these specifications will be asked to change.
 
 ## Rules
 
-- All WDL should be written in v1.1
+- All WDL should be written in v1.1+
+- All tasks with multiple commands (including any pipes (`|`)) should have `set -euo pipefail` before any other commands.
+- All tasks should run in a persistently versioned container
+  - This ensures reproducibility across time and environments
 - See `template/common-parameter-meta.txt` for common description strings.
   - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
 - Check all assumptions made about workflow inputs before beginning long running executions
   - Common examples of assumptions that should be checked: valid `String` choice, mutually exclusive parameters, missing optional file for selected parameters, filename extensions
   - This can commonly be handled by a `parse_input` task (defined in the same file as the workflow in question)
     - When possible, avoid passing in entire files to the `parse_input` task. Coerce files to `Boolean`s or `String`s to avoid unnecessary disk space usage
-- All tasks with multiple commands (including any pipes (`|`)) should have `set -euo pipefail` before any other commands.
-- Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-examples.wdl`)
+- Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-examples.wdl.template`)
   - they should also fail quickly with an informative error message if an invalid input is provided
     - In most cases, just passing the parameter to the underlying tool should produce a satisfactory error, but this must be checked for each tool
   - While redundant, it is still best practice to validate these strings in the `parse_input` task of any workflow which calls the task
     - This ensures the workflow will fail as fast as possible to save users time and resources
-- All tasks must have configurable memory and disk space allocations
+- All requirement values are overridable at runtime. However, tasks should have easily configurable memory and disk space allocations
   - see the various tasks in the template directory for possible ways to allocate resources
     - Contributors can mix and match the available templates, copy and pasting subsections as appropriate
     - It is allowed to have one resource allocated dynamically, and another allocated statically in the same task.
-- multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-examples.wdl`)
+- multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-examples.wdl.template`)
   - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter
   - Note that future versions of WDL will likely cause a change to this convention.
     - We plan to deprecate the `ncpu` param in favor of accessing the runtime section directly (`n_cores=~{task.runtime.cpu}`)
-- Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-examples.wdl`)
-  - This is to accomodate as many backends as possible
+- Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-examples.wdl.template`)
+  - This is to accommodate as many backends as possible
 - output file names should *always* be determined with either the `outfile_name` parameter or the `prefix` parameter.
   - `outfile_name` should be preferred if no downstream tasks/tools rely on the file name/extension
   - tasks with multiple outputs should always use the `prefix` convention
-- After the input sorting rules in `style-guide.md` have been applied, follow the below rules for further sorting.
+- After the input sorting rules in `sprocket lint` have been applied, follow the below rules for further sorting.
   - "sample" files come before "reference" files
   - If present, `use_all_cores` should be the last `Boolean` in its block
   - the `ncpu` parameter comes before inputs that allocate memory, which come before inputs that allocate disk space
     - This block of 2-3 inputs should come after all other inputs.
 - Most tasks should have a default `maxRetries` of 1
-  - Certain tasks are prone to intermittent failure (often if an internet connection is involved) and can have a higher default `maxRetries`. This value should not exceed 3.
-- There are lower bounds for resource allocation
-  - Memory should be allocated a minimum of 4gb
-  - Disk size should be allocated a minimum of 10gb
-  - If the task is multi-cored, it should use at least 2 cpu by default
-  - These bounds were selected somewhat arbitrarily, but consistency is important for quickly identifying our light-weight tasks
-  - These bounds are subject to change pending a more empirical investigation
-- All tasks should have an output
-  - This may be a hardcoded "dummy" output such as `String check = "passed"`
-  - This ensures the task can be cached by runners. Tasks without outputs may be required to rerun on the same input due to a cache miss.
+  - Certain tasks are prone to intermittent failure (often if an internet connection is involved) and can have a higher default `maxRetries`.
+- If a task uses multiple cores or is multithreaded, then at least 2 cpu should be specified.
 - Use the `as` keyword sparingly; only in the case of increased readability or to avoid name collisions
   - Prefer using `as` in the import block rather than at the task/workflow call level
   - When using `as` to rename an invalid URI, attempt to make as few changes to the filename as possible (i.e. try not to abbreviate)
   - To disambiguate a task or workflow file from it's contents, you can respectively add the `_tasks` or `_wf` suffix in the import section
 - Whenever possible, prefer a Docker image maintained by an external source (such as BioContainers) rather than creating your own image
 - When adding a Dockerfile to this repository, follow the below conventions
-  - The `Dockerfile` should be nested under the `docker/` directory, a folder with a name for the image (in most cases the name of the primary tool), and finally a folder named after the version being built.
+  - Create a directory under the `docker/` directory and choose an appropriate name (likely shared with the underlying tool). The `Dockerfile` should be nested under this new directory. Then create a `package.json` alongside the `Dockerfile`. The `package.json` file is required to contain two JSON fields (`name` and `version`). It can optionally contain a `revision` field.
   - Docker images should be versioned according to the following convention
-    - Start with the version of whatever tool is named in the path to the `Dockerfile`
+    - The `version` should be shared with whatever underlying tool is being used
       - If no specific tool is named (e.g. the `util` image), default to SemVer. Ignore the next 3 bullet points.
-    - Followed by a dash-zero (`-0`)
-      - If the Docker image gets updated, *without* updating the base tool's version, increment the number after the dash (`-`) by one
-      - If the Docker image gets updated, *including* updating the base tool's version, revert back to a dash-zero (`-0`)
+    - The revision should start with zero (`0`)
+      - If the Docker image gets updated, *without* updating the base tool's version, increment the number by one
+      - If the Docker image gets updated, *including* updating the base tool's version, revert back to zero
 - general purpose tasks can use the `util` image maintained in this repo
+- The `description` key in WDL meta sections should be in active voice, beginning the first sentence with a verb
+  - Each task/workflow is _doing_ something. The first sentence should be a succinct description of what that "something" is.
+  - The `description` key should be succinct. Generally, one sentence shorter than 140 characters is appropriate.
+- If documenting a workflow, task, input, or output and you need to be more verbose than is appropriate in a `description` field, you may include _in addition_ a `help` key with extended prose or an `external_help` key with a URL
+  - the presence of `help` or `external_help` is _not_ a substitute for a `description`
+- Any tasks which are deprecated should have a `deprecated: true` key in their `meta` section
+  - It is allowed (but redundant and discouraged) to include a `deprecated: false` key in any production tasks. All tasks are assumed to not be deprecated unless otherwise noted.
+  - In addition, the `description` key of deprecated tasks should start with `**[DEPRECATED]**`
+    - These two rules allow for a task's deprecated status to be communicated in multiple ways, ensuring no user misses the notice
+- Deprecated tasks should be placed at the end of their file
+- While WDL allows embedded scripts in the `command` block sections, this repository requires scripts (e.g. R, Python) to be separate and placed in the `scripts` folder. The relevant Docker image build for your task should then include the script during the build so the task can access it. This separation of concerns improves the developer experience by improving syntax highlighting in the WDL document and enabling linting and formatting checks for the scripting languages.
