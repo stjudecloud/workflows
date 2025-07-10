@@ -1,8 +1,8 @@
 version 1.1
 
+import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
-import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "./rnaseq-core.wdl" as rnaseq_core_wf
 
@@ -82,7 +82,7 @@ workflow rnaseq_standard {
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample after parse_input { input:
+        call samtools.subsample after validate_input_bam { input:
             bam,
             desired_reads = subsample_n_reads,
             use_all_cores,
@@ -90,11 +90,15 @@ workflow rnaseq_standard {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call util.get_read_groups after parse_input { input:
+    call read_group.get_read_groups after validate_input_bam { input:
         bam = selected_bam,
-        clean = true,  # matches default but prevents user from overriding
     }
-    call bam_to_fastqs_wf.bam_to_fastqs after parse_input { input:
+    scatter (rg in get_read_groups.read_groups) {
+        call read_group.read_group_to_string { input:
+            read_group = rg,
+        }
+    }
+    call bam_to_fastqs_wf.bam_to_fastqs after validate_input_bam { input:
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding
         use_all_cores,
@@ -103,7 +107,7 @@ workflow rnaseq_standard {
     call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
-        read_groups = get_read_groups.read_groups,
+        read_groups = read_group_to_string.validated_read_group,
         prefix,
         gtf,
         star_db,
@@ -179,7 +183,7 @@ task parse_input {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.1.2"
+        container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }
 }
