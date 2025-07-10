@@ -11,7 +11,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 Sure!
 
-We welcome bug reports. If you discover a flaw in our codebase, please review the list of open issues to ensure that it is not a duplicate. Please also attempt to debug the issue locally and ensure that it is not a configuration issue. Once you have done both, please file a new issue providing the relevant information in the issue. Please provide the exact steps to reproduce the problem, specific example(s) that demonstrate the steps, and the behavior you observe as well as the behavior you expected to observe. For terminal-based use cases, a copy and paste of the command and error log (please use markdown formatting appropriately) is preferred.
+We welcome bug reports. If you discover a flaw in our codebase, please review the list of open issues to ensure that it is not a duplicate. Please also attempt to debug the issue locally and ensure that it is not a configuration issue. Once you have done both, please file a new issue providing the relevant information in the issue. Please provide the exact steps to reproduce the problem, specific example(s) that demonstrate the steps, and the behavior you observe as well as the behavior you expected to observe. A copy and paste of the command and error log is always helpful (please use markdown formatting appropriately).
 
 We also appreciate feedback on our documentation. Feel free to look over any of our `*.md` files and note any issues you find. You can also find a rendered version of our documentation at https://stjudecloud.github.io/workflows/. This is built from the embedded documentation in the various WDL files.
 
@@ -39,7 +39,7 @@ We have found that AI, while helpful in some contexts, causes more confusion and
 
 ### What IDE should I use?
 
-Most of this team uses VScode with the `sprocket` extension but that preference is not hardcoded anywhere. Feel free to use any IDE you want!
+Most of this team uses VSCode with the `sprocket` extension but that preference is not hardcoded anywhere. Feel free to use any IDE you want!
 
 ### What's a good first issue?
 
