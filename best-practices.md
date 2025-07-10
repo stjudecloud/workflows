@@ -17,7 +17,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
     - In most cases, just passing the parameter to the underlying tool should produce a satisfactory error, but this must be checked for each tool
   - While redundant, it is still best practice to validate these strings in the `parse_input` task of any workflow which calls the task
     - This ensures the workflow will fail as fast as possible to save users time and resources
-- All tasks must have configurable memory and disk space allocations
+- All requirement values are overridable at runtime. However, tasks should have easily configurable memory and disk space allocations
   - see the various tasks in the template directory for possible ways to allocate resources
     - Contributors can mix and match the available templates, copy and pasting subsections as appropriate
     - It is allowed to have one resource allocated dynamically, and another allocated statically in the same task.
