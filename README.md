@@ -15,7 +15,7 @@ Resources requirements have been optimized to minimize failures in our computing
 
 ### 🏠 [Homepage](https://stjude.cloud)
 
-Please excuse the state of our documentation. We are working on some big changes around here, and with those changes will come much improved documentation.
+Our [documentation](https://stjudecloud.github.io/workflows/) is generated with [Sprocket](https://sprocket.bio).
 
 ## Repository Structure
 
@@ -92,7 +92,7 @@ The command for running our tests should be executed at the root of the repo: `p
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
+Contributions, issues and feature requests are welcome!<br />Feel free to check the [issues page](https://github.com/stjudecloud/workflows/issues). You can also take a look at the [contributing guide](https://github.com/stjudecloud/workflows/blob/master/CONTRIBUTING.md).
 
 ## Links worth checking out
 
