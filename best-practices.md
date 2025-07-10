@@ -37,6 +37,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
     - This block of 2-3 inputs should come after all other inputs.
 - Most tasks should have a default `maxRetries` of 1
   - Certain tasks are prone to intermittent failure (often if an internet connection is involved) and can have a higher default `maxRetries`.
+- If a task uses multiple cores or is multithreaded, then at least 2 cpu should be specified.
 - All tasks should have an output
   - This may be a hardcoded "dummy" output such as `String check = "passed"`
   - This ensures the task can be cached by runners. Tasks without outputs may be required to rerun on the same input due to a cache miss.
