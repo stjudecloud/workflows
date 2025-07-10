@@ -878,7 +878,11 @@ task bam_to_fastq {
                 ~{if fast_mode then "-f" else ""} \
                 -O \
                 "~{bam}" \
-                | tee ~{if retain_collated_bam then "\"" + prefix + ".collated.bam\"" else ""} \
+                | tee ~{(
+                    if retain_collated_bam
+                    then "\"" + prefix + ".collated.bam\""
+                    else ""
+                )} \
                 > bam_pipe \
                 &
         else
