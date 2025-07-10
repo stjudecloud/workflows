@@ -15,7 +15,7 @@ Resources requirements have been optimized to minimize failures in our computing
 
 ### 🏠 [Homepage](https://stjude.cloud)
 
-Our [documentation](https://stjudecloud.github.io/workflows/) is generated with [Sprocket](https://github.com/stjude-rust-labs/sprocket).
+Our [documentation](https://stjudecloud.github.io/workflows/) is generated with [Sprocket](https://sprocket.bio).
 
 ## Repository Structure
 
