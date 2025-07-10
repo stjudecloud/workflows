@@ -40,9 +40,6 @@ All rules below should be followed by contributors to this repo. Contributors sh
 - Most tasks should have a default `maxRetries` of 1
   - Certain tasks are prone to intermittent failure (often if an internet connection is involved) and can have a higher default `maxRetries`.
 - If a task uses multiple cores or is multithreaded, then at least 2 cpu should be specified.
-- All tasks should have an output
-  - This may be a hardcoded "dummy" output such as `String check = "passed"`
-  - This ensures the task can be cached by runners. Tasks without outputs may be required to rerun on the same input due to a cache miss.
 - Use the `as` keyword sparingly; only in the case of increased readability or to avoid name collisions
   - Prefer using `as` in the import block rather than at the task/workflow call level
   - When using `as` to rename an invalid URI, attempt to make as few changes to the filename as possible (i.e. try not to abbreviate)
