@@ -5,13 +5,15 @@ All rules below should be followed by contributors to this repo. Contributors sh
 ## Rules
 
 - All WDL should be written in v1.1+
+- All tasks with multiple commands (including any pipes (`|`)) should have `set -euo pipefail` before any other commands.
+- All tasks should run in a persistently versioned container
+  - This ensures reproducibility across time and environments
 - See `template/common-parameter-meta.txt` for common description strings.
   - If applicable, use the same parameter name, help string, and parameter ordering as the underlying tool called by the task
 - Check all assumptions made about workflow inputs before beginning long running executions
   - Common examples of assumptions that should be checked: valid `String` choice, mutually exclusive parameters, missing optional file for selected parameters, filename extensions
   - This can commonly be handled by a `parse_input` task (defined in the same file as the workflow in question)
     - When possible, avoid passing in entire files to the `parse_input` task. Coerce files to `Boolean`s or `String`s to avoid unnecessary disk space usage
-- All tasks with multiple commands (including any pipes (`|`)) should have `set -euo pipefail` before any other commands.
 - Tasks with string parameters for which a limited number of choices are valid, must be documented following the template in `string_choices_task` (see `template/task-examples.wdl.template`)
   - they should also fail quickly with an informative error message if an invalid input is provided
     - In most cases, just passing the parameter to the underlying tool should produce a satisfactory error, but this must be checked for each tool
@@ -26,7 +28,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - Note that future versions of WDL will likely cause a change to this convention.
     - We plan to deprecate the `ncpu` param in favor of accessing the runtime section directly (`n_cores=~{task.runtime.cpu}`)
 - Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* follow the conventions laid out in the `localize_files_task` example (see `template/task-examples.wdl.template`)
-  - This is to accomodate as many backends as possible
+  - This is to accommodate as many backends as possible
 - output file names should *always* be determined with either the `outfile_name` parameter or the `prefix` parameter.
   - `outfile_name` should be preferred if no downstream tasks/tools rely on the file name/extension
   - tasks with multiple outputs should always use the `prefix` convention
@@ -60,8 +62,6 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - The `description` key should be succinct. Generally, one sentence shorter than 140 characters is appropriate.
 - If documenting a workflow, task, input, or output and you need to be more verbose than is appropriate in a `description` field, you may include _in addition_ a `help` key with extended prose or an `external_help` key with a URL
   - the presence of `help` or `external_help` is _not_ a substitute for a `description`
-- All tasks should run in a persistently versioned container
-  - This ensures reproducibility across time and environments
 - Any tasks which are deprecated should have a `deprecated: true` key in their `meta` section
   - It is allowed (but redundant and discouraged) to include a `deprecated: false` key in any production tasks. All tasks are assumed to not be deprecated unless otherwise noted.
   - In addition, the `description` key of deprecated tasks should start with `**[DEPRECATED]**`
