@@ -5,9 +5,6 @@ version 1.1
 task fqlint {
     meta {
         description: "Performs quality control on the input FASTQs to ensure proper formatting"
-        outputs: {
-            check: "A string indicating whether the input FASTQs passed validation"
-        }
     }
 
     parameter_meta {
@@ -71,7 +68,7 @@ task fqlint {
     Float read2_size = size(read_two_fastq, "GiB")
 
     Int memory_gb = (
-        ceil((read1_size + read2_size) * 0.25) + 4 + modify_memory_gb
+        ceil((read1_size + read2_size) * 0.25) + 1 + modify_memory_gb
     )
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
@@ -85,10 +82,6 @@ task fqlint {
             ~{read_one_fastq} \
             ~{read_two_fastq}
     >>>
-
-    output {
-        String check = "passed"
-    }
 
     runtime {
         memory: "~{memory_gb} GB"

@@ -84,7 +84,6 @@ workflow read_group_to_string {
         Boolean restrictive = true
     }
 
-    #@ except: UnusedCall
     call validate_read_group { input:
         read_group,
         required_fields,
@@ -104,9 +103,6 @@ workflow read_group_to_string {
 task get_read_groups {
     meta {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
-        outputs: {
-            read_groups: "An array of `ReadGroup` structs containing read group information."
-        }
     }
 
     parameter_meta {
@@ -156,9 +152,6 @@ task get_read_groups {
 task validate_read_group {
     meta {
         description: "Validate a `ReadGroup` struct's fields are defined and well-formed"
-        outputs: {
-            check: "Dummy output to indicate success and enable call-caching"
-        }
     }
 
     parameter_meta {
@@ -368,13 +361,7 @@ task validate_read_group {
         exit $exit_code
     >>>
 
-    output {
-        String check = "passed"
-    }
-
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }
@@ -430,8 +417,6 @@ task inner_read_group_to_string {
     }
 
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }

@@ -134,9 +134,6 @@ workflow rnaseq_standard {
 task parse_input {
     meta {
         description: "Parses and validates the `rnaseq_standard[_fastq]` workflows' provided inputs"
-        outputs: {
-            check: "Dummy output to indicate success and to enable call-caching"
-        }
     }
 
     parameter_meta {
@@ -176,13 +173,7 @@ task parse_input {
         fi
     >>>
 
-    output {
-        String check = "passed"
-    }
-
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }

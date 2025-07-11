@@ -62,7 +62,6 @@ workflow dnaseq_standard_fastq_experimental {
         Int subsample_n_reads = -1
     }
 
-    #@ except: UnusedCall
     call dnaseq_standard.parse_input { input:
         aligner,
     }

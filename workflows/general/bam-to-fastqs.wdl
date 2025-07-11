@@ -27,7 +27,6 @@ workflow bam_to_fastqs {
         Boolean use_all_cores = false
     }
 
-    #@ except: UnusedCall
     # TODO: is quickcheck needed here?
     call samtools.quickcheck { input: bam }
 

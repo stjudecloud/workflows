@@ -58,7 +58,6 @@ workflow dnaseq_core_experimental {
         String read_two_names = basename(fq)
     }
 
-    #@ except: UnusedCall
     call util.check_fastq_and_rg_concordance as validate { input:
         read_one_names,
         read_two_names,

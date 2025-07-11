@@ -172,7 +172,6 @@ workflow rnaseq_core {
     scatter (fq in read_two_fastqs_gz) {
         String read_two_names = basename(fq)
     }
-    #@ except: UnusedCall
     call util.check_fastq_and_rg_concordance as validate { input:
         read_one_names,
         read_two_names,

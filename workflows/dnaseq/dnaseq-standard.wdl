@@ -124,9 +124,6 @@ workflow dnaseq_standard_experimental {
 task parse_input {
     meta {
         description: "Parses and validates the `dnaseq_standard` workflow's provided inputs"
-        outputs: {
-            check: "Dummy output to indicate success and to enable call-caching"
-        }
     }
 
     parameter_meta {
@@ -153,13 +150,7 @@ task parse_input {
         fi
     >>>
 
-    output {
-        String check = "passed"
-    }
-
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.2.0"
         maxRetries: 1
     }
