@@ -355,8 +355,8 @@ task variant_filtration {
             --V "~{vcf}" \
             --window ~{window} \
             --cluster ~{cluster} \
-                ~{sep(" ", prefix("--filter-name ", quote(filter_names)))} \
-                ~{sep(" ", prefix("--filter-expression ", squote(filter_expressions)))} \
+            ~{sep(" ", prefix("--filter-name ", quote(filter_names)))} \
+            ~{sep(" ", prefix("--filter-expression ", squote(filter_expressions)))} \
             -O "~{prefix}.filtered.vcf.gz"
     >>>
 
