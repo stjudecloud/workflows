@@ -362,7 +362,7 @@ task validate_read_group {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.2.0"
+        container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }
 }
@@ -417,7 +417,7 @@ task inner_read_group_to_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.2.0"
+        container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }
 }

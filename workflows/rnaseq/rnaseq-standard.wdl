@@ -174,7 +174,7 @@ task parse_input {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.2.0"
+        container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }
 }
