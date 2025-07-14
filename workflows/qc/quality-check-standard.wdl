@@ -107,7 +107,7 @@ workflow quality_check_standard {
         File bam
         File bam_index
         File kraken_db
-        Array[File]+ coverage_beds
+        Array[File] coverage_beds
         File? gtf
         #@ except: LineWidth
         File multiqc_config

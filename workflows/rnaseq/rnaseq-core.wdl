@@ -124,10 +124,10 @@ workflow rnaseq_core {
     input {
         File gtf
         File star_db
-        Array[File]+ read_one_fastqs_gz
-        Array[String]+ read_groups
+        Array[File] read_one_fastqs_gz
+        Array[String] read_groups
         File? contaminant_db
-        Array[File]+? read_two_fastqs_gz
+        Array[File]? read_two_fastqs_gz
         SpliceJunctionMotifs align_sj_stitch_mismatch_n_max = SpliceJunctionMotifs {
             noncanonical_motifs: 5,
             GT_AG_and_CT_AC_motif: -1,

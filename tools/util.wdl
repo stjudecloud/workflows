@@ -375,15 +375,21 @@ task check_fastq_and_rg_concordance {
     }
 
     input {
-        Array[String]+ read_one_names
-        Array[String]+ read_groups
-        Array[String] read_two_names
+        Array[String] read_one_names
+        Array[String] read_groups
+        Array[String]? read_two_names
     }
+
+    Array[String] read_twos = select_first([read_two_names, []])
 
     command <<<
         python3 /scripts/util/check_FQs_and_RGs.py \
             --read-one-fastqs "~{sep(",", read_one_names)}" \
-            --read-two-fastqs "~{sep(",", read_two_names)}" \
+            ~{(
+                if length(read_twos) > 0
+                then "--read-two-names \"~{sep(",", squote(read_twos))}\""
+                else ""
+            )}
             --read-groups "~{sep(",", read_groups)}"
     >>>
 
