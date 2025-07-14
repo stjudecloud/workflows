@@ -22,8 +22,12 @@ test-output/
 # Ignore OS generated files
 .DS_Store
 
-# Commonly used folder for putting miniwdl results in during testing
+# Commonly used folder for putting miniwdl/sprocket results in during testing
 results/
+output/
+
+# Ignore JSONs in the root (probably being used for input to sprocket run)
+*.json
 
 # Ignore `sprocket doc` dir
 docs/
