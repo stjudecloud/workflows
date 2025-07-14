@@ -185,17 +185,17 @@ task arriba {
     command <<<
         arriba \
             -x "~{bam}" \
-            ~{if defined(chimeric_sam) then "-c '" + chimeric_sam + "'" else ""} \
+            ~{"-c '" + chimeric_sam + "'"} \
             -o "~{prefix}.tsv" \
             -O "~{prefix}.discarded.tsv" \
             -a "~{reference_fasta_gz}" \
             -g "~{gtf}" \
             -G "~{feature_name}" \
-            ~{if defined(exclude_list) then "-b '" + exclude_list + "'" else ""} \
-            ~{if defined(known_fusions) then "-k '" + known_fusions + "'" else ""} \
-            ~{if defined(annotate_fusions) then "-t '" + annotate_fusions + "'" else ""} \
-            ~{if defined(protein_domains) then "-p '" + protein_domains + "'" else ""} \
-            ~{if defined(wgs_svs) then "-d '" + wgs_svs + "'" else ""} \
+            ~{"-b '" + exclude_list + "'"} \
+            ~{"-k '" + known_fusions + "'"} \
+            ~{"-t '" + annotate_fusions + "'"} \
+            ~{"-p '" + protein_domains + "'"} \
+            ~{"-d '" + wgs_svs + "'"} \
             -D ~{max_genomic_breakpoint_distance} \
             -s "~{strandedness}" \
             ~{(

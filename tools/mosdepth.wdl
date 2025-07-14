@@ -48,7 +48,7 @@ task coverage {
 
         mosdepth \
             -n \
-            ~{if defined(coverage_bed) then "-b '~{coverage_bed}'" else ""} \
+            ~{"-b '" + coverage_bed + "'"} \
             -Q ~{min_mapping_quality} \
             ~{if (use_fast_mode) then "-x" else ""} \
             "~{prefix}" \

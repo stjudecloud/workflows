@@ -265,7 +265,7 @@ task bwa_mem {
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
         ln -sf "~{read_one_fastq_gz}" .
-        ~{if defined(read_two_fastq_gz) then "ln -sf " + read_two_fastq_gz + "" else ""}
+        ~{"ln -sf '" + read_two_fastq_gz + "'"}
 
         bwa mem \
             -t "$n_cores" \

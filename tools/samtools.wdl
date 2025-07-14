@@ -584,7 +584,7 @@ task merge {
 
         samtools merge \
             --threads "$n_cores" \
-            ~{if defined(new_header) then "-h \"" + new_header + "\"" else ""} \
+            ~{"-h \"" + new_header + "\""} \
             ~{if name_sorted then "-n" else ""} \
             ~{if (region != "") then "-R \"" + region + "\"" else ""} \
             ~{if attach_rg then "-r" else ""} \
@@ -672,7 +672,7 @@ task addreplacerg {
         samtools addreplacerg \
             --threads "$n_cores" \
             ~{sep(" ", prefix("-r ", squote(read_group_line)))} \
-            ~{if defined(read_group_id) then "-R \"" + read_group_id + "\"" else ""} \
+            ~{"-R \"" + read_group_id + "\""} \
             -m ~{if orphan_only then "orphan_only" else "overwrite_all"} \
             ~{if overwrite_header_record then "-w" else ""} \
             -o "~{outfile_name}" \

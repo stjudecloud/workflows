@@ -187,11 +187,6 @@ task validate_bam {
         Int modify_disk_size_gb = 0
     }
 
-    String reference_arg = (
-        if defined(reference_fasta)
-        then "-R ~{reference_fasta}"
-        else ""
-    )
     String mode_arg = if (summary_mode) then "--MODE SUMMARY" else ""
     String stringency_arg = (
         if (index_validation_stringency_less_exhaustive)
@@ -208,7 +203,7 @@ task validate_bam {
         rc=0
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             -I "~{bam}" \
-            ~{reference_arg} \
+            ~{"-R '" + reference_fasta + "'"} \
             ~{mode_arg} \
             ~{stringency_arg} \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
@@ -1023,13 +1018,9 @@ task create_sequence_dictionary {
 
         picard -Xmx~{java_heap_size}g CreateSequenceDictionary \
             -R "~{fasta}" \
-            ~{(
-                if defined(assembly_name)
-                then "--GENOME_ASSEMBLY '" + assembly_name + "'"
-                else ""
-            )} \
-            ~{if defined(fasta_url) then "--URI '" + fasta_url + "'" else ""} \
-            ~{if defined(species) then "--SPECIES '" + species + "'" else ""} \
+            ~{"--GENOME_ASSEMBLY '" + assembly_name + "'"} \
+            ~{"--URI '" + fasta_url + "'"} \
+            ~{"--SPECIES '" + species + "'"} \
             > "~{outfile_name}"
     >>>
 
