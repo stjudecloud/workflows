@@ -13,9 +13,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 - FASTQ entrypoint now specifies that FASTQ and read group record inputs must be non-empty [#235](https://github.com/stjudecloud/workflows/pull/235).
+    - immediately reverted in [#240](https://github.com/stjudecloud/workflows/pull/240).
 
 ### Changed
 
+- "validation tasks" no longer have output sections [#240](https://github.com/stjudecloud/workflows/pull/240).
+- "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manaully specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
 - Added `after` clauses to many calls to prevent wasted compute on validation failures [#235](https://github.com/stjudecloud/workflows/pull/235).
 
 ## 2025 May
