@@ -387,9 +387,9 @@ task check_fastq_and_rg_concordance {
             --read-one-fastqs "~{sep(",", read_one_names)}" \
             ~{(
                 if length(read_twos) > 0
-                then "--read-two-names \"~{sep(",", squote(read_twos))}\""
+                then "--read-two-fastqs \"~{sep(",", squote(read_twos))}\""
                 else ""
-            )}
+            )} \
             --read-groups "~{sep(",", read_groups)}"
     >>>
 
