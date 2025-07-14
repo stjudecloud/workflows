@@ -28,7 +28,6 @@ workflow bam_to_fastqs {
     }
 
     #@ except: UnusedCall
-    # TODO: is quickcheck needed here?
     call samtools.quickcheck { input: bam }
 
     call samtools.split after quickcheck { input:

@@ -26,12 +26,12 @@ task download_taxonomy {
         kraken2-build --download-taxonomy \
             ~{if protein then "--protein" else ""} \
             --use-ftp \
-            --db ~{db_name} 2>&1 \
+            --db "~{db_name}" 2>&1 \
             | awk '/gunzip:/ { print; exit 42 } !/gunzip:/ { print }' 1>&2
 
-        tar -C ~{db_name} -czf "~{db_name}.tar.gz" .
+        tar -C "~{db_name}" -czf "~{db_name}.tar.gz" .
 
-        rm -r ~{db_name}
+        rm -r "~{db_name}"
     >>>
 
     output {
@@ -99,15 +99,15 @@ task download_library {
         set -euo pipefail
 
         kraken2-build --download-library \
-            ~{library_name} \
+            "~{library_name}" \
             ~{if protein then "--protein" else ""} \
             --use-ftp \
-            --db ~{db_name} 2>&1 \
+            --db "~{db_name}" 2>&1 \
             | awk '/gunzip:/ { print; exit 42 } !/gunzip:/ { print }' 1>&2
 
-        tar -C ~{db_name} -czf "~{db_name}.tar.gz" .
+        tar -C "~{db_name}" -czf "~{db_name}.tar.gz" .
 
-        rm -r ~{db_name}
+        rm -r "~{db_name}"
     >>>
 
     output {
@@ -157,14 +157,14 @@ task create_library_from_fastas {
             kraken2-build \
                 ~{if protein then "--protein" else ""} \
                 --add-to-library tmp.fa \
-                --db ~{db_name}
+                --db "~{db_name}"
         done < fastas.txt
         rm tmp.fa
         >&2 echo "*** done adding custom FASTAs ***"
 
-        tar -C ~{db_name} -czf "~{db_name}.tar.gz" .
+        tar -C "~{db_name}" -czf "~{db_name}.tar.gz" .
 
-        rm -r ~{db_name}
+        rm -r "~{db_name}"
     >>>
 
     output {
@@ -246,9 +246,9 @@ task build_db {
 
         >&2 echo "*** start unpacking tarballs ***"
         echo "~{sep("\n", tarballs)}" > tarballs.txt
-        mkdir ~{db_name}
+        mkdir "~{db_name}"
         while read -r tarball; do
-            tar -xzf "$tarball" -C ~{db_name} --no-same-owner
+            tar -xzf "$tarball" -C "~{db_name}" --no-same-owner
         done < tarballs.txt
         >&2 echo "*** done unpacking tarballs ***"
 
@@ -260,20 +260,20 @@ task build_db {
             --minimizer-spaces ~{minimizer_spaces} \
             ~{(
                 if (max_db_size_gb > 0)
-                then "--max-db-size " + max_db_size_bytes
+                then "--max-db-size '" + max_db_size_bytes + "'"
                 else ""
             )} \
             --threads "$n_cores" \
-            --db ~{db_name}
+            --db "~{db_name}"
 
         >&2 echo "*** start DB clean ***"
-        kraken2-build --clean --threads "$n_cores" --db ~{db_name}
+        kraken2-build --clean --threads "$n_cores" --db "~{db_name}"
         >&2 echo "*** done ***"
 
         >&2 echo "*** tarballing DB ***"
-        tar -C ~{db_name}/ -czf "~{db_name}.tar.gz" .
+        tar -C "~{db_name}/" -czf "~{db_name}.tar.gz" .
 
-        rm -r ~{db_name}
+        rm -r "~{db_name}"
     >>>
 
     output {
@@ -376,21 +376,21 @@ task kraken {
         fi
 
         mkdir kraken2_db/
-        tar -xzf ~{db} -C kraken2_db/ --no-same-owner
+        tar -xzf "~{db}" -C kraken2_db/ --no-same-owner
 
         kraken2 --db kraken2_db/ \
             --paired \
-            --output ~{if store_sequences then out_sequences else "-"} \
+            --output ~{if store_sequences then "'" + out_sequences + "'" else "-"} \
             --threads "$n_cores" \
             --minimum-base-quality ~{min_base_quality} \
-            --report ~{out_report} \
+            --report "~{out_report}" \
             --report-zero-counts \
             ~{if use_names then "--use-names" else ""} \
-            ~{read_one_fastq_gz} \
-            ~{read_two_fastq_gz}
+            "~{read_one_fastq_gz}" \
+            "~{read_two_fastq_gz}"
 
         if ~{store_sequences}; then
-            gzip ~{out_sequences}
+            gzip "~{out_sequences}"
         fi
 
         rm -r kraken2_db/

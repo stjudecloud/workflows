@@ -375,7 +375,7 @@ task validate_read_group {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.2.0"
+        container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }
 }
@@ -432,7 +432,7 @@ task inner_read_group_to_string {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.2.0"
+        container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }
 }

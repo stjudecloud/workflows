@@ -101,20 +101,20 @@ task count {
         set -euo pipefail
 
         if ~{include_custom_header}; then
-            echo -e "~{idattr}\t~{prefix}" > ~{outfile_name}
+            echo -e "~{idattr}\t~{prefix}" > "~{outfile_name}"
         else
-            true > ~{outfile_name}  # ensure file is empty
+            true > "~{outfile_name}"  # ensure file is empty
         fi
 
         # 9223372036854776000 == max 64 bit Float
         htseq-count -f bam \
             --max-reads-in-buffer 9223372036854776000 \
             -r ~{if pos_sorted then "pos" else "name"} \
-            -s ~{strandedness} \
+            -s "~{strandedness}" \
             -a ~{minaqual} \
-            -t ~{feature_type} \
-            -m ~{mode} \
-            -i ~{idattr} \
+            -t "~{feature_type}" \
+            -m "~{mode}" \
+            -i "~{idattr}" \
             --nonunique ~{if nonunique then "all" else "none"} \
             --secondary-alignments ~{if secondary_alignments then "score" else "ignore"} \
             --supplementary-alignments ~{(
@@ -122,9 +122,9 @@ task count {
                 then "score"
                 else "ignore"
             )} \
-            ~{bam} \
-            ~{gtf} \
-            >> ~{outfile_name}
+            "~{bam}" \
+            "~{gtf}" \
+            >> "~{outfile_name}"
     >>>
 
     output {
@@ -209,7 +209,7 @@ task calc_tpm {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.2.0"
+        container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }
 }

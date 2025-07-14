@@ -91,24 +91,24 @@ task mark_duplicates {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g MarkDuplicates \
-            -I ~{bam} \
-            --METRICS_FILE ~{prefix}.metrics.txt \
-            -O ~{if create_bam then prefix + ".bam" else "/dev/null"} \
+            -I "~{bam}" \
+            --METRICS_FILE "~{prefix}.metrics.txt" \
+            -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
             --CREATE_INDEX ~{create_bam} \
             --CREATE_MD5_FILE ~{create_bam} \
-            --VALIDATION_STRINGENCY ~{validation_stringency} \
-            --DUPLICATE_SCORING_STRATEGY ~{duplicate_scoring_strategy} \
+            --VALIDATION_STRINGENCY "~{validation_stringency}" \
+            --DUPLICATE_SCORING_STRATEGY "~{duplicate_scoring_strategy}" \
             --READ_NAME_REGEX '~{
                 if (optical_distance > 0) then read_name_regex else "null"
             }' \
-            --TAGGING_POLICY ~{tagging_policy} \
+            --TAGGING_POLICY "~{tagging_policy}" \
             --CLEAR_DT ~{clear_dt} \
             --REMOVE_DUPLICATES ~{remove_duplicates} \
             --REMOVE_SEQUENCING_DUPLICATES ~{remove_sequencing_duplicates} \
             --OPTICAL_DUPLICATE_PIXEL_DISTANCE ~{optical_distance}
 
         if ~{create_bam}; then
-            mv ~{prefix}.bai ~{prefix}.bam.bai
+            mv "~{prefix}.bai" "~{prefix}.bam.bai"
         fi
     >>>
 
@@ -187,11 +187,6 @@ task validate_bam {
         Int modify_disk_size_gb = 0
     }
 
-    String reference_arg = (
-        if defined(reference_fasta)
-        then "-R ~{reference_fasta}"
-        else ""
-    )
     String mode_arg = if (summary_mode) then "--MODE SUMMARY" else ""
     String stringency_arg = (
         if (index_validation_stringency_less_exhaustive)
@@ -207,14 +202,14 @@ task validate_bam {
 
         rc=0
         picard -Xmx~{java_heap_size}g ValidateSamFile \
-            -I ~{bam} \
-            ~{reference_arg} \
+            -I "~{bam}" \
+            ~{"-R '" + reference_fasta + "'"} \
             ~{mode_arg} \
             ~{stringency_arg} \
-            --VALIDATION_STRINGENCY ~{validation_stringency} \
-            ~{sep(" ", prefix("--IGNORE ", ignore_list))} \
+            --VALIDATION_STRINGENCY "~{validation_stringency}" \
+            ~{sep(" ", prefix("--IGNORE ", squote(ignore_list)))} \
             --MAX_OUTPUT ~{max_errors} \
-            > ~{outfile_name} \
+            > "~{outfile_name}" \
             || rc=$?
 
         # rc = 0 = success
@@ -232,10 +227,10 @@ task validate_bam {
         fi
 
         if ! ~{succeed_on_errors} \
-            && [ "$(grep -Ec "$GREP_PATTERN" ~{outfile_name})" -gt 0 ]
+            && [ "$(grep -Ec "$GREP_PATTERN" "~{outfile_name}")" -gt 0 ]
         then
             >&2 echo "Problems detected by Picard ValidateSamFile"
-            >&2 grep -E "$GREP_PATTERN" ~{outfile_name}
+            >&2 grep -E "$GREP_PATTERN" "~{outfile_name}"
             exit $rc
         fi
     >>>
@@ -307,17 +302,17 @@ task sort {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g SortSam \
-            -I ~{bam} \
-            -O ~{outfile_name} \
-            -SO ~{sort_order} \
+            -I "~{bam}" \
+            -O "~{outfile_name}" \
+            -SO "~{sort_order}" \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
-            --VALIDATION_STRINGENCY ~{validation_stringency}
+            --VALIDATION_STRINGENCY "~{validation_stringency}"
 
         # CREATE_INDEX true only applies when the sort order
         # is coordinate. So the index may not exist.
         if [ -f "~{prefix}.bai" ]; then
-            mv ~{prefix}.bai ~{outfile_name}.bai
+            mv "~{prefix}.bai" "~{outfile_name}.bai"
         fi
     >>>
 
@@ -387,7 +382,7 @@ task merge_sam_files {
     Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    Array[String] input_arg = prefix("--INPUT ", bams)
+    Array[String] input_arg = prefix("--INPUT ", squote(bams))
 
     String outfile_name = prefix + ".bam"
 
@@ -396,15 +391,15 @@ task merge_sam_files {
 
         picard -Xmx~{java_heap_size}g MergeSamFiles \
             ~{sep(" ", input_arg)} \
-            --OUTPUT ~{outfile_name} \
+            --OUTPUT "~{outfile_name}" \
             --ASSUME_SORTED true \
-            --SORT_ORDER ~{sort_order} \
+            --SORT_ORDER "~{sort_order}" \
             --USE_THREADING ~{threading} \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
-            --VALIDATION_STRINGENCY ~{validation_stringency}
+            --VALIDATION_STRINGENCY "~{validation_stringency}"
 
-        mv ~{prefix}.bai ~{outfile_name}.bai
+        mv "~{prefix}.bai" "~{outfile_name}.bai"
     >>>
 
     output {
@@ -467,13 +462,13 @@ task clean_sam {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g CleanSam \
-            -I ~{bam} \
+            -I "~{bam}" \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
-            --VALIDATION_STRINGENCY ~{validation_stringency} \
-            -O ~{outfile_name}
+            --VALIDATION_STRINGENCY "~{validation_stringency}" \
+            -O "~{outfile_name}"
 
-        mv ~{prefix}.bai ~{outfile_name}.bai
+        mv "~{prefix}.bai" "~{outfile_name}.bai"
     >>>
 
     output {
@@ -534,10 +529,10 @@ task collect_wgs_metrics {
 
     command <<<
         picard -Xmx~{java_heap_size}g CollectWgsMetrics \
-            -I ~{bam} \
-            -R ~{reference_fasta} \
-            -O ~{outfile_name} \
-            --VALIDATION_STRINGENCY ~{validation_stringency} \
+            -I "~{bam}" \
+            -R "~{reference_fasta}" \
+            -O "~{outfile_name}" \
+            --VALIDATION_STRINGENCY "~{validation_stringency}" \
             --INCLUDE_BQ_HISTOGRAM true
     >>>
 
@@ -596,10 +591,10 @@ task collect_alignment_summary_metrics {
 
     command <<<
         picard -Xmx~{java_heap_size}g CollectAlignmentSummaryMetrics \
-            -I ~{bam} \
-            --VALIDATION_STRINGENCY ~{validation_stringency} \
-            -O ~{prefix}.txt \
-            -H ~{prefix}.pdf
+            -I "~{bam}" \
+            --VALIDATION_STRINGENCY "~{validation_stringency}" \
+            -O "~{prefix}.txt" \
+            -H "~{prefix}.pdf"
     >>>
 
     output {
@@ -664,12 +659,12 @@ task collect_gc_bias_metrics {
 
     command <<<
         picard -Xmx~{java_heap_size}g CollectGcBiasMetrics \
-            -I ~{bam} \
-            -R ~{reference_fasta} \
-            --VALIDATION_STRINGENCY ~{validation_stringency} \
-            -O ~{prefix}.txt \
-            -S ~{prefix}.summary.txt \
-            -CHART ~{prefix}.pdf
+            -I "~{bam}" \
+            -R "~{reference_fasta}" \
+            --VALIDATION_STRINGENCY "~{validation_stringency}" \
+            -O "~{prefix}.txt" \
+            -S "~{prefix}.summary.txt" \
+            -CHART "~{prefix}.pdf"
     >>>
 
     output {
@@ -729,10 +724,10 @@ task collect_insert_size_metrics {
 
     command <<<
         picard -Xmx~{java_heap_size}g CollectInsertSizeMetrics \
-            -I ~{bam} \
-            --VALIDATION_STRINGENCY ~{validation_stringency} \
-            -O ~{prefix}.txt \
-            -H ~{prefix}.pdf
+            -I "~{bam}" \
+            --VALIDATION_STRINGENCY "~{validation_stringency}" \
+            -O "~{prefix}.txt" \
+            -H "~{prefix}.pdf"
     >>>
 
     output {
@@ -788,10 +783,10 @@ task quality_score_distribution {
 
     command <<<
         picard -Xmx~{java_heap_size}g QualityScoreDistribution \
-            --VALIDATION_STRINGENCY ~{validation_stringency} \
-            -I ~{bam} \
-            -O ~{prefix}.txt \
-            -CHART ~{prefix}.pdf
+            --VALIDATION_STRINGENCY "~{validation_stringency}" \
+            -I "~{bam}" \
+            -O "~{prefix}.txt" \
+            -CHART "~{prefix}.pdf"
     >>>
 
     output {
@@ -840,8 +835,8 @@ task bam_to_fastq {
     command <<<
         set -euo pipefail
 
-        picard -Xmx~{java_heap_size}g SamToFastq INPUT=~{bam} \
-            FASTQ=~{prefix}.R1.fastq \
+        picard -Xmx~{java_heap_size}g SamToFastq INPUT="~{bam}" \
+            FASTQ="~{prefix}.R1.fastq" \
             ~{(
                 if paired
                 then "SECOND_END_FASTQ=" + prefix + ".R2.fastq"
@@ -850,8 +845,8 @@ task bam_to_fastq {
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
 
-        gzip ~{prefix}.R1.fastq \
-            ~{if paired then prefix + ".R2.fastq" else ""}
+        gzip "~{prefix}.R1.fastq" \
+            ~{if paired then "'" + prefix + ".R2.fastq'" else ""}
     >>>
 
     output {
@@ -896,8 +891,8 @@ task merge_vcfs {
     command <<<
         picard -Xms2000m \
             MergeVcfs \
-            ~{sep(" ", prefix("--INPUT ", vcfs))} \
-            --OUTPUT ~{output_vcf_name}
+            ~{sep(" ", prefix("--INPUT ", squote(vcfs)))} \
+            --OUTPUT "~{output_vcf_name}"
     >>>
 
     output {
@@ -908,7 +903,7 @@ task merge_vcfs {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -953,10 +948,10 @@ task scatter_interval_list {
         picard -Xms1g \
             IntervalListTools \
             --SCATTER_COUNT ~{scatter_count} \
-            --SUBDIVISION_MODE ~{subdivision_mode} \
+            --SUBDIVISION_MODE "~{subdivision_mode}" \
             --UNIQUE ~{unique} \
             --SORT ~{sort} \
-            --INPUT ~{interval_list} \
+            --INPUT "~{interval_list}" \
             --OUTPUT out
 
         bash <<CODE
@@ -980,7 +975,7 @@ task scatter_interval_list {
     runtime {
         memory: "2 GB"
         disks: "1 GB"
-        container: "quay.io/biocontainers/picard:2.27.5--hdfd78af_0"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -1022,15 +1017,11 @@ task create_sequence_dictionary {
         set -euo pipefail
 
         picard -Xmx~{java_heap_size}g CreateSequenceDictionary \
-            -R ~{fasta} \
-            ~{(
-                if defined(assembly_name)
-                then "--GENOME_ASSEMBLY " + assembly_name
-                else ""
-            )} \
-            ~{if defined(fasta_url) then "--URI " + fasta_url else ""} \
-            ~{if defined(species) then "--SPECIES " + species else ""} \
-            > ~{outfile_name}
+            -R "~{fasta}" \
+            ~{"--GENOME_ASSEMBLY '" + assembly_name + "'"} \
+            ~{"--URI '" + fasta_url + "'"} \
+            ~{"--SPECIES '" + species + "'"} \
+            > "~{outfile_name}"
     >>>
 
     output {
@@ -1041,7 +1032,7 @@ task create_sequence_dictionary {
         cpu: 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/picard:3.1.0--hdfd78af_0"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
         maxRetries: 1
     }
 }
