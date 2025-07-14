@@ -83,7 +83,7 @@ task fqlint {
             --paired-read-validation-level "~{paired_read_validation_level}" \
             --lint-mode ~{if panic then "panic" else "log"} \
             "~{read_one_fastq}" \
-            ~{read_two_fastq}
+            ~{"~{read_two_fastq}"}
     >>>
 
     output {
@@ -165,7 +165,7 @@ task subsample {
                 else ""
             )} \
             "~{read_one_fastq}" \
-            ~{read_two_fastq}
+            ~{"~{read_two_fastq}"}
     >>>
 
     output {
