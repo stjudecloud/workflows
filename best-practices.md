@@ -44,6 +44,7 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - Prefer using `as` in the import block rather than at the task/workflow call level
   - When using `as` to rename an invalid URI, attempt to make as few changes to the filename as possible (i.e. try not to abbreviate)
   - To disambiguate a task or workflow file from it's contents, you can respectively add the `_tasks` or `_wf` suffix in the import section
+- the non-empty qualifier (`+`) of arrays and maps should be avoided
 - Whenever possible, prefer a Docker image maintained by an external source (such as BioContainers) rather than creating your own image
 - When adding a Dockerfile to this repository, follow the below conventions
   - Create a directory under the `docker/` directory and choose an appropriate name (likely shared with the underlying tool). The `Dockerfile` should be nested under this new directory. Then create a `package.json` alongside the `Dockerfile`. The `package.json` file is required to contain two JSON fields (`name` and `version`). It can optionally contain a `revision` field.
