@@ -192,14 +192,14 @@
 
 rc=0
 picard -Xmx~{java_heap_size}g ValidateSamFile \
-    -I ~{bam} \
-    ~{reference_arg} \
+    -I &quot;~{bam}&quot; \
+    ~{&quot;-R '&quot; + reference_fasta + &quot;'&quot;} \
     ~{mode_arg} \
     ~{stringency_arg} \
-    --VALIDATION_STRINGENCY ~{validation_stringency} \
-    ~{sep(&quot; &quot;, prefix(&quot;--IGNORE &quot;, ignore_list))} \
+    --VALIDATION_STRINGENCY &quot;~{validation_stringency}&quot; \
+    ~{sep(&quot; &quot;, prefix(&quot;--IGNORE &quot;, squote(ignore_list)))} \
     --MAX_OUTPUT ~{max_errors} \
-    &gt; ~{outfile_name} \
+    &gt; &quot;~{outfile_name}&quot; \
     || rc=$?
 
 # rc = 0 = success
@@ -217,9 +217,9 @@ else
 fi
 
 if ! ~{succeed_on_errors} \
-    &amp;&amp; [ &quot;$(grep -Ec &quot;$GREP_PATTERN&quot; ~{outfile_name})&quot; -gt 0 ]
+    &amp;&amp; [ &quot;$(grep -Ec &quot;$GREP_PATTERN&quot; &quot;~{outfile_name}&quot;)&quot; -gt 0 ]
 then
     &gt;&amp;2 echo &quot;Problems detected by Picard ValidateSamFile&quot;
-    &gt;&amp;2 grep -E &quot;$GREP_PATTERN&quot; ~{outfile_name}
+    &gt;&amp;2 grep -E &quot;$GREP_PATTERN&quot; &quot;~{outfile_name}&quot;
     exit $rc
 fi</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>

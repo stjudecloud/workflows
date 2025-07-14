@@ -195,13 +195,13 @@ if ~{use_all_cores}; then
     n_cores=$(nproc)
 fi
 # -1 because samtools uses one more core than `--threads` specifies
-let &quot;n_cores -= 1&quot;
+(( n_cores -= 1 ))
 
 samtools addreplacerg \
     --threads &quot;$n_cores&quot; \
     ~{sep(&quot; &quot;, prefix(&quot;-r &quot;, squote(read_group_line)))} \
-    ~{if defined(read_group_id) then &quot;-R &quot; + read_group_id else &quot;&quot;} \
+    ~{&quot;-R \&quot;&quot; + read_group_id + &quot;\&quot;&quot;} \
     -m ~{if orphan_only then &quot;orphan_only&quot; else &quot;overwrite_all&quot;} \
     ~{if overwrite_header_record then &quot;-w&quot; else &quot;&quot;} \
-    -o ~{outfile_name} \
-    ~{bam}</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
+    -o &quot;~{outfile_name}&quot; \
+    &quot;~{bam}&quot;</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>

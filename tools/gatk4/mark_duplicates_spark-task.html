@@ -192,15 +192,15 @@
 
 gatk MarkDuplicatesSpark \
     --java-options &quot;-Xmx~{java_heap_size}g&quot; \
-    -I ~{bam} \
-    -M ~{prefix}.metrics.txt \
-    -O ~{if create_bam then prefix + &quot;.bam&quot; else &quot;/dev/null&quot;} \
+    -I &quot;~{bam}&quot; \
+    -M &quot;~{prefix}.metrics.txt&quot; \
+    -O &quot;~{if create_bam then prefix + &quot;.bam&quot; else &quot;/dev/null&quot;}&quot; \
     --create-output-bam-index ~{create_bam} \
-    --read-validation-stringency ~{validation_stringency} \
-    --duplicate-scoring-strategy ~{duplicate_scoring_strategy} \
+    --read-validation-stringency &quot;~{validation_stringency}&quot; \
+    --duplicate-scoring-strategy &quot;~{duplicate_scoring_strategy}&quot; \
     --read-name-regex '~{
         if (optical_distance &gt; 0) then read_name_regex else &quot;null&quot;
     }' \
-    --duplicate-tagging-policy ~{tagging_policy} \
+    --duplicate-tagging-policy &quot;~{tagging_policy}&quot; \
     --optical-duplicate-pixel-distance ~{optical_distance} \
     --spark-master local[~{ncpu}]</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>

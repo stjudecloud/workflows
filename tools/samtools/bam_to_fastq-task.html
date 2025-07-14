@@ -201,7 +201,7 @@ if ~{use_all_cores}; then
     n_cores=$(nproc)
 fi
 # -1 because samtools uses one more core than `--threads` specifies
-let &quot;n_cores -= 1&quot;
+(( n_cores -= 1 ))
 
 mkfifo bam_pipe
 if ! ~{collated} &amp;&amp; ~{paired_end}; then
@@ -210,20 +210,24 @@ if ! ~{collated} &amp;&amp; ~{paired_end}; then
         --threads &quot;$n_cores&quot; \
         ~{if fast_mode then &quot;-f&quot; else &quot;&quot;} \
         -O \
-        ~{bam} \
-        | tee ~{if retain_collated_bam then prefix + &quot;.collated.bam&quot; else &quot;&quot;} \
+        &quot;~{bam}&quot; \
+        | tee ~{(
+            if retain_collated_bam
+            then &quot;\&quot;&quot; + prefix + &quot;.collated.bam\&quot;&quot;
+            else &quot;&quot;
+        )} \
         &gt; bam_pipe \
         &amp;
 else
-    samtools view -h --threads &quot;$n_cores&quot; ~{bam} &gt; bam_pipe &amp;
+    samtools view -h --threads &quot;$n_cores&quot; &quot;~{bam}&quot; &gt; bam_pipe &amp;
 fi
 
 samtools fastq \
     --threads &quot;$n_cores&quot; \
-    -f ~{bitwise_filter.include_if_all} \
-    -F ~{bitwise_filter.exclude_if_any} \
-    --rf ~{bitwise_filter.include_if_any} \
-    -G ~{bitwise_filter.exclude_if_all} \
+    -f &quot;~{bitwise_filter.include_if_all}&quot; \
+    -F &quot;~{bitwise_filter.exclude_if_any}&quot; \
+    --rf &quot;~{bitwise_filter.include_if_any}&quot; \
+    -G &quot;~{bitwise_filter.exclude_if_all}&quot; \
     ~{(
         if append_read_number
         then &quot;-N&quot;
@@ -233,23 +237,25 @@ samtools fastq \
         if paired_end
         then (
             if interleaved
-            then prefix + &quot;.fastq.gz&quot;
-            else prefix + &quot;.R1.fastq.gz&quot;
+            then &quot;\&quot;&quot; + prefix + &quot;.fastq.gz\&quot;&quot;
+            else &quot;\&quot;&quot; + prefix + &quot;.R1.fastq.gz\&quot;&quot;
         )
-        else prefix + &quot;.fastq.gz&quot;
+        else &quot;\&quot;&quot; + prefix + &quot;.fastq.gz\&quot;&quot;
     )} \
     -2 ~{(
         if paired_end
         then (
-            if interleaved then prefix + &quot;.fastq.gz&quot; else prefix + &quot;.R2.fastq.gz&quot;
+            if interleaved
+            then &quot;\&quot;&quot; + prefix + &quot;.fastq.gz\&quot;&quot;
+            else &quot;\&quot;&quot; + prefix + &quot;.R2.fastq.gz\&quot;&quot;
         )
-        else prefix + &quot;.fastq.gz&quot;
+        else &quot;\&quot;&quot; + prefix + &quot;.fastq.gz\&quot;&quot;
     )} \
     ~{(
         if paired_end
         then (
             if output_singletons
-            then &quot;-s &quot; + prefix + &quot;.singleton.fastq.gz&quot;
+            then &quot;-s \&quot;&quot; + prefix + &quot;.singleton.fastq.gz\&quot;&quot;
             else &quot;-s junk.singleton.fastq.gz&quot;
         )
         else &quot;&quot;
@@ -257,14 +263,14 @@ samtools fastq \
     -0 ~{(
         if paired_end
         then &quot;junk.unknown_bit_setting.fastq.gz&quot;
-        else prefix + &quot;.fastq.gz&quot;
+        else &quot;\&quot;&quot; + prefix + &quot;.fastq.gz\&quot;&quot;
     )} \
     bam_pipe
 
 rm bam_pipe
 
 # Check that some output is non-empty
-if [ -z &quot;$(gunzip -c ~{prefix}*.fastq.gz | head -c 1 | tr '\0\n' __)&quot; ]; then
+if [ -z &quot;$(gunzip -c &quot;~{prefix}&quot;*.fastq.gz | head -c 1 | tr '\0\n' __)&quot; ]; then
     &gt;&amp;2 echo &quot;No reads are in any output FASTQ&quot;
     &gt;&amp;2 echo &quot;Command failed!&quot;
     exit 42

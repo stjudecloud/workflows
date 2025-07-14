@@ -197,12 +197,12 @@ fi
 
 # localize BAM and BAI to CWD
 CWD_BAM=~{basename(bam)}
-ln -s ~{bam} &quot;$CWD_BAM&quot;
-ln -s ~{bam_index} &quot;$CWD_BAM&quot;.bai
+ln -s &quot;~{bam}&quot; &quot;$CWD_BAM&quot;
+ln -s &quot;~{bam_index}&quot; &quot;$CWD_BAM&quot;.bai
 
 bamCoverage \
     --bam &quot;$CWD_BAM&quot; \
-    --outFileName ~{prefix}.bw \
+    --outFileName &quot;~{prefix}.bw&quot; \
     --outFileFormat bigwig \
     --numberOfProcessors &quot;$n_cores&quot;
 

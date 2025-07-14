@@ -204,11 +204,11 @@ echo &quot;~{sep(&quot;\n&quot;, files)}&quot; &gt; file_list.txt
 # run after multiqc is finished.
 multiqc -v \
     --no-ansi \
-    ~{if defined(config) then &quot;-c &quot; + config else &quot;&quot;} \
+    ~{&quot;-c '&quot; + config + &quot;'&quot;} \
     --file-list file_list.txt \
-    -o ~{prefix}
+    -o &quot;~{prefix}&quot;
 
-if [ ! -d ~{prefix} ]; then
+if [ ! -d &quot;~{prefix}&quot; ]; then
     &gt;&amp;2 echo &quot;MultiQC didn't find any valid files!&quot;
     exit 1
 fi

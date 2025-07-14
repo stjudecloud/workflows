@@ -231,7 +231,7 @@ if ~{use_all_cores}; then
 fi
 
 mkdir star_db
-tar -xzf ~{star_db_tar_gz} -C star_db/ --no-same-owner
+tar -xzf &quot;~{star_db_tar_gz}&quot; -C star_db/ --no-same-owner
 
 STAR --readFilesIn \
     ~{sep(&quot;,&quot;, squote(read_one_fastqs_gz))} \
@@ -241,8 +241,8 @@ STAR --readFilesIn \
     --runThreadN &quot;$n_cores&quot; \
     --outSAMtype BAM Unsorted \
     --outMultimapperOrder Random \
-    --outFileNamePrefix ~{prefix + &quot;.&quot;} \
-    --twopassMode ~{twopass_mode} \
+    --outFileNamePrefix &quot;~{prefix + &quot;.&quot;}&quot; \
+    --twopassMode &quot;~{twopass_mode}&quot; \
     --outSAMattrRGline ~{sep(&quot; , &quot;, read_groups)} \
     --outSJfilterIntronMaxVsReadN ~{
         sep(&quot; &quot;, quote(out_sj_filter_intron_max_vs_read_n))
@@ -277,9 +277,9 @@ STAR --readFilesIn \
         align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
         align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
     ]))} \
-    --clip3pAdapterSeq ~{clip_3p_adapter_seq.left} ~{(
+    --clip3pAdapterSeq &quot;~{clip_3p_adapter_seq.left}&quot; ~{(
         if (length(read_twos) != 0)
-        then clip_3p_adapter_seq.right
+        then &quot;~{clip_3p_adapter_seq.right}&quot;
         else &quot;&quot;
     )} \
     --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
@@ -287,11 +287,11 @@ STAR --readFilesIn \
         then clip_3p_adapter_mmp.right
         else None
     )} \
-    --alignEndsProtrude ~{align_ends_protrude.left} ~{(
+    --alignEndsProtrude ~{align_ends_protrude.left} &quot;~{(
         if (length(read_twos) != 0)
         then align_ends_protrude.right
         else None
-    )} \
+    )}&quot; \
     --clip3pNbases ~{clip_3p_n_bases.left} ~{(
         if (length(read_twos) != 0)
         then clip_3p_n_bases.right
@@ -307,13 +307,13 @@ STAR --readFilesIn \
         then clip_5p_n_bases.right
         else None
     )} \
-    --readNameSeparator ~{read_name_separator} \
-    --clipAdapterType ~{clip_adapter_type} \
-    --outSAMstrandField ~{out_sam_strand_field} \
+    --readNameSeparator &quot;~{read_name_separator}&quot; \
+    --clipAdapterType &quot;~{clip_adapter_type}&quot; \
+    --outSAMstrandField &quot;~{out_sam_strand_field}&quot; \
     --outSAMattributes ~{out_sam_attributes} \
-    --outSAMunmapped ~{out_sam_unmapped} \
-    --outSAMorder ~{out_sam_order} \
-    --outSAMreadID ~{out_sam_read_id} \
+    --outSAMunmapped &quot;~{out_sam_unmapped}&quot; \
+    --outSAMorder &quot;~{out_sam_order}&quot; \
+    --outSAMreadID &quot;~{out_sam_read_id}&quot; \
     --outSAMtlen ~{(
         if (out_sam_tlen == &quot;left_plus&quot;)
         then &quot;1&quot;
@@ -321,16 +321,16 @@ STAR --readFilesIn \
             if (out_sam_tlen == &quot;left_any&quot;) then &quot;2&quot; else &quot;error&quot;
         )
     )} \
-    --outFilterType ~{out_filter_type} \
-    --outFilterIntronMotifs ~{out_filter_intron_motifs} \
-    --outFilterIntronStrands ~{out_filter_intron_strands} \
-    --outSJfilterReads ~{out_sj_filter_reads} \
-    --alignEndsType ~{align_ends_type} \
-    --alignSoftClipAtReferenceEnds ~{align_soft_clip_at_reference_ends} \
-    --alignInsertionFlush ~{align_insertion_flush} \
+    --outFilterType &quot;~{out_filter_type}&quot; \
+    --outFilterIntronMotifs &quot;~{out_filter_intron_motifs}&quot; \
+    --outFilterIntronStrands &quot;~{out_filter_intron_strands}&quot; \
+    --outSJfilterReads &quot;~{out_sj_filter_reads}&quot; \
+    --alignEndsType &quot;~{align_ends_type}&quot; \
+    --alignSoftClipAtReferenceEnds &quot;~{align_soft_clip_at_reference_ends}&quot; \
+    --alignInsertionFlush &quot;~{align_insertion_flush}&quot; \
     --chimOutType ~{chim_out_type} \
-    --chimFilter ~{chim_filter} \
-    --chimOutJunctionFormat ~{chim_out_junction_format} \
+    --chimFilter &quot;~{chim_filter}&quot; \
+    --chimOutJunctionFormat &quot;~{chim_out_junction_format}&quot; \
     --outFilterMismatchNoverLmax ~{out_filter_mismatch_n_over_l_max} \
     --outFilterMismatchNoverReadLmax ~{out_filter_mismatch_n_over_read_l_max} \
     --outFilterScoreMinOverLread ~{out_filter_score_min_over_l_read} \

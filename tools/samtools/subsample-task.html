@@ -195,7 +195,7 @@ if ~{use_all_cores}; then
     n_cores=$(nproc)
 fi
 # -1 because samtools uses one more core than `--threads` specifies
-let &quot;n_cores -= 1&quot;
+(( n_cores -= 1 ))
 
 if [[ ~{desired_reads} -le 0 ]]; then
     &gt;&amp;2 echo &quot;'desired_reads' must be greater than zero!&quot;
@@ -206,7 +206,7 @@ fi
 read_count=&quot;$(samtools view \
     --threads &quot;$n_cores&quot; \
     --count \
-    ~{bam}
+    &quot;~{bam}&quot;
 )&quot;
 
 if [[ &quot;$read_count&quot; -eq 0 ]]; then
@@ -231,8 +231,8 @@ if [[ &quot;$read_count&quot; -gt &quot;~{desired_reads}&quot; ]]; then
         --threads &quot;$n_cores&quot; \
         -hb \
         -s &quot;$frac&quot; \
-        ~{bam} \
-        &gt; ~{suffixed}.bam
+        &quot;~{bam}&quot; \
+        &gt; &quot;~{suffixed}.bam&quot;
 
     # Report the original read count.
     # Use 'prefix' as the entry name.
@@ -242,7 +242,7 @@ if [[ &quot;$read_count&quot; -gt &quot;~{desired_reads}&quot; ]]; then
     {
         echo -e &quot;sample\toriginal read count&quot;
         echo -e &quot;~{prefix}\t$read_count&quot;
-    } &gt; ~{suffixed}.orig_read_count.tsv
+    } &gt; &quot;~{suffixed}.orig_read_count.tsv&quot;
 else
     # the BAM has less than or equal to ~{desired_reads} reads,
     # meaning we should just use it directly without subsampling.
@@ -256,17 +256,17 @@ else
     {
         echo -e &quot;sample\toriginal read count&quot;
         echo -e &quot;~{prefix}\t-&quot;
-    } &gt; ~{prefix}.orig_read_count.tsv
+    } &gt; &quot;~{prefix}.orig_read_count.tsv&quot;
 fi
 
 # Check that if output was created,
 # it contains at least one read.
-if [ -e ~{suffixed}.bam ]; then
+if [ -e &quot;~{suffixed}.bam&quot; ]; then
     samtools head \
         --threads &quot;$n_cores&quot; \
         -h 0 \
         -n 1 \
-        ~{suffixed}.bam \
+        &quot;~{suffixed}.bam&quot; \
         &gt; first_read.sam
 
     if [ ! -s first_read.sam ]; then

@@ -196,25 +196,25 @@ if ~{use_all_cores}; then
 fi
 
 gtf_name=~{basename(gtf, &quot;.gz&quot;)}
-gunzip -c ~{gtf} &gt; &quot;$gtf_name&quot; || ln -sf ~{gtf} &quot;$gtf_name&quot;
+gunzip -c &quot;~{gtf}&quot; &gt; &quot;$gtf_name&quot; || ln -sf &quot;~{gtf}&quot; &quot;$gtf_name&quot;
 
-ref_fasta=~{basename(reference_fasta, &quot;.gz&quot;)}
-gunzip -c ~{reference_fasta} &gt; &quot;$ref_fasta&quot; \
-    || ln -sf ~{reference_fasta} &quot;$ref_fasta&quot;
+ref_fasta=&quot;~{basename(reference_fasta, &quot;.gz&quot;)}&quot;
+gunzip -c &quot;~{reference_fasta}&quot; &gt; &quot;$ref_fasta&quot; \
+    || ln -sf &quot;~{reference_fasta}&quot; &quot;$ref_fasta&quot;
 
-mkdir ~{db_name};
+mkdir &quot;~{db_name}&quot;
 STAR --runMode genomeGenerate \
-    --genomeDir ~{db_name} \
+    --genomeDir &quot;~{db_name}&quot; \
     --runThreadN &quot;$n_cores&quot; \
-    --limitGenomeGenerateRAM ~{memory_limit_bytes} \
+    --limitGenomeGenerateRAM &quot;~{memory_limit_bytes}&quot; \
     --genomeFastaFiles &quot;$ref_fasta&quot; \
     --sjdbGTFfile &quot;$gtf_name&quot; \
-    --sjdbGTFchrPrefix ~{sjdb_gtf_chr_prefix} \
-    --sjdbGTFfeatureExon ~{sjdb_gtf_feature_exon} \
-    --sjdbGTFtagExonParentTranscript ~{sjdb_gtf_tag_exon_parant_transcript} \
-    --sjdbGTFtagExonParentGene ~{sjdb_gtf_tag_exon_parent_gene} \
-    --sjdbGTFtagExonParentGeneName ~{sjdb_gtf_tag_exon_parent_gene_name} \
-    --sjdbGTFtagExonParentGeneType ~{sjdb_gtf_tag_exon_parent_gene_type} \
+    --sjdbGTFchrPrefix &quot;~{sjdb_gtf_chr_prefix}&quot; \
+    --sjdbGTFfeatureExon &quot;~{sjdb_gtf_feature_exon}&quot; \
+    --sjdbGTFtagExonParentTranscript &quot;~{sjdb_gtf_tag_exon_parant_transcript}&quot; \
+    --sjdbGTFtagExonParentGene &quot;~{sjdb_gtf_tag_exon_parent_gene}&quot; \
+    --sjdbGTFtagExonParentGeneName &quot;~{sjdb_gtf_tag_exon_parent_gene_name}&quot; \
+    --sjdbGTFtagExonParentGeneType &quot;~{sjdb_gtf_tag_exon_parent_gene_type}&quot; \
     --genomeChrBinNbits ~{genome_chr_bin_n_bits} \
     --genomeSAindexNbases ~{genome_SA_index_n_bases} \
     --genomeSAsparseD ~{genome_SA_sparse_d} \
@@ -223,4 +223,4 @@ STAR --runMode genomeGenerate \
 
 rm &quot;$gtf_name&quot; &quot;$ref_fasta&quot;
 
-tar -C ~{db_name} -czf ~{star_db_tar_gz} .</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#resources" class="right-sidebar__section-item">Resources</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
+tar -C &quot;~{db_name}&quot; -czf &quot;~{star_db_tar_gz}&quot; .</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#resources" class="right-sidebar__section-item">Resources</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>

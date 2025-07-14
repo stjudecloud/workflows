@@ -192,16 +192,16 @@
 
 orig=~{gtf}
 gtf_name=$(basename &quot;${orig%.gz}&quot;)
-gunzip -c ~{gtf} &gt; &quot;$gtf_name&quot; || ln -sf ~{gtf} &quot;$gtf_name&quot;
+gunzip -c &quot;~{gtf}&quot; &gt; &quot;$gtf_name&quot; || ln -sf &quot;~{gtf}&quot; &quot;$gtf_name&quot;
 
 # '-oc qualimap_counts.txt' puts the file in '-outdir'
-qualimap rnaseq -bam ~{bam} \
+qualimap rnaseq -bam &quot;~{bam}&quot; \
                 -oc qualimap_counts.txt \
                 -gtf &quot;$gtf_name&quot; \
-                -outdir ~{prefix} \
+                -outdir &quot;~{prefix}&quot; \
                 ~{name_sorted_arg} \
                 ~{paired_end_arg} \
                 --java-mem-size=~{java_heap_size}G
 rm &quot;$gtf_name&quot;
 
-tar -czf ~{out_tar_gz} ~{prefix}</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
+tar -czf &quot;~{out_tar_gz}&quot; &quot;~{prefix}&quot;</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>

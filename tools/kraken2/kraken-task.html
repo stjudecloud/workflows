@@ -201,21 +201,21 @@ if ~{use_all_cores}; then
 fi
 
 mkdir kraken2_db/
-tar -xzf ~{db} -C kraken2_db/ --no-same-owner
+tar -xzf &quot;~{db}&quot; -C kraken2_db/ --no-same-owner
 
 kraken2 --db kraken2_db/ \
     --paired \
-    --output ~{if store_sequences then out_sequences else &quot;-&quot;} \
+    --output ~{if store_sequences then &quot;'&quot; + out_sequences + &quot;'&quot; else &quot;-&quot;} \
     --threads &quot;$n_cores&quot; \
     --minimum-base-quality ~{min_base_quality} \
-    --report ~{out_report} \
+    --report &quot;~{out_report}&quot; \
     --report-zero-counts \
     ~{if use_names then &quot;--use-names&quot; else &quot;&quot;} \
-    ~{read_one_fastq_gz} \
-    ~{read_two_fastq_gz}
+    &quot;~{read_one_fastq_gz}&quot; \
+    &quot;~{read_two_fastq_gz}&quot;
 
 if ~{store_sequences}; then
-    gzip ~{out_sequences}
+    gzip &quot;~{out_sequences}&quot;
 fi
 
 rm -r kraken2_db/</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>

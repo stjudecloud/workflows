@@ -197,9 +197,9 @@ fi
 
 &gt;&amp;2 echo &quot;*** start unpacking tarballs ***&quot;
 echo &quot;~{sep(&quot;\n&quot;, tarballs)}&quot; &gt; tarballs.txt
-mkdir ~{db_name}
+mkdir &quot;~{db_name}&quot;
 while read -r tarball; do
-    tar -xzf &quot;$tarball&quot; -C ~{db_name} --no-same-owner
+    tar -xzf &quot;$tarball&quot; -C &quot;~{db_name}&quot; --no-same-owner
 done &lt; tarballs.txt
 &gt;&amp;2 echo &quot;*** done unpacking tarballs ***&quot;
 
@@ -211,17 +211,17 @@ kraken2-build --build \
     --minimizer-spaces ~{minimizer_spaces} \
     ~{(
         if (max_db_size_gb &gt; 0)
-        then &quot;--max-db-size &quot; + max_db_size_bytes
+        then &quot;--max-db-size '&quot; + max_db_size_bytes + &quot;'&quot;
         else &quot;&quot;
     )} \
     --threads &quot;$n_cores&quot; \
-    --db ~{db_name}
+    --db &quot;~{db_name}&quot;
 
 &gt;&amp;2 echo &quot;*** start DB clean ***&quot;
-kraken2-build --clean --threads &quot;$n_cores&quot; --db ~{db_name}
+kraken2-build --clean --threads &quot;$n_cores&quot; --db &quot;~{db_name}&quot;
 &gt;&amp;2 echo &quot;*** done ***&quot;
 
 &gt;&amp;2 echo &quot;*** tarballing DB ***&quot;
-tar -C ~{db_name}/ -czf &quot;~{db_name}.tar.gz&quot; .
+tar -C &quot;~{db_name}/&quot; -czf &quot;~{db_name}.tar.gz&quot; .
 
-rm -r ~{db_name}</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
+rm -r &quot;~{db_name}&quot;</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>

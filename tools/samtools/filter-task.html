@@ -195,23 +195,23 @@ if ~{use_all_cores}; then
     n_cores=$(nproc)
 fi
 # -1 because samtools uses one more core than `--threads` specifies
-let &quot;n_cores -= 1&quot;
+(( n_cores -= 1 ))
 
 samtools view \
     --threads &quot;$n_cores&quot; \
     -hb \
-    -f ~{bitwise_filter.include_if_all} \
-    -F ~{bitwise_filter.exclude_if_any} \
-    --rf ~{bitwise_filter.include_if_any} \
-    -G ~{bitwise_filter.exclude_if_all} \
-    ~{bam} \
-    &gt; ~{prefix}.bam
+    -f &quot;~{bitwise_filter.include_if_all}&quot; \
+    -F &quot;~{bitwise_filter.exclude_if_any}&quot; \
+    --rf &quot;~{bitwise_filter.include_if_any}&quot; \
+    -G &quot;~{bitwise_filter.exclude_if_all}&quot; \
+    &quot;~{bam}&quot; \
+    &gt; &quot;~{prefix}.bam&quot;
 
 samtools head \
     --threads &quot;$n_cores&quot; \
     -h 0 \
     -n 1 \
-    ~{prefix}.bam \
+    &quot;~{prefix}.bam&quot; \
     &gt; first_read.sam
 
 if [ ! -s first_read.sam ]; then

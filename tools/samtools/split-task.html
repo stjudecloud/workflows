@@ -195,19 +195,19 @@ if ~{use_all_cores}; then
     n_cores=$(nproc)
 fi
 # -1 because samtools uses one more core than `--threads` specifies
-let &quot;n_cores -= 1&quot;
+(( n_cores -= 1 ))
 
 samtools split \
     --threads &quot;$n_cores&quot; \
-    -u ~{prefix}.unaccounted_reads.bam \
+    -u &quot;~{prefix}.unaccounted_reads.bam&quot; \
     -f '~{prefix}.%!.bam' \
-    ~{bam}
+    &quot;~{bam}&quot;
 
 samtools head \
     --threads &quot;$n_cores&quot; \
     -h 0 \
     -n 1 \
-    ~{prefix}.unaccounted_reads.bam \
+    &quot;~{prefix}.unaccounted_reads.bam&quot; \
     &gt; first_unaccounted_read.sam
 
 EXITCODE=0
@@ -215,7 +215,7 @@ if ~{reject_unaccounted_reads} &amp;&amp; [ -s first_unaccounted_read.sam ]; the
     &gt;&amp;2 echo &quot;There are reads present with bad or missing RG tags!&quot;
     EXITCODE=21
 else
-    rm ~{prefix}.unaccounted_reads.bam
+    rm &quot;~{prefix}.unaccounted_reads.bam&quot;
 fi
 rm first_unaccounted_read.sam
 

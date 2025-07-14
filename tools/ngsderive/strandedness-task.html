@@ -192,22 +192,22 @@
 
 # localize BAM and BAI to CWD
 CWD_BAM=~{basename(bam)}
-ln -s ~{bam} &quot;$CWD_BAM&quot;
-ln -s ~{bam_index} &quot;$CWD_BAM&quot;.bai
+ln -s &quot;~{bam}&quot; &quot;$CWD_BAM&quot;
+ln -s &quot;~{bam_index}&quot; &quot;$CWD_BAM&quot;.bai
 
 ngsderive strandedness --verbose \
     ~{if split_by_rg then &quot;--split-by-rg&quot; else &quot;&quot;} \
     -m ~{min_reads_per_gene} \
     -n ~{num_genes} \
     -q ~{min_mapq} \
-    -g ~{gene_model} \
+    -g &quot;~{gene_model}&quot; \
     &quot;$CWD_BAM&quot; \
-    &gt; ~{outfile_name}
+    &gt; &quot;~{outfile_name}&quot;
 
 if ~{split_by_rg}; then
     echo &quot;N/A&quot; &gt; strandedness.txt
 else
-    awk 'NR &gt; 1' ~{outfile_name} | cut -f 5 &gt; strandedness.txt
+    awk 'NR &gt; 1' &quot;~{outfile_name}&quot; | cut -f 5 &gt; strandedness.txt
 fi
 
 rm &quot;$CWD_BAM&quot; &quot;$CWD_BAM&quot;.bai</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
