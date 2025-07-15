@@ -42,9 +42,9 @@ workflow dnaseq_core_experimental {
 
     input {
         File bwa_db
-        Array[File]+ read_one_fastqs_gz
-        Array[File]+ read_two_fastqs_gz
-        Array[String]+ read_groups
+        Array[File] read_one_fastqs_gz
+        Array[File] read_two_fastqs_gz
+        Array[String] read_groups
         String prefix
         String aligner = "mem"
         Boolean use_all_cores = false
@@ -58,7 +58,6 @@ workflow dnaseq_core_experimental {
         String read_two_names = basename(fq)
     }
 
-    #@ except: UnusedCall
     call util.check_fastq_and_rg_concordance as validate { input:
         read_one_names,
         read_two_names,

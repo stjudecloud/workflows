@@ -107,7 +107,7 @@ workflow quality_check_standard {
         File bam
         File bam_index
         File kraken_db
-        Array[File]+ coverage_beds
+        Array[File] coverage_beds
         File? gtf
         #@ except: LineWidth
         File multiqc_config
@@ -159,7 +159,6 @@ workflow quality_check_standard {
     call md5sum.compute_checksum after parse_input { input: file = bam }
 
     call samtools.quickcheck after parse_input { input: bam }
-    #@ except: UnusedCall
     call util.compression_integrity after parse_input { input: bgzipped_file = bam }
 
     if (subsample_n_reads > 0) {
@@ -555,8 +554,6 @@ task parse_input {
     }
 
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }

@@ -40,7 +40,6 @@ task download {
     }
 
     runtime {
-        memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
@@ -81,8 +80,6 @@ task split_string {
     }
 
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }
@@ -139,9 +136,6 @@ task calc_gene_lengths {
 task compression_integrity {
     meta {
         description: "Checks the compression integrity of a bgzipped file"
-        outputs: {
-            check: "Dummy output to indicate success and to enable call-caching"
-        }
     }
 
     parameter_meta {
@@ -161,12 +155,7 @@ task compression_integrity {
         bgzip -t "~{bgzipped_file}"
     >>>
 
-    output {
-        String check = "passed"
-    }
-
     runtime {
-        memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -213,7 +202,6 @@ task add_to_bam_header {
     }
 
     runtime {
-        memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -255,7 +243,6 @@ task unpack_tarball {
     }
 
     runtime {
-        memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
@@ -314,7 +301,6 @@ task make_coverage_regions_bed {
     }
 
     runtime {
-        memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0"
         maxRetries: 1
@@ -371,9 +357,6 @@ task check_fastq_and_rg_concordance {
     meta {
         description: "Validates FASTQs and read group records are concordant"
         help: "Each read1 FASTQ must correspond to exactly one read group record. This correspondance is encoded in two ways, both of which must match. 1) the FASTQ and its read group share the same index of their respective lists and 2) the `ID` field value must be contained somewhere within the FASTQ file basename. If `read_two_names` is non-empty, the same checks are performed on each of these names as well (i.e. all 3 of the read1 FASTQ, read2 FASTQ, and read group ID must match and be in the same position of their list). Additionally, the `ID` field must be the first field of the read group record, and each `ID` value must be unique."
-        outputs: {
-            check: "Dummy output to enable caching."
-        }
     }
 
     parameter_meta {
@@ -392,25 +375,25 @@ task check_fastq_and_rg_concordance {
     }
 
     input {
-        Array[String]+ read_one_names
-        Array[String]+ read_groups
-        Array[String] read_two_names
+        Array[String] read_one_names
+        Array[String] read_groups
+        Array[String]? read_two_names
     }
+
+    Array[String] read_twos = select_first([read_two_names, []])
 
     command <<<
         python3 /scripts/util/check_FQs_and_RGs.py \
             --read-one-fastqs "~{sep(",", read_one_names)}" \
-            --read-two-fastqs "~{sep(",", read_two_names)}" \
+            ~{(
+                if length(read_twos) > 0
+                then "--read-two-fastqs \"~{sep(",", squote(read_twos))}\""
+                else ""
+            )} \
             --read-groups "~{sep(",", read_groups)}"
     >>>
 
-    output {
-        String check = "passed"
-    }
-
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }
@@ -487,8 +470,6 @@ task qc_summary {
     }
 
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }

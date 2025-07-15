@@ -7,9 +7,6 @@ import "../data_structures/flag_filter.wdl"
 task quickcheck {
     meta {
         description: "Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists and the end-of-file marker exists."
-        outputs: {
-            check: "Dummy output to enable caching"
-        }
     }
 
     parameter_meta {
@@ -29,12 +26,7 @@ task quickcheck {
         samtools quickcheck "~{bam}"
     >>>
 
-    output {
-        String check = "passed"
-    }
-
     runtime {
-        memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1

@@ -247,10 +247,10 @@ task plot_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/python-plotting:2.0.1"
-        memory: "4 GB"
         cpu: 1
+        memory: "4 GB"
         disks: "4 GB"
+        container: "ghcr.io/stjudecloud/python-plotting:2.0.1"
         maxRetries: 1
     }
 }

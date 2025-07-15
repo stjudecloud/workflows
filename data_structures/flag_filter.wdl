@@ -1,5 +1,3 @@
-#@ except: UnusedCall
-
 ## # FlagFilter
 ##
 ## A struct to represent the filtering flags used in various `samtools` commands.
@@ -10,7 +8,7 @@
 ## The values of these fields are strings that represent a 12bit bitwise flag.
 ## These strings must evaluate to an integer less than 4096 (2^12).
 ## They can be in octal, decimal, or hexadecimal format.
-## Please see the `meta.help` of `validate_string_is_12bit_oct_dec_or_hex`
+## Please see the `meta.help` of `validate_string_is_12bit_int`
 ## for more information on the valid formats.
 ##
 ## The `validate_flag_filter` workflow can be used to validate a `FlagFilter` struct.
@@ -70,13 +68,10 @@ struct FlagFilter {
     String exclude_if_all  # samtools -G
 }
 
-task validate_string_is_12bit_oct_dec_or_hex {
+task validate_string_is_12bit_int {
     meta {
         description: "Validates that a string is a octal, decimal, or hexadecimal number and less than 2^12."
         help: "Hexadecimal numbers must be prefixed with '0x' and only contain the characters [0-9A-F] to be valid (i.e. [a-f] is not allowed). Octal number must start with '0' and only contain the characters [0-7] to be valid. And decimal numbers must start with a digit between 1-9 and only contain the characters [0-9] to be valid."
-        outputs: {
-            check: "Dummy output to enable caching."
-        }
     }
 
     parameter_meta {
@@ -111,13 +106,7 @@ task validate_string_is_12bit_oct_dec_or_hex {
         fi
     >>>
 
-    output {
-        String check = "passed"
-    }
-
     runtime {
-        memory: "4 GB"
-        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }
@@ -127,9 +116,6 @@ workflow validate_flag_filter {
     meta {
         name: "Validate FlagFilter"
         description: "Validates a FlagFilter struct."
-        outputs: {
-            check: "Dummy output to enable caching."
-        }
     }
 
     parameter_meta {
@@ -140,20 +126,16 @@ workflow validate_flag_filter {
         FlagFilter flags
     }
 
-    call validate_string_is_12bit_oct_dec_or_hex as validate_include_if_any { input:
+    call validate_string_is_12bit_int as validate_include_if_any { input:
         number = flags.include_if_any
     }
-    call validate_string_is_12bit_oct_dec_or_hex as validate_include_if_all { input:
+    call validate_string_is_12bit_int as validate_include_if_all { input:
         number = flags.include_if_all
     }
-    call validate_string_is_12bit_oct_dec_or_hex as validate_exclude_if_any { input:
+    call validate_string_is_12bit_int as validate_exclude_if_any { input:
         number = flags.exclude_if_any
     }
-    call validate_string_is_12bit_oct_dec_or_hex as validate_exclude_if_all { input:
+    call validate_string_is_12bit_int as validate_exclude_if_all { input:
         number = flags.exclude_if_all
-    }
-
-    output {
-        String check = "passed"
     }
 }

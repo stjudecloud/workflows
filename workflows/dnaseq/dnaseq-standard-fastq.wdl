@@ -47,9 +47,9 @@ workflow dnaseq_standard_fastq_experimental {
 
     input {
         File bwa_db
-        Array[File]+ read_one_fastqs_gz
-        Array[File]+ read_two_fastqs_gz
-        Array[ReadGroup]+ read_groups
+        Array[File] read_one_fastqs_gz
+        Array[File] read_two_fastqs_gz
+        Array[ReadGroup] read_groups
         String prefix = sub(
             basename(read_one_fastqs_gz[0]),
             "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
@@ -62,7 +62,6 @@ workflow dnaseq_standard_fastq_experimental {
         Int subsample_n_reads = -1
     }
 
-    #@ except: UnusedCall
     call dnaseq_standard.parse_input { input:
         aligner,
     }

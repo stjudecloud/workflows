@@ -12,11 +12,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- "validation tasks" no longer have output sections [#240](https://github.com/stjudecloud/workflows/pull/240).
+- "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manaully specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` now specifies `read_one_fastqs_gz` and `read_groups` must be non-empty [#235](https://github.com/stjudecloud/workflows/pull/235).
+    - immediately reverted in [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` input `read_two_fastqs_gz` is now an `Array[File]+?`, allowing it to be omitted entirely [#235](https://github.com/stjudecloud/workflows/pull/235).
+    - immediately reverted in [#240](https://github.com/stjudecloud/workflows/pull/240).
 
 ### Removed
 
+- removed all uses of non-empty (`+`) array qualifier [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` no longer sorts inputs prior to passing to STAR [#235](https://github.com/stjudecloud/workflows/pull/235).
     - This means you have to ensure the FASTQs and RG records are concordant in your inputs!
 - `util.get_read_groups` has been removed [#235](https://github.com/stjudecloud/workflows/pull/235).
