@@ -26,7 +26,7 @@ task compute_checksum {
     String outfile_name = basename(file) + ".md5"
 
     command <<<
-        md5sum ~{file} > ~{outfile_name}
+        md5sum "~{file}" > "~{outfile_name}"
     >>>
 
     output {
@@ -36,7 +36,7 @@ task compute_checksum {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.2.0"
+        container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }
 }

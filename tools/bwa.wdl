@@ -63,21 +63,21 @@ task bwa_aln {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "samtools_cores = $n_cores - 1"
+        (( samtools_cores = n_cores - 1 ))
 
         mkdir bwa_db
-        tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
+        tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
-        bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{fastq} > sai
+        bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{fastq}" > sai
 
         bwa samse \
-            ~{if read_group != "" then "-r '" + read_group + "'" else ""} \
+            ~{if read_group != "" then "-r '~{read_group}'" else ""} \
             bwa_db/"$PREFIX" \
             sai \
-            ~{fastq} \
+            "~{fastq}" \
             | samtools view --threads "$samtools_cores" -hb - \
-            > ~{output_bam}
+            > "~{output_bam}"
 
         rm -r bwa_db
     >>>
@@ -162,23 +162,23 @@ task bwa_aln_pe {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "samtools_cores = $n_cores - 1"
+        (( samtools_cores = n_cores - 1 ))
 
         mkdir bwa_db
-        tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
+        tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
-        ln -s ~{read_one_fastq_gz}
-        ln -s ~{read_two_fastq_gz}
+        ln -s "~{read_one_fastq_gz}" .
+        ln -s "~{read_two_fastq_gz}" .
 
         bwa sampe \
             ~{if read_group != "" then "-r '" + read_group + "'" else ""} \
             bwa_db/"$PREFIX" \
-            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_one_fastq_gz)}) \
-            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" ~{basename(read_two_fastq_gz)}) \
-            ~{basename(read_one_fastq_gz)} ~{basename(read_two_fastq_gz)} \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{basename(read_one_fastq_gz)}") \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{basename(read_two_fastq_gz)}") \
+            "~{basename(read_one_fastq_gz)}" "~{basename(read_two_fastq_gz)}" \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
-            > ~{output_bam}
+            > "~{output_bam}"
 
         rm -r bwa_db
     >>>
@@ -258,23 +258,23 @@ task bwa_mem {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        let "samtools_cores = $n_cores - 1"
+        (( samtools_cores = n_cores - 1 ))
 
         mkdir bwa_db
-        tar -C bwa_db -xzf ~{bwa_db_tar_gz} --no-same-owner
+        tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
-        ln -sf ~{read_one_fastq_gz}
-        ~{if defined(read_two_fastq_gz) then "ln -sf " + read_two_fastq_gz + "" else ""}
+        ln -sf "~{read_one_fastq_gz}" .
+        ~{"ln -sf '" + read_two_fastq_gz + "'"}
 
         bwa mem \
             -t "$n_cores" \
             ~{if read_group != "" then "-R '" + read_group + "'" else ""} \
             bwa_db/"$PREFIX" \
-            ~{basename(read_one_fastq_gz)} \
+            "~{basename(read_one_fastq_gz)}" \
             ~{basename(read_two_file)} \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
-            > ~{output_bam}
+            > "~{output_bam}"
 
         rm -r bwa_db
     >>>
@@ -323,12 +323,12 @@ task build_bwa_db {
         set -euo pipefail
 
         ref_fasta=~{basename(reference_fasta, ".gz")}
-        gunzip -c ~{reference_fasta} > "$ref_fasta" \
-            || ln -sf ~{reference_fasta} "$ref_fasta"
+        gunzip -c "~{reference_fasta}" > "$ref_fasta" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta"
 
         bwa index "$ref_fasta"
 
-        tar -czf ~{bwa_db_out_name} "$ref_fasta"*
+        tar -czf "~{bwa_db_out_name}" "$ref_fasta"*
     >>>
 
     output {
