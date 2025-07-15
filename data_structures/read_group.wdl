@@ -103,6 +103,9 @@ workflow read_group_to_string {
 task get_read_groups {
     meta {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
+        outputs: {
+            read_groups: "An array of `ReadGroup` structs containing read group information."
+        }
     }
 
     parameter_meta {
