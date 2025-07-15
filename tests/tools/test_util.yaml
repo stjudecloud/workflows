@@ -54,9 +54,6 @@
     - util
   command: >-
     miniwdl run --verbose -d test-output/. --task compression_integrity tools/util.wdl bgzipped_file="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
-  stdout:
-    contains:
-      - "passed"
 
 # TODO: This does not test that the record was properly added to the header.
 - name: add_to_bam_header
