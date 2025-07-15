@@ -27,11 +27,11 @@ task download {
     command <<<
         set -euo pipefail
 
-        wget ~{url} -O ~{outfile_name}
+        wget "~{url}" -O "~{outfile_name}"
 
         if [ -n "~{md5sum}" ]; then
-            echo "~{md5sum}  ~{outfile_name}" > ~{outfile_name}.md5
-            md5sum -c ~{outfile_name}.md5
+            echo "~{md5sum}  ~{outfile_name}" > "~{outfile_name}.md5"
+            md5sum -c "~{outfile_name}.md5"
         fi
     >>>
 
@@ -72,7 +72,7 @@ task split_string {
     command <<<
         set -euo pipefail
 
-        echo ~{string} | sed 's/~{delimiter}/\n/g' > split_strings.txt
+        echo "~{sub(string, delimiter, "\n")}"  > split_strings.txt
     >>>
 
     output {
@@ -116,9 +116,9 @@ task calc_gene_lengths {
 
     command <<<
         python3 /scripts/util/calc_gene_lengths.py \
-            --id_attr ~{idattr} \
-            ~{gtf} \
-            ~{outfile_name}
+            --id_attr "~{idattr}" \
+            "~{gtf}" \
+            "~{outfile_name}"
     >>>
 
     output {
@@ -152,7 +152,7 @@ task compression_integrity {
     Int disk_size_gb = ceil(file_size) + 10 + modify_disk_size_gb
 
     command <<<
-        bgzip -t ~{bgzipped_file}
+        bgzip -t "~{bgzipped_file}"
     >>>
 
     runtime {
@@ -192,9 +192,9 @@ task add_to_bam_header {
     command <<<
         set -euo pipefail
 
-        samtools view -H ~{bam} > header.sam
+        samtools view -H "~{bam}" > header.sam
         echo "~{additional_header}" >> header.sam
-        samtools reheader -P header.sam ~{bam} > ~{outfile_name}
+        samtools reheader -P header.sam "~{bam}" > "~{outfile_name}"
     >>>
 
     output {
@@ -233,7 +233,7 @@ task unpack_tarball {
         set -euo pipefail
 
         mkdir unpacked_tarball
-        tar -C unpacked_tarball -xzf ~{tarball} --no-same-owner
+        tar -C unpacked_tarball -xzf "~{tarball}" --no-same-owner
         # pipe through sort because otherwise order is random (dependent on filesystem)
         find unpacked_tarball/ -type f | LC_ALL=C sort > file_list.txt
     >>>
@@ -290,10 +290,10 @@ task make_coverage_regions_bed {
     command <<<
         set -euo pipefail
 
-        gunzip -c ~{gtf} \
+        gunzip -c "~{gtf}" \
             | gtf2bed \
             | awk '$8 == "~{feature_type}" {print $1 "\t" $2 "\t" $3}' \
-            > ~{outfile_name}
+            > "~{outfile_name}"
     >>>
 
     output {
@@ -337,8 +337,8 @@ task global_phred_scores {
     command <<<
         python3 /scripts/util/calc_global_phred_scores.py \
             ~{if fast_mode then "--fast_mode" else ""} \
-            ~{bam} \
-            ~{prefix}
+            "~{bam}" \
+            "~{prefix}"
     >>>
 
     output {
@@ -425,20 +425,20 @@ task qc_summary {
         set -euo pipefail
 
         tar -xzf "~{multiqc_tar_gz}" --no-same-owner
-        gen_stats_file=~{sample_name}.multiqc/multiqc_data/multiqc_general_stats.txt
+        gen_stats_file="~{sample_name}.multiqc/multiqc_data/multiqc_general_stats.txt"
 
-        TOTAL_READS=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-total_reads $gen_stats_file | tail -n 1 | awk '{ printf("%.0f", $1) }')
-        PERCENT_ALIGNED=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-percentage_aligned $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
-        MEAN_COVERAGE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-mean_coverage $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
-        INSERT_SIZE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-median_insert_size $gen_stats_file | tail -n 1)
-        MEAN_GC_CONTENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-avg_gc $gen_stats_file | tail -n 1 | awk '{ printf("%.3f", $1) }')
-        READ_LENGTH=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-consensusreadlength $gen_stats_file | tail -n 1)
-        PLATFORM=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-instrument $gen_stats_file | tail -n 1)
+        TOTAL_READS=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-total_reads "$gen_stats_file" | tail -n 1 | awk '{ printf("%.0f", $1) }')
+        PERCENT_ALIGNED=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-percentage_aligned "$gen_stats_file" | tail -n 1 | awk '{ printf("%.3f", $1) }')
+        MEAN_COVERAGE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-mean_coverage "$gen_stats_file" | tail -n 1 | awk '{ printf("%.3f", $1) }')
+        INSERT_SIZE=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-median_insert_size "$gen_stats_file" | tail -n 1)
+        MEAN_GC_CONTENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-avg_gc "$gen_stats_file" | tail -n 1 | awk '{ printf("%.3f", $1) }')
+        READ_LENGTH=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-consensusreadlength "$gen_stats_file" | tail -n 1)
+        PLATFORM=$(csvcut -t -c ngsderive_mqc-generalstats-ngsderive-instrument "$gen_stats_file" | tail -n 1)
 
-        THIRTYX_PERCENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-30_x_pc $gen_stats_file | tail -n 1)
-        DUP_PERCENT=$(csvcut -t -c FastQC_mqc-generalstats-fastqc-percent_duplicates $gen_stats_file | tail -n 1)
+        THIRTYX_PERCENT=$(csvcut -t -c QualiMap_mqc-generalstats-qualimap-30_x_pc "$gen_stats_file" | tail -n 1)
+        DUP_PERCENT=$(csvcut -t -c FastQC_mqc-generalstats-fastqc-percent_duplicates "$gen_stats_file" | tail -n 1)
 
-        STRANDEDNESS=$({ csvcut -t -c ngsderive_mqc-generalstats-ngsderive-predicted $gen_stats_file || echo "Not Applicable" ; } | tail -n 1)
+        STRANDEDNESS=$({ csvcut -t -c ngsderive_mqc-generalstats-ngsderive-predicted "$gen_stats_file" || echo "Not Applicable" ; } | tail -n 1)
 
         jq -n \
             --arg TOTAL_READS "$TOTAL_READS" \
@@ -462,7 +462,7 @@ task qc_summary {
                 percent_thirtyX_coverage: ($THIRTYX_PERCENT | tonumber),
                 percent_duplicate: ($DUP_PERCENT | tonumber),
                 inferred_strandedness: $STRANDEDNESS
-            }' > ~{outfile_name}
+            }' > "~{outfile_name}"
     >>>
 
     output {
@@ -515,8 +515,8 @@ task split_fastq {
     command <<<
         set -euo pipefail
 
-        let "lines = ~{reads_per_file} * 4"
-        zcat ~{fastq} | split -l $lines -d -a 6 - ~{prefix}
+        (( lines = ~{reads_per_file} * 4 ))
+        zcat "~{fastq}" | split -l $lines -d -a 6 - "~{prefix}"
 
         for file in "~{prefix}"*; do
             mv "$file" "${file}.fastq"

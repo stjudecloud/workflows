@@ -47,12 +47,12 @@ task bam_coverage {
 
         # localize BAM and BAI to CWD
         CWD_BAM=~{basename(bam)}
-        ln -s ~{bam} "$CWD_BAM"
-        ln -s ~{bam_index} "$CWD_BAM".bai
+        ln -s "~{bam}" "$CWD_BAM"
+        ln -s "~{bam_index}" "$CWD_BAM".bai
 
         bamCoverage \
             --bam "$CWD_BAM" \
-            --outFileName ~{prefix}.bw \
+            --outFileName "~{prefix}.bw" \
             --outFileFormat bigwig \
             --numberOfProcessors "$n_cores"
 

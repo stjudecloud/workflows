@@ -75,12 +75,12 @@ task fqlint {
 
     command <<<
         fq lint \
-            ~{sep(" ", prefix("--disable-validator ", disable_validator_codes))} \
-            --single-read-validation-level ~{single_read_validation_level} \
-            --paired-read-validation-level ~{paired_read_validation_level} \
+            ~{sep(" ", prefix("--disable-validator ", squote(disable_validator_codes)))} \
+            --single-read-validation-level "~{single_read_validation_level}" \
+            --paired-read-validation-level "~{paired_read_validation_level}" \
             --lint-mode ~{if panic then "panic" else "log"} \
-            ~{read_one_fastq} \
-            ~{read_two_fastq}
+            "~{read_one_fastq}" \
+            ~{"'" + read_two_fastq + "'"}
     >>>
 
     runtime {
@@ -151,14 +151,10 @@ task subsample {
         fq subsample \
             ~{probability_arg} \
             ~{record_count_arg} \
-            --r1-dst ~{r1_dst} \
-            ~{(
-                if defined(read_two_fastq)
-                then "--r2-dst " + r2_dst
-                else ""
-            )} \
-            ~{read_one_fastq} \
-            ~{read_two_fastq}
+            --r1-dst "~{r1_dst}" \
+            ~{"--r2-dst '" + r2_dst + "'"} \
+            "~{read_one_fastq}" \
+            ~{"'" + read_two_fastq + "'"}
     >>>
 
     output {

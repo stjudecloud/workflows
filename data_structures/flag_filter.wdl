@@ -85,7 +85,7 @@ task validate_string_is_12bit_int {
     command <<<
         if [[ "~{number}" =~ ^[1-9][0-9]*$ ]]; then
             # number is in decimal
-            if [ ~{number} -lt 4096 ]; then
+            if [ "~{number}" -lt 4096 ]; then
                 >&2 echo "Input number (~{number}) is valid"
             else
                 >&2 echo "Input number (~{number}) interpreted as decimal"
@@ -107,6 +107,8 @@ task validate_string_is_12bit_int {
     >>>
 
     runtime {
+        memory: "4 GB"
+        disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:2.2.1"
         maxRetries: 1
     }

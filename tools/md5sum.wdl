@@ -26,7 +26,7 @@ task compute_checksum {
     String outfile_name = basename(file) + ".md5"
 
     command <<<
-        md5sum ~{file} > ~{outfile_name}
+        md5sum "~{file}" > "~{outfile_name}"
     >>>
 
     output {

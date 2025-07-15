@@ -48,12 +48,12 @@ task split_n_cigar_reads {
         gatk \
             --java-options "-Xms4000m -Xmx~{java_heap_size}g" \
             SplitNCigarReads \
-            -R ~{fasta} \
-            -I ~{bam} \
-            -O ~{prefix}.bam \
+            -R "~{fasta}" \
+            -I "~{bam}" \
+            -O "~{prefix}.bam" \
             -OBM true
        # GATK is unreasonable and uses the plain ".bai" suffix.
-       mv ~{prefix}.bai ~{prefix}.bam.bai
+       mv "~{prefix}.bai" "~{prefix}.bam.bai"
     >>>
 
     output {
@@ -126,16 +126,16 @@ task base_recalibrator {
         gatk \
             --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
             BaseRecalibratorSpark \
-            -R ~{fasta} \
-            -I ~{bam} \
+            -R "~{fasta}" \
+            -I "~{bam}" \
             ~{(
                 if use_original_quality_scores
                 then "--use-original-qualities"
                 else ""
             )} \
-            -O ~{outfile_name} \
-            --known-sites ~{dbSNP_vcf} \
-            ~{sep(" ", prefix("--known-sites ", known_indels_sites_vcfs))} \
+            -O "~{outfile_name}" \
+            --known-sites "~{dbSNP_vcf}" \
+            ~{sep(" ", prefix("--known-sites ", squote(known_indels_sites_vcfs)))} \
             --spark-master local[~{ncpu}]
     >>>
 
@@ -195,10 +195,10 @@ task apply_bqsr {
             --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
             ApplyBQSRSpark \
             --spark-master local[~{ncpu}] \
-            -I ~{bam} \
+            -I "~{bam}" \
             ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
-            -O ~{prefix}.bqsr.bam \
-            --bqsr-recal-file ~{recalibration_report}
+            -O "~{prefix}.bqsr.bam" \
+            --bqsr-recal-file "~{recalibration_report}"
     >>>
 
     output {
@@ -278,13 +278,13 @@ task haplotype_caller {
         gatk \
            --java-options "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
             HaplotypeCaller \
-            -R ~{fasta} \
-            -I ~{bam} \
-            -L ~{interval_list} \
-            -O ~{prefix}.vcf.gz \
+            -R "~{fasta}" \
+            -I "~{bam}" \
+            -L "~{interval_list}" \
+            -O "~{prefix}.vcf.gz" \
             ~{if use_soft_clipped_bases then "" else "--dont-use-soft-clipped-bases"} \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
-            --dbsnp ~{dbSNP_vcf}
+            --dbsnp "~{dbSNP_vcf}"
     >>>
 
     output {
@@ -351,13 +351,13 @@ task variant_filtration {
 
     command <<<
         gatk VariantFiltration \
-            --R ~{fasta} \
-                --V ~{vcf} \
-                --window ~{window} \
-                --cluster ~{cluster} \
-                 ~{sep(" ", prefix("--filter-name ", filter_names))} \
-                 ~{sep(" ", prefix("--filter-expression ", squote(filter_expressions)))} \
-                -O ~{prefix}.filtered.vcf.gz
+            --R "~{fasta}" \
+            --V "~{vcf}" \
+            --window ~{window} \
+            --cluster ~{cluster} \
+            ~{sep(" ", prefix("--filter-name ", quote(filter_names)))} \
+            ~{sep(" ", prefix("--filter-expression ", squote(filter_expressions)))} \
+            -O "~{prefix}.filtered.vcf.gz"
     >>>
 
     output {
@@ -458,16 +458,16 @@ task mark_duplicates_spark {
 
         gatk MarkDuplicatesSpark \
             --java-options "-Xmx~{java_heap_size}g" \
-            -I ~{bam} \
-            -M ~{prefix}.metrics.txt \
-            -O ~{if create_bam then prefix + ".bam" else "/dev/null"} \
+            -I "~{bam}" \
+            -M "~{prefix}.metrics.txt" \
+            -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
             --create-output-bam-index ~{create_bam} \
-            --read-validation-stringency ~{validation_stringency} \
-            --duplicate-scoring-strategy ~{duplicate_scoring_strategy} \
+            --read-validation-stringency "~{validation_stringency}" \
+            --duplicate-scoring-strategy "~{duplicate_scoring_strategy}" \
             --read-name-regex '~{
                 if (optical_distance > 0) then read_name_regex else "null"
             }' \
-            --duplicate-tagging-policy ~{tagging_policy} \
+            --duplicate-tagging-policy "~{tagging_policy}" \
             --optical-duplicate-pixel-distance ~{optical_distance} \
             --spark-master local[~{ncpu}]
     >>>
