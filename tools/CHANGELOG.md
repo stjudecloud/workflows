@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - Added `util.check_fastq_and_rg_concordance` task for alignment pre-processing [#235](https://github.com/stjudecloud/workflows/pull/235).
+- Added `fastq` task for fastq pre-processing [#244](https://github.com/stjudecloud/workflows/pull/244).
 
 ### Changed
 
