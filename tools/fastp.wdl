@@ -12,20 +12,30 @@ task fastp {
         read_one_fastq: "Input FASTQ with read one. Can be gzipped or uncompressed."
         read_two_fastq: "Input FASTQ with read two. Can be gzipped or uncompressed."
         prefix: "Prefix for the Fastp report files. The extensions `.fastp.html`, `.fastp.json`, and `.fastp.trimmed.fastq.gz` will be added."
+        disable_adapter_trimming: "Disable adapter trimming"
+        deduplicate: "Enable deduplication to drop the duplicated reads/pairs"
+        phred64: "Input uses phred64 encoding. It will be converted to phred33 encoding in the output files."
+        trim_front_r1: "Number of bases to trim from the front of read one"
+        trim_tail_r1: "Number of bases to trim from the tail of read one"
+        trim_front_r2: "Number of bases to trim from the front of read two"
+        trim_tail_r2: "Number of bases to trim from the tail of read two"
+        max_length_r1: "Maximum length of read one. Reads longer than this will be trimmed from the tail."
+        max_length_r2: "Maximum length of read two. Reads longer than this will be trimmed from the tail."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
     }
 
     input {
         File read_one_fastq
         File? read_two_fastq
-        Boolean disable_adapter_trimming = false
-        Boolean deduplicate = false
-        Boolean phred64 = false
         String prefix = sub(
             basename(read_one_fastq),
             "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
+        Boolean disable_adapter_trimming = false
+        Boolean deduplicate = false
+        Boolean phred64 = false
         Int trim_front_r1 = 0
         Int trim_tail_r1 = 0
         Int trim_front_r2 = 0
@@ -33,10 +43,11 @@ task fastp {
         Int max_length_r1 = 0
         Int max_length_r2 = 0
         Int modify_disk_size_gb = 0
-        Int n_cpu = 3
+        Int ncpu = 3
     }
 
-    Float input_size = size(read_one_fastq, "GiB") + (if defined(read_two_fastq) then size(read_two_fastq, "GiB") else 0)
+    Float input_size = size(read_one_fastq, "GiB")
+        + (if defined(read_two_fastq) then size(read_two_fastq, "GiB") else 0)
     Int disk_size_gb = ceil(input_size) + 10 + modify_disk_size_gb
 
     String out_tar_gz = prefix + ".tar.gz"
@@ -62,22 +73,26 @@ task fastp {
             --max_len1 ~{max_length_r1} \
             --max_len2 ~{max_length_r2} \
             -R "~{prefix} report" \
-            --thread ~{n_cpu} \
+            --thread ~{ncpu} \
             ~{if deduplicate then "--dedup" else ""} \
 
             -h "~{prefix}.fastp.html" \
             -j "~{prefix}.fastp.json"
 
-        tar -czf ~{out_tar_gz} ~{prefix}.R1.fastq.gz ~{prefix}.R2.fastq.gz ~{prefix}.fastp.html ~{prefix}.fastp.json
+        tar -czf ~{out_tar_gz} \
+            ~{prefix}.R1.fastq.gz \
+            ~{prefix}.R2.fastq.gz \
+            ~{prefix}.fastp.html \
+            ~{prefix}.fastp.json
     >>>
+
+    output {
+        File fastp_report = out_tar_gz
+    }
 
     runtime {
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fastp:1.0.1--heae3180_0"
         maxRetries: 1
-    }
-
-    output {
-        File fastp_report = out_tar_gz
     }
 }
