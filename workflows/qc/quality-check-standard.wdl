@@ -554,7 +554,7 @@ task parse_input {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.2.1"
+        container: "ghcr.io/stjudecloud/util:2.2.2"
         maxRetries: 1
     }
 }
