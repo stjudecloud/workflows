@@ -250,7 +250,6 @@ workflow quality_check_standard {
         # Those alignments are used downstream by Qualimap.
         fast_mode = (!rna),
         paired_end = true,  # matches default but prevents user from overriding
-        interleaved = false,  # matches default but prevents user from overriding
         use_all_cores,
     }
 
@@ -291,7 +290,6 @@ workflow quality_check_standard {
             # be converted to FASTQs. (Is that true?)
             fast_mode = true,
             paired_end = true,  # matches default but prevents user from overriding
-            interleaved = false,  # matches default but prevents user from overriding
             use_all_cores,
         }
         call fq.fqlint as alt_filtered_fqlint { input:

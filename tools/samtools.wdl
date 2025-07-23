@@ -763,11 +763,10 @@ task bam_to_fastq {
         help: "If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
         outputs: {
             collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order). Only generated if `retain_collated_bam` and `paired_end` are both true. Has the name `~{prefix}.collated.bam`.",
-            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair. Only generated if `paired_end` is true and `interleaved` is false. Has the name `~{prefix}.R1.fastq.gz`.",
-            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair. Only generated if `paired_end` is true and `interleaved` is false. Has the name `~{prefix}.R2.fastq.gz`.",
+            read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair. Only generated if `paired_end` is true. Has the name `~{prefix}.R1.fastq.gz`.",
+            read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair. Only generated if `paired_end` is true. Has the name `~{prefix}.R2.fastq.gz`.",
             singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads. Only generated if `paired_end` and `output_singletons` are both true. Has the name `~{prefix}.singleton.fastq.gz`.",
-            interleaved_reads_fastq_gz: "Interleaved gzipped Paired-End FASTQ. Only generated if `paired_end` and `interleaved` are both true. Has the name `~{prefix}.fastq.gz`. The conditions under which this output and `single_end_reads_fastq_gz` are created are mutually exclusive, but since they share the same literal filename they will always evaluate to the same file (or undefined if neither are created).",
-            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads. Only generated if `paired_end` is false. Has the name `~{prefix}.fastq.gz`. The conditions under which this output and `interleaved_reads_fastq_gz` are created are mutually exclusive, but since they share the same literal filename they will always evaluate to the same file (or undefined if neither are created).",
+            single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads. Only generated if `paired_end` is false. Has the name `~{prefix}.fastq.gz`.",
         }
     }
 
@@ -793,10 +792,6 @@ task bam_to_fastq {
         }
         append_read_number: {
             description: "Append /1 and /2 suffixes to read names?",
-            group: "Common",
-        }
-        interleaved: {
-            description: "Create an interleaved FASTQ file from Paired-End data? Ignored if `paired_end == false`.",
             group: "Common",
         }
         output_singletons: "Output singleton reads as their own FASTQ? Ignored if `paired_end == false`."
@@ -831,7 +826,6 @@ task bam_to_fastq {
         Boolean retain_collated_bam = false
         Boolean fast_mode = !retain_collated_bam
         Boolean append_read_number = true
-        Boolean interleaved = false
         Boolean output_singletons = false
         Boolean fail_on_unexpected_reads = false
         Boolean use_all_cores = false
@@ -894,20 +888,12 @@ task bam_to_fastq {
             )} \
             -1 ~{(
                 if paired_end
-                then (
-                    if interleaved
-                    then "\"" + prefix + ".fastq.gz\""
-                    else "\"" + prefix + ".R1.fastq.gz\""
-                )
+                then "\"" + prefix + ".R1.fastq.gz\""
                 else "\"" + prefix + ".fastq.gz\""
             )} \
             -2 ~{(
                 if paired_end
-                then (
-                    if interleaved
-                    then "\"" + prefix + ".fastq.gz\""
-                    else "\"" + prefix + ".R2.fastq.gz\""
-                )
+                then "\"" + prefix + ".R2.fastq.gz\""
                 else "\"" + prefix + ".fastq.gz\""
             )} \
             ~{(
@@ -949,7 +935,6 @@ task bam_to_fastq {
         File? read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
         File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
         File? singleton_reads_fastq_gz = "~{prefix}.singleton.fastq.gz"
-        File? interleaved_reads_fastq_gz = "~{prefix}.fastq.gz"
         File? single_end_reads_fastq_gz = "~{prefix}.fastq.gz"
     }
 
