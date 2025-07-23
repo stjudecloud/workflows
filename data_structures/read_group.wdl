@@ -365,7 +365,7 @@ task validate_read_group {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.2.1"
+        container: "ghcr.io/stjudecloud/util:2.2.2"
         maxRetries: 1
     }
 }
@@ -396,22 +396,20 @@ task inner_read_group_to_string {
             echo -n "@RG~{delimiter}" > out.txt
         fi
         {
-            echo -n "~{"ID:~{read_group.ID}"}"  # required field. All others optional
-            # if any individual placeholder of an interpolated String evaluates to None
-            # the entire parent String will evaluate to the empty String.
-            echo -n "~{"~{delimiter}BC:~{read_group.BC}"}"
-            echo -n "~{"~{delimiter}CN:~{read_group.CN}"}"
-            echo -n "~{"~{delimiter}DS:~{read_group.DS}"}"
-            echo -n "~{"~{delimiter}DT:~{read_group.DT}"}"
-            echo -n "~{"~{delimiter}FO:~{read_group.FO}"}"
-            echo -n "~{"~{delimiter}KS:~{read_group.KS}"}"
-            echo -n "~{"~{delimiter}LB:~{read_group.LB}"}"
-            echo -n "~{"~{delimiter}PG:~{read_group.PG}"}"
-            echo -n "~{"~{delimiter}PI:~{read_group.PI}"}"
-            echo -n "~{"~{delimiter}PL:~{read_group.PL}"}"
-            echo -n "~{"~{delimiter}PM:~{read_group.PM}"}"
-            echo -n "~{"~{delimiter}PU:~{read_group.PU}"}"
-            echo "~{"~{delimiter}SM:~{read_group.SM}"}"
+            echo -n "~{"ID:" + read_group.ID}"  # required field. All others optional
+            echo -n "~{delimiter + "BC:" + read_group.BC}"
+            echo -n "~{delimiter + "CN:" + read_group.CN}"
+            echo -n "~{delimiter + "DS:" + read_group.DS}"
+            echo -n "~{delimiter + "DT:" + read_group.DT}"
+            echo -n "~{delimiter + "FO:" + read_group.FO}"
+            echo -n "~{delimiter + "KS:" + read_group.KS}"
+            echo -n "~{delimiter + "LB:" + read_group.LB}"
+            echo -n "~{delimiter + "PG:" + read_group.PG}"
+            echo -n "~{delimiter + "PI:" + read_group.PI}"
+            echo -n "~{delimiter + "PL:" + read_group.PL}"
+            echo -n "~{delimiter + "PM:" + read_group.PM}"
+            echo -n "~{delimiter + "PU:" + read_group.PU}"
+            echo "~{delimiter + "SM:" + read_group.SM}"
         } >> out.txt
     >>>
 
@@ -420,7 +418,7 @@ task inner_read_group_to_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.2.1"
+        container: "ghcr.io/stjudecloud/util:2.2.2"
         maxRetries: 1
     }
 }
