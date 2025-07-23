@@ -1,5 +1,5 @@
 {
-    "read_group":{
+    "validate_read_group.read_group":{
         "ID": "myID",
         "SM": "sample a",
         "LB": "library",

@@ -1,9 +1,8 @@
 {
-    "read_group":{
+    "validate_read_group.read_group":{
         "ID": "id"
     },
-    "required_fields": [
-        "ID",
+    "validate_read_group.required_fields": [
         "SM"
     ]
 }

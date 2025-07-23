@@ -1,5 +1,5 @@
 {
-    "read_group":{
+    "validate_read_group.read_group":{
         "ID": "R123",
         "SM": "IPSC-1",
         "LB": "library",

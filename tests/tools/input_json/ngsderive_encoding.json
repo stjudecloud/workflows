@@ -1,4 +1,4 @@
 {
-    "ngs_files": ["tests/input/test.bwa_aln_pe.chrY_chrM.bam"],
-    "outfile_name": "test.bwa_aln_pe.chrY_chrM.encoding.tsv"
+    "encoding.ngs_files": ["../../input/test.bwa_aln_pe.chrY_chrM.bam"],
+    "encoding.outfile_name": "test.bwa_aln_pe.chrY_chrM.encoding.tsv"
 }

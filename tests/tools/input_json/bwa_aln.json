@@ -1,5 +1,5 @@
 {
-    "fastq": "tests/input/test_R1.fq.gz",
-    "read_group": "@RG\\tID:test\\tSM:test",
-    "bwa_db_tar_gz": "tests/input/bwa_db.tar.gz"
+    "bwa_aln.fastq": "../../input/test_R1.fq.gz",
+    "bwa_aln.read_group": "@RG\\tID:test\\tSM:test",
+    "bwa_aln.bwa_db_tar_gz": "../../input/bwa_db.tar.gz"
 }
