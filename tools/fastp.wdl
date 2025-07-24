@@ -22,6 +22,7 @@ task fastp {
         disable_adapter_trimming: "Disable adapter trimming"
         deduplicate: "Enable deduplication to drop the duplicated reads/pairs"
         phred64: "Input uses phred64 encoding. It will be converted to phred33 encoding in the output files."
+        use_all_cores: "TODO"
         n_base_limit: "TODO"
         qualified_quality: "TODO"
         unqualified_percent: "TODO"
@@ -52,6 +53,7 @@ task fastp {
         Boolean disable_adapter_trimming = false
         Boolean deduplicate = false
         Boolean phred64 = false
+        Boolean use_all_cores = false
         Int n_base_limit = 5
         Int qualified_quality = 15
         Int unqualified_percent = 40
@@ -74,6 +76,11 @@ task fastp {
 
     command <<< 
         set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
 
         # set ENV variables for `fastp`
         export LC_ALL=C.UTF-8
@@ -113,7 +120,7 @@ task fastp {
             --max_len1 ~{max_length_r1} \
             --max_len2 ~{max_length_r2} \
             -R "~{prefix} report" \
-            --thread ~{ncpu} \
+            --thread "$n_cores" \
             ~{if deduplicate then "--dedup" else ""} \
             -h "~{prefix}.fastp.html" \
             -j "~{prefix}.fastp.json"
@@ -128,6 +135,7 @@ task fastp {
     }
 
     runtime {
+        cpu: ncpu
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fastp:1.0.1--heae3180_0"
         maxRetries: 1
