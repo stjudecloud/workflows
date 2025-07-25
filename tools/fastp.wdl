@@ -36,7 +36,7 @@ task fastp {
         phred64: "Input uses phred64 encoding. It will be converted to phred33 encoding in the output files."
         use_all_cores: "Use all cores? Recommended for cloud environments."
         first_n_reads: "Only process the first `n` reads. `first_n_reads = 0` for processing entire input."
-        duplicate_accuracy: "Accuracy level to calculate duplication. Value must be between 1 and 6 inclusive. Higher levels use more memory (approximately: 1 GB, 2 GB, 4 GB, 8 GB, 16 GB, 24 GB)."
+        duplicate_accuracy: "Accuracy level to calculate duplication. Value must be between 1 and 6 inclusive. Higher levels use more memory (by default: 2 GB, 4 GB, 6 GB, 12 GB, 20 GB, 32 GB)."
         n_base_limit: "If one read's number of N base is `>n_base_limit`, then this read/pair is discarded."
         qualified_quality: "The PHRED quality score value that determines whether a base is qualified."
         unqualified_percent: "What percentage of bases is allowed to be unqualified (0-100)."
@@ -100,6 +100,15 @@ task fastp {
         Int max_length_r2 = 0
         Int modify_disk_size_gb = 0
         Int ncpu = 3
+    }
+
+    Map[Int, String] dup_acc_to_mem = {
+        1: "2 GB",
+        2: "4 GB",
+        3: "6 GB",
+        4: "12 GB",
+        5: "20 GB",
+        6: "32 GB",
     }
 
     Float input_size = size(read_one_fastq, "GiB")
@@ -181,6 +190,7 @@ task fastp {
 
     runtime {
         cpu: ncpu
+        memory: dup_acc_to_mem[duplicate_accuracy]
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fastp:1.0.1--heae3180_0"
         maxRetries: 1
