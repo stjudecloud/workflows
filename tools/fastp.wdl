@@ -190,7 +190,11 @@ task fastp {
 
     runtime {
         cpu: ncpu
-        memory: dup_acc_to_mem[duplicate_accuracy]
+        memory: (
+            if disable_duplicate_eval
+            then "2 GB"
+            else dup_acc_to_mem[duplicate_accuracy]
+        )
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fastp:1.0.1--heae3180_0"
         maxRetries: 1
