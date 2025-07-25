@@ -17,8 +17,8 @@ task fastp {
         read_two_fastq: "Optional input FASTQ with read two. Can be gzipped or uncompressed."
         prefix: "Prefix for the output files. The extensions `.fastp.html`, `.fastp.json`, and TODO will be added."
         output_fastq: "Output FASTQ files (true) or only generate a Fastq report (false)?"
-        disable_quality_filtering: "TODO"
-        disable_length_filtering: "TODO"
+        disable_quality_filter: "TODO"
+        disable_length_filter: "TODO"
         disable_adapter_trimming: "Disable adapter trimming"
         deduplicate: "Enable deduplication to drop the duplicated reads/pairs"
         phred64: "Input uses phred64 encoding. It will be converted to phred33 encoding in the output files."
@@ -48,18 +48,31 @@ task fastp {
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         Boolean output_fastq = true
-        Boolean disable_quality_filtering = false
-        Boolean disable_length_filtering = false
-        Boolean disable_adapter_trimming = false
         Boolean deduplicate = false
+        Boolean disable_duplicate_eval = false
+        Boolean disable_quality_filter = false
+        Boolean disable_length_filter = false
+        Boolean enable_complexity_filter = false
+        Boolean enable_overrepresentation = true
+        Boolean disable_adapter_trimming = false
+        Boolean enable_pe_adapter_trimming = false
+        Boolean allow_gap_overlap_trimming = false
+        Boolean enable_base_correction = false
         Boolean phred64 = false
         Boolean use_all_cores = false
+        Int first_n_reads = 0
+        Int duplicate_accuracy = if deduplicate then 3 else 1
         Int n_base_limit = 5
         Int qualified_quality = 15
         Int unqualified_percent = 40
         Int average_quality = 0
         Int length_required = 15
         Int length_limit = 0
+        Int complexity_threshold = 30
+        Int overlap_len_require = 30
+        Int overlap_diff_limit = 5
+        Int overlap_diff_percent_limit = 20
+        Int overrepresentation_sampling = 20
         Int trim_front_r1 = 0
         Int trim_tail_r1 = 0
         Int trim_front_r2 = 0
@@ -103,16 +116,30 @@ task fastp {
                 then "-O '" + prefix + ".R2.fastq.gz'"
                 else ""
             )} \
+            --reads_to_process ~{first_n_reads} \
+            ~{if deduplicate then "--dedup" else ""} \
+            --dup_calc_accuracy ~{duplicate_accuracy} \
+            ~{if disable_duplicate_eval then "--dont_eval_duplication" else ""} \
             ~{if phred64 then "--phred64" else ""} \
-            ~{if disable_quality_filtering then "--disable_quality_filtering" else ""} \
+            ~{if disable_quality_filter then "--disable_quality_filtering" else ""} \
             -n ~{n_base_limit} \
             -q ~{qualified_quality} \
             -u ~{unqualified_percent} \
             -e ~{average_quality} \
-            ~{if disable_length_filtering then "--disable_length_filtering" else ""} \
+            ~{if disable_length_filter then "--disable_length_filtering" else ""} \
             -l ~{length_required} \
             --length_limit ~{length_limit} \
+            ~{if enable_complexity_filter then "-y" else ""} \
+            -Y ~{complexity_threshold} \
+            ~{if enable_overrepresentation then "-p" else ""} \
+            -P ~{overrepresentation_sampling} \
             ~{if disable_adapter_trimming then "--disable_adapter_trimming" else ""} \
+            ~{if enable_pe_adapter_trimming then "-2" else ""} \
+            ~{if allow_gap_overlap_trimming then "--allow_gap_overlap_trimming" else ""} \
+            ~{if enable_base_correction then "-c" else ""} \
+            --overlap_len_require ~{overlap_len_require} \
+            --overlap_diff_limit ~{overlap_diff_limit} \
+            --overlap_diff_percent_limit ~{overlap_diff_percent_limit} \
             --trim_front1 ~{trim_front_r1} \
             --trim_tail1 ~{trim_tail_r1} \
             --trim_front2 ~{trim_front_r2} \
@@ -121,7 +148,6 @@ task fastp {
             --max_len2 ~{max_length_r2} \
             -R "~{prefix} report" \
             --thread "$n_cores" \
-            ~{if deduplicate then "--dedup" else ""} \
             -h "~{prefix}.fastp.html" \
             -j "~{prefix}.fastp.json"
     >>>
