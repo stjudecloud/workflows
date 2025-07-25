@@ -17,18 +17,37 @@ task fastp {
         read_two_fastq: "Optional input FASTQ with read two. Can be gzipped or uncompressed."
         prefix: "Prefix for the output files. The extensions `.fastp.html`, `.fastp.json`, and TODO will be added."
         output_fastq: "Output FASTQ files (true) or only generate a Fastq report (false)?"
-        disable_quality_filter: "TODO"
-        disable_length_filter: "TODO"
-        disable_adapter_trimming: "Disable adapter trimming"
-        deduplicate: "Enable deduplication to drop the duplicated reads/pairs"
+        deduplicate: "Remove detected duplicate reads/pairs?"
+        disable_duplicate_eval: "Don't evaluate duplication rate? Saves time and uses less memory."
+        disable_quality_filter: "Disable quality score filtering?"
+        disable_length_filter: "Disable read length filtering?"
+        enable_complexity_filter: "Enable low complexity filter?"
+        enable_overrepresentation_eval: {
+            description: "Enable overrepresented sequence analysis?",
+            tool_default: false,
+        }
+        disable_adapter_trimming: "Disable adapter trimming?"
+        enable_pe_adapter_trimming: {
+            description: "Enable adapter detection for Paired-End data to get ultra-clean data? It takes more time to find just a little bit more adapters.",
+            tool_default: false,
+        }
+        allow_gap_overlap_trimming: "Allow up to one gap when trimming adapters by overlap analysis for Paired-End data?"
+        enable_base_correction: "Enable base correction in overlapped regions? Only for Paired-End data."
         phred64: "Input uses phred64 encoding. It will be converted to phred33 encoding in the output files."
-        use_all_cores: "TODO"
-        n_base_limit: "TODO"
-        qualified_quality: "TODO"
-        unqualified_percent: "TODO"
-        average_quality: "TODO"
-        length_required: "TODO"
-        length_limit: "TODO"
+        use_all_cores: "Use all cores? Recommended for cloud environments."
+        first_n_reads: "Only process the first `n` reads. `first_n_reads = 0` for processing entire input."
+        duplicate_accuracy: "Accuracy level to calculate duplication. Value must be between 1 and 6 inclusive. Higher levels use more memory (approximately: 1 GB, 2 GB, 4 GB, 8 GB, 16 GB, 24 GB)."
+        n_base_limit: "If one read's number of N base is `>n_base_limit`, then this read/pair is discarded."
+        qualified_quality: "The PHRED quality score value that determines whether a base is qualified."
+        unqualified_percent: "What percentage of bases is allowed to be unqualified (0-100)."
+        average_quality: "If one read's average quality score `< average_quality`, then this read/pair is discarded. `0` means no requirement."
+        length_required: "Reads shorter than `length_required` will be discarded."
+        length_limit: "Reads longer than `length_limit` will be discarded. `0` means no limitation."
+        complexity_threshold: "The threshold for the low complexity filter (0-100). A value of 30 would mean 30% complexity is required."
+        overlap_len_require: "The minimum length to detect overlapped region of Paired-End reads. This will affect overlap analysis based Paired-End adapter trimming and correction."
+        overlap_diff_limit: "The maximum number of mismatched bases to detect overlapped region of Paired-End reads. This will affect overlap analysis based Paired-End adapter trimming and correction."
+        overlap_diff_percent_limit: "The maximum percentage of mismatched bases to detect overlapped region of Paired-End reads. This will affect overlap analysis based Paired-End adapter trimming and correction."
+        overrepresentation_sampling: "One in `overrepresentation_sampling` reads will be computed for overrepresentation analysis. Value should be between 1 and 10000 inclusive. Smaller values will run slower."
         trim_front_r1: "Number of bases to trim from the front of read one"
         trim_tail_r1: "Number of bases to trim from the tail of read one"
         trim_front_r2: "Number of bases to trim from the front of read two"
@@ -53,9 +72,9 @@ task fastp {
         Boolean disable_quality_filter = false
         Boolean disable_length_filter = false
         Boolean enable_complexity_filter = false
-        Boolean enable_overrepresentation = true
+        Boolean enable_overrepresentation_eval = true
         Boolean disable_adapter_trimming = false
-        Boolean enable_pe_adapter_trimming = false
+        Boolean enable_pe_adapter_trimming = true
         Boolean allow_gap_overlap_trimming = false
         Boolean enable_base_correction = false
         Boolean phred64 = false
@@ -131,7 +150,7 @@ task fastp {
             --length_limit ~{length_limit} \
             ~{if enable_complexity_filter then "-y" else ""} \
             -Y ~{complexity_threshold} \
-            ~{if enable_overrepresentation then "-p" else ""} \
+            ~{if enable_overrepresentation_eval then "-p" else ""} \
             -P ~{overrepresentation_sampling} \
             ~{if disable_adapter_trimming then "--disable_adapter_trimming" else ""} \
             ~{if enable_pe_adapter_trimming then "-2" else ""} \
