@@ -201,6 +201,7 @@ task validate_bam {
         set -euo pipefail
 
         rc=0
+        # shellcheck disable=SC2086
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             -I "~{bam}" \
             ~{"-R '" + reference_fasta + "'"} \
@@ -389,6 +390,7 @@ task merge_sam_files {
     command <<<
         set -euo pipefail
 
+        # shellcheck disable=SC2086
         picard -Xmx~{java_heap_size}g MergeSamFiles \
             ~{sep(" ", input_arg)} \
             --OUTPUT "~{outfile_name}" \
@@ -839,7 +841,7 @@ task bam_to_fastq {
             FASTQ="~{prefix}.R1.fastq" \
             ~{(
                 if paired
-                then "SECOND_END_FASTQ=" + prefix + ".R2.fastq"
+                then "SECOND_END_FASTQ='" + prefix + ".R2.fastq'"
                 else ""
             )} \
             RE_REVERSE=true \

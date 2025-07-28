@@ -195,7 +195,7 @@ task validate_read_group {
             >&2 echo "ID must match pattern ~{sam_spec_pattern}"
             exit_code=1
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "SM") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "SM")" -eq 1 ]; then
             if [ -z "~{read_group.SM}" ]; then
                 >&2 echo "SM is required"
                 exit_code=1
@@ -216,7 +216,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "BC") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "BC")" -eq 1 ]; then
             if [ -z "~{read_group.BC}" ]; then
                 >&2 echo "BC is required"
                 exit_code=1
@@ -228,7 +228,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "CN") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "CN")" -eq 1 ]; then
             if [ -z "~{read_group.CN}" ]; then
                 >&2 echo "CN is required"
                 exit_code=1
@@ -240,7 +240,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "DS") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "DS")" -eq 1 ]; then
             if [ -z "~{read_group.DS}" ]; then
                 >&2 echo "DS is required"
                 exit_code=1
@@ -252,7 +252,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "DT") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "DT")" -eq 1 ]; then
             if [ -z "~{read_group.DT}" ]; then
                 >&2 echo "DT is required"
                 exit_code=1
@@ -264,7 +264,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "FO") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "FO")" -eq 1 ]; then
             if [ -z "~{read_group.FO}" ]; then
                 >&2 echo "FO is required"
                 exit_code=1
@@ -276,7 +276,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "KS") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "KS")" -eq 1 ]; then
             if [ -z "~{if defined(read_group.KS) then read_group.KS else ""}" ]; then
                 >&2 echo "KS is required"
                 exit_code=1
@@ -288,7 +288,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "LB") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "LB")" -eq 1 ]; then
             if [ -z "~{read_group.LB}" ]; then
                 >&2 echo "LB is required"
                 exit_code=1
@@ -300,7 +300,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PG") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "PG")" -eq 1 ]; then
             if [ -z "~{read_group.PG}" ]; then
                 >&2 echo "PG is required"
                 exit_code=1
@@ -312,7 +312,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PI") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "PI")" -eq 1 ]; then
             if [ -z "~{read_group.PI}" ]; then
                 >&2 echo "PI is required"
                 exit_code=1
@@ -324,7 +324,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PL") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "PL")" -eq 1 ]; then
             if [ -z "~{read_group.PL}" ]; then
                 >&2 echo "PL is required"
                 exit_code=1
@@ -336,7 +336,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PM") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "PM")" -eq 1 ]; then
             if [ -z "~{read_group.PM}" ]; then
                 >&2 echo "PM is required"
                 exit_code=1
@@ -348,7 +348,7 @@ task validate_read_group {
                 exit_code=1
             fi
         fi
-        if [ $(echo "~{sep(" ", required_fields)}" | grep -Ewc "PU") -eq 1 ]; then
+        if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "PU")" -eq 1 ]; then
             if [ -z "~{read_group.PU}" ]; then
                 >&2 echo "PU is required"
                 exit_code=1

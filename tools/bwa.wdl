@@ -13,13 +13,12 @@ task bwa_aln {
     parameter_meta {
         fastq: "Input FASTQ file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
+        read_group: {
+            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
+        }
         prefix: {
             description: "Prefix for the BAM file. The extension `.bam` will be added.",
             help: "See `../README.md` for more information on the default prefix evaluation.",
-            group: "Common",
-        }
-        read_group: {
-            description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
             group: "Common",
         }
         use_all_cores: {
@@ -36,12 +35,12 @@ task bwa_aln {
     input {
         File fastq
         File bwa_db_tar_gz
+        String read_group
         String prefix = sub(
             basename(fastq),
             "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
-        String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_disk_size_gb = 0
@@ -72,7 +71,7 @@ task bwa_aln {
         bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{fastq}" > sai
 
         bwa samse \
-            ~{if read_group != "" then "-r '~{read_group}'" else ""} \
+            ~{"-r '" + read_group + "'"} \
             bwa_db/"$PREFIX" \
             sai \
             "~{fastq}" \
@@ -272,7 +271,7 @@ task bwa_mem {
             ~{if read_group != "" then "-R '" + read_group + "'" else ""} \
             bwa_db/"$PREFIX" \
             "~{basename(read_one_fastq_gz)}" \
-            ~{basename(read_two_file)} \
+            "~{basename(read_two_file)}" \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > "~{output_bam}"
 

@@ -583,7 +583,7 @@ task merge {
             ~{if combine_rg then "-c" else ""} \
             ~{if combine_pg then "-p" else ""} \
             "~{prefix}.bam" \
-            $bams
+            "${bams[@]}"
     >>>
 
     output {

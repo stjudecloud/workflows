@@ -64,6 +64,7 @@ task rnaseq {
         gunzip -c "~{gtf}" > "$gtf_name" || ln -sf "~{gtf}" "$gtf_name"
 
         # '-oc qualimap_counts.txt' puts the file in '-outdir'
+        # shellcheck disable=SC2086
         qualimap rnaseq -bam "~{bam}" \
                         -oc qualimap_counts.txt \
                         -gtf "$gtf_name" \
