@@ -1,4 +1,4 @@
-- name: fastqc
+- name: fastp
   tags:
     - miniwdl
     - fastp
