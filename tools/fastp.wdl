@@ -122,10 +122,6 @@ task fastp {
             n_cores=$(nproc)
         fi
 
-        # set ENV variables for `fastp`
-        export LC_ALL=C.UTF-8
-        export LANG=C.UTF-8
-
         fastp \
             -i "~{read_one_fastq}" \
             ~{"-I '" + read_two_fastq + "'"} \
