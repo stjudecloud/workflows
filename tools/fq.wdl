@@ -148,6 +148,7 @@ task subsample {
     String r2_dst = prefix + ".R2.subsampled.fastq.gz"
 
     command <<<
+        # shellcheck disable=SC2086
         fq subsample \
             ~{probability_arg} \
             ~{record_count_arg} \

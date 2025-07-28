@@ -123,6 +123,7 @@ task base_recalibrator {
 
     #@ except: LineWidth
     command <<<
+        # shellcheck disable=SC2102
         gatk \
             --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
             BaseRecalibratorSpark \
@@ -191,6 +192,7 @@ task apply_bqsr {
     command <<<
         set -euo pipefail
 
+        # shellcheck disable=SC2102
         gatk \
             --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
             ApplyBQSRSpark \
@@ -456,6 +458,7 @@ task mark_duplicates_spark {
     command <<<
         set -euo pipefail
 
+        # shellcheck disable=SC2102
         gatk MarkDuplicatesSpark \
             --java-options "-Xmx~{java_heap_size}g" \
             -I "~{bam}" \

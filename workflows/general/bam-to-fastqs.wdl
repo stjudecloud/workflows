@@ -37,7 +37,6 @@ workflow bam_to_fastqs {
         call samtools.bam_to_fastq { input:
             bam = split_bam,
             paired_end,
-            interleaved = false,  # matches default but prevents user from overriding
             use_all_cores,
         }
     }

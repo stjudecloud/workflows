@@ -676,6 +676,7 @@ task alignment {
         mkdir star_db
         tar -xzf "~{star_db_tar_gz}" -C star_db/ --no-same-owner
 
+        # shellcheck disable=SC2086
         STAR --readFilesIn \
             ~{sep(",", squote(read_one_fastqs_gz))} \
             ~{sep(",", squote(read_twos))} \
@@ -722,7 +723,7 @@ task alignment {
             ]))} \
             --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{(
                 if (length(read_twos) != 0)
-                then "~{clip_3p_adapter_seq.right}"
+                then "'" + clip_3p_adapter_seq.right + "'"
                 else ""
             )} \
             --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(

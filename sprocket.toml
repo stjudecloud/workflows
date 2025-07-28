@@ -1,3 +1,3 @@
 [check]
-except = ["ContainerUri", "ShellCheck"]
+except = ["ContainerUri", "OutputSection", "UnusedCall"]
 deny_notes = true
