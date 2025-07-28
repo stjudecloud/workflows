@@ -112,11 +112,10 @@ task bwa_aln_pe {
             stream: false,
         }
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            group: "Common",
         }
+        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             group: "Common",
@@ -132,12 +131,12 @@ task bwa_aln_pe {
         File read_one_fastq_gz
         File read_two_fastq_gz
         File bwa_db_tar_gz
+        String read_group
         String prefix = sub(
             basename(read_one_fastq_gz),
             "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
-        String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 4
         Int modify_disk_size_gb = 0
@@ -171,7 +170,7 @@ task bwa_aln_pe {
         ln -s "~{read_two_fastq_gz}" .
 
         bwa sampe \
-            ~{if read_group != "" then "-r '" + read_group + "'" else ""} \
+            ~{"-r '" + read_group + "'"} \
             bwa_db/"$PREFIX" \
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{basename(read_one_fastq_gz)}") \
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{basename(read_two_fastq_gz)}") \
@@ -206,12 +205,11 @@ task bwa_mem {
     parameter_meta {
         read_one_fastq_gz: "Input gzipped FASTQ read one file to align with bwa"
         bwa_db_tar_gz: "Gzipped tar archive of the bwa reference files. Files should be at the root of the archive."
-        read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
-        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         read_group: {
             description: "Read group information for BWA to insert into the header. BWA format: '@RG\tID:foo\tSM:bar'",
-            group: "Common",
         }
+        read_two_fastq_gz: "Input gzipped FASTQ read two file to align with bwa"
+        prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             group: "Common",
@@ -226,13 +224,13 @@ task bwa_mem {
     input {
         File read_one_fastq_gz
         File bwa_db_tar_gz
+        String read_group
         File? read_two_fastq_gz
         String prefix = sub(
             basename(read_one_fastq_gz),
             "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
-        String read_group = ""
         Boolean use_all_cores = false
         Int ncpu = 4
         Int modify_disk_size_gb = 0
@@ -246,8 +244,6 @@ task bwa_mem {
     Int disk_size_gb = (
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
     )
-
-    File read_two_file = select_first([read_two_fastq_gz, ""])
 
     command <<<
         set -euo pipefail
@@ -264,14 +260,18 @@ task bwa_mem {
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
         ln -sf "~{read_one_fastq_gz}" .
-        ~{"ln -sf '" + read_two_fastq_gz + "'"}
+        ~{"ln -sf '" + read_two_fastq_gz + "' ."}
 
         bwa mem \
             -t "$n_cores" \
             ~{if read_group != "" then "-R '" + read_group + "'" else ""} \
             bwa_db/"$PREFIX" \
             "~{basename(read_one_fastq_gz)}" \
-            "~{basename(read_two_file)}" \
+            ~{(
+                if defined(read_two_fastq_gz)
+                then "'" + basename(select_first([read_two_fastq_gz])) + "'"
+                else ""
+            )} \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > "~{output_bam}"
 

@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- `bwa.bwa_aln` no requires the `read_group` argument [#244](https://github.com/stjudecloud/workflows/pull/244).
+- `bwa` alignment tasks now require the `read_group` argument [#244](https://github.com/stjudecloud/workflows/pull/244).
 - "validation tasks" no longer have output sections [#240](https://github.com/stjudecloud/workflows/pull/240).
 - "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manaully specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` now specifies `read_one_fastqs_gz` and `read_groups` must be non-empty [#235](https://github.com/stjudecloud/workflows/pull/235).
