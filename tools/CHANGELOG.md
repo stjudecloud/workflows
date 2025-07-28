@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - Added `util.check_fastq_and_rg_concordance` task for alignment pre-processing [#235](https://github.com/stjudecloud/workflows/pull/235).
-- Added `fastq` task for fastq pre-processing [#244](https://github.com/stjudecloud/workflows/pull/244).
+- Added `fastp` task for fastq QC and read trimming [#244](https://github.com/stjudecloud/workflows/pull/244).
 
 ### Changed
 
@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Removed
 
+- removed interleaved FASTQ option from `samtools.bam_to_fastq` [#244](https://github.com/stjudecloud/workflows/pull/244).
 - removed all uses of non-empty (`+`) array qualifier [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` no longer sorts inputs prior to passing to STAR [#235](https://github.com/stjudecloud/workflows/pull/235).
     - This means you have to ensure the FASTQs and RG records are concordant in your inputs!
