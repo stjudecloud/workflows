@@ -71,7 +71,7 @@ task bwa_aln {
         bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{fastq}" > sai
 
         bwa samse \
-            ~{"-r '" + read_group + "'"} \
+            -r  "~{read_group}" \
             bwa_db/"$PREFIX" \
             sai \
             "~{fastq}" \
@@ -170,7 +170,7 @@ task bwa_aln_pe {
         ln -s "~{read_two_fastq_gz}" .
 
         bwa sampe \
-            ~{"-r '" + read_group + "'"} \
+           -r "~{read_group}" \
             bwa_db/"$PREFIX" \
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{basename(read_one_fastq_gz)}") \
             <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{basename(read_two_fastq_gz)}") \
@@ -264,7 +264,7 @@ task bwa_mem {
 
         bwa mem \
             -t "$n_cores" \
-            ~{if read_group != "" then "-R '" + read_group + "'" else ""} \
+            -R "~{read_group}" \
             bwa_db/"$PREFIX" \
             "~{basename(read_one_fastq_gz)}" \
             ~{(
