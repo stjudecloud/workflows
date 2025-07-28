@@ -15,10 +15,10 @@ task fastp {
     parameter_meta {
         read_one_fastq: "Input FASTQ with read one. Can be gzipped or uncompressed."
         read_two_fastq: "Optional input FASTQ with read two. Can be gzipped or uncompressed."
-        prefix: "Prefix for the output files. The extensions `.fastp.html`, `.fastp.json`, and TODO will be added."
+        prefix: "Prefix for the output files. The extensions `.fastp.html`, `.fastp.json`, `.R1.fastq.gz`, `.R2.fastq.gz`, and/or `.fastq.gz` will be added."
         output_fastq: "Output FASTQ files (true) or only generate a `fastp` QC report (false)?"
         deduplicate: "Remove detected duplicate reads/pairs?"
-        disable_duplicate_eval: "Don't evaluate duplication rate? Saves time and uses less memory."
+        disable_duplicate_eval: "Don't evaluate duplication rate? Decreases runtime."
         disable_quality_filter: "Disable quality score filtering?"
         disable_length_filter: "Disable read length filtering?"
         enable_complexity_filter: "Enable low complexity filter?"
