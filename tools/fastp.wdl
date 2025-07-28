@@ -116,7 +116,6 @@ task fastp {
 
     command <<< 
         set -euo pipefail
-
         n_cores=~{ncpu}
         if ~{use_all_cores}; then
             n_cores=$(nproc)
