@@ -9,10 +9,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - Added `util.check_fastq_and_rg_concordance` task for alignment pre-processing [#235](https://github.com/stjudecloud/workflows/pull/235).
-- Added `fastp` task for fastq QC and read trimming [#244](https://github.com/stjudecloud/workflows/pull/244).
+- Added `fastp` task for FASTQ QC and read trimming [#244](https://github.com/stjudecloud/workflows/pull/244).
 
 ### Changed
 
+- `bwa.bwa_aln` no requires the `read_group` argument [#244](https://github.com/stjudecloud/workflows/pull/244).
 - "validation tasks" no longer have output sections [#240](https://github.com/stjudecloud/workflows/pull/240).
 - "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manaully specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` now specifies `read_one_fastqs_gz` and `read_groups` must be non-empty [#235](https://github.com/stjudecloud/workflows/pull/235).
