@@ -184,16 +184,36 @@ workflow rnaseq_core {
     }
 
     scatter (pair in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-        call fp.fastp after validate { input:
-            read_one_fastq = pair.left,
-            read_two_fastq = pair.right,
-            output_fastq = enable_read_trimming,
+        if (enable_read_trimming) {
+            call fp.fastp as trim after validate { input:
+                read_one_fastq = pair.left,
+                read_two_fastq = pair.right,
+                output_fastq = enable_read_trimming,
+            }
+        }
+        if (!enable_read_trimming) {
+            call fp.fastp after validate { input:
+                read_one_fastq = pair.left,
+                read_two_fastq = pair.right,
+                output_fastq = enable_read_trimming,
+            }
         }
     }
 
+    Array[File] chosen_r1s = (
+        if enable_read_trimming
+        then select_all(trim.read_one_fastq_gz)
+        else read_one_fastqs_gz
+    )
+    Array[File] chosen_r2s = (
+        if enable_read_trimming
+        then select_all(trim.read_two_fastq_gz)
+        else read_two_fastqs_gz
+    )
+
     call star.alignment after validate { input:
-        read_one_fastqs_gz,
-        read_two_fastqs_gz,
+        read_one_fastqs_gz = chosen_r1s,
+        read_two_fastqs_gz = chosen_r2s,
         star_db_tar_gz = star_db,
         prefix,
         read_groups,
@@ -259,7 +279,9 @@ workflow rnaseq_core {
         File feature_counts = htseq_count.feature_counts
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
         String inferred_strandedness_string = ngsderive_strandedness.strandedness_string
-        Array[File] fastp_reports = fastp.report
-        Array[File] fastp_jsons = fastp.report_json
+        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
+        Array[File] fastp_jsons = select_all(flatten(
+            [fastp.report_json, trim.report_json]
+        ))
     }
 }

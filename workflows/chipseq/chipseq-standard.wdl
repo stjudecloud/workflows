@@ -36,6 +36,7 @@ workflow chipseq_standard {
         bowtie_indexes: "Database of v1 reference files for the bowtie aligner. Can be generated with https://github.com/stjude/seaseq/blob/master/workflows/tasks/bowtie.wdl. [*.ebwt]"
         excludelist: "Optional list of regions that will be excluded after reference alignment"
         prefix: "Prefix for output files"
+        enable_read_trimming: "Enable read trimming with `fastp`?"
         validate_input: "Run Picard ValidateSamFile on the input BAM?"
         use_all_cores: "Use all cores for multi-core steps?"
         subsample_n_reads: "Only process a random sampling of `n` reads. <=`0` for processing entire input BAM."
@@ -46,6 +47,7 @@ workflow chipseq_standard {
         Array[File] bowtie_indexes
         File? excludelist
         String prefix = basename(bam, ".bam")
+        Boolean enable_read_trimming = false
         Boolean validate_input = true
         Boolean use_all_cores = false
         Int subsample_n_reads = -1
@@ -77,16 +79,26 @@ workflow chipseq_standard {
     }
 
     scatter (pair in zip(bam_to_fastqs.read1s, get_read_groups.read_groups)){
-        call fp.fastp { input:
-            read_one_fastq = pair.left,
-            output_fastq = false,
+        if (enable_read_trimming) {
+            call fp.fastp as trim { input:
+                read_one_fastq = pair.left,
+                output_fastq = enable_read_trimming,
+            }
+        }
+        if (!enable_read_trimming) {
+            call fp.fastp { input:
+                read_one_fastq = pair.left,
+                output_fastq = enable_read_trimming,
+            }
         }
 
+        File chosen_fastq = select_first([trim.single_end_reads_fastq_gz, pair.left])
+
         call seaseq_util.basicfastqstats as basic_stats { input:
-            fastqfile = pair.left
+            fastqfile = chosen_fastq
         }
         call seaseq_map.mapping as bowtie_single_end_mapping { input:
-            fastqfile = pair.left,
+            fastqfile = chosen_fastq,
             index_files = bowtie_indexes,
             metricsfile = basic_stats.metrics_out,
             blacklist = excludelist,
@@ -151,7 +163,9 @@ workflow chipseq_standard {
         File bam_checksum = compute_checksum.md5sum
         File bam_index = samtools_index.bam_index
         File bigwig = deeptools_bam_coverage.bigwig
-        Array[File] fastp_reports = fastp.report
-        Array[File] fastp_jsons = fastp.report_json
+        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
+        Array[File] fastp_jsons = select_all(flatten(
+            [fastp.report_json, trim.report_json]
+        ))
     }
 }

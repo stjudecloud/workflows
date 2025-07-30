@@ -73,13 +73,22 @@ workflow dnaseq_core_experimental {
         zip(read_one_fastqs_gz, read_two_fastqs_gz),
         read_groups
     )) {
-        call fp.fastp after validate { input:
-            read_one_fastq = tuple.left.left,
-            read_two_fastq = tuple.left.right,
-            output_fastq = enable_read_trimming,
+        if (enable_read_trimming) {
+            call fp.fastp as trim after validate { input:
+                read_one_fastq = tuple.left.left,
+                read_two_fastq = tuple.left.right,
+                output_fastq = enable_read_trimming,
+            }
         }
-        File chosen_r1_fastq = select_first([fastp.read_one_fastq_gz, tuple.left.left])
-        File chosen_r2_fastq = select_first([fastp.read_two_fastq_gz, tuple.left.right])
+        if (!enable_read_trimming) {
+            call fp.fastp after validate { input:
+                read_one_fastq = tuple.left.left,
+                read_two_fastq = tuple.left.right,
+                output_fastq = enable_read_trimming,
+            }
+        }
+        File chosen_r1_fastq = select_first([trim.read_one_fastq_gz, tuple.left.left])
+        File chosen_r2_fastq = select_first([trim.read_two_fastq_gz, tuple.left.right])
 
         call util.split_fastq as read_ones after validate { input:
             fastq = chosen_r1_fastq,
@@ -137,7 +146,9 @@ workflow dnaseq_core_experimental {
     output {
         File harmonized_bam = rg_merge.merged_bam
         File harmonized_bam_index = index.bam_index
-        Array[File] fastp_reports = fastp.report
-        Array[File] fastp_jsons = fastp.report_json
+        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
+        Array[File] fastp_jsons = select_all(flatten(
+            [fastp.report_json, trim.report_json]
+        ))
     }
 }
