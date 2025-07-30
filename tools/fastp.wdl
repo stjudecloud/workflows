@@ -14,14 +14,30 @@ task fastp {
 
     parameter_meta {
         read_one_fastq: "Input FASTQ with read one. Can be gzipped or uncompressed."
-        read_two_fastq: "Optional input FASTQ with read two. Can be gzipped or uncompressed."
-        prefix: "Prefix for the output files. The extensions `.fastp.html`, `.fastp.json`, `.R1.fastq.gz`, `.R2.fastq.gz`, and/or `.fastq.gz` will be added."
-        output_fastq: "Output FASTQ files (true) or only generate a `fastp` QC report (false)?"
-        deduplicate: "Remove detected duplicate reads/pairs?"
+        read_two_fastq: {
+            description: "Optional input FASTQ with read two. Can be gzipped or uncompressed.",
+            group: "Common",
+        }
+        prefix: {
+            description: "Prefix for the output files. The extensions `.fastp.html`, `.fastp.json`, `.R1.fastq.gz`, `.R2.fastq.gz`, and/or `.fastq.gz` will be added.",
+            group: "Common",
+        }
+        output_fastq: {
+            description: "Output FASTQ files (true) or only generate a `fastp` QC report (false)?",
+            group: "Common",
+        }
+        deduplicate: {
+            description: "Remove detected duplicate reads/pairs?",
+            group: "Common",
+        }
         disable_duplicate_eval: "Don't evaluate duplication rate? Decreases runtime."
         disable_quality_filter: "Disable quality score filtering?"
         disable_length_filter: "Disable read length filtering?"
-        enable_complexity_filter: "Enable low complexity filter?"
+        enable_complexity_filter: {
+            description: "Enable low complexity filter?",
+            help: "Defaults to the negation of `output_fastq`. This is to enable more comprehensive QC analysis when FASTQs aren't being produced and used downstream.",
+            group: "Common",
+        }
         enable_overrepresentation_eval: {
             description: "Enable overrepresented sequence analysis?",
             tool_default: false,
@@ -36,7 +52,10 @@ task fastp {
         phred64: "Input uses phred64 encoding. It will be converted to phred33 encoding in the output files."
         use_all_cores: "Use all cores? Recommended for cloud environments."
         first_n_reads: "Only process the first `n` reads. `first_n_reads = 0` for processing entire input."
-        duplicate_accuracy: "Accuracy level to calculate duplication. Value must be between 1 and 6 inclusive. Higher levels use more memory (by default: 2 GB, 4 GB, 6 GB, 12 GB, 20 GB, 32 GB)."
+        duplicate_accuracy: {
+            description: "Accuracy level to calculate duplication.",
+            help: "Value must be between 1 and 6 inclusive. Higher levels use more memory (by default: 2 GB, 4 GB, 6 GB, 12 GB, 20 GB, 32 GB).",
+        }
         n_base_limit: "If one read's number of N base is `>n_base_limit`, then this read/pair is discarded."
         qualified_quality: "The PHRED quality score value that determines whether a base is qualified."
         unqualified_percent: "What percentage of bases is allowed to be unqualified (0-100)."
@@ -44,10 +63,22 @@ task fastp {
         length_required: "Reads shorter than `length_required` will be discarded."
         length_limit: "Reads longer than `length_limit` will be discarded. `0` means no limitation."
         complexity_threshold: "The threshold for the low complexity filter (0-100). A value of 30 would mean 30% complexity is required."
-        overlap_len_require: "The minimum length to detect overlapped region of Paired-End reads. This will affect overlap analysis based Paired-End adapter trimming and correction."
-        overlap_diff_limit: "The maximum number of mismatched bases to detect overlapped region of Paired-End reads. This will affect overlap analysis based Paired-End adapter trimming and correction."
-        overlap_diff_percent_limit: "The maximum percentage of mismatched bases to detect overlapped region of Paired-End reads. This will affect overlap analysis based Paired-End adapter trimming and correction."
-        overrepresentation_sampling: "One in `overrepresentation_sampling` reads will be computed for overrepresentation analysis. Value should be between 1 and 10000 inclusive. Smaller values will run slower."
+        overlap_len_require: {
+            description: "The minimum length to detect overlapped region of Paired-End reads.",
+            help: "This will affect overlap analysis based Paired-End adapter trimming and correction.",
+        }
+        overlap_diff_limit: {
+            description: "The maximum number of mismatched bases to detect overlapped region of Paired-End reads.",
+            help: "This will affect overlap analysis based Paired-End adapter trimming and correction.",
+        }
+        overlap_diff_percent_limit: {
+            description: "The maximum percentage of mismatched bases to detect overlapped region of Paired-End reads.",
+            help: "This will affect overlap analysis based Paired-End adapter trimming and correction.",
+        }
+        overrepresentation_sampling: {
+            description: "One in `overrepresentation_sampling` reads will be computed for overrepresentation analysis.",
+            help: "Value should be between 1 and 10000 inclusive. Smaller values will run slower.",
+        }
         trim_front_r1: "Number of bases to trim from the front of read one"
         trim_tail_r1: "Number of bases to trim from the tail of read one"
         trim_front_r2: "Number of bases to trim from the front of read two"
@@ -71,7 +102,7 @@ task fastp {
         Boolean disable_duplicate_eval = false
         Boolean disable_quality_filter = false
         Boolean disable_length_filter = false
-        Boolean enable_complexity_filter = false
+        Boolean enable_complexity_filter = !output_fastq
         Boolean enable_overrepresentation_eval = true
         Boolean disable_adapter_trimming = false
         Boolean enable_pe_adapter_trimming = true
