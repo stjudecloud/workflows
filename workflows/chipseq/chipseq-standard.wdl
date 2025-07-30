@@ -2,6 +2,7 @@ version 1.1
 
 import "../../data_structures/read_group.wdl"
 import "../../tools/deeptools.wdl"
+import "../../tools/fastp.wdl" as fp
 import "../../tools/md5sum.wdl"
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
@@ -24,6 +25,8 @@ workflow chipseq_standard {
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
             bam_index: "BAI index file associated with `harmonized_bam`",
             bigwig: "BigWig format coverage file",
+            fastp_reports: "An array of `fastp` reports (in HTML format) corresponding to each read group",
+            fastp_jsons: "An array of `fastp` reports (in JSON format) corresponding to each read group",
         }
         allowNestedInputs: true
     }
@@ -74,6 +77,11 @@ workflow chipseq_standard {
     }
 
     scatter (pair in zip(bam_to_fastqs.read1s, get_read_groups.read_groups)){
+        call fp.fastp { input:
+            read_one_fastq = pair.left,
+            output_fastq = false,
+        }
+
         call seaseq_util.basicfastqstats as basic_stats { input:
             fastqfile = pair.left
         }
@@ -143,5 +151,7 @@ workflow chipseq_standard {
         File bam_checksum = compute_checksum.md5sum
         File bam_index = samtools_index.bam_index
         File bigwig = deeptools_bam_coverage.bigwig
+        Array[File] fastp_reports = fastp.report
+        Array[File] fastp_jsons = fastp.report_json
     }
 }

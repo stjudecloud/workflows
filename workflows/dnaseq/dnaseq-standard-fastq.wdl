@@ -15,6 +15,8 @@ workflow dnaseq_standard_fastq_experimental {
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
             harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",
+            fastp_reports: "An array of `fastp` reports (in HTML format) corresponding to each read group",
+            fastp_jsons: "An array of `fastp` reports (in JSON format) corresponding to each read group",
         }
         allowNestedInputs: true
     }
@@ -39,6 +41,7 @@ workflow dnaseq_standard_fastq_experimental {
                 "aln",
             ],
         }
+        enable_read_trimming: "Enable read trimming with `fastp`?"
         validate_input: "Ensure input FASTQs ares well-formed before beginning harmonization?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
         reads_per_file: "Controls the number of reads per FASTQ file for internal split to run BWA in parallel."
@@ -56,6 +59,7 @@ workflow dnaseq_standard_fastq_experimental {
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         String aligner = "mem"
+        Boolean enable_read_trimming = false
         Boolean validate_input = true
         Boolean use_all_cores = false
         Int reads_per_file = 10000000
@@ -106,15 +110,18 @@ workflow dnaseq_standard_fastq_experimental {
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,
         bwa_db,
-        reads_per_file,
         read_groups = read_group_to_string.validated_read_group,
         prefix,
         aligner,
+        enable_read_trimming,
+        reads_per_file,
         use_all_cores,
     }
 
     output {
         File harmonized_bam = dnaseq_core_experimental.harmonized_bam
         File harmonized_bam_index = dnaseq_core_experimental.harmonized_bam_index
+        Array[File] fastp_reports = dnaseq_core_experimental.fastp_reports
+        Array[File] fastp_jsons = dnaseq_core_experimental.fastp_jsons
     }
 }
