@@ -6,14 +6,15 @@
 **/*.sam
 **/*.log
 
-# Ignore Cromwell and Womtool and miniwdl files
+# Ignore Cromwell, Womtool, Sprocket, and miniwdl files
 **/cromwell*
 **/womtool*
 *.jar
+runs/
 miniwdl_call_cache/
 miniwdl_singularity_cache/
 _LAST
-202*/
+2025*/
 
 # Ignore test directories
 test-output/

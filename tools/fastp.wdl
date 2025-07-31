@@ -56,7 +56,10 @@ task fastp {
             description: "Accuracy level to calculate duplication.",
             help: "Value must be between 1 and 6 inclusive. Higher levels use more memory (by default: 2 GB, 4 GB, 6 GB, 12 GB, 20 GB, 32 GB).",
         }
-        n_base_limit: "If one read's number of N base is `>n_base_limit`, then this read/pair is discarded."
+        n_base_limit: {
+            description: "If one read's number of N base is `>n_base_limit`, then this read/pair is discarded.",
+            help: "Must be between `0` and `50` inclusive",
+        }
         qualified_quality: "The PHRED quality score value that determines whether a base is qualified."
         unqualified_percent: "What percentage of bases is allowed to be unqualified (0-100)."
         average_quality: "If one read's average quality score `< average_quality`, then this read/pair is discarded. `0` means no requirement."
