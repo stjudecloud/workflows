@@ -181,7 +181,7 @@ task parse_input {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.3.0"
+        container: "ghcr.io/stjudecloud/util:branch-fastp-workflows-2.3.0"
         maxRetries: 1
     }
 }
