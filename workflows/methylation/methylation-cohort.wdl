@@ -125,7 +125,7 @@ task combine_data {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-fastp-workflows-2.2.1-4"
+        container: "ghcr.io/stjudecloud/pandas:workflows-2.2.1-4"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -171,7 +171,7 @@ task filter_probes {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-fastp-workflows-2.2.1-4"
+        container: "ghcr.io/stjudecloud/pandas:workflows-2.2.1-4"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -210,7 +210,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/umap:branch-fastp-workflows-0.5.7-5"
+        container: "ghcr.io/stjudecloud/umap:workflows-0.5.7-5"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -250,7 +250,7 @@ task plot_umap {
         cpu: 1
         memory: "4 GB"
         disks: "4 GB"
-        container: "ghcr.io/stjudecloud/python-plotting:branch-fastp-workflows-2.0.1"
+        container: "ghcr.io/stjudecloud/python-plotting:workflows-2.0.1"
         maxRetries: 1
     }
 }

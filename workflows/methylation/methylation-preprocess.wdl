@@ -53,7 +53,7 @@ task process_raw_idats {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/minfi:branch-fastp-workflows-1.48.0-4"
+        container: "ghcr.io/stjudecloud/minfi:workflows-1.48.0-4"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
