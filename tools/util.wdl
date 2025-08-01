@@ -41,7 +41,7 @@ task download {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:workflows-2.3.0"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }
@@ -80,7 +80,7 @@ task split_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:workflows-2.3.0"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }
@@ -128,7 +128,7 @@ task calc_gene_lengths {
     runtime {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:workflows-2.3.0"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }
@@ -244,7 +244,7 @@ task unpack_tarball {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:workflows-2.3.0"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }
@@ -348,7 +348,7 @@ task global_phred_scores {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:workflows-2.3.0"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }
@@ -395,7 +395,7 @@ task check_fastq_and_rg_concordance {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:workflows-2.3.0"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }
@@ -471,7 +471,7 @@ task qc_summary {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:workflows-2.3.0"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }
@@ -535,7 +535,7 @@ task split_fastq {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:workflows-2.3.0"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }

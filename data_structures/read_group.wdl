@@ -365,7 +365,7 @@ task validate_read_group {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:workflows-2.3.0"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }
@@ -418,7 +418,7 @@ task inner_read_group_to_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:workflows-2.3.0"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }
