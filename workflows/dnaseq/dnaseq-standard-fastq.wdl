@@ -73,6 +73,7 @@ workflow dnaseq_standard_fastq_experimental {
     scatter (rg in read_groups) {
         call read_group.read_group_to_string after parse_input { input:
             read_group = rg,
+            format_as_sam_record = true,
         }
     }
 
