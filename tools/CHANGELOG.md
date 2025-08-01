@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- `util.check_fastq_and_rg_concordance` task no longer accepts tab literal delimiters. Use `\t` instead [#247](https://github.com/stjudecloud/workflows/pull/247).
 - `bwa` alignment tasks now require the `read_group` argument [#244](https://github.com/stjudecloud/workflows/pull/244).
 - "validation tasks" no longer have output sections [#240](https://github.com/stjudecloud/workflows/pull/240).
 - "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manaully specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).

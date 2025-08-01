@@ -15,6 +15,10 @@ Any change to the `scripts/` directory should be accompanied by version increase
 - Added `util/check_FQs_and_RGs.py` script [#235](https://github.com/stjudecloud/workflows/pull/235).
     - This script is a refactor of `star/sort_star_input.py` which is generalized for cases other than STAR.
 
+### Changed
+
+- `util/check_FQs_and_RGs.py` script now expects either space delimited _or_ tab esacape sequence (`\t`) delimited read groups[#247](https://github.com/stjudecloud/workflows/pull/247).
+
 ### Removed
 
 - Removed `star/sort_star_input.py` [#235](https://github.com/stjudecloud/workflows/pull/235).
