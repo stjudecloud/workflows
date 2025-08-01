@@ -82,17 +82,25 @@ if __name__ == "__main__":
     rgids = []
     for rg in rg_records:
         # try splitting on `\t`
-        start, delim, remainder = rg.partition("\t")
+        start, delim, remainder = rg.partition("\\t")
+        print("start: ", start)
+        print("remainder: ", remainder)
         # partition returns the empty string if the delim wasn't found
         if delim == "":
+            print("'\t' not found. Trying space delimiter (' ')")
             # so try splitting on a space
             start, delim, remainder = rg.partition(" ")
+            print("start: ", start)
+            print("remainder: ", remainder)
         # if the first element is the `@RG` prefix, skip it
         if start == "@RG":
+            print("found '@RG'")
             # use the found `delim` to split again
             first = remainder.partition(delim)[0]
         else:
+            print("no '@RG'")
             first = start
+        print("first: ", first)
         field, id = first.split(":")
         if field != "ID":
             raise SystemExit("ID field must be the first field for each RG record")
