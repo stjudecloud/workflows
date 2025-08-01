@@ -127,8 +127,8 @@ task split {
                     >&2 echo "This is likely caused by malformed RG records."
                     EXITCODE=42
                 fi
+                rm first_read.sam
             done
-            rm first_read.sam
         fi
         
         exit $EXITCODE
