@@ -381,7 +381,7 @@ task inner_read_group_to_string {
 
     parameter_meta {
         read_group: "`ReadGroup` struct to stringify"
-        format_as_sam_record: "Format the `ReadGroup` as a SAM record? If `true`, the read group string will be prefixed with `@RG` and `\t` delimiters will be used instead of space delimiters."
+        format_as_sam_record: "Format the `ReadGroup` as a SAM record? If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters."
     }
 
     input {

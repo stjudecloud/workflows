@@ -10,7 +10,7 @@ This script checks various assumptions we make about FASTQ and RG record concord
 - the `ID` field of each RG record must be the first field
 - every `ID` must be unique
 
-Read group records may be optionally prefixed with `@RG` and may use either `\t` or spaces as delimiters.
+Read group records may be optionally prefixed with `@RG` and may use either tab escape sequence (`\t`) or spaces as delimiters.
 """
 
 import argparse
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         print("remainder: ", remainder)
         # partition returns the empty string if the delim wasn't found
         if delim == "":
-            print("'\t' not found. Trying space delimiter (' ')")
+            print("'\\t' not found. Trying space delimiter (' ')")
             # so try splitting on a space
             start, delim, remainder = rg.partition(" ")
             print("start: ", start)
