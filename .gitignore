@@ -28,7 +28,7 @@ results/
 output/
 
 # Ignore JSONs in the root (probably being used for input to sprocket run)
-*.json
+/*.json
 
 # Ignore `sprocket doc` dir
 docs/
