@@ -1,3 +1,8 @@
 [check]
-except = ["ContainerUri", "OutputSection", "UnusedCall"]
+except = ["ContainerUri"]
 deny_notes = true
+
+[run.task]
+cpu_limit_behavior = "try_with_max"
+memory_limit_behavior = "try_with_max"
+

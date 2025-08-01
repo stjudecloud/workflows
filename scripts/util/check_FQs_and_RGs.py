@@ -10,7 +10,7 @@ This script checks various assumptions we make about FASTQ and RG record concord
 - the `ID` field of each RG record must be the first field
 - every `ID` must be unique
 
-Read group records may be optionally prefixed with `@RG` and may use either tabs or spaces as delimiters.
+Read group records may be optionally prefixed with `@RG` and may use either tab escape sequence (`\t`) or spaces as delimiters.
 """
 
 import argparse
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--read-groups",
         required=True,
-        help="Comma delimited list of read group records. Individual fields of each RG are whitespace delimited. Entire argument should be quoted in the call to this script.",
+        help="Comma delimited list of read group records. Individual fields of each RG are either delimited a single space (` `) or a tab escape sequence (`\t`). Entire argument should be quoted in the call to this script.",
     )
 
     args = parser.parse_args()
@@ -81,11 +81,26 @@ if __name__ == "__main__":
 
     rgids = []
     for rg in rg_records:
-        split = rg.split()
-        if split[0] == "@RG":
-            first = split[1]
+        # try splitting on `\t`
+        start, delim, remainder = rg.partition("\\t")
+        print("start: ", start)
+        print("remainder: ", remainder)
+        # partition returns the empty string if the delim wasn't found
+        if delim == "":
+            print("'\\t' not found. Trying space delimiter (' ')")
+            # so try splitting on a space
+            start, delim, remainder = rg.partition(" ")
+            print("start: ", start)
+            print("remainder: ", remainder)
+        # if the first element is the `@RG` prefix, skip it
+        if start == "@RG":
+            print("found '@RG'")
+            # use the found `delim` to split again
+            first = remainder.partition(delim)[0]
         else:
-            first = split[0]
+            print("no '@RG'")
+            first = start
+        print("first: ", first)
         field, id = first.split(":")
         if field != "ID":
             raise SystemExit("ID field must be the first field for each RG record")

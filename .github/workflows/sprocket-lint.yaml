@@ -14,4 +14,4 @@ jobs:
             exclude-patterns: template
             deny-warnings: true
             deny-notes: true
-            except: ContainerUri, OutputSection, UnusedCall
+            except: ContainerUri

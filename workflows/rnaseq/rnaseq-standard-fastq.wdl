@@ -19,6 +19,8 @@ workflow rnaseq_standard_fastq {
             feature_counts: "A two column headerless TSV file. First column is feature names and second column is counts.",
             inferred_strandedness: "TSV file containing the `ngsderive strandedness` report",
             inferred_strandedness_string: "Derived strandedness from `ngsderive strandedness`",
+            fastp_reports: "An array of `fastp` reports (in HTML format) corresponding to each read group",
+            fastp_jsons: "An array of `fastp` reports (in JSON format) corresponding to each read group",
         }
         allowNestedInputs: true
     }
@@ -56,6 +58,7 @@ workflow rnaseq_standard_fastq {
                 "Unstranded",
             ],
         }
+        enable_read_trimming: "Enable read trimming with `fastp`?"
         mark_duplicates: "Add SAM flag to computationally determined duplicate reads?"
         cleanse_xenograft: "Use XenoCP to unmap reads from contaminant genome?"
         validate_input: "Ensure input FASTQs are well-formed before beginning harmonization?"
@@ -77,6 +80,7 @@ workflow rnaseq_standard_fastq {
         )
         String xenocp_aligner = "star"
         String strandedness = ""
+        Boolean enable_read_trimming = false
         Boolean mark_duplicates = false
         Boolean cleanse_xenograft = false
         Boolean validate_input = true
@@ -133,6 +137,7 @@ workflow rnaseq_standard_fastq {
         prefix,
         gtf,
         star_db,
+        enable_read_trimming,
         mark_duplicates,
         contaminant_db,
         cleanse_xenograft,
@@ -150,5 +155,7 @@ workflow rnaseq_standard_fastq {
         File feature_counts = rnaseq_core.feature_counts
         File inferred_strandedness = rnaseq_core.inferred_strandedness
         String inferred_strandedness_string = rnaseq_core.inferred_strandedness_string
+        Array[File] fastp_reports = rnaseq_core.fastp_reports
+        Array[File] fastp_jsons = rnaseq_core.fastp_jsons
     }
 }

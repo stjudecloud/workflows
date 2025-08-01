@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- Added `fastp` QC and optional read trimming (also from `fastp`) [#247](https://github.com/stjudecloud/workflows/pull/247).
 - Added read group validation [#235](https://github.com/stjudecloud/workflows/pull/235).
 
 ### Changed
