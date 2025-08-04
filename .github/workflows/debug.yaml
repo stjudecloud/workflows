@@ -1,0 +1,46 @@
+name: Workflows Pull Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          detached: true
+          limit-access-to-actor: true
+      - name: Install Sprocket
+        run: |
+          wget -O sprocket.tar.gz https://github.com/stjude-rust-labs/sprocket/releases/download/v0.15.0/sprocket-v0.15.0-x86_64-unknown-linux-gnu.tar.gz
+          tar -xvf sprocket.tar.gz
+      - name: Run the check
+        run: |
+          for file in $(find . -name "*.wdl")
+          do
+            if [ -e ".sprocket.yml" ]
+            then
+                if [ $(echo $file | grep -cvf .sprocket.yml) -eq 0 ]
+                then
+                    echo "  [***] Excluding $file [***]"
+                    continue
+                fi
+            fi
+            echo "  [***] $file [***]"
+            echo "sprocket check --suppress-imports $lint $warnings $notes $exceptions $file"
+            #./sprocket check --suppress-imports $lint $warnings $notes $exceptions $file || EXITCODE=$(($? || EXITCODE))
+            docker run -v $(pwd):$(pwd) ghcr.io/stjude-rust-labs/sprocket:v0.15.0 check --suppress-imports $lint $warnings $notes $exceptions $(pwd)/$file || EXITCODE=$(($? || EXITCODE))
+          done
+          exit $EXITCODE
+      - name: Run sprocket check via actions
+        uses: stjude-rust-labs/sprocket-action@main
+        with:
+          exclude-patterns: template
+          deny-warnings: true
+
