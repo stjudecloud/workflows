@@ -57,7 +57,7 @@ task fastp {
             help: "Value must be between 1 and 6 inclusive. Higher levels use more memory (by default: 2 GB, 4 GB, 6 GB, 12 GB, 20 GB, 32 GB).",
         }
         n_base_limit: {
-            description: "If one read's number of N base is `>n_base_limit`, then this read/pair is discarded.",
+            description: "If one read's number of N base(s) is `>n_base_limit`, then this read/pair is discarded.",
             help: "Must be between `0` and `50` inclusive",
         }
         qualified_quality: "The PHRED quality score value that determines whether a base is qualified."
