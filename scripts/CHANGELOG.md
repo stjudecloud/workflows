@@ -17,7 +17,7 @@ Any change to the `scripts/` directory should be accompanied by version increase
 
 ### Changed
 
-- `util/check_FQs_and_RGs.py` script now expects either space delimited _or_ tab esacape sequence (`\t`) delimited read groups[#247](https://github.com/stjudecloud/workflows/pull/247).
+- `util/check_FQs_and_RGs.py` script now expects either space delimited _or_ tab escape sequence (`\t`) delimited read groups[#247](https://github.com/stjudecloud/workflows/pull/247).
 
 ### Removed
 
