@@ -58,7 +58,7 @@ task fastp {
         }
         n_base_limit: {
             description: "If one read's number of N base is `>n_base_limit`, then this read/pair is discarded.",
-            help: "Must be between `0` and `50` inclusive",
+            help: "Must be between `0` and `50` inclusive. Note that does `fastp` does not make it possible to disable completely.",
         }
         qualified_quality: "The PHRED quality score value that determines whether a base is qualified."
         unqualified_percent: "What percentage of bases is allowed to be unqualified (0-100)."
