@@ -1,7 +1,7 @@
 version 1.1
 
 import "../../data_structures/flag_filter.wdl"
-import "../../tools/fastqc.wdl" as fastqc_tasks
+import "../../tools/fastp.wdl" as fp
 import "../../tools/fq.wdl"
 import "../../tools/kraken2.wdl"
 import "../../tools/librarian.wdl" as libraran_tasks
@@ -25,7 +25,6 @@ workflow quality_check_standard {
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
             validate_sam_file: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
             flagstat_report: "`samtools flagstat` STDOUT redirected to a file. If `mark_duplicates` is `true`, then this result will be generated from the duplicate marked BAM.",
-            fastqc_results: "A gzipped tar archive of all FastQC output files",
             instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file",
             read_length_file: "TSV file containing the `ngsderive readlen` report for the input BAM file",
             inferred_encoding: "TSV file containing the `ngsderive encoding` report for the input BAM file",
@@ -52,6 +51,8 @@ workflow quality_check_standard {
             mosdepth_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file.",
             mosdepth_region_summary: "A summary of mean depths per chromosome and within specified regions per chromosome. There will be one file in this array for each `coverage_beds` input file.",
             multiqc_report: "A gzipped tar archive of all MultiQC output files",
+            fastp_report: "A `fastp` report (in HTML format)",
+            fastp_json: "A `fastp` report (in JSON format)",
             orig_read_count: "A TSV report containing the original read count before subsampling. Only present if `subsample_n_reads > 0`.",
             kraken_sequences: {
                 description: "Detailed Kraken2 output that has been gzipped. Only present if `store_kraken_sequences == true`.",
@@ -91,8 +92,13 @@ workflow quality_check_standard {
         prefix: "Prefix for all results files"
         rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
         mark_duplicates: "Mark duplicates before select analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. If set to `true`, a BAM will be generated and passed to selected downstream analyses. For more details about what analyses are run, review `./markdups-post.wdl`. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
+        run_fastp: {
+            description: "Run the `fastp` tool on generated FASTQs?",
+            help: "`fastp` produces similar metrics as `fastqc`, but more comprehensively and efficiently. We always recommend running `fastp` for the valuable metrics it produces, but `fastp` is also run during our harmonization workflows so users of those workflows should supply the `fastp_json` output as an input via `extra_multiqc_inputs` and set this option to `false` to prevent runnning the tool twice.",
+        }
         run_librarian: {
-            description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data. **WARNING** this tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database.",
+            description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data",
+            warning: "This tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database.",
             external_help: "https://f1000research.com/articles/11-1122/v2",
         }
         run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_filter` is ignored."
@@ -130,6 +136,7 @@ workflow quality_check_standard {
         String prefix = basename(bam, ".bam")
         Boolean rna = false
         Boolean mark_duplicates = rna
+        Boolean run_fastp = true
         Boolean run_librarian = false
         Boolean run_comparative_kraken = false
         Boolean store_kraken_sequences = false
@@ -207,11 +214,6 @@ workflow quality_check_standard {
         bam = post_subsample_bam,
         prefix = post_subsample_prefix + ".QualityScoreDistribution",
     }
-    call fastqc_tasks.fastqc after quickcheck { input:
-        bam = post_subsample_bam,
-        prefix = post_subsample_prefix + ".fastqc_results",
-        use_all_cores,
-    }
     call ngsderive.instrument after quickcheck { input:
         bam = post_subsample_bam,
         outfile_name = post_subsample_prefix + ".instrument.tsv",
@@ -266,6 +268,15 @@ workflow quality_check_standard {
         store_sequences = store_kraken_sequences,
         prefix = post_subsample_prefix,
         use_all_cores,
+    }
+    if (run_fastp) {
+        call fp.fastp after fqlint { input:
+            read_one_fastq
+                = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
+            read_two_fastq
+                = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
+            output_fastq = false,
+        }
     }
     if (run_librarian) {
         call libraran_tasks.librarian after fqlint { input:
@@ -392,7 +403,7 @@ workflow quality_check_standard {
                 read_length.read_length_file,
                 encoding.encoding_file,
                 endedness.endedness_file,
-                fastqc.raw_data,
+                fastp.report_json,
                 collect_alignment_summary_metrics.alignment_metrics,
                 collect_insert_size_metrics.insert_size_metrics,
                 markdups_post.insert_size_metrics,
@@ -451,7 +462,6 @@ workflow quality_check_standard {
             markdups_post.flagstat_report,
             flagstat.flagstat_report,
         ])
-        File fastqc_results = fastqc.results
         File instrument_file = instrument.instrument_file
         File read_length_file = read_length.read_length_file
         File inferred_encoding = encoding.encoding_file
@@ -478,6 +488,8 @@ workflow quality_check_standard {
         Array[File] mosdepth_region_dist = select_all(regions_coverage.region_dist)
         Array[File] mosdepth_region_summary = regions_coverage.summary
         File multiqc_report = multiqc.multiqc_report
+        File? fastp_report = fastp.report
+        File? fastp_json = fastp.report_json
         File? orig_read_count = subsample.orig_read_count
         File? kraken_sequences = kraken.sequences
         File? comparative_kraken_report = comparative_kraken.report
@@ -552,7 +564,7 @@ task parse_input {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.2.2"
+        container: "ghcr.io/stjudecloud/util:2.3.0"
         maxRetries: 1
     }
 }

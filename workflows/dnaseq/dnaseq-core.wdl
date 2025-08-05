@@ -3,6 +3,7 @@
 version 1.1
 
 import "../../tools/bwa.wdl"
+import "../../tools/fastp.wdl" as fp
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
@@ -16,6 +17,8 @@ workflow dnaseq_core_experimental {
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
             harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",
+            fastp_reports: "An array of `fastp` reports (in HTML format) corresponding to each read group",
+            fastp_jsons: "An array of `fastp` reports (in JSON format) corresponding to each read group",
         }
         allowNestedInputs: true
     }
@@ -36,6 +39,7 @@ workflow dnaseq_core_experimental {
                 "aln",
             ],
         }
+        enable_read_trimming: "Enable read trimming with `fastp`?"
         use_all_cores: "Use all cores? Recommended for cloud environments."
         reads_per_file: "Controls the number of reads per FASTQ file for internal split to run BWA in parallel."
     }
@@ -46,8 +50,9 @@ workflow dnaseq_core_experimental {
         Array[File] read_two_fastqs_gz
         Array[String] read_groups
         String prefix
-        String aligner = "mem"
-        Boolean use_all_cores = false
+        String aligner
+        Boolean enable_read_trimming
+        Boolean use_all_cores
         Int reads_per_file = 10000000
     }
 
@@ -68,13 +73,29 @@ workflow dnaseq_core_experimental {
         zip(read_one_fastqs_gz, read_two_fastqs_gz),
         read_groups
     )) {
+        if (enable_read_trimming) {
+            call fp.fastp as trim after validate { input:
+                read_one_fastq = tuple.left.left,
+                read_two_fastq = tuple.left.right,
+                output_fastq = enable_read_trimming,
+            }
+        }
+        if (!enable_read_trimming) {
+            call fp.fastp after validate { input:
+                read_one_fastq = tuple.left.left,
+                read_two_fastq = tuple.left.right,
+                output_fastq = enable_read_trimming,
+            }
+        }
+        File chosen_r1_fastq = select_first([trim.read_one_fastq_gz, tuple.left.left])
+        File chosen_r2_fastq = select_first([trim.read_two_fastq_gz, tuple.left.right])
+
         call util.split_fastq as read_ones after validate { input:
-            fastq = tuple.left.left,
+            fastq = chosen_r1_fastq,
             reads_per_file,
         }
-
         call util.split_fastq as read_twos after validate { input:
-            fastq = tuple.left.right,
+            fastq = chosen_r2_fastq,
             reads_per_file,
         }
 
@@ -125,5 +146,9 @@ workflow dnaseq_core_experimental {
     output {
         File harmonized_bam = rg_merge.merged_bam
         File harmonized_bam_index = index.bam_index
+        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
+        Array[File] fastp_jsons = select_all(flatten(
+            [fastp.report_json, trim.report_json]
+        ))
     }
 }
