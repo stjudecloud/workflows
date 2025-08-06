@@ -30,7 +30,10 @@ workflow alignment_post {
                 "star",
             ],
         }
-        cleanse_xenograft: "If true, use XenoCP to unmap reads from contaminant genome"
+        cleanse_xenograft: {
+            description: "If true, use XenoCP to unmap reads from contaminant genome",
+            help: "If false, `xenocp_aligner` value will be ignored. If true, `xenocp_aligner` must be non-empty and a valid choice.",
+        }
         use_all_cores: "Use all cores for multi-core steps?"
     }
 
@@ -38,7 +41,7 @@ workflow alignment_post {
         File bam
         Boolean mark_duplicates
         File? contaminant_db
-        String xenocp_aligner = ""
+        String? xenocp_aligner
         Boolean cleanse_xenograft = false
         Boolean use_all_cores = false
     }
@@ -55,7 +58,7 @@ workflow alignment_post {
             input_bam = picard_sort.sorted_bam,
             input_bai = pre_xenocp_index.bam_index,
             reference_tar_gz = select_first([contaminant_db, ""]),
-            aligner = xenocp_aligner,
+            aligner = select_first([xenocp_aligner, "undefined"]),
             skip_duplicate_marking = true,
         }
     }

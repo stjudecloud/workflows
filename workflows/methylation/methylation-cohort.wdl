@@ -3,6 +3,7 @@ version 1.1
 workflow methylation_cohort {
     meta {
         description: "Process methylation data for a cohort of samples"
+        warning: "We recommend against running this workflow direcly, and would suggest instead running the `methylation` workflow defined in `./methylation-standard.wdl`."
         outputs: {
             combined_beta: "Matrix (in CSV format) containing beta values for every (common) probe on the array as rows and all of the input samples as columns.",
             filtered_beta: "Matrix (in CSV format) containing only beta values for the retained probes (top N highest standard deviation) for all provided samples.",

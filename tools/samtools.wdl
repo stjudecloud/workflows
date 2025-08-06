@@ -1153,8 +1153,9 @@ task position_sorted_fixmate {
 #@ except: MatchingOutputMeta
 task markdup {
     meta {
-        description: "**[DEPRECATED]** Runs `samtools markdup` on the position-sorted input BAM file. This creates a report and optionally a new BAM with duplicate reads marked."
-        help: "This task assumes `samtools fixmate` has already been run on the input BAM. If it has not, then the output may be incorrect. A name-sorted or collated BAM can be run through the `fixmate` task (and then position-sorted prior to this task) or a position-sorted BAM can be run through the `position_sorted_fixmate` task. Deprecated due to extremely high memory usage for certain RNA-Seq samples when searching for optical duplicates. Use `mark_duplicates` in `./picard.wdl` instead."
+        description: "Runs `samtools markdup` on the position-sorted input BAM file. This creates a report and optionally a new BAM with duplicate reads marked."
+        help: "This task assumes `samtools fixmate` has already been run on the input BAM. If it has not, then the output may be incorrect. A name-sorted or collated BAM can be run through the `fixmate` task (and then position-sorted prior to this task) or a position-sorted BAM can be run through the `position_sorted_fixmate` task."
+        warning: "**[DEPRECATED]** Deprecated due to extremely high memory usage for certain RNA-Seq samples when searching for optical duplicates. Use `mark_duplicates` in `./picard.wdl` instead."
         deprecated: true
     }
 

@@ -63,6 +63,7 @@ struct ReadGroup {
 
 workflow read_group_to_string {
     meta {
+        name: "ReadGroup to String"
         description: "Validates a `ReadGroup` struct is well-formed and then converts it to a `String`"
         category: "Utility"
         outputs: {
