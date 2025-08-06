@@ -11,7 +11,7 @@ import "../general/alignment-post.wdl" as alignment_post_wf
 workflow rnaseq_core {
     meta {
         name: "RNA-Seq Core"
-        description: "Main processing of RNA-Seq data, starting with FASTQs. We recommend against calling this workflow directly, and would suggest instead running `rnaseq_standard` or `rnaseq_standard_fastq`. Both wrapper workflows provide a nicer user experience than this workflow and will get you equivalent results."
+        warning: "Main processing of RNA-Seq data, starting with FASTQs. We recommend against calling this workflow directly, and would suggest instead running `rnaseq_standard` or `rnaseq_standard_fastq`. Both wrapper workflows provide a nicer user experience than this workflow and will get you equivalent results."
         outputs: {
             bam: "Harmonized RNA-Seq BAM",
             bam_index: "BAI index file associated with `bam`",

@@ -13,7 +13,7 @@ workflow dnaseq_core_experimental {
     meta {
         name: "DNA-Seq Core (Experimental)"
         description: "Aligns DNA reads using bwa"
-        help: "We recommend against calling this workflow directly, and would suggest instead running `dnaseq_standard` or `dnaseq_standard_fastq`. Both wrapper workflows provide a nicer user experience than this workflow and will get you equivalent results."
+        warning: "We recommend against calling this workflow directly, and would suggest instead running `dnaseq_standard_experimental` or `dnaseq_standard_fastq_experimental`. Both wrapper workflows provide a nicer user experience than this workflow and will get you equivalent results."
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
             harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",

@@ -6,7 +6,8 @@ import "../../tools/htseq.wdl"
 workflow estimate {
     meta {
         name: "ESTIMATE"
-        description: "**[DEPRECATED]** Runs the ESTIMATE software package on a feature counts file"
+        description: "Runs the ESTIMATE software package on a feature counts file"
+        warning: "**[DEPRECATED]**"
         external_help: "https://bioinformatics.mdanderson.org/estimate/"
         outputs: {
             tpm: "Transcripts Per Million file",

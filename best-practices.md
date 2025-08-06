@@ -62,7 +62,8 @@ All rules below should be followed by contributors to this repo. Contributors sh
   - the presence of `help` or `external_help` is _not_ a substitute for a `description`
 - Any tasks which are deprecated should have a `deprecated: true` key in their `meta` section
   - It is allowed (but redundant and discouraged) to include a `deprecated: false` key in any production tasks. All tasks are assumed to not be deprecated unless otherwise noted.
-  - In addition, the `description` key of deprecated tasks should start with `**[DEPRECATED]**`
-    - These two rules allow for a task's deprecated status to be communicated in multiple ways, ensuring no user misses the notice
-- Deprecated tasks should be placed at the end of their file
+  - In addition, there should be a `warning` key which starts with the text `**[DEPRECATED]**`
+    - No other text or explanation is required after the above text, but it can be added for further context
+  - These two rules allow for a task's deprecated status to be communicated in multiple ways, ensuring no user misses the notice
+  - Deprecated tasks should be placed at the end of their file
 - While WDL allows embedded scripts in the `command` block sections, this repository requires scripts (e.g. R, Python) to be separate and placed in the `scripts` folder. The relevant Docker image build for your task should then include the script during the build so the task can access it. This separation of concerns improves the developer experience by improving syntax highlighting in the WDL document and enabling linting and formatting checks for the scripting languages.
