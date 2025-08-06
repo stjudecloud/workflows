@@ -17,6 +17,7 @@ import "./markdups-post.wdl" as markdups_post_wf
 
 workflow quality_check_standard {
     meta {
+        name: "Quality Check Standard"
         description: "Performs comprehensive quality checks, aggregating all analyses and metrics into a final MultiQC report."
         category: "Harmonization"
         help: "Assumes that input BAM is position-sorted."

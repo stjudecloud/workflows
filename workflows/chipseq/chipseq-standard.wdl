@@ -15,9 +15,9 @@ import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samt
 #@ except: LineWidth
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
 
-workflow chipseq_standard {
+workflow chipseq_standard_experimental {
     meta {
-        name: "ChIP-Seq Standard"
+        name: "ChIP-Seq Standard (Experimental)"
         description: "Runs the BWA ChIP-Seq alignment workflow for St. Jude Cloud."
         category: "Harmonization"
         outputs: {

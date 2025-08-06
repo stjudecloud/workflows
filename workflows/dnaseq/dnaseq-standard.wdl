@@ -10,7 +10,7 @@ import "./dnaseq-core.wdl" as dnaseq_core_wf
 
 workflow dnaseq_standard_experimental {
     meta {
-        name: "DNA-Seq Standard (Experimental)"
+        name: "DNA-Seq Standard (Experimental, BAM)"
         description: "Aligns DNA reads using bwa"
         category: "Harmonization"
         outputs: {

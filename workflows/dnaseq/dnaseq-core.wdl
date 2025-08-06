@@ -133,18 +133,18 @@ workflow dnaseq_core_experimental {
             }
         }
     }
-    call samtools_merge_wf.samtools_merge as rg_merge { input:
+    call samtools_merge_wf.samtools_merge as merge { input:
         bams = flatten(sort.sorted_bam),
         prefix,
         use_all_cores,
     }
 
     call samtools.index { input:
-        bam = rg_merge.merged_bam,
+        bam = merge.merged_bam,
     }
 
     output {
-        File harmonized_bam = rg_merge.merged_bam
+        File harmonized_bam = merge.merged_bam
         File harmonized_bam_index = index.bam_index
         Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
         Array[File] fastp_jsons = select_all(flatten(
