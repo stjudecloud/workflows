@@ -4,7 +4,8 @@ version 1.1
 
 task run_estimate {
     meta {
-        description: "**[DEPRECATED]** Given a gene expression file, run the ESTIMATE software package"
+        description: "Given a gene expression file, run the ESTIMATE software package"
+        warning: "**[DEPRECATED]**"
         outputs: {
             estimate_file: "The results file of the ESTIMATE software package"
         }

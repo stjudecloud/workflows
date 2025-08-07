@@ -13,7 +13,7 @@ workflow dnaseq_core_experimental {
     meta {
         name: "DNA-Seq Core (Experimental)"
         description: "Aligns DNA reads using bwa"
-        help: "We recommend against calling this workflow directly, and would suggest instead running `dnaseq_standard` or `dnaseq_standard_fastq`. Both wrapper workflows provide a nicer user experience than this workflow and will get you equivalent results."
+        warning: "We recommend against calling this workflow directly, and would suggest instead running `dnaseq_standard_experimental` or `dnaseq_standard_fastq_experimental`. Both wrapper workflows provide a nicer user experience than this workflow and will get you equivalent results."
         outputs: {
             harmonized_bam: "Harmonized DNA-Seq BAM, aligned with bwa",
             harmonized_bam_index: "Index for the harmonized DNA-Seq BAM file",
@@ -133,18 +133,18 @@ workflow dnaseq_core_experimental {
             }
         }
     }
-    call samtools_merge_wf.samtools_merge as rg_merge { input:
+    call samtools_merge_wf.samtools_merge as merge { input:
         bams = flatten(sort.sorted_bam),
         prefix,
         use_all_cores,
     }
 
     call samtools.index { input:
-        bam = rg_merge.merged_bam,
+        bam = merge.merged_bam,
     }
 
     output {
-        File harmonized_bam = rg_merge.merged_bam
+        File harmonized_bam = merge.merged_bam
         File harmonized_bam_index = index.bam_index
         Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
         Array[File] fastp_jsons = select_all(flatten(

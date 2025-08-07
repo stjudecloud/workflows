@@ -95,7 +95,8 @@ task rnaseq {
 #@ except: MatchingOutputMeta
 task bamqc {
     meta {
-        description: "**[Deprecated]** This WDL task runs QualiMap's bamqc tool on the input BAM file. This task has been deprecated due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
+        description: "This WDL task runs QualiMap's bamqc tool on the input BAM file."
+        warning: "**[Deprecated]** This task has been deprecated due to memory leak issues. Use at your own risk, for some samples can consume over 1TB of RAM."
         deprecated: true
     }
 

@@ -17,10 +17,10 @@ import "./markdups-post.wdl" as markdups_post_wf
 
 workflow quality_check_standard {
     meta {
+        name: "Quality Check Standard"
         description: "Performs comprehensive quality checks, aggregating all analyses and metrics into a final MultiQC report."
         category: "Harmonization"
         help: "Assumes that input BAM is position-sorted."
-        external_help: "https://multiqc.info/"
         outputs: {
             bam_checksum: "STDOUT of the `md5sum` command run on the input BAM that has been redirected to a file",
             validate_sam_file: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
@@ -50,7 +50,10 @@ workflow quality_check_standard {
             mosdepth_global_summary: "A summary of mean depths per chromosome",
             mosdepth_region_dist: "The `$prefix.mosdepth.region.dist.txt` file contains a cumulative distribution indicating the proportion of total bases in the region(s) defined by the `coverage_bed` that were covered for at least a given coverage value. There will be one file in this array for each `coverage_beds` input file.",
             mosdepth_region_summary: "A summary of mean depths per chromosome and within specified regions per chromosome. There will be one file in this array for each `coverage_beds` input file.",
-            multiqc_report: "A gzipped tar archive of all MultiQC output files",
+            multiqc_report: {
+                description: "A gzipped tar archive of all MultiQC output files",
+                external_help: "https://multiqc.info/",
+            },
             fastp_report: "A `fastp` report (in HTML format)",
             fastp_json: "A `fastp` report (in JSON format)",
             orig_read_count: "A TSV report containing the original read count before subsampling. Only present if `subsample_n_reads > 0`.",

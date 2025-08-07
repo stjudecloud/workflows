@@ -9,7 +9,7 @@ import "./dnaseq-standard.wdl" as dnaseq_standard
 
 workflow dnaseq_standard_fastq_experimental {
     meta {
-        name: "DNA-Seq Standard (FASTQ, Experimental)"
+        name: "DNA-Seq Standard (Experimental, FASTQ)"
         description: "Aligns DNA reads using bwa"
         category: "Harmonization"
         outputs: {

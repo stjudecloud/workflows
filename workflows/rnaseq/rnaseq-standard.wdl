@@ -8,7 +8,7 @@ import "./rnaseq-core.wdl" as rnaseq_core_wf
 
 workflow rnaseq_standard {
     meta {
-        name: "RNA-Seq Standard"
+        name: "RNA-Seq Standard (BAM)"
         description: "Runs the STAR RNA-Seq alignment workflow for St. Jude Cloud"
         category: "Harmonization"
         outputs: {
