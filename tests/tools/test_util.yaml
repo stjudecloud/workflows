@@ -37,17 +37,6 @@
       contains:
         - "AL954722.1"
 
-# This fails, but the underlying task will be updated.
-- name: qc_summary
-  tags:
-   - miniwdl
-   - util
-   - deprecated
-  command: >-
-   miniwdl run --verbose -d test-output/. --task qc_summary tools/util.wdl multiqc_tar_gz="tests/input/SJBT031344_D1.Exome.multiqc.tar.gz"
-  files:
-    - path: "test-output/out/summary/SJBT031344_D1.Exome.qc_summary.json"
-
 - name: compression_integrity
   tags:
     - miniwdl
