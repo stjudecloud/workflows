@@ -2,7 +2,7 @@
   tags:
     - htseq
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t count tools/htseq.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz" strandedness="no"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t count tools/htseq.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz" strandedness="no"
   files:
     - path: test-output/out/feature_counts/test.bwa_aln_pe.chrY_chrM.feature-counts.txt
 
@@ -10,6 +10,6 @@
   tags:
     - htseq
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t calc_tpm tools/htseq.wdl counts="tests/input/test.bwa_aln_pe.chrY_chrM.feature-counts.txt" gene_lengths="tests/input/gencode.v31.chrY_chrM.genelengths.txt"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t calc_tpm tools/htseq.wdl counts="tests/input/test.bwa_aln_pe.chrY_chrM.feature-counts.txt" gene_lengths="tests/input/gencode.v31.chrY_chrM.genelengths.txt"
   files:
     - path: test-output/out/tpm_file/test.bwa_aln_pe.chrY_chrM.TPM.txt

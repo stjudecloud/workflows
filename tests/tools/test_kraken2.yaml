@@ -3,7 +3,7 @@
     - kraken
     - reference
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t download_taxonomy tools/kraken2.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t download_taxonomy tools/kraken2.wdl
   files:
     - path: test-output/out/taxonomy/kraken2_taxonomy.tar.gz
 
@@ -12,7 +12,7 @@
     - kraken
     - reference
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t download_library tools/kraken2.wdl library_name='fungi'
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t download_library tools/kraken2.wdl library_name='fungi'
   files:
     - path: test-output/out/library/kraken2_fungi_library.tar.gz
 
@@ -21,7 +21,7 @@
     - kraken
     - reference
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t create_library_from_fastas -i tests/tools/input_json/kraken_create_library_from_fastas.json tools/kraken2.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t create_library_from_fastas -i tests/tools/input_json/kraken_create_library_from_fastas.json tools/kraken2.wdl
   files:
     - path: test-output/out/custom_library/kraken2_custom_library.tar.gz
 
@@ -30,7 +30,7 @@
     - kraken
     - reference
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t build_db -i tests/tools/input_json/kraken_build_db.json tools/kraken2.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t build_db -i tests/tools/input_json/kraken_build_db.json tools/kraken2.wdl
   files:
     - path: test-output/out/built_db/kraken2_db.tar.gz
 
@@ -38,6 +38,6 @@
   tags:
     - kraken
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t kraken tools/kraken2.wdl read_one_fastq_gz="tests/input/test_R1.fq.gz" read_two_fastq_gz="tests/input/test_R2.fq.gz" db="tests/input/kraken2_db.tar.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t kraken tools/kraken2.wdl read_one_fastq_gz="tests/input/test_R1.fq.gz" read_two_fastq_gz="tests/input/test_R2.fq.gz" db="tests/input/kraken2_db.tar.gz"
   files:
     - path: test-output/out/report/test.kraken2.txt

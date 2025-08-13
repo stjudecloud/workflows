@@ -2,7 +2,7 @@
   tags:
     - sambamba
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t index tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t index tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/bam_index/test.bwa_aln_pe.chrY_chrM.bam.bai
 
@@ -10,7 +10,7 @@
   tags:
     - sambamba
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t merge -i tests/tools/input_json/sambamba_merge.json tools/sambamba.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t merge -i tests/tools/input_json/sambamba_merge.json tools/sambamba.wdl
   files:
     - path: test-output/out/merged_bam/test.bam
 
@@ -18,7 +18,7 @@
   tags:
     - sambamba
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t sort tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t sort tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/sorted_bam/test.bwa_aln_pe.chrY_chrM.sorted.bam
 
@@ -26,7 +26,7 @@
   tags:
     - sambamba
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t flagstat tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t flagstat tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/flagstat_report/test.bwa_aln_pe.chrY_chrM.flagstat.txt
 
@@ -34,7 +34,7 @@
   tags:
     - sambamba
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t markdup tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t markdup tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/duplicate_marked_bam/test.bwa_aln_pe.chrY_chrM.markdup.bam
     - path: test-output/out/duplicate_marked_bam_index/test.bwa_aln_pe.chrY_chrM.markdup.bam.bai

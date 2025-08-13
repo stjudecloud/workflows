@@ -2,6 +2,6 @@
   tags:
     - deeptools
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t bam_coverage tools/deeptools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t bam_coverage tools/deeptools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai"
   files:
     - path: test-output/out/bigwig/test.bwa_aln_pe.chrY_chrM.bw

@@ -3,7 +3,7 @@
     - star
     - reference
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t build_star_db tools/star.wdl reference_fasta=tests/input/GRCh38.chrY_chrM.fa gtf=tests/input/gencode.v31.chrY_chrM.gtf.gz
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t build_star_db tools/star.wdl reference_fasta=tests/input/GRCh38.chrY_chrM.fa gtf=tests/input/gencode.v31.chrY_chrM.gtf.gz
   files:
     - path: test-output/out/star_db/star_db.tar.gz
 
@@ -11,7 +11,7 @@
   tags:
     - star
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t alignment -i tests/tools/input_json/star_alignment_PE_1_pair.json tools/star.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t alignment -i tests/tools/input_json/star_alignment_PE_1_pair.json tools/star.wdl
   files:
     - path: test-output/out/star_log/test.Log.final.out
     - path: test-output/out/star_bam/test.Aligned.out.bam
@@ -20,7 +20,7 @@
   tags:
     - star
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t alignment -i tests/tools/input_json/star_alignment_PE_2_pairs.json tools/star.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t alignment -i tests/tools/input_json/star_alignment_PE_2_pairs.json tools/star.wdl
   files:
     - path: test-output/out/star_log/test.Log.final.out
     - path: test-output/out/star_bam/test.Aligned.out.bam
@@ -29,7 +29,7 @@
   tags:
     - star
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t alignment tools/star.wdl read_one_fastqs_gz=tests/input/test_R1.fq.gz read_groups=ID:foo prefix=test star_db_tar_gz="tests/input/star_db.chrY_chrM.tar.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t alignment tools/star.wdl read_one_fastqs_gz=tests/input/test_R1.fq.gz read_groups=ID:foo prefix=test star_db_tar_gz="tests/input/star_db.chrY_chrM.tar.gz"
   files:
     - path: test-output/out/star_log/test.Log.final.out
     - path: test-output/out/star_bam/test.Aligned.out.bam

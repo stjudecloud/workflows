@@ -2,7 +2,7 @@
   tags:
     - fastp
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t fastp tools/fastp.wdl read_one_fastq="tests/input/test_R1.fq.gz" read_two_fastq="tests/input/test_R2.fq.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t fastp tools/fastp.wdl read_one_fastq="tests/input/test_R1.fq.gz" read_two_fastq="tests/input/test_R2.fq.gz"
   files:
     - path: test-output/out/read_one_fastq_gz/test.trimmed.R1.fastq.gz
     - path: test-output/out/read_two_fastq_gz/test.trimmed.R2.fastq.gz

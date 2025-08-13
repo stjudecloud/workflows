@@ -2,57 +2,57 @@
   tags:
     - flag_filter
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="0x900"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="0x900"
 
 - name: flag_filter_5
   tags:
     - flag_filter
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="5"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="5"
 
 - name: flag_filter_01
   tags:
     - flag_filter
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="01"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="01"
 
 - name: flag_filter_0x1000
   tags:
     - flag_filter
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="0x1000"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="0x1000"
   exit_code: 42
 
 - name: flag_filter_neg1
   tags:
     - flag_filter
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="-1"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="-1"
   exit_code: 42
 
 - name: flag_filter_4096
   tags:
     - flag_filter
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="4096"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="4096"
   exit_code: 42
 
 - name: flag_filter_4095
   tags:
     - flag_filter
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="4095"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="4095"
 
 - name: flag_filter_string
   tags:
     - flag_filter
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="string"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number="string"
   exit_code: 42
 
 - name: flag_filter_empty_string
   tags:
     - flag_filter
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number=""
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_string_is_12bit_int data_structures/flag_filter.wdl number=""
   exit_code: 42

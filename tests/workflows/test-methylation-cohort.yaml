@@ -2,7 +2,7 @@
   tags:
     - methylation
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t combine_data -i tests/workflows/input_json/combine_data.json workflows/methylation/methylation-cohort.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t combine_data -i tests/workflows/input_json/combine_data.json workflows/methylation/methylation-cohort.wdl
   files:
     - path: test-output/out/combined_beta/combined_beta.csv
 
@@ -10,7 +10,7 @@
   tags:
     - methylation
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t filter_probes -i tests/workflows/input_json/filter_probes.json workflows/methylation/methylation-cohort.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t filter_probes -i tests/workflows/input_json/filter_probes.json workflows/methylation/methylation-cohort.wdl
   files:
     - path: test-output/out/filtered_beta_values/filtered.beta.csv
     - path: test-output/out/filtered_probes/filtered.probes.csv
@@ -19,7 +19,7 @@
   tags:
     - methylation
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t generate_umap -i tests/workflows/input_json/generate_umap.json workflows/methylation/methylation-cohort.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t generate_umap -i tests/workflows/input_json/generate_umap.json workflows/methylation/methylation-cohort.wdl
   files:
     - path: test-output/out/umap/umap.csv
 
@@ -27,6 +27,6 @@
   tags:
     - methylation
   command: >-
-    sh developer_scripts/run_sprocket_or_miniwdl.sh -t plot_umap -i tests/workflows/input_json/plot_umap.json workflows/methylation/methylation-cohort.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t plot_umap -i tests/workflows/input_json/plot_umap.json workflows/methylation/methylation-cohort.wdl
   files:
     - path: test-output/out/umap_plot/umap.png
