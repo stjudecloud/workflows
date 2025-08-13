@@ -16,8 +16,7 @@ miniwdl_singularity_cache/
 _LAST
 2025*/
 
-# Ignore test directories
-test-output/
+# Ignore python junk
 **/__pycache__
 
 # Ignore OS generated files
@@ -32,6 +31,3 @@ output/
 
 # Ignore `sprocket doc` dir
 docs/
-
-# ignore any tags files that are generated
-tags
