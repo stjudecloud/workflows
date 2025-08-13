@@ -66,12 +66,18 @@ if [ "$runner" != "miniwdl" ]; then
    else
       entrypoint=$wf
    fi
-   sprocket run -e "$entrypoint" "$wdl" ${input_file:+"$input_file"} "$@"
+   sprocket run --output output --overwrite -e "$entrypoint" "$wdl" ${input_file:+"$input_file"} "$@"
 else
    if [[ $input_file ]]; then
       input_dir=$(dirname "$input_file")
       sed -e 's;../../;'"$input_dir"'/../../;g' "$input_file" > tmp.json
       input_file=tmp.json
    fi
-   miniwdl run ${task:+--task "$task"} ${input_file:+-i "$input_file"} "$wdl" "$@"
+   if [ -d output ]; then
+      rm -rf output
+   fi
+   miniwdl run ${task:+--task "$task"} --verbose --dir output ${input_file:+-i "$input_file"} "$wdl" "$@"
+   if [ -e tmp.json ]; then
+      rm tmp.json
+   fi
 fi
