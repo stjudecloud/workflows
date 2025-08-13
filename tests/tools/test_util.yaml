@@ -34,6 +34,12 @@
       contains:
         - "AL954722.1"
 
+- name: compression_integrity
+  tags:
+    - util
+  command: >-
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t compression_integrity tools/util.wdl bgzipped_file="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+
 # TODO: This does not test that the record was properly added to the header.
 - name: add_to_bam_header
   tags:
