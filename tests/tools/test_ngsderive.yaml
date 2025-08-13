@@ -1,9 +1,8 @@
 - name: strandedness
   tags:
-    - miniwdl
     - ngsderive
   command: >-
-    miniwdl run --verbose -d test-output/. --task strandedness tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai" gene_model="tests/input/gencode.v31.chrY_chrM.gtf.gz"
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t strandedness tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai" gene_model="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
     - path: test-output/out/strandedness_file/test.bwa_aln_pe.chrY_chrM.strandedness.tsv
       contains:
@@ -11,10 +10,9 @@
 
 - name: instrument
   tags:
-    - miniwdl
     - ngsderive
   command: >-
-    miniwdl run --verbose -d test-output/. --task instrument tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t instrument tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/instrument_file/test.bwa_aln_pe.chrY_chrM.instrument.tsv
       contains:
@@ -23,10 +21,9 @@
 
 - name: read_length
   tags:
-    - miniwdl
     - ngsderive
   command: >-
-    miniwdl run --verbose -d test-output/. --task read_length tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai"
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t read_length tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai"
   files:
     - path: test-output/out/read_length_file/test.bwa_aln_pe.chrY_chrM.readlength.tsv
       contains:
@@ -34,10 +31,9 @@
 
 - name: encoding
   tags:
-    - miniwdl
     - ngsderive
   command: >-
-    miniwdl run --verbose -d test-output/. --task encoding -i tests/tools/input_json/ngsderive_encoding.json tools/ngsderive.wdl
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t encoding -i tests/tools/input_json/ngsderive_encoding.json tools/ngsderive.wdl
   files:
     - path: test-output/out/encoding_file/test.bwa_aln_pe.chrY_chrM.encoding.tsv
       contains:
@@ -46,19 +42,17 @@
 
 - name: junction_annotation
   tags:
-    - miniwdl
     - ngsderive
   command: >-
-    miniwdl run --verbose -d test-output/. --task junction_annotation tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai" gene_model="tests/input/gencode.v31.chrY_chrM.gtf.gz"
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t junction_annotation tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai" gene_model="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
     - path: test-output/out/junction_summary/test.bwa_aln_pe.chrY_chrM.junction_summary.tsv
     - path: test-output/out/junctions/test.bwa_aln_pe.chrY_chrM.junctions.tsv.gz
 
 - name: endedness
   tags:
-    - miniwdl
     - ngsderive
   command: >-
-    miniwdl run --verbose -d test-output/. --task endedness tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t endedness tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/endedness_file/test.bwa_aln_pe.chrY_chrM.endedness.tsv

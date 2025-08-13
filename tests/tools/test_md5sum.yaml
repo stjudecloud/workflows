@@ -1,9 +1,8 @@
 - name: compute_checksum
   tags:
-    - miniwdl
     - md5sum
   command: >-
-    miniwdl run --verbose -d test-output/. --task compute_checksum tools/md5sum.wdl file="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t compute_checksum tools/md5sum.wdl file="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
     - path: test-output/out/md5sum/test.bwa_aln_pe.chrY_chrM.bam.md5
       contains:

@@ -1,36 +1,32 @@
 - name: arriba
   tags:
-    - miniwdl
     - arriba
   command: >-
-    miniwdl run --verbose -d test-output/. --task arriba -i tests/tools/input_json/arriba.json tools/arriba.wdl
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t arriba -i tests/tools/input_json/arriba.json tools/arriba.wdl
   files:
     - path: test-output/out/fusions/fusions.tsv
     - path: test-output/out/discarded_fusions/fusions.discarded.tsv
 
 - name: arriba_tsv_to_vcf
   tags:
-    - miniwdl
     - arriba
   command: >-
-    miniwdl run --verbose -d test-output/. --task arriba_tsv_to_vcf tools/arriba.wdl fusions="tests/input/fusions.tsv" reference_fasta="tests/input/GRCh38.chr9_chr22.fa.gz"
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_tsv_to_vcf tools/arriba.wdl fusions="tests/input/fusions.tsv" reference_fasta="tests/input/GRCh38.chr9_chr22.fa.gz"
   files:
     - path: test-output/out/fusions_vcf/fusions.vcf
 
 - name: arriba_extract_fusion_supporting_alignments
   tags:
-    - miniwdl
     - arriba
   command: >-
-    miniwdl run --verbose -d test-output/. --task arriba_extract_fusion_supporting_alignments tools/arriba.wdl fusions="tests/input/fusions.tsv" bam="tests/input/Aligned.sortedByCoord.chr9_chr22.bam" bam_index="tests/input/Aligned.sortedByCoord.chr9_chr22.bam.bai"
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_extract_fusion_supporting_alignments tools/arriba.wdl fusions="tests/input/fusions.tsv" bam="tests/input/Aligned.sortedByCoord.chr9_chr22.bam" bam_index="tests/input/Aligned.sortedByCoord.chr9_chr22.bam.bai"
   files:
     - path: test-output/out/fusion_bams/0/fusions_1.bam
 
 - name: arriba_annotate_exon_numbers
   tags:
-    - miniwdl
     - arriba
   command: >-
-    miniwdl run --verbose -d test-output/. --task arriba_annotate_exon_numbers tools/arriba.wdl fusions="tests/input/fusions.tsv" gtf="tests/input/gencode.v31.chr9_chr22.gtf.gz"
+    sh developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_annotate_exon_numbers tools/arriba.wdl fusions="tests/input/fusions.tsv" gtf="tests/input/gencode.v31.chr9_chr22.gtf.gz"
   files:
     - path: test-output/out/fusion_tsv/fusions.annotated.tsv
