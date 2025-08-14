@@ -584,11 +584,9 @@ task merge {
             ~{if combine_pg then "-p" else ""} \
             "~{prefix}.bam" \
             $bams
-    
-        # clean up symlinks
-        for file in "${bams[@]}"; do
-            rm "$file"
-        done
+
+        # shellcheck disable=SC2086
+        rm $bams
     >>>
 
     output {
