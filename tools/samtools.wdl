@@ -586,7 +586,7 @@ task merge {
             $bams
     
         # clean up symlinks
-        for file in ${bams[@]}; do
+        for file in "${bams[@]}"; do
             rm "$file"
         done
     >>>
