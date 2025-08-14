@@ -566,8 +566,7 @@ task merge {
         (( n_cores -= 1 ))
 
         bams=""
-        for file in ~{sep(" ", squote(bams))}
-        do
+        for file in ~{sep(" ", squote(bams))}; do
           # This will fail (intentionally) if there are duplicate names
           # in the input BAM array.
           ln -s "$file" .
@@ -585,6 +584,11 @@ task merge {
             ~{if combine_pg then "-p" else ""} \
             "~{prefix}.bam" \
             $bams
+    
+        # clean up symlinks
+        for file in ${bams[@]}; do
+            rm "$file"
+        done
     >>>
 
     output {
