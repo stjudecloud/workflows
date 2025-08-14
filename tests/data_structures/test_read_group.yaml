@@ -2,7 +2,7 @@
   tags:
     - read_group
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_read_group -i tests/data_structures/input_json/read_group_bad_id.json data_structures/read_group.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -w read_group_to_string -i tests/data_structures/input_json/read_group_bad_id.json data_structures/read_group.wdl
   exit_code: 1
   stderr:
     contains:
@@ -12,7 +12,7 @@
   tags:
     - read_group
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_read_group -i tests/data_structures/input_json/read_group_bad_sample.json data_structures/read_group.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -w read_group_to_string -i tests/data_structures/input_json/read_group_bad_sample.json data_structures/read_group.wdl
   exit_code: 1
   stderr:
     contains:
@@ -22,14 +22,14 @@
   tags:
     - read_group
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_read_group -i tests/data_structures/input_json/read_group_good.json data_structures/read_group.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -w read_group_to_string -i tests/data_structures/input_json/read_group_good.json data_structures/read_group.wdl
   exit_code: 0
 
 - name: read_group_missing_sample
   tags:
     - read_group
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_read_group -i tests/data_structures/input_json/read_group_missing_sample.json data_structures/read_group.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -w read_group_to_string -i tests/data_structures/input_json/read_group_missing_sample.json data_structures/read_group.wdl
   exit_code: 1
   stderr:
     contains:
@@ -39,7 +39,7 @@
   tags:
     - read_group
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_read_group -i tests/data_structures/input_json/read_group_sample_with_space.json data_structures/read_group.wdl
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -w read_group_to_string -i tests/data_structures/input_json/read_group_sample_with_space.json data_structures/read_group.wdl
   exit_code: 1
   stderr:
     contains:
