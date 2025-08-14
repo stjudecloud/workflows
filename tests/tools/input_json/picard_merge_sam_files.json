@@ -1,4 +1,4 @@
 {
-    "bams": ["tests/input/possorted_genome_bam.bam", "tests/input/test.bwa_aln_pe.chrY_chrM.bam"],
-    "prefix": "test"
+    "merge_sam_files.bams": ["../../input/possorted_genome_bam.bam", "../../input/test.bwa_aln_pe.chrY_chrM.bam"],
+    "merge_sam_files.prefix": "test"
 }

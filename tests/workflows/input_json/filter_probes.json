@@ -1,4 +1,4 @@
 {
-    "beta_values": "tests/input/combined_beta.csv",
-    "num_probes": 1000
+    "filter_probes.beta_values": "../../input/combined_beta.csv",
+    "filter_probes.num_probes": 1000
 }
