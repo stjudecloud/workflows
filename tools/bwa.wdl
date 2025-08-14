@@ -179,6 +179,8 @@ task bwa_aln_pe {
             > "~{output_bam}"
 
         rm -r bwa_db
+        rm "~{basename(read_one_fastq_gz)}"
+        rm "~{basename(read_two_fastq_gz)}"
     >>>
 
     output {
@@ -276,6 +278,12 @@ task bwa_mem {
             > "~{output_bam}"
 
         rm -r bwa_db
+        rm "~{basename(read_one_fastq_gz)}"
+        ~{(
+            if defined(read_two_fastq_gz)
+            then "rm '" + basename(select_first([read_two_fastq_gz])) + "'"
+            else ""
+        )}
     >>>
 
     output {
@@ -328,6 +336,8 @@ task build_bwa_db {
         bwa index "$ref_fasta"
 
         tar -czf "~{bwa_db_out_name}" "$ref_fasta"*
+
+        rm "$ref_fasta"
     >>>
 
     output {
