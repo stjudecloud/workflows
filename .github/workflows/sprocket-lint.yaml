@@ -13,3 +13,4 @@ jobs:
             lint: true
             deny-notes: true
             except: ContainerUri
+            exclude-patterns: template
