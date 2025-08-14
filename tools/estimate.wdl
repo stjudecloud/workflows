@@ -52,7 +52,7 @@ task run_estimate {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/estimate:2.0.0"
+        container: "ghcr.io/stjudecloud/estimate:branch-sprocket-2.0.0"
         maxRetries: max_retries
     }
 }
