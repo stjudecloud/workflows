@@ -4,10 +4,10 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t process_raw_idats -i tests/workflows/input_json/process_raw_idats.json workflows/methylation/methylation-preprocess.wdl
   files:
-    - path: test-output/out/beta_swan_norm_unfiltered/201533520001_R03C01.beta_swan_norm_unfiltered.csv
-    - path: test-output/out/beta_swan_norm_unfiltered_genomic/201533520001_R03C01.beta_swan_norm_unfiltered.genomic.csv
-    - path: test-output/out/annotation/201533520001_R03C01.annotation.csv
-    - path: test-output/out/beta_unnorm/201533520001_R03C01.beta.csv
-    - path: test-output/out/cn_values/201533520001_R03C01.cn_values.csv
-    - path: test-output/out/m_values/201533520001_R03C01.m_values.csv
-    - path: test-output/out/probe_names/201533520001_R03C01.probeNames.csv
+    - path: output/out/beta_swan_norm_unfiltered/201533520001_R03C01.beta_swan_norm_unfiltered.csv
+    - path: output/out/beta_swan_norm_unfiltered_genomic/201533520001_R03C01.beta_swan_norm_unfiltered.genomic.csv
+    - path: output/out/annotation/201533520001_R03C01.annotation.csv
+    - path: output/out/beta_unnorm/201533520001_R03C01.beta.csv
+    - path: output/out/cn_values/201533520001_R03C01.cn_values.csv
+    - path: output/out/m_values/201533520001_R03C01.m_values.csv
+    - path: output/out/probe_names/201533520001_R03C01.probeNames.csv

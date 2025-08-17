@@ -6,4 +6,4 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t run_estimate tools/estimate.wdl gene_expression_file="tests/input/test.bwa_aln_pe.chrY_chrM.TPM.txt"
   files:
-    - path: test-output/out/estimate_file/test.bwa_aln_pe.chrY_chrM.ESTIMATE.gct
+    - path: output/out/estimate_file/test.bwa_aln_pe.chrY_chrM.ESTIMATE.gct

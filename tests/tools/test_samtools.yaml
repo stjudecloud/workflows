@@ -10,8 +10,8 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t split tools/samtools.wdl bam="tests/input/test.bam"
   files:
-    - path: test-output/out/split_bams/0/test.1.bam
-    - path: test-output/out/split_bams/1/test.2.bam
+    - path: output/out/split_bams/0/test.1.bam
+    - path: output/out/split_bams/1/test.2.bam
 
 - name: samtools_split_unaccounted
   tags:
@@ -33,7 +33,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t flagstat tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/flagstat_report/test.bwa_aln_pe.chrY_chrM.flagstat.txt
+    - path: output/out/flagstat_report/test.bwa_aln_pe.chrY_chrM.flagstat.txt
       contains:
         - "20000"
         - "0 + 0 secondary"
@@ -47,7 +47,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t index tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/bam_index/test.bwa_aln_pe.chrY_chrM.bam.bai
+    - path: output/out/bam_index/test.bwa_aln_pe.chrY_chrM.bam.bai
 
 - name: samtools_subsample
   tags:
@@ -55,7 +55,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t subsample tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam" desired_reads=100
   files:
-    - path: test-output/out/sampled_bam/test.sampled.bam
+    - path: output/out/sampled_bam/test.sampled.bam
 
 - name: samtools_merge
   tags:
@@ -63,7 +63,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t merge -i tests/tools/input_json/samtools_merge.json tools/samtools.wdl
   files:
-    - path: test-output/out/merged_bam/test.bam
+    - path: output/out/merged_bam/test.bam
 
 - name: samtools_addreplacerg
   tags:
@@ -71,7 +71,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t addreplacerg tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" read_group_id="test"
   files:
-    - path: test-output/out/tagged_bam/test.bwa_aln_pe.chrY_chrM.addreplacerg.bam
+    - path: output/out/tagged_bam/test.bwa_aln_pe.chrY_chrM.addreplacerg.bam
 
 - name: samtools_collate
   tags:
@@ -79,7 +79,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t collate tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/collated_bam/test.bwa_aln_pe.chrY_chrM.collated.bam
+    - path: output/out/collated_bam/test.bwa_aln_pe.chrY_chrM.collated.bam
 
 - name: samtools_bam_to_fastq
   tags:
@@ -87,9 +87,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t bam_to_fastq tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" retain_collated_bam=true
   files:
-    - path: test-output/out/collated_bam/test.bwa_aln_pe.chrY_chrM.collated.bam
-    - path: test-output/out/read_one_fastq_gz/test.bwa_aln_pe.chrY_chrM.R1.fastq.gz
-    - path: test-output/out/read_two_fastq_gz/test.bwa_aln_pe.chrY_chrM.R2.fastq.gz
+    - path: output/out/collated_bam/test.bwa_aln_pe.chrY_chrM.collated.bam
+    - path: output/out/read_one_fastq_gz/test.bwa_aln_pe.chrY_chrM.R1.fastq.gz
+    - path: output/out/read_two_fastq_gz/test.bwa_aln_pe.chrY_chrM.R2.fastq.gz
 
 - name: samtools_faidx
   tags:
@@ -97,4 +97,4 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t faidx tools/samtools.wdl fasta="tests/input/test.fa"
   files:
-    - path: test-output/out/fasta_index/test.fa.fai
+    - path: output/out/fasta_index/test.fa.fai

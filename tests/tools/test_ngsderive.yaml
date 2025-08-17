@@ -4,7 +4,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t strandedness tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai" gene_model="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
-    - path: test-output/out/strandedness_file/test.bwa_aln_pe.chrY_chrM.strandedness.tsv
+    - path: output/out/strandedness_file/test.bwa_aln_pe.chrY_chrM.strandedness.tsv
       contains:
         - "Unstranded"
 
@@ -14,7 +14,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t instrument tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/instrument_file/test.bwa_aln_pe.chrY_chrM.instrument.tsv
+    - path: output/out/instrument_file/test.bwa_aln_pe.chrY_chrM.instrument.tsv
       contains:
         - "multiple instruments"
         - "unknown confidence"
@@ -25,7 +25,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t read_length tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai"
   files:
-    - path: test-output/out/read_length_file/test.bwa_aln_pe.chrY_chrM.readlength.tsv
+    - path: output/out/read_length_file/test.bwa_aln_pe.chrY_chrM.readlength.tsv
       contains:
         - "150=20000"
 
@@ -35,7 +35,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t encoding -i tests/tools/input_json/ngsderive_encoding.json tools/ngsderive.wdl
   files:
-    - path: test-output/out/encoding_file/test.bwa_aln_pe.chrY_chrM.encoding.tsv
+    - path: output/out/encoding_file/test.bwa_aln_pe.chrY_chrM.encoding.tsv
       contains:
         - "ASCII range: 74-74"
         - "Illumina 1.3"
@@ -46,8 +46,8 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t junction_annotation tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai" gene_model="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
-    - path: test-output/out/junction_summary/test.bwa_aln_pe.chrY_chrM.junction_summary.tsv
-    - path: test-output/out/junctions/test.bwa_aln_pe.chrY_chrM.junctions.tsv.gz
+    - path: output/out/junction_summary/test.bwa_aln_pe.chrY_chrM.junction_summary.tsv
+    - path: output/out/junctions/test.bwa_aln_pe.chrY_chrM.junctions.tsv.gz
 
 - name: endedness
   tags:
@@ -55,4 +55,4 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t endedness tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/endedness_file/test.bwa_aln_pe.chrY_chrM.endedness.tsv
+    - path: output/out/endedness_file/test.bwa_aln_pe.chrY_chrM.endedness.tsv

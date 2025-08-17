@@ -5,9 +5,9 @@
     ./developer_scripts/run_sprocket_or_miniwdl.sh -i tests/tools/input_json/util_download.json -t download tools/util.wdl
   stdout:
     contains_regex:
-      - '"download.downloaded_file": ".*test-output/out/downloaded_file/license.txt"'
+      - '"download.downloaded_file": ".*output/out/downloaded_file/license.txt"'
   files:
-    - path: test-output/out/downloaded_file/license.txt
+    - path: output/out/downloaded_file/license.txt
       md5sum: cf3575bd84ab3151c7e9700b5f1a9746
       contains:
         - "MIT License"
@@ -30,7 +30,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t calc_gene_lengths tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
-    - path: test-output/out/gene_lengths/gencode.v31.chrY_chrM.genelengths.txt
+    - path: output/out/gene_lengths/gencode.v31.chrY_chrM.genelengths.txt
       contains:
         - "AL954722.1"
 
@@ -47,7 +47,7 @@
   command: >-
       ./developer_scripts/run_sprocket_or_miniwdl.sh -t add_to_bam_header tools/util.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" additional_header="@RG	ID:3"
   files:
-    - path: "test-output/out/reheadered_bam/test.bwa_aln_pe.chrY_chrM.reheader.bam"
+    - path: "output/out/reheadered_bam/test.bwa_aln_pe.chrY_chrM.reheader.bam"
 
 - name: unpack_tarball
   tags:
@@ -55,8 +55,8 @@
   command: >-
       ./developer_scripts/run_sprocket_or_miniwdl.sh -t unpack_tarball tools/util.wdl tarball="tests/input/test.tar.gz"
   files:
-    - path: "test-output/out/tarball_contents/0/a"
-    - path: "test-output/out/tarball_contents/1/b"
+    - path: "output/out/tarball_contents/0/a"
+    - path: "output/out/tarball_contents/1/b"
 
 - name: make_coverage_regions_bed
   tags:
@@ -64,7 +64,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t make_coverage_regions_bed tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz" feature_type="exon"
   files:
-    - path: "test-output/out/bed/gencode.v31.chrY_chrM.exon.bed"
+    - path: "output/out/bed/gencode.v31.chrY_chrM.exon.bed"
 
 - name: global_phred_scores
   tags:
@@ -72,7 +72,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t global_phred_scores tools/util.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: "test-output/out/phred_scores/test.bwa_aln_pe.chrY_chrM.global_PHRED_scores.tsv"
+    - path: "output/out/phred_scores/test.bwa_aln_pe.chrY_chrM.global_PHRED_scores.tsv"
 
 - name: split_fastq
   tags:
@@ -80,4 +80,4 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t split_fastq tools/util.wdl fastq="tests/input/test_R1.fq.gz" prefix="test.R1."
   files:
-    - path: "test-output/out/fastqs/0/test.R1.000000.fastq.gz"
+    - path: "output/out/fastqs/0/test.R1.000000.fastq.gz"

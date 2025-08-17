@@ -5,7 +5,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t bamqc tools/qualimap.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: test-output/out/results/test.bwa_aln_pe.chrY_chrM.qualimap_bamqc_results.tar.gz
+    - path: output/out/results/test.bwa_aln_pe.chrY_chrM.qualimap_bamqc_results.tar.gz
 
 - name: qualimap_rnaseq
   tags:
@@ -13,6 +13,6 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t rnaseq tools/qualimap.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
-    - path: test-output/out/results/test.bwa_aln_pe.chrY_chrM.qualimap_rnaseq_results.tar.gz
-    - path: test-output/out/raw_summary/rnaseq_qc_results.txt
-    - path: test-output/out/raw_coverage/coverage_profile_along_genes_(total).txt
+    - path: output/out/results/test.bwa_aln_pe.chrY_chrM.qualimap_rnaseq_results.tar.gz
+    - path: output/out/raw_summary/rnaseq_qc_results.txt
+    - path: output/out/raw_coverage/coverage_profile_along_genes_(total).txt
