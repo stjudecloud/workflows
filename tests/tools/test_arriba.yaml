@@ -25,7 +25,7 @@
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_extract_fusion_supporting_alignments tools/arriba.wdl fusions="tests/input/fusions.tsv" bam="tests/input/Aligned.sortedByCoord.chr9_chr22.bam" bam_index="tests/input/Aligned.sortedByCoord.chr9_chr22.bam.bai"
   files:
     - path: output/outputs.json
-      contians: fusions_1.bam
+      contains: fusions_1.bam
 
 - name: arriba_annotate_exon_numbers
   tags:
