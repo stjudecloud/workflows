@@ -5,7 +5,8 @@
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t bwa_aln -i tests/tools/input_json/bwa_aln.json tools/bwa.wdl
   files:
     - path: output/outputs.json
-      contains: test.bam
+      contains:
+      - test.bam
 
 - name: bwa_aln_pe
   tags:
@@ -14,7 +15,8 @@
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t bwa_aln_pe -i tests/tools/input_json/bwa_aln_pe.json tools/bwa.wdl
   files:
     - path: output/outputs.json
-      contains: test.bam
+      contains:
+      - test.bam
 
 - name: bwa_mem
   tags:
@@ -23,7 +25,8 @@
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t bwa_mem -i tests/tools/input_json/bwa_mem.json tools/bwa.wdl
   files:
     - path: output/outputs.json
-      contains: test.bam
+      contains:
+      - test.bam
 
 - name: build_bwa_db
   tags:
@@ -33,4 +36,5 @@
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t build_bwa_db tools/bwa.wdl reference_fasta="tests/input/GRCh38.chrY_chrM.fa.gz"
   files:
     - path: output/outputs.json
-      contains: bwa_db.tar.gz
+      contains:
+      - bwa_db.tar.gz

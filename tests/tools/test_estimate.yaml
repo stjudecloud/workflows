@@ -7,4 +7,5 @@
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t run_estimate tools/estimate.wdl gene_expression_file="tests/input/test.bwa_aln_pe.chrY_chrM.TPM.txt"
   files:
     - path: output/outputs.json
-      contains: test.bwa_aln_pe.chrY_chrM.ESTIMATE.gct
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.ESTIMATE.gct

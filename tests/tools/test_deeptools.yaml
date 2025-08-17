@@ -5,4 +5,5 @@
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t bam_coverage tools/deeptools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai"
   files:
     - path: output/outputs.json
-      contains: test.bwa_aln_pe.chrY_chrM.bw
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.bw
