@@ -4,5 +4,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t fastqc tools/fastqc.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/raw_data/test.bwa_aln_pe.chrY_chrM_fastqc.zip
-    - path: output/out/results/test.bwa_aln_pe.chrY_chrM.fastqc_results.tar.gz
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM_fastqc.zip
+      - test.bwa_aln_pe.chrY_chrM.fastqc_results.tar.gz

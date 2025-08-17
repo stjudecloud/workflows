@@ -4,7 +4,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t fastp tools/fastp.wdl read_one_fastq="tests/input/test_R1.fq.gz" read_two_fastq="tests/input/test_R2.fq.gz"
   files:
-    - path: output/out/read_one_fastq_gz/test.trimmed.R1.fastq.gz
-    - path: output/out/read_two_fastq_gz/test.trimmed.R2.fastq.gz
-    - path: output/out/report/test.trimmed.fastp.html
-    - path: output/out/report_json/test.trimmed.fastp.json
+    - path: output/outputs.json
+      contains:
+      - test.trimmed.R1.fastq.gz
+      - test.trimmed.R2.fastq.gz
+      - test.trimmed.fastp.html
+      - test.trimmed.fastp.json

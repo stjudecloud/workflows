@@ -16,7 +16,7 @@
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_tsv_to_vcf tools/arriba.wdl fusions="tests/input/fusions.tsv" reference_fasta="tests/input/GRCh38.chr9_chr22.fa.gz"
   files:
     - path: output/outputs.json
-      contans: fusions.vcf
+      contains: fusions.vcf
 
 - name: arriba_extract_fusion_supporting_alignments
   tags:
