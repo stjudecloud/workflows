@@ -23,8 +23,8 @@ _LAST
 .DS_Store
 
 # Commonly used folder for putting miniwdl/sprocket results in during testing
-results/
-output/
+results*/
+output*/
 
 # Ignore JSONs in the root (probably being used for input to sprocket run)
 /*.json
