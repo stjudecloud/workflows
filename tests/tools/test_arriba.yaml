@@ -4,8 +4,10 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba -i tests/tools/input_json/arriba.json tools/arriba.wdl
   files:
-    - path: output/out/fusions/fusions.tsv
-    - path: output/out/discarded_fusions/fusions.discarded.tsv
+    - path: output/outputs.json
+      contains:
+      - fusions.tsv
+      - fusions.discarded.tsv
 
 - name: arriba_tsv_to_vcf
   tags:
@@ -13,7 +15,8 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_tsv_to_vcf tools/arriba.wdl fusions="tests/input/fusions.tsv" reference_fasta="tests/input/GRCh38.chr9_chr22.fa.gz"
   files:
-    - path: output/out/fusions_vcf/fusions.vcf
+    - path: output/outputs.json
+      contans: fusions.vcf
 
 - name: arriba_extract_fusion_supporting_alignments
   tags:
@@ -21,7 +24,8 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_extract_fusion_supporting_alignments tools/arriba.wdl fusions="tests/input/fusions.tsv" bam="tests/input/Aligned.sortedByCoord.chr9_chr22.bam" bam_index="tests/input/Aligned.sortedByCoord.chr9_chr22.bam.bai"
   files:
-    - path: output/out/fusion_bams/0/fusions_1.bam
+    - path: output/outputs.json
+      contians: fusions_1.bam
 
 - name: arriba_annotate_exon_numbers
   tags:
@@ -29,4 +33,5 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_annotate_exon_numbers tools/arriba.wdl fusions="tests/input/fusions.tsv" gtf="tests/input/gencode.v31.chr9_chr22.gtf.gz"
   files:
-    - path: output/out/fusion_tsv/fusions.annotated.tsv
+    - path: output/outputs.json
+      contains: fusions.annotated.tsv
