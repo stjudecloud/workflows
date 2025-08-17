@@ -70,7 +70,7 @@ if [ "$runner" != "miniwdl" ]; then
 else
    if [[ $input_file ]]; then
       input_dir=$(dirname "$input_file")
-      sed -e 's;../;'"$input_dir"'/../;g' "$input_file" > tmp.json
+      sed -e 's;../;'"$input_dir"'/../;' "$input_file" > tmp.json
       input_file=tmp.json
    fi
    if [ -d output ]; then
