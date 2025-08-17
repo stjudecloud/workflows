@@ -20,11 +20,17 @@ jobs:
     strategy:
       matrix:
         tag: ${{ fromJson(needs.list-tags.outputs.tags) }}
+        runner: [sprocket, miniwdl]
       fail-fast: false
     steps:
     - uses: actions/checkout@v4
       with:
         lfs: true
+    - name: Update Rust
+      run: rustup update stable && rustup default stable
+    - name: Build Sprocket
+      run: |
+        cargo install sprocket --locked
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -40,5 +46,6 @@ jobs:
       run: |
         ./developer_scripts/update_container_tags.sh ${GITHUB_REF##*/}
     - name: Run pytest-workflow
+      env: ${{ matrix.runner }}
       run: |
         pytest --git-aware --basetemp /home/runner/work/pytest --symlink --tag ${{ matrix.tag }}
