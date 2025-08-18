@@ -12,7 +12,7 @@
   tags:
     - htseq
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t calc_tpm tools/htseq.wdl counts=\"tests/input/test.bwa_aln_pe.chrY_chrM.feature-counts.txt\" gene_lengths="tests/input/gencode.v31.chrY_chrM.genelengths.txt"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t calc_tpm -i tests/tools/input_json/calc_tpm.json tools/htseq.wdl
   files:
     - path: output/outputs.json
       contains:

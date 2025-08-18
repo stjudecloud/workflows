@@ -15,7 +15,7 @@
   tags:
     - util
   command: >-
-        ./developer_scripts/run_sprocket_or_miniwdl.sh -t split_string tools/util.wdl string=\"rg1 , rg2\"
+        ./developer_scripts/run_sprocket_or_miniwdl.sh -t split_string -i tests/tools/input_json/util_split_string.json tools/util.wdl
   stdout:
     contains:
       - "rg1"
@@ -46,7 +46,7 @@
   tags:
     - util
   command: >-
-      ./developer_scripts/run_sprocket_or_miniwdl.sh -t add_to_bam_header tools/util.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" additional_header=\"@RG	ID:3\"
+      ./developer_scripts/run_sprocket_or_miniwdl.sh -t add_to_bam_header -i tests/tools/input_json/util_add_to_bam_header.json tools/util.wdl
   files:
     - path: output/output.json
       contains:

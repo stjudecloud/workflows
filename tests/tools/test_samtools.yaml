@@ -66,7 +66,7 @@
   tags:
     - samtools
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t subsample tools/samtools.wdl bam=\"https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam\" desired_reads=100
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t subsample -i tests/tools/input_json/samtools_subsample.json tools/samtools.wdl
   files:
     - path: output/outputs.json
       contains:
