@@ -138,7 +138,7 @@
   files:
     - path: output/outputs.json
       contains:
-      - merged_vcf/test.vcf.gz
+      - test.vcf.gz
 
 - name: picard_scatter_interval_list
   tags:

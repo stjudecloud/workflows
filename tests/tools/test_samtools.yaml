@@ -66,7 +66,7 @@
   tags:
     - samtools
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t subsample tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam" desired_reads=100
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t subsample tools/samtools.wdl bam=\"https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam\" desired_reads=100
   files:
     - path: output/outputs.json
       contains:
@@ -88,7 +88,8 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t addreplacerg tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" read_group_id="test"
   files:
-    - path: output/out/tagged_bam/test.bwa_aln_pe.chrY_chrM.addreplacerg.bam
+    - path: output/outputs.json
+      contains: test.bwa_aln_pe.chrY_chrM.addreplacerg.bam
 
 - name: samtools_collate
   tags:

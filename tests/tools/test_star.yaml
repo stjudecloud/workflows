@@ -35,7 +35,7 @@
   tags:
     - star
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t alignment tools/star.wdl read_one_fastqs_gz=tests/input/test_R1.fq.gz read_groups=ID:foo prefix=test star_db_tar_gz="tests/input/star_db.chrY_chrM.tar.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t alignment tools/star.wdl read_one_fastqs_gz=tests/input/test_R1.fq.gz read_groups=\"ID:foo\" prefix=test star_db_tar_gz="tests/input/star_db.chrY_chrM.tar.gz"
   files:
     - path: output/outputs.json
       contains:
