@@ -2,6 +2,7 @@
   tags:
     - kraken
     - reference
+    - slow
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t download_taxonomy tools/kraken2.wdl
   files:
@@ -13,6 +14,7 @@
   tags:
     - kraken
     - reference
+    - slow
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t download_library tools/kraken2.wdl library_name='fungi'
   files:
