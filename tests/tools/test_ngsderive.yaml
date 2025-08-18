@@ -7,8 +7,7 @@
     - path: output/outputs.json
       contains:
       - test.bwa_aln_pe.chrY_chrM.strandedness.tsv
-      # contains:
-      #   - "Unstranded"
+      - "Unstranded"
 
 - name: instrument
   tags:
@@ -19,8 +18,7 @@
     - path: output/outputs.json
       contains:
       - test.bwa_aln_pe.chrY_chrM.instrument.tsv
-      # contains:
-      #   - "multiple instruments"
+      - "multiple instruments"
       #   - "unknown confidence"
 
 - name: read_length
