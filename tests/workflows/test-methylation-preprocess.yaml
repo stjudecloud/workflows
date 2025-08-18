@@ -1,8 +1,9 @@
+# TODO: this is hardcoded to run miniwdl (redundantly) because Sprocket does not accept pair inputs
 - name: process_raw_idats
   tags:
     - methylation
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t process_raw_idats -i tests/workflows/input_json/process_raw_idats.json workflows/methylation/methylation-preprocess.wdl
+    RUNNER=miniwdl ./developer_scripts/run_sprocket_or_miniwdl.sh -t process_raw_idats -i tests/workflows/input_json/process_raw_idats.json workflows/methylation/methylation-preprocess.wdl
   files:
     - path: output/outputs.json
       contains:
