@@ -1,6 +1,6 @@
 {
-    "download.url":"https://raw.githubusercontent.com/stjudecloud/workflows/main/LICENSE.md",
-    "download.outfile_name":"license.txt",
-    "download.md5sum":"cf3575bd84ab3151c7e9700b5f1a9746",
-    "download.disk_size_gb":1
+    "download.url": "https://raw.githubusercontent.com/stjudecloud/workflows/main/LICENSE.md",
+    "download.outfile_name": "license.txt",
+    "download.md5sum": "cf3575bd84ab3151c7e9700b5f1a9746",
+    "download.disk_size_gb": 1
 }

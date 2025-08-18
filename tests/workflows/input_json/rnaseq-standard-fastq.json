@@ -1,13 +1,19 @@
 {
-    "rnaseq_standard_fastq.read_one_fastqs_gz": ["../../input/test_R1.fq.gz"],
-    "rnaseq_standard_fastq.read_two_fastqs_gz": ["../../input/test_R2.fq.gz"],
-    "rnaseq_standard_fastq.read_groups": [{
-        "ID": "test",
-        "PI": 150,
-        "PL": "ILLUMINA",
-        "SM": "Sample",
-        "LB": "Sample"
-    }],
+    "rnaseq_standard_fastq.read_one_fastqs_gz": [
+        "../../input/test_R1.fq.gz"
+    ],
+    "rnaseq_standard_fastq.read_two_fastqs_gz": [
+        "../../input/test_R2.fq.gz"
+    ],
+    "rnaseq_standard_fastq.read_groups": [
+        {
+            "ID": "test",
+            "PI": 150,
+            "PL": "ILLUMINA",
+            "SM": "Sample",
+            "LB": "Sample"
+        }
+    ],
     "rnaseq_standard_fastq.prefix": "test",
     "rnaseq_standard_fastq.gtf": "../../input/gencode.v31.chrY_chrM.gtf.gz",
     "rnaseq_standard_fastq.star_db": "../../input/star_db.chrY_chrM.tar.gz",

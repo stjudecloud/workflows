@@ -1,4 +1,7 @@
 {
-    "merge.bams": ["../../input/test2.bam", "../../input/test.bwa_aln_pe.chrY_chrM.bam"],
+    "merge.bams": [
+        "../../input/test2.bam",
+        "../../input/test.bwa_aln_pe.chrY_chrM.bam"
+    ],
     "merge.prefix": "test"
 }

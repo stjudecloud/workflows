@@ -4,8 +4,12 @@
     "base_recalibrator.fasta": "../../input/GRCh38.chr1_chr19.fa",
     "base_recalibrator.fasta_index": "../../input/GRCh38.chr1_chr19.fa.fai",
     "base_recalibrator.dict": "../../input/GRCh38.chr1_chr19.dict",
-    "base_recalibrator.dbSNP_vcf":"../../input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf",
+    "base_recalibrator.dbSNP_vcf": "../../input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf",
     "base_recalibrator.dbSNP_vcf_index": "../../input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf.idx",
-    "base_recalibrator.known_indels_sites_vcfs": ["../../input/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"],
-    "base_recalibrator.known_indels_sites_indices": ["../../input/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"]
+    "base_recalibrator.known_indels_sites_vcfs": [
+        "../../input/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
+    ],
+    "base_recalibrator.known_indels_sites_indices": [
+        "../../input/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"
+    ]
 }
