@@ -233,7 +233,7 @@ task unpack_tarball {
         set -euo pipefail
 
         mkdir unpacked_tarball
-        tar -C unpacked_tarball -xzf "~{tarball}" --no-same-owner
+        tar -C unpacked_tarball -xzf "~{tarball}" --no-same-owner --no-same-permissions
         # pipe through sort because otherwise order is random (dependent on filesystem)
         find unpacked_tarball/ -type f | LC_ALL=C sort > file_list.txt
     >>>
