@@ -89,7 +89,8 @@
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t addreplacerg tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" read_group_id="test"
   files:
     - path: output/outputs.json
-      contains: test.bwa_aln_pe.chrY_chrM.addreplacerg.bam
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.addreplacerg.bam
 
 - name: samtools_collate
   tags:
