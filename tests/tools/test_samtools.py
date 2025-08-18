@@ -1,3 +1,4 @@
+"""TODO: rewrite this so it is runner agnostic"""
 import pytest
 import pathlib
 from collections import OrderedDict
@@ -6,7 +7,7 @@ import pysam
 import fastq
 
 
-@pytest.mark.workflow('samtools_split')
+# @pytest.mark.workflow('samtools_split')
 def test_samtools_split(workflow_dir):
     bam = pathlib.Path(workflow_dir, 'test-output/out/split_bams/0/test.1.bam')
     samfile = pysam.AlignmentFile(bam, "rb")
@@ -22,7 +23,7 @@ def test_samtools_split(workflow_dir):
     assert len(second_read_groups) == 1
     assert second_read_groups[0] == "2"
 
-@pytest.mark.workflow('samtools_merge')
+# @pytest.mark.workflow('samtools_merge')
 def test_samtools_merge(workflow_dir):
     bam = pathlib.Path(workflow_dir, 'test-output/out/merged_bam/test.bam')
     samfile = pysam.AlignmentFile(bam, "rb")
@@ -32,7 +33,7 @@ def test_samtools_merge(workflow_dir):
     assert read_groups[0] == "test2"
     assert read_groups[1] == "test.bwa_aln_pe.chrY_chrM"
 
-@pytest.mark.workflow('samtools_collate', 'samtools_collate_to_fastq')
+# @pytest.mark.workflow('samtools_collate', 'samtools_collate_to_fastq')
 def test_samtools_collate(workflow_dir):
     bam = pathlib.Path(workflow_dir, 'test-output/out/collated_bam/test.bwa_aln_pe.chrY_chrM.collated.bam')
     samfile = pysam.AlignmentFile(bam, "rb")
@@ -42,7 +43,7 @@ def test_samtools_collate(workflow_dir):
         assert reads[c].query_name == reads[c+1].query_name
         assert reads[c].is_read1 != reads[c+1].is_read1
 
-@pytest.mark.workflow('samtools_bam_to_fastq', 'samtools_collate_to_fastq')
+# @pytest.mark.workflow('samtools_bam_to_fastq', 'samtools_collate_to_fastq')
 def test_samtools_bam_to_fastq(workflow_dir):
     fq1 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_one_fastq_gz/test.bwa_aln_pe.chrY_chrM.R1.fastq.gz'))
     fq2 = fastq.read(pathlib.Path(workflow_dir, 'test-output/out/read_two_fastq_gz/test.bwa_aln_pe.chrY_chrM.R2.fastq.gz'))

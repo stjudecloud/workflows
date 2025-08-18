@@ -4,9 +4,11 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t split_n_cigar_reads -i tests/tools/input_json/gatk4_split_n_cigar_reads.json tools/gatk4.wdl
   files:
-    - path: output/out/split_n_reads_bam/split.bam
-    - path: output/out/split_n_reads_bam_index/split.bam.bai
-    - path: output/out/split_n_reads_bam_md5/split.bam.md5
+    - path: output/outputs.json
+      contains:
+      - split.bam
+      - split.bam.bai
+      - split.bam.md5
 
 - name: gatk4_base_recalibrator
   tags:
@@ -14,7 +16,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t base_recalibrator -i tests/tools/input_json/gatk4_base_recalibrator.json tools/gatk4.wdl
   files:
-    - path: output/out/recalibration_report/test_rnaseq_variant.recal.txt
+    - path: output/outputs.json
+      contains:
+      - test_rnaseq_variant.recal.txt
 
 - name: gatk4_apply_bqsr
   tags:
@@ -22,9 +26,10 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t apply_bqsr -i tests/tools/input_json/gatk4_apply_bqsr.json tools/gatk4.wdl
   files:
-    - path: output/out/recalibrated_bam/test_rnaseq_variant.bqsr.bam
-    - path: output/out/recalibrated_bam_index/test_rnaseq_variant.bqsr.bam.bai
-
+    - path: output/outputs.json
+      contains:
+      - test_rnaseq_variant.bqsr.bam
+      - test_rnaseq_variant.bqsr.bam.bai
 
 - name: gatk4_haplotype_caller
   tags:
@@ -32,7 +37,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t haplotype_caller -i tests/tools/input_json/gatk4_haplotype_caller.json tools/gatk4.wdl
   files:
-    - path: output/out/vcf/test_rnaseq_variant.vcf.gz
+    - path: output/outputs.json
+      contains:
+      - test_rnaseq_variant.vcf.gz
 
 - name: gatk4_variant_filtration
   tags:
@@ -40,8 +47,10 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t variant_filtration -i tests/tools/input_json/gatk4_variant_filtration.json tools/gatk4.wdl
   files:
-    - path: output/out/vcf_filtered/test1.filtered.vcf.gz
-    - path: output/out/vcf_filtered_index/test1.filtered.vcf.gz.tbi
+    - path: output/outputs.json
+      contains:
+      - test1.filtered.vcf.gz
+      - test1.filtered.vcf.gz.tbi
 
 - name: gatk4_mark_duplicates_spark
   tags:
@@ -49,6 +58,8 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t mark_duplicates_spark tools/gatk4.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/duplicate_marked_bam/test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam
-    - path: output/out/duplicate_marked_bam_index/test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam.bai
-    - path: output/out/mark_duplicates_metrics/test.bwa_aln_pe.chrY_chrM.MarkDuplicates.metrics.txt
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam
+      - test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam.bai
+      - test.bwa_aln_pe.chrY_chrM.MarkDuplicates.metrics.txt

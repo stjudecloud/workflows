@@ -4,10 +4,12 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t mark_duplicates tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/duplicate_marked_bam/test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam
-    - path: output/out/duplicate_marked_bam_index/test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam.bai
-    - path: output/out/duplicate_marked_bam_md5/test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam.md5
-    - path: output/out/mark_duplicates_metrics/test.bwa_aln_pe.chrY_chrM.MarkDuplicates.metrics.txt
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam
+      - test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam.bai
+      - test.bwa_aln_pe.chrY_chrM.MarkDuplicates.bam.md5
+      - test.bwa_aln_pe.chrY_chrM.MarkDuplicates.metrics.txt
 
 - name: picard_validate_bam
   tags:
@@ -15,7 +17,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t validate_bam tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/validate_report/test.bwa_aln_pe.chrY_chrM.ValidateSamFile.txt
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.ValidateSamFile.txt
 
 - name: picard_bam_to_fastq
   tags:
@@ -23,8 +27,10 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t bam_to_fastq tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/read_one_fastq_gz/test.bwa_aln_pe.chrY_chrM.R1.fastq.gz
-    - path: output/out/read_two_fastq_gz/test.bwa_aln_pe.chrY_chrM.R2.fastq.gz
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.R1.fastq.gz
+      - test.bwa_aln_pe.chrY_chrM.R2.fastq.gz
 
 - name: picard_sort
   tags:
@@ -32,8 +38,10 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t sort tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" memory_gb=16
   files:
-    - path: output/out/sorted_bam/test.bwa_aln_pe.chrY_chrM.sorted.bam
-    - path: output/out/sorted_bam_index/test.bwa_aln_pe.chrY_chrM.sorted.bam.bai
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.sorted.bam
+      - test.bwa_aln_pe.chrY_chrM.sorted.bam.bai
 
 - name: picard_sort_queryname
   tags:
@@ -41,7 +49,11 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t sort tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" memory_gb=16 sort_order="queryname"
   files:
-    - path: output/out/sorted_bam/test.bwa_aln_pe.chrY_chrM.sorted.bam
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.sorted.bam
+      must_not_contain:
+      - test.bwa_aln_pe.chrY_chrM.sorted.bam.bai
 
 - name: picard_merge_sam_files
   tags:
@@ -49,7 +61,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t merge_sam_files -i tests/tools/input_json/picard_merge_sam_files.json tools/picard.wdl
   files:
-    - path: output/out/merged_bam/test.bam
+    - path: output/outputs.json
+      contains:
+      - test.bam
 
 - name: picard_clean_sam
   tags:
@@ -57,7 +71,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t clean_sam tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/cleaned_bam/test.bwa_aln_pe.chrY_chrM.cleaned.bam
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.cleaned.bam
 
 - name: picard_collect_wgs_metrics
   tags:
@@ -65,7 +81,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t collect_wgs_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" reference_fasta="tests/input/GRCh38.chrY_chrM.fa"
   files:
-    - path: output/out/wgs_metrics/test.bwa_aln_pe.chrY_chrM.CollectWgsMetrics.txt
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.CollectWgsMetrics.txt
 
 - name: picard_collect_alignment_summary_metrics
   tags:
@@ -73,8 +91,10 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t collect_alignment_summary_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/alignment_metrics/test.bwa_aln_pe.chrY_chrM.CollectAlignmentSummaryMetrics.txt
-    - path: output/out/alignment_metrics_pdf/test.bwa_aln_pe.chrY_chrM.CollectAlignmentSummaryMetrics.pdf
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.CollectAlignmentSummaryMetrics.txt
+      - test.bwa_aln_pe.chrY_chrM.CollectAlignmentSummaryMetrics.pdf
 
 - name: picard_collect_gc_bias_metrics
   tags:
@@ -82,9 +102,11 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t collect_gc_bias_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" reference_fasta=tests/input/GRCh38.chrY_chrM.fa
   files:
-    - path: output/out/gc_bias_metrics/test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.txt
-    - path: output/out/gc_bias_metrics_summary/test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.summary.txt
-    - path: output/out/gc_bias_metrics_pdf/test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.pdf
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.txt
+      - test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.summary.txt
+      - test.bwa_aln_pe.chrY_chrM.CollectGcBiasMetrics.pdf
 
 - name: picard_collect_insert_size_metrics
   tags:
@@ -92,8 +114,10 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t collect_insert_size_metrics tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/insert_size_metrics/test.bwa_aln_pe.chrY_chrM.CollectInsertSizeMetrics.txt
-    - path: output/out/insert_size_metrics_pdf/test.bwa_aln_pe.chrY_chrM.CollectInsertSizeMetrics.pdf
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.CollectInsertSizeMetrics.txt
+      - test.bwa_aln_pe.chrY_chrM.CollectInsertSizeMetrics.pdf
 
 - name: picard_quality_score_distribution
   tags:
@@ -101,8 +125,10 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t quality_score_distribution tools/picard.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/quality_score_distribution_txt/test.bwa_aln_pe.chrY_chrM.QualityScoreDistribution.txt
-    - path: output/out/quality_score_distribution_pdf/test.bwa_aln_pe.chrY_chrM.QualityScoreDistribution.pdf
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.QualityScoreDistribution.txt
+      - test.bwa_aln_pe.chrY_chrM.QualityScoreDistribution.pdf
 
 - name: picard_merge_vcfs
   tags:
@@ -110,7 +136,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t merge_vcfs -i tests/tools/input_json/picard_merge_vcfs.json tools/picard.wdl
   files:
-    - path: output/out/merged_vcf/test.vcf.gz
+    - path: output/outputs.json
+      contains:
+      - merged_vcf/test.vcf.gz
 
 - name: picard_scatter_interval_list
   tags:
@@ -118,9 +146,11 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t scatter_interval_list tools/picard.wdl interval_list="tests/input/wgs_calling_regions.hg38.interval_list" scatter_count=3
   files:
-    - path: output/out/interval_lists_scatter/0/1scattered.interval_list
-    - path: output/out/interval_lists_scatter/1/2scattered.interval_list
-    - path: output/out/interval_lists_scatter/2/3scattered.interval_list
+    - path: output/outputs.json
+      contains:
+      - 1scattered.interval_list
+      - 2scattered.interval_list
+      - 3scattered.interval_list
 
 - name: picard_create_sequence_dictionary
   tags:
@@ -128,4 +158,6 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t create_sequence_dictionary tools/picard.wdl fasta="tests/input/GRCh38.chrY_chrM.fa" outfile_name="GRCh38.chrY_chrM.dict"
   files:
-    - path: output/out/dictionary/GRCh38.chrY_chrM.dict
+    - path: output/outputs.json
+      contains:
+      - GRCh38.chrY_chrM.dict

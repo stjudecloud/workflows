@@ -10,8 +10,10 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t subsample tools/fq.wdl read_one_fastq=tests/input/test_R1.fq.gz read_two_fastq=tests/input/test_R2.fq.gz record_count=1000
   files:
-    - path: output/out/subsampled_read1/test.R1.subsampled.fastq.gz
-    - path: output/out/subsampled_read2/test.R2.subsampled.fastq.gz
+    - path: output/outputs.json
+      contains:
+      - test.R1.subsampled.fastq.gz
+      - test.R2.subsampled.fastq.gz
 
 - name: subsample_fq_percentage
   tags:
@@ -19,5 +21,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t subsample tools/fq.wdl read_one_fastq=tests/input/test_R1.fq.gz read_two_fastq=tests/input/test_R2.fq.gz probability=0.01
   files:
-    - path: output/out/subsampled_read1/test.R1.subsampled.fastq.gz
-    - path: output/out/subsampled_read2/test.R2.subsampled.fastq.gz
+    - path: output/outputs.json
+      contains:
+      - test.R1.subsampled.fastq.gz
+      - test.R2.subsampled.fastq.gz

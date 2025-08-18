@@ -4,4 +4,6 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t multiqc -i tests/tools/input_json/multiqc.json tools/multiqc.wdl
   files:
-    - path: output/out/multiqc_report/test.bwa_aln_pe.chrY_chrM.tar.gz
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.tar.gz

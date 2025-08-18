@@ -4,5 +4,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t coverage tools/mosdepth.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai"
   files:
-    - path: output/out/summary/test.bwa_aln_pe.chrY_chrM.mosdepth.summary.txt
-    - path: output/out/global_dist/test.bwa_aln_pe.chrY_chrM.mosdepth.global.dist.txt
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.mosdepth.summary.txt
+      - test.bwa_aln_pe.chrY_chrM.mosdepth.global.dist.txt

@@ -4,7 +4,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t index tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/bam_index/test.bwa_aln_pe.chrY_chrM.bam.bai
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.bam.bai
 
 - name: sambamba_merge
   tags:
@@ -12,7 +14,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t merge -i tests/tools/input_json/sambamba_merge.json tools/sambamba.wdl
   files:
-    - path: output/out/merged_bam/test.bam
+    - path:  output/outputs.json
+      contains:
+      - test.bam
 
 - name: sambamba_sort
   tags:
@@ -20,7 +24,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t sort tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/sorted_bam/test.bwa_aln_pe.chrY_chrM.sorted.bam
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.sorted.bam
 
 - name: sambamba_flagstat
   tags:
@@ -28,7 +34,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t flagstat tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/flagstat_report/test.bwa_aln_pe.chrY_chrM.flagstat.txt
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.flagstat.txt
 
 - name: sambamba_markdup
   tags:
@@ -36,6 +44,8 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t markdup tools/sambamba.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/duplicate_marked_bam/test.bwa_aln_pe.chrY_chrM.markdup.bam
-    - path: output/out/duplicate_marked_bam_index/test.bwa_aln_pe.chrY_chrM.markdup.bam.bai
-    - path: output/out/markdup_log/test.bwa_aln_pe.chrY_chrM.markdup_log.txt
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.markdup.bam
+      - test.bwa_aln_pe.chrY_chrM.markdup.bam.bai
+      - test.bwa_aln_pe.chrY_chrM.markdup_log.txt

@@ -76,7 +76,7 @@ else
    if [ -d output ]; then
       rm -rf output
    fi
-   miniwdl run ${task:+--task "$task"} --verbose --dir output/. ${input_file:+-i "$input_file"} "$wdl" "$@"
+   miniwdl run ${task:+--task "$task"} --verbose --dir output/. ${input_file:+-i "$input_file"} "$wdl" "$@" || exit 1
    if [ -e tmp.json ]; then
       rm tmp.json
    fi

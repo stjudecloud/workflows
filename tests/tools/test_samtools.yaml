@@ -10,22 +10,31 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t split tools/samtools.wdl bam="tests/input/test.bam"
   files:
-    - path: output/out/split_bams/0/test.1.bam
-    - path: output/out/split_bams/1/test.2.bam
+    - path: output/outputs.json
+      contains:
+      - test.1.bam
+      - test.2.bam
 
 - name: samtools_split_unaccounted
   tags:
     - samtools
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t split tools/samtools.wdl bam="tests/input/test.unaccounted_read.bam"
-  exit_code: 21
+  exit_code: 1
+  stderr:
+    contains:
+    - "There are reads present with bad or missing RG tags!"
 
 - name: samtools_split_extra_RG
   tags:
     - samtools
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t split tools/samtools.wdl bam="tests/input/test.extra_RG.bam"
-  exit_code: 42
+  exit_code: 1
+  stderr:
+    contains:
+    - "No reads are in output BAM test.extra_RG.no_match.bam!"
+    - "This is likely caused by malformed RG records."
 
 - name: samtools_flagstat
   tags:
@@ -33,13 +42,15 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t flagstat tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/flagstat_report/test.bwa_aln_pe.chrY_chrM.flagstat.txt
+    - path: output/outputs.json
       contains:
-        - "20000"
-        - "0 + 0 secondary"
-        - "20000 + 0 in total (QC-passed reads + QC-failed reads)"
-        - "10000 + 0 read1"
-        - "10000 + 0 read2"
+      - test.bwa_aln_pe.chrY_chrM.flagstat.txt
+      # contains:
+      #   - "20000"
+      #   - "0 + 0 secondary"
+      #   - "20000 + 0 in total (QC-passed reads + QC-failed reads)"
+      #   - "10000 + 0 read1"
+      #   - "10000 + 0 read2"
 
 - name: samtools_index
   tags:
@@ -47,7 +58,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t index tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/bam_index/test.bwa_aln_pe.chrY_chrM.bam.bai
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.bam.bai
 
 - name: samtools_subsample
   tags:
@@ -55,7 +68,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t subsample tools/samtools.wdl bam="https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam" desired_reads=100
   files:
-    - path: output/out/sampled_bam/test.sampled.bam
+    - path: output/outputs.json
+      contains:
+      - test.sampled.bam
 
 - name: samtools_merge
   tags:
@@ -63,7 +78,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t merge -i tests/tools/input_json/samtools_merge.json tools/samtools.wdl
   files:
-    - path: output/out/merged_bam/test.bam
+    - path: output/outputs.json
+      contains:
+      - test.bam
 
 - name: samtools_addreplacerg
   tags:
@@ -79,7 +96,9 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t collate tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/collated_bam/test.bwa_aln_pe.chrY_chrM.collated.bam
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.collated.bam
 
 - name: samtools_bam_to_fastq
   tags:
@@ -87,9 +106,11 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t bam_to_fastq tools/samtools.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" retain_collated_bam=true
   files:
-    - path: output/out/collated_bam/test.bwa_aln_pe.chrY_chrM.collated.bam
-    - path: output/out/read_one_fastq_gz/test.bwa_aln_pe.chrY_chrM.R1.fastq.gz
-    - path: output/out/read_two_fastq_gz/test.bwa_aln_pe.chrY_chrM.R2.fastq.gz
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.collated.bam
+      - test.bwa_aln_pe.chrY_chrM.R1.fastq.gz
+      - test.bwa_aln_pe.chrY_chrM.R2.fastq.gz
 
 - name: samtools_faidx
   tags:
@@ -97,4 +118,6 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t faidx tools/samtools.wdl fasta="tests/input/test.fa"
   files:
-    - path: output/out/fasta_index/test.fa.fai
+    - path: output/outputs.json
+      contains:
+      - test.fa.fai

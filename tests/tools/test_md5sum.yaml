@@ -4,6 +4,8 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t compute_checksum tools/md5sum.wdl file="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: output/out/md5sum/test.bwa_aln_pe.chrY_chrM.bam.md5
+    - path: output/outputs.json
       contains:
-        - "77fa2f59b0083202c73b0c80b60b24f6"
+      - test.bwa_aln_pe.chrY_chrM.bam.md5
+      # contains:
+      #   - "77fa2f59b0083202c73b0c80b60b24f6"

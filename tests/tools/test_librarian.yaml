@@ -4,5 +4,7 @@
   command: >-
     ./developer_scripts/run_sprocket_or_miniwdl.sh -t librarian tools/librarian.wdl read_one_fastq="tests/input/test_R1.fq.gz"
   files:
-    - path: output/out/report/test.librarian.tar.gz
-    - path: output/out/raw_data/librarian_heatmap.txt
+    - path: output/outputs.json
+      contains:
+      - test.librarian.tar.gz
+      - librarian_heatmap.txt
