@@ -33,7 +33,7 @@
     - bwa
     - reference
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t build_bwa_db tools/bwa.wdl reference_fasta="tests/input/GRCh38.chrY_chrM.fa.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t build_bwa_db tools/bwa.wdl reference_fasta="tests/input/GRCh38.chrY_chrM.fa"
   files:
     - path: output/outputs.json
       contains:
