@@ -48,7 +48,7 @@
   command: >-
       ./developer_scripts/run_sprocket_or_miniwdl.sh -t add_to_bam_header -i tests/tools/input_json/util_add_to_bam_header.json tools/util.wdl
   files:
-    - path: output/output.json
+    - path: output/outputs.json
       contains:
       - test.bwa_aln_pe.chrY_chrM.reheader.bam
 
