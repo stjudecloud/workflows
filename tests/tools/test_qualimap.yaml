@@ -1,14 +1,3 @@
-- name: qualimap_bamqc
-  tags:
-    - qualimap
-    - deprecated
-  command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t bamqc tools/qualimap.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
-  files:
-    - path: output/outputs.json
-      contains:
-      - test.bwa_aln_pe.chrY_chrM.qualimap_bamqc_results.tar.gz
-
 - name: qualimap_rnaseq
   tags:
     - qualimap
