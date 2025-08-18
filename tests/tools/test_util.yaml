@@ -60,8 +60,8 @@
   files:
     - path: output/outputs.json
       contains:
-      - a
-      - b
+      - test_file_a
+      - test_file_b
 
 - name: make_coverage_regions_bed
   tags:
