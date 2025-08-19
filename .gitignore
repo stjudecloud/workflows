@@ -16,22 +16,18 @@ miniwdl_singularity_cache/
 _LAST
 2025*/
 
-# Ignore test directories
-test-output/
+# Ignore python junk
 **/__pycache__
 
 # Ignore OS generated files
 .DS_Store
 
 # Commonly used folder for putting miniwdl/sprocket results in during testing
-results/
-output/
+results*/
+output*/
 
 # Ignore JSONs in the root (probably being used for input to sprocket run)
 /*.json
 
 # Ignore `sprocket doc` dir
 docs/
-
-# ignore any tags files that are generated
-tags

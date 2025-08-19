@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2025 August
+
+### Fixed
+
+- Upstream bug in Sprocket patched locally [#251](https://github.com/stjudecloud/workflows/pull/251)
+    - Upstream bug [here](https://github.com/stjude-rust-labs/wdl/issues/574)
+    - Local fix was moving a private declaration in `samtools.merge_sam_files` to the command body 
+
+### Removed
+
+- Removed `util.qc_summary` which has been out of date from `quality-check-standard` for a very long time [#251](https://github.com/stjudecloud/workflows/pull/251)
+
 ## 2025 July
 
 ### Added

@@ -1,5 +1,11 @@
 {
-    "vcfs": ["tests/input/test1.vcf.gz", "tests/input/test2.vcf.gz"],
-    "vcfs_indexes": ["tests/input/test1.vcf.gz.tbi", "tests/input/test2.vcf.gz.tbi"],
-    "output_vcf_name": "test.vcf.gz"
+    "merge_vcfs.vcfs": [
+        "../../input/test1.vcf.gz",
+        "../../input/test2.vcf.gz"
+    ],
+    "merge_vcfs.vcfs_indexes": [
+        "../../input/test1.vcf.gz.tbi",
+        "../../input/test2.vcf.gz.tbi"
+    ],
+    "merge_vcfs.output_vcf_name": "test.vcf.gz"
 }

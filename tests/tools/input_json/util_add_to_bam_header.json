@@ -1,0 +1,4 @@
+{
+    "add_to_bam_header.bam": "../../input/test.bwa_aln_pe.chrY_chrM.bam",
+    "add_to_bam_header.additional_header": "@RG\tID:3"
+}

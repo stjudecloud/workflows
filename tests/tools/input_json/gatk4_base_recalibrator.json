@@ -1,11 +1,15 @@
 {
-    "bam": "tests/input/test_rnaseq_variant.bam",
-    "bam_index": "tests/input/test_rnaseq_variant.bam.bai",
-    "fasta": "tests/input/GRCh38.chr1_chr19.fa",
-    "fasta_index": "tests/input/GRCh38.chr1_chr19.fa.fai",
-    "dict": "tests/input/GRCh38.chr1_chr19.dict",
-    "dbSNP_vcf":"tests/input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf",
-    "dbSNP_vcf_index": "tests/input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf.idx",
-    "known_indels_sites_vcfs": ["tests/input/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"],
-    "known_indels_sites_indices": ["tests/input/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"]
+    "base_recalibrator.bam": "../../input/test_rnaseq_variant.bam",
+    "base_recalibrator.bam_index": "../../input/test_rnaseq_variant.bam.bai",
+    "base_recalibrator.fasta": "../../input/GRCh38.chr1_chr19.fa",
+    "base_recalibrator.fasta_index": "../../input/GRCh38.chr1_chr19.fa.fai",
+    "base_recalibrator.dict": "../../input/GRCh38.chr1_chr19.dict",
+    "base_recalibrator.dbSNP_vcf": "../../input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf",
+    "base_recalibrator.dbSNP_vcf_index": "../../input/Homo_sapiens_assembly38.dbsnp138.top5000.vcf.idx",
+    "base_recalibrator.known_indels_sites_vcfs": [
+        "../../input/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
+    ],
+    "base_recalibrator.known_indels_sites_indices": [
+        "../../input/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"
+    ]
 }

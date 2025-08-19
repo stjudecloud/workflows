@@ -1,3 +1,6 @@
 {
-    "unfiltered_normalized_beta": ["tests/input/201533520001_R01C01.beta_swan_norm_unfiltered.genomic.csv", "tests/input/201533520001_R03C01.beta_swan_norm_unfiltered.genomic.csv"]
+    "combine_data.unfiltered_normalized_beta": [
+        "../../input/201533520001_R01C01.beta_swan_norm_unfiltered.genomic.csv",
+        "../../input/201533520001_R03C01.beta_swan_norm_unfiltered.genomic.csv"
+    ]
 }

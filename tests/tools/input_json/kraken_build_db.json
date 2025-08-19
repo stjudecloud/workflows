@@ -1,3 +1,6 @@
 {
-    "tarballs": ["tests/input/kraken2_taxonomy.tar.gz", "tests/input/kraken2_custom_library.tar.gz"]
+    "build_db.tarballs": [
+        "../../input/kraken2_taxonomy.tar.gz",
+        "../../input/kraken2_custom_library.tar.gz"
+    ]
 }

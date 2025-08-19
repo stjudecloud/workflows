@@ -1,5 +1,5 @@
 {
-    "read_group":{
+    "read_group_to_string.read_group":{
         "ID": "R123",
         "SM": "sample1",
         "LB": "library",

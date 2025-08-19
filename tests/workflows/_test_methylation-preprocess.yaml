@@ -1,0 +1,15 @@
+- name: process_raw_idats
+  tags:
+    - methylation
+  command: >-
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t process_raw_idats -i tests/workflows/input_json/process_raw_idats.json workflows/methylation/methylation-preprocess.wdl
+  files:
+    - path: output/outputs.json
+      contains:
+      - 201533520001_R03C01.beta_swan_norm_unfiltered.csv
+      - 201533520001_R03C01.beta_swan_norm_unfiltered.genomic.csv
+      - 201533520001_R03C01.annotation.csv
+      - 201533520001_R03C01.beta.csv
+      - 201533520001_R03C01.cn_values.csv
+      - 201533520001_R03C01.m_values.csv
+      - 201533520001_R03C01.probeNames.csv
