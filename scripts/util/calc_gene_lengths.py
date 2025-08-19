@@ -39,8 +39,7 @@ def main(gtf_path, outfile_path, id_attr):
 
         for start, end in zip(exon_starts[feature_id], exon_ends[feature_id]):
             gene_exon_intersection[feature_id][
-                start
-                - gene_start_offset[feature_id] : end
+                start - gene_start_offset[feature_id] : end
                 - gene_start_offset[feature_id]
             ] = True
 
