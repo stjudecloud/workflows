@@ -6,16 +6,16 @@ jobs:
     python-format:
         runs-on: ubuntu-latest
         steps:
-        - uses: actions/checkout@v4
         - name: Python ruff format
+        - uses: actions/checkout@v4
         - uses: astral-sh/ruff-action@v3
           with:
             args: "format --check --diff"
     python-lint:
         runs-on: ubuntu-latest
         steps:
-        - uses: actions/checkout@v4
         - name: Python ruff check
+        - uses: actions/checkout@v4
         - uses: astral-sh/ruff-action@v3
           with:
             args: "check"
