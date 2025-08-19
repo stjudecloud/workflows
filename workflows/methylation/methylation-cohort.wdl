@@ -211,7 +211,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/umap:0.5.7-6"
+        container: "ghcr.io/stjudecloud/umap:0.5.7-7"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
