@@ -1,12 +1,18 @@
 {
-    "dnaseq_standard_fastq_experimental.read_one_fastqs_gz": ["tests/input/test_R1.fq.gz"],
-    "dnaseq_standard_fastq_experimental.read_two_fastqs_gz": ["tests/input/test_R2.fq.gz"],
-    "dnaseq_standard_fastq_experimental.read_groups": [{
-        "ID": "test",
-        "PI": 150,
-        "PL": "ILLUMINA",
-        "SM": "Sample",
-        "LB": "Sample"
-    }],
-    "dnaseq_standard_fastq_experimental.bwa_db": "tests/input/bwa_db.tar.gz"
+    "dnaseq_standard_fastq_experimental.read_one_fastqs_gz": [
+        "../../input/test_R1.fq.gz"
+    ],
+    "dnaseq_standard_fastq_experimental.read_two_fastqs_gz": [
+        "../../input/test_R2.fq.gz"
+    ],
+    "dnaseq_standard_fastq_experimental.read_groups": [
+        {
+            "ID": "test",
+            "PI": 150,
+            "PL": "ILLUMINA",
+            "SM": "Sample",
+            "LB": "Sample"
+        }
+    ],
+    "dnaseq_standard_fastq_experimental.bwa_db": "../../input/bwa_db.tar.gz"
 }

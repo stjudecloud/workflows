@@ -1,4 +1,6 @@
 {
-    "files": ["tests/input/test.bwa_aln_pe.chrY_chrM.readlength.txt"],
-    "prefix": "test.bwa_aln_pe.chrY_chrM"
+    "multiqc.files": [
+        "../../input/test.bwa_aln_pe.chrY_chrM.readlength.txt"
+    ],
+    "multiqc.prefix": "test.bwa_aln_pe.chrY_chrM"
 }

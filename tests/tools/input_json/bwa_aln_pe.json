@@ -1,6 +1,6 @@
 {
-    "read_one_fastq_gz": "tests/input/test_R1.fq.gz",
-    "read_two_fastq_gz": "tests/input/test_R2.fq.gz",
-    "read_group": "@RG\\tID:test\\tSM:test",
-    "bwa_db_tar_gz": "tests/input/bwa_db.tar.gz"
+    "bwa_aln_pe.read_one_fastq_gz": "../../input/test_R1.fq.gz",
+    "bwa_aln_pe.read_two_fastq_gz": "../../input/test_R2.fq.gz",
+    "bwa_aln_pe.read_group": "@RG\\tID:test\\tSM:test",
+    "bwa_aln_pe.bwa_db_tar_gz": "../../input/bwa_db.tar.gz"
 }

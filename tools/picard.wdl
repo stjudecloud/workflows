@@ -383,8 +383,6 @@ task merge_sam_files {
     Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    Array[String] input_arg = prefix("--INPUT ", squote(bams))
-
     String outfile_name = prefix + ".bam"
 
     command <<<
@@ -392,7 +390,7 @@ task merge_sam_files {
 
         # shellcheck disable=SC2086
         picard -Xmx~{java_heap_size}g MergeSamFiles \
-            ~{sep(" ", input_arg)} \
+            ~{sep(" ", prefix("--INPUT ", squote(bams)))} \
             --OUTPUT "~{outfile_name}" \
             --ASSUME_SORTED true \
             --SORT_ORDER "~{sort_order}" \

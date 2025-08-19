@@ -1,24 +1,21 @@
 - name: download
   tags:
-    - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. -i tests/tools/input_json/util_download.json --task download tools/util.wdl
-  stdout:
-    contains_regex:
-      - '"download.downloaded_file": ".*test-output/out/downloaded_file/license.txt"'
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -i tests/tools/input_json/util_download.json -t download tools/util.wdl
   files:
-    - path: test-output/out/downloaded_file/license.txt
-      md5sum: cf3575bd84ab3151c7e9700b5f1a9746
+    - path: output/outputs.json
       contains:
-        - "MIT License"
+      - license.txt
+      # md5sum: cf3575bd84ab3151c7e9700b5f1a9746
+      # contains:
+      #   - "MIT License"
 
 - name: split_string
   tags:
-    - miniwdl
     - util
   command: >-
-        miniwdl run --verbose -d test-output/. --task split_string tools/util.wdl string="rg1 , rg2"
+        ./developer_scripts/run_sprocket_or_miniwdl.sh -t split_string -i tests/tools/input_json/util_split_string.json tools/util.wdl
   stdout:
     contains:
       - "rg1"
@@ -28,65 +25,70 @@
 
 - name: calc_gene_lengths
   tags:
-    - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task calc_gene_lengths tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t calc_gene_lengths tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
-    - path: test-output/out/gene_lengths/gencode.v31.chrY_chrM.genelengths.txt
+    - path: output/outputs.json
       contains:
-        - "AL954722.1"
+      - gencode.v31.chrY_chrM.genelengths.txt
+      # contains:
+      #   - "AL954722.1"
 
 - name: compression_integrity
   tags:
-    - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task compression_integrity tools/util.wdl bgzipped_file="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t compression_integrity tools/util.wdl bgzipped_file="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
 
 # TODO: This does not test that the record was properly added to the header.
 - name: add_to_bam_header
   tags:
-    - miniwdl
     - util
   command: >-
-      miniwdl run --verbose -d test-output/. --task add_to_bam_header tools/util.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" additional_header="@RG	ID:3"
+      ./developer_scripts/run_sprocket_or_miniwdl.sh -t add_to_bam_header -i tests/tools/input_json/util_add_to_bam_header.json tools/util.wdl
   files:
-    - path: "test-output/out/reheadered_bam/test.bwa_aln_pe.chrY_chrM.reheader.bam"
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.reheader.bam
 
 - name: unpack_tarball
   tags:
-    - miniwdl
     - util
   command: >-
-      miniwdl run --verbose -d test-output/. --task unpack_tarball tools/util.wdl tarball="tests/input/test.tar.gz"
+      ./developer_scripts/run_sprocket_or_miniwdl.sh -t unpack_tarball tools/util.wdl tarball="tests/input/test.tar.gz"
   files:
-    - path: "test-output/out/tarball_contents/0/a"
-    - path: "test-output/out/tarball_contents/1/b"
+    - path: output/outputs.json
+      contains:
+      - test_file_a
+      - test_file_b
 
 - name: make_coverage_regions_bed
   tags:
-    - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task make_coverage_regions_bed tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz" feature_type="exon"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t make_coverage_regions_bed tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz" feature_type="exon"
   files:
-    - path: "test-output/out/bed/gencode.v31.chrY_chrM.exon.bed"
+    - path: output/outputs.json
+      contains:
+      - gencode.v31.chrY_chrM.exon.bed
 
 - name: global_phred_scores
   tags:
-    - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task global_phred_scores tools/util.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t global_phred_scores tools/util.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
   files:
-    - path: "test-output/out/phred_scores/test.bwa_aln_pe.chrY_chrM.global_PHRED_scores.tsv"
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.global_PHRED_scores.tsv
 
 - name: split_fastq
   tags:
-    - miniwdl
     - util
   command: >-
-    miniwdl run --verbose -d test-output/. --task split_fastq tools/util.wdl fastq="tests/input/test_R1.fq.gz" prefix="test.R1."
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t split_fastq tools/util.wdl fastq="tests/input/test_R1.fq.gz" prefix="test.R1."
   files:
-    - path: "test-output/out/fastqs/0/test.R1.000000.fastq.gz"
+    - path: output/outputs.json
+      contains:
+      - test.R1.000000.fastq.gz

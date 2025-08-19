@@ -13,18 +13,27 @@ jobs:
           uses: actions/checkout@v4
         - name: set tags
           id: set-tags
-          run: echo "tags=$(find tests -name '*.yaml' -exec yq --output-format yaml '.[].tags[] ' {} \;| sort | uniq | grep -vE 'deprecated|miniwdl' | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
+          # remove the "reference" tag as it's redundant with other tags
+          run: echo "tags=$(find tests -name '*.yaml' -exec yq --output-format yaml '.[].tags[] ' {} \; | sort | uniq | grep -vE 'reference|slow' | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
   pytest_check:
     needs: list-tags
     runs-on: ubuntu-latest
     strategy:
       matrix:
         tag: ${{ fromJson(needs.list-tags.outputs.tags) }}
+        runner: [sprocket, miniwdl]
       fail-fast: false
     steps:
     - uses: actions/checkout@v4
       with:
         lfs: true
+    - name: Update Rust
+      if: matrix.runner == 'sprocket'
+      run: rustup update stable && rustup default stable
+    - name: Build Sprocket
+      if: matrix.runner == 'sprocket'
+      run: |
+        cargo install sprocket --locked
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -34,11 +43,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements-dev.txt
     - name: filter tests
+      # don't run slow tests in CI
       run: |
-        find tests -name '*.yaml' -exec yq --output-format yaml -i 'del(.[] | select(.tags[] | test("reference|deprecated") ) )' {} \;
+        find tests -name '*.yaml' -exec yq --output-format yaml -i 'del(.[] | select(.tags[] | test("slow") ) )' {} \;
     - name: Update containers
       run: |
         ./developer_scripts/update_container_tags.sh ${GITHUB_REF##*/}
     - name: Run pytest-workflow
+      env: 
+        RUNNER: ${{ matrix.runner }}
       run: |
         pytest --git-aware --basetemp /home/runner/work/pytest --symlink --tag ${{ matrix.tag }}

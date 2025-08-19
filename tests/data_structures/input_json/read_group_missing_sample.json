@@ -1,9 +1,8 @@
 {
-    "read_group":{
+    "read_group_to_string.read_group":{
         "ID": "id"
     },
-    "required_fields": [
-        "ID",
+    "read_group_to_string.required_fields": [
         "SM"
     ]
 }

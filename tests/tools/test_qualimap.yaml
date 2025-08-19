@@ -1,20 +1,11 @@
-- name: qualimap_bamqc
-  tags:
-    - miniwdl
-    - qualimap
-    - deprecated
-  command: >-
-    miniwdl run --verbose -d test-output/. --task bamqc tools/qualimap.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam"
-  files:
-    - path: test-output/out/results/test.bwa_aln_pe.chrY_chrM.qualimap_bamqc_results.tar.gz
-
 - name: qualimap_rnaseq
   tags:
-    - miniwdl
     - qualimap
   command: >-
-    miniwdl run --verbose -d test-output/. --task rnaseq tools/qualimap.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t rnaseq tools/qualimap.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
-    - path: test-output/out/results/test.bwa_aln_pe.chrY_chrM.qualimap_rnaseq_results.tar.gz
-    - path: test-output/out/raw_summary/rnaseq_qc_results.txt
-    - path: test-output/out/raw_coverage/coverage_profile_along_genes_(total).txt
+    - path: output/outputs.json
+      contains:
+      - test.bwa_aln_pe.chrY_chrM.qualimap_rnaseq_results.tar.gz
+      - rnaseq_qc_results.txt
+      - coverage_profile_along_genes_(total).txt

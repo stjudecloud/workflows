@@ -1,5 +1,5 @@
 {
-    "bam": "tests/input/test_rnaseq_variant.bam",
-    "bam_index": "tests/input/test_rnaseq_variant.bam.bai",
-    "recalibration_report": "tests/input/test_rnaseq_variant.recal.txt"
+    "apply_bqsr.bam": "../../input/test_rnaseq_variant.bam",
+    "apply_bqsr.bam_index": "../../input/test_rnaseq_variant.bam.bai",
+    "apply_bqsr.recalibration_report": "../../input/test_rnaseq_variant.recal.txt"
 }
