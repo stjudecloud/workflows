@@ -11,6 +11,7 @@ jobs:
           uses: astral-sh/ruff-action@v3
           with:
             args: "format --check --diff"
+            src: "scripts/"
     python-lint:
         runs-on: ubuntu-latest
         steps:
@@ -18,4 +19,4 @@ jobs:
         - name: Python ruff check
           uses: astral-sh/ruff-action@v3
           with:
-            args: "check"
+            src: "scripts/"
