@@ -6,4 +6,4 @@
   files:
     - path: output/outputs.json
       contains:
-      - test.bwa_aln_pe.chrY_chrM.tar.gz
+      - test.bwa_aln_pe.chrY_chrM.mutliqc.html
