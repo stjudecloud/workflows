@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## 2025 August
 
+### Changed
+
+- Updated to the lastest version of MultiQC (v1.30) and made some API changes in the process [#258](https://github.com/stjudecloud/workflows/pull/258).
+
 ### Fixed
 
 - Upstream bug in Sprocket patched locally [#251](https://github.com/stjudecloud/workflows/pull/251)
