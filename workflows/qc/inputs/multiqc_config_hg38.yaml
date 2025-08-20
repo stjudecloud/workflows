@@ -6,7 +6,7 @@ run_modules:
   - picard
   - samtools
   - kraken
-  - fastqc
+  - fastp
   - librarian
 extra_fn_clean_exts:
   - '.ValidateSamFile'
@@ -19,11 +19,11 @@ extra_fn_clean_exts:
   - '.qualimap_rnaseq_results'
   - '.alt_filtered'
   - '.librarian'
+  - '.R1'
+  - '.R2'
 log_filesize_limit: 1000000000
-fastqc_config:
-  fastqc_theoretical_gc: "hg38_genome"
-  status_checks: false
 top_modules:
+  - fastp
   - qualimap
   - kraken:
       path_filters:
@@ -79,7 +79,6 @@ top_modules:
   - custom_content
   - librarian
   - samtools
-  - fastqc
 custom_data:
   global_PHRED_scores:
     file_format: "tsv"
@@ -88,10 +87,6 @@ custom_data:
   orig_read_counts:
     file_format: "tsv"
     plot_type: "generalstats"
-remove_sections:
-  - fastqc_status_checks
-  - fastqc_sequence_counts
-  - fastqc_per_base_sequence_content
 table_columns_visible:
   global_PHRED_scores-plot:
     "first position total average": false
