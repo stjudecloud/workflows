@@ -6,4 +6,14 @@
   files:
     - path: output/outputs.json
       contains:
-      - test.bwa_aln_pe.chrY_chrM.mutliqc.html
+      - test.bwa_aln_pe.chrY_chrM.multiqc.html
+
+- name: multiqc_empty
+  tags:
+    - multiqc
+  command: >-
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t multiqc -i tests/tools/input_json/multiqc_empty.json tools/multiqc.wdl
+  exit_code: 1
+  stderr:
+    contains:
+    - "No analysis results found"
