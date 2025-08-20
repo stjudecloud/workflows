@@ -9,6 +9,7 @@ extra_fn_clean_exts:
   - '.qualimap_rnaseq_results'
   - '.alt_filtered'
   - '.librarian'
+  - '.trimmed'
   - 'R1'
   - 'R2'
 log_filesize_limit: 1000000000
