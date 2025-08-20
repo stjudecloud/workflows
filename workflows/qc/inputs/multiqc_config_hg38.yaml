@@ -1,13 +1,3 @@
-run_modules:
-  - mosdepth
-  - custom_content
-  - ngsderive
-  - qualimap
-  - picard
-  - samtools
-  - kraken
-  - fastp
-  - librarian
 extra_fn_clean_exts:
   - '.ValidateSamFile'
   - '.whole_genome'
