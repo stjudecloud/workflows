@@ -39,9 +39,10 @@ task multiqc {
         # --require-logs might be useful at some point, but as of now,
         # it would cause errors. It could replace the check currently
         # run after multiqc is finished.
-        multiqc -v \
+        multiqc -vz \
             ~{"-c '" + config + "'"} \
             --file-list file_list.txt \
+            --data-dir \
             -n "~{report_name}"
 
         mv "~{report_name}_data" "~{report_name}.log"
