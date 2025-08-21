@@ -45,6 +45,11 @@ task multiqc {
             --data-dir \
             -n "~{report_name}"
 
+        if [ ! -f "~{report_name}.html" ]; then
+            >&2 echo "MultiQC didn't find any valid files!"
+            exit 1
+        fi
+
         mv "~{report_name}_data" "~{report_name}.log"
     >>>
 

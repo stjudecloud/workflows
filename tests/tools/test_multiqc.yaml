@@ -17,3 +17,4 @@
   stderr:
     contains:
     - "No analysis results found"
+    - "MultiQC didn't find any valid files"
