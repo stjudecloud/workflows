@@ -13,6 +13,8 @@ Any change to the `scripts/` directory should be accompanied by version increase
 ### Changed
 
 - Replaced `black` and `pyright` with `ruff` [#255](https://github.com/stjudecloud/workflows/pull/255).
+- Beta value matrix now retains sample names as column names [#259](https://github.com/stjudecloud/workflows/pull/259)
+
 
 ## 2025 July
 

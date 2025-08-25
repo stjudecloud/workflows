@@ -99,8 +99,9 @@ write.csv(
 r_set <- ratioConvert(gr_set_swan_norm)
 gr_set <- mapToGenome(r_set)
 beta_swan_norm <- getBeta(gr_set)
-colnames(beta_swan_norm) <- colnames(cn)
+beta_swan_norm <-
+  beta_swan_norm[order(rownames(beta_swan_norm)), , drop = FALSE]
 write.csv(
-  beta_swan_norm[order(rownames(beta_swan_norm)), ],
+  beta_swan_norm,
   paste0(args$out_base, ".beta_swan_norm_unfiltered.genomic.csv")
 )
