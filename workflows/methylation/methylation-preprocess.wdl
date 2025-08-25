@@ -53,7 +53,7 @@ task process_raw_idats {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/minfi:1.48.0-5"
+        container: "ghcr.io/stjudecloud/minfi:1.48.0-6"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
