@@ -31,11 +31,12 @@ task multiqc {
     command <<<
         set -euo pipefail
 
+        >&2 whoami
         >&2 pwd
         >&2 ls -la
-
         touch file_list.txt
-        echo '~{sep("\n", files)}' >> file_list.txt
+
+        echo '~{sep("\n", files)}' > file_list.txt
 
         # --strict is too strict. It causes errors due
         # to how our config adds 'custom-content' to the report.
