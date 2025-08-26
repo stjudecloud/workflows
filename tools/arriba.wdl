@@ -82,7 +82,7 @@ task arriba {
         }
         feature_name: {
             description: "List of feature names to use in GTF.",
-            help: "The Arriba default it designed to handle RefSeq, GENCODE, or ENSEMBL format annotations. `feature_name` expects a string of space/comma separated options. The required fields are `gene_name`, `gene_id`, `transcript_id`, `feature_exon`, and `feature_CDS`. The fields should space separated. The values should be provided with `field=value`. Mutliple values can be provided and separated by a pipe (`|`), e.g. `=value1|value2`. A complete example is `gene_name=gene_name|gene_id gene_id=gene_id transcript_id=transcript_id feature_exon=exon feature_CDS=CDS`.",
+            help: "The Arriba default it designed to handle RefSeq, GENCODE, or ENSEMBL format annotations. `feature_name` expects a string of space/comma separated options. The required fields are `gene_name`, `gene_id`, `transcript_id`, `feature_exon`, and `feature_CDS`. The fields should space separated. The values should be provided with `field=value`. Multiple values can be provided and separated by a pipe (`|`), e.g. `=value1|value2`. A complete example is `gene_name=gene_name|gene_id gene_id=gene_id transcript_id=transcript_id feature_exon=exon feature_CDS=CDS`.",
             external_help: "https://arriba.readthedocs.io/en/v2.4.0/command-line-options/",
             common: false,
         }
