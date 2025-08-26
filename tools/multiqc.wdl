@@ -31,6 +31,8 @@ task multiqc {
     command <<<
         set -euo pipefail
 
+        >&2 ls -la
+
         touch file_list.txt
         echo '~{sep("\n", files)}' >> file_list.txt
 
