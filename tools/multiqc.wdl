@@ -31,6 +31,7 @@ task multiqc {
     command <<<
         set -euo pipefail
 
+        >&2 pwd
         >&2 ls -la
 
         touch file_list.txt
