@@ -166,21 +166,23 @@ task bwa_aln_pe {
         tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
-        ln -s "~{read_one_fastq_gz}" .
-        ln -s "~{read_two_fastq_gz}" .
+        CWD_R1='~{basename(read_one_fastq_gz)}'
+        CWD_R2='~{basename(read_two_fastq_gz)}'
+
+        ln -s "~{read_one_fastq_gz}" "$CWD_R1"
+        ln -s "~{read_two_fastq_gz}" "$CWD_R2"
 
         bwa sampe \
            -r "~{read_group}" \
             bwa_db/"$PREFIX" \
-            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{basename(read_one_fastq_gz)}") \
-            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" "~{basename(read_two_fastq_gz)}") \
-            "~{basename(read_one_fastq_gz)}" "~{basename(read_two_fastq_gz)}" \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" "$CWD_R1") \
+            <(bwa aln -t "$n_cores" bwa_db/"$PREFIX" "$CWD_R2") \
+            "$CWD_R1" "$CWD_R2" \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > "~{output_bam}"
 
         rm -r bwa_db
-        rm "~{basename(read_one_fastq_gz)}"
-        rm "~{basename(read_two_fastq_gz)}"
+        rm "$CWD_R1" "$CWD_R2"
     >>>
 
     output {
