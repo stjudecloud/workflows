@@ -1,3 +1,4 @@
 {
-    "split_string.string": "rg1 , rg2"
+    "split_string.string": "rg1 , rg2",
+    "split_string.delimiter": " , "
 }

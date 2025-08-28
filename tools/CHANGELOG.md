@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- `util.split_string` now requires an explicitly provided `delimiter` input (instead of defaulting to `" , "`) [#260](https://github.com/stjudecloud/workflows/pull/260).
+- Scaled back `bwa.bwa_aln_pe` disk usage by 5gb [#260](https://github.com/stjudecloud/workflows/pull/260).
 - Updated to the latest version of MultiQC (v1.30) and made some API changes in the process [#258](https://github.com/stjudecloud/workflows/pull/258).
 
 ### Fixed

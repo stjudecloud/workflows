@@ -51,6 +51,7 @@ task split_string {
     # Revisit task in future version updates, can hopefully be replaced.
     meta {
         description: "Split a string into an array of strings based on a delimiter"
+        warning: "This implementation will result in a runtime error if the provided string has any embedded single quotes (`'`)!"
         outputs: {
             split_strings: "Split string as an array"
         }
@@ -60,19 +61,18 @@ task split_string {
         string: "String to split on occurences of `delimiter`"
         delimiter: {
             description: "Delimiter on which to split `input_string`",
-            group: "Common",
         }
     }
 
     input {
         String string
-        String delimiter = " , "
+        String delimiter
     }
 
     command <<<
         set -euo pipefail
 
-        echo "~{sub(string, delimiter, "\n")}"  > split_strings.txt
+        echo '~{sub(string, delimiter, "\n")}' > split_strings.txt
     >>>
 
     output {

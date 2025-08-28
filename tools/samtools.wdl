@@ -565,15 +565,13 @@ task merge {
         # -1 because samtools uses one more core than `--threads` specifies
         (( n_cores -= 1 ))
 
-        bams=""
         for file in ~{sep(" ", squote(bams))}; do
           # This will fail (intentionally) if there are duplicate names
           # in the input BAM array.
           ln -s "$file" .
-          bams+=" $(basename "$file")"
+          bams+=("$(basename "$file")")
         done
 
-        # shellcheck disable=SC2086
         samtools merge \
             --threads "$n_cores" \
             ~{"-h \"" + new_header + "\""} \
@@ -583,10 +581,10 @@ task merge {
             ~{if combine_rg then "-c" else ""} \
             ~{if combine_pg then "-p" else ""} \
             "~{prefix}.bam" \
-            $bams
+            "${bams[@]}"
 
         # shellcheck disable=SC2086
-        rm $bams
+        rm "${bams[@]}"
     >>>
 
     output {
