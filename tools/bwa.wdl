@@ -149,7 +149,7 @@ task bwa_aln_pe {
     )
     Float reference_size = size(bwa_db_tar_gz, "GiB")
     Int disk_size_gb = (
-        ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
+        ceil((input_fastq_size + reference_size) * 2) + 5 + modify_disk_size_gb
     )
 
     command <<<
