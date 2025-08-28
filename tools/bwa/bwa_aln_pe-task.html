@@ -206,18 +206,20 @@ mkdir bwa_db
 tar -C bwa_db -xzf &quot;~{bwa_db_tar_gz}&quot; --no-same-owner
 PREFIX=$(basename bwa_db/*.ann &quot;.ann&quot;)
 
-ln -s &quot;~{read_one_fastq_gz}&quot; .
-ln -s &quot;~{read_two_fastq_gz}&quot; .
+CWD_R1='~{basename(read_one_fastq_gz)}'
+CWD_R2='~{basename(read_two_fastq_gz)}'
+
+ln -s &quot;~{read_one_fastq_gz}&quot; &quot;$CWD_R1&quot;
+ln -s &quot;~{read_two_fastq_gz}&quot; &quot;$CWD_R2&quot;
 
 bwa sampe \
    -r &quot;~{read_group}&quot; \
     bwa_db/&quot;$PREFIX&quot; \
-    &lt;(bwa aln -t &quot;$n_cores&quot; bwa_db/&quot;$PREFIX&quot; &quot;~{basename(read_one_fastq_gz)}&quot;) \
-    &lt;(bwa aln -t &quot;$n_cores&quot; bwa_db/&quot;$PREFIX&quot; &quot;~{basename(read_two_fastq_gz)}&quot;) \
-    &quot;~{basename(read_one_fastq_gz)}&quot; &quot;~{basename(read_two_fastq_gz)}&quot; \
+    &lt;(bwa aln -t &quot;$n_cores&quot; bwa_db/&quot;$PREFIX&quot; &quot;$CWD_R1&quot;) \
+    &lt;(bwa aln -t &quot;$n_cores&quot; bwa_db/&quot;$PREFIX&quot; &quot;$CWD_R2&quot;) \
+    &quot;$CWD_R1&quot; &quot;$CWD_R2&quot; \
     | samtools view --no-PG --threads &quot;$samtools_cores&quot; -hb - \
     &gt; &quot;~{output_bam}&quot;
 
 rm -r bwa_db
-rm &quot;~{basename(read_one_fastq_gz)}&quot;
-rm &quot;~{basename(read_two_fastq_gz)}&quot;</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
+rm &quot;$CWD_R1&quot; &quot;$CWD_R2&quot;</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>

@@ -197,15 +197,13 @@ fi
 # -1 because samtools uses one more core than `--threads` specifies
 (( n_cores -= 1 ))
 
-bams=&quot;&quot;
 for file in ~{sep(&quot; &quot;, squote(bams))}; do
   # This will fail (intentionally) if there are duplicate names
   # in the input BAM array.
   ln -s &quot;$file&quot; .
-  bams+=&quot; $(basename &quot;$file&quot;)&quot;
+  bams+=(&quot;$(basename &quot;$file&quot;)&quot;)
 done
 
-# shellcheck disable=SC2086
 samtools merge \
     --threads &quot;$n_cores&quot; \
     ~{&quot;-h \&quot;&quot; + new_header + &quot;\&quot;&quot;} \
@@ -215,7 +213,7 @@ samtools merge \
     ~{if combine_rg then &quot;-c&quot; else &quot;&quot;} \
     ~{if combine_pg then &quot;-p&quot; else &quot;&quot;} \
     &quot;~{prefix}.bam&quot; \
-    $bams
+    &quot;${bams[@]}&quot;
 
 # shellcheck disable=SC2086
-rm $bams</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
+rm &quot;${bams[@]}&quot;</sprocket-code></div></div></div></div><div class="layout__sidebar-right"><div class="right-sidebar__container"><div class="right-sidebar__header">ON THIS PAGE</div><a href="#inputs" class="right-sidebar__section-header">Inputs</a><div class="right-sidebar__section-items"><a href="#required-inputs" class="right-sidebar__section-item">Required Inputs</a></div><div class="right-sidebar__section-items"><a href="#common" class="right-sidebar__section-item">Common</a></div><div class="right-sidebar__section-items"><a href="#other-inputs" class="right-sidebar__section-item">Other Inputs</a></div><a href="#outputs" class="right-sidebar__section-header">Outputs</a><a href="#runtime" class="right-sidebar__section-header">Runtime</a><a href="#command" class="right-sidebar__section-header">Command</a><div class="right-sidebar__back-to-top-container"><a href="#title" class="right-sidebar__back-to-top"><span class="right-sidebar__back-to-top-icon">↑</span><span class="right-sidebar__back-to-top-text">Back to top</span></a></div></div></div></div></body></html>
