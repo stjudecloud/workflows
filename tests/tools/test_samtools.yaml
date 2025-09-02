@@ -80,7 +80,7 @@
   files:
     - path: output/outputs.json
       contains:
-      - test.bam
+      - test.merged.bam
 
 - name: samtools_addreplacerg
   tags:
