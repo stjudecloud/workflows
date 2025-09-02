@@ -37,7 +37,7 @@ combined_beta.csv
 filtered_beta.csv
 : TODO
 
-fusions.BCR-ABL1.tsv
+fusions.BCR_ABL1.tsv
 : A single called fusion from `arriba`.
 
 gencode.v31.chr9_chr22.gtf.gz
