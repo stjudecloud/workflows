@@ -1,8 +1,7 @@
 {
     "merge_sam_files.bams": [
         "../../input/test.bam",
-        "../../input/test_rnaseq_variant.bam",
-        "../../input/test2.bam"
+        "../../input/test_rnaseq_variant.bam"
     ],
-    "merge_sam_files.prefix": "test"
+    "merge_sam_files.prefix": "test.merged"
 }
