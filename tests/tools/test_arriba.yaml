@@ -13,7 +13,7 @@
   tags:
     - arriba
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_tsv_to_vcf tools/arriba.wdl fusions="tests/input/fusions.tsv" reference_fasta="tests/input/GRCh38.chr9_chr22.fa.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_tsv_to_vcf tools/arriba.wdl fusions="tests/input/fusions.BCR-ABL1.tsv" reference_fasta="tests/input/GRCh38.chr9_chr22.fa.gz"
   files:
     - path: output/outputs.json
       contains:
@@ -23,7 +23,7 @@
   tags:
     - arriba
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_extract_fusion_supporting_alignments tools/arriba.wdl fusions="tests/input/fusions.tsv" bam="tests/input/Aligned.sortedByCoord.chr9_chr22.bam" bam_index="tests/input/Aligned.sortedByCoord.chr9_chr22.bam.bai"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_extract_fusion_supporting_alignments tools/arriba.wdl fusions="tests/input/fusions.BCR-ABL1.tsv" bam="tests/input/Aligned.sortedByCoord.chr9_chr22.bam" bam_index="tests/input/Aligned.sortedByCoord.chr9_chr22.bam.bai"
   files:
     - path: output/outputs.json
       contains:
@@ -33,7 +33,7 @@
   tags:
     - arriba
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_annotate_exon_numbers tools/arriba.wdl fusions="tests/input/fusions.tsv" gtf="tests/input/gencode.v31.chr9_chr22.gtf.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t arriba_annotate_exon_numbers tools/arriba.wdl fusions="tests/input/fusions.BCR-ABL1.tsv" gtf="tests/input/gencode.v31.chr9_chr22.gtf.gz"
   files:
     - path: output/outputs.json
       contains:

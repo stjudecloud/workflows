@@ -48,7 +48,7 @@
   tags:
     - kraken
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t kraken tools/kraken2.wdl read_one_fastq_gz="tests/input/test_R1.fq.gz" read_two_fastq_gz="tests/input/test_R2.fq.gz" db="tests/input/kraken2_db.tar.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t kraken tools/kraken2.wdl read_one_fastq_gz="tests/input/test_R1.fq.gz" read_two_fastq_gz="tests/input/test_R2.fq.gz" db="tests/input/kraken2_db.mini.tar.gz"
   files:
     - path: output/outputs.json
       contains:
