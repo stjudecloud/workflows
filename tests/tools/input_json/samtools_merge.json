@@ -1,7 +1,8 @@
 {
     "merge.bams": [
-        "../../input/test2.bam",
-        "../../input/test.bwa_aln_pe.chrY_chrM.bam"
+        "../../input/test.bam",
+        "../../input/test_rnaseq_variant.bam",
+        "../../input/test2.bam"
     ],
     "merge.prefix": "test"
 }
