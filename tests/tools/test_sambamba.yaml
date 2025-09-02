@@ -16,7 +16,7 @@
   files:
     - path:  output/outputs.json
       contains:
-      - test.bam
+      - test.merged.bam
 
 - name: sambamba_sort
   tags:

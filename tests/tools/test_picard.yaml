@@ -63,7 +63,7 @@
   files:
     - path: output/outputs.json
       contains:
-      - test.bam
+      - test.merged.bam
 
 - name: picard_clean_sam
   tags:

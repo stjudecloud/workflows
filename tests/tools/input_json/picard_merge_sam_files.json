@@ -1,7 +1,7 @@
 {
     "merge_sam_files.bams": [
-        "../../input/possorted_genome_bam.bam",
-        "../../input/test.bwa_aln_pe.chrY_chrM.bam"
+        "../../input/test.bam",
+        "../../input/test_rnaseq_variant.bam"
     ],
-    "merge_sam_files.prefix": "test"
+    "merge_sam_files.prefix": "test.merged"
 }
