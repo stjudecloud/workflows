@@ -41,6 +41,10 @@ dir <- getwd()
 rg_set <- read.metharray(args$idat_base, verbose = TRUE, force = TRUE)
 saveRDS(rg_set, paste0(args$out_base, ".RGSet.rds"))
 
+# Generate detection p-values for all probed positions
+detP <- detectionP(rg_set)
+write.csv(detP, paste0(args$out_base, ".detectionP.csv"))
+
 # The manifest is needed by preprocessRAW
 manifest <- getManifest(rg_set)
 manifest
