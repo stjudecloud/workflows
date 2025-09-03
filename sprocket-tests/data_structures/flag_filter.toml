@@ -1,0 +1,49 @@
+[[validate_string_is_12bit_int]]
+name = "decimal_passes" # each test must have a unique identifier
+[validate_string_is_12bit_int.inputs]
+number = "5"
+# without any tests explicitly configured, Sprocket will consider the task executing with a 0 exit code to be a "pass" and any non-zero exit code as a "fail"
+
+[[validate_string_is_12bit_int]]
+name = "hexadecimal_passes"
+[validate_string_is_12bit_int.inputs]
+number = "0x900"
+[validate_string_is_12bit_int.tests]
+stdout.contains = "Input number (0x900) is valid" # builtin test for checking STDOUT logs
+
+[[validate_string_is_12bit_int]]
+name = "too_big_hexadecimal_fails"
+[validate_string_is_12bit_int.inputs]
+number = "0x1000"
+[validate_string_is_12bit_int.tests]
+exit_code = 42 # the task should fail for this test
+stderr.contains = "Input number (0x1000) is invalid" # similar to the stdout test
+
+[[validate_string_is_12bit_int]]
+name = "too_big_decimal_fails"
+[validate_string_is_12bit_int.inputs]
+number = "4096"
+[validate_string_is_12bit_int.tests]
+exit_code = 42
+stderr.contains = [
+    "Input number (4096) interpreted as decimal",
+    "But number must be less than 4096!",
+] # `contains` test can also be an array of strings
+
+[[validate_flag_filter]] # a workflow test
+name = "valid_FlagFilter_passes"
+[validate_flag_filter.inputs.flags]
+include_if_all = "3" # decimal
+exclude_if_any = "0xF04" # hexadecimal
+include_if_any = "03" # octal
+exclude_if_all = "4095" # decimal
+
+[[validate_flag_filter]]
+name = "invalid_FlagFilter_fails"
+[validate_flag_filter.inputs.flags]
+include_if_all = "" # empty string
+exclude_if_any = "this is not a number"
+include_if_any = "000000000011" # binary interpreted as octal. Too many digits for octal
+exclude_if_all = "4095" # this is fine
+[validate_flag_filter.tests]
+should_fail = true
