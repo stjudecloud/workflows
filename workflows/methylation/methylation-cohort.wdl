@@ -16,16 +16,19 @@ workflow methylation_cohort {
 
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
+        p_values: "Array of detection p-value files for each sample."
         num_probes: "Number of probes to use when filtering to the top `num_probes` probes with the highest standard deviation."
     }
 
     input {
         Array[File] unfiltered_normalized_beta
+        Array[File] p_values = []
         Int num_probes = 10000
     }
 
     Int max_length = 500
     Int beta_length = length(unfiltered_normalized_beta)
+    Int pval_length = length(p_values)
 
     if (beta_length > max_length){
         scatter (merge_num in range((beta_length / max_length) + 1)){
@@ -52,11 +55,40 @@ workflow methylation_cohort {
         call combine_data as final_merge { input:
             unfiltered_normalized_beta = inner_merge.combined_beta,
         }
+
+        # If p-values are provided, merge those as well
+        scatter (merge_num in range((pval_length / max_length) + 1)){
+            # Get the sublist of p-value files
+            scatter (pval_num in range(max_length)){
+                Int num_p = (
+                    if merge_num > 0
+                    then pval_num + (merge_num * max_length)
+                    else pval_num
+                )
+                if (num_p < pval_length){
+                    File pval_list = p_values[num_p]
+                }
+            }
+        }
+        scatter (iter_index in range(length(pval_list))){
+            call combine_data as inner_merge_pvals { input:
+                unfiltered_normalized_beta = select_all(pval_list[iter_index]),
+                combined_file_name = "~{iter_index}.pvals.combined.csv",
+                modify_memory_gb = 25,
+            }
+        }
+        call combine_data as final_merge_pvals { input:
+            unfiltered_normalized_beta = inner_merge_pvals.combined_beta,
+        }
+
     }
 
     if (beta_length <= max_length){
         call combine_data as simple_merge { input:
             unfiltered_normalized_beta,
+        }
+        call combine_data as simple_merge_pval { input:
+            unfiltered_normalized_beta = p_values,
         }
     }
 
@@ -65,6 +97,12 @@ workflow methylation_cohort {
             [
                 final_merge.combined_beta,
                 simple_merge.combined_beta,
+            ]
+        ),
+        p_values = select_first(
+            [
+                final_merge_pvals.combined_beta,
+                simple_merge_pval.combined_beta,
             ]
         ),
         num_probes,
@@ -146,12 +184,14 @@ task filter_probes {
 
     parameter_meta {
         beta_values: "Beta values for all samples"
+        p_values: "P-values for all samples"
         prefix: "Prefix for the output files. The extensions `.beta.csv` and `.probes.csv` will be appended."
         num_probes: "Number of probes to retain after filtering"
     }
 
     input {
         File beta_values
+        File p_values
         String prefix = "filtered"
         Int num_probes = 10000
     }
