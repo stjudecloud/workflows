@@ -54,7 +54,7 @@ task process_raw_idats {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/minfi:1.48.0-7"
+        container: "ghcr.io/stjudecloud/minfi:branch-probe_quality-1.48.0-7"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"

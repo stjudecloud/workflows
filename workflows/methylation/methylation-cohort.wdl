@@ -74,11 +74,12 @@ workflow methylation_cohort {
             call combine_data as inner_merge_pvals { input:
                 unfiltered_normalized_beta = select_all(pval_list[iter_index]),
                 combined_file_name = "~{iter_index}.pvals.combined.csv",
-                modify_memory_gb = 25,
+                modify_memory_gb = 65,
             }
         }
         call combine_data as final_merge_pvals { input:
             unfiltered_normalized_beta = inner_merge_pvals.combined_beta,
+            modify_memory_gb = 25,
         }
 
     }
