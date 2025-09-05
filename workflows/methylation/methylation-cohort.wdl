@@ -165,7 +165,7 @@ task combine_data {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:2.2.1-5"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-6"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -213,7 +213,7 @@ task filter_probes {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:2.2.1-5"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-6"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
