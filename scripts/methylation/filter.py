@@ -18,8 +18,18 @@ def get_args():
     parser.add_argument(
         "--filtered-probes", type=str, help="Name for filtered probes file."
     )
-    parser.add_argument("--pval-threshold", type=float, default=0.01, help="P-value threshold for filtering.")
-    parser.add_argument("--pval-sample-fraction", type=float, default=0.5, help="Fraction of samples that must exceed the p-value threshold.")
+    parser.add_argument(
+        "--pval-threshold",
+        type=float,
+        default=0.01,
+        help="P-value threshold for filtering.",
+    )
+    parser.add_argument(
+        "--pval-sample-fraction",
+        type=float,
+        default=0.5,
+        help="Fraction of samples that must exceed the p-value threshold.",
+    )
     parser.add_argument("beta", type=str, help="Beta values CSV file.")
     parser.add_argument("pval", type=str, help="P-values CSV file.")
     args = parser.parse_args()
@@ -46,7 +56,9 @@ if __name__ == "__main__":
             if count_high_pval > allowable_sample_count:
                 high_pval_probes.append(probe)
 
-    print("Number of probes with high p-value in too many samples:", len(high_pval_probes))
+    print(
+        "Number of probes with high p-value in too many samples:", len(high_pval_probes)
+    )
 
     # Read beta values and compute standard deviation
     data = []
