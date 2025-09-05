@@ -188,6 +188,8 @@ task filter_probes {
         p_values: "P-values for all samples"
         prefix: "Prefix for the output files. The extensions `.beta.csv` and `.probes.csv` will be appended."
         num_probes: "Number of probes to retain after filtering"
+        pval_threshold: "P-value cutoff to determine poor quality probes"
+        pval_sample_fraction: "Fraction of samples that must exceed p-value threshold to exclude probe"
     }
 
     input {
@@ -195,6 +197,8 @@ task filter_probes {
         File p_values
         String prefix = "filtered"
         Int num_probes = 10000
+        Float pval_threshold = 0.01
+        Float pval_sample_fraction = 0.5
     }
 
     Int disk_size_gb = ceil(size(beta_values, "GiB") * 2) + 2
@@ -204,7 +208,9 @@ task filter_probes {
             --output-name "~{prefix}.beta.csv" \
             --filtered-probes "~{prefix}.probes.csv" \
             --num-probes ~{num_probes} \
-            "~{beta_values}"
+            --pval-threshold ~{pval_threshold} \
+            --pval-sample-fraction ~{pval_sample_fraction} \
+            "~{beta_values}" "~{p_values}"
     >>>
 
     output {
