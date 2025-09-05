@@ -52,7 +52,9 @@ if __name__ == "__main__":
                     print(f"Processing probe {i}")
                 probe = line[0]
                 # Get count of samples where the p-value exceeds the threshold
-                count_high_pval = sum(1 for x in line[1:] if float(x) > args.pval_threshold)
+                count_high_pval = sum(
+                    1 for x in line[1:] if float(x) > args.pval_threshold
+                )
                 # Check if the count exceeds the allowable fraction
                 if count_high_pval > allowable_sample_count:
                     high_pval_probes.append(probe)
