@@ -200,7 +200,7 @@ task filter_probes {
 
     input {
         File beta_values
-        File p_values
+        File? p_values
         String prefix = "filtered"
         Float pval_threshold = 0.01
         Float pval_sample_fraction = 0.5
@@ -216,7 +216,8 @@ task filter_probes {
             --num-probes ~{num_probes} \
             --pval-threshold ~{pval_threshold} \
             --pval-sample-fraction ~{pval_sample_fraction} \
-            "~{beta_values}" "~{p_values}"
+            ~{'--pval "' + p_values + '"'} \
+            "~{beta_values}"
     >>>
 
     output {

@@ -30,8 +30,8 @@ def get_args():
         default=0.5,
         help="Fraction of samples that must exceed the p-value threshold.",
     )
+    parser.add_argument("--pval", type=str, help="P-values CSV file.")
     parser.add_argument("beta", type=str, help="Beta values CSV file.")
-    parser.add_argument("pval", type=str, help="P-values CSV file.")
     args = parser.parse_args()
 
     return args
@@ -42,19 +42,20 @@ if __name__ == "__main__":
 
     # Read p-values and find probes with high p-value in too many samples
     high_pval_probes = []
-    with open(args.pval, "r") as f:
-        reader = csv.reader(f)
-        header = next(reader)
-        allowable_sample_count = args.pval_sample_fraction * (len(header) - 1)
-        for i, line in enumerate(reader):
-            if i % 1000 == 0:
-                print(f"Processing probe {i}")
-            probe = line[0]
-            # Get count of samples where the p-value exceeds the threshold
-            count_high_pval = sum(1 for x in line[1:] if float(x) > args.pval_threshold)
-            # Check if the count exceeds the allowable fraction
-            if count_high_pval > allowable_sample_count:
-                high_pval_probes.append(probe)
+    if args.pval is not None:
+        with open(args.pval, "r") as f:
+            reader = csv.reader(f)
+            header = next(reader)
+            allowable_sample_count = args.pval_sample_fraction * (len(header) - 1)
+            for i, line in enumerate(reader):
+                if i % 1000 == 0:
+                    print(f"Processing probe {i}")
+                probe = line[0]
+                # Get count of samples where the p-value exceeds the threshold
+                count_high_pval = sum(1 for x in line[1:] if float(x) > args.pval_threshold)
+                # Check if the count exceeds the allowable fraction
+                if count_high_pval > allowable_sample_count:
+                    high_pval_probes.append(probe)
 
     print(
         "Number of probes with high p-value in too many samples:", len(high_pval_probes)
