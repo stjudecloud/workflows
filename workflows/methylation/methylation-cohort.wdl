@@ -216,7 +216,7 @@ task filter_probes {
             --num-probes ~{num_probes} \
             --pval-threshold ~{pval_threshold} \
             --pval-sample-fraction ~{pval_sample_fraction} \
-            ~{'--pval "' + p_values + '"'} \
+            ~{"--pval '" + p_values + "'"} \
             "~{beta_values}"
     >>>
 
