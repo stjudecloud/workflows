@@ -15,6 +15,7 @@ workflow methylation {
             filtered_probeset: "List of probe names that were retained after filtering to the top N highest standard deviation",
             umap_embedding: "UMAP embedding for all samples",
             umap_plot: "UMAP plot for all samples",
+            probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows and all of the input samples as columns.",
         }
         allowNestedInputs: true
     }
@@ -49,5 +50,6 @@ workflow methylation {
         File filtered_probeset = methylation_cohort.filtered_probeset
         File umap_embedding = methylation_cohort.umap_embedding
         File umap_plot = methylation_cohort.umap_plot
+        File probe_pvalues = methylation_cohort.probe_pvalues
     }
 }

@@ -11,6 +11,7 @@ task process_raw_idats {
             cn_values: "Copy number values",
             m_values: "M values",
             probe_names: "Probe names found on the array",
+            probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows.",
         }
     }
 

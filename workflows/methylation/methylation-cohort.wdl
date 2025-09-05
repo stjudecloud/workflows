@@ -10,6 +10,7 @@ workflow methylation_cohort {
             filtered_probeset: "List of probe names that were retained after filtering to the top N highest standard deviation",
             umap_embedding: "UMAP embedding for all samples",
             umap_plot: "UMAP plot for all samples",
+            probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows and all of the input samples as columns.",
         }
         allowNestedInputs: true
     }
@@ -81,7 +82,6 @@ workflow methylation_cohort {
             unfiltered_normalized_beta = inner_merge_pvals.combined_beta,
             modify_memory_gb = 25,
         }
-
     }
 
     if (beta_length <= max_length){
@@ -128,6 +128,12 @@ workflow methylation_cohort {
         File filtered_probeset = filter_probes.filtered_probes
         File umap_embedding = generate_umap.umap
         File umap_plot = plot_umap.umap_plot
+        File probe_pvalues = select_first(
+            [
+                final_merge_pvals.combined_beta,
+                simple_merge_pval.combined_beta,
+            ]
+        )
     }
 }
 
@@ -187,18 +193,18 @@ task filter_probes {
         beta_values: "Beta values for all samples"
         p_values: "P-values for all samples"
         prefix: "Prefix for the output files. The extensions `.beta.csv` and `.probes.csv` will be appended."
-        num_probes: "Number of probes to retain after filtering"
         pval_threshold: "P-value cutoff to determine poor quality probes"
         pval_sample_fraction: "Fraction of samples that must exceed p-value threshold to exclude probe"
+        num_probes: "Number of probes to retain after filtering"
     }
 
     input {
         File beta_values
         File p_values
         String prefix = "filtered"
-        Int num_probes = 10000
         Float pval_threshold = 0.01
         Float pval_sample_fraction = 0.5
+        Int num_probes = 10000
     }
 
     Int disk_size_gb = ceil(size(beta_values, "GiB") * 2) + 2
