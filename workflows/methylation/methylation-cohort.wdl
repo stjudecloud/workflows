@@ -91,9 +91,11 @@ workflow methylation_cohort {
             files_to_combine = unfiltered_normalized_beta,
             combined_file_name = "combined_beta.csv",
         }
-        call combine_data as simple_merge_pval { input:
-            files_to_combine = p_values,
-            combined_file_name = "combined_pvals.csv",
+        if (pval_length > 0){
+            call combine_data as simple_merge_pval { input:
+                files_to_combine = p_values,
+                combined_file_name = "combined_pvals.csv",
+            }
         }
     }
 
