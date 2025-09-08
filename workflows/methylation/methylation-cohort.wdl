@@ -79,10 +79,12 @@ workflow methylation_cohort {
                 modify_memory_gb = 65,
             }
         }
-        call combine_data as final_merge_pvals { input:
-            files_to_combine = inner_merge_pvals.combined_file,
-            modify_memory_gb = 25,
-            combined_file_name = "combined_pvals.csv",
+        if (pval_length > 0){
+            call combine_data as final_merge_pvals { input:
+                files_to_combine = inner_merge_pvals.combined_file,
+                modify_memory_gb = 25,
+                combined_file_name = "combined_pvals.csv",
+            }
         }
     }
 
