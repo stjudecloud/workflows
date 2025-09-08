@@ -48,7 +48,7 @@ if __name__ == "__main__":
             header = next(reader)
             allowable_sample_count = args.pval_sample_fraction * (len(header) - 1)
             for i, line in enumerate(reader):
-                if i % 1000 == 0:
+                if i % 10000 == 0:
                     print(f"Processing probe {i}")
                 probe = line[0]
                 # Get count of samples where the p-value exceeds the threshold
