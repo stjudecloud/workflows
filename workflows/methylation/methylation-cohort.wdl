@@ -47,14 +47,15 @@ workflow methylation_cohort {
         }
         scatter (iter_index in range(length(bam_list))){
             call combine_data as inner_merge { input:
-                unfiltered_normalized_beta = select_all(bam_list[iter_index]),
+                files_to_combine = select_all(bam_list[iter_index]),
                 combined_file_name = "~{iter_index}.combined.csv",
                 modify_memory_gb = 25,
             }
         }
 
         call combine_data as final_merge { input:
-            unfiltered_normalized_beta = inner_merge.combined_beta,
+            files_to_combine = inner_merge.combined_file,
+            combined_file_name = "combined_beta.csv"
         }
 
         # If p-values are provided, merge those as well
@@ -73,37 +74,40 @@ workflow methylation_cohort {
         }
         scatter (iter_index in range(length(pval_list))){
             call combine_data as inner_merge_pvals { input:
-                unfiltered_normalized_beta = select_all(pval_list[iter_index]),
+                files_to_combine = select_all(pval_list[iter_index]),
                 combined_file_name = "~{iter_index}.pvals.combined.csv",
                 modify_memory_gb = 65,
             }
         }
         call combine_data as final_merge_pvals { input:
-            unfiltered_normalized_beta = inner_merge_pvals.combined_beta,
+            files_to_combine = inner_merge_pvals.combined_file,
             modify_memory_gb = 25,
+            combined_file_name = "combined_pvals.csv"
         }
     }
 
     if (beta_length <= max_length){
         call combine_data as simple_merge { input:
-            unfiltered_normalized_beta,
+            files_to_combine = unfiltered_normalized_beta,
+            combined_file_name = "combined_beta.csv"
         }
         call combine_data as simple_merge_pval { input:
-            unfiltered_normalized_beta = p_values,
+            files_to_combine = p_values,
+            combined_file_name = "combined_pvals.csv"
         }
     }
 
     call filter_probes { input:
         beta_values = select_first(
             [
-                final_merge.combined_beta,
-                simple_merge.combined_beta,
+                final_merge.combined_file,
+                simple_merge.combined_file,
             ]
         ),
         p_values = select_first(
             [
-                final_merge_pvals.combined_beta,
-                simple_merge_pval.combined_beta,
+                final_merge_pvals.combined_file,
+                simple_merge_pval.combined_file,
             ]
         ),
         num_probes,
@@ -120,8 +124,8 @@ workflow methylation_cohort {
     output {
         File combined_beta = select_first(
             [
-                final_merge.combined_beta,
-                simple_merge.combined_beta,
+                final_merge.combined_file,
+                simple_merge.combined_file,
             ]
         )
         File filtered_beta = filter_probes.filtered_beta_values
@@ -130,8 +134,8 @@ workflow methylation_cohort {
         File umap_plot = plot_umap.umap_plot
         File probe_pvalues = select_first(
             [
-                final_merge_pvals.combined_beta,
-                simple_merge_pval.combined_beta,
+                final_merge_pvals.combined_file,
+                simple_merge_pval.combined_file,
             ]
         )
     }
@@ -139,35 +143,35 @@ workflow methylation_cohort {
 
 task combine_data {
     meta {
-        description: "Combine data from multiple samples"
+        description: "Combine data from multiple CSV files by column"
         outputs: {
-            combined_beta: "Combined beta values for all samples"
+            combined_file: "Combined CSV file"
         }
     }
 
     parameter_meta {
-        unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
+        files_to_combine: "Array of files with values for each sample"
         combined_file_name: "Name of the combined file"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
     }
 
     input {
-        Array[File] unfiltered_normalized_beta
-        String combined_file_name = "combined_beta.csv"
+        Array[File] files_to_combine
+        String combined_file_name = "combined.csv"
         Int modify_memory_gb = 0
     }
 
-    Int memory_gb = ceil(size(unfiltered_normalized_beta, "GiB")) + modify_memory_gb + 2
-    Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2) + 2
+    Int memory_gb = ceil(size(files_to_combine, "GiB")) + modify_memory_gb + 2
+    Int disk_size_gb = ceil(size(files_to_combine, "GiB") * 2) + 2
 
     command <<<
         python /scripts/methylation/combine.py \
             --output-name "~{combined_file_name}" \
-            ~{sep(" ", quote(unfiltered_normalized_beta))}
+            ~{sep(" ", quote(files_to_combine))}
     >>>
 
     output {
-        File combined_beta = combined_file_name
+        File combined_file = combined_file_name
     }
 
     runtime {
