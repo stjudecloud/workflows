@@ -55,7 +55,7 @@ workflow methylation_cohort {
 
         call combine_data as final_merge { input:
             files_to_combine = inner_merge.combined_file,
-            combined_file_name = "combined_beta.csv"
+            combined_file_name = "combined_beta.csv",
         }
 
         # If p-values are provided, merge those as well
@@ -82,18 +82,18 @@ workflow methylation_cohort {
         call combine_data as final_merge_pvals { input:
             files_to_combine = inner_merge_pvals.combined_file,
             modify_memory_gb = 25,
-            combined_file_name = "combined_pvals.csv"
+            combined_file_name = "combined_pvals.csv",
         }
     }
 
     if (beta_length <= max_length){
         call combine_data as simple_merge { input:
             files_to_combine = unfiltered_normalized_beta,
-            combined_file_name = "combined_beta.csv"
+            combined_file_name = "combined_beta.csv",
         }
         call combine_data as simple_merge_pval { input:
             files_to_combine = p_values,
-            combined_file_name = "combined_pvals.csv"
+            combined_file_name = "combined_pvals.csv",
         }
     }
 
