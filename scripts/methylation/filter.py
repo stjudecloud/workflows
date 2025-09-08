@@ -58,10 +58,10 @@ if __name__ == "__main__":
                 # Check if the count exceeds the allowable fraction
                 if count_high_pval > allowable_sample_count:
                     high_pval_probes.append(probe)
+        print(
+            "Number of probes with high p-value in too many samples:", len(high_pval_probes)
+        )
 
-    print(
-        "Number of probes with high p-value in too many samples:", len(high_pval_probes)
-    )
 
     # Read beta values and compute standard deviation
     data = []
@@ -71,7 +71,8 @@ if __name__ == "__main__":
         for i, line in enumerate(reader):
             probe = line[0]
             sd = np.std([float(x) for x in line[1:]])
-            data.append([probe, sd])
+            if probe not in high_pval_probes:
+                data.append([probe, sd])
 
     sd_df = pd.DataFrame(data, columns=["probe", "sd"]).set_index("probe")
 
