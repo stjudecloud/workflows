@@ -59,9 +59,9 @@ if __name__ == "__main__":
                 if count_high_pval > allowable_sample_count:
                     high_pval_probes.append(probe)
         print(
-            "Number of probes with high p-value in too many samples:", len(high_pval_probes)
+            "Number of probes with high p-value in too many samples:",
+            len(high_pval_probes),
         )
-
 
     # Read beta values and compute standard deviation
     data = []
