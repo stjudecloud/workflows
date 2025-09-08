@@ -10,6 +10,11 @@ Any change to the `scripts/` directory should be accompanied by version increase
 
 ## 2025 August
 
+### Added
+
+- Added `detectionP` method from `minfi` to `methylation-preprocess.R` [#262](https://github.com/stjudecloud/workflows/pull/262)
+- Added filtering step to `filter.py` to use probe p-values to filter low quality probes across a cohort [#262](https://github.com/stjudecloud/workflows/pull/262)
+
 ### Changed
 
 - Replaced `black` and `pyright` with `ruff` [#255](https://github.com/stjudecloud/workflows/pull/255).
