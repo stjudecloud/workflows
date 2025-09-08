@@ -26,5 +26,9 @@ if __name__ == "__main__":
     args = get_args()
 
     # Combine data
-    df = pd.concat([read(f) for f in args.csvs], axis=1, join="inner")
+    dfs_to_concat = []
+    for f in args.csvs:
+        df = read(f)
+        dfs_to_concat.append(df)
+    df = pd.concat(dfs_to_concat, axis=1, join="inner")
     df.to_csv(args.output_name, index=True)
