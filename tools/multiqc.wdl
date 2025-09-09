@@ -29,7 +29,7 @@ task multiqc {
     }
 
     Float input_size = size(files, "GiB")
-    Int disk_size_gb = ceil(input_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(input_size) * 2 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
