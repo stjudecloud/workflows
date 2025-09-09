@@ -28,7 +28,8 @@ workflow quality_check_standard {
                 external_help: "https://docs.seqera.io/multiqc",
             },
             multiqc_data: {
-                description: "Zipped archive of data copmiled by MultiQC",
+                description: "Parquet format file output by MultiQC.",
+                help: "Can be used to recapitualate the created HTML report without access to all the raw data files analyzed.",
             },
             analyzed_by_multiqc: {
                 description: "All files produced during QC which were analyzed by MultiQC",
@@ -429,7 +430,7 @@ workflow quality_check_standard {
     output {
         File bam_checksum = compute_checksum.md5sum
         File multiqc_report = multiqc.html
-        File multiqc_data = multiqc.data
+        File multiqc_data = multiqc.parquet
         Array[File] analyzed_by_multiqc = multiqc_files
         Array[File] individual_analysis_reports = select_all([
             collect_alignment_summary_metrics.alignment_metrics_pdf,
