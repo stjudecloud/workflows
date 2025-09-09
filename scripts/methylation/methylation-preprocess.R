@@ -115,6 +115,9 @@ genomic_probes <- rownames(beta_swan_norm)
 all_probes <- rownames(det_p)
 non_genomic_probes <- setdiff(all_probes, genomic_probes)
 
+# Filter probe p-values to only those with genomic coordinates
 det_p <- det_p[!(row.names(det_p) %in% non_genomic_probes), , drop = FALSE]
+det_p <-
+  det_p[order(rownames(det_p)), , drop = FALSE]
 
 write.csv(det_p, paste0(args$out_base, ".detectionP.csv"))
