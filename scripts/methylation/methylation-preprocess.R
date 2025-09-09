@@ -43,6 +43,8 @@ saveRDS(rg_set, paste0(args$out_base, ".RGSet.rds"))
 
 # Generate detection p-values for all probed positions
 det_p <- detectionP(rg_set)
+det_p <-
+  det_p[order(rownames(det_p)), , drop = FALSE]
 write.csv(det_p, paste0(args$out_base, ".detectionP.csv"))
 
 # The manifest is needed by preprocessRAW
