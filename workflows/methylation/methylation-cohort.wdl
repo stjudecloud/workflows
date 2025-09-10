@@ -101,12 +101,15 @@ workflow methylation_cohort {
         }
     }
 
-    File? pval_file = if !skip_pvalue_check then select_first(
-        [
-            final_merge_pvals.combined_file,
-            simple_merge_pval.combined_file,
-        ])
+    File? pval_file = (
+        if !skip_pvalue_check
+        then select_first(
+            [
+                final_merge_pvals.combined_file,
+                simple_merge_pval.combined_file,
+            ])
         else None
+    )
 
     call filter_probes { input:
         beta_values = select_first(
