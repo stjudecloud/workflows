@@ -155,12 +155,14 @@ task combine_data {
 
     parameter_meta {
         files_to_combine: "Array of files with values for each sample"
+        simple_merge: "Use simple merge rather than batched read. Use this if different arrays are to be combined."
         combined_file_name: "Name of the combined file"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
     }
 
     input {
         Array[File] files_to_combine
+        Boolean simple_merge = false
         String combined_file_name = "combined.csv"
         Int modify_memory_gb = 0
     }
@@ -171,6 +173,7 @@ task combine_data {
     command <<<
         python /scripts/methylation/combine.py \
             --output-name "~{combined_file_name}" \
+            ~{if simple_merge then '--simple-merge' else ''} \
             ~{sep(" ", quote(files_to_combine))}
     >>>
 
