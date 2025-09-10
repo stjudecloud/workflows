@@ -1,0 +1,11 @@
+[[merge_sam_files]]
+name = "Merge works"
+[merge_sam_files.inputs]
+bams = [
+    "$FIXTURES/test1.bam",
+    "$FIXTURES/test2.bam",
+]
+prefix = "test.merged"
+[merge_sam_files.tests]
+custom = "quickcheck.sh"
+
