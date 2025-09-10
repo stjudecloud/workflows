@@ -51,7 +51,6 @@ workflow methylation_cohort {
             call combine_data as inner_merge { input:
                 files_to_combine = select_all(bam_list[iter_index]),
                 combined_file_name = "~{iter_index}.combined.csv",
-                modify_memory_gb = 25,
             }
         }
 
@@ -79,13 +78,11 @@ workflow methylation_cohort {
                 call combine_data as inner_merge_pvals { input:
                     files_to_combine = select_all(pval_list[iter_index]),
                     combined_file_name = "~{iter_index}.pvals.combined.csv",
-                    modify_memory_gb = 65,
                 }
             }
 
             call combine_data as final_merge_pvals { input:
                 files_to_combine = inner_merge_pvals.combined_file,
-                modify_memory_gb = 25,
                 combined_file_name = "combined_pvals.csv",
             }
         }
@@ -104,6 +101,13 @@ workflow methylation_cohort {
         }
     }
 
+    File? pval_file = if !skip_pvalue_check then select_first(
+        [
+            final_merge_pvals.combined_file,
+            simple_merge_pval.combined_file,
+        ])
+        else None
+
     call filter_probes { input:
         beta_values = select_first(
             [
@@ -111,12 +115,7 @@ workflow methylation_cohort {
                 simple_merge.combined_file,
             ]
         ),
-        p_values = select_first(
-            [
-                final_merge_pvals.combined_file,
-                simple_merge_pval.combined_file,
-            ]
-        ),
+        p_values = pval_file,
         num_probes,
     }
 
@@ -139,12 +138,7 @@ workflow methylation_cohort {
         File filtered_probeset = filter_probes.filtered_probes
         File umap_embedding = generate_umap.umap
         File umap_plot = plot_umap.umap_plot
-        File probe_pvalues = select_first(
-            [
-                final_merge_pvals.combined_file,
-                simple_merge_pval.combined_file,
-            ]
-        )
+        File? probe_pvalues = pval_file
     }
 }
 
