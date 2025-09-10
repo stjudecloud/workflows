@@ -4,8 +4,14 @@ import pandas as pd
 
 def get_args():
     parser = argparse.ArgumentParser(description="Combine CSV files.")
-    parser.add_argument("--output-name", type=str, help="Name for output file.", default="combined.csv")
-    parser.add_argument("--simple-merge", action="store_true", help="Use simple merge rather than batched read. Use this if different arrays are to be combined.")
+    parser.add_argument(
+        "--output-name", type=str, help="Name for output file.", default="combined.csv"
+    )
+    parser.add_argument(
+        "--simple-merge",
+        action="store_true",
+        help="Use simple merge rather than batched read. Use this if different arrays are to be combined.",
+    )
     parser.add_argument("csvs", type=str, nargs="+", help="List of CSV files.")
 
     args = parser.parse_args()
@@ -53,4 +59,6 @@ if __name__ == "__main__":
             if index == 0:
                 combined_chunk.to_csv(args.output_name, mode="w", index=True)
             else:
-                combined_chunk.to_csv(args.output_name, mode="a", index=True, header=False)
+                combined_chunk.to_csv(
+                    args.output_name, mode="a", index=True, header=False
+                )
