@@ -18,12 +18,14 @@ workflow methylation_cohort {
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
         p_values: "Array of detection p-value files for each sample."
+        skip_pvalue_check: "Skip filtering based on p-values, even if `p_values` is supplied."
         num_probes: "Number of probes to use when filtering to the top `num_probes` probes with the highest standard deviation."
     }
 
     input {
         Array[File] unfiltered_normalized_beta
         Array[File] p_values = []
+        Boolean skip_pvalue_check = false
         Int num_probes = 10000
     }
 
@@ -58,28 +60,29 @@ workflow methylation_cohort {
             combined_file_name = "combined_beta.csv",
         }
 
-        # If p-values are provided, merge those as well
-        scatter (merge_num in range((pval_length / max_length) + 1)){
-            # Get the sublist of p-value files
-            scatter (pval_num in range(max_length)){
-                Int num_p = (
-                    if merge_num > 0
-                    then pval_num + (merge_num * max_length)
-                    else pval_num
-                )
-                if (num_p < pval_length){
-                    File pval_list = p_values[num_p]
+        if (pval_length > 0 && !skip_pvalue_check){
+            # If p-values are provided, merge those as well
+            scatter (merge_num in range((pval_length / max_length) + 1)){
+                # Get the sublist of p-value files
+                scatter (pval_num in range(max_length)){
+                    Int num_p = (
+                        if merge_num > 0
+                        then pval_num + (merge_num * max_length)
+                        else pval_num
+                    )
+                    if (num_p < pval_length){
+                        File pval_list = p_values[num_p]
+                    }
                 }
             }
-        }
-        scatter (iter_index in range(length(pval_list))){
-            call combine_data as inner_merge_pvals { input:
-                files_to_combine = select_all(pval_list[iter_index]),
-                combined_file_name = "~{iter_index}.pvals.combined.csv",
-                modify_memory_gb = 65,
+            scatter (iter_index in range(length(pval_list))){
+                call combine_data as inner_merge_pvals { input:
+                    files_to_combine = select_all(pval_list[iter_index]),
+                    combined_file_name = "~{iter_index}.pvals.combined.csv",
+                    modify_memory_gb = 65,
+                }
             }
-        }
-        if (pval_length > 0){
+
             call combine_data as final_merge_pvals { input:
                 files_to_combine = inner_merge_pvals.combined_file,
                 modify_memory_gb = 25,
@@ -93,7 +96,7 @@ workflow methylation_cohort {
             files_to_combine = unfiltered_normalized_beta,
             combined_file_name = "combined_beta.csv",
         }
-        if (pval_length > 0){
+        if (pval_length > 0 && !skip_pvalue_check){
             call combine_data as simple_merge_pval { input:
                 files_to_combine = p_values,
                 combined_file_name = "combined_pvals.csv",
