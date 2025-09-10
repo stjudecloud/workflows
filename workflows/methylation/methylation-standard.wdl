@@ -50,6 +50,6 @@ workflow methylation {
         File filtered_probeset = methylation_cohort.filtered_probeset
         File umap_embedding = methylation_cohort.umap_embedding
         File umap_plot = methylation_cohort.umap_plot
-        File probe_pvalues = methylation_cohort.probe_pvalues
+        File? probe_pvalues = methylation_cohort.probe_pvalues
     }
 }
