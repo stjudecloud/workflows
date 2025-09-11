@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import argparse
 
-
 def get_args():
     parser = argparse.ArgumentParser(
         description="Filter probes based on standard deviation."
@@ -49,7 +48,7 @@ if __name__ == "__main__":
             allowable_sample_count = args.pval_sample_fraction * (len(header) - 1)
             for i, line in enumerate(reader):
                 if i % 10000 == 0:
-                    print(f"Processing probe {i}")
+                    print(f"Processing p-value for probe {i}")
                 probe = line[0]
                 # Get count of samples where the p-value exceeds the threshold
                 count_high_pval = sum(
@@ -62,13 +61,18 @@ if __name__ == "__main__":
             "Number of probes with high p-value in too many samples:",
             len(high_pval_probes),
         )
+        pd.Series(high_pval_probes).to_csv("high_pval_probes.csv", index=False, header=False)
 
     # Read beta values and compute standard deviation
     data = []
+
     with open(args.beta, "r") as f:
         reader = csv.reader(f)
         header = next(reader)
         for i, line in enumerate(reader):
+            if i % 10000 == 0:
+                print(f"Processing probe {i}")
+
             probe = line[0]
             sd = np.std([float(x) for x in line[1:]])
             if probe not in high_pval_probes:
@@ -87,11 +91,14 @@ if __name__ == "__main__":
 
     # Filter beta values
     # NOTE: we are iterating over the file a second time to avoid loading the entire file into memory
+    print("Reading beta for filtering")
     with open(args.beta, "r") as f:
         reader = csv.reader(f)
         header = next(reader)
         header[0] = "probe"
         beta_data = [line for line in reader if line[0] in filtered_probes]
 
+
+    print("Writing filtered beta values")
     bd = pd.DataFrame(beta_data, columns=header).set_index("probe")
     bd.to_csv(args.output_name)
