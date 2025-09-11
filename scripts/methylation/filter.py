@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import argparse
 
+
 def get_args():
     parser = argparse.ArgumentParser(
         description="Filter probes based on standard deviation."
@@ -61,7 +62,9 @@ if __name__ == "__main__":
             "Number of probes with high p-value in too many samples:",
             len(high_pval_probes),
         )
-        pd.Series(high_pval_probes).to_csv("high_pval_probes.csv", index=False, header=False)
+        pd.Series(high_pval_probes).to_csv(
+            "high_pval_probes.csv", index=False, header=False
+        )
 
     # Read beta values and compute standard deviation
     data = []
@@ -97,7 +100,6 @@ if __name__ == "__main__":
         header = next(reader)
         header[0] = "probe"
         beta_data = [line for line in reader if line[0] in filtered_probes]
-
 
     print("Writing filtered beta values")
     bd = pd.DataFrame(beta_data, columns=header).set_index("probe")
