@@ -10,7 +10,7 @@ def get_args():
     parser.add_argument(
         "--simple-merge",
         action="store_true",
-        help="Use simple merge rather than batched read. Use this if different arrays are to be combined.",
+        help="Use simple merge rather than batched read. Use this if different probesets are to be combined.",
     )
     parser.add_argument("csvs", type=str, nargs="+", help="List of CSV files.")
 

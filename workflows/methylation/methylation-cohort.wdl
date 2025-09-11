@@ -102,7 +102,7 @@ workflow methylation_cohort {
     }
 
     File? pval_file = (
-        if !skip_pvalue_check
+        if (pval_length > 0 && !skip_pvalue_check)
         then select_first(
             [
                 final_merge_pvals.combined_file,

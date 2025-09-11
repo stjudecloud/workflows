@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 Any change to the `scripts/` directory should be accompanied by version increases in the `docker/` directory! If you are editing this file, please ensure these changes propagate!
 
-## 2025 August
+## 2025 September
 
 ### Added
 
@@ -17,9 +17,14 @@ Any change to the `scripts/` directory should be accompanied by version increase
 
 ### Changed
 
+- `combine.py` now has multiple strategies for merging [#262](https://github.com/stjudecloud/workflows/pull/262)
+
+## 2025 August
+
+### Changed
+
 - Replaced `black` and `pyright` with `ruff` [#255](https://github.com/stjudecloud/workflows/pull/255).
 - Beta value matrix now retains sample names as column names [#259](https://github.com/stjudecloud/workflows/pull/259)
-
 
 ## 2025 July
 

@@ -4,11 +4,13 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
  
-## 2025 August
+## 2025 September
 
 ### Added
 
 - Now computes a per-sample [detection value](https://www.rdocumentation.org/packages/minfi/versions/1.18.4/topics/detectionP) for each probe and provides functionality to filter based on the fraction of a cohort with p-values exceeding a threshold [#262](https://github.com/stjudecloud/workflows/pull/262)
+
+## 2025 August
 
 ### Changed
 
