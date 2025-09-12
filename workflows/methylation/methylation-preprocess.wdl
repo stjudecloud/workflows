@@ -11,6 +11,7 @@ task process_raw_idats {
             cn_values: "Copy number values",
             m_values: "M values",
             probe_names: "Probe names found on the array",
+            probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows.",
         }
     }
 
@@ -50,10 +51,11 @@ task process_raw_idats {
         File cn_values = out_base + ".cn_values.csv"
         File m_values = out_base + ".m_values.csv"
         File probe_names = out_base + ".probeNames.csv"
+        File probe_pvalues = out_base + ".detectionP.csv"
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/minfi:1.48.0-6"
+        container: "ghcr.io/stjudecloud/minfi:1.48.0-7"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
