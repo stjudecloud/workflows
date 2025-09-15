@@ -168,7 +168,7 @@ task calc_tpm {
             "~{counts}" \
             "~{gene_lengths}" \
             "~{outfile_name}" \
-            ~{if has_header then "--has_header" else ""}
+            ~{if has_header then "--counts_has_header" else ""}
     >>>
 
     output {
