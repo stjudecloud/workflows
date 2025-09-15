@@ -42,4 +42,9 @@ if __name__ == "__main__":
     parser.add_argument("--counts_has_header", action="store_true")
 
     args = parser.parse_args()
-    main(args.counts_path, args.gene_lengths_path, args.outfile_path, args.counts_has_header)
+    main(
+        args.counts_path,
+        args.gene_lengths_path,
+        args.outfile_path,
+        args.counts_has_header,
+    )
