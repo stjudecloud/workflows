@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2025 September
+
+### Added
+
+- Included a warning that the `read_group.get_read_groups` task will uppercase any `PL` values [#266](https://github.com/stjudecloud/workflows/pull/266)
+
+### Changed
+
+- Ported the python heredoc used in `read_group.get_read_groups` to a full script [#266](https://github.com/stjudecloud/workflows/pull/266)
+
 ## 2025 July
 
 ### Changed
