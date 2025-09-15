@@ -12,6 +12,8 @@ Any change to the `scripts/` directory should be accompanied by version increase
 
 ### Added
 
+- Added `data_structures/get_read_groups.py` [#266](https://github.com/stjudecloud/workflows/pull/266)
+- Added `htseq/calc_tpm.py` [#266](https://github.com/stjudecloud/workflows/pull/266)
 - Added `detectionP` method from `minfi` to `methylation-preprocess.R` [#262](https://github.com/stjudecloud/workflows/pull/262)
 - Added filtering step to `methylation/filter.py` to use probe p-values to filter low quality probes across a cohort [#262](https://github.com/stjudecloud/workflows/pull/262)
 

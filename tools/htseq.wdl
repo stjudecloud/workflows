@@ -163,43 +163,12 @@ task calc_tpm {
 
     String outfile_name = prefix + ".TPM.txt"
 
-    #@ except: LineWidth
     command <<<
-        COUNTS="~{counts}" GENE_LENGTHS="~{gene_lengths}" OUTFILE="~{outfile_name}" python3 - <<END
-        import os  # lint-check: ignore
-
-        counts_file = open(os.environ['COUNTS'], 'r')
-        counts = {}
-        if "~{has_header}" == "true":
-            counts_file.readline()
-        for line in counts_file:
-            gene, count = line.split('\t')
-            if gene[0:2] == '__':
-                break
-            counts[gene.strip()] = int(count.strip())
-        counts_file.close()
-
-        lengths_file = open(os.environ['GENE_LENGTHS'], 'r')
-        rpks = {}  # Reads Per Kilobase
-        tot_rpk = 0
-        lengths_file.readline()  # discard header
-        for line in lengths_file:
-            gene, length = line.split('\t')
-            rpk = counts[gene.strip()] / int(length.strip()) * 1000
-            tot_rpk += rpk
-            rpks[gene.strip()] = rpk
-        lengths_file.close()
-
-        scaling_factor = tot_rpk / 1000000
-
-        sample_name = '.'.join(os.environ['OUTFILE'].split('.')[:-2])  # equivalent to ~{prefix}
-        outfile = open(os.environ['OUTFILE'], 'w')
-        print(f"feature\t{sample_name}", file=outfile)
-        for gene, rpk in sorted(rpks.items()):
-            tpm = rpk / scaling_factor
-            print(f"{gene}\t{tpm:.3f}", file=outfile)
-        outfile.close()
-        END
+        python3 /scripts/htseq/calc_tpm.py \
+            "~{counts}" \
+            "~{gene_lengths}" \
+            "~{outfile_name}" \
+            ~{if has_header then "--counts_has_header" else ""}
     >>>
 
     output {
@@ -209,7 +178,7 @@ task calc_tpm {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:2.3.3"
+        container: "ghcr.io/stjudecloud/util:2.4.0"
         maxRetries: 1
     }
 }

@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- Ported the python heredoc used in `htseq.calc_tpm` to a full script [#266](https://github.com/stjudecloud/workflows/pull/266)
 - Updated to the latest MultiQC (v1.31) which stabilized the `.parquet` output format file [#264](https://github.com/stjudecloud/workflows/pull/264).
 
 ## 2025 August
