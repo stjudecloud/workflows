@@ -125,7 +125,7 @@ task get_read_groups {
     #@ except: LineWidth
     command <<<
         set -euo pipefail
-        BAM="~{bam}" OUTFILE="read_groups.json" python - <<END
+        BAM="~{bam}" OUTFILE="read_groups.json" python - <<PYTHON
         import os  # lint-check: ignore
         import pysam  # lint-check: ignore
         import json  # lint-check: ignore
@@ -138,7 +138,7 @@ task get_read_groups {
             modified_header.append({k:v.upper() if k=='PL' else v for k,v in read_group.items()})
         json.dump(modified_header, out_file)
         out_file.close()
-        END
+        PYTHON
     >>>
 
     output {
