@@ -164,7 +164,7 @@ task calc_tpm {
     String outfile_name = prefix + ".TPM.txt"
 
     command <<<
-        python3 /scripts/util/calc_tpm.py \
+        python3 /scripts/htseq/calc_tpm.py \
             "~{counts}" \
             "~{gene_lengths}" \
             "~{outfile_name}" \
