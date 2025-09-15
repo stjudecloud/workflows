@@ -35,7 +35,7 @@ task compute_checksum {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.3.3"
+        container: "ghcr.io/stjudecloud/util:branch-python-2.3.3"
         maxRetries: 1
     }
 }
