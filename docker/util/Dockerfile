@@ -11,3 +11,4 @@ COPY --from=scripts --chmod=777 util/calc_global_phred_scores.py /scripts/util/c
 COPY --from=scripts --chmod=777 util/calc_gene_lengths.py /scripts/util/calc_gene_lengths.py
 COPY --from=scripts --chmod=777 util/check_FQs_and_RGs.py /scripts/util/check_FQs_and_RGs.py
 COPY --from=scripts --chmod=777 htseq/calc_tpm.py /scripts/htseq/calc_tpm.py
+COPY --from=scripts --chmod=777 read_group/get_read_groups.py /scripts/read_group/get_read_groups.py
