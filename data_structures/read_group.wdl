@@ -123,7 +123,7 @@ task get_read_groups {
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
-        python3 /scripts/read_group/get_read_groups.py \
+        python3 /scripts/data_structures/get_read_groups.py \
             "~{bam}" \
             read_groups.json
     >>>
