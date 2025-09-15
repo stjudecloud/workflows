@@ -104,6 +104,7 @@ workflow read_group_to_string {
 task get_read_groups {
     meta {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
+        warning: "This task will uppercase any lowercase `PL` values it finds, as is required by the [SAM specification](https://samtools.github.io/hts-specs/SAMv1.pdf)."
         outputs: {
             read_groups: "An array of `ReadGroup` structs containing read group information."
         }
