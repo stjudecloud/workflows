@@ -178,7 +178,7 @@ task calc_tpm {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:branch-python-2.3.3"
+        container: "ghcr.io/stjudecloud/util:branch-python-2.4.0"
         maxRetries: 1
     }
 }

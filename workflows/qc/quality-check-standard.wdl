@@ -505,7 +505,7 @@ task parse_input {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:branch-python-2.3.3"
+        container: "ghcr.io/stjudecloud/util:branch-python-2.4.0"
         maxRetries: 1
     }
 }
