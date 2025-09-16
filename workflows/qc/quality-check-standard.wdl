@@ -88,7 +88,7 @@ workflow quality_check_standard {
         File? gtf
         #@ except: LineWidth
         File multiqc_config
-            = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/inputs/multiqc_config_hg38.yaml"
+            = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/multiqc_config/multiqc_config.yaml"
         Array[File] extra_multiqc_inputs = []
         Array[File] coverage_beds = []
         Array[String] coverage_labels = []
