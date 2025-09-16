@@ -94,8 +94,17 @@ Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
 Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi
 : Index file for indel reference file from GATK reference bundle: `gs://genomics-public-data/resources/broad/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi`
 
+random10k.r1.fq.gz
+: 10,000 randomly generated read1 FASTQ reads. Generated with the [`fq` tool](https://github.com/stjude-rust-labs/fq). Gzipped.
+
+random10k.r2.fq.gz
+: 10,000 randomly generated read2 FASTQ reads. Generated with the [`fq` tool](https://github.com/stjude-rust-labs/fq). Gzipped.
+
 star_db.chrY_chrM.tar.gz
 : STAR database containing only the GRCh38 `chrY` and `chrM` contigs.
+
+test.PE.2_RGs.Aligned.out.sorted.bam
+: `random10k.r[1,2].fq.gz` and `test_R[1,2].fq.gz` aligned with STAR to `star_db.chrY_chrM.tar.gz` and then coordinate sorted.
 
 test_R1.fq.gz
 : 10,000 reads in FASTQ format. Can be used by itself to represent a Single-End sample or used with `test_R2.fq.gz` to represent a Paired-End sample.
