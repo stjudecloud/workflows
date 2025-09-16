@@ -148,9 +148,6 @@ test.extra_RG.bam
 test.fa
 : Truncated copies of `chr1`, `chr2`, and `chr3` from human reference genome v38.
 
-test.SE.2_RGs.Aligned.out.bam
-: Single-End BAM generated with STAR. There are two read groups, `rg1` and `rg2` which correspond to `test_R1.fq.gz` and `test_R1_copy.fq.gz`. Contains 20,000 reads mapped to the contigs `chrY` and `chrM`.
-
 test.tar.gz
 : A tarball with contents of `test_file_a` and `test_file_b` files.
 
