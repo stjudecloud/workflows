@@ -25,17 +25,14 @@ Aligned.sortedByCoord.chr9_chr22.bam
 Aligned.sortedByCoord.chr9_chr22.bam.bai
 : BAM index for `Aligned.sortedByCoord.chr9_chr22.bam`.
 
-bwa_db.tar.gz
-: BWA reference database built from `GRCh38.chrY_chrM.fa`
-
-chr1.interval_list
+chr1_chr19.interval_list
 : Intervals for `chr1` (and one interval from `chr19`) derived from `wgs_calling_regions.hg38.interval_list`
 
 combined_beta.csv
 : Combined beta values from `minfi` for two patient samples.
 
 filtered_beta.csv
-: Beta values from `minfi` filtered to the top N most differentially methylated probes.
+: Beta values from `minfi` filtered to the top 10K most differentially methylated probes.
 
 fusions.BCR_ABL1.tsv
 : A single called fusion from `arriba`.
@@ -62,7 +59,10 @@ GRCh38.chr1_chr19.fa.fai
 : FASTA index for GRCh38 reference containing `chr1` and `chr19` only
 
 GRCh38.chr9_chr22.fa.gz
-: FASTA format GRCh38 reference containing `chr9` and `chr22` only
+: FASTA format GRCh38 reference containing `chr9` and `chr22` only. Gzipped.
+
+GRCh38.chrY_chrM.bwa_db.tar.gz
+: BWA reference database built from `GRCh38.chrY_chrM.fa`
 
 GRCh38.chrY_chrM.dict
 : Sequence dictionary for GRCh38 reference containing `chrY` and `chrM` only
@@ -72,9 +72,6 @@ GRCh38.chrY_chrM.fa
 
 GRCh38.chrY_chrM.fa.fai
 : FASTA index for GRCh38 reference containing `chrY` and `chrM` only
-
-GRCh38.tar.gz
-: Cell ranger reference files for `chrY` and `chrM` from GRCh38. Includes FASTA file, GTF file, and STAR database. From the 2020-A release and for cellranger 7.1.0.
 
 Homo_sapiens_assembly38.dbsnp138.top5000.vcf
 : First 5000 records for hg38 from dbsnp version 138.
