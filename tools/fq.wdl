@@ -86,7 +86,7 @@ task fqlint {
     runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/fq:0.11.0--h9ee0642_0"
+        container: "quay.io/biocontainers/fq:0.12.0--h9ee0642_0"
         maxRetries: 1
     }
 }
@@ -166,7 +166,7 @@ task subsample {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/fq:0.11.0--h9ee0642_0"
+        container: "quay.io/biocontainers/fq:0.12.0--h9ee0642_0"
         maxRetries: 1
     }
 }
