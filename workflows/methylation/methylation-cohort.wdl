@@ -10,22 +10,28 @@ workflow methylation_cohort {
             filtered_probeset: "List of probe names that were retained after filtering to the top N highest standard deviation",
             umap_embedding: "UMAP embedding for all samples",
             umap_plot: "UMAP plot for all samples",
+            probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows and all of the input samples as columns.",
         }
         allowNestedInputs: true
     }
 
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
+        p_values: "Array of detection p-value files for each sample."
+        skip_pvalue_check: "Skip filtering based on p-values, even if `p_values` is supplied."
         num_probes: "Number of probes to use when filtering to the top `num_probes` probes with the highest standard deviation."
     }
 
     input {
         Array[File] unfiltered_normalized_beta
+        Array[File] p_values = []
+        Boolean skip_pvalue_check = false
         Int num_probes = 10000
     }
 
     Int max_length = 500
     Int beta_length = length(unfiltered_normalized_beta)
+    Int pval_length = length(p_values)
 
     if (beta_length > max_length){
         scatter (merge_num in range((beta_length / max_length) + 1)){
@@ -43,30 +49,76 @@ workflow methylation_cohort {
         }
         scatter (iter_index in range(length(bam_list))){
             call combine_data as inner_merge { input:
-                unfiltered_normalized_beta = select_all(bam_list[iter_index]),
+                files_to_combine = select_all(bam_list[iter_index]),
                 combined_file_name = "~{iter_index}.combined.csv",
-                modify_memory_gb = 25,
             }
         }
 
         call combine_data as final_merge { input:
-            unfiltered_normalized_beta = inner_merge.combined_beta,
+            files_to_combine = inner_merge.combined_file,
+            combined_file_name = "combined_beta.csv",
+        }
+
+        if (pval_length > 0 && !skip_pvalue_check){
+            # If p-values are provided, merge those as well
+            scatter (merge_num in range((pval_length / max_length) + 1)){
+                # Get the sublist of p-value files
+                scatter (pval_num in range(max_length)){
+                    Int num_p = (
+                        if merge_num > 0
+                        then pval_num + (merge_num * max_length)
+                        else pval_num
+                    )
+                    if (num_p < pval_length){
+                        File pval_list = p_values[num_p]
+                    }
+                }
+            }
+            scatter (iter_index in range(length(pval_list))){
+                call combine_data as inner_merge_pvals { input:
+                    files_to_combine = select_all(pval_list[iter_index]),
+                    combined_file_name = "~{iter_index}.pvals.combined.csv",
+                }
+            }
+
+            call combine_data as final_merge_pvals { input:
+                files_to_combine = inner_merge_pvals.combined_file,
+                combined_file_name = "combined_pvals.csv",
+            }
         }
     }
 
     if (beta_length <= max_length){
         call combine_data as simple_merge { input:
-            unfiltered_normalized_beta,
+            files_to_combine = unfiltered_normalized_beta,
+            combined_file_name = "combined_beta.csv",
+        }
+        if (pval_length > 0 && !skip_pvalue_check){
+            call combine_data as simple_merge_pval { input:
+                files_to_combine = p_values,
+                combined_file_name = "combined_pvals.csv",
+            }
         }
     }
+
+    File? pval_file = (
+        if (pval_length > 0 && !skip_pvalue_check)
+        then select_first(
+            [
+                final_merge_pvals.combined_file,
+                simple_merge_pval.combined_file,
+            ])
+        else None
+    )
 
     call filter_probes { input:
         beta_values = select_first(
             [
-                final_merge.combined_beta,
-                simple_merge.combined_beta,
+                final_merge.combined_file,
+                simple_merge.combined_file,
             ]
         ),
+        p_values = pval_file,
         num_probes,
     }
 
@@ -81,52 +133,59 @@ workflow methylation_cohort {
     output {
         File combined_beta = select_first(
             [
-                final_merge.combined_beta,
-                simple_merge.combined_beta,
+                final_merge.combined_file,
+                simple_merge.combined_file,
             ]
         )
         File filtered_beta = filter_probes.filtered_beta_values
         File filtered_probeset = filter_probes.filtered_probes
         File umap_embedding = generate_umap.umap
         File umap_plot = plot_umap.umap_plot
+        File? probe_pvalues = pval_file
     }
 }
 
 task combine_data {
     meta {
-        description: "Combine data from multiple samples"
+        description: "Combine data from multiple CSV files by column"
         outputs: {
-            combined_beta: "Combined beta values for all samples"
+            combined_file: "Combined CSV file"
         }
     }
 
     parameter_meta {
-        unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
+        files_to_combine: "Array of files with values for each sample. Each file is expected to have a list of probes in the first column with a header. Any additional columns are assumed to be sample values. The first column will be named `probe` in the output file."
         combined_file_name: "Name of the combined file"
+        simple_merge: "Use simple merge rather than batched read. Use this if different probesets are to be combined. The batched merge assumes that every sample uses the same set of probes and that the probes are ordered. If the probe set is different, then a simpler, but more memory intensive merge must be used."
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
     }
 
     input {
-        Array[File] unfiltered_normalized_beta
-        String combined_file_name = "combined_beta.csv"
+        Array[File] files_to_combine
+        String combined_file_name = "combined.csv"
+        Boolean simple_merge = false
         Int modify_memory_gb = 0
     }
 
-    Int memory_gb = ceil(size(unfiltered_normalized_beta, "GiB")) + modify_memory_gb + 2
-    Int disk_size_gb = ceil(size(unfiltered_normalized_beta, "GiB") * 2) + 2
+    Int memory_gb = ceil(size(files_to_combine, "GiB") *
+        if simple_merge then 2 else 1)
+        + modify_memory_gb
+        + 2
+    Int disk_size_gb = ceil(size(files_to_combine, "GiB") * 2) + 2
 
     command <<<
         python /scripts/methylation/combine.py \
             --output-name "~{combined_file_name}" \
-            ~{sep(" ", quote(unfiltered_normalized_beta))}
+            ~{if simple_merge then "--simple-merge" else ""} \
+            ~{sep(" ", quote(files_to_combine))}
     >>>
 
     output {
-        File combined_beta = combined_file_name
+        File combined_file = combined_file_name
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:2.2.1-5"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-6"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -146,13 +205,19 @@ task filter_probes {
 
     parameter_meta {
         beta_values: "Beta values for all samples"
+        p_values: "P-values for all samples"
         prefix: "Prefix for the output files. The extensions `.beta.csv` and `.probes.csv` will be appended."
+        pval_threshold: "P-value cutoff to determine poor quality probes"
+        pval_sample_fraction: "Fraction of samples that must exceed p-value threshold to exclude probe"
         num_probes: "Number of probes to retain after filtering"
     }
 
     input {
         File beta_values
+        File? p_values
         String prefix = "filtered"
+        Float pval_threshold = 0.01
+        Float pval_sample_fraction = 0.5
         Int num_probes = 10000
     }
 
@@ -163,6 +228,9 @@ task filter_probes {
             --output-name "~{prefix}.beta.csv" \
             --filtered-probes "~{prefix}.probes.csv" \
             --num-probes ~{num_probes} \
+            --pval-threshold ~{pval_threshold} \
+            --pval-sample-fraction ~{pval_sample_fraction} \
+            ~{"--pval '" + p_values + "'"} \
             "~{beta_values}"
     >>>
 
@@ -172,7 +240,7 @@ task filter_probes {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:2.2.1-5"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-6"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -211,7 +279,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/umap:0.5.7-8"
+        container: "ghcr.io/stjudecloud/umap:0.5.7-9"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -251,7 +319,7 @@ task plot_umap {
         cpu: 1
         memory: "4 GB"
         disks: "4 GB"
-        container: "ghcr.io/stjudecloud/python-plotting:2.0.4"
+        container: "ghcr.io/stjudecloud/python-plotting:2.0.5"
         maxRetries: 1
     }
 }

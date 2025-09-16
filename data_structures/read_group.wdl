@@ -104,6 +104,7 @@ workflow read_group_to_string {
 task get_read_groups {
     meta {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
+        warning: "This task will uppercase any lowercase `PL` values it finds, as is required by the [SAM specification](https://samtools.github.io/hts-specs/SAMv1.pdf)."
         outputs: {
             read_groups: "An array of `ReadGroup` structs containing read group information."
         }
@@ -122,23 +123,10 @@ task get_read_groups {
     Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
-    #@ except: LineWidth
     command <<<
-        set -euo pipefail
-        BAM="~{bam}" OUTFILE="read_groups.json" python - <<END
-        import os  # lint-check: ignore
-        import pysam  # lint-check: ignore
-        import json  # lint-check: ignore
-        sam = pysam.AlignmentFile(os.environ["BAM"], "rb")
-
-        out_file = open(os.environ["OUTFILE"], "w")
-        header = sam.header.to_dict()["RG"]
-        modified_header = []
-        for read_group in sorted(header, key=lambda d: d['ID']):
-            modified_header.append({k:v.upper() if k=='PL' else v for k,v in read_group.items()})
-        json.dump(modified_header, out_file)
-        out_file.close()
-        END
+        python3 /scripts/data_structures/get_read_groups.py \
+            "~{bam}" \
+            read_groups.json
     >>>
 
     output {
@@ -146,9 +134,8 @@ task get_read_groups {
     }
 
     runtime {
-        memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/pysam:0.22.0--py38h15b938a_1"
+        container: "ghcr.io/stjudecloud/util:2.4.0"
         maxRetries: 1
     }
 }
@@ -366,7 +353,7 @@ task validate_read_group {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.3.3"
+        container: "ghcr.io/stjudecloud/util:2.4.0"
         maxRetries: 1
     }
 }
@@ -419,7 +406,7 @@ task inner_read_group_to_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.3.3"
+        container: "ghcr.io/stjudecloud/util:2.4.0"
         maxRetries: 1
     }
 }

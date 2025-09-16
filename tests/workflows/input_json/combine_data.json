@@ -1,6 +1,7 @@
 {
-    "combine_data.unfiltered_normalized_beta": [
+    "combine_data.files_to_combine": [
         "../../input/201533520001_R01C01.beta_swan_norm_unfiltered.genomic.csv",
         "../../input/201533520001_R03C01.beta_swan_norm_unfiltered.genomic.csv"
-    ]
+    ],
+    "combine_data.combined_file_name": "combined_beta.csv"
 }

@@ -41,6 +41,11 @@ dir <- getwd()
 rg_set <- read.metharray(args$idat_base, verbose = TRUE, force = TRUE)
 saveRDS(rg_set, paste0(args$out_base, ".RGSet.rds"))
 
+# Generate detection p-values for all probed positions
+det_p <- detectionP(rg_set)
+det_p <-
+  det_p[order(rownames(det_p)), , drop = FALSE]
+
 # The manifest is needed by preprocessRAW
 manifest <- getManifest(rg_set)
 manifest
@@ -105,3 +110,14 @@ write.csv(
   beta_swan_norm,
   paste0(args$out_base, ".beta_swan_norm_unfiltered.genomic.csv")
 )
+
+genomic_probes <- rownames(beta_swan_norm)
+all_probes <- rownames(det_p)
+non_genomic_probes <- setdiff(all_probes, genomic_probes)
+
+# Filter probe p-values to only those with genomic coordinates
+det_p <- det_p[!(row.names(det_p) %in% non_genomic_probes), , drop = FALSE]
+det_p <-
+  det_p[order(rownames(det_p)), , drop = FALSE]
+
+write.csv(det_p, paste0(args$out_base, ".detectionP.csv"))
