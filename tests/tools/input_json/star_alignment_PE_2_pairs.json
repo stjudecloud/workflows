@@ -1,16 +1,16 @@
 {
     "alignment.read_one_fastqs_gz": [
         "../../input/test_R1.fq.gz",
-        "../../input/test_R1_copy.fq.gz"
+        "../../input/random10k.r1.fq.gz"
     ],
     "alignment.read_two_fastqs_gz": [
         "../../input/test_R2.fq.gz",
-        "../../input/test_R2_copy.fq.gz"
+        "../../input/random10k.r2.fq.gz"
     ],
     "alignment.star_db_tar_gz": "../../input/star_db.chrY_chrM.tar.gz",
     "alignment.prefix": "test",
     "alignment.read_groups": [
         "ID:test SM:test PL:ILLUMINA",
-        "ID:copy"
+        "ID:random"
     ]
 }
