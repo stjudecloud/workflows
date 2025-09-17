@@ -44,9 +44,9 @@ Combined beta values from `minfi` for two patient samples.
 
 The result of passing `empty.r[1,2].fq.gz` into STAR alignment.
 
-## empty.chrY_chrM.bwa_aln.bam
+## empty.chrY_chrM.bwa_aln.SE.bam
 
-The result of passing `empty.r[1,2].fq.gz` into BWA aln alignment.
+The result of passing `empty.r1.fq.gz` into BWA aln Single-End alignment.
 
 ## empty.r1.fq.gz
 
