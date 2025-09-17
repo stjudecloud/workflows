@@ -33,7 +33,7 @@ jobs:
     - name: Build Sprocket
       if: matrix.runner == 'sprocket'
       run: |
-        cargo install --git https://github.com/peterhuene/sprocket --branch fix-perms
+        cargo install sprocket --locked
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
