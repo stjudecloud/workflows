@@ -1,5 +1,6 @@
 # Ignore common bioinformatics formats used in these workflows.
 **/*.fastq.gz
+**/*.fq.gz
 **/*.fa
 **/*.gtf
 **/*.bam
