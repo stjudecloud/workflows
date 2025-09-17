@@ -108,6 +108,10 @@ FASTA format GRCh38 reference containing `chrY` and `chrM` only
 
 FASTA index for GRCh38 reference containing `chrY` and `chrM` only
 
+## GRCh38.chrY_chrM.fa.gz
+
+Gzipped `GRCh38.chrY_chrM.fa`
+
 ## Homo_sapiens_assembly38.dbsnp138.top5000.vcf
 
 First 5000 records for hg38 from dbsnp version 138.
