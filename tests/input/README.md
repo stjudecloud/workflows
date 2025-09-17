@@ -40,6 +40,14 @@ Intervals for `chr1` (and one interval from `chr19`) derived from `wgs_calling_r
 
 Combined beta values from `minfi` for two patient samples.
 
+## empty.r1.fq.gz
+
+A gzipped FASTQ file without any reads inside.
+
+## empty.r2.fq.gz
+
+A gzipped FASTQ file without any reads inside.
+
 ## filtered_beta.csv
 
 Beta values from `minfi` filtered to the top 10K most differentially methylated probes.
