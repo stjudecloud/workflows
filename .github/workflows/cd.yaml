@@ -21,7 +21,7 @@ jobs:
       - name: Build Docs
         run: |
           cd $GITHUB_WORKSPACE/workflows
-          sprocket dev doc -v --homepage assets/DOCS.md .
+          sprocket dev doc -v --homepage assets/DOCS.md --prioritize-workflows-view .
           cp -r assets docs/
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
