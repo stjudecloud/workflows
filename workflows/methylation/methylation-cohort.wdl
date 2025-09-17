@@ -279,7 +279,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/umap:0.5.7-9"
+        container: "ghcr.io/stjudecloud/umap:0.5.7-10"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -319,7 +319,7 @@ task plot_umap {
         cpu: 1
         memory: "4 GB"
         disks: "4 GB"
-        container: "ghcr.io/stjudecloud/python-plotting:2.0.5"
+        container: "ghcr.io/stjudecloud/python-plotting:2.0.6"
         maxRetries: 1
     }
 }

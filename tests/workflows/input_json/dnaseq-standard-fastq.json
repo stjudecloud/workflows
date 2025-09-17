@@ -14,5 +14,5 @@
             "LB": "Sample"
         }
     ],
-    "dnaseq_standard_fastq_experimental.bwa_db": "../../input/bwa_db.tar.gz"
+    "dnaseq_standard_fastq_experimental.bwa_db": "../../input/GRCh38.chrY_chrM.bwa_db.tar.gz"
 }
