@@ -40,9 +40,13 @@ Intervals for `chr1` (and one interval from `chr19`) derived from `wgs_calling_r
 
 Combined beta values from `minfi` for two patient samples.
 
-## empty.Aligned.out.bam
+## empty.chrY_chrM.Aligned.out.bam
 
 The result of passing `empty.r[1,2].fq.gz` into STAR alignment.
+
+## empty.chrY_chrM.bwa_aln.bam
+
+The result of passing `empty.r[1,2].fq.gz` into BWA aln alignment.
 
 ## empty.r1.fq.gz
 
