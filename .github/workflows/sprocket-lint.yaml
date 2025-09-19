@@ -6,11 +6,8 @@ jobs:
     sprocket_lint:
         runs-on: ubuntu-latest
         steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v4
         - name: Run sprocket
           uses: stjude-rust-labs/sprocket-action@main
           with:
             lint: true
-            deny-notes: true
-            except: ContainerUri
-            exclude-patterns: template
