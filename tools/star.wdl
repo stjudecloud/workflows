@@ -845,7 +845,7 @@ task alignment {
             --chimNonchimScoreDropMin ~{chim_nonchim_score_drop_min} \
             --twopass1readsN ~{twopass1_reads_n}
 
-        rm -r star_db "~{prefix}._*
+        rm -r star_db "~{prefix}._*"
     >>>
 
     output {
