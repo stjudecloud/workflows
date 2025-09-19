@@ -1,10 +1,12 @@
 # Ignore common bioinformatics formats used in these workflows.
-**/*.fastq.gz
-**/*.fa
-**/*.gtf
-**/*.bam
-**/*.sam
-**/*.log
+/*.fastq.gz
+/*.fq.gz
+/*.fa
+/*.gtf
+/*.bam
+/*.bai
+/*.sam
+/*.log
 
 # Ignore Cromwell, Womtool, Sprocket, and miniwdl files
 **/cromwell*
