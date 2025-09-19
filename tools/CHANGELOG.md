@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- Added `rm` statements to clean up temporary files at the end of `bwa` and `star` tasks [#269](https://github.com/stjudecloud/workflows/pull/268)
 - Bumped `fq` versions from `0.11.0` to `0.12.0` [#261](https://github.com/stjudecloud/workflows/pull/261).
 - Ported the python heredoc used in `htseq.calc_tpm` to a full script [#266](https://github.com/stjudecloud/workflows/pull/266)
 - Updated to the latest MultiQC (v1.31) which stabilized the `.parquet` output format file [#264](https://github.com/stjudecloud/workflows/pull/264).
