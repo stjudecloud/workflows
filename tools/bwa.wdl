@@ -78,7 +78,7 @@ task bwa_aln {
             | samtools view --threads "$samtools_cores" -hb - \
             > "~{output_bam}"
 
-        rm -r bwa_db
+        rm -r bwa_db sai
     >>>
 
     output {

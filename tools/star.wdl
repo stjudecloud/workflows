@@ -844,6 +844,8 @@ task alignment {
             --chimMultimapScoreRange ~{chim_multimap_score_range} \
             --chimNonchimScoreDropMin ~{chim_nonchim_score_drop_min} \
             --twopass1readsN ~{twopass1_reads_n}
+
+        rm -r star_db "~{prefix}._*
     >>>
 
     output {
