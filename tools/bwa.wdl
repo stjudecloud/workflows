@@ -337,9 +337,9 @@ task build_bwa_db {
 
         bwa index "$ref_fasta"
 
-        tar -czf "~{bwa_db_out_name}" "$ref_fasta"*
-
         rm "$ref_fasta"
+
+        tar -czf "~{bwa_db_out_name}" "$ref_fasta"*
     >>>
 
     output {
