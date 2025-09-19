@@ -78,7 +78,7 @@ task bwa_aln {
             | samtools view --threads "$samtools_cores" -hb - \
             > "~{output_bam}"
 
-        rm -r bwa_db
+        rm -r bwa_db sai
     >>>
 
     output {
@@ -338,8 +338,6 @@ task build_bwa_db {
         bwa index "$ref_fasta"
 
         tar -czf "~{bwa_db_out_name}" "$ref_fasta"*
-
-        rm "$ref_fasta"
     >>>
 
     output {

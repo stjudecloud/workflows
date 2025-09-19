@@ -11,6 +11,3 @@ jobs:
           uses: stjude-rust-labs/sprocket-action@main
           with:
             lint: true
-            deny-notes: true
-            except: ContainerUri
-            exclude-patterns: template

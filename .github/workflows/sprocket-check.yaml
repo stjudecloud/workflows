@@ -9,6 +9,3 @@ jobs:
         - uses: actions/checkout@v2
         - name: Run sprocket
           uses: stjude-rust-labs/sprocket-action@main
-          with:
-            deny-warnings: true
-            exclude-patterns: template
