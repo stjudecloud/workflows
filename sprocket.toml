@@ -1,4 +1,5 @@
 [check]
+all_lint_rules = true
 except = ["ContainerUri"]
 deny_notes = true
 
