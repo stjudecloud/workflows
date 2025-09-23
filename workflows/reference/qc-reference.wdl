@@ -23,8 +23,14 @@ workflow qc_reference {
         reference_fa_name: "Name of output reference FASTA file"
         gtf_url: "URL to retrieve the reference GTF file from"
         gtf_name: "Name of output GTF file"
-        kraken_fastas: "Array of gzipped FASTA files. Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`"
-        kraken_fasta_urls: "URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database. This allows the addition of individual genomes (or other sequences) of interest."
+        kraken_fastas: {
+            description: "Array of gzipped FASTA files.",
+            help: "Each sequence's ID must contain either an NCBI accession number or an explicit assignment of the taxonomy ID using `kraken:taxid`",
+        }
+        kraken_fasta_urls: {
+            description: "URLs for any additional FASTA files in NCBI format to download and include in the Kraken2 database.",
+            help: "This allows the addition of individual genomes (or other sequences) of interest.",
+        }
         kraken_libraries: {
             description: "List of kraken libraries to download",
             choices: [

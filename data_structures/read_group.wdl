@@ -74,7 +74,10 @@ workflow read_group_to_string {
     parameter_meta {
         read_group: "Input `ReadGroup` struct"
         required_fields: "Array of read group fields that must be defined. The ID field is always required and does not need to be specified."
-        format_as_sam_record: "Format the `ReadGroup` as a SAM record? If `true`, the read group string will be prefixed with `@RG` and tab delimiters will be used instead of space delimiters."
+        format_as_sam_record: {
+            description: "Format the `ReadGroup` as a SAM record?",
+            help: "If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters.",
+        }
         restrictive: "If true, run a stricter validation of field values. Otherwise, check against SAM spec-defined values."
     }
 
@@ -369,7 +372,10 @@ task inner_read_group_to_string {
 
     parameter_meta {
         read_group: "`ReadGroup` struct to stringify"
-        format_as_sam_record: "Format the `ReadGroup` as a SAM record? If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters."
+        format_as_sam_record: {
+            description: "Format the `ReadGroup` as a SAM record?",
+            help: "If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters.",
+        }
     }
 
     input {

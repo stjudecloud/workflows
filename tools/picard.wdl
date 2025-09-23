@@ -29,7 +29,10 @@ task mark_duplicates {
                 "RANDOM",
             ],
         }
-        read_name_regex: "Regular expression for extracting tile names, x coordinates, and y coordinates from read names. The default works for typical Illumina read names."
+        read_name_regex: {
+            description: "Regular expression for extracting tile names, x coordinates, and y coordinates from read names.",
+            help: "The default works for typical Illumina read names.",
+        }
         tagging_policy: {
             description: "Tagging policy for the output BAM.",
             choices: [
@@ -52,10 +55,13 @@ task mark_duplicates {
             group: "Common",
         }
         clear_dt: "Clear the `DT` tag from the input BAM? For increased performance, if the input BAM does not have the `DT` tag, set to `false`."
-        remove_duplicates: "Remove duplicate reads from the output BAM? If `true`, the output BAM will not contain any duplicate reads."
-        remove_sequencing_duplicates: "Remove sequencing duplicates (i.e. optical duplicates) from the output BAM? If `true`, the output BAM will not contain any sequencing duplicates (optical duplicates)."
-        optical_distance: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`."
-        modify_memory_gb: "Add to or subtract from the default memory allocation. Default memory allocation is determined by the size of the input BAM. Specified in GB."
+        remove_duplicates: "Remove duplicate reads from the output BAM?"
+        remove_sequencing_duplicates: "Remove sequencing duplicates (i.e. optical duplicates) from the output BAM?"
+        optical_distance: {
+            description: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. ",
+            help: "Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`.",
+        }
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 
@@ -364,7 +370,10 @@ task merge_sam_files {
             ],
             tool_default: "STRICT",
         }
-        threading: "Option to create a background thread to encode, compress and write to disk the output file. The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file. **Sets `runtime.cpu = 2` if `true`. `runtime.cpu = 1` if `false`.**"
+        threading: {
+            description: "Option to create a background thread to encode, compress, and write the output file to disk.",
+            help: "The threaded version uses about 20% more CPU and decreases runtime by ~20% when writing out a compressed BAM file. **Sets `runtime.cpu = 2` if `true`. `runtime.cpu = 1` if `false`.**",
+        }
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -487,7 +496,8 @@ task clean_sam {
 
 task collect_wgs_metrics {
     meta {
-        description: "Runs `picard CollectWgsMetrics` to collect metrics about the fractions of reads that pass base- and mapping-quality filters as well as coverage (read-depth) levels"
+        description: "Runs `picard CollectWgsMetrics`."
+        help: "Collects metrics about the fractions of reads that pass base- and mapping-quality filters as well as coverage (read-depth) levels"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037226132-CollectWgsMetrics-Picard-"
         outputs: {
             wgs_metrics: {
@@ -550,7 +560,8 @@ task collect_wgs_metrics {
 
 task collect_alignment_summary_metrics {
     meta {
-        description: "Runs `picard CollectAlignmentSummaryMetrics` to calculate metrics detailing the quality of the read alignments as well as the proportion of the reads that passed machine signal-to-noise threshold quality filters"
+        description: "Runs `picard CollectAlignmentSummaryMetrics`."
+        help: "Calculates metrics detailing the quality of the read alignments as well as the proportion of the reads that passed machine signal-to-noise threshold quality filters."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360040507751-CollectAlignmentSummaryMetrics-Picard-"
         outputs: {
             alignment_metrics: {
@@ -683,7 +694,8 @@ task collect_gc_bias_metrics {
 
 task collect_insert_size_metrics {
     meta {
-        description: "Runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction including the insert size distribution and read orientation of Paired-End libraries"
+        description: "Runs `picard CollectInsertSizeMetrics` to collect metrics for validating library construction."
+        help: "Metrics include the insert size distribution and read orientation of Paired-End libraries."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037055772-CollectInsertSizeMetrics-Picard-"
         outputs: {
             insert_size_metrics: {

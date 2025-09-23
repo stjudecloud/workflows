@@ -33,7 +33,8 @@ workflow chipseq_standard_experimental {
 
     parameter_meta {
         bam: "Input BAM format file to realign with bowtie"
-        bowtie_indexes: "Database of v1 reference files for the bowtie aligner. Can be generated with https://github.com/stjude/seaseq/blob/master/workflows/tasks/bowtie.wdl. [*.ebwt]"
+        #@ except: DescriptionLength
+        bowtie_indexes: "Database of v1 reference files for the bowtie aligner. Can be generated with https://github.com/stjude/seaseq/blob/master/workflows/tasks/bowtie.wdl."
         excludelist: "Optional list of regions that will be excluded after reference alignment"
         prefix: "Prefix for output files"
         enable_read_trimming: "Enable read trimming with `fastp`?"

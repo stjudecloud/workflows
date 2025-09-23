@@ -6,7 +6,7 @@ import "../../tools/picard.wdl"
 workflow rnaseq_variant_calling {
     meta {
         name: "RNA-Seq Variant Calling"
-        description: "Call short germline variants from RNA-Seq data. Produces a VCF file of variants. Based on GATK RNA-Seq short variant calling best practices pipeline."
+        description: "Call short germline variants from RNA-Seq data. Based on GATK RNA-Seq short variant calling best practices pipeline."
         category: "Variant Calling"
         outputs: {
             recalibrated_bam: "BAM that has undergone recalibration of base quality scores",
@@ -30,7 +30,10 @@ workflow rnaseq_variant_calling {
         known_vcf_indexes: "Array of index files for known indels VCF files"
         prefix: "Prefix for the output files."
         bam_is_dup_marked: "Whether the input BAM file has duplicates marked."
-        scatter_count: "Number of intervals to scatter over. This should typically be set to 5-20. Higher values will increase parallelism and speed up the workflow, but increase overhead in provisioning resources."
+        scatter_count: {
+            description: "Number of intervals to scatter over. This should typically be set to 5-20.",
+            help: "Higher values will increase parallelism and speed up the workflow, but increase overhead in provisioning resources.",
+        }
     }
 
     input {

@@ -172,7 +172,10 @@ task add_to_bam_header {
 
     parameter_meta {
         bam: "Input BAM format file which will have its header added to"
-        additional_header: "A string to add as a new line in the BAM header. No format checking is done, so please ensure you do not invalidate your BAM with this task. Add only spec compliant entries to the header."
+        additional_header: {
+            description: "A string to add as a new line in the BAM header.",
+            warning: "No format checking is done, so please ensure you do not invalidate your BAM with this task. Add only spec compliant entries to the header.",
+        }
         prefix: "Prefix for the reheadered BAM. The extension `.bam` will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

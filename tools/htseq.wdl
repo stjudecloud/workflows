@@ -6,7 +6,10 @@ task count {
     meta {
         description: "Performs read counting for a set of features in the input BAM file"
         outputs: {
-            feature_counts: "A two column TSV file. First column is feature names and second column is counts. Presence of a header is determined by the `include_custom_header` parameter."
+            feature_counts: {
+                description: "A two column TSV file. First column is feature names and second column is counts.",
+                help: "Presence of a header is determined by the `include_custom_header` parameter.",
+            }
         }
     }
 
@@ -41,11 +44,13 @@ task count {
             ],
         }
         include_custom_header: {
-            description: "Include a custom header for the output file? This is not an official feature of HTSeq. If true, the first line of the output file will be `~{idattr}\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format.",
+            description: "Include a custom header for the output file? This is not an official feature of HTSeq. ",
+            warning: "If true, the first line of the output file will be `~{idattr}\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format.",
             group: "Common",
         }
         pos_sorted: {
-            description: "Is the BAM position sorted (true) or name sorted (false)? It is **highly** recommended to use a name sorted BAM file. This is because HTSeq will re-sort position-sorted BAMs with an inefficient algorithm, causing very large memory and disk space allocations (especially for large BAMs).",
+            description: "Is the BAM position sorted (true) or name sorted (false)?",
+            warning: "It is **highly** recommended to use a name sorted BAM file. This is because HTSeq will re-sort position-sorted BAMs with an inefficient algorithm, causing very large memory and disk space allocations (especially for large BAMs).",
             group: "Common",
         }
         nonunique: {
@@ -141,22 +146,29 @@ task count {
 
 task calc_tpm {
     meta {
-        description: "Given a gene counts file and a gene lengths file, calculate Transcripts Per Million (TPM)"
+        description: "Given a features counts file and a feature lengths file, calculate Transcripts Per Million (TPM)"
         outputs: {
             tpm_file: "Transcripts Per Million (TPM) file. A two column headered TSV file."
         }
     }
 
     parameter_meta {
-        counts: "A two column TSV file with gene names in the first column and counts (as integers) in the second column. Entries starting with '__' will be discarded. Can be generated with the `count` task."
-        gene_lengths: "A two column headered TSV file with gene names (matching those in the `counts` file) in the first column and feature lengths (as integers) in the second column. Can be generated with the `calc_gene_lengths` task in `util.wdl`."
+        counts: {
+            description: "A two column TSV file with features in the first column and counts (as integers) in the second column.",
+            help: "Entries starting with '__' will be discarded. Can be generated with the `count` task.",
+        }
+        feature_lengths: {
+            description: "A two column headered TSV file with features in the first column and feature lengths (as integers) in the second column.",
+            warning: "Features in the first column **must** match those in `counts` file.",
+            help: "Can be generated with the `calc_gene_lengths` task in `util.wdl`.",
+        }
         prefix: "Prefix for the TPM file. The extension `.TPM.txt` will be added."
         has_header: "Does the `counts` file have a header line? If true, the first line will be ignored."
     }
 
     input {
         File counts
-        File gene_lengths
+        File feature_lengths
         String prefix = basename(counts, ".feature-counts.txt")
         Boolean has_header = true
     }
@@ -166,7 +178,7 @@ task calc_tpm {
     command <<<
         python3 /scripts/htseq/calc_tpm.py \
             "~{counts}" \
-            "~{gene_lengths}" \
+            "~{feature_lengths}" \
             "~{outfile_name}" \
             ~{if has_header then "--counts_has_header" else ""}
     >>>
