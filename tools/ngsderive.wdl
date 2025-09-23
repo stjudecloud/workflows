@@ -371,7 +371,7 @@ task endedness {
         }
         paired_deviance: {
             description: "Distance from 0.5 split between number of f+l- reads and f-l+ reads allowed to be called 'Paired-End'.",
-            help: "Default of `0.0` only appropriate if the whole file is being processed.",
+            warning: "Default of `0.0` only appropriate if the whole file is being processed.",
             group: "Common",
         }
         num_reads: {

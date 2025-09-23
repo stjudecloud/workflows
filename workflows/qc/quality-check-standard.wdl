@@ -111,11 +111,12 @@ workflow quality_check_standard {
         use_all_cores: "Use all cores? Recommended for cloud environments."
         optical_distance: {
             description: "Maximum distance between read coordinates to consider them optical duplicates instead of library duplicates (e.g. PCR duplicates).",
-            help: "If `mark_duplicates == false`, this parameter is ignored. If `0`, then _optical_ duplicate marking is disabled and only traditional duplicate marking will be performed. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without a custom regex for tile-data extraction. Review the `mark_duplicates` task in `../../tools/picard.wdl` for more information.",
+            help: "If `mark_duplicates == false`, this parameter is ignored. If `0`, then _optical_ duplicate marking is disabled and only traditional duplicate marking will be performed. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Review the `mark_duplicates` task in `../../tools/picard.wdl` for more information.",
+            warning: "Calculation of distance depends on coordinate data embedded in the read names, typically produced by Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without a custom regex for tile-data extraction.",
         }
         subsample_n_reads: {
             description: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input.",
-            help: "Subsampling is done probabalistically so the exact number of reads in the output will have some variation.",
+            warning: "Subsampling is done probabalistically so the exact number of reads in the output will have some variation.",
         }
     }
 

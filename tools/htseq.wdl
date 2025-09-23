@@ -44,8 +44,8 @@ task count {
             ],
         }
         include_custom_header: {
-            description: "Include a custom header for the output file? This is not an official feature of HTSeq. ",
-            warning: "If true, the first line of the output file will be `~{idattr}\t~{prefix}`. This may break downstream tools that expect the typical headerless HTSeq output format.",
+            description: "Include a custom header for the output file? If true, the first line of the output file will be `~{idattr}\t~{prefix}`.",
+            warning: "This is not an official feature of HTSeq. This may break downstream tools that expect the typical headerless HTSeq output format.",
             group: "Common",
         }
         pos_sorted: {
@@ -160,7 +160,7 @@ task calc_tpm {
         feature_lengths: {
             description: "A two column headered TSV file with features in the first column and feature lengths (as integers) in the second column.",
             warning: "Features in the first column **must** match those in `counts` file.",
-            help: "Can be generated with the `calc_gene_lengths` task in `util.wdl`.",
+            help: "Can be generated with the `calc_feature_lengths` task in `util.wdl`.",
         }
         prefix: "Prefix for the TPM file. The extension `.TPM.txt` will be added."
         has_header: "Does the `counts` file have a header line? If true, the first line will be ignored."

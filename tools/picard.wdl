@@ -55,11 +55,12 @@ task mark_duplicates {
             group: "Common",
         }
         clear_dt: "Clear the `DT` tag from the input BAM? For increased performance, if the input BAM does not have the `DT` tag, set to `false`."
-        remove_duplicates: "Remove duplicate reads from the output BAM?"
-        remove_sequencing_duplicates: "Remove sequencing duplicates (i.e. optical duplicates) from the output BAM?"
+        remove_duplicates: "Remove all duplicate reads from the output BAM?"
+        remove_sequencing_duplicates: "Remove only sequencing duplicates (i.e. optical duplicates) from the output BAM?"
         optical_distance: {
             description: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. ",
-            help: "Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`.",
+            help: "Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines.",
+            warning: "Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`.",
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."

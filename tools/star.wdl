@@ -227,8 +227,7 @@ task alignment {
         clip_3p_after_adapter_n_bases: "number of bases to clip from 3p of each mate after the adapter clipping. `left` applies to read one and `right` applies to read two."
         clip_5p_n_bases: "number of bases to clip from 5p of each mate. `left` applies to read one and `right` applies to read two."
         prefix: {
-            #@ except: DescriptionLength
-            description: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added.",
+            description: "Prefix for the STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added.",
             help: "See `../README.md` for more information on the default prefix evaluation.",
             group: "Common",
         }
@@ -415,8 +414,10 @@ task alignment {
         read_quality_score_base: "number to be subtracted from the ASCII code to get Phred quality score"
         limit_out_sj_one_read: "max number of junctions for one read (including all multi-mappers)"
         limit_out_sj_collapsed: "max number of collapsed junctions"
-        #@ except: DescriptionLength
-        limit_sjdb_insert_n_sj: "maximum number of junction to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run"
+        limit_sjdb_insert_n_sj: {
+            description: "maximum number of junction to be inserted to the genome on the fly at the mapping stage",
+            help: "includes those from annotations and those detected in the 1st step of the 2-pass run",
+        }
         out_QS_conversion_add: "add this number to the quality score (e.g. to convert from Illumina to Sanger, use -31)"
         out_sam_attr_IH_start: "start value for the IH attribute. 0 may be required by some downstream software, such as Cufflinks or StringTie."
         out_sam_mapq_unique: {

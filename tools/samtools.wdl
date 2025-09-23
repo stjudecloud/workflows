@@ -532,7 +532,7 @@ task merge {
         }
         combine_pg: {
             description: "If true, for each @PG ID in the set of files to merge use the @PG line of the first file we find.",
-            help: "If false, add a suffix to differentiate similar PG IDs.",
+            help: "If false, add a random suffix to differentiate similar PG IDs.",
             group: "Common",
         }
         use_all_cores: {

@@ -85,7 +85,7 @@ task split_string {
     }
 }
 
-task calc_gene_lengths {
+task calc_feature_lengths {
     meta {
         description: "Calculate gene lengths from a GTF feature file using the non-overlapping exonic length algorithm"
         help: "The non-overlapping exonic length algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
@@ -115,7 +115,7 @@ task calc_gene_lengths {
     Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
-        python3 /scripts/util/calc_gene_lengths.py \
+        python3 /scripts/util/calc_feature_lengths.py \
             --id_attr "~{idattr}" \
             "~{gtf}" \
             "~{outfile_name}"
