@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- `calc_gene_lengths` in `util.wdl` was renamed to `calc_feature_lengths` [#269](https://github.com/stjudecloud/workflows/pull/269)
 - `calc_tpm` task in `htseq.wdl` had the `gene_lengths` input renamed to `feature_lengths` [#269](https://github.com/stjudecloud/workflows/pull/269)
 - Added `rm` statements to clean up temporary files at the end of `bwa` and `star` tasks [#268](https://github.com/stjudecloud/workflows/pull/268)
 - Bumped `fq` versions from `0.11.0` to `0.12.0` [#261](https://github.com/stjudecloud/workflows/pull/261).
