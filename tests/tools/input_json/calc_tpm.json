@@ -1,4 +1,4 @@
 {
     "calc_tpm.counts": "../../input/test.bwa_aln_pe.chrY_chrM.feature-counts.txt",
-    "calc_tpm.gene_lengths": "../../input/gencode.v31.chrY_chrM.genelengths.txt"
+    "calc_tpm.feature_lengths": "../../input/gencode.v31.chrY_chrM.genelengths.txt"
 }
