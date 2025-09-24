@@ -146,7 +146,7 @@ task count {
 
 task calc_tpm {
     meta {
-        description: "Given a features counts file and a feature lengths file, calculate Transcripts Per Million (TPM)"
+        description: "Given a feature counts file and a feature lengths file, calculate Transcripts Per Million (TPM)"
         outputs: {
             tpm_file: "Transcripts Per Million (TPM) file. A two column headered TSV file."
         }
