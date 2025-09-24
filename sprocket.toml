@@ -1,6 +1,6 @@
 [check]
 all_lint_rules = true
-except = ["ContainerUri"]
+except = ["ContainerUri", "UnknownRule"]
 deny_notes = true
 
 [run.task]
