@@ -87,15 +87,15 @@ task split_string {
 
 task calc_feature_lengths {
     meta {
-        description: "Calculate gene lengths from a GTF feature file using the non-overlapping exonic length algorithm"
+        description: "Calculate feature lengths from a GTF file using the non-overlapping exonic length algorithm"
         help: "The non-overlapping exonic length algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
         outputs: {
-            feature_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
+            feature_lengths: "A two column headered TSV file with feature names in the first column and feature lengths (as integers) in the second column"
         }
     }
 
     parameter_meta {
-        gtf: "GTF feature file"
+        gtf: "Gzipped GTF file"
         outfile_name: "Name of the gene lengths file"
         idattr: {
             description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.",
