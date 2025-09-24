@@ -107,7 +107,7 @@ task validate_string_is_12bit_int {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.4.1"
+        container: "ghcr.io/stjudecloud/util:3.0.0"
         maxRetries: 1
     }
 }
