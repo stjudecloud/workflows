@@ -43,7 +43,7 @@ workflow quality_check_standard {
                 description: "Detailed Kraken2 output that has been gzipped. Only present if `store_kraken_sequences == true`.",
                 external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#standard-kraken-output-format",
             },
-            comparative_kraken_sequences: "Detailed Kraken2 output for only the alternatively filtered reads. Only present if `run_comparative_kraken == true && store_kraken_sequences == true`.",
+            comparative_kraken_sequences: "Detailed Kraken2 output for only the alternatively filtered reads. Only present if `run_comparative_kraken && store_kraken_sequences`.",
             junctions: "TSV file containing a detailed list of annotated junctions. Only present if `rna == true`.",
             intermediate_files: "Any and all files produced as intermediate during pipeline processing. Only populated if `output_intermediate_files == true`.",
         }
@@ -57,13 +57,35 @@ workflow quality_check_standard {
         gtf: "GTF features file. Gzipped or uncompressed. **Required** for RNA-Seq data."
         multiqc_config: "YAML file for configuring MultiQC"
         extra_multiqc_inputs: "An array of additional files to pass directly into MultiQC"
-        coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions. Any regional analysis enabled by this option is _in addition_ to whole genome coverage, which is calculated regardless of this setting. An exon BED and a Coding Sequence BED are examples of regions you may wish to restrict coverage analysis to. BED files meant for this coverage restriction can be created with the workflow in `../reference/qc-reference.wdl`."
-        coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used. If using the BEDs created by `../reference/qc-reference.wdl`, the labels [\"exon\", \"CDS\", \"UTR\"] are appropriate. Make sure to provide the coverage BEDs **in the same order** as the labels."
-        standard_filter: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2 and `librarian` (if `run_librarian == true`). This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the created FASTQs. **WARNING:** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults. **WARNING:** If you have set `run_librarian` to `true`, we **strongly** recommend leaving this filter at the default value. `librarian` is trained on a specific set of reads, and changing this filter may produce nonsensical results."
-        comparative_filter: "Filter to apply to the input BAM while performing a second FASTQ conversion, before running Kraken2 another time. This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove unmapped, secondary, and supplementary reads** from the created FASTQs. **WARNING** These filters can be tricky to configure; please read documentation thoroughly before changing the defaults."
+        coverage_beds: {
+            description: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions.",
+            help: "Any regional analysis enabled by this option is _in addition_ to whole genome coverage, which is calculated regardless of this setting. An exon BED and a Coding Sequence BED are examples of regions you may wish to restrict coverage analysis to. BED files meant for this can be created with the workflow in `../reference/qc-reference.wdl`.",
+        }
+        coverage_labels: {
+            description: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files.",
+            help: "If omitted, defaults of `regions1`, `regions2`, etc. will be used. If using the BEDs created by `../reference/qc-reference.wdl`, the labels [\"exon\", \"CDS\", \"UTR\"] are appropriate.",
+            warning: "Make sure to provide the coverage BEDs **in the same order** as the labels.",
+        }
+        standard_filter: {
+            description: "Filter to apply to the input BAM while converting to FASTQ, before running Kraken2 and `librarian` (if `run_librarian == true`).",
+            warning: "If you have set `run_librarian` to `true`, we **strongly** recommend leaving this filter at the default value. `librarian` is trained on a specific set of reads, and changing this filter may produce nonsensical results. These filters can be tricky to configure; please read documentation thoroughly before changing the defaults.",
+            help: "This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the created FASTQs.",
+        }
+        comparative_filter: {
+            description: "Filter to apply to the input BAM while performing a second FASTQ conversion, before running Kraken2 another time.",
+            help: "This is a `FlagFilter` object (see ../../data_structures/flag_filter.wdl for more information). By default, it will **remove unmapped, secondary, and supplementary reads** from the created FASTQs.",
+            warning: "These filters can be tricky to configure; please read documentation thoroughly before changing the defaults.",
+        }
         prefix: "Prefix for all results files"
-        rna: "Is the sequenced molecule RNA? Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored."
-        mark_duplicates: "Mark duplicates before select analyses? Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. If set to `true`, a BAM will be generated and passed to selected downstream analyses. For more details about what analyses are run, review `./markdups-post.wdl`. **WARNING, this duplicate marked BAM is _not_ ouput by default.** If you would like to output this file, set `output_intermediate_files = true`."
+        rna: {
+            description: "Is the sequenced molecule RNA?",
+            help: "Enabling this option adds RNA-Seq specific analyses to the workflow. If `true`, a GTF file must be provided. If `false`, the GTF file is ignored.",
+        }
+        mark_duplicates: {
+            description: "Mark duplicates before select analyses?",
+            help: "Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. If set to `true`, a BAM will be generated and passed to selected downstream analyses. For more details about what analyses are run, review `./markdups-post.wdl`.",
+            warning: "This duplicate marked BAM is _not_ ouput by default. If you would like to output this file, set `output_intermediate_files = true`.",
+        }
         run_fastp: {
             description: "Run the `fastp` tool on generated FASTQs?",
             help: "`fastp` produces similar metrics as `fastqc`, but more comprehensively and efficiently. We always recommend running `fastp` for the valuable metrics it produces, but `fastp` is also run during our harmonization workflows so users of those workflows should supply the `fastp_json` output as an input via `extra_multiqc_inputs` and set this option to `false` to prevent runnning the tool twice.",
@@ -73,12 +95,29 @@ workflow quality_check_standard {
             warning: "This tool is not guaranteed to work on all data, and may produce nonsensical results. `librarian` was trained on a limited set of GEO read data (Gene Expression Oriented). This means the input data should be Paired-End, of mouse or human origin, read length should be >50bp, and derived from a library prep kit that is in the `librarian` database.",
             external_help: "https://f1000research.com/articles/11-1122/v2",
         }
-        run_comparative_kraken: "Run Kraken2 a second time with different FASTQ filtering? If `true`, `comparative_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_filter` is ignored."
-        store_kraken_sequences: "Store the Kraken2 sequences output? This will apply to all runs of Kraken2 (see `parameter_meta.run_comparative_kraken`). **WARNING** these files can be very large."
-        output_intermediate_files: "Output intermediate files? FASTQs; if `rna == true` a collated BAM; if `mark_duplicates == true` a duplicate marked BAM, various accessory files like indexes and md5sums; if subsampling was requested _and_ performed then a sampled BAM and associated index. **WARNING, these files can be large.**"
+        run_comparative_kraken: {
+            description: "Run Kraken2 a second time with different FASTQ filtering?",
+            help: "If `true`, `comparative_filter` is used in a second run of BAM->FASTQ conversion, resulting in differently filtered FASTQs analyzed by Kraken2. If `false`, `comparative_filter` is ignored.",
+        }
+        store_kraken_sequences: {
+            description: "Store the Kraken2 sequences output? This will apply to all runs of Kraken2 (see `run_comparative_kraken`).",
+            warning: "These files can be very large.",
+        }
+        output_intermediate_files: {
+            description: "Output intermediate files?",
+            help: "FASTQs; if `rna == true` a collated BAM; if `mark_duplicates == true` a duplicate marked BAM, various accessory files like indexes and md5sums; if subsampling was requested _and_ performed then a sampled BAM and associated index.",
+            warning: "These files can be very large.",
+        }
         use_all_cores: "Use all cores? Recommended for cloud environments."
-        optical_distance: "Maximum distance between read coordinates to consider them optical duplicates instead of library duplicates (e.g. PCR duplicates). If `mark_duplicates == false`, this parameter is ignored. If `0`, then _optical_ duplicate marking is disabled and only traditional duplicate marking will be performed. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without a custom regex for tile-data extraction. Review the `mark_duplicates` task in `../../tools/picard.wdl` for more information."
-        subsample_n_reads: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input. Subsampling is done probabalistically so the exact number of reads in the output will have some variation."
+        optical_distance: {
+            description: "Maximum distance between read coordinates to consider them optical duplicates instead of library duplicates (e.g. PCR duplicates).",
+            help: "If `mark_duplicates == false`, this parameter is ignored. If `0`, then _optical_ duplicate marking is disabled and only traditional duplicate marking will be performed. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Review the `mark_duplicates` task in `../../tools/picard.wdl` for more information.",
+            warning: "Calculation of distance depends on coordinate data embedded in the read names, typically produced by Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without a custom regex for tile-data extraction.",
+        }
+        subsample_n_reads: {
+            description: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input.",
+            warning: "Subsampling is done probabalistically so the exact number of reads in the output will have some variation.",
+        }
     }
 
     input {
@@ -457,7 +496,10 @@ task parse_input {
     }
 
     parameter_meta {
-        coverage_labels: "An array of equal length to `coverage_beds_len` which determines the prefix label applied to coverage output files. If an empty array is supplied, defaults of `regions1`, `regions2`, etc. will be used."
+        coverage_labels: {
+            description: "An array of equal length to `coverage_beds_len` which determines the prefix label applied to coverage output files.",
+            help: "If an empty array is supplied, defaults of `regions1`, `regions2`, etc. will be used.",
+        }
         rna: "Is the sequenced molecule RNA?"
         gtf_provided: "Was a GTF supplied by the user? Must be `true` if `rna == true`."
         coverage_beds_len: "Length of the provided `coverage_beds` array"
@@ -505,7 +547,7 @@ task parse_input {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.4.1"
+        container: "ghcr.io/stjudecloud/util:3.0.0"
         maxRetries: 1
     }
 }

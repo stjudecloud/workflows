@@ -32,7 +32,10 @@ workflow markdups_post {
         markdups_bam: "Input BAM format file to quality check. Duplicates being marked is not necessary for a successful run of this workflow."
         markdups_bam_index: "BAM index file corresponding to the input BAM"
         coverage_beds: "An array of 3 column BEDs which are passed to the `-b` flag of mosdepth, in order to restrict coverage analysis to select regions"
-        coverage_labels: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files. If omitted, defaults of `regions1`, `regions2`, etc. will be used."
+        coverage_labels: {
+            description: "An array of equal length to `coverage_beds` which determines the prefix label applied to the output files.",
+            help: "If omitted, defaults of `regions1`, `regions2`, etc. will be used.",
+        }
         prefix: "Prefix for all results files"
     }
 

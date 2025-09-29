@@ -1,3 +1,5 @@
+#@ except: DescriptionLength
+
 version 1.1
 
 import "../../tools/estimate.wdl"
@@ -28,7 +30,7 @@ workflow estimate {
 
     call htseq.calc_tpm { input:
         counts = counts_file,
-        gene_lengths = gene_lengths_file,
+        feature_lengths = gene_lengths_file,
     }
     call estimate.run_estimate { input:
         gene_expression_file = calc_tpm.tpm_file,

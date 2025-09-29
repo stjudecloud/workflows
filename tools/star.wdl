@@ -30,12 +30,19 @@ task build_star_db {
             description: "Use all cores? Recommended for cloud environments.",
             group: "Resources",
         }
-        genome_chr_bin_n_bits: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)])."
-        genome_SA_index_n_bases: "length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`."
+        genome_chr_bin_n_bits: {
+            description: "=log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins.",
+            help: "For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)]).",
+        }
+        genome_SA_index_n_bases: {
+            description: "length (bases) of the SA pre-indexing string. Typically between 10 and 15.",
+            help: "Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter `--genomeSAindexNbases` must be scaled down to `min(14, log2(GenomeLength)/2 - 1)`.",
+        }
         genome_SA_sparse_d: "suffix array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction."
         genome_suffix_length_max: "maximum length of the suffixes, has to be longer than read length. -1 = infinite."
         sjdb_overhang: {
-            description: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1). **[STAR default]**: `100`. **[WDL default]**: `125`.",
+            description: "length of the donor/acceptor sequence on each side of the junctions, ideally = (mate_length - 1).",
+            tool_default: 100,
             group: "Common",
         }
         ncpu: {
@@ -143,15 +150,22 @@ task alignment {
         description: "Runs the STAR aligner on a set of RNA-Seq FASTQ files"
         external_help: "https://github.com/alexdobin/STAR/blob/2.7.11b/doc/STARmanual.pdf"
         outputs: {
-            star_log: "Summary mapping statistics after mapping job is complete. The statistics are calculated for each read (Single- or Paired-End) and then summed or averaged over all reads. Note that STAR counts a Paired-End read as one read. Most of the information is collected about the UNIQUE mappers. Each splicing is counted in the numbers of splices, which would correspond to summing the counts in SJ.out.tab. The mismatch/indel error rates are calculated on a per base basis, i.e. as total number of mismatches/indels in all unique mappers divided by the total number of mapped bases.",
+            star_log: {
+                description: "Summary mapping statistics after mapping job is complete.",
+                help: "The statistics are calculated for each read (Single- or Paired-End) and then summed or averaged over all reads. Note that STAR counts a Paired-End read as one read. Most of the information is collected about the UNIQUE mappers. Each splicing is counted in the numbers of splices, which would correspond to summing the counts in SJ.out.tab. The mismatch/indel error rates are calculated on a per base basis, i.e. as total number of mismatches/indels in all unique mappers divided by the total number of mapped bases.",
+            },
             star_bam: "STAR aligned BAM",
-            star_junctions: "File contains high confidence collapsed splice junctions in tab-delimited format. Note that STAR defines the junction start/end as intronic bases, while many other software define them as exonic bases. See `meta.external_help` for file specification.",
+            star_junctions: {
+                description: "File contains high confidence collapsed splice junctions in tab-delimited format.",
+                warning: "Note that STAR defines the junction start/end as intronic bases, while many other tools define them as exonic bases.",
+                help: "See `meta.external_help` for file specification.",
+            },
             star_chimeric_junctions: "Tab delimited file containing chimeric reads and associated metadata. See `meta.external_help` for file specification.",
         }
     }
 
     parameter_meta {
-        star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. The name of the root directory which was archived must match the archive's filename without the `.tar.gz` extension."
+        star_db_tar_gz: "A gzipped TAR file containing the STAR reference files. Files should be at the root of the archive."
         read_one_fastqs_gz: "An array of gzipped FASTQ files containing read one information"
         read_groups: {
             description: "An array of `String`s where each `String` corresponds to one read group.",
@@ -163,27 +177,30 @@ task alignment {
             group: "Common",
         }
         out_sj_filter_intron_max_vs_read_n: {
-            description: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax. Does not apply to annotated junctions.",
+            description: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. Does not apply to annotated junctions.",
+            help: "i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax.",
             group: "Splice Junctions",
         }
         out_sj_filter_overhang_min: {
-            description: "minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Does not apply to annotated junctions.",
+            description: "minimum overhang length for splice junctions on both sides. -1 means no output for that motif. Does not apply to annotated junctions.",
             group: "Splice Junctions",
         }
         out_sj_filter_count_unique_min: {
-            description: "minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions.",
+            description: "minimum uniquely mapping read count per junction. -1 means no output for that motif. Does not apply to annotated junctions.",
+            help: "Junctions are output if one of `outSJfilterCountUniqueMin` *OR* `outSJfilterCountTotalMin` conditions are satisfied.",
             group: "Splice Junctions",
         }
         out_sj_filter_count_total_min: {
-            description: "minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif. Junctions are output if one of outSJfilterCountUniqueMin *OR* outSJfilterCountTotalMin conditions are satisfied. Does not apply to annotated junctions.",
+            description: "minimum total (multi-mapping+unique) read count per junction. -1 means no output for that motif. Does not apply to annotated junctions.",
+            help: "Junctions are output if one of `outSJfilterCountUniqueMin` *OR* `outSJfilterCountTotalMin` conditions are satisfied.",
             group: "Splice Junctions",
         }
         out_sj_filter_dist_to_other_sj_min: {
-            description: "minimum allowed distance to other junctions' donor/acceptor for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. Does not apply to annotated junctions.",
+            description: "minimum allowed distance to other junctions' donor/acceptor. Does not apply to annotated junctions.",
             group: "Splice Junctions",
         }
         align_sj_stitch_mismatch_n_max: {
-            description: "maximum number of mismatches for stitching of the splice junctions (-1: no limit) for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif",
+            description: "maximum number of mismatches for stitching of splice junctions (-1: no limit)",
             group: "Splice Junctions",
         }
         clip_3p_adapter_seq: {
@@ -197,7 +214,10 @@ task alignment {
         }
         clip_3p_adapter_mmp: "max proportion of mismatches for 3p adapter clipping for each mate. `left` applies to read one and `right` applies to read two."
         align_ends_protrude: {
-            description: "allow protrusion of alignment ends, i.e. start (end) of the +strand mate downstream of the start (end) of the -strand mate. `left`: maximum number of protrusion bases allowed. `right`: see `choices` below.",
+            description: "allow protrusion of alignment ends.",
+            help: "i.e. start (end) of the +strand mate downstream of the start (end) of the -strand mate",
+            left: "maximum number of protrusion bases allowed",
+            right: "see `choices`",
             choices: {
                 ConcordantPair: "report alignments with non-zero protrusion as concordant pairs",
                 DiscordantPair: "report alignments with non-zero protrusion as discordant pairs",
@@ -207,7 +227,7 @@ task alignment {
         clip_3p_after_adapter_n_bases: "number of bases to clip from 3p of each mate after the adapter clipping. `left` applies to read one and `right` applies to read two."
         clip_5p_n_bases: "number of bases to clip from 5p of each mate. `left` applies to read one and `right` applies to read two."
         prefix: {
-            description: "Prefix for the BAM and other STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added.",
+            description: "Prefix for the STAR files. The extensions `.Aligned.out.bam`, `.Log.final.out`, `.SJ.out.tab`, and `.Chimeric.out.junction` will be added.",
             help: "See `../README.md` for more information on the default prefix evaluation.",
             group: "Common",
         }
@@ -229,7 +249,9 @@ task alignment {
             group: "Common",
         }
         out_sam_attributes: {
-            description: "a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order. **[STAR defaults]**: `NH HI AS nM`. **[WDL default]**: `NH HI AS nM NM MD XS`.",
+            description: "a string of desired SAM attributes, in the order desired for the output SAM.",
+            help: "Tags can be listed in any combination/order.",
+            tool_default: "NH HS AS nM",
             choices: {
                 NH: "number of loci the reads maps to: =1 for unique mappers, >1 for multimappers. Standard SAM tag.",
                 HI: "multiple alignment index, starts with --outSAMattrIHstart (=1 by default). Standard SAM tag.",
@@ -392,15 +414,31 @@ task alignment {
         read_quality_score_base: "number to be subtracted from the ASCII code to get Phred quality score"
         limit_out_sj_one_read: "max number of junctions for one read (including all multi-mappers)"
         limit_out_sj_collapsed: "max number of collapsed junctions"
-        limit_sjdb_insert_n_sj: "maximum number of junction to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run"
+        limit_sjdb_insert_n_sj: {
+            description: "maximum number of junction to be inserted to the genome on the fly at the mapping stage",
+            help: "includes those from annotations and those detected in the 1st step of the 2-pass run",
+        }
         out_QS_conversion_add: "add this number to the quality score (e.g. to convert from Illumina to Sanger, use -31)"
         out_sam_attr_IH_start: "start value for the IH attribute. 0 may be required by some downstream software, such as Cufflinks or StringTie."
-        out_sam_mapq_unique: "`0-255`: the MAPQ value for unique mappers. Please note the STAR default (255) produces errors downstream, as a MAPQ value of 255 is reserved to indicate a missing value. The default of this task is 254, which is the highest _valid_ MAPQ value, and possibly what the author of STAR intended. **[STAR default]**: `255`. **[WDL default]**: `254`."
-        out_sam_flag_OR: "`0-65535`: sam FLAG will be bitwise OR'd with this value, i.e. FLAG=FLAG | outSAMflagOR. This is applied after all flags have been set by STAR, and after outSAMflagAND. Can be used to set specific bits that are not set otherwise."
-        out_sam_flag_AND: "`0-65535`: sam FLAG will be bitwise AND'd with this value, i.e. FLAG=FLAG & outSAMflagOR. This is applied after all flags have been set by STAR, but before outSAMflagOR. Can be used to unset specific bits that are not set otherwise."
+        out_sam_mapq_unique: {
+            description: "the MAPQ value for unique mappers.",
+            warning: "Please note the STAR default (255) produces errors downstream, as a MAPQ value of 255 is reserved to indicate a missing value. The default of this task is 254, which is the highest _valid_ MAPQ value.",
+            help: "Must be between 0 and 255, inclusive",
+            tool_default: 255,
+        }
+        out_sam_flag_OR: {
+            description: "`0-65535`: sam FLAG will be bitwise OR'd with this value, i.e. `FLAG=FLAG | outSAMflagOR`.",
+            help: "This is applied after all flags have been set by STAR, and after `outSAMflagAND`. Can be used to set specific bits that are not set otherwise.",
+        }
+        out_sam_flag_AND: {
+            description: "`0-65535`: sam FLAG will be bitwise AND'd with this value, i.e. `FLAG=FLAG & outSAMflagOR`.",
+            help: "This is applied after all flags have been set by STAR, but before `outSAMflagOR`. Can be used to unset specific bits that are not set otherwise.",
+        }
         out_filter_multimap_score_range: "the score range below the maximum score for multimapping alignments"
         out_filter_multimap_n_max: {
-            description: "maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out. **[STAR default]**: `10`. **[WDL default]**: `20`.",
+            description: "maximum number of loci the read is allowed to map to.",
+            help: "Alignments (all of them) will be output only if the read maps to no more loci than this value. Otherwise no alignments will be output, and the read will be counted as 'mapped to too many loci' in the Log.final.out.",
+            tool_default: 10,
             group: "Common",
         }
         out_filter_mismatch_n_max: {
@@ -437,11 +475,13 @@ task alignment {
             group: "Common",
         }
         align_intron_max: {
-            description: "maximum intron size, if 0, max intron size will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `500000`.",
+            description: "maximum intron size, if 0, max intron size will be determined by (2^winBinNbits)*winAnchorDistNbins.",
+            tool_default: 0,
             group: "Common",
         }
         align_mates_gap_max: {
-            description: "maximum gap between two mates, if 0, max intron gap will be determined by (2^winBinNbits)*winAnchorDistNbins. **[STAR default]**: `0`. **[WDL default]**: `1000000`",
+            description: "maximum gap between two mates, if 0, max intron gap will be determined by (2^winBinNbits)*winAnchorDistNbins.",
+            tool_default: 0,
             group: "Common",
         }
         align_sj_overhang_min: {
@@ -449,14 +489,18 @@ task alignment {
             group: "Common",
         }
         align_sjdb_overhang_min: {
-            description: "minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments. **[STAR default]**: `3`. **[WDL default]**: `1`.",
+            description: "minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments.",
+            tool_default: 3,
             group: "Common",
         }
         align_spliced_mate_map_l_min: "minimum mapped length for a read mate that is spliced"
         align_windows_per_read_n_max: "max number of windows per read"
         align_transcripts_per_window_n_max: "max number of transcripts per window"
         align_transcripts_per_read_n_max: "max number of different alignments per read to consider"
-        pe_overlap_n_bases_min: "minimum number of overlap bases to trigger mates merging and realignment. Specify >0 value to switch on the 'merging of overlapping mates' algorithm."
+        pe_overlap_n_bases_min: {
+            description: "minimum number of overlap bases to trigger mates merging and realignment.",
+            help: "Specify a value `> 0` to switch on the 'merging of overlapping mates' algorithm.",
+        }
         win_anchor_multimap_n_max: "max number of loci anchors are allowed to map to"
         win_bin_n_bits: "=log2(winBin), where winBin is the size of the bin for the windows/clustering, each window will occupy an integer number of bins"
         win_anchor_dist_n_bins: "max number of bins between two anchors that allows aggregation of anchors into one window"
@@ -493,9 +537,10 @@ task alignment {
             group: "Common",
         }
         chim_multimap_score_range: "the score range for multi-mapping chimeras below the best chimeric score. Only works with --chimMultimapNmax > 1."
+        #@ except: DescriptionLength
         chim_nonchim_score_drop_min: "to trigger chimeric detection, the drop in the best non-chimeric alignment score with respect to the read length has to be greater than this value"
         twopass1_reads_n: {
-            description: "number of reads to process for the 1st step. Use default (`-1`) to map all reads in the first step",
+            description: "number of reads to process for the 1st step. Use default to map all reads in the first step",
             group: "Common",
         }
         ncpu: {

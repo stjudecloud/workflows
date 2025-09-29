@@ -4,7 +4,8 @@ version 1.1
 
 task rnaseq {
     meta {
-        description: "Generates runs QualiMap's rnaseq tool on the input BAM file. Note that we don't expose the `-p` parameter. This is used to set strandedness protocol of the sample, however in practice it only disables certain calculations. We do not expose the parameter so that the full suite of calculations is always performed."
+        description: "Generates runs QualiMap's rnaseq tool on the input BAM file."
+        help: "Note that we don't expose the `-p` parameter. This is used to set strandedness protocol of the sample, however in practice it only disables certain calculations. We do not expose the parameter so that the full suite of calculations is always performed."
         outputs: {
             raw_summary: "Raw text summary of QualiMap's results. Can be parsed by MultiQC.",
             raw_coverage: "Raw text of QualiMap's coverage analysis results. Can be parsed by MultiQC.",
@@ -17,7 +18,8 @@ task rnaseq {
         gtf: "GTF features file. Gzipped or uncompressed."
         prefix: "Prefix for the results directory and output tarball. The extension `.qualimap_rnaseq_results.tar.gz` will be added."
         name_sorted: {
-            description: "Is the BAM name sorted? QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to true.",
+            description: "Is the BAM name sorted?",
+            warning: "QualiMap has an inefficient sorting algorithm. In order to save resources we recommend collating your input BAM before QualiMap and setting this parameter to `true`.",
             group: "Common",
         }
         paired_end: {

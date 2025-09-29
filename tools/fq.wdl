@@ -109,7 +109,8 @@ task subsample {
             group: "Common",
         }
         probability: {
-            description: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`. Any `probability<=0.0` or `probability>=1.0` to disable.",
+            description: "The probability a record is kept, as a decimal (0.0, 1.0). Cannot be used with `record-count`.",
+            help: "Any `probability<=0.0` or `probability>=1.0` to disable.",
             group: "Common",
         }
         record_count: {

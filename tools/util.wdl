@@ -41,7 +41,7 @@ task download {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.4.1"
+        container: "ghcr.io/stjudecloud/util:3.0.0"
         maxRetries: 1
     }
 }
@@ -80,22 +80,22 @@ task split_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.4.1"
+        container: "ghcr.io/stjudecloud/util:3.0.0"
         maxRetries: 1
     }
 }
 
-task calc_gene_lengths {
+task calc_feature_lengths {
     meta {
-        description: "Calculate gene lengths from a GTF feature file using the non-overlapping exonic length algorithm"
+        description: "Calculate feature lengths from a GTF file using the non-overlapping exonic length algorithm"
         help: "The non-overlapping exonic length algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
         outputs: {
-            gene_lengths: "A two column headered TSV file with gene names in the first column and feature lengths (as integers) in the second column"
+            feature_lengths: "A two column headered TSV file with feature names in the first column and feature lengths (as integers) in the second column"
         }
     }
 
     parameter_meta {
-        gtf: "GTF feature file"
+        gtf: "Gzipped GTF file"
         outfile_name: "Name of the gene lengths file"
         idattr: {
             description: "GTF attribute to be used as feature ID. The value of this attribute will be used as the first column in the output file.",
@@ -115,20 +115,20 @@ task calc_gene_lengths {
     Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
-        python3 /scripts/util/calc_gene_lengths.py \
+        python3 /scripts/util/calc_feature_lengths.py \
             --id_attr "~{idattr}" \
             "~{gtf}" \
             "~{outfile_name}"
     >>>
 
     output {
-        File gene_lengths = outfile_name
+        File feature_lengths = outfile_name
     }
 
     runtime {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.4.1"
+        container: "ghcr.io/stjudecloud/util:3.0.0"
         maxRetries: 1
     }
 }
@@ -172,7 +172,10 @@ task add_to_bam_header {
 
     parameter_meta {
         bam: "Input BAM format file which will have its header added to"
-        additional_header: "A string to add as a new line in the BAM header. No format checking is done, so please ensure you do not invalidate your BAM with this task. Add only spec compliant entries to the header."
+        additional_header: {
+            description: "A string to add as a new line in the BAM header.",
+            warning: "No format checking is done, so please ensure you do not invalidate your BAM with this task. Add only spec compliant entries to the header.",
+        }
         prefix: "Prefix for the reheadered BAM. The extension `.bam` will be added."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
@@ -244,7 +247,7 @@ task unpack_tarball {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.4.1"
+        container: "ghcr.io/stjudecloud/util:3.0.0"
         maxRetries: 1
     }
 }
@@ -348,7 +351,7 @@ task global_phred_scores {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.4.1"
+        container: "ghcr.io/stjudecloud/util:3.0.0"
         maxRetries: 1
     }
 }
@@ -395,7 +398,7 @@ task check_fastq_and_rg_concordance {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:2.4.1"
+        container: "ghcr.io/stjudecloud/util:3.0.0"
         maxRetries: 1
     }
 }
@@ -459,7 +462,7 @@ task split_fastq {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:2.4.1"
+        container: "ghcr.io/stjudecloud/util:3.0.0"
         maxRetries: 1
     }
 }

@@ -13,6 +13,7 @@ task run_estimate {
     }
 
     parameter_meta {
+        #@ except: DescriptionLength
         gene_expression_file: "A 2 column headered TSV file with 'Gene name' in the first column and gene expression values (as floats) in the second column. Can be generated with the `calc_tpm` task."
         outfile_name: "Name of the ESTIMATE output file"
         memory_gb: "RAM to allocate for task, specified in GB"

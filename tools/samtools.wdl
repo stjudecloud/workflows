@@ -6,7 +6,8 @@ import "../data_structures/flag_filter.wdl"
 
 task quickcheck {
     meta {
-        description: "Runs Samtools quickcheck on the input BAM file. This checks that the BAM file appears to be intact, e.g. header exists and the end-of-file marker exists."
+        description: "Runs Samtools quickcheck on the input BAM file."
+        help: "This checks that the BAM file appears to be intact, e.g. header exists and the end-of-file marker exists."
     }
 
     parameter_meta {
@@ -35,7 +36,7 @@ task quickcheck {
 
 task split {
     meta {
-        description: "Runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files. It optionally errors if there are reads present that do not belong to a read group."
+        description: "Runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files."
         outputs: {
             split_bams: "The split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
         }
@@ -269,14 +270,17 @@ task subsample {
         description: "Randomly subsamples the input BAM, in order to produce an output BAM with approximately the desired number of reads."
         help: "A `desired_reads` **greater than zero** must be supplied. A `desired_reads <= 0` will result in task failure. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
-            orig_read_count: "A TSV report containing the original read count before subsampling. If subsampling was requested but the input BAM had less than `desired_reads`, no read count will be filled in (instead there will be a `dash`).",
+            orig_read_count: {
+                description: "A TSV report containing the original read count before subsampling.",
+                help: "If subsampling was requested but the input BAM had less than `desired_reads`, no read count will be filled in (instead there will be a `dash`).",
+            },
             sampled_bam: "The subsampled input BAM. Only present if subsampling was performed.",
         }
     }
 
     parameter_meta {
         bam: "Input BAM format file to subsample"
-        desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value. **Must be greater than zero.** A `desired_reads <= 0` will result in task failure."
+        desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value. **Must be greater than zero.**"
         prefix: "Prefix for the BAM file. The extension `.sampled.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
@@ -508,7 +512,10 @@ task merge {
     parameter_meta {
         bams: "An array of BAMs to merge into one combined BAM"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
-        new_header: "Use the lines of FILE as `@` headers to be copied to the merged BAM, replacing any header lines that would otherwise be copied from the first BAM file in the list. (File may actually be in SAM format, though any alignment records it may contain are ignored.)"
+        new_header: {
+            description: "Copy the `@` headers from this file to the merged BAM.",
+            help: "This will replace any header lines that would otherwise be copied from the first BAM file in the list. File may actually be in SAM format, though any alignment records it may contain are ignored.",
+        }
         region: "Merge files in the specified region (Format: `chr:start-end`)"
         attach_rg: {
             description: "Attach an RG tag to each alignment. The tag value is inferred from file names.",
@@ -519,11 +526,13 @@ task merge {
             group: "Common",
         }
         combine_rg: {
-            description: "When several input files contain @RG headers with the same ID, emit only one of them (namely, the header line from the first file we find that ID in) to the merged output file. Combining these similar headers is usually the right thing to do when the files being merged originated from the same file. Without `-c`, all @RG headers appear in the output file, with random suffixes added to their IDs where necessary to differentiate them.",
+            description: "If true, when several input files contain @RG headers with the same ID, emit only the header line from the first file we find that ID in.",
+            help: "Combining these similar headers is usually the right thing to do when the files being merged originated from the same file. When this is `false`, all @RG headers appear in the output file, with random suffixes added to their IDs where necessary to differentiate them.",
             group: "Common",
         }
         combine_pg: {
-            description: "Similarly to `combine_rg`: for each @PG ID in the set of files to merge, use the @PG line of the first file we find that ID in rather than adding a suffix to differentiate similar IDs.",
+            description: "If true, for each @PG ID in the set of files to merge use the @PG line of the first file we find.",
+            help: "If false, add a random suffix to differentiate similar PG IDs.",
             group: "Common",
         }
         use_all_cores: {
@@ -612,7 +621,9 @@ task addreplacerg {
         bam: "Input BAM format file to add read group information"
         read_group_id: "Allows you to specify the read group ID of an existing @RG line and applies it to the reads specified by the `orphan_only` option"
         read_group_line: {
-            description: "Allows you to specify a read group line to append to (or replace in) the header and applies it to the reads specified by the `orphan_only` option. Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM. Only **one** read group line can be supplied per invocation of this task.",
+            description: "A read group to append to (or replace in) the header and apply to the reads specified by the `orphan_only` option.",
+            warning: "Only **one** read group line can be supplied per invocation of this task.",
+            help: "Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM.",
             group: "Common",
         }
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
@@ -763,32 +774,39 @@ task bam_to_fastq {
         description: "Converts an input BAM file into FASTQ(s) using `samtools fastq`."
         help: "If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads. An exit-code of `42` indicates that no reads were present in the output FASTQs. An exit-code of `43` indicates that unexpected reads were discovered in the input BAM."
         outputs: {
-            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order). Only generated if `retain_collated_bam` and `paired_end` are both true. Has the name `~{prefix}.collated.bam`.",
+            collated_bam: "A collated BAM. Only generated if `retain_collated_bam && paired_end`. Has the name `~{prefix}.collated.bam`.",
             read_one_fastq_gz: "Gzipped FASTQ file with 1st reads in pair. Only generated if `paired_end` is true. Has the name `~{prefix}.R1.fastq.gz`.",
             read_two_fastq_gz: "Gzipped FASTQ file with 2nd reads in pair. Only generated if `paired_end` is true. Has the name `~{prefix}.R2.fastq.gz`.",
-            singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads. Only generated if `paired_end` and `output_singletons` are both true. Has the name `~{prefix}.singleton.fastq.gz`.",
+            singleton_reads_fastq_gz: "Gzipped FASTQ containing singleton reads. Only generated if `paired_end && output_singletons`. Has the name `~{prefix}.singleton.fastq.gz`.",
             single_end_reads_fastq_gz: "A gzipped FASTQ containing all reads. Only generated if `paired_end` is false. Has the name `~{prefix}.fastq.gz`.",
         }
     }
 
     parameter_meta {
         bam: "Input BAM format file to convert to FASTQ(s)"
-        bitwise_filter: "A set of 4 possible read filters to apply during conversion to FASTQ. This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs."
+        bitwise_filter: {
+            description: "A set of 4 possible read filters to apply during conversion to FASTQ.",
+            help: "This is a `FlagFilter` object (see ../data_structures/flag_filter.wdl for more information). By default, it will **remove secondary and supplementary reads** from the output FASTQs.",
+        }
         prefix: "Prefix for the collated BAM and FASTQ files. The extensions `.collated.bam` and `[,.R1,.R2,.singleton].fastq.gz` will be added."
         paired_end: {
-            description: "Is the data Paired-End? If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads.",
+            description: "Is the data Paired-End?",
+            warning: "If `paired_end == false`, then _all_ reads in the BAM will be output to a single FASTQ file. Use `bitwise_filter` argument to remove any unwanted reads.",
             group: "Common",
         }
         collated: {
-            description: "Is the BAM collated (or name-sorted)? If `collated == true`, then the input BAM will be run through `samtools fastq` without preprocessing. If `collated == false`, then `samtools collate` must be run on the input BAM before conversion to FASTQ. Ignored if `paired_end == false`.",
+            description: "Is the BAM collated (or name-sorted)?",
+            help: "If `collated == true`, then the input BAM will be run through `samtools fastq` without preprocessing. If `collated == false`, then `samtools collate` must be run on the input BAM before conversion to FASTQ. Ignored if `paired_end == false`.",
             group: "Common",
         }
         retain_collated_bam: {
-            description: "Save the collated BAM to disk and output it (true)? This slows performance and **substantially** increases storage requirements. Be aware that collated BAMs occupy much more space than either position sorted or name sorted BAMs (due to the compression algorithm). Ignored if `collated == true` **or** `paired_end == false`.",
+            description: "Save the collated BAM to disk and output it (true)? Ignored if `collated == true` **or** `paired_end == false`.",
+            warning: "This slows performance and **substantially** increases storage requirements. Be aware that collated BAMs occupy much more space than either position sorted or name sorted BAMs (due to the compression algorithm).",
             group: "Common",
         }
         fast_mode: {
-            description: "Fast mode for `samtools collate`? If `true`, this **removes secondary and supplementary reads** during the `collate` step. If `false`, secondary and supplementary reads will be retained in the `collated_bam` output (if created). Defaults to the opposite of `retain_collated_bam`. Ignored if `collated == true` **or** `paired_end == false`.",
+            description: "Fast mode for `samtools collate`?",
+            help: "If `true`, this **removes secondary and supplementary reads** during the `collate` step. If `false`, secondary and supplementary reads will be retained in the `collated_bam` output (if created). Defaults to the opposite of `retain_collated_bam`. Ignored if `collated == true` **or** `paired_end == false`.",
             group: "Common",
         }
         append_read_number: {
@@ -950,8 +968,8 @@ task bam_to_fastq {
 
 task fixmate {
     meta {
-        description: "Runs `samtools fixmate` on the name-collated input BAM file. This fills in mate coordinates and insert size fields among other tags and fields."
-        help: "This task assumes a name-sorted or name-collated input BAM. If you have a position-sorted BAM, please use the `position_sorted_fixmate` task. This task runs `fixmate` and outputs a BAM in the same order as the input."
+        description: "Runs `samtools fixmate` on the input BAM file. This fills in mate coordinates and insert size fields among other tags and fields."
+        warning: "This task assumes a name-sorted or name-collated input BAM. If you have a position-sorted BAM, please use the `position_sorted_fixmate` task."
         outputs: {
             fixmate_bam: "The BAM resulting from running `samtools fixmate` on the input BAM"
         }
@@ -1048,7 +1066,11 @@ task fixmate {
 
 task position_sorted_fixmate {
     meta {
-        description: "Runs `samtools fixmate` on the position-sorted input BAM file and output a position-sorted BAM. `fixmate` fills in mate coordinates and insert size fields among other tags and fields. `samtools fixmate` assumes a name-sorted or name-collated input BAM. If you already have a collated BAM, please use the `fixmate` task. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM."
+        description: {
+            description: "Runs `samtools fixmate` on the position-sorted input BAM file and output a position-sorted BAM.",
+            warning: "If you already have a collated BAM, please use the `fixmate` task.",
+            help: "`fixmate` fills in mate coordinates and insert size fields among other tags and fields. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM.",
+        }
         outputs: {
             fixmate_bam: "BAM file with mate information added"
         }
@@ -1163,11 +1185,14 @@ task markdup {
         bam: "Input BAM format file to mark duplicates in"
         prefix: "Prefix for the output file."
         read_coords_regex: {
-            description: "Regular expression to extract read coordinates from the QNAME field. This takes a POSIX regular expression for at least x and y to be used in optical duplicate marking It can also include another part of the read name to test for equality, eg lane:tile elements. Elements wanted are captured with parentheses. The default is meant to capture information from Illumina style read names. Ignored if `optical_distance == 0`. If changing `read_coords_regex`, make sure that `coordinates_order` matches.",
+            description: "Regular expression to extract read coordinates from the QNAME field.",
+            help: "This takes a POSIX regular expression for at least x and y to be used in optical duplicate marking. It can also include another part of the read name to test for equality, e.g. lane:tile elements. Elements wanted are captured with parentheses. The default is meant to capture information from Illumina style read names. Ignored if `optical_distance == 0`. ",
+            warning: "If changing `read_coords_regex`, make sure that `coordinates_order` matches.",
             tool_default: "`([!-9;-?A-~]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+):([0-9]+):([0-9]+)`",
         }
         coordinates_order: {
-            description: "The order of the elements captured in the `read_coords_regex` regular expression. Default is `txy` where `t` is a part of the read name selected for string comparison and `x`/`y` are the coordinates used for optical duplicate detection. Ignored if `optical_distance == 0`.",
+            description: "The order of the elements captured in the `read_coords_regex` regular expression.",
+            help: "Default is `txy` where `t` is a part of the read name selected for string comparison and `x`/`y` are the coordinates used for optical duplicate detection. Ignored if `optical_distance == 0`.",
             choices: [
                 "txy",
                 "tyx",
@@ -1181,19 +1206,35 @@ task markdup {
         }
         create_bam: "Create a new BAM with duplicate reads marked? If `false`, then only a markdup report will be generated."
         remove_duplicates: "Remove duplicates from the output BAM? Ignored if `create_bam == false`."
-        mark_supp_or_sec_or_unmapped_as_duplicates: "Mark supplementary, secondary, or unmapped alignments of duplicates as duplicates? As this takes a quick second pass over the data it will increase running time. Ignored if `create_bam == false`."
+        mark_supp_or_sec_or_unmapped_as_duplicates: {
+            description: "Mark supplementary, secondary, or unmapped alignments of duplicates as duplicates?",
+            help: "As this takes a quick second pass over the data it will increase running time. Ignored if `create_bam == false`.",
+        }
         json: "Output a JSON report instead of a text report? Either are parseable by MultiQC."
-        mark_duplicates_with_do_tag: "Mark duplicates with the `do` (`d`uplicate `o`riginal) tag? The `do` tag contains the name of the \"original\" read that was duplicated. Ignored if `create_bam == false`."
+        mark_duplicates_with_do_tag: {
+            description: "Mark duplicates with the `do` (`d`uplicate `o`riginal) tag?",
+            help: "The `do` tag contains the name of the \"original\" read that was duplicated. Ignored if `create_bam == false`.",
+        }
         duplicate_count: "Record the original primary read duplication count (include itself) in a `dc` tag? Ignored if `create_bam == false`."
-        include_qc_fails: "Include reads that have the QC-failed flag set in duplicate marking? This can increase the number of duplicates found. Ignored if `create_bam == false`."
-        duplicates_of_duplicates_check: "Check duplicates of duplicates for correctness? Performs further checks to make sure all optical duplicates are found. Also operates on `mark_duplicates_with_do_tag` tagging where reads may be tagged with the best quality read. Disabling this option can speed up duplicate marking when there are a great many duplicates for each original read. Ignored if `create_bam == false` **or** `optical_distance == 0`."
+        include_qc_fails: {
+            description: "Include reads that have the QC-failed flag set in duplicate marking?",
+            help: "This can increase the number of duplicates found. Ignored if `create_bam == false`.",
+        }
+        duplicates_of_duplicates_check: {
+            description: "Check duplicates of duplicates for correctness? Performs further checks to make sure all optical duplicates are found.",
+            help: "Also operates on `mark_duplicates_with_do_tag` tagging where reads may be tagged with the best quality read. Disabling this option can speed up duplicate marking when there are a great many duplicates for each original read. Ignored if `create_bam == false` **or** `optical_distance == 0`.",
+        }
         use_read_groups: "Only mark duplicates _within_ the same Read Group? Ignored if `create_bam == false`."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             group: "Common",
         }
         max_readlen: "Expected maximum read length."
-        optical_distance: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. Suggested settings of 100 for HiSeq style platforms or about 2500 for NovaSeq ones. When set above `0`, duplicate reads are tagged with `dt:Z:SQ` for optical duplicates and `dt:Z:LB` otherwise. Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_coords_regex`. If changing `read_coords_regex`, make sure that `coordinates_order` matches."
+        optical_distance: {
+            description: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled.",
+            warning: "Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines. Optical duplicate detection will not work on non-standard names without modifying `read_coords_regex`. If changing `read_coords_regex`, make sure that `coordinates_order` matches.",
+            help: "Suggested settings of 100 for HiSeq style platforms or about 2500 for NovaSeq ones. When set above `0`, duplicate reads are tagged with `dt:Z:SQ` for optical duplicates and `dt:Z:LB` otherwise.",
+        }
         ncpu: {
             description: "Number of cores to allocate for task",
             group: "Common",

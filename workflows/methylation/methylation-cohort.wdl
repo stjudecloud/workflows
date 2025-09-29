@@ -154,9 +154,15 @@ task combine_data {
     }
 
     parameter_meta {
-        files_to_combine: "Array of files with values for each sample. Each file is expected to have a list of probes in the first column with a header. Any additional columns are assumed to be sample values. The first column will be named `probe` in the output file."
+        files_to_combine: {
+            description: "Array of files with values for each sample.",
+            help: "Each file is expected to have a list of probes in the first column with a header. Any additional columns are assumed to be sample values. The first column will be named `probe` in the output file.",
+        }
         combined_file_name: "Name of the combined file"
-        simple_merge: "Use simple merge rather than batched read. Use this if different probesets are to be combined. The batched merge assumes that every sample uses the same set of probes and that the probes are ordered. If the probe set is different, then a simpler, but more memory intensive merge must be used."
+        simple_merge: {
+            description: "Use simple merge rather than batched read.",
+            warning: "Set this to `true` if different probesets are to be combined. The batched merge assumes that every sample uses the same set of probes and that the probes are ordered. If the probe set is different, then a simpler, but more memory intensive merge must be used.",
+        }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
     }
 

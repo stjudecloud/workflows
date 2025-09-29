@@ -357,7 +357,8 @@ task endedness {
             group: "Common",
         }
         calc_rpt: {
-            description: "Calculate and output Reads-Per-Template. This will produce a more sophisticated estimate for endedness, but uses substantially more memory (can reach up to 200% of BAM size in memory consumption for some inputs).",
+            description: "Calculate and output Reads-Per-Template.",
+            warning: "This will produce a more sophisticated estimate for endedness, but uses substantially more memory (can reach up to 200% of BAM size in memory consumption for some inputs).",
             group: "Common",
         }
         round_rpt: {
@@ -369,14 +370,15 @@ task endedness {
             group: "Common",
         }
         paired_deviance: {
-            description: "Distance from 0.5 split between number of f+l- reads and f-l+ reads allowed to be called 'Paired-End'. Default of `0.0` only appropriate if the whole file is being processed.",
+            description: "Distance from 0.5 split between number of f+l- reads and f-l+ reads allowed to be called 'Paired-End'.",
+            warning: "Default of `0.0` only appropriate if the whole file is being processed.",
             group: "Common",
         }
         num_reads: {
             description: "How many reads to analyze from the start of the file. Any n < 1 to parse whole file.",
             group: "Common",
         }
-        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by value of `calc_rpt` and the size of the input. Specified in GB."
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by value of `calc_rpt` and size of the BAM. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }
 

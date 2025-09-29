@@ -23,11 +23,11 @@
     must_not_contain:
       - "rg1 , rg2"
 
-- name: calc_gene_lengths
+- name: calc_feature_lengths
   tags:
     - util
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t calc_gene_lengths tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t calc_feature_lengths tools/util.wdl gtf="tests/input/gencode.v31.chrY_chrM.gtf.gz"
   files:
     - path: output/outputs.json
       contains:

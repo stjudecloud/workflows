@@ -1,4 +1,4 @@
-def main(counts_name_path, gene_lengths_path, outfile_path, has_header):
+def main(counts_name_path, feature_lengths_path, outfile_path, has_header):
     counts_file = open(counts_name_path, "r")
     counts = {}
     if has_header:
@@ -10,7 +10,7 @@ def main(counts_name_path, gene_lengths_path, outfile_path, has_header):
         counts[gene.strip()] = int(count.strip())
     counts_file.close()
 
-    lengths_file = open(gene_lengths_path, "r")
+    lengths_file = open(feature_lengths_path, "r")
     rpks = {}  # Reads Per Kilobase
     tot_rpk = 0
     lengths_file.readline()  # discard header
@@ -37,14 +37,14 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("counts_path")
-    parser.add_argument("gene_lengths_path")
+    parser.add_argument("feature_lengths_path")
     parser.add_argument("outfile_path")
     parser.add_argument("--counts_has_header", action="store_true")
 
     args = parser.parse_args()
     main(
         args.counts_path,
-        args.gene_lengths_path,
+        args.feature_lengths_path,
         args.outfile_path,
         args.counts_has_header,
     )

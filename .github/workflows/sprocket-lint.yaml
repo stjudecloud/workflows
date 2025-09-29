@@ -11,3 +11,4 @@ jobs:
           uses: stjude-rust-labs/sprocket-action@main
           with:
             lint: true
+            except: KnownRules

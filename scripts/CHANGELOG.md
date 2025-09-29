@@ -19,6 +19,7 @@ Any change to the `scripts/` directory should be accompanied by version increase
 
 ### Changed
 
+- `util/calc_gene_lengths.py` renamed to `util/calc_feature_lengths.py` [#269](https://github.com/stjudecloud/workflows/pull/269)
 - `methylation/combine.py` now has multiple strategies for merging [#262](https://github.com/stjudecloud/workflows/pull/262)
 
 ## 2025 August
