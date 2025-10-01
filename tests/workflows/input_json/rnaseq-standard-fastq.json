@@ -15,7 +15,8 @@
         }
     ],
     "rnaseq_standard_fastq.prefix": "test",
-    "rnaseq_standard_fastq.gtf": "../../input/gencode.v31.chrY_chrM.gtf.gz",
+    "rnaseq_standard_fastq.gtf": "../../input/gencode.v31.chrY_chrM.sorted.gtf.gz",
+    "rnaseq_standard_fastq.gtf_index": "../../input/gencode.v31.chrY_chrM.sorted.gtf.gz.tbi",
     "rnaseq_standard_fastq.star_db": "../../input/star_db.chrY_chrM.tar.gz",
     "rnaseq_standard_fastq.strandedness": "Unstranded"
 }
