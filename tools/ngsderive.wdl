@@ -75,7 +75,7 @@ task strandedness {
             awk 'NR > 1' "~{outfile_name}" | cut -f 5 > strandedness.txt
         fi
 
-        rm "$CWD_BAM" "$CWD_BAM".bai
+        rm "$CWD_BAM" "$CWD_BAM".bai "$CWD_GFF"
     >>>
 
     output {
