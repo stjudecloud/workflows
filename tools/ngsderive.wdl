@@ -53,17 +53,19 @@ task strandedness {
     command <<<
         set -euo pipefail
 
-        # localize BAM and BAI to CWD
+        # localize BAM, BAI, and GFF to CWD
         CWD_BAM=~{basename(bam)}
         ln -s "~{bam}" "$CWD_BAM"
         ln -s "~{bam_index}" "$CWD_BAM".bai
+        CWD_GFF=~{basename(gene_model)}
+        ln -s "~{gene_model}" "$CWD_GFF"
 
         ngsderive strandedness --verbose \
             ~{if split_by_rg then "--split-by-rg" else ""} \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
             -q ~{min_mapq} \
-            -g "~{gene_model}" \
+            -g "$CWD_GFF" \
             "$CWD_BAM" \
             > "~{outfile_name}"
 
