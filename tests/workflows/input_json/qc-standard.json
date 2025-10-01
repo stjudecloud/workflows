@@ -1,7 +1,8 @@
 {
     "quality_check_standard.bam": "../../input/test.bwa_aln_pe.chrY_chrM.bam",
     "quality_check_standard.bam_index": "../../input/test.bwa_aln_pe.chrY_chrM.bam.bai",
-    "quality_check_standard.gtf": "../../input/gencode.v31.chrY_chrM.gtf.gz",
+    "quality_check_standard.gtf": "../../input/gencode.v31.chrY_chrM.sorted.gtf.gz",
+    "quality_check_standard.gtf_index": "../../input/gencode.v31.chrY_chrM.sorted.gtf.gz.tbi",
     "quality_check_standard.kraken_db": "../../input/kraken2_db.mini.tar.gz",
     "quality_check_standard.rna": true,
     "quality_check_standard.coverage_beds": [

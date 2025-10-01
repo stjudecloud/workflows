@@ -54,7 +54,8 @@ workflow quality_check_standard {
         bam: "Input BAM format file to quality check"
         bam_index: "BAM index file corresponding to the input BAM"
         kraken_db: "Kraken2 database. Can be generated with `../reference/qc-reference.wdl`. Must be a tarball without a root directory."
-        gtf: "GTF features file. Gzipped or uncompressed. **Required** for RNA-Seq data."
+        gtf: "Sorted GTF features file. Gzipped or uncompressed. **Required** for RNA-Seq data."
+        gtf_index: "Tabix index corresponding to `gtf`"
         multiqc_config: "YAML file for configuring MultiQC"
         extra_multiqc_inputs: "An array of additional files to pass directly into MultiQC"
         coverage_beds: {
@@ -125,6 +126,7 @@ workflow quality_check_standard {
         File bam_index
         File kraken_db
         File? gtf
+        File? gtf_index
         #@ except: LineWidth
         File multiqc_config
             = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/multiqc_config/multiqc_config.yaml"
@@ -159,6 +161,7 @@ workflow quality_check_standard {
 
     call parse_input { input:
         gtf_provided = defined(gtf),
+        gtf_index_provided = defined(gtf_index),
         rna,
         coverage_beds_len = length(coverage_beds),
         coverage_labels,
@@ -357,6 +360,7 @@ workflow quality_check_standard {
             bam = post_subsample_bam,
             bam_index = post_subsample_bam_index,
             gene_model = select_first([gtf, "undefined"]),
+            gene_model_index = select_first([gtf_index, "undefined"]),
             outfile_name = post_subsample_prefix + ".strandedness.tsv",
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
@@ -502,6 +506,7 @@ task parse_input {
         }
         rna: "Is the sequenced molecule RNA?"
         gtf_provided: "Was a GTF supplied by the user? Must be `true` if `rna == true`."
+        gtf_index_provided: "Was a GTF index supplied by the user? Must be `true` if `rna == true`."
         coverage_beds_len: "Length of the provided `coverage_beds` array"
     }
 
@@ -509,6 +514,7 @@ task parse_input {
         Array[String] coverage_labels
         Boolean rna
         Boolean gtf_provided
+        Boolean gtf_index_provided
         Int coverage_beds_len
     }
 
@@ -517,8 +523,8 @@ task parse_input {
     command <<<
         EXITCODE=0
 
-        if ~{rna} && ! ~{gtf_provided}; then
-            >&2 echo "Must supply a GTF if 'rna == true'"
+        if ~{rna} && ! ~{gtf_provided} && ! ~{gtf_index_provided}; then
+            >&2 echo "Must supply a GTF and a tabix index if 'rna == true'"
             EXITCODE=1
         fi
 
