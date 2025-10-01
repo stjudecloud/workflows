@@ -2,7 +2,7 @@
   tags:
     - ngsderive
   command: >-
-    ./developer_scripts/run_sprocket_or_miniwdl.sh -t strandedness tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai" gene_model="tests/input/gencode.v31.chrY_chrM.gtf.gz"
+    ./developer_scripts/run_sprocket_or_miniwdl.sh -t strandedness tools/ngsderive.wdl bam="tests/input/test.bwa_aln_pe.chrY_chrM.bam" bam_index="tests/input/test.bwa_aln_pe.chrY_chrM.bam.bai" gene_model="tests/input/gencode.v31.chrY_chrM.sorted.gtf.gz" gene_model_index="tests/input/gencode.v31.chrY_chrM.gtf.gz.tbi"
   files:
     - path: output/outputs.json
       contains:

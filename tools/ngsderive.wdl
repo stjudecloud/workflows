@@ -14,7 +14,8 @@ task strandedness {
     parameter_meta {
         bam: "Input BAM format file to derive strandedness for"
         bam_index: "BAM index file corresponding to the input BAM"
-        gene_model: "Gene model as a GFF/GTF file"
+        gene_model: "Sorted gene model as a GFF/GTF file"
+        gene_model_index: "Tabix index corresponding to `gene_model`"
         outfile_name: "Name for the strandedness TSV file"
         split_by_rg: {
             description: "Contain one entry in the output TSV per read group, in addition to an `overall` entry",
@@ -39,6 +40,7 @@ task strandedness {
         File bam
         File bam_index
         File gene_model
+        File gene_model_index
         String outfile_name = basename(bam, ".bam") + ".strandedness.tsv"
         Boolean split_by_rg = false
         Int min_reads_per_gene = 10
@@ -57,6 +59,11 @@ task strandedness {
         CWD_BAM=~{basename(bam)}
         ln -s "~{bam}" "$CWD_BAM"
         ln -s "~{bam_index}" "$CWD_BAM".bai
+        
+        # localize gene model to CWD
+        CWD_GFF=~{basename(gene_model)}
+        ln -s "~{gene_model}" "$CWD_GFF"
+        ln -s "~{gene_model_index}" "$CWD_GFF".tbi
 
         ngsderive strandedness --verbose \
             ~{if split_by_rg then "--split-by-rg" else ""} \
