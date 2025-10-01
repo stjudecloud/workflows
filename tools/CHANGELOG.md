@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2025 October
+
+### Fixed
+
+- Prevented `ngsderive strandedness` from writing to read only file systems [#272](https://github.com/stjudecloud/workflows/pull/272)
+
 ## 2025 September
 
 ### Changed
