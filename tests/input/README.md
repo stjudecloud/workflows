@@ -26,7 +26,7 @@ Individual beta values from `minfi` filtered to only probes with genomic coordin
 
 ## Aligned.sortedByCoord.chr9_chr22.bam
 
-Coordinate sorted BAM file with alignments on `chr9` and `chr22`. Generated with STAR and parameters suitable for `arriba` variant calling. Has a single read group with ID `rg1`.
+Coordinate sorted BAM file with alignments on `chr9` and `chr22`. Generated with STAR and parameters suitable for `arriba` variant calling. Has a single read group with ID `rg1`. Has BCR-ABL fusion. Generated from `read1.fastq.gz` and `read2.fastq.gz` from `https://github.com/suhrig/arriba/tree/master/test`.
 
 ## Aligned.sortedByCoord.chr9_chr22.bam.bai
 
@@ -142,11 +142,11 @@ STAR database containing only the GRCh38 `chrY` and `chrM` contigs.
 
 ## test_R1.fq.gz
 
-10,000 reads in FASTQ format. Can be used by itself to represent a Single-End sample or used with `test_R2.fq.gz` to represent a Paired-End sample.
+10,000 reads in FASTQ format. Can be used by itself to represent a Single-End sample or used with `test_R2.fq.gz` to represent a Paired-End sample. Generated with `fq generate`.
 
 ## test_R2.fq.gz
 
-10,000 reads in FASTQ format. Can be used by itself to represent a Single-End sample or used with `test_R1.fq.gz` to represent a Paired-End sample.
+10,000 reads in FASTQ format. Can be used by itself to represent a Single-End sample or used with `test_R1.fq.gz` to represent a Paired-End sample. Generated with `fq generate`.
 
 ## test_rnaseq_variant.bam
 
@@ -162,7 +162,7 @@ GATK recalibration report for `test_rnaseq_variant.bam`
 
 ## test.bam
 
-Coordinate sorted BAM with 2 read groups (IDs of `1` and `2`) and 633 total reads mapped to `chr1` and `chr19`.
+Coordinate sorted BAM with 2 read groups (IDs of `1` and `2`) and 633 total reads mapped to `chr1` and `chr19`. Reused from `https://github.com/stjude/CICERO/tree/master/test/data/input`.
 
 ## test.bam.bai
 
