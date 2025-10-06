@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:noble-20250925
 
 RUN apt-get update \
     && apt-get upgrade -y \
