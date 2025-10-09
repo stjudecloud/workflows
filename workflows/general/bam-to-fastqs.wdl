@@ -60,9 +60,11 @@ workflow bam_to_fastqs {
     }
 
     output {
-        Array[File] read1s = select_all(flatten(
-            [bam_to_fastq.read_one_fastq_gz, bam_to_fastq.single_end_reads_fastq_gz]
-        ))
+        Array[File] read1s = (
+            if paired_end
+            then select_all(bam_to_fastq.read_one_fastq_gz)
+            else select_all(bam_to_fastq.single_end_reads_fastq_gz)
+        )
         Array[File?] read2s = bam_to_fastq.read_two_fastq_gz
     }
 }
