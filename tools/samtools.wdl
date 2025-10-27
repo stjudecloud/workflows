@@ -1066,11 +1066,9 @@ task fixmate {
 
 task position_sorted_fixmate {
     meta {
-        description: {
-            description: "Runs `samtools fixmate` on the position-sorted input BAM file and output a position-sorted BAM.",
-            warning: "If you already have a collated BAM, please use the `fixmate` task.",
-            help: "`fixmate` fills in mate coordinates and insert size fields among other tags and fields. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM.",
-        }
+        description: "Runs `samtools fixmate` on the position-sorted input BAM file and output a position-sorted BAM."
+        warning: "If you already have a collated BAM, please use the `fixmate` task."
+        help: "`fixmate` fills in mate coordinates and insert size fields among other tags and fields. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM."
         outputs: {
             fixmate_bam: "BAM file with mate information added"
         }
