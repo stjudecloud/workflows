@@ -185,5 +185,7 @@ sp:
     fn: "*.instrument.tsv"
   ngsderive/junction_annotation:
     fn: "*.junction_summary.tsv"
+  qualimap/rnaseq/coverage:
+    fn: "coverage_profile_along_genes_total.txt"
   samtools/flagstat:
     fn: "*.flagstat.txt"
