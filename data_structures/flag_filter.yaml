@@ -7,7 +7,7 @@ validate_string_is_12bit_int:
     inputs:
       - number:
           - "0x900"
-    tests:
+    assertions:
       stdout:
         contains: Input number (0x900) is valid
   - name: too_big_hexadecimal_fails
