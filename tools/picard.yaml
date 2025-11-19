@@ -5,5 +5,5 @@ merge_sam_files:
           - [$FIXTURES/test1.bam, $FIXTURES/test2.bam]
       - prefix:
           - test.merged
-    tests:
+    assertions:
       custom: quickcheck.sh

@@ -14,7 +14,7 @@ validate_string_is_12bit_int:
     inputs:
       - number:
           - "0x1000"
-    tests:
+    assertions:
       exit_code: 42
       stderr:
         contains: Input number (0x1000) is invalid
@@ -22,7 +22,7 @@ validate_string_is_12bit_int:
     inputs:
       - number:
           - "4096"
-    tests:
+    assertions:
       exit_code: 42
       stderr:
         contains:
@@ -43,5 +43,5 @@ validate_flag_filter:
           exclude_if_any: this is not a number
           include_if_any: "000000000011"
           exclude_if_all: "4095"
-    tests:
+    assertions:
       should_fail: true
