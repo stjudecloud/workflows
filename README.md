@@ -92,7 +92,7 @@ We use [`uv`](https://docs.astral.sh/uv/) for dependency management.
 
 The command for running our tests should be executed at the root of the repo:
 ```console
-$ uv run -m pytest --kwdof --wt $(nproc)
+$ uv run pytest --kwdof --wt $(nproc)
 ```
 
 ## 🤝 Contributing
