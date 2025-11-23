@@ -371,6 +371,18 @@ wheels = [
 ]
 
 [[package]]
+name = "miniwdl-lsf"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "miniwdl" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d4/3d/dcd3adaf7693e70a7aa496906f3bb7aae030fc551cd2954250f5fb84bc67/miniwdl_lsf-0.2.0.tar.gz", hash = "sha256:c8c79b3c2580e2a9d728b579406a6c5c30fc21a00b71f8f52763253c0eb0d799", size = 5131, upload-time = "2024-02-14T20:40:15.997Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/06/ca/c78acb84d267fbac809877cf59fba07f7e795378b2753496cad015eab0fe/miniwdl_lsf-0.2.0-py3-none-any.whl", hash = "sha256:80e044694a906899fceacde1c2a6ee7ca2dcb9f1dd855aa15c511ec8c4d29986", size = 6369, upload-time = "2024-02-14T20:40:14.579Z" },
+]
+
+[[package]]
 name = "numba"
 version = "0.62.1"
 source = { registry = "https://pypi.org/simple" }
@@ -990,6 +1002,7 @@ dependencies = [
     { name = "git-lfs" },
     { name = "matplotlib" },
     { name = "miniwdl" },
+    { name = "miniwdl-lsf" },
     { name = "numpy" },
     { name = "pandas" },
     { name = "pysam" },
@@ -1004,6 +1017,7 @@ requires-dist = [
     { name = "git-lfs", specifier = ">=1.6" },
     { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "miniwdl", specifier = ">=1.13.1" },
+    { name = "miniwdl-lsf", specifier = ">=0.2.0" },
     { name = "numpy", specifier = ">=2.3.5" },
     { name = "pandas", specifier = ">=2.3.3" },
     { name = "pysam", specifier = ">=0.23.3" },
