@@ -77,14 +77,12 @@ task rnaseq {
         rm "$gtf_name"
 
         tar -czf "~{out_tar_gz}" "~{prefix}"
-
-        mv "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt" \
-            coverage_profile_along_genes_total.txt
     >>>
 
     output {
         File raw_summary = "~{prefix}/rnaseq_qc_results.txt"
-        File raw_coverage = "coverage_profile_along_genes_total.txt"
+        File raw_coverage
+            = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
         File results = out_tar_gz
     }
 
