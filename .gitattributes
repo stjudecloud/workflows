@@ -8,12 +8,6 @@
 *.json !text !filter !merge !diff
 *.jpg !text !filter !merge !diff
 *.txt !text !filter !merge !diff
-docker/util/1.2.0/Dockerfile !text !filter !merge !diff
-docker/kraken2/2.1.2-0/Dockerfile !text !filter !merge !diff
-docker/estimate/1.0.0/Dockerfile !text !filter !merge !diff
-docker/cellranger/1.1.1/Dockerfile !text !filter !merge !diff
-docker/bwa/0.7.17-0/Dockerfile !text !filter !merge !diff
-docker/STAR/2.7.10a-0/Dockerfile !text !filter !merge !diff
 bin/check-job-alive !text !filter !merge !diff
 *.yml !text !filter !merge !diff
 *.md !text !filter !merge !diff

@@ -49,8 +49,6 @@ We will try to keep a handful of [issues][issues] marked `good first issue` open
 
 The Sprocket Lint check is the most common failure. We encourage contributors to run Sprocket locally via the VSCode extension. Then address any WDL style issues before committing.
 
-The Docker Pull Check also fails when an image version is incremented, but the corresponding change has not made it to the `main` branch to build the docker image. These failures can be ignored if the pull request is responsible for creating the new docker image version.
-
 ### Container Vulnerabilities
 
 We use Snyk to scan our container images for vulnerabilities. These vulnerability lists can be quite long and therefore we prioritize Critical and High severity vulnerabilities. In addition, lower severity vulnerabilities should also be addressed when feasible. Ultimately, the maintainers of this repository are the arbiters of which vulnerabilities must be addressed to merge a pull request.

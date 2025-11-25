@@ -66,7 +66,7 @@ This repository implements workflows using the Workflow Description Language (WD
 
 The workflows and tasks in this repository should require minimal set-up and configuration before you're ready to run. You don't even need to clone the repo! The bare minimum requirements are a locally installed WDL runner and an internet connection.
 
-The exact steps for installation, configuration, and execution are going to depend on you environment and preferred engine. There are a variety of WDL engines you could use, though our team prefers [miniwdl](https://github.com/chanzuckerberg/miniwdl). We also make use of the [`miniwdl-lsf` plugin](https://pypi.org/project/miniwdl-lsf/) for running on our LSF cluster.
+The exact steps for installation, configuration, and execution are going to depend on you environment and preferred engine. There are a variety of WDL engines you could use; we ensure our WDL code executes with both [Sprocket](https://sprocket.bio) and [miniwdl](https://github.com/chanzuckerberg/miniwdl). We also make use of the [`miniwdl-lsf` plugin](https://pypi.org/project/miniwdl-lsf/) for running on our LSF cluster.
 
 Most WDL runners are capable of running a WDL file from a URL. This is how we most commonly execute our workflows and tasks. The below command is a mock example of of what could be used to submit a run of our rnaseq-standard workflow using `miniwdl`:
 
@@ -86,9 +86,14 @@ For an introduction to WDL, there are many guides, one of which is [from Terra](
 
 ## Tests
 
-Every task in this repository is covered by at least one test (see all of our tests in `tests/tools/`). These are run using [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/).
+Every task in this repository is covered by at least one test (see all of our tests in `tests/`). These are run using [pytest-workflow](https://pytest-workflow.readthedocs.io/en/stable/).
 
-The command for running our tests should be executed at the root of the repo: `python -m pytest --kwdof --git-aware`
+We use [`uv`](https://docs.astral.sh/uv/) for dependency management.
+
+The command for running our tests should be executed at the root of the repo:
+```console
+$ uv run pytest --kwdof --wt $(nproc)
+```
 
 ## 🤝 Contributing
 
