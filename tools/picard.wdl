@@ -83,7 +83,7 @@ task mark_duplicates {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int memory_gb = min(ceil(bam_size + 10), 50) + modify_memory_gb
+    Int memory_gb = min(ceil(bam_size + 12), 50) + modify_memory_gb
     Int disk_size_gb = (
         (
             if create_bam
