@@ -1,0 +1,13 @@
+[project]
+name = "workflows"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "<3.14,>=3.13"
+dependencies = [
+    "git-lfs>=1.6",
+    "miniwdl>=1.13.1",
+    "miniwdl-lsf>=0.2.0",
+    "pytest-workflow>=2.1.0",
+    "ruff>=0.14.6",
+]

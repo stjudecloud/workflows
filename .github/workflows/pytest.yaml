@@ -41,7 +41,7 @@ jobs:
     - name: Install miniwdl and pytest-workflow
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements-dev.txt
+        pip install -r requirements-ci.txt
     - name: filter tests
       # don't run slow tests in CI
       run: |
@@ -53,4 +53,4 @@ jobs:
       env: 
         RUNNER: ${{ matrix.runner }}
       run: |
-        pytest --git-aware --basetemp /home/runner/work/pytest --symlink --tag ${{ matrix.tag }}
+        pytest --basetemp /home/runner/work/pytest --tag ${{ matrix.tag }}
