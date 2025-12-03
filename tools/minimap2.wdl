@@ -93,12 +93,18 @@ task index {
     }
 
     command <<<
+        set -euo pipefail
+
+        ref_fasta=~{basename(reference_fasta, ".gz")}
+        gunzip -c "~{reference_fasta}" > "$ref_fasta" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta"
+
         minimap2 \
             -k ~{minimizer_kmer_size} \
             -w ~{minimizer_window_size} \
             ~{if defined(alt_contigs) then "--alt \"~{alt_contigs}\"" else ""} \
             -d "~{index_name}" \
-            "~{reference_fasta}"
+            "$ref_fasta"
     >>>
 
     output {
