@@ -43,6 +43,7 @@ task align {
         secondary_alignments: "If true, report secondary alignments"
         seed: "Seed value for the minimap2 aligner"
         threads: "Number of threads to use for alignment"
+        modify_disk_size_gb: "Additional disk space to allocate (in GB)"
     }
 
     input {
@@ -61,7 +62,16 @@ task align {
         Boolean secondary_alignments = true
         Int seed = 11
         Int threads = 3
+        Int modify_disk_size_gb = 0
     }
+
+    Int disk_size_gb = ceil(
+        (
+            size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+        ) * 2)
+        + ceil(size(reference_index, "GiB"))
+        + 10
+        + modify_disk_size_gb
 
     command <<<
         minimap2 \
@@ -96,6 +106,7 @@ task align {
         container: "ghcr.io/stjudecloud/minimap2:branch-minimap2-2.30-0"
         cpu: threads
         memory: "16 GB"
+        disks: "~{disk_size_gb} GB"
     }
 }
 
@@ -114,6 +125,7 @@ task index {
         minimizer_kmer_size: "K-mer size for minimizer indexing"
         minimizer_window_size: "Window size for minimizer indexing"
         threads: "Number of threads to use for indexing"
+        modify_disk_size_gb: "Additional disk space to allocate (in GB)"
     }
 
     input {
@@ -123,7 +135,10 @@ task index {
         Int minimizer_kmer_size = 15
         Int minimizer_window_size = 10
         Int threads = 3
+        Int modify_disk_size_gb = 0
     }
+
+    Int disk_size_gb = ceil(size(reference_fasta, "GiB")) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -149,5 +164,6 @@ task index {
         container: "ghcr.io/stjudecloud/minimap2:branch-minimap2-2.30-0"
         cpu: threads
         memory: "16 GB"
+        disks: "~{disk_size_gb} GB"
     }
 }
