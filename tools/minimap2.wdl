@@ -9,10 +9,31 @@ task align {
     }
 
     parameter_meta {
-        reads: "The input reads file in FASTQ format"
+        read_one_fastq_gz: "Input gzipped FASTQ read one file to align with minimap2"
+        read_two_fastq_gz: "Input gzipped FASTQ read two file to align with minimap2"
         reference_index: "The minimap2 index file for the reference genome"
         read_group: "The read group string to be included in the SAM header. Format: '@RG\\tID:foo\\tSM:bar'"
         output_name: "The name of the output alignment file"
+        preset: {
+            description: "Minimap2 preset for alignment",
+            external_help: "https://lh3.github.io/minimap2/minimap2.html#8",
+            options: [
+                "sr",
+                "map-ont",
+                "lr:hq",
+                "map-hifi",
+                "map-pb",
+                "map-iclr",
+                "asm5",
+                "asm10",
+                "asm20",
+                "splice",
+                "splice:hq",
+                "splice:sr",
+                "ava-pb",
+                "ava-ont"
+            ],
+        }
         output_paf: "If true, output in PAF format instead of SAM"
         cigar_in_paf: "If true and outputting PAF, include CIGAR strings in the PAF output"
         ignore_base_quality: "If true, ignore base quality scores during alignment"
@@ -25,9 +46,11 @@ task align {
     }
 
     input {
-        File reads
+        File read_one_fastq_gz
         File reference_index
         String read_group
+        File? read_two_fastq_gz
+        String? preset = "sr"
         String output_name = "aligned.sam"
         Boolean output_paf = false
         Boolean cigar_in_paf = true
@@ -42,6 +65,7 @@ task align {
 
     command <<<
         minimap2 \
+            ~{if defined(preset) then "-x \"~{preset}\"" else ""} \
             ~{if output_paf then "" else "-a"} \
             ~{if output_paf && cigar_in_paf then "-c" else ""} \
             ~{if ignore_base_quality then "-Q" else ""} \
@@ -53,7 +77,8 @@ task align {
             --seed ~{seed} \
             -R "~{read_group}" \
             "~{reference_index}" \
-            "~{reads}" \
+            "~{read_one_fastq_gz}" \
+            ~{if defined(read_two_fastq_gz) then "\"~{read_two_fastq_gz}\"" else ""} \
             > "~{output_name}"
     >>>
 
@@ -64,7 +89,7 @@ task align {
     requirements {
         container: "quay.io/biocontainers/minimap2:2.30--h577a1d6_0"
         cpu: threads
-        memory: "4 GB"
+        memory: "16 GB"
     }
 }
 
@@ -82,6 +107,7 @@ task index {
         index_name: "The name of the output index file"
         minimizer_kmer_size: "K-mer size for minimizer indexing"
         minimizer_window_size: "Window size for minimizer indexing"
+        threads: "Number of threads to use for indexing"
     }
 
     input {
@@ -90,6 +116,7 @@ task index {
         String index_name = "reference.mmi"
         Int minimizer_kmer_size = 15
         Int minimizer_window_size = 10
+        Int threads = 3
     }
 
     command <<<
@@ -103,6 +130,7 @@ task index {
             -k ~{minimizer_kmer_size} \
             -w ~{minimizer_window_size} \
             ~{if defined(alt_contigs) then "--alt \"~{alt_contigs}\"" else ""} \
+            -t ~{threads} \
             -d "~{index_name}" \
             "$ref_fasta"
     >>>
@@ -113,7 +141,7 @@ task index {
 
     requirements {
         container: "quay.io/biocontainers/minimap2:2.30--h577a1d6_0"
-        cpu: 1
-        memory: "4 GB"
+        cpu: threads
+        memory: "16 GB"
     }
 }
