@@ -34,7 +34,7 @@ task align {
                 "ava-ont"
             ],
         }
-        output_paf: "If true, output in PAF format instead of SAM"
+        output_paf: "If true, output in PAF format instead of BAM"
         cigar_in_paf: "If true and outputting PAF, include CIGAR strings in the PAF output"
         ignore_base_quality: "If true, ignore base quality scores during alignment"
         output_md_tag: "If true, include MD tags in the SAM output"
@@ -51,7 +51,7 @@ task align {
         String read_group
         File? read_two_fastq_gz
         String? preset = "sr"
-        String output_name = "aligned.sam"
+        String output_name = "aligned.bam"
         Boolean output_paf = false
         Boolean cigar_in_paf = true
         Boolean ignore_base_quality = false
@@ -79,7 +79,13 @@ task align {
             "~{reference_index}" \
             "~{read_one_fastq_gz}" \
             ~{if defined(read_two_fastq_gz) then "\"~{read_two_fastq_gz}\"" else ""} \
-            > "~{output_name}"
+            > output
+
+            if ~{output_paf}; then
+                mv output "~{output_name}"
+            else
+                samtools view -b output > "~{output_name}"
+            fi
     >>>
 
     output {
@@ -87,7 +93,7 @@ task align {
     }
 
     requirements {
-        container: "quay.io/biocontainers/minimap2:2.30--h577a1d6_0"
+        container: "ghcr.io/stjudecloud/minimap2:branch-minimap2-2.30-0"
         cpu: threads
         memory: "16 GB"
     }
@@ -140,7 +146,7 @@ task index {
     }
 
     requirements {
-        container: "quay.io/biocontainers/minimap2:2.30--h577a1d6_0"
+        container: "ghcr.io/stjudecloud/minimap2:branch-minimap2-2.30-0"
         cpu: threads
         memory: "16 GB"
     }
