@@ -10,10 +10,9 @@ task align {
 
     parameter_meta {
         read_one_fastq_gz: "Input gzipped FASTQ read one file to align with minimap2"
-        read_two_fastq_gz: "Input gzipped FASTQ read two file to align with minimap2"
         reference_index: "The minimap2 index file for the reference genome"
         read_group: "The read group string to be included in the SAM header. Format: '@RG\\tID:foo\\tSM:bar'"
-        output_name: "The name of the output alignment file"
+        read_two_fastq_gz: "Input gzipped FASTQ read two file to align with minimap2"
         preset: {
             description: "Minimap2 preset for alignment",
             external_help: "https://lh3.github.io/minimap2/minimap2.html#8",
@@ -31,9 +30,10 @@ task align {
                 "splice:hq",
                 "splice:sr",
                 "ava-pb",
-                "ava-ont"
+                "ava-ont",
             ],
         }
+        output_name: "The name of the output alignment file"
         output_paf: "If true, output in PAF format instead of BAM"
         cigar_in_paf: "If true and outputting PAF, include CIGAR strings in the PAF output"
         ignore_base_quality: "If true, ignore base quality scores during alignment"
