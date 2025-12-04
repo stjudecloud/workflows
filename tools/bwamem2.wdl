@@ -14,9 +14,12 @@ task align {
         read_group: "The read group string to be included in the SAM header. Format: '@RG\\tID:foo\\tSM:bar'"
         read_two_fastq_gz: "Input gzipped FASTQ read two file to align with BWA-MEM2"
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
-        seed: "Seed value for the BWA-MEM2 aligner"
+        smart_pairing: "If true, enable smart pairing mode for paired-end reads"
+        skip_mate_rescue: "If true, skip mate rescue for paired-end reads"
         threads: "Number of threads to use for alignment"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
+        seed_length: "Seed value for the BWA-MEM2 aligner"
+        min_score: "Minimum score threshold for reporting alignments"
     }
 
     input {
@@ -29,12 +32,12 @@ task align {
             "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
             ""
         )
+        Boolean smart_pairing = false
+        Boolean skip_mate_rescue = false
         Int threads = 4
         Int modify_disk_size_gb = 0
         Int seed_length = 19
         Int min_score = 30
-        Boolean smart_pairing = false
-        Boolean skip_mate_rescue = false
     }
 
     String output_name = prefix + ".bam"
@@ -61,7 +64,7 @@ task align {
             ~{if skip_mate_rescue then "-S" else ""} \
             bwa_db/"$PREFIX" \
             "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz) then "~{read_two_fastq_gz}" else ""} |
+            ~{if defined(read_two_fastq_gz) then "\"~{read_two_fastq_gz}\"" else ""} |
         samtools view -b -o "~{output_name}" -
     >>>
 
@@ -121,7 +124,7 @@ task index {
     requirements {
         container: "ghcr.io/stjudecloud/bwamem2:branch-minimap2-2.3-0"
         cpu: 1
-        memory: "16 GB"
+        memory: "120 GB"
         disks: "~{disk_size_gb} GB"
     }
 }
