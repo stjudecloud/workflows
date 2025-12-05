@@ -51,9 +51,15 @@ task index {
         + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
+        ref_fasta=~{basename(reference_fasta, ".gz")}
+        gunzip -c "~{reference_fasta}" > "$ref_fasta" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta"
+
         vg autoindex \
             --workflow "~{workflow}" \
-            -r "~{reference_fasta}" \
+            -r "$ref_fasta" \
             -p "~{db_prefix}" \
             ~{sep(" ", prefix("-v ", quote(vcf_files)))} \
             ~{sep(" ", prefix("-x ", quote(transcript_gff)))} \
