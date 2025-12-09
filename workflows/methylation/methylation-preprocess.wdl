@@ -12,6 +12,8 @@ task process_raw_idats {
             m_values: "M values",
             probe_names: "Probe names found on the array",
             probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows.",
+            probes_with_snps: "List of probes that contain SNPs",
+            probes_without_snps: "List of probes that do not contain SNPs",
         }
     }
 
@@ -58,8 +60,8 @@ task process_raw_idats {
         File m_values = out_base + ".m_values.csv"
         File probe_names = out_base + ".probeNames.csv"
         File probe_pvalues = out_base + ".detectionP.csv"
-        File probes_with_snps = out_base + ".probes_with_snps.csv"
-        File probes_without_snps = out_base + ".probes_without_snps.csv"
+        File probes_with_snps = out_base + ".probes_with_snps.tab"
+        File probes_without_snps = out_base + ".probes_without_snps.tab"
     }
 
     runtime {

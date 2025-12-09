@@ -90,10 +90,17 @@ write.csv(probe_names, paste0(args$out_base, ".probeNames.csv"))
 
 # Write probes with SNPs
 probes_with_snps <- setdiff(probe_names, probes_without_snps)
-write.csv(probes_with_snps, paste0(args$out_base, ".probes_with_snps.csv"))
-write.csv(
+write.table(
+  probes_with_snps,
+  paste0(args$out_base, ".probes_with_snps.tab"),
+  row.names = FALSE,
+  col.names = FALSE,
+)
+write.table(
   probes_without_snps,
-  paste0(args$out_base, ".probes_without_snps.csv")
+  paste0(args$out_base, ".probes_without_snps.tab"),
+  row.names = FALSE,
+  col.names = FALSE,
 )
 
 gr <- granges(gr_set)

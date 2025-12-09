@@ -31,7 +31,9 @@ def get_args():
         help="Fraction of samples that must exceed the p-value threshold.",
     )
     parser.add_argument("--pval", type=str, help="P-values CSV file.")
-    parser.add_argument("--exclude", type=str, nargs='*', help="Files with probes to exclude.")
+    parser.add_argument(
+        "--exclude", type=str, nargs='*', help="Files with probes to exclude."
+    )
     parser.add_argument("beta", type=str, help="Beta values CSV file.")
     args = parser.parse_args()
 
