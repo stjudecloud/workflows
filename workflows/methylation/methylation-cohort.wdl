@@ -17,6 +17,7 @@ workflow methylation_cohort {
 
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
+        sex_probe_list: "List of probes mapping to sex chromosomes to optionally filter"
         p_values: "Array of detection p-value files for each sample."
         skip_pvalue_check: "Skip filtering based on p-values, even if `p_values` is supplied."
         num_probes: "Number of probes to use when filtering to the top `num_probes` probes with the highest standard deviation."
@@ -24,6 +25,7 @@ workflow methylation_cohort {
 
     input {
         Array[File] unfiltered_normalized_beta
+        File? sex_probe_list
         Array[File] p_values = []
         Boolean skip_pvalue_check = false
         Int num_probes = 10000
@@ -120,6 +122,7 @@ workflow methylation_cohort {
         ),
         p_values = pval_file,
         num_probes,
+        additional_probes_to_exclude = select_all([sex_probe_list]),
     }
 
     call generate_umap { input:
@@ -212,6 +215,7 @@ task filter_probes {
     parameter_meta {
         beta_values: "Beta values for all samples"
         p_values: "P-values for all samples"
+        additional_probes_to_exclude: "Additional probes to exclude from the analysis"
         prefix: "Prefix for the output files. The extensions `.beta.csv` and `.probes.csv` will be appended."
         pval_threshold: "P-value cutoff to determine poor quality probes"
         pval_sample_fraction: "Fraction of samples that must exceed p-value threshold to exclude probe"
@@ -221,6 +225,7 @@ task filter_probes {
     input {
         File beta_values
         File? p_values
+        Array[File] additional_probes_to_exclude = []
         String prefix = "filtered"
         Float pval_threshold = 0.01
         Float pval_sample_fraction = 0.5
@@ -237,6 +242,7 @@ task filter_probes {
             --pval-threshold ~{pval_threshold} \
             --pval-sample-fraction ~{pval_sample_fraction} \
             ~{"--pval '" + p_values + "'"} \
+            ~{sep(" ", prefix("--exclude ", quote(additional_probes_to_exclude)))} \
             "~{beta_values}"
     >>>
 

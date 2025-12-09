@@ -36,10 +36,13 @@ workflow methylation {
         }
     }
 
+    call preprocess.list_sex_probes {}
+
     call cohort.methylation_cohort { input:
         unfiltered_normalized_beta =
             process_raw_idats.beta_swan_norm_unfiltered_genomic,
         p_values = process_raw_idats.probe_pvalues,
+        sex_probe_list = list_sex_probes.probe_list,
     }
 
     output {

@@ -68,3 +68,34 @@ task process_raw_idats {
         maxRetries: 1
     }
 }
+
+task list_sex_probes {
+    meta {
+        description: "List probes that map to the sex chromosomes"
+        outputs: {
+            probe_list: "List of probe names that map to the sex chromosomes"
+        }
+    }
+
+    parameter_meta {}
+
+    input {}
+
+    command <<<
+        set -euo pipefail
+
+        Rscript /scripts/methylation/list-sex-probes.R
+    >>>
+
+    output {
+        File probe_list = "sex_probes.txt"
+    }
+
+    runtime {
+        container: "ghcr.io/stjudecloud/minfi:1.48.0-7"
+        memory: "8 GB"
+        cpu: 1
+        disks: "2 GB"
+        maxRetries: 1
+    }
+}

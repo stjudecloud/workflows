@@ -63,6 +63,13 @@ saveRDS(r_set, paste0(args$out_base, ".RSet.rds"))
 gr_set <- mapToGenome(r_set)
 saveRDS(gr_set, paste0(args$out_base, ".GRSet.rds"))
 
+# Get the list of sites with SNPs
+snps <- getSnpInfo(gr_set)
+gr_set_snps <- addSnpInfo(gr_set)
+# Remove probes with SNPs at CpG or single-base extension sites
+gr_set_snps <- dropLociWithSnps(gr_set_snps, snps=c("SBE","CpG"), maf=0)
+probes_without_snps <- featureNames(gr_set_snps)
+
 # Take the genomic mapped RatioSet and fill Beta values (non-normalized).
 # Get the NON-normalized beta values:
 beta <- getBeta(gr_set)
@@ -80,6 +87,14 @@ sample_names <- sampleNames(gr_set)
 write.csv(sample_names, paste0(args$out_base, ".sampleNames.csv"))
 probe_names <- featureNames(gr_set)
 write.csv(probe_names, paste0(args$out_base, ".probeNames.csv"))
+
+# Write probes with SNPs
+probes_with_snps <- setdiff(probe_names, probes_without_snps)
+write.csv(probes_with_snps, paste0(args$out_base, ".probes_with_snps.csv"))
+write.csv(
+  probes_without_snps,
+  paste0(args$out_base, ".probes_without_snps.csv")
+)
 
 gr <- granges(gr_set)
 write.csv(gr, paste0(args$out_base, ".gr.csv"))
