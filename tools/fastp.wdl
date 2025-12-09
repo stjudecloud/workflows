@@ -54,7 +54,7 @@ task fastp {
         first_n_reads: "Only process the first `n` reads. `first_n_reads = 0` for processing entire input."
         duplicate_accuracy: {
             description: "Accuracy level to calculate duplication.",
-            help: "Value must be between 1 and 6 inclusive. Higher levels use more memory (by default: 2 GB, 4 GB, 6 GB, 12 GB, 20 GB, 32 GB).",
+            help: "Value must be between 1 and 6 inclusive. Higher levels use more memory (by default: 4 GB, 6 GB, 8 GB, 14 GB, 22 GB, 34 GB).",
         }
         n_base_limit: {
             description: "If one read's number of N base(s) is `>n_base_limit`, then this read/pair is discarded.",
@@ -137,12 +137,12 @@ task fastp {
     }
 
     Map[Int, String] dup_acc_to_mem = {
-        1: "2 GB",
-        2: "4 GB",
-        3: "6 GB",
-        4: "12 GB",
-        5: "20 GB",
-        6: "32 GB",
+        1: "4 GB",
+        2: "6 GB",
+        3: "8 GB",
+        4: "14 GB",
+        5: "22 GB",
+        6: "34 GB",
     }
 
     Float input_size = size(read_one_fastq, "GB") + size(read_two_fastq, "GB")
@@ -221,7 +221,7 @@ task fastp {
         cpu: ncpu
         memory: (
             if disable_duplicate_eval
-            then "2 GB"
+            then "4 GB"
             else dup_acc_to_mem[duplicate_accuracy]
         )
         disks: "~{disk_size_gb} GB"
