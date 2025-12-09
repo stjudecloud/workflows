@@ -67,7 +67,7 @@ saveRDS(gr_set, paste0(args$out_base, ".GRSet.rds"))
 snps <- getSnpInfo(gr_set)
 gr_set_snps <- addSnpInfo(gr_set)
 # Remove probes with SNPs at CpG or single-base extension sites
-gr_set_snps <- dropLociWithSnps(gr_set_snps, snps=c("SBE","CpG"), maf=0)
+gr_set_snps <- dropLociWithSnps(gr_set_snps, snps = c("SBE", "CpG"), maf = 0)
 probes_without_snps <- featureNames(gr_set_snps)
 
 # Take the genomic mapped RatioSet and fill Beta values (non-normalized).
