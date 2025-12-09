@@ -58,6 +58,8 @@ task process_raw_idats {
         File m_values = out_base + ".m_values.csv"
         File probe_names = out_base + ".probeNames.csv"
         File probe_pvalues = out_base + ".detectionP.csv"
+        File probes_with_snps = out_base + ".probes_with_snps.csv"
+        File probes_without_snps = out_base + ".probes_without_snps.csv"
     }
 
     runtime {
