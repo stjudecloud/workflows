@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2025 December
+
+### Changed
+
+- `mark_duplicates` in `picard.wdl` had a memory constant used for small BAMs bumped from +6GB to +12GB [#279](https://github.com/stjudecloud/workflows/pull/279)
+
 ## 2025 October
 
 ### Fixed
