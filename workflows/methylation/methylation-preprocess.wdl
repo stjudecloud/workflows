@@ -63,7 +63,7 @@ task process_raw_idats {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/minfi:1.48.0-7"
+        container: "ghcr.io/stjudecloud/minfi:1.48.0-8"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -94,7 +94,7 @@ task list_sex_probes {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/minfi:1.48.0-7"
+        container: "ghcr.io/stjudecloud/minfi:1.48.0-8"
         memory: "8 GB"
         cpu: 1
         disks: "2 GB"
