@@ -95,12 +95,14 @@ write.table(
   paste0(args$out_base, ".probes_with_snps.tab"),
   row.names = FALSE,
   col.names = FALSE,
+  quote = FALSE,
 )
 write.table(
   probes_without_snps,
   paste0(args$out_base, ".probes_without_snps.tab"),
   row.names = FALSE,
   col.names = FALSE,
+  quote = FALSE,
 )
 
 gr <- granges(gr_set)
