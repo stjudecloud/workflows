@@ -89,12 +89,10 @@ task align {
             "~{reference_index}" \
             "~{read_one_fastq_gz}" \
             ~{if defined(read_two_fastq_gz) then "\"~{read_two_fastq_gz}\"" else ""} \
-            > output
-
-            if ~{output_paf}; then
-                mv output "~{output_name}"
+            | if ~{output_paf}; then
+                cat - > "~{output_name}"
             else
-                samtools view -b output > "~{output_name}"
+                samtools view -b - > "~{output_name}"
             fi
     >>>
 
