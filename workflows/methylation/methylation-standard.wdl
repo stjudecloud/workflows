@@ -16,6 +16,7 @@ workflow methylation {
             umap_embedding: "UMAP embedding for all samples",
             umap_plot: "UMAP plot for all samples",
             probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows and all of the input samples as columns.",
+            probes_with_snps: "List of probes that are affected by SNPs",
         }
         allowNestedInputs: true
     }
@@ -46,8 +47,8 @@ workflow methylation {
     }
 
     call concat_and_uniq { input:
-        input_files = process_raw_idats.probes_with_snps,
-        output_file_name = "probes_with_snps.txt"
+        files_to_combine = process_raw_idats.probes_with_snps,
+        output_file_name = "probes_with_snps.txt",
     }
 
     output {
@@ -59,7 +60,7 @@ workflow methylation {
         File umap_embedding = methylation_cohort.umap_embedding
         File umap_plot = methylation_cohort.umap_plot
         File? probe_pvalues = methylation_cohort.probe_pvalues
-        File probes_with_snps = concat_and_uniq.output_file
+        File probes_with_snps = concat_and_uniq.combined_file
     }
 }
 
@@ -67,28 +68,28 @@ task concat_and_uniq {
     meta {
         description: "Concatenate multiple files and retain unique lines"
         outputs: {
-            output_file: "File containing unique lines from all input files"
+            combined_file: "File containing unique lines from all input files"
         }
     }
 
     parameter_meta {
-        input_files: "Array of input files to concatenate"
+        files_to_combine: "Array of input files to concatenate"
         output_file_name: "Name of the output file"
     }
 
     input {
-        Array[File] input_files
+        Array[File] files_to_combine
         String output_file_name = "unique_lines.txt"
     }
 
     command <<<
         set -euo pipefail
 
-        cat ~{sep(" ", quote(input_files))} | sort | uniq > "~{output_file_name}"
+        sort ~{sep(" ", quote(files_to_combine))} | uniq > "~{output_file_name}"
     >>>
 
     output {
-        File output_file = "~{output_file_name}"
+        File combined_file = "~{output_file_name}"
     }
 
     runtime {
@@ -98,5 +99,4 @@ task concat_and_uniq {
         disks: "4 GB"
         maxRetries: 1
     }
-
 }
