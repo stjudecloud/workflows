@@ -45,6 +45,11 @@ workflow methylation {
         sex_probe_list = list_sex_probes.probe_list,
     }
 
+    call concat_and_uniq { input:
+        input_files = process_raw_idats.probes_with_snps,
+        output_file_name = "probes_with_snps.txt"
+    }
+
     output {
         Array[File] beta_swan_norm_unfiltered_genomic =
             process_raw_idats.beta_swan_norm_unfiltered_genomic
@@ -54,5 +59,44 @@ workflow methylation {
         File umap_embedding = methylation_cohort.umap_embedding
         File umap_plot = methylation_cohort.umap_plot
         File? probe_pvalues = methylation_cohort.probe_pvalues
+        File probes_with_snps = concat_and_uniq.output_file
     }
+}
+
+task concat_and_uniq {
+    meta {
+        description: "Concatenate multiple files and retain unique lines"
+        outputs: {
+            output_file: "File containing unique lines from all input files"
+        }
+    }
+
+    parameter_meta {
+        input_files: "Array of input files to concatenate"
+        output_file_name: "Name of the output file"
+    }
+
+    input {
+        Array[File] input_files
+        String output_file_name = "unique_lines.txt"
+    }
+
+    command <<<
+        set -euo pipefail
+
+        cat ~{sep(" ", quote(input_files))} | sort | uniq > "~{output_file_name}"
+    >>>
+
+    output {
+        File output_file = "~{output_file_name}"
+    }
+
+    runtime {
+        container: "ghcr.io/stjudecloud/pandas:branch-methylation_filtering-2.2.1-7"
+        memory: "2 GB"
+        cpu: 1
+        disks: "4 GB"
+        maxRetries: 1
+    }
+
 }
