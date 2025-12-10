@@ -47,6 +47,8 @@ task process_raw_idats {
             --idat_base "~{idat_base}" \
             --out_base "~{out_base}" \
             --seed ~{seed}
+
+        rm ./*.idat
     >>>
 
     output {
