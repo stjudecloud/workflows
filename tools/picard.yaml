@@ -2,7 +2,7 @@ merge_sam_files:
   - name: Merge works
     inputs:
       bams:
-          - [$FIXTURES/test1.bam, $FIXTURES/test2.bam]
+          - [test.bwa_aln_pe.chrY_chrM.bam, test.PE.2_RGs.Aligned.out.sorted.bam]
       prefix:
           - test.merged
     assertions:

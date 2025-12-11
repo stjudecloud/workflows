@@ -1,15 +1,11 @@
 bam_to_fastq:
   - name: kitchen_sink
     inputs:
-      $files:
-          bam:
-            - $FIXTURES/test1.bam
-            - $FIXTURES/test2.bam
-            - $FIXTURES/test3.bam
-          bam_index:
-            - $FIXTURES/test1.bam.bai
-            - $FIXTURES/test2.bam.bai
-            - $FIXTURES/test3.bam.bai
+      bam:
+        - Aligned.sortedByCoord.chr9_chr22.bam
+        - test.bam
+        - test_rnaseq_variant.bam
+        - test.bwa_aln_pe.chrY_chrM.bam
       bitwise_filter:
         - include_if_all: "0x0"
           exclude_if_any: "0x900"
@@ -38,34 +34,8 @@ bam_to_fastq:
       output_singletons:
         - true
         - false
-      $files:
-        bam:
-          - $FIXTURES/test1.bam
-          - $FIXTURES/test2.bam
-        bam_index:
-          - $FIXTURES/test1.bam.bai
-          - $FIXTURES/test2.bam.bai
-  - name: not as simple
-    inputs:
-      output_singletons:
-        - true
-        - false
-      $files:
-          bam:
-            - $FIXTURES/test1.bam
-            - $FIXTURES/test2.bam
-            - $FIXTURES/test3.bam
-          bam_index:
-            - $FIXTURES/test1.bam.bai
-            - $FIXTURES/test2.bam.bai
-            - $FIXTURES/test3.bam.bai
-      $ref:
-          ref_fasta:
-            - hg19.fasta
-            - GRCh38.fasta
-          ref_fasta_index:
-            - hg19.fa.fai
-            - GRCh38.fa.fai
-      prefix:
-        - not_as_simple
-
+      bam:
+        - Aligned.sortedByCoord.chr9_chr22.bam
+        - test.bam
+        - test_rnaseq_variant.bam
+        - test.bwa_aln_pe.chrY_chrM.bam
