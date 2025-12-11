@@ -99,6 +99,7 @@ workflow methylation {
             final_cat.combined_file,
             simple_merge.combined_file,
         ])
+        File st = list_sex_probes.probe_list
     }
 }
 
