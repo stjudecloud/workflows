@@ -34,13 +34,21 @@ task align {
         + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
+        mkdir hisat2_db
+        tar -C hisat2_db -xzf "~{hisat2_db_tar_gz}" --no-same-owner
+        PREFIX=$(basename hisat2_db/*.1.ht2 ".1.ht2")
+
         hisat2 \
             -q \
             -p ~{threads} \
-            -x "~{reference_index}" \
+            -S "~{output_name}" \
+            -x "$PREFIX" \
             -1 "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz) then "-2 \"~{read_two_fastq_gz}\"" else ""} \
-            -S "~{output_name}"
+            ~{if defined(read_two_fastq_gz) then "-2 \"~{read_two_fastq_gz}\"" else ""}
+
+        rm -r hisat2_db
     >>>
 
     output {
