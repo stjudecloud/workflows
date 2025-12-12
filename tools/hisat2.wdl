@@ -4,7 +4,7 @@ task align {
     meta {
         description: "Align RNA-seq reads against a reference genome using HISAT2"
         outputs: {
-            alignments: "The output alignment file in SAM format"
+            alignments: "The output alignment file in SAM format",
         }
     }
 
@@ -67,7 +67,7 @@ task index {
     meta {
         description: "Index a reference genome for alignment with HISAT2"
         outputs: {
-            reference_index: "The HISAT2 index files for the reference genome"
+            reference_index: "The HISAT2 index files for the reference genome",
         }
     }
 
@@ -156,7 +156,11 @@ task index {
             ~{if defined(repeat_ref) then "--repeat-ref \"~{repeat_ref}\"" else ""} \
             ~{if defined(repeat_info) then "--repeat-info \"~{repeat_info}\"" else ""} \
             ~{if defined(repeat_snp) then "--repeat-snp \"~{repeat_snp}\"" else ""} \
-            ~{if defined(repeat_haplotype) then "--repeat-haplotype \"~{repeat_haplotype}\"" else ""} \
+            ~{(
+                if defined(repeat_haplotype)
+                then "--repeat-haplotype \"~{repeat_haplotype}\""
+                else ""
+            )} \
             ~{if defined(seed) then "--seed \"~{seed}\"" else ""} \
             "$ref_fasta" \
             "~{index_base_name}"
