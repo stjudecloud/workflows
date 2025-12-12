@@ -29,7 +29,7 @@ task align {
     Int disk_size_gb = ceil((
             size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
         ) * 2)
-        + ceil(size(reference_index, "GiB"))
+        + ceil(size(reference_index, "GiB") * 5)
         + 10
         + modify_disk_size_gb
 
@@ -37,14 +37,14 @@ task align {
         set -euo pipefail
 
         mkdir hisat2_db
-        tar -C hisat2_db -xzf "~{hisat2_db_tar_gz}" --no-same-owner
+        tar -C hisat2_db -xzf "~{reference_index}" --no-same-owner
         PREFIX=$(basename hisat2_db/*.1.ht2 ".1.ht2")
 
         hisat2 \
             -q \
             -p ~{threads} \
             -S "~{output_name}" \
-            -x "$PREFIX" \
+            -x "hisat2_db/$PREFIX" \
             -1 "~{read_one_fastq_gz}" \
             ~{if defined(read_two_fastq_gz) then "-2 \"~{read_two_fastq_gz}\"" else ""}
 
@@ -57,7 +57,7 @@ task align {
 
     requirements {
         cpu: threads
-        memory: "16 GB"
+        memory: "64 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/hisat2:branch-minimap2-2.2.1-0"
     }
