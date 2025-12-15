@@ -64,6 +64,7 @@ task process_raw_idats {
         File probe_pvalues = out_base + ".detectionP.csv"
         File probes_with_snps = out_base + ".probes_with_snps.tab"
         File probes_without_snps = out_base + ".probes_without_snps.tab"
+        File non_genomic_probes = out_base + ".non_genomic_probes.tab"
     }
 
     runtime {
