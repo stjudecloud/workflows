@@ -63,6 +63,8 @@ saveRDS(r_set, paste0(args$out_base, ".RSet.rds"))
 gr_set <- mapToGenome(r_set)
 saveRDS(gr_set, paste0(args$out_base, ".GRSet.rds"))
 
+non_genomic_probes <- setdiff(featureNames(r_set), featureNames(gr_set))
+
 # Get the list of sites with SNPs
 snps <- getSnpInfo(gr_set)
 gr_set_snps <- addSnpInfo(gr_set)
@@ -100,6 +102,15 @@ write.table(
 write.table(
   probes_without_snps,
   paste0(args$out_base, ".probes_without_snps.tab"),
+  row.names = FALSE,
+  col.names = FALSE,
+  quote = FALSE,
+)
+
+# Write non-genomic probe list
+write.table(
+  non_genomic_probes,
+  paste0(args$out_base, ".non_genomic_probes.tab"),
   row.names = FALSE,
   col.names = FALSE,
   quote = FALSE,
