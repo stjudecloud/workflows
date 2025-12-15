@@ -100,6 +100,7 @@ workflow methylation {
             simple_merge.combined_file,
         ])
         File st = list_sex_probes.probe_list
+        File high_pval_probes = methylation_cohort.high_pval_probes
     }
 }
 
