@@ -385,7 +385,7 @@ task merge_sam_files {
         String sort_order = "coordinate"
         String validation_stringency = "SILENT"
         Boolean threading = true
-        Int memory_gb = 10
+        Int memory_gb = 40
         Int modify_disk_size_gb = 0
     }
 
