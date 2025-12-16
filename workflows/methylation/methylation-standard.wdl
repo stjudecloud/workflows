@@ -179,7 +179,7 @@ task concat_and_uniq {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-methylation_filtering-2.2.1-7"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-7"
         memory: "2 GB"
         cpu: 1
         disks: "4 GB"

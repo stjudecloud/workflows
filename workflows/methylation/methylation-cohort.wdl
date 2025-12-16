@@ -196,7 +196,7 @@ task combine_data {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-methylation_filtering-2.2.1-7"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-7"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -256,7 +256,7 @@ task filter_probes {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-methylation_filtering-2.2.1-7"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-7"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
