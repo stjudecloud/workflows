@@ -146,7 +146,7 @@ workflow methylation_cohort {
         File umap_embedding = generate_umap.umap
         File umap_plot = plot_umap.umap_plot
         File? probe_pvalues = pval_file
-        File high_pval_probes = filter_probes.high_pval_probes
+        File? high_pval_probes = filter_probes.high_pval_probes
     }
 }
 

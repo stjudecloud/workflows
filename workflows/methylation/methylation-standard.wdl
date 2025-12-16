@@ -142,7 +142,7 @@ workflow methylation {
             simple_merge.combined_file,
         ])
         File sex_probe_list = list_sex_probes.probe_list
-        File high_pval_probes = methylation_cohort.high_pval_probes
+        File? high_pval_probes = methylation_cohort.high_pval_probes
         File non_genomic_probes = select_first([
             final_cat_non_genomic.combined_file,
             simple_merge_non_genomic.combined_file,
