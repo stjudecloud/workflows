@@ -14,6 +14,7 @@ task process_raw_idats {
             probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows.",
             probes_with_snps: "List of probes that contain SNPs",
             probes_without_snps: "List of probes that do not contain SNPs",
+            non_genomic_probes: "List of probes that do not map to the genome",
         }
     }
 

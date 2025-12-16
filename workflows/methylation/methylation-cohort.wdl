@@ -11,6 +11,7 @@ workflow methylation_cohort {
             umap_embedding: "UMAP embedding for all samples",
             umap_plot: "UMAP plot for all samples",
             probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows and all of the input samples as columns.",
+            high_pval_probes: "List of probes that were filtered out due to high p-values",
         }
         allowNestedInputs: true
     }
@@ -210,6 +211,7 @@ task filter_probes {
         outputs: {
             filtered_beta_values: "Filtered beta values for all samples",
             filtered_probes: "Probes that were retained after filtering.",
+            high_pval_probes: "Probes that were filtered out due to high p-values",
         }
     }
 

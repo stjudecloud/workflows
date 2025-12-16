@@ -17,6 +17,9 @@ workflow methylation {
             umap_plot: "UMAP plot for all samples",
             probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows and all of the input samples as columns.",
             probes_with_snps: "List of probes that are affected by SNPs",
+            sex_probe_list: "List of probes that map to sex chromosomes",
+            high_pval_probes: "List of probes that were filtered out due to high p-values",
+            non_genomic_probes: "List of probes that do not map to the genome",
         }
         allowNestedInputs: true
     }
@@ -86,6 +89,45 @@ workflow methylation {
         }
     }
 
+    Array[File] non_genomic_probe_list = process_raw_idats.non_genomic_probes
+    Int non_genomic_probelist_length = length(non_genomic_probe_list)
+
+    if (non_genomic_probelist_length > max_length){
+        scatter (merge_num in range((non_genomic_probelist_length / max_length) + 1)){
+            # Get the sublist of probe files
+            scatter (probe_num in range(max_length)){
+                Int num_ng = (
+                    if merge_num > 0
+                    then probe_num + (merge_num * max_length)
+                    else probe_num
+                )
+                if (num_ng < non_genomic_probelist_length){
+                    File probe_list_non_genomic = non_genomic_probe_list[num_ng]
+                }
+            }
+        }
+        scatter (iter_index in range(length(probe_list_non_genomic))){
+            call concat_and_uniq as non_genomic_concat { input:
+                files_to_combine = select_all(probe_list_non_genomic[iter_index]),
+                output_file_name = "non_genomic_probes_part_~{iter_index}.txt",
+            }
+        }
+
+        call concat_and_uniq as final_cat_non_genomic { input:
+            files_to_combine = flatten([
+                non_genomic_concat.combined_file
+            ]),
+            output_file_name = "non_genomic_probes.txt",
+        }
+    }
+
+    if (non_genomic_probelist_length <= max_length){
+        call concat_and_uniq as simple_merge_non_genomic { input:
+            files_to_combine = non_genomic_probe_list,
+            output_file_name = "non_genomic_probes.csv",
+        }
+    }
+
     output {
         Array[File] beta_swan_norm_unfiltered_genomic =
             process_raw_idats.beta_swan_norm_unfiltered_genomic
@@ -101,6 +143,10 @@ workflow methylation {
         ])
         File sex_probe_list = list_sex_probes.probe_list
         File high_pval_probes = methylation_cohort.high_pval_probes
+        File non_genomic_probes = select_first([
+            final_cat_non_genomic.combined_file,
+            simple_merge_non_genomic.combined_file,
+        ])
     }
 }
 
