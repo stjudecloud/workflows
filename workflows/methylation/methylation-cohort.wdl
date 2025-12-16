@@ -252,7 +252,7 @@ task filter_probes {
     output {
         File filtered_beta_values = "~{prefix}.beta.csv"
         File filtered_probes = "~{prefix}.probes.csv"
-        File high_pval_probes = "high_pval_probes.csv"
+        File? high_pval_probes = "high_pval_probes.csv"
     }
 
     runtime {
