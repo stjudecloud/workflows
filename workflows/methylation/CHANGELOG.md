@@ -3,7 +3,16 @@
 All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
- 
+
+## 2025 December
+
+### Added
+
+- Now outputs list of probes that map to sex chromosomes [#283](https://github.com/stjudecloud/workflows/pull/283)
+- Pipeline writes out the list of filtered probes [#283](https://github.com/stjudecloud/workflows/pull/283)
+- Pipeline writes out list of probes that are affected by SNPs [#283](https://github.com/stjudecloud/workflows/pull/283)
+- Pipeline writes out list of probes that were filtered for not mapping to genomic coordinates [#283](https://github.com/stjudecloud/workflows/pull/283)
+
 ## 2025 September
 
 ### Added
