@@ -40,6 +40,22 @@ Intervals for `chr1` (and one interval from `chr19`) derived from `wgs_calling_r
 
 Combined beta values from `minfi` for two patient samples.
 
+## empty.chrY_chrM.Aligned.out.bam
+
+The result of passing `empty.r[1,2].fq.gz` into STAR alignment.
+
+## empty.chrY_chrM.bwa_aln.SE.bam
+
+The result of passing `empty.r1.fq.gz` into BWA aln Single-End alignment.
+
+## empty.r1.fq.gz
+
+A gzipped FASTQ file without any reads inside.
+
+## empty.r2.fq.gz
+
+A gzipped FASTQ file without any reads inside.
+
 ## filtered_beta.csv
 
 Beta values from `minfi` filtered to the top 10K most differentially methylated probes.
@@ -95,6 +111,10 @@ FASTA format GRCh38 reference containing `chrY` and `chrM` only
 ## GRCh38.chrY_chrM.fa.fai
 
 FASTA index for GRCh38 reference containing `chrY` and `chrM` only
+
+## GRCh38.chrY_chrM.fa.gz
+
+Gzipped `GRCh38.chrY_chrM.fa`
 
 ## Homo_sapiens_assembly38.dbsnp138.top5000.vcf
 
