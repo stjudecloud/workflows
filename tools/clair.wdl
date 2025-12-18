@@ -59,7 +59,7 @@ task clair3 {
         gunzip -c "~{reference_fasta}" > "$ref_fasta" \
             || ln -sf "~{reference_fasta}" "$ref_fasta"
 
-        ./run_clair3.sh \
+        run_clair3.sh \
             --bam_fn="~{bam}" \
             --ref_fn="$ref_fasta" \
             --threads="~{threads}" \
