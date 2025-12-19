@@ -21,7 +21,7 @@ task align {
         File read_one_fastq_gz
         File reference_index
         File? read_two_fastq_gz
-        String output_name = "aligned.sam"
+        String output_name = "aligned.bam"
         Int threads = 4
         Int modify_disk_size_gb = 0
     }
@@ -40,13 +40,15 @@ task align {
         tar -C hisat2_db -xzf "~{reference_index}" --no-same-owner
         PREFIX=$(basename hisat2_db/*.1.ht2 ".1.ht2")
 
+        mkfifo hisat2_stdout_pipe
         hisat2 \
             -q \
             -p ~{threads} \
-            -S "~{output_name}" \
+            -S hisat2_stdout_pipe \
             -x "hisat2_db/$PREFIX" \
             -1 "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz) then "-2 \"~{read_two_fastq_gz}\"" else ""}
+            ~{if defined(read_two_fastq_gz) then "-2 \"~{read_two_fastq_gz}\"" else ""} &
+        samtools view -bS hisat2_stdout_pipe > "~{output_name}"
 
         rm -r hisat2_db
     >>>
