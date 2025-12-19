@@ -40,15 +40,13 @@ task align {
         tar -C hisat2_db -xzf "~{reference_index}" --no-same-owner
         PREFIX=$(basename hisat2_db/*.1.ht2 ".1.ht2")
 
-        mkfifo hisat2_stdout_pipe
         hisat2 \
             -q \
             -p ~{threads} \
-            -S hisat2_stdout_pipe \
             -x "hisat2_db/$PREFIX" \
             -1 "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz) then "-2 \"~{read_two_fastq_gz}\"" else ""} &
-        samtools view -bS hisat2_stdout_pipe > "~{output_name}"
+            ~{if defined(read_two_fastq_gz) then "-2 \"~{read_two_fastq_gz}\"" else ""} \
+            | samtools view -bS - > "~{output_name}"
 
         rm -r hisat2_db
     >>>
