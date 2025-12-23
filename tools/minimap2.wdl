@@ -74,6 +74,8 @@ task align {
         + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         minimap2 \
             ~{if defined(preset) then "-x \"~{preset}\"" else ""} \
             ~{if output_paf then "" else "-a"} \
