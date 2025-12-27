@@ -3,7 +3,6 @@ bam_to_fastq:
     inputs:
       bam:
         - Aligned.sortedByCoord.chr9_chr22.bam
-        - test.bam
         - test_rnaseq_variant.bam
         - test.bwa_aln_pe.chrY_chrM.bam
       bitwise_filter:
@@ -36,6 +35,5 @@ bam_to_fastq:
         - false
       bam:
         - Aligned.sortedByCoord.chr9_chr22.bam
-        - test.bam
         - test_rnaseq_variant.bam
         - test.bwa_aln_pe.chrY_chrM.bam

@@ -1,0 +1,11 @@
+read_group_to_string:
+  - name: bad_id
+    inputs:
+      read_group:
+        - ID: id,
+          SM: sample_a
+          LB: library
+    assertions:
+      exit_code: 1
+      stdout:
+        - ID (.*) must not match pattern
