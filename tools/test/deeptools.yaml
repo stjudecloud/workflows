@@ -1,0 +1,7 @@
+bam_coverage:
+  - name: works
+    inputs:
+      bam:
+        - test.bwa_aln_pe.chrY_chrM.bam
+      bam_index:
+        - test.bwa_aln_pe.chrY_chrM.bam.bai

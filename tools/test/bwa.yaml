@@ -1,0 +1,35 @@
+bwa_aln:
+  - name: works
+    inputs: 
+      fastq:
+        - test_R1.fq.gz
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      bwa_db_tar_gz:
+        - GRCh38.chrY_chrM.bwa_db.tar.gz
+bwa_aln_pe:
+  - name: works
+    inputs:
+      read_one_fastq_gz:
+        - test_R1.fq.gz
+      read_two_fastq_gz:
+        - test_R2.fq.gz
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      bwa_db_tar_gz:
+        - GRCh38.chrY_chrM.bwa_db.tar.gz
+bwa_mem:
+  - name: works
+    inputs:
+      read_one_fastq_gz:
+        - test_R1.fq.gz
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      bwa_db_tar_gz:
+        - GRCh38.chrY_chrM.bwa_db.tar.gz
+build_bwa_db:
+  - name: works
+    tags: [ reference, slow ]
+    inputs:
+      reference_fasta:
+        - GRCh38.chrY_chrM.fa
