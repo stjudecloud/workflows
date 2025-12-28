@@ -156,15 +156,13 @@ task validate_read_group {
 
     input {
         ReadGroup read_group
-        Array[String] required_fields = []
+        Array[String] required_fields = ["SM"]
         Boolean restrictive = true
     }
 
     # The SAM spec allows any printable ASCII character in header fields.
     String sam_spec_pattern = "[\\ -~]+"
     # We have the opinion that is too permissive for ID and SM.
-    String id_pattern = "id"
-    String sample_pattern = "sample.?"
     String restrictive_pattern = "\\ "  # Disallow spaces
     Array[String] platforms = [
         "CAPILLARY", "DNBSEQ", "ELEMENT", "HELICOS", "ILLUMINA", "IONTORRENT", "LS454",
@@ -174,11 +172,9 @@ task validate_read_group {
     command <<<
         exit_code=0
         if ~{restrictive}; then
-            if [[ ~{read_group.ID} =~ ^~{id_pattern}$ ]] \
-                || [[ ~{read_group.ID} =~ ~{restrictive_pattern} ]]
+            if [[ "~{read_group.ID}" =~ ~{restrictive_pattern} ]]
             then
-                >&2 echo "ID (~{read_group.ID}) must not match patterns:"
-                >&2 echo "'~{id_pattern}' or '~{restrictive_pattern}'"
+                >&2 echo "ID must not contain spaces"
                 exit_code=1
             fi
         fi
@@ -194,11 +190,9 @@ task validate_read_group {
         fi
         if ~{defined(read_group.SM)}; then
             if ~{restrictive}; then
-                if [[ "~{read_group.SM}" =~ ^~{sample_pattern}$ ]] \
-                    || [[ "~{read_group.SM}" =~ ~{restrictive_pattern} ]]
+                if [[ "~{read_group.SM}" =~ ~{restrictive_pattern} ]]
                 then
-                    >&2 echo "SM must not match patterns:"
-                    >&2 echo "'~{sample_pattern}' or '~{restrictive_pattern}'"
+                    >&2 echo "SM must not contain spaces"
                     exit_code=1
                 fi
             fi
