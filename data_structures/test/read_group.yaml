@@ -89,3 +89,5 @@ get_read_groups:
     inputs:
       bam:
         - test.bam
+
+# TODO: test read_group_to_string
