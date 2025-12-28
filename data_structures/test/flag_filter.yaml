@@ -1,19 +1,23 @@
 validate_string_is_12bit_int:
-  - name: decimal_passes
+  - name: valid_numbers
     inputs:
       number:
         - "5"
-  - name: hexadecimal_passes
-    inputs:
-      number:
         - "0x900"
+        - "01"
+        - "4095"
     assertions:
       stderr:
         - Input number \(.*\) is valid
-  - name: too_big_hexadecimal_fails
+  - name: invalid_numbers
     inputs:
       number:
         - "0x1000"
+        - ""
+        - "string"
+        - this is not a number
+        - "000000000011"
+        - "-1"
     assertions:
       exit_code: 42
       stderr:
@@ -38,9 +42,9 @@ validate_flag_filter:
   - name: invalid_FlagFilter_fails
     inputs:
       flags:
-        - include_if_all: ""
-          exclude_if_any: this is not a number
-          include_if_any: "000000000011"
-          exclude_if_all: "4095"
+        - include_if_all: "3"
+          exclude_if_any: "0xF04"
+          include_if_any: "03"
+          exclude_if_all: "" # empty string should trigger a fail
     assertions:
       should_fail: true
