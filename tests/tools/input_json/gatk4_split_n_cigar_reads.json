@@ -1,8 +1,0 @@
-{
-    "split_n_cigar_reads.bam": "../../input/test.bam",
-    "split_n_cigar_reads.bam_index": "../../input/test.bam.bai",
-    "split_n_cigar_reads.fasta": "../../input/GRCh38.chr1_chr19.fa",
-    "split_n_cigar_reads.fasta_index": "../../input/GRCh38.chr1_chr19.fa.fai",
-    "split_n_cigar_reads.dict": "../../input/GRCh38.chr1_chr19.dict",
-    "split_n_cigar_reads.prefix": "split"
-}

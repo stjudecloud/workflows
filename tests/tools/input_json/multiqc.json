@@ -1,6 +1,0 @@
-{
-    "multiqc.files": [
-        "../../input/test.bwa_aln_pe.chrY_chrM.readlength.txt"
-    ],
-    "multiqc.report_name": "test.bwa_aln_pe.chrY_chrM.multiqc"
-}

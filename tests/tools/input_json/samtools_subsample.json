@@ -1,4 +1,0 @@
-{
-    "subsample.bam": "https://github.com/stjude/CICERO/raw/master/test/data/input/test.bam",
-    "subsample.desired_reads": 100
-}
