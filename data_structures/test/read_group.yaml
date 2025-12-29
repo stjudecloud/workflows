@@ -88,9 +88,9 @@ get_read_groups:
   - name: works
     inputs:
       bam:
-        - test.bwa_aln_pe.chrY_chrM.bam
-        - Aligned.sortedByCoord.chr9_chr22.bam
-        - test_rnaseq_variant.bam
-        - test.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bam
 
 # TODO: test read_group_to_string

@@ -2,11 +2,11 @@ arriba:
   - name: works
     inputs:
       bam:
-        - Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
       gtf:
-        - gencode.v31.chr9_chr22.gtf.gz
+        - reference/gencode.v31.chr9_chr22.gtf.gz
       reference_fasta_gz:
-        - GRCh38.chr9_chr22.fa.gz
+        - reference/GRCh38.chr9_chr22.fa.gz
       disable_filters:
         - [ blacklist ]
       prefix:
@@ -17,7 +17,7 @@ arriba_tsv_to_vcf:
       fusions:
         - fusions.BCR_ABL1.tsv
       reference_fasta:
-        - GRCh38.chr9_chr22.fa.gz
+        - reference/GRCh38.chr9_chr22.fa.gz
       prefix:
         - fusions
 arriba_extract_fusion_supporting_alignments:
@@ -27,9 +27,9 @@ arriba_extract_fusion_supporting_alignments:
         fusions:
           - fusions.BCR_ABL1.tsv
         bam:
-          - Aligned.sortedByCoord.chr9_chr22.bam
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
         bam_index:
-          - Aligned.sortedByCoord.chr9_chr22.bam.bai
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam.bai
       prefix:
         - fusions
 arriba_annotate_exon_numbers:
@@ -38,6 +38,6 @@ arriba_annotate_exon_numbers:
       fusions:
         - fusions.BCR_ABL1.tsv
       gtf:
-        - gencode.v31.chr9_chr22.gtf.gz
+        - reference/gencode.v31.chr9_chr22.gtf.gz
       prefix:
         - fusions

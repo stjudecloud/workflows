@@ -2,9 +2,9 @@ bam_to_fastq:
   - name: kitchen_sink
     inputs:
       bam:
-        - Aligned.sortedByCoord.chr9_chr22.bam
-        - test_rnaseq_variant.bam
-        - test.bwa_aln_pe.chrY_chrM.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
       bitwise_filter:
         - include_if_all: "0x0"
           exclude_if_any: "0x900"
@@ -34,6 +34,6 @@ bam_to_fastq:
         - true
         - false
       bam:
-        - Aligned.sortedByCoord.chr9_chr22.bam
-        - test_rnaseq_variant.bam
-        - test.bwa_aln_pe.chrY_chrM.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
