@@ -1,0 +1,56 @@
+# TODO: add lint tests for malformed fastqs
+fqlint:
+  - name: valid_fastqs
+    inputs:
+      $files:
+        read_one_fastq:
+          - fastqs/test_R1.fq.gz
+          - fastqs/random10k.r1.fq.gz
+        read_two_fastq:
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r2.fq.gz
+subsample:
+  - name: works
+    inputs:
+      $files:
+        read_one_fastq:
+          - fastqs/test_R1.fq.gz
+          - fastqs/random10k.r1.fq.gz
+        read_two_fastq:
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r2.fq.gz
+      $sampling_controls:
+        record_count:
+          - 1000
+          - 500
+          - -1 # negative should disable
+          - 0 # so should zero
+        probability:
+          - 0.0 # 0 should disable
+          - 1.0 # 1 should also disable
+          - 0.5
+          - 0.25
+  - name: conflicting_args
+    inputs:
+      $files:
+        read_one_fastq:
+          - fastqs/random10k.r1.fq.gz
+        read_two_fastq:
+          - fastqs/random10k.r2.fq.gz
+      record_count:
+        - -1
+        - 0
+      probability:
+        - 0.0
+        - 1.0
+    assertions:
+      exit_code: 2
+  - name: neither_count_nor_probability_specified
+    inputs:
+      $files:
+        read_one_fastq:
+          - fastqs/random10k.r1.fq.gz
+        read_two_fastq:
+          - fastqs/random10k.r2.fq.gz
+    assertions:
+      exit_code: 2
