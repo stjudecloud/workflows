@@ -23,12 +23,13 @@ arriba_tsv_to_vcf:
 arriba_extract_fusion_supporting_alignments:
   - name: works
     inputs:
-      fusions:
-        - fusions.BCR_ABL1.tsv
-      bam:
-        - Aligned.sortedByCoord.chr9_chr22.bam
-      bam_index:
-        - Aligned.sortedByCoord.chr9_chr22.bam.bai
+      $files:
+        fusions:
+          - fusions.BCR_ABL1.tsv
+        bam:
+          - Aligned.sortedByCoord.chr9_chr22.bam
+        bam_index:
+          - Aligned.sortedByCoord.chr9_chr22.bam.bai
       prefix:
         - fusions
 arriba_annotate_exon_numbers:

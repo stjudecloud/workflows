@@ -1,7 +1,14 @@
 bam_coverage:
   - name: works
     inputs:
-      bam:
-        - test.bwa_aln_pe.chrY_chrM.bam
-      bam_index:
-        - test.bwa_aln_pe.chrY_chrM.bam.bai
+      $files:
+        bam:
+          - test.bwa_aln_pe.chrY_chrM.bam
+          - Aligned.sortedByCoord.chr9_chr22.bam
+          - test_rnaseq_variant.bam
+          - test.bam
+        bam_index:
+          - test.bwa_aln_pe.chrY_chrM.bam.bai
+          - Aligned.sortedByCoord.chr9_chr22.bam.bai
+          - test_rnaseq_variant.bam.bai
+          - test.bam.bai
