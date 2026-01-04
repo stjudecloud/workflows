@@ -27,11 +27,17 @@ bwa_aln_pe:
 bwa_mem:
   - name: works
     inputs:
-      read_one_fastq_gz:
-        - fastqs/test_R1.fq.gz
-        - fastqs/test_R2.fq.gz
-        - fastqs/random10k.r1.fq.gz
-        - fastqs/random10k.r2.fq.gz
+      $samples:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r1.fq.gz
+          - fastqs/random10k.r2.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - null
+          - fastqs/random10k.r2.fq.gz
+          - null
       read_group:
         - "@RG\\tID:test\\tSM:test"
       bwa_db_tar_gz:

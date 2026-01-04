@@ -6,9 +6,13 @@ fqlint:
         read_one_fastq:
           - fastqs/test_R1.fq.gz
           - fastqs/random10k.r1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r2.fq.gz
         read_two_fastq:
           - fastqs/test_R2.fq.gz
           - fastqs/random10k.r2.fq.gz
+          - null
+          - null
 subsample:
   - name: works
     inputs:
@@ -16,9 +20,13 @@ subsample:
         read_one_fastq:
           - fastqs/test_R1.fq.gz
           - fastqs/random10k.r1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r2.fq.gz
         read_two_fastq:
           - fastqs/test_R2.fq.gz
           - fastqs/random10k.r2.fq.gz
+          - null
+          - null
       $sampling_controls:
         record_count:
           - 1000
