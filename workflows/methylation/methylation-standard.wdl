@@ -85,7 +85,7 @@ workflow methylation {
     if (probelist_length <= max_length){
         call concat_and_uniq as simple_merge { input:
             files_to_combine = probe_files,
-            output_file_name = "probes_with_snps.csv",
+            output_file_name = "probes_with_snps.tab",
         }
     }
 
@@ -124,7 +124,7 @@ workflow methylation {
     if (non_genomic_probelist_length <= max_length){
         call concat_and_uniq as simple_merge_non_genomic { input:
             files_to_combine = non_genomic_probe_list,
-            output_file_name = "non_genomic_probes.csv",
+            output_file_name = "non_genomic_probes.tab",
         }
     }
 
@@ -171,7 +171,7 @@ task concat_and_uniq {
     command <<<
         set -euo pipefail
 
-        sort ~{sep(" ", quote(files_to_combine))} | uniq > "~{output_file_name}"
+        sort -u ~{sep(" ", quote(files_to_combine))} > "~{output_file_name}"
     >>>
 
     output {
