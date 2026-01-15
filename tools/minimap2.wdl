@@ -68,7 +68,7 @@ task align {
     Int disk_size_gb = ceil(
         (
             size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
-        ) * 2)
+        ) * 3)
         + ceil(size(reference_index, "GiB"))
         + 10
         + modify_disk_size_gb
@@ -154,6 +154,8 @@ task index {
             -t ~{threads} \
             -d "~{index_name}" \
             "$ref_fasta"
+
+        rm -r "$ref_fasta"
     >>>
 
     output {

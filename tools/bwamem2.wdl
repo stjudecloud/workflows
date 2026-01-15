@@ -66,6 +66,8 @@ task align {
             "~{read_one_fastq_gz}" \
             ~{if defined(read_two_fastq_gz) then "\"~{read_two_fastq_gz}\"" else ""} |
         samtools view -b -o "~{output_name}" -
+
+        rm -r bwa_db
     >>>
 
     output {
@@ -115,6 +117,8 @@ task index {
             "$ref_fasta"
 
         tar -czf "~{bwa_db_out_name}" "$ref_fasta"*
+
+        rm -r "$ref_fasta"
     >>>
 
     output {

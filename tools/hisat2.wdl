@@ -166,6 +166,8 @@ task index {
             "~{index_base_name}"
 
             tar -czf "~{index_base_name}.tar.gz" "~{index_base_name}"*
+
+            rm -r "$ref_fasta"
     >>>
 
     output {

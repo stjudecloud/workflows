@@ -192,7 +192,6 @@ task deepvariant {
 
 
         rm -rf "$ref_fasta"
-
     >>>
 
     output {
