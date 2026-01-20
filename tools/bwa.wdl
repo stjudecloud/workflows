@@ -62,7 +62,7 @@ task bwa_aln {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( samtools_cores = n_cores - 1 ))
+        (( samtools_cores = n_cores - 1 || 1 ))
 
         mkdir bwa_db
         tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
@@ -160,7 +160,7 @@ task bwa_aln_pe {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( samtools_cores = n_cores - 1 ))
+        (( samtools_cores = n_cores - 1 || 1 ))
 
         mkdir bwa_db
         tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
@@ -257,7 +257,7 @@ task bwa_mem {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( samtools_cores = n_cores - 1 ))
+        (( samtools_cores = n_cores - 1 || 1 ))
 
         mkdir bwa_db
         tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
