@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - Bumped `fastp` memory requirements [#284](https://github.com/stjudecloud/workflows/pull/284)
 
+### Removed
+
+- Removed the long deprecated and unused `estimate.wdl` tool [#292](https://github.com/stjudecloud/workflows/pull/292)
+
 ## 2025 December
 
 ### Changed
