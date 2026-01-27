@@ -83,7 +83,7 @@ workflow read_group_to_string {
 
     input {
         ReadGroup read_group
-        Array[String] required_fields = []
+        Array[String] required_fields = ["SM"]
         Boolean format_as_sam_record = false
         Boolean restrictive = true
     }
@@ -156,8 +156,8 @@ task validate_read_group {
 
     input {
         ReadGroup read_group
-        Array[String] required_fields = ["SM"]
-        Boolean restrictive = true
+        Array[String] required_fields
+        Boolean restrictive
     }
 
     # The SAM spec allows any printable ASCII character in header fields.
@@ -374,7 +374,7 @@ task inner_read_group_to_string {
 
     input {
         ReadGroup read_group
-        Boolean format_as_sam_record = false
+        Boolean format_as_sam_record
     }
 
     String delimiter = if format_as_sam_record then "\\t" else " "
