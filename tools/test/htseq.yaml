@@ -1,0 +1,37 @@
+count:
+  - name: kitchen_sink
+    tags: [ slow ]
+    inputs:
+      $files:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        gtf:
+          - reference/gencode.v31.chrY_chrM.gtf.gz
+        pos_sorted:
+          - false
+      strandedness:
+        - yes
+        - no
+        - reverse
+      include_custom_header:
+        - true
+        - false
+      nonunique:
+        - true
+        - false
+      secondary_alignments:
+        - true
+        - false
+      supplementary_alignments:
+        - true
+        - false
+      minaqual:
+        - 0
+        - 10
+calc_tpm:
+  - name: works
+    inputs:
+      counts:
+        - test.bwa_aln_pe.chrY_chrM.feature-counts.txt
+      feature_lengths:
+        - reference/gencode.v31.chrY_chrM.genelengths.txt

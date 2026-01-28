@@ -1,3 +1,4 @@
+pytest/
 # Ignore common bioinformatics formats used in these workflows.
 # But only if they are in the root of this repo
 /*.fastq.gz

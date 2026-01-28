@@ -5,6 +5,8 @@ version 1.1
 task fastqc {
     meta {
         description: "Generates a FastQC quality control metrics report for the input BAM file"
+        warning: "**[DEPRECATED]** We prefer the analysis provided by `fastp` which computes similar metrics but is faster and more robust. Please see the `fastp` task in `fastp.wdl` instead of using FastQC!"
+        deprecated: true
         outputs: {
             raw_data: "A zip archive of raw FastQC data. Can be parsed by MultiQC.",
             results: "A gzipped tar archive of all FastQC output files",

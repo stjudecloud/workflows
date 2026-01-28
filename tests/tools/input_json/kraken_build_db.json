@@ -1,6 +1,0 @@
-{
-    "build_db.tarballs": [
-        "../../input/kraken2_taxonomy.tar.gz",
-        "../../input/kraken2_C_elegans_library.tar.gz"
-    ]
-}

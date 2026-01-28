@@ -1,7 +1,0 @@
-{
-    "variant_filtration.vcf": "../../input/test1.vcf.gz",
-    "variant_filtration.vcf_index": "../../input/test1.vcf.gz.tbi",
-    "variant_filtration.fasta": "../../input/GRCh38.chr1_chr19.fa",
-    "variant_filtration.fasta_index": "../../input/GRCh38.chr1_chr19.fa.fai",
-    "variant_filtration.dict": "../../input/GRCh38.chr1_chr19.dict"
-}

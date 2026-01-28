@@ -154,7 +154,7 @@ task subsample {
             ~{probability_arg} \
             ~{record_count_arg} \
             --r1-dst "~{r1_dst}" \
-            ~{"--r2-dst '" + r2_dst + "'"} \
+            ~{if defined(read_two_fastq) then "--r2-dst '" + r2_dst + "'" else ""} \
             "~{read_one_fastq}" \
             ~{"'" + read_two_fastq + "'"}
     >>>

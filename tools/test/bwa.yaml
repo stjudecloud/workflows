@@ -1,0 +1,50 @@
+bwa_aln:
+  - name: works
+    inputs: 
+      fastq:
+        - fastqs/test_R1.fq.gz
+        - fastqs/test_R2.fq.gz
+        - fastqs/random10k.r1.fq.gz
+        - fastqs/random10k.r2.fq.gz
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      bwa_db_tar_gz:
+        - reference/GRCh38.chrY_chrM.bwa_db.tar.gz
+bwa_aln_pe:
+  - name: works
+    inputs:
+      $files:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/random10k.r1.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r2.fq.gz
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      bwa_db_tar_gz:
+        - reference/GRCh38.chrY_chrM.bwa_db.tar.gz
+bwa_mem:
+  - name: works
+    inputs:
+      $samples:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r1.fq.gz
+          - fastqs/random10k.r2.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - null
+          - fastqs/random10k.r2.fq.gz
+          - null
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      bwa_db_tar_gz:
+        - reference/GRCh38.chrY_chrM.bwa_db.tar.gz
+build_bwa_db:
+  - name: works
+    tags: [ reference, slow ]
+    inputs:
+      reference_fasta:
+        - reference/GRCh38.chrY_chrM.fa

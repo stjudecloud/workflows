@@ -34,15 +34,6 @@ task count {
             description: "GFF attribute to be used as feature ID",
             group: "Common",
         }
-        mode: {
-            description: "Mode to handle reads overlapping more than one feature. `union` is recommended for most use-cases.",
-            external_help: "https://htseq.readthedocs.io/en/latest/htseqcount.html#htseq-count-counting-reads-within-features",
-            choices: [
-                "union",
-                "intersection-strict",
-                "intersection-nonempty",
-            ],
-        }
         include_custom_header: {
             description: "Include a custom header for the output file? If true, the first line of the output file will be `~{idattr}\t~{prefix}`.",
             warning: "This is not an official feature of HTSeq. This may break downstream tools that expect the typical headerless HTSeq output format.",
@@ -80,7 +71,6 @@ task count {
         String prefix = basename(bam, ".bam")
         String feature_type = "exon"
         String idattr = "gene_name"
-        String mode = "union"
         Boolean include_custom_header = true
         Boolean pos_sorted = false
         Boolean nonunique = false
@@ -92,6 +82,9 @@ task count {
     }
 
     String outfile_name = prefix + ".feature-counts.txt"
+
+    # the docs recommend this for most use cases, so we hardcode
+    String mode = "union"
 
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
@@ -107,8 +100,6 @@ task count {
 
         if ~{include_custom_header}; then
             echo -e "~{idattr}\t~{prefix}" > "~{outfile_name}"
-        else
-            true > "~{outfile_name}"  # ensure file is empty
         fi
 
         # 9223372036854776000 == max 64 bit Float
