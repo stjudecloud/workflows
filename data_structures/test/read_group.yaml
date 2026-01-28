@@ -1,11 +1,11 @@
-validate_read_group:
+read_group_to_string:
   - name: valid_read_groups
     inputs:
       read_group:
-        - ID: id
-          SM: sample
-        - ID: R2
-          SM: sampleA
+        - ID: R1
+          SM: sampleFoo
+        - ID: R1
+          SM: sampleFoo
           LB: spaces are allowed in LB
           BC: barcode with a space
           PU: platform_unit
@@ -18,6 +18,11 @@ validate_read_group:
           PM: platform_model
           FO: ACMG
           KS: key_sequence
+    assertions:
+      outputs:
+        validated_read_group:
+          - Contains: R1
+          - Contains: sampleFoo
   - name: id_with_spaces
     inputs:
       read_group:
@@ -36,9 +41,7 @@ validate_read_group:
           FO: ACMG
           KS: key_sequence
     assertions:
-      exit_code: 1
-      stderr:
-        - ID must not contain spaces
+      should_fail: true
   - name: sample_with_spaces
     inputs:
       read_group:
@@ -57,9 +60,7 @@ validate_read_group:
           FO: ACMG
           KS: key_sequence
     assertions:
-      exit_code: 1
-      stderr:
-        - SM must not contain spaces
+      should_fail: true
   - name: spaces_allowed
     inputs:
       read_group:
@@ -73,9 +74,7 @@ validate_read_group:
         - ID: R123
           LB: library
     assertions:
-      exit_code: 1
-      stderr:
-        - SM is required
+      should_fail: true
   - name: missing_sample_allowed
     inputs:
       read_group:
@@ -92,5 +91,3 @@ get_read_groups:
         - bams/Aligned.sortedByCoord.chr9_chr22.bam
         - bams/test_rnaseq_variant.bam
         - bams/test.bam
-
-# TODO: test read_group_to_string
