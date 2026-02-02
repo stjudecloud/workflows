@@ -306,7 +306,6 @@ task make_coverage_regions_bed {
     runtime {
         memory: "8 GB"
         disks: "~{disk_size_gb} GB"
-        memory: "18 GB"
         container: "quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0"
         maxRetries: 1
     }
