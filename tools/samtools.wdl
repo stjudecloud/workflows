@@ -863,7 +863,7 @@ task bam_to_fastq {
         if (retain_collated_bam && !collated && paired_end)
         then 5
         else 2
-    )) + 10 + modify_disk_size_gb
+    )) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
