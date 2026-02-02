@@ -77,7 +77,7 @@ task align {
     requirements {
         container: "ghcr.io/stjudecloud/bwamem2:branch-minimap2-2.3-0"
         cpu: threads
-        memory: "64 GB"
+        memory: "~{4 * threads} GB"
         disks: "~{disk_size_gb} GB"
     }
 }

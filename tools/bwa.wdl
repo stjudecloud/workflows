@@ -250,7 +250,7 @@ task bwa_mem {
     )
 
     command <<<
-        set -euo pipefail
+        set -xeuo pipefail
 
         n_cores=~{ncpu}
         if ~{use_all_cores}; then
@@ -294,7 +294,7 @@ task bwa_mem {
 
     runtime {
         cpu: ncpu
-        memory: "25 GB"
+        memory: "128 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/bwa:0.7.17-2"
         maxRetries: 1
