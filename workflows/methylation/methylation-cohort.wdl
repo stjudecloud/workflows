@@ -19,6 +19,7 @@ workflow methylation_cohort {
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
         sex_probe_list: "List of probes mapping to sex chromosomes to optionally filter"
+        additional_probes_to_exclude: "Additional probes to exclude from the analysis"
         p_values: "Array of detection p-value files for each sample."
         skip_pvalue_check: "Skip filtering based on p-values, even if `p_values` is supplied."
         num_probes: "Number of probes to use when filtering to the top `num_probes` probes with the highest standard deviation."
@@ -27,6 +28,7 @@ workflow methylation_cohort {
     input {
         Array[File] unfiltered_normalized_beta
         File? sex_probe_list
+        File? additional_probes_to_exclude
         Array[File] p_values = []
         Boolean skip_pvalue_check = false
         Int num_probes = 10000
@@ -123,7 +125,10 @@ workflow methylation_cohort {
         ),
         p_values = pval_file,
         num_probes,
-        additional_probes_to_exclude = select_all([sex_probe_list]),
+        additional_probes_to_exclude = select_all([
+            sex_probe_list,
+            additional_probes_to_exclude,
+        ]),
     }
 
     call generate_umap { input:
