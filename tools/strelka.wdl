@@ -99,6 +99,7 @@ task germline {
         reference_fasta: "Reference genome in FASTA format"
         reference_fasta_index: "Index file for the reference genome FASTA"
         bam: "Input BAM file with aligned reads"
+        bam_index: "Index for input BAM file"
         output_dir: "Directory to store Strelka output"
         exome: "Boolean indicating if the data is exome sequencing"
         rna: "Boolean indicating if the data is RNA sequencing"
@@ -110,6 +111,7 @@ task germline {
         File reference_fasta
         File reference_fasta_index
         File bam
+        File bam_index
         String output_dir = "strelka_germline_output"
         Boolean exome = false
         Boolean rna = false
