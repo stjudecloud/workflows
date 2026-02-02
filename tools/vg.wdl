@@ -100,7 +100,7 @@ task giraffe {
     requirements {
         container: "quay.io/biocontainers/vg:1.70.0--h9ee0642_0"
         cpu: threads
-        memory: "120 GB"
+        memory: "60 GB"
         disks: "~{disk_size_gb} GB"
     }
 }
