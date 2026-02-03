@@ -10,19 +10,20 @@ All rules below should be followed by contributors to this repo. Contributors sh
 - All tasks should run in a persistently versioned container.
   - e.g. do not use `latest` tags for Docker images.
   - This ensures reproducibility across time and environments.
-- Check all assumptions made about workflow inputs before beginning long running executions
+- Check all assumptions made about workflow inputs before beginning long running executions.
   - Common examples of assumptions that should be checked: valid `String` choice, mutually exclusive parameters, missing optional file for selected parameters, filename extensions
+  - Use `after` clauses in workflows to ensure that all these assumptions are valid before beginning tasks with heavy computation.
 - If the _contents_ of a `File` are not read or do not need to be localized for a task, try to coerce the `File` variable to a `Boolean` (with `defined()`) or a `String` (with `basename()`) to avoid unnecessary disk space usage and networking.
-- All requirement values are overridable at runtime. However, tasks should have easily configurable memory and disk space allocations
+- All requirement values are overridable at runtime. However, tasks should have easily configurable memory and disk space allocations.
   - TODO should this be here?
 - multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-examples.wdl`)
-  - TODO should this be here?
-  - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter
+  - TODO should this be here? Will at least need to be rephrased.
+  - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter.
   - Note that future versions of WDL will likely cause a change to this convention.
     - We plan to deprecate the `ncpu` param in favor of accessing the runtime section directly (`n_cores=~{task.runtime.cpu}`)
 - Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* create symlinks from the mounted inputs to the work directory of the task
-  - The Bash would look something like: `ln -s "~{<input name>}" "./<expected name>"`
-  - This is because multiple `File` types are not guarenteed to be in the same mounted directory.
+  - This is because individual `File` types are not guarenteed to be in the same mounted directory.
+  - The `command` may include something like: `ln -s "~{<input name>}" "./<expected name>"`
 - Most tasks should have a default `maxRetries` of 1.
   - This is because many WDL backends are prone to intermittent failures that can be recovered from with a retry.
   - Certain tasks are especially prone to intermittent failure (often if any networking is involved) and can have a higher default `maxRetries`.
