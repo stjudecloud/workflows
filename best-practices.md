@@ -24,6 +24,9 @@ All rules below should be followed by contributors to this repo. Contributors sh
 - Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* create symlinks from the mounted inputs to the work directory of the task
   - This is because individual `File` types are not guarenteed to be in the same mounted directory.
   - The `command` may include something like: `ln -s "~{<input name>}" "./<expected name>"`
+- Tasks should `rm` any temporary or intermediate files created in the work directory (including symlinks).
+  - This helps reduce disk bloat from keeping unnecessary files around.
+  - This is especially important for any large or uncompressed files, such as reference FASTAs or databases.
 - Most tasks should have a default `maxRetries` of 1.
   - This is because many WDL backends are prone to intermittent failures that can be recovered from with a retry.
   - Certain tasks are especially prone to intermittent failure (often if any networking is involved) and can have a higher default `maxRetries`.
