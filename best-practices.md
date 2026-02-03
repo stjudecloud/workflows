@@ -1,9 +1,5 @@
 # WDL Best Practices
 
-All rules below should be followed by contributors to this repo. Contributors should also follow the rules enforced by [Sprocket](https://sprocket.bio/). Pull Requests which do not conform to these specifications will be asked to change.
-
-## Rules
-
 - All tasks with multiple commands (including any pipes (`|`)) should have `set -euo pipefail` before any other commands.
   - Tasks without multiple commands or pipes can omit this.
   - These options will cause common classes of bugs in Bash scripts to fail immediately and loudly, instead of causing silent or subtle bugs in your task behavior.
