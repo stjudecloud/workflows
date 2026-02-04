@@ -26,6 +26,7 @@
 - Most tasks should have a default `maxRetries` of 1.
   - This is because many WDL backends are prone to intermittent failures that can be recovered from with a retry.
   - Certain tasks are especially prone to intermittent failure (often if any networking is involved) and can have a higher default `maxRetries`.
+  - Certain tasks with potentially high compute costs in cloud environments may default to 0. This should be used in combination with call caching to aid rerunning while minimizing costs.
 - The non-empty qualifier (`+`) of arrays and maps should be avoided.
   - TODO this is really just our opinion after trying to use it and finding the resulting WDL ugly. I'm not sure it can really be called a "best practice".
   - This is because the non-empty qualifier can be cumbersome to deal with in WDL source code.

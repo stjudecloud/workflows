@@ -40,7 +40,7 @@ We have some opinionated rules and guidelines we use while writing WDL for this 
 - All requirement values are overridable at runtime. However, tasks should have easily configurable memory and disk space allocations.
   - See the various tasks in the template directory for possible ways to allocate resources.
     - Contributors can mix and match the available templates, copy and pasting subsections as appropriate.
-    - It is allowed to have one resource allocated dynamically, and another allocated statically in the same task.
+    - A task may contain both statically and dynamically allocated resources.
 - Multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-examples.wdl`).
   - This is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter.
   - Note that future versions of WDL will likely cause a change to this convention.
