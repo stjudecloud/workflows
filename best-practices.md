@@ -5,18 +5,19 @@
   - These options will cause common classes of bugs in Bash scripts to fail immediately and loudly, instead of causing silent or subtle bugs in your task behavior.
 - All tasks should run in a persistently versioned container.
   - e.g. do not use `latest` tags for Docker images.
-  - This ensures reproducibility across time and environments.
+  - This helps ensure reproducibility across time and environments.
 - Check all assumptions made about workflow inputs before beginning long running executions.
-  - Common examples of assumptions that should be checked: valid `String` choice (post-WDL 1.3, an `enum` should be used in place of `String`s with a fixed set of valid options), mutually exclusive parameters, missing optional file for selected parameters, filename extensions
+  - Common examples of assumptions that should be checked:
+    - valid `String` choice (for WDL 1.3 and later, an `enum` should be used in place of `String`s with a fixed set of valid options)
+    - mutually exclusive parameters
+    - missing optional file for selected parameters
+    - filename extensions
   - Use `after` clauses in workflows to ensure that all these assumptions are valid before beginning tasks with heavy computation.
 - If the _contents_ of a `File` are not read or do not need to be localized for a task, try to coerce the `File` variable to a `Boolean` (with `defined()`) or a `String` (with `basename()`) to avoid unnecessary disk space usage and networking.
 - All requirement values are overridable at runtime. However, tasks should have easily configurable memory and disk space allocations.
-  - TODO should this be here?
-- multi-core tasks should *always* follow the conventions laid out in the `use_all_cores_task` example (see `template/task-examples.wdl`)
-  - TODO should this be here? Will at least need to be rephrased.
-  - this is catering to cloud users, who may be allocated a machine with more cores than are specified by the `ncpu` parameter.
-  - Note that future versions of WDL will likely cause a change to this convention.
-    - We plan to deprecate the `ncpu` param in favor of accessing the runtime section directly (`n_cores=~{task.runtime.cpu}`)
+  - Often, tasks have a dynamic calculation for resource requirements based on input sizes. Users of a WDL should have an easy way to fine tune this calculation.
+  - This may mean incorporating an `Int` or `Float` in the input that is applied to the dynamic calculation.
+  - For WDL 1.3 and later, WDL authors can change resource requirements between retry attempts. TODO explain this line of thought I'm brain farting on
 - Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* create symlinks from the mounted inputs to the work directory of the task
   - This is because individual `File` types are not guarenteed to be in the same mounted directory.
   - The `command` may include something like: `ln -s "~{<input name>}" "./<expected name>"`
@@ -26,7 +27,4 @@
 - Most tasks should have a default `maxRetries` of 1.
   - This is because many WDL backends are prone to intermittent failures that can be recovered from with a retry.
   - Certain tasks are especially prone to intermittent failure (often if any networking is involved) and can have a higher default `maxRetries`.
-  - Certain tasks with potentially high compute costs in cloud environments may default to 0. This should be used in combination with call caching to aid rerunning while minimizing costs.
-- The non-empty qualifier (`+`) of arrays and maps should be avoided.
-  - TODO this is really just our opinion after trying to use it and finding the resulting WDL ugly. I'm not sure it can really be called a "best practice".
-  - This is because the non-empty qualifier can be cumbersome to deal with in WDL source code.
+  - Certain tasks with potentially high compute costs in cloud environments may default to `0`. This should be used in combination with call caching to aid rerunning while minimizing costs.
