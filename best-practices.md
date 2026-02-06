@@ -7,7 +7,7 @@
   - e.g. do not use `latest` tags for Docker images.
   - This ensures reproducibility across time and environments.
 - Check all assumptions made about workflow inputs before beginning long running executions.
-  - Common examples of assumptions that should be checked: valid `String` choice, mutually exclusive parameters, missing optional file for selected parameters, filename extensions
+  - Common examples of assumptions that should be checked: valid `String` choice (post-WDL 1.3, an `enum` should be used in place of `String`s with a fixed set of valid options), mutually exclusive parameters, missing optional file for selected parameters, filename extensions
   - Use `after` clauses in workflows to ensure that all these assumptions are valid before beginning tasks with heavy computation.
 - If the _contents_ of a `File` are not read or do not need to be localized for a task, try to coerce the `File` variable to a `Boolean` (with `defined()`) or a `String` (with `basename()`) to avoid unnecessary disk space usage and networking.
 - All requirement values are overridable at runtime. However, tasks should have easily configurable memory and disk space allocations.
