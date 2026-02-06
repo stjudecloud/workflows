@@ -10,3 +10,4 @@ applyTo: "**/*.wdl"
 - Use the best-practices.md guide in this repository for WDL-specific best practices.
 - Prefer the strings in template/common-parameter-meta.txt when writing parameter meta sections.
 - Use the templates in template/task-examples.wdl when writing new tasks.
+- All WDL code should be checked with Sprocket lint and formatted with Sprocket format before committing.
