@@ -1,5 +1,4 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-
 version 1.1
 
 import "../../tools/bwa.wdl"
@@ -69,10 +68,7 @@ workflow dnaseq_core_experimental {
         read_groups,
     }
 
-    scatter (tuple in zip(
-        zip(read_one_fastqs_gz, read_two_fastqs_gz),
-        read_groups
-    )) {
+    scatter (tuple in zip(zip(read_one_fastqs_gz, read_two_fastqs_gz), read_groups)) {
         if (enable_read_trimming) {
             call fp.fastp as trim after validate { input:
                 read_one_fastq = tuple.left.left,
@@ -87,8 +83,14 @@ workflow dnaseq_core_experimental {
                 output_fastq = enable_read_trimming,
             }
         }
-        File chosen_r1_fastq = select_first([trim.read_one_fastq_gz, tuple.left.left])
-        File chosen_r2_fastq = select_first([trim.read_two_fastq_gz, tuple.left.right])
+        File chosen_r1_fastq = select_first([
+            trim.read_one_fastq_gz,
+            tuple.left.left,
+        ])
+        File chosen_r2_fastq = select_first([
+            trim.read_two_fastq_gz,
+            tuple.left.right,
+        ])
 
         call util.split_fastq as read_ones after validate { input:
             fastq = chosen_r1_fastq,
@@ -105,11 +107,8 @@ workflow dnaseq_core_experimental {
                     read_one_fastq_gz = t.left,
                     read_two_fastq_gz = t.right,
                     bwa_db_tar_gz = bwa_db,
-                    prefix = sub(sub(
-                        basename(t.left),
-                        "(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
-                        ""
-                    ), "\\.([rR][12])\\.", "."),
+                    prefix = sub(sub(basename(t.left), "(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
+                        ""), "\\.([rR][12])\\.", "."),
                     read_group = tuple.right,
                     use_all_cores,
                 }
@@ -119,17 +118,17 @@ workflow dnaseq_core_experimental {
                     read_one_fastq_gz = t.left,
                     read_two_fastq_gz = t.right,
                     bwa_db_tar_gz = bwa_db,
-                    prefix = sub(sub(
-                        basename(t.left),
-                        "(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
-                        ""
-                    ), "\\.([rR][12])\\.", "."),
+                    prefix = sub(sub(basename(t.left), "(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
+                        ""), "\\.([rR][12])\\.", "."),
                     read_group = tuple.right,
                     use_all_cores,
                 }
             }
             call picard.sort as sort { input:
-                 bam = select_first([bwa_mem.bam, bwa_aln_pe.bam])
+                bam = select_first([
+                    bwa_mem.bam,
+                    bwa_aln_pe.bam,
+                ]),
             }
         }
     }
@@ -146,9 +145,13 @@ workflow dnaseq_core_experimental {
     output {
         File harmonized_bam = merge.merged_bam
         File harmonized_bam_index = index.bam_index
-        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
-        Array[File] fastp_jsons = select_all(flatten(
-            [fastp.report_json, trim.report_json]
-        ))
+        Array[File] fastp_reports = select_all(flatten([
+            fastp.report,
+            trim.report,
+        ]))
+        Array[File] fastp_jsons = select_all(flatten([
+            fastp.report_json,
+            trim.report_json,
+        ]))
     }
 }

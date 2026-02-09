@@ -95,11 +95,9 @@ task fastp {
     input {
         File read_one_fastq
         File? read_two_fastq
-        String prefix = sub(
-            basename(read_one_fastq),
-            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+        String prefix = sub(basename(read_one_fastq), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
-        ) + ".trimmed"
+            ) + ".trimmed"
         Boolean output_fastq = true
         Boolean deduplicate = false
         Boolean disable_duplicate_eval = false
@@ -148,9 +146,9 @@ task fastp {
     Float input_size = size(read_one_fastq, "GB") + size(read_two_fastq, "GB")
     Int disk_size_gb = ceil(input_size) * 2 + 10 + modify_disk_size_gb
 
-    command <<< 
+    command <<<
         set -euo pipefail
-        
+
         n_cores=~{ncpu}
         if ~{use_all_cores}; then
             n_cores=$(nproc)
@@ -159,20 +157,10 @@ task fastp {
         fastp \
             -i "~{read_one_fastq}" \
             ~{"-I '" + read_two_fastq + "'"} \
-            ~{(
-                if output_fastq
-                then "-o '" + (
-                    if defined(read_two_fastq)
-                    then "~{prefix}.R1.fastq.gz"
-                    else "~{prefix}.fastq.gz"
-                ) + "'"
-                else ""
-            )} \
-            ~{(
-                if (defined(read_two_fastq) && output_fastq)
-                then "-O '" + prefix + ".R2.fastq.gz'"
-                else ""
-            )} \
+            ~{(if output_fastq then "-o '" + (if defined(read_two_fastq) then "~{prefix}.R1.fastq.gz"
+                else "~{prefix}.fastq.gz") + "'" else "")} \
+            ~{(if (defined(read_two_fastq) && output_fastq) then "-O '" + prefix + ".R2.fastq.gz'"
+                else "")} \
             --reads_to_process ~{first_n_reads} \
             ~{if deduplicate then "--dedup" else ""} \
             --dup_calc_accuracy ~{duplicate_accuracy} \
@@ -219,11 +207,8 @@ task fastp {
 
     runtime {
         cpu: ncpu
-        memory: (
-            if disable_duplicate_eval
-            then "4 GB"
-            else dup_acc_to_mem[duplicate_accuracy]
-        )
+        memory: (if disable_duplicate_eval then "4 GB" else dup_acc_to_mem[
+            duplicate_accuracy])
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fastp:1.0.1--heae3180_0"
         maxRetries: 1

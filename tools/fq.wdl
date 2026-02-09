@@ -1,5 +1,4 @@
 ## [Homepage](https://github.com/stjude-rust-labs/fq)
-
 version 1.1
 
 task fqlint {
@@ -67,9 +66,7 @@ task fqlint {
     Float read1_size = size(read_one_fastq, "GiB")
     Float read2_size = size(read_two_fastq, "GiB")
 
-    Int memory_gb = (
-        ceil((read1_size + read2_size) * 0.25) + 1 + modify_memory_gb
-    )
+    Int memory_gb = (ceil((read1_size + read2_size) * 0.25) + 1 + modify_memory_gb)
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
@@ -123,11 +120,9 @@ task subsample {
     input {
         File read_one_fastq
         File? read_two_fastq
-        String prefix = sub(
-            basename(read_one_fastq),
-            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+        String prefix = sub(basename(read_one_fastq), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
-        )
+            )
         Float probability = 1.0
         Int record_count = -1
         Int modify_disk_size_gb = 0
@@ -138,11 +133,8 @@ task subsample {
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
-    String probability_arg = (
-        if (probability < 1.0 && probability > 0)
-        then "-p ~{probability}"
-        else ""
-    )
+    String probability_arg = (if (probability < 1.0 && probability > 0) then "-p ~{
+        probability}" else "")
     String record_count_arg = if (record_count > 0) then "-n ~{record_count}" else ""
 
     String r1_dst = prefix + ".R1.subsampled.fastq.gz"

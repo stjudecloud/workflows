@@ -73,11 +73,9 @@ workflow rnaseq_standard_fastq {
         Array[File] read_two_fastqs_gz
         Array[ReadGroup] read_groups
         File? contaminant_db
-        String prefix = sub(
-            basename(read_one_fastqs_gz[0]),
-            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+        String prefix = sub(basename(read_one_fastqs_gz[0]), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
-        )
+            )
         String xenocp_aligner = "star"
         String strandedness = ""
         Boolean enable_read_trimming = false
@@ -100,7 +98,7 @@ workflow rnaseq_standard_fastq {
         }
     }
 
-    if (validate_input){
+    if (validate_input) {
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
             call fq.fqlint after parse_input { input:
                 read_one_fastq = reads.left,
@@ -123,12 +121,10 @@ workflow rnaseq_standard_fastq {
         subsample.subsampled_read1,
         read_one_fastqs_gz,
     ])
-    Array[File] selected_read_two_fastqs = select_all(
-        select_first([
-            subsample.subsampled_read2,
-            read_two_fastqs_gz,
-        ])
-    )
+    Array[File] selected_read_two_fastqs = select_all(select_first([
+        subsample.subsampled_read2,
+        read_two_fastqs_gz,
+    ]))
 
     call rnaseq_core_wf.rnaseq_core after fqlint { input:
         read_one_fastqs_gz = selected_read_one_fastqs,

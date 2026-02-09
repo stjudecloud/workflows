@@ -1,12 +1,11 @@
 ## [Homepage](https://github.com/alexdobin/STAR)
-
 version 1.1
 
 task build_star_db {
     meta {
         description: "Runs STAR's build command to generate a STAR format reference for alignment"
         outputs: {
-            star_db: "A gzipped TAR file containing the STAR reference files. Suitable as the `star_db_tar_gz` input to the `alignment` task."
+            star_db: "A gzipped TAR file containing the STAR reference files. Suitable as the `star_db_tar_gz` input to the `alignment` task.",
         }
     }
 
@@ -86,9 +85,8 @@ task build_star_db {
 
     Float reference_fasta_size = size(reference_fasta, "GiB")
     Float gtf_size = size(gtf, "GiB")
-    Int disk_size_gb = (
-        ceil((reference_fasta_size + gtf_size) * 3) + 10 + modify_disk_size_gb
-    )
+    Int disk_size_gb = (ceil((reference_fasta_size + gtf_size) * 3) + 10 + modify_disk_size_gb
+        )
 
     # Leave 2GB as system overhead
     String memory_limit_bytes = "~{memory_gb - 2}000000000"
@@ -558,7 +556,11 @@ task alignment {
         Array[File] read_one_fastqs_gz
         Array[String] read_groups
         Array[File]? read_two_fastqs_gz
-        Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
+        Array[Int] out_sj_filter_intron_max_vs_read_n = [
+            50000,
+            100000,
+            200000,
+        ]
         SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,
             GT_AG_and_CT_AC_motif: 12,
@@ -595,11 +597,9 @@ task alignment {
         Pair[Int, Int] clip_3p_n_bases = (0, 0)
         Pair[Int, Int] clip_3p_after_adapter_n_bases = (0, 0)
         Pair[Int, Int] clip_5p_n_bases = (0, 0)
-        String prefix = sub(
-            basename(read_one_fastqs_gz[0]),
-            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+        String prefix = sub(basename(read_one_fastqs_gz[0]), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
-        )
+            )
         String read_name_separator = "/"
         String clip_adapter_type = "Hamming"
         String out_sam_strand_field = "intronMotif"
@@ -699,16 +699,16 @@ task alignment {
         Int modify_disk_size_gb = 0
     }
 
-    Array[File] read_twos = select_first([read_two_fastqs_gz, []])
+    Array[File] read_twos = select_first([
+        read_two_fastqs_gz,
+        [],
+    ])
 
     Float read_one_fastqs_size = size(read_one_fastqs_gz, "GiB")
     Float read_two_fastqs_size = size(read_twos, "GiB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
-    Int disk_size_gb = (
-        (
-            ceil(read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size) * 3
-        ) + 10 + modify_disk_size_gb
-    )
+    Int disk_size_gb = ((ceil(read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size
+        ) * 3) + 10 + modify_disk_size_gb)
 
     command <<<
         set -euo pipefail
@@ -733,9 +733,8 @@ task alignment {
             --outFileNamePrefix "~{prefix + "."}" \
             --twopassMode "~{twopass_mode}" \
             --outSAMattrRGline ~{sep(" , ", read_groups)} \
-            --outSJfilterIntronMaxVsReadN ~{
-                sep(" ", quote(out_sj_filter_intron_max_vs_read_n))
-            } \
+            --outSJfilterIntronMaxVsReadN ~{sep(" ", quote(
+                out_sj_filter_intron_max_vs_read_n))} \
             --outSJfilterOverhangMin ~{sep(" ", quote([
                 out_sj_filter_overhang_min.noncanonical_motifs,
                 out_sj_filter_overhang_min.GT_AG_and_CT_AC_motif,
@@ -766,36 +765,18 @@ task alignment {
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
             ]))} \
-            --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{(
-                if (length(read_twos) != 0)
-                then "'" + clip_3p_adapter_seq.right + "'"
-                else ""
-            )} \
-            --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
-                if (length(read_twos) != 0)
-                then clip_3p_adapter_mmp.right
-                else None
-            )} \
-            --alignEndsProtrude ~{align_ends_protrude.left} "~{(
-                if (length(read_twos) != 0)
-                then align_ends_protrude.right
-                else None
-            )}" \
-            --clip3pNbases ~{clip_3p_n_bases.left} ~{(
-                if (length(read_twos) != 0)
-                then clip_3p_n_bases.right
-                else None
-            )} \
-            --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{(
-                if (length(read_twos) != 0)
-                then clip_3p_after_adapter_n_bases.right
-                else None
-            )} \
-            --clip5pNbases ~{clip_5p_n_bases.left} ~{(
-                if (length(read_twos) != 0)
-                then clip_5p_n_bases.right
-                else None
-            )} \
+            --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{(if (length(read_twos) != 0
+            ) then "'" + clip_3p_adapter_seq.right + "'" else "")} \
+            --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(if (length(read_twos) != 0)
+             then clip_3p_adapter_mmp.right else None)} \
+            --alignEndsProtrude ~{align_ends_protrude.left} "~{(if (length(read_twos) != 0
+             ) then align_ends_protrude.right else None)}" \
+            --clip3pNbases ~{clip_3p_n_bases.left} ~{(if (length(read_twos) != 0) then clip_3p_n_bases.right
+             else None)} \
+            --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{(if (length(
+             read_twos) != 0) then clip_3p_after_adapter_n_bases.right else None)} \
+            --clip5pNbases ~{clip_5p_n_bases.left} ~{(if (length(read_twos) != 0) then clip_5p_n_bases.right
+             else None)} \
             --readNameSeparator "~{read_name_separator}" \
             --clipAdapterType "~{clip_adapter_type}" \
             --outSAMstrandField "~{out_sam_strand_field}" \
@@ -803,13 +784,8 @@ task alignment {
             --outSAMunmapped "~{out_sam_unmapped}" \
             --outSAMorder "~{out_sam_order}" \
             --outSAMreadID "~{out_sam_read_id}" \
-            --outSAMtlen ~{(
-                if (out_sam_tlen == "left_plus")
-                then "1"
-                else (
-                    if (out_sam_tlen == "left_any") then "2" else "error"
-                )
-            )} \
+            --outSAMtlen ~{(if (out_sam_tlen == "left_plus") then "1" else (if (
+                out_sam_tlen == "left_any") then "2" else "error"))} \
             --outFilterType "~{out_filter_type}" \
             --outFilterIntronMotifs "~{out_filter_intron_motifs}" \
             --outFilterIntronStrands "~{out_filter_intron_strands}" \

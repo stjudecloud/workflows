@@ -1,5 +1,4 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-
 version 1.1
 
 import "../../data_structures/read_group.wdl"
@@ -54,11 +53,9 @@ workflow dnaseq_standard_fastq_experimental {
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
         Array[ReadGroup] read_groups
-        String prefix = sub(
-            basename(read_one_fastqs_gz[0]),
-            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+        String prefix = sub(basename(read_one_fastqs_gz[0]), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
-        )
+            )
         String aligner = "mem"
         Boolean enable_read_trimming = false
         Boolean validate_input = true
@@ -101,12 +98,10 @@ workflow dnaseq_standard_fastq_experimental {
         subsample.subsampled_read1,
         read_one_fastqs_gz,
     ])
-    Array[File] selected_read_two_fastqs = select_all(
-        select_first([
-            subsample.subsampled_read2,
-            read_two_fastqs_gz,
-        ])
-    )
+    Array[File] selected_read_two_fastqs = select_all(select_first([
+        subsample.subsampled_read2,
+        read_two_fastqs_gz,
+    ]))
 
     call dnaseq_core_wf.dnaseq_core_experimental after fqlint { input:
         read_one_fastqs_gz = selected_read_one_fastqs,

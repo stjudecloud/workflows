@@ -1,12 +1,11 @@
 ## [Homepage](https://lomereiter.github.io/sambamba/)
-
 version 1.1
 
 task index {
     meta {
         description: "Creates a `.bai` BAM index for the input BAM"
         outputs: {
-            bam_index: "A `.bai` BAM index associated with the input BAM. Filename will be `basename(bam) + '.bai'`."
+            bam_index: "A `.bai` BAM index associated with the input BAM. Filename will be `basename(bam) + '.bai'`.",
         }
     }
 
@@ -63,7 +62,7 @@ task merge {
     meta {
         description: "Merges multiple sorted BAMs into a single BAM"
         outputs: {
-            merged_bam: "The BAM resulting from merging all the input BAMs"
+            merged_bam: "The BAM resulting from merging all the input BAMs",
         }
     }
 
@@ -123,7 +122,7 @@ task sort {
     meta {
         description: "Sorts the input BAM file"
         outputs: {
-            sorted_bam: "The input BAM after it has been sorted according to `sort_order`"
+            sorted_bam: "The input BAM after it has been sorted according to `sort_order`",
         }
     }
 
@@ -234,7 +233,7 @@ task flagstat {
     meta {
         description: "Produces a report containing statistics about the alignments based on the bit flags set in the BAM"
         outputs: {
-            flagstat_report: "`sambamba flagstat` STDOUT redirected to a file"
+            flagstat_report: "`sambamba flagstat` STDOUT redirected to a file",
         }
     }
 
@@ -275,7 +274,7 @@ task flagstat {
     >>>
 
     output {
-       File flagstat_report = outfile_name
+        File flagstat_report = outfile_name
     }
 
     runtime {

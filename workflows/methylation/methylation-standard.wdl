@@ -32,19 +32,17 @@ workflow methylation {
 
     scatter (pair in zip(green_idats, red_idats)) {
         call preprocess.process_raw_idats { input:
-            idats = pair
+            idats = pair,
         }
     }
 
     call cohort.methylation_cohort { input:
-        unfiltered_normalized_beta =
-            process_raw_idats.beta_swan_norm_unfiltered_genomic,
+        unfiltered_normalized_beta = process_raw_idats.beta_swan_norm_unfiltered_genomic,
         p_values = process_raw_idats.probe_pvalues,
     }
 
     output {
-        Array[File] beta_swan_norm_unfiltered_genomic =
-            process_raw_idats.beta_swan_norm_unfiltered_genomic
+        Array[File] beta_swan_norm_unfiltered_genomic = process_raw_idats.beta_swan_norm_unfiltered_genomic
         File combined_beta = methylation_cohort.combined_beta
         File filtered_beta = methylation_cohort.filtered_beta
         File filtered_probeset = methylation_cohort.filtered_probeset

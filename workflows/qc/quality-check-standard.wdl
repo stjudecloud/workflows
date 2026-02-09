@@ -126,8 +126,7 @@ workflow quality_check_standard {
         File kraken_db
         File? gtf
         #@ except: LineWidth
-        File multiqc_config
-            = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/multiqc_config/multiqc_config.yaml"
+        File multiqc_config = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/multiqc_config/multiqc_config.yaml"
         Array[File] extra_multiqc_inputs = []
         Array[File] coverage_beds = []
         Array[String] coverage_labels = []
@@ -164,20 +163,24 @@ workflow quality_check_standard {
         coverage_labels,
     }
     call flag_filter.validate_flag_filter as kraken_filter_validator { input:
-        flags = standard_filter
+        flags = standard_filter,
     }
     if (run_comparative_kraken) {
-        call flag_filter.validate_flag_filter
-            as comparative_kraken_filter_validator
-        { input:
-            flags = comparative_filter
+        call flag_filter.validate_flag_filter as comparative_kraken_filter_validator { input:
+            flags = comparative_filter,
         }
     }
 
-    call md5sum.compute_checksum after parse_input { input: file = bam }
+    call md5sum.compute_checksum after parse_input { input:
+        file = bam,
+    }
 
-    call samtools.quickcheck after parse_input { input: bam }
-    call util.compression_integrity after parse_input { input: bgzipped_file = bam }
+    call samtools.quickcheck after parse_input { input:
+        bam,
+    }
+    call util.compression_integrity after parse_input { input:
+        bgzipped_file = bam,
+    }
 
     if (subsample_n_reads > 0) {
         call samtools.subsample after quickcheck { input:
@@ -188,7 +191,10 @@ workflow quality_check_standard {
         }
         if (defined(subsample.sampled_bam)) {
             call samtools.index as subsample_index { input:
-                bam = select_first([subsample.sampled_bam, "undefined"]),
+                bam = select_first([
+                    subsample.sampled_bam,
+                    "undefined",
+                ]),
                 use_all_cores,
             }
         }
@@ -203,11 +209,8 @@ workflow quality_check_standard {
         subsample_index.bam_index,
         bam_index,
     ])
-    String post_subsample_prefix = (
-        if (defined(subsample.sampled_bam))
-        then prefix + ".subsampled"
-        else prefix
-    )
+    String post_subsample_prefix = (if (defined(subsample.sampled_bam)) then prefix + ".subsampled"
+        else prefix)
 
     call picard.validate_bam after quickcheck { input:
         bam = post_subsample_bam,
@@ -235,7 +238,9 @@ workflow quality_check_standard {
         outfile_name = post_subsample_prefix + ".readlength.tsv",
     }
     call ngsderive.encoding after quickcheck { input:
-        ngs_files = [post_subsample_bam],
+        ngs_files = [
+            post_subsample_bam,
+        ],
         outfile_name = post_subsample_prefix + ".encoding.tsv",
         num_reads = -1,
     }
@@ -249,9 +254,7 @@ workflow quality_check_standard {
         prefix = post_subsample_prefix,
     }
 
-    call samtools.bam_to_fastq after quickcheck
-        after kraken_filter_validator
-    { input:
+    call samtools.bam_to_fastq after quickcheck after kraken_filter_validator { input:
         bam = post_subsample_bam,
         bitwise_filter = standard_filter,
         prefix = post_subsample_prefix,
@@ -267,14 +270,24 @@ workflow quality_check_standard {
     }
 
     call fq.fqlint { input:
-        read_one_fastq = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
-        read_two_fastq = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
+        read_one_fastq = select_first([
+            bam_to_fastq.read_one_fastq_gz,
+            "undefined",
+        ]),
+        read_two_fastq = select_first([
+            bam_to_fastq.read_two_fastq_gz,
+            "undefined",
+        ]),
     }
     call kraken2.kraken after fqlint { input:
-        read_one_fastq_gz
-            = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
-        read_two_fastq_gz
-            = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
+        read_one_fastq_gz = select_first([
+            bam_to_fastq.read_one_fastq_gz,
+            "undefined",
+        ]),
+        read_two_fastq_gz = select_first([
+            bam_to_fastq.read_two_fastq_gz,
+            "undefined",
+        ]),
         db = kraken_db,
         store_sequences = store_kraken_sequences,
         prefix = post_subsample_prefix,
@@ -282,23 +295,29 @@ workflow quality_check_standard {
     }
     if (run_fastp) {
         call fp.fastp after fqlint { input:
-            read_one_fastq
-                = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
-            read_two_fastq
-                = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
+            read_one_fastq = select_first([
+                bam_to_fastq.read_one_fastq_gz,
+                "undefined",
+            ]),
+            read_two_fastq = select_first([
+                bam_to_fastq.read_two_fastq_gz,
+                "undefined",
+            ]),
             output_fastq = false,
         }
     }
     if (run_librarian) {
         call libraran_tasks.librarian after fqlint { input:
-            read_one_fastq = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
+            read_one_fastq = select_first([
+                bam_to_fastq.read_one_fastq_gz,
+                "undefined",
+            ]),
         }
     }
 
     if (run_comparative_kraken) {
-        call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck
-            after comparative_kraken_filter_validator
-        { input:
+        call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck after comparative_kraken_filter_validator {
+            input:
             bam = post_subsample_bam,
             bitwise_filter = comparative_filter,
             prefix = post_subsample_prefix + ".alt_filtered",
@@ -315,16 +334,24 @@ workflow quality_check_standard {
             use_all_cores,
         }
         call fq.fqlint as alt_filtered_fqlint { input:
-            read_one_fastq
-                = select_first([alt_filtered_fastq.read_one_fastq_gz, "undefined"]),
-            read_two_fastq
-                = select_first([alt_filtered_fastq.read_two_fastq_gz, "undefined"]),
+            read_one_fastq = select_first([
+                alt_filtered_fastq.read_one_fastq_gz,
+                "undefined",
+            ]),
+            read_two_fastq = select_first([
+                alt_filtered_fastq.read_two_fastq_gz,
+                "undefined",
+            ]),
         }
         call kraken2.kraken as comparative_kraken after alt_filtered_fqlint { input:
-            read_one_fastq_gz
-                = select_first([alt_filtered_fastq.read_one_fastq_gz, "undefined"]),
-            read_two_fastq_gz
-                = select_first([alt_filtered_fastq.read_two_fastq_gz, "undefined"]),
+            read_one_fastq_gz = select_first([
+                alt_filtered_fastq.read_one_fastq_gz,
+                "undefined",
+            ]),
+            read_two_fastq_gz = select_first([
+                alt_filtered_fastq.read_two_fastq_gz,
+                "undefined",
+            ]),
             db = kraken_db,
             store_sequences = store_kraken_sequences,
             prefix = post_subsample_prefix + ".alt_filtered",
@@ -337,8 +364,8 @@ workflow quality_check_standard {
         bam_index = post_subsample_bam_index,
         prefix = post_subsample_prefix + ".whole_genome",
     }
-    scatter(coverage_pair in zip(coverage_beds, parse_input.labels)) {
-        call mosdepth.coverage as regions_coverage after quickcheck  { input:
+    scatter (coverage_pair in zip(coverage_beds, parse_input.labels)) {
+        call mosdepth.coverage as regions_coverage after quickcheck { input:
             bam = post_subsample_bam,
             bam_index = post_subsample_bam_index,
             coverage_bed = coverage_pair.left,
@@ -350,19 +377,31 @@ workflow quality_check_standard {
         call ngsderive.junction_annotation after quickcheck { input:
             bam = post_subsample_bam,
             bam_index = post_subsample_bam_index,
-            gene_model = select_first([gtf, "undefined"]),
+            gene_model = select_first([
+                gtf,
+                "undefined",
+            ]),
             prefix = post_subsample_prefix,
         }
         call ngsderive.strandedness after quickcheck { input:
             bam = post_subsample_bam,
             bam_index = post_subsample_bam_index,
-            gene_model = select_first([gtf, "undefined"]),
+            gene_model = select_first([
+                gtf,
+                "undefined",
+            ]),
             outfile_name = post_subsample_prefix + ".strandedness.tsv",
         }
         call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam = select_first([bam_to_fastq.collated_bam, "undefined"]),
+            bam = select_first([
+                bam_to_fastq.collated_bam,
+                "undefined",
+            ]),
             prefix = post_subsample_prefix + ".qualimap_rnaseq_results",
-            gtf = select_first([gtf, "undefined"]),
+            gtf = select_first([
+                gtf,
+                "undefined",
+            ]),
             name_sorted = true,
             paired_end = true,  # matches default but prevents user from overriding
         }
@@ -434,17 +473,24 @@ workflow quality_check_standard {
         ],
         regions_coverage.summary,
         select_all(regions_coverage.region_dist),
-        select_first([markdups_post.mosdepth_region_summary, []]),
-        select_first([markdups_post.mosdepth_region_dist, []]),
-        (
-            if (mark_duplicates && optical_distance > 0)
-            then [markdups.mark_duplicates_metrics]
-            else []
-        ),
+        select_first([
+            markdups_post.mosdepth_region_summary,
+            [],
+        ]),
+        select_first([
+            markdups_post.mosdepth_region_dist,
+            [],
+        ]),
+        (if (mark_duplicates && optical_distance > 0) then [
+            markdups.mark_duplicates_metrics,
+        ] else []),
     ]))
 
     call multiqc_tasks.multiqc { input:
-        files = flatten([multiqc_files, extra_multiqc_inputs]),
+        files = flatten([
+            multiqc_files,
+            extra_multiqc_inputs,
+        ]),
         config = multiqc_config,
         report_name = post_subsample_prefix + ".multiqc",
     }
@@ -483,7 +529,10 @@ workflow quality_check_standard {
         File? kraken_sequences = kraken.sequences
         File? comparative_kraken_sequences = comparative_kraken.sequences
         File? junctions = junction_annotation.junctions
-        Array[File] intermediate_files = select_first([optional_files, []])
+        Array[File] intermediate_files = select_first([
+            optional_files,
+            [],
+        ])
     }
 }
 
@@ -491,7 +540,7 @@ task parse_input {
     meta {
         description: "Parses and validates the `quality_check_standard` workflow's provided inputs"
         outputs: {
-            labels: "An array of labels to use on the result coverage files associated with each coverage BED"
+            labels: "An array of labels to use on the result coverage files associated with each coverage BED",
         }
     }
 
@@ -539,11 +588,8 @@ task parse_input {
     >>>
 
     output {
-        Array[String] labels = (
-            if (coverage_beds_len > 0)
-            then read_lines("labels.txt")
-            else []
-        )
+        Array[String] labels = (if (coverage_beds_len > 0) then read_lines("labels.txt")
+            else [])
     }
 
     runtime {

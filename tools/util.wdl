@@ -1,12 +1,11 @@
 ## # Utilities
-
 version 1.1
 
 task download {
     meta {
         description: "Uses wget to download a file from a remote URL to the local filesystem"
         outputs: {
-            downloaded_file: "File downloaded from provided URL"
+            downloaded_file: "File downloaded from provided URL",
         }
     }
 
@@ -53,7 +52,7 @@ task split_string {
         description: "Split a string into an array of strings based on a delimiter"
         warning: "This implementation will result in a runtime error if the provided string has any embedded single quotes (`'`)!"
         outputs: {
-            split_strings: "Split string as an array"
+            split_strings: "Split string as an array",
         }
     }
 
@@ -90,7 +89,7 @@ task calc_feature_lengths {
         description: "Calculate feature lengths from a GTF file using the non-overlapping exonic length algorithm"
         help: "The non-overlapping exonic length algorithm can be implemented as the sum of each base covered by at least one exon; where each base is given a value of 1 regardless of how many exons overlap it."
         outputs: {
-            feature_lengths: "A two column headered TSV file with feature names in the first column and feature lengths (as integers) in the second column"
+            feature_lengths: "A two column headered TSV file with feature names in the first column and feature lengths (as integers) in the second column",
         }
     }
 
@@ -166,7 +165,7 @@ task add_to_bam_header {
     meta {
         description: "Adds another line of text to the bottom of a BAM header"
         outputs: {
-            reheadered_bam: "The BAM after its header has been modified"
+            reheadered_bam: "The BAM after its header has been modified",
         }
     }
 
@@ -215,7 +214,7 @@ task unpack_tarball {
     meta {
         description: "Accepts a `.tar.gz` archive and converts it into a flat array of files. Any directory structure of the archive is ignored."
         outputs: {
-            tarball_contents: "An array of files found in the input tarball"
+            tarball_contents: "An array of files found in the input tarball",
         }
     }
 
@@ -314,7 +313,7 @@ task global_phred_scores {
     meta {
         description: "Calculates statistics about PHRED scores of the input BAM"
         outputs: {
-            phred_scores: "Headered TSV file containing PHRED score statistics"
+            phred_scores: "Headered TSV file containing PHRED score statistics",
         }
     }
 
@@ -384,16 +383,16 @@ task check_fastq_and_rg_concordance {
         Array[String]? read_two_names
     }
 
-    Array[String] read_twos = select_first([read_two_names, []])
+    Array[String] read_twos = select_first([
+        read_two_names,
+        [],
+    ])
 
     command <<<
         python3 /scripts/util/check_FQs_and_RGs.py \
             --read-one-fastqs "~{sep(",", read_one_names)}" \
-            ~{(
-                if length(read_twos) > 0
-                then "--read-two-fastqs \"" + sep(",", squote(read_twos)) + "\""
-                else ""
-            )} \
+            ~{(if length(read_twos) > 0 then "--read-two-fastqs \"" + sep(",", squote(
+                read_twos)) + "\"" else "")} \
             --read-groups "~{sep(",", read_groups)}"
     >>>
 
@@ -407,7 +406,7 @@ task split_fastq {
     meta {
         description: "Splits a FASTQ into multiple files based on the number of reads per file"
         outputs: {
-            fastqs: "Array of FASTQ files, each containing a subset of the input FASTQ"
+            fastqs: "Array of FASTQ files, each containing a subset of the input FASTQ",
         }
     }
 
@@ -427,11 +426,7 @@ task split_fastq {
 
     input {
         File fastq
-        String prefix = sub(
-            basename(fastq),
-            "(fastq|fq)\\.gz$",
-            ""
-        )
+        String prefix = sub(basename(fastq), "(fastq|fq)\\.gz$", "")
         Int reads_per_file = 10000000
         Int modify_disk_size_gb = 0
         Int ncpu = 2

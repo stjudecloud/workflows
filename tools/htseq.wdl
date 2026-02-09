@@ -1,5 +1,4 @@
 ## [Homepage](https://github.com/htseq/htseq)
-
 version 1.1
 
 task count {
@@ -9,7 +8,7 @@ task count {
             feature_counts: {
                 description: "A two column TSV file. First column is feature names and second column is counts.",
                 help: "Presence of a header is determined by the `include_custom_header` parameter.",
-            }
+            },
         }
     }
 
@@ -98,9 +97,7 @@ task count {
 
     Int memory_gb = (if pos_sorted then ceil(bam_size) + 4 else 4) + modify_memory_gb
 
-    Int disk_size_gb = ceil(
-        (bam_size + gtf_size) * if pos_sorted then 4 else 1
-    ) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil((bam_size + gtf_size) * if pos_sorted then 4 else 1) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -122,11 +119,8 @@ task count {
             -i "~{idattr}" \
             --nonunique ~{if nonunique then "all" else "none"} \
             --secondary-alignments ~{if secondary_alignments then "score" else "ignore"} \
-            --supplementary-alignments ~{(
-                if supplementary_alignments
-                then "score"
-                else "ignore"
-            )} \
+            --supplementary-alignments ~{(if supplementary_alignments then "score" else "ignore"
+                )} \
             "~{bam}" \
             "~{gtf}" \
             >> "~{outfile_name}"
@@ -148,7 +142,7 @@ task calc_tpm {
     meta {
         description: "Given a feature counts file and a feature lengths file, calculate Transcripts Per Million (TPM)"
         outputs: {
-            tpm_file: "Transcripts Per Million (TPM) file. A two column headered TSV file."
+            tpm_file: "Transcripts Per Million (TPM) file. A two column headered TSV file.",
         }
     }
 

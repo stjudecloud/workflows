@@ -1,27 +1,25 @@
 ## # FlagFilter
 ##
-## A struct to represent the filtering flags used in various `samtools` commands.
-## The order of precedence is `include_if_all`, `exclude_if_any`, `include_if_any`,
-## and `exclude_if_all`.
-## These four fields correspond to the samtools flags
+## A struct to represent the filtering flags used in various `samtools` commands. The
+## order of precedence is `include_if_all`, `exclude_if_any`, `include_if_any`, and
+## `exclude_if_all`. These four fields correspond to the samtools flags
 ## `-f`, `-F`, `--rf`, and `-G` respectively.
-## The values of these fields are strings that represent a 12bit bitwise flag.
-## These strings must evaluate to an integer less than 4096 (2^12).
-## They can be in octal, decimal, or hexadecimal format.
-## Please see the `meta.help` of `validate_string_is_12bit_int`
-## for more information on the valid formats.
+## The values of these fields are strings that represent a 12bit bitwise flag. These
+## strings must evaluate to an integer less than 4096 (2^12). They can be in octal,
+## decimal, or hexadecimal format. Please see the `meta.help` of
+## `validate_string_is_12bit_int` for more information on the valid formats.
 ##
 ## The `validate_flag_filter` workflow can be used to validate a `FlagFilter` struct.
 ## **WARNING** The `validate_flag_filter` workflow will only check that all the fields
-## can be parsed as integers less than 4096. It will not check if the flags are
-## sensible input to `samtools fastq`.
+## can be parsed as integers less than 4096. It will not check if the flags are sensible
+## input to `samtools fastq`.
 ## `samtools fastq` also employs very little error checking on the flags.
-## So it is possible to pass in flags that produce nonsensical output.
-## For example, it is possible to pass in flags that produce no output.
+## So it is possible to pass in flags that produce nonsensical output. For example, it is
+## possible to pass in flags that produce no output.
 ## **Please exhibit caution while modifying any default values of a `FlagFilter`.**
 ##
-## We suggest using the Broad Institute's SAM flag explainer to construct the flags.
-## Find it [here](https://broadinstitute.github.io/picard/explain-flags.html).
+## We suggest using the Broad Institute's SAM flag explainer to construct the flags. Find
+## it [here](https://broadinstitute.github.io/picard/explain-flags.html).
 ##
 ## ## Example input JSON
 ##
@@ -38,27 +36,24 @@
 ##
 ## ### Explanation
 ##
-## The above example JSON represents a `FlagFilter` struct
-## being passed to parameter named `flags`.
-## The `include_if_all` field is set to `0x3` which is `3` in decimal.
-## The `exclude_if_any` field is set to `0xF04` which is `3844` in decimal.
-## The `include_if_any` field is set to `0x0` which is `0` in decimal.
-## The `exclude_if_all` field is set to `0x0` which is `0` in decimal.
+## The above example JSON represents a `FlagFilter` struct being passed to parameter
+## named `flags`. The `include_if_all` field is set to `0x3` which is `3` in decimal. The
+## `exclude_if_any` field is set to `0xF04` which is `3844` in decimal. The
+## `include_if_any` field is set to `0x0` which is `0` in decimal. The `exclude_if_all`
+## field is set to `0x0` which is `0` in decimal.
 ##
 ## `3` in decimal can be represented as `000000000011` in 12bit binary.
-## This number means that to be included a read must have the 1st and 2nd bits set.
-## Those bits correspond to the `read paired` and `read mapped in proper pair` flags.
+## This number means that to be included a read must have the 1st and 2nd bits set. Those
+## bits correspond to the `read paired` and `read mapped in proper pair` flags.
 ##
 ## `3844` in decimal can be represented as `111100000100` in 12bit binary.
 ## This number means that to be excluded a read must have **any** of the
 ## 3rd, 9th, 10th, 11th, or 12th bits set.
-## We won't go through what all those bits mean here, but you can find
-## the meanings of the bits in the
+## We won't go through what all those bits mean here, but you can find the meanings of
+## the bits in the
 ## [SAM flag explainer](https://broadinstitute.github.io/picard/explain-flags.html).
-## In short, those are all flags corresponding to the quality of the read
-## and them being `true` may indicate that the read is of low quality and
-## should be excluded.
-
+## In short, those are all flags corresponding to the quality of the read and them being
+## `true` may indicate that the read is of low quality and should be excluded.
 version 1.1
 
 struct FlagFilter {
@@ -127,15 +122,15 @@ workflow validate_flag_filter {
     }
 
     call validate_string_is_12bit_int as validate_include_if_any { input:
-        number = flags.include_if_any
+        number = flags.include_if_any,
     }
     call validate_string_is_12bit_int as validate_include_if_all { input:
-        number = flags.include_if_all
+        number = flags.include_if_all,
     }
     call validate_string_is_12bit_int as validate_exclude_if_any { input:
-        number = flags.exclude_if_any
+        number = flags.exclude_if_any,
     }
     call validate_string_is_12bit_int as validate_exclude_if_all { input:
-        number = flags.exclude_if_all
+        number = flags.exclude_if_all,
     }
 }
