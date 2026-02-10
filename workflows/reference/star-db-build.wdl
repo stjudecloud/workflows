@@ -56,8 +56,8 @@ workflow star_db_build {
     }
 
     output {
-      File reference_fa = reference_download.downloaded_file
-      File gtf = gtf_download.downloaded_file
-      File star_db_tar_gz = build_star_db.star_db
+        File reference_fa = reference_download.downloaded_file
+        File gtf = gtf_download.downloaded_file
+        File star_db_tar_gz = build_star_db.star_db
     }
 }

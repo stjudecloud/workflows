@@ -1,11 +1,9 @@
 ## # MarkDuplicates Post
 ##
-## An investigation of all our QC tools was conducted when duplicate marking
-## was introduced to our pipeline. Most tools do not take into consideration
-## whether a read is a duplicate or not.
-## But the tasks called below produce different results depending on whether the
-## input BAM has been duplicate marked or not.
-
+## An investigation of all our QC tools was conducted when duplicate marking was
+## introduced to our pipeline. Most tools do not take into consideration whether a read
+## is a duplicate or not. But the tasks called below produce different results depending
+## on whether the input BAM has been duplicate marked or not.
 version 1.1
 
 import "../../tools/mosdepth.wdl"
@@ -61,7 +59,7 @@ workflow markdups_post {
         bam_index = markdups_bam_index,
         prefix = prefix + "." + "whole_genome",
     }
-    scatter(coverage_pair in zip(coverage_beds, coverage_labels)) {
+    scatter (coverage_pair in zip(coverage_beds, coverage_labels)) {
         call mosdepth.coverage as regions_coverage { input:
             bam = markdups_bam,
             bam_index = markdups_bam_index,
@@ -72,8 +70,7 @@ workflow markdups_post {
 
     output {
         File insert_size_metrics = collect_insert_size_metrics.insert_size_metrics
-        File insert_size_metrics_pdf
-            = collect_insert_size_metrics.insert_size_metrics_pdf
+        File insert_size_metrics_pdf = collect_insert_size_metrics.insert_size_metrics_pdf
         File flagstat_report = flagstat.flagstat_report
         File mosdepth_global_summary = wg_coverage.summary
         File mosdepth_global_dist = wg_coverage.global_dist

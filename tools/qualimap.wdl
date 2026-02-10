@@ -1,5 +1,4 @@
 ## [Homepage](http://qualimap.bioinfo.cipf.es/)
-
 version 1.1
 
 task rnaseq {
@@ -50,13 +49,8 @@ task rnaseq {
 
     # Qualimap has an inefficient name sorting algorithm and will
     # use an excessive amount of storage.
-    Int disk_size_gb = (
-        (
-            if name_sorted
-            then ceil(bam_size + gtf_size + 15)
-            else ceil(((bam_size + gtf_size) * 12) + 10)
-        ) + modify_disk_size_gb
-    )
+    Int disk_size_gb = ((if name_sorted then ceil(bam_size + gtf_size + 15) else ceil(((
+        bam_size + gtf_size) * 12) + 10)) + modify_disk_size_gb)
 
     command <<<
         set -euo pipefail
@@ -81,8 +75,7 @@ task rnaseq {
 
     output {
         File raw_summary = "~{prefix}/rnaseq_qc_results.txt"
-        File raw_coverage
-            = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
+        File raw_coverage = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
         File results = out_tar_gz
     }
 

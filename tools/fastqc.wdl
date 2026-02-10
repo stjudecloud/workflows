@@ -1,5 +1,4 @@
 ## [Homepage](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
-
 version 1.1
 
 task fastqc {

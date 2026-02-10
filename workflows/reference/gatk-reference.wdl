@@ -88,16 +88,28 @@ workflow gatk_reference {
 
     if (defined(dbSNP_vcf_index_url) && defined(dbSNP_vcf_index_name)) {
         call util.download as dbsnp_index { input:
-            url = select_first([dbSNP_vcf_index_url, "undefined"]),
-            outfile_name = select_first([dbSNP_vcf_index_name, "undefined"]),
+            url = select_first([
+                dbSNP_vcf_index_url,
+                "undefined",
+            ]),
+            outfile_name = select_first([
+                dbSNP_vcf_index_name,
+                "undefined",
+            ]),
             disk_size_gb = dbSNP_vcf_index_disk_size_gb,
         }
     }
 
     if (defined(interval_list_url) && defined(interval_list_name)) {
         call util.download as intervals { input:
-            url = select_first([interval_list_url, "undefined"]),
-            outfile_name = select_first([interval_list_name, "undefined"]),
+            url = select_first([
+                interval_list_url,
+                "undefined",
+            ]),
+            outfile_name = select_first([
+                interval_list_name,
+                "undefined",
+            ]),
             disk_size_gb = interval_list_disk_size_gb,
         }
     }

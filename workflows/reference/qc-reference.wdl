@@ -121,12 +121,11 @@ workflow qc_reference {
         }
     }
 
-    if (
-        (length(kraken_fastas) > 0)
-        || (length(kraken_fasta_urls) > 0)
-        || (length(kraken_libraries) > 0)
-    ) {
-        call kraken2.download_taxonomy { input: protein }
+    if ((length(kraken_fastas) > 0) || (length(kraken_fasta_urls) > 0) || (length(
+        kraken_libraries) > 0)) {
+        call kraken2.download_taxonomy { input:
+            protein,
+        }
     }
 
     scatter (lib in kraken_libraries) {
@@ -136,7 +135,10 @@ workflow qc_reference {
         }
     }
 
-    Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.downloaded_file])
+    Array[File] custom_fastas = flatten([
+        kraken_fastas,
+        fastas_download.downloaded_file,
+    ])
     if (length(custom_fastas) > 0) {
         call kraken2.create_library_from_fastas { input:
             fastas_gz = custom_fastas,
@@ -145,9 +147,13 @@ workflow qc_reference {
     }
 
     Array[File] kraken_tarballs = flatten([
-        select_all([download_taxonomy.taxonomy]),
+        select_all([
+            download_taxonomy.taxonomy,
+        ]),
         download_library.library,
-        select_all([create_library_from_fastas.custom_library]),
+        select_all([
+            create_library_from_fastas.custom_library,
+        ]),
     ])
     if (length(kraken_tarballs) > 0) {
         call kraken2.build_db as kraken_build_db { input:

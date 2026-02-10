@@ -33,21 +33,18 @@ workflow methylation_cohort {
     Int beta_length = length(unfiltered_normalized_beta)
     Int pval_length = length(p_values)
 
-    if (beta_length > max_length){
-        scatter (merge_num in range((beta_length / max_length) + 1)){
+    if (beta_length > max_length) {
+        scatter (merge_num in range((beta_length / max_length) + 1)) {
             # Get the sublist of beta files
-            scatter (beta_num in range(max_length)){
-                Int num = (
-                    if merge_num > 0
-                    then beta_num + (merge_num * max_length)
-                    else beta_num
-                )
-                if (num < beta_length){
+            scatter (beta_num in range(max_length)) {
+                Int num = (if merge_num > 0 then beta_num + (merge_num * max_length) else beta_num
+                    )
+                if (num < beta_length) {
                     File bam_list = unfiltered_normalized_beta[num]
                 }
             }
         }
-        scatter (iter_index in range(length(bam_list))){
+        scatter (iter_index in range(length(bam_list))) {
             call combine_data as inner_merge { input:
                 files_to_combine = select_all(bam_list[iter_index]),
                 combined_file_name = "~{iter_index}.combined.csv",
@@ -59,22 +56,19 @@ workflow methylation_cohort {
             combined_file_name = "combined_beta.csv",
         }
 
-        if (pval_length > 0 && !skip_pvalue_check){
+        if (pval_length > 0 && !skip_pvalue_check) {
             # If p-values are provided, merge those as well
-            scatter (merge_num in range((pval_length / max_length) + 1)){
+            scatter (merge_num in range((pval_length / max_length) + 1)) {
                 # Get the sublist of p-value files
-                scatter (pval_num in range(max_length)){
-                    Int num_p = (
-                        if merge_num > 0
-                        then pval_num + (merge_num * max_length)
-                        else pval_num
-                    )
-                    if (num_p < pval_length){
+                scatter (pval_num in range(max_length)) {
+                    Int num_p = (if merge_num > 0 then pval_num + (merge_num * max_length)
+                        else pval_num)
+                    if (num_p < pval_length) {
                         File pval_list = p_values[num_p]
                     }
                 }
             }
-            scatter (iter_index in range(length(pval_list))){
+            scatter (iter_index in range(length(pval_list))) {
                 call combine_data as inner_merge_pvals { input:
                     files_to_combine = select_all(pval_list[iter_index]),
                     combined_file_name = "~{iter_index}.pvals.combined.csv",
@@ -88,12 +82,12 @@ workflow methylation_cohort {
         }
     }
 
-    if (beta_length <= max_length){
+    if (beta_length <= max_length) {
         call combine_data as simple_merge { input:
             files_to_combine = unfiltered_normalized_beta,
             combined_file_name = "combined_beta.csv",
         }
-        if (pval_length > 0 && !skip_pvalue_check){
+        if (pval_length > 0 && !skip_pvalue_check) {
             call combine_data as simple_merge_pval { input:
                 files_to_combine = p_values,
                 combined_file_name = "combined_pvals.csv",
@@ -101,23 +95,16 @@ workflow methylation_cohort {
         }
     }
 
-    File? pval_file = (
-        if (pval_length > 0 && !skip_pvalue_check)
-        then select_first(
-            [
-                final_merge_pvals.combined_file,
-                simple_merge_pval.combined_file,
-            ])
-        else None
-    )
+    File? pval_file = (if (pval_length > 0 && !skip_pvalue_check) then select_first([
+        final_merge_pvals.combined_file,
+        simple_merge_pval.combined_file,
+    ]) else None)
 
     call filter_probes { input:
-        beta_values = select_first(
-            [
-                final_merge.combined_file,
-                simple_merge.combined_file,
-            ]
-        ),
+        beta_values = select_first([
+            final_merge.combined_file,
+            simple_merge.combined_file,
+        ]),
         p_values = pval_file,
         num_probes,
     }
@@ -131,12 +118,10 @@ workflow methylation_cohort {
     }
 
     output {
-        File combined_beta = select_first(
-            [
-                final_merge.combined_file,
-                simple_merge.combined_file,
-            ]
-        )
+        File combined_beta = select_first([
+            final_merge.combined_file,
+            simple_merge.combined_file,
+        ])
         File filtered_beta = filter_probes.filtered_beta_values
         File filtered_probeset = filter_probes.filtered_probes
         File umap_embedding = generate_umap.umap
@@ -149,7 +134,7 @@ task combine_data {
     meta {
         description: "Combine data from multiple CSV files by column"
         outputs: {
-            combined_file: "Combined CSV file"
+            combined_file: "Combined CSV file",
         }
     }
 
@@ -173,9 +158,7 @@ task combine_data {
         Int modify_memory_gb = 0
     }
 
-    Int memory_gb = ceil(size(files_to_combine, "GiB") *
-        if simple_merge then 2 else 1)
-        + modify_memory_gb
+    Int memory_gb = ceil(size(files_to_combine, "GiB") * if simple_merge then 2 else 1) + modify_memory_gb
         + 2
     Int disk_size_gb = ceil(size(files_to_combine, "GiB") * 2) + 2
 
@@ -258,7 +241,7 @@ task generate_umap {
     meta {
         description: "Generate UMAP embedding"
         outputs: {
-            umap: "UMAP embedding for all samples"
+            umap: "UMAP embedding for all samples",
         }
     }
 
@@ -297,7 +280,7 @@ task plot_umap {
     meta {
         description: "Plot UMAP embedding"
         outputs: {
-            umap_plot: "UMAP plot for all samples"
+            umap_plot: "UMAP plot for all samples",
         }
     }
 

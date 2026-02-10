@@ -1,12 +1,11 @@
 ## [Homepage](https://deeptools.readthedocs.io/en/develop/index.html)
-
 version 1.1
 
 task bam_coverage {
     meta {
         description: "Generates a BigWig coverage track using bamCoverage from DeepTools"
         outputs: {
-            bigwig: "BigWig format coverage file"
+            bigwig: "BigWig format coverage file",
         }
     }
 
