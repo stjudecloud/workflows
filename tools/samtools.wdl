@@ -21,7 +21,7 @@ task quickcheck {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         samtools quickcheck "~{bam}"
@@ -863,7 +863,7 @@ task bam_to_fastq {
         if (retain_collated_bam && !collated && paired_end)
         then 5
         else 2
-    )) + 10 + modify_disk_size_gb
+    )) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

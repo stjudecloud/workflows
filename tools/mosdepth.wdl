@@ -39,7 +39,7 @@ task coverage {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
