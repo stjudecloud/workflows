@@ -8,6 +8,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 Any change to the `scripts/` directory should be accompanied by version increases in the `docker/` directory! If you are editing this file, please ensure these changes propagate!
 
+## 2025 December
+
+### Added
+
+- Added `list-sex-probes.R` to dump the list of probes that align to the sex chromosomes [#283](https://github.com/stjudecloud/workflows/pull/283)
+
+### Changed
+
+- `filter.py` now accepts an optional set of files listing probes to exclude [#283](https://github.com/stjudecloud/workflows/pull/283)
+- `methylation-preprocess.R` now outputs non-genomic probes, SNP affected probes, and non-SNP affected probes [#283](https://github.com/stjudecloud/workflows/pull/283)
+
 ## 2025 September
 
 ### Added
