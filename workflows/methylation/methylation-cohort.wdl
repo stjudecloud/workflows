@@ -340,7 +340,7 @@ task plot_umap {
         cpu: 1
         memory: "4 GB"
         disks: "4 GB"
-        container: "ghcr.io/stjudecloud/python-plotting:2.0.8"
+        container: "ghcr.io/stjudecloud/python-plotting:2.0.9"
         maxRetries: 1
     }
 }
