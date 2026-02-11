@@ -63,13 +63,13 @@ workflow methylation {
                     else probe_num
                 )
                 if (num < probelist_length){
-                    File probe_list = probe_files[num]
+                    File probe_file_batches = probe_files[num]
                 }
             }
         }
-        scatter (iter_index in range(length(probe_list))){
+        scatter (iter_index in range(length(probe_file_batches))){
             call concat_and_uniq { input:
-                files_to_combine = select_all(probe_list[iter_index]),
+                files_to_combine = select_all(probe_file_batches[iter_index]),
                 output_file_name = "probes_with_snps_part_~{iter_index}.txt",
             }
         }
@@ -102,13 +102,13 @@ workflow methylation {
                     else probe_num
                 )
                 if (num_ng < non_genomic_probelist_length){
-                    File probe_list_non_genomic = non_genomic_probe_list[num_ng]
+                    File non_genomic_probe_batches = non_genomic_probe_list[num_ng]
                 }
             }
         }
-        scatter (iter_index in range(length(probe_list_non_genomic))){
+        scatter (iter_index in range(length(non_genomic_probe_batches))){
             call concat_and_uniq as non_genomic_concat { input:
-                files_to_combine = select_all(probe_list_non_genomic[iter_index]),
+                files_to_combine = select_all(non_genomic_probe_batches[iter_index]),
                 output_file_name = "non_genomic_probes_part_~{iter_index}.txt",
             }
         }
