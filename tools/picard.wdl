@@ -194,6 +194,7 @@ task validate_bam {
         Int modify_disk_size_gb = 0
     }
 
+    String outfile = if summary_mode then outfile_name else outfile_name + ".gz"
     String mode_arg = if (summary_mode) then "--MODE SUMMARY" else ""
     String stringency_arg = (
         if (index_validation_stringency_less_exhaustive)
@@ -217,7 +218,8 @@ task validate_bam {
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
             ~{sep(" ", prefix("--IGNORE ", squote(ignore_list)))} \
             --MAX_OUTPUT ~{max_errors} \
-            > "~{outfile_name}" \
+            ~{if !summary_mode then "| gzip" else ""} \
+            > "~{outfile}" \
             || rc=$?
 
         # rc = 0 = success
@@ -235,16 +237,16 @@ task validate_bam {
         fi
 
         if ! ~{succeed_on_errors} \
-            && [ "$(grep -Ec "$GREP_PATTERN" "~{outfile_name}")" -gt 0 ]
+            && [ "$(grep -Ec "$GREP_PATTERN" "~{outfile}")" -gt 0 ]
         then
             >&2 echo "Problems detected by Picard ValidateSamFile"
-            >&2 grep -E "$GREP_PATTERN" "~{outfile_name}"
+            >&2 grep -E "$GREP_PATTERN" "~{outfile}"
             exit $rc
         fi
     >>>
 
     output {
-        File validate_report = outfile_name
+        File validate_report = outfile
     }
 
     runtime {
