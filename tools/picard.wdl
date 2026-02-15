@@ -201,7 +201,7 @@ task validate_bam {
         else ""
     )
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
