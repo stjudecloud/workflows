@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2026 February
+
+### Changed
+
+- gzip `piacrd.validate_bam` output when not in `summary_mode` [#298](https://github.com/stjudecloud/workflows/pull/298)
+- Lowered default disk allocation for `picard.validate_bam` [#298](https://github.com/stjudecloud/workflows/pull/298)
+
 ## 2026 January
 
 ### Changed
