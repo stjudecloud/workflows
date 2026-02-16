@@ -72,7 +72,7 @@ jobs:
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:buildcache,mode=max
       - name: container diff
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} || true
+          docker pull --platform=linux/amd64 ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} || true
           if [ -z "$(docker images -q ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }})" ]; then
             echo "Prior image not found in registry, skipping container-diff"
             exit 0
