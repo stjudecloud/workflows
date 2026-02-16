@@ -22,7 +22,7 @@ jobs:
 
   build-images:
     needs: list-images
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         image: ${{ fromJson(needs.list-images.outputs.images) }}
