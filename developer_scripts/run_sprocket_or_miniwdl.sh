@@ -66,7 +66,7 @@ if [ "$runner" != "miniwdl" ]; then
    else
       entrypoint=$wf
    fi
-   sprocket run --output output --overwrite -e "$entrypoint" "$wdl" ${input_file:+"$input_file"} "$@"
+   sprocket run --output-dir output --overwrite -e "$entrypoint" "$wdl" ${input_file:+"$input_file"} "$@"
 else
    if [[ $input_file ]]; then
       input_dir=$(dirname "$input_file")
