@@ -9,3 +9,4 @@ RUN R --no-save <<SCRIPT
 SCRIPT
 
 COPY --from=scripts --chmod=777 methylation/methylation-preprocess.R /scripts/methylation/methylation-preprocess.R
+COPY --from=scripts --chmod=777 methylation/list-sex-probes.R /scripts/methylation/list-sex-probes.R
