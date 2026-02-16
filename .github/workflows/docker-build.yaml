@@ -8,7 +8,7 @@ env:
 
 jobs:
   list-images:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       images: ${{ steps.set-matrix.outputs.images }}
     steps:
@@ -22,7 +22,7 @@ jobs:
 
   build-images:
     needs: list-images
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         image: ${{ fromJson(needs.list-images.outputs.images) }}
