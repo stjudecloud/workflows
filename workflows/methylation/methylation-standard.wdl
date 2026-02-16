@@ -32,6 +32,7 @@ workflow methylation {
     input {
         Array[File] green_idats
         Array[File] red_idats
+        File? additional_probes_to_exclude
     }
 
     scatter (pair in zip(green_idats, red_idats)) {
@@ -47,6 +48,7 @@ workflow methylation {
             process_raw_idats.beta_swan_norm_unfiltered_genomic,
         p_values = process_raw_idats.probe_pvalues,
         sex_probe_list = list_sex_probes.probe_list,
+        additional_probes_to_exclude = methylation.additional_probes_to_exclude,
     }
 
     Array[File] probe_files = process_raw_idats.probes_with_snps

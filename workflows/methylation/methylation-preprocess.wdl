@@ -101,7 +101,7 @@ task list_sex_probes {
 
     runtime {
         container: "ghcr.io/stjudecloud/minfi:1.48.0-8"
-        memory: "8 GB"
+        memory: "3 GB"
         cpu: 1
         disks: "2 GB"
         maxRetries: 1
