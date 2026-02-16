@@ -27,6 +27,7 @@ workflow methylation {
     parameter_meta {
         green_idats: "Array of raw green IDAT files from the Illumina methylation array. See NOTE in `process_raw_idats` task for naming convention."
         red_idats: "Array of raw red IDAT files from the Illumina methylation array.  See NOTE in `process_raw_idats` task for naming convention."
+        additional_probes_to_exclude: "Optional file containing a list of additional probes to exclude from the analysis. This should be a text file with one probe name per line."
     }
 
     input {
@@ -48,7 +49,7 @@ workflow methylation {
             process_raw_idats.beta_swan_norm_unfiltered_genomic,
         p_values = process_raw_idats.probe_pvalues,
         sex_probe_list = list_sex_probes.probe_list,
-        additional_probes_to_exclude = methylation.additional_probes_to_exclude,
+        additional_probes_to_exclude,
     }
 
     Array[File] probe_files = process_raw_idats.probes_with_snps
