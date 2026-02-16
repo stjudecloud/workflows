@@ -14,6 +14,7 @@
 **/womtool*
 *.jar
 runs/
+out/
 miniwdl_call_cache/
 miniwdl_singularity_cache/
 _LAST
@@ -29,7 +30,7 @@ _LAST
 results*/
 output*/
 
-# Ignore JSONs in the root (probably being used for input to sprocket run)
+# Ignore JSONs in the root (probably being used for input)
 /*.json
 
 # Ignore `sprocket doc` dir
