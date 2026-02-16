@@ -77,6 +77,7 @@ jobs:
             echo "Prior image not found in registry, skipping container-diff"
             exit 0
           fi
+          docker inspect ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }}
           # curl -LO https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64 && \
           # chmod +x container-diff-linux-amd64 && \
           # ./container-diff-linux-amd64 diff --json daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:${{ env.TAG_TO_CHECK }} daemon://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.TOOL }}:local --type=history --type=file --type=size | tee comparison.json
