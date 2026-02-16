@@ -1,0 +1,9 @@
+merge_sam_files:
+  - name: Merge works
+    inputs:
+      bams:
+          - [bams/test.bwa_aln_pe.chrY_chrM.bam, bams/test.PE.2_RGs.Aligned.out.sorted.bam]
+      prefix:
+          - test.merged
+    assertions:
+      custom: quickcheck.sh

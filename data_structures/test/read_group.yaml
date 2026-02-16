@@ -1,0 +1,93 @@
+read_group_to_string:
+  - name: valid_read_groups
+    inputs:
+      read_group:
+        - ID: R1
+          SM: sampleFoo
+        - ID: R1
+          SM: sampleFoo
+          LB: spaces are allowed in LB
+          BC: barcode with a space
+          PU: platform_unit
+          PL: ILLUMINA
+          CN: center_name
+          DT: date
+          DS: description
+          PI: 1
+          PG: program_group
+          PM: platform_model
+          FO: ACMG
+          KS: key_sequence
+    assertions:
+      outputs:
+        validated_read_group:
+          - Contains: R1
+          - Contains: sampleFoo
+  - name: id_with_spaces
+    inputs:
+      read_group:
+        - ID: ids should not have spaces # this is a problem
+          SM: sample_a
+          LB: library
+          BC: barcode
+          PU: platform_unit
+          PL: ILLUMINA
+          CN: center_name
+          DT: date
+          DS: description
+          PI: 1
+          PG: program_group
+          PM: platform_model
+          FO: ACMG
+          KS: key_sequence
+    assertions:
+      should_fail: true
+  - name: sample_with_spaces
+    inputs:
+      read_group:
+        - ID: R123
+          SM: samples should not have spaces
+          LB: library can have spaces though
+          BC: barcode
+          PU: platform_unit
+          PL: ILLUMINA
+          CN: center_name
+          DT: date
+          DS: description
+          PI: 1
+          PG: program_group
+          PM: platform_model
+          FO: ACMG
+          KS: key_sequence
+    assertions:
+      should_fail: true
+  - name: spaces_allowed
+    inputs:
+      read_group:
+        - ID: technically permissable but gross
+          SM: same here!
+      restrictive:
+        - false
+  - name: missing_sample
+    inputs:
+      read_group:
+        - ID: R123
+          LB: library
+    assertions:
+      should_fail: true
+  - name: missing_sample_allowed
+    inputs:
+      read_group:
+        - ID: R1
+          LB: lib
+      required_fields:
+        - []
+
+get_read_groups:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bam
