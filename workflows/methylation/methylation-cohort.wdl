@@ -11,12 +11,15 @@ workflow methylation_cohort {
             umap_embedding: "UMAP embedding for all samples",
             umap_plot: "UMAP plot for all samples",
             probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows and all of the input samples as columns.",
+            high_pval_probes: "List of probes that were filtered out due to high p-values",
         }
         allowNestedInputs: true
     }
 
     parameter_meta {
         unfiltered_normalized_beta: "Array of unfiltered normalized beta values for each sample"
+        sex_probe_list: "List of probes mapping to sex chromosomes to optionally filter"
+        additional_probes_to_exclude: "Additional probes to exclude from the analysis"
         p_values: "Array of detection p-value files for each sample."
         skip_pvalue_check: "Skip filtering based on p-values, even if `p_values` is supplied."
         num_probes: "Number of probes to use when filtering to the top `num_probes` probes with the highest standard deviation."
@@ -24,6 +27,8 @@ workflow methylation_cohort {
 
     input {
         Array[File] unfiltered_normalized_beta
+        File? sex_probe_list
+        File? additional_probes_to_exclude
         Array[File] p_values = []
         Boolean skip_pvalue_check = false
         Int num_probes = 10000
@@ -120,6 +125,10 @@ workflow methylation_cohort {
         ),
         p_values = pval_file,
         num_probes,
+        additional_probes_to_exclude = select_all([
+            sex_probe_list,
+            additional_probes_to_exclude,
+        ]),
     }
 
     call generate_umap { input:
@@ -142,6 +151,7 @@ workflow methylation_cohort {
         File umap_embedding = generate_umap.umap
         File umap_plot = plot_umap.umap_plot
         File? probe_pvalues = pval_file
+        File? high_pval_probes = filter_probes.high_pval_probes
     }
 }
 
@@ -191,7 +201,7 @@ task combine_data {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:2.2.1-6"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-7"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -206,12 +216,14 @@ task filter_probes {
         outputs: {
             filtered_beta_values: "Filtered beta values for all samples",
             filtered_probes: "Probes that were retained after filtering.",
+            high_pval_probes: "Probes that were filtered out due to high p-values",
         }
     }
 
     parameter_meta {
         beta_values: "Beta values for all samples"
         p_values: "P-values for all samples"
+        additional_probes_to_exclude: "Additional probes to exclude from the analysis"
         prefix: "Prefix for the output files. The extensions `.beta.csv` and `.probes.csv` will be appended."
         pval_threshold: "P-value cutoff to determine poor quality probes"
         pval_sample_fraction: "Fraction of samples that must exceed p-value threshold to exclude probe"
@@ -221,6 +233,7 @@ task filter_probes {
     input {
         File beta_values
         File? p_values
+        Array[File] additional_probes_to_exclude = []
         String prefix = "filtered"
         Float pval_threshold = 0.01
         Float pval_sample_fraction = 0.5
@@ -237,16 +250,18 @@ task filter_probes {
             --pval-threshold ~{pval_threshold} \
             --pval-sample-fraction ~{pval_sample_fraction} \
             ~{"--pval '" + p_values + "'"} \
+            ~{sep(" ", prefix("--exclude ", quote(additional_probes_to_exclude)))} \
             "~{beta_values}"
     >>>
 
     output {
         File filtered_beta_values = "~{prefix}.beta.csv"
         File filtered_probes = "~{prefix}.probes.csv"
+        File? high_pval_probes = "high_pval_probes.csv"
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:2.2.1-6"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-7"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -325,7 +340,7 @@ task plot_umap {
         cpu: 1
         memory: "4 GB"
         disks: "4 GB"
-        container: "ghcr.io/stjudecloud/python-plotting:2.0.8"
+        container: "ghcr.io/stjudecloud/python-plotting:2.0.9"
         maxRetries: 1
     }
 }

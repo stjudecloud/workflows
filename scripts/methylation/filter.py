@@ -31,6 +31,9 @@ def get_args():
         help="Fraction of samples that must exceed the p-value threshold.",
     )
     parser.add_argument("--pval", type=str, help="P-values CSV file.")
+    parser.add_argument(
+        "--exclude", type=str, action="append", help="Files with probes to exclude."
+    )
     parser.add_argument("beta", type=str, help="Beta values CSV file.")
     args = parser.parse_args()
 
@@ -39,6 +42,15 @@ def get_args():
 
 if __name__ == "__main__":
     args = get_args()
+
+    # Read probes to exclude
+    probes_to_exclude = []
+    if args.exclude is not None:
+        for exclude_file in args.exclude:
+            with open(exclude_file, "r") as ef:
+                for line in ef:
+                    probes_to_exclude.append(line.strip())
+        print("Number of probes to exclude:", len(probes_to_exclude))
 
     # Read p-values and find probes with high p-value in too many samples
     high_pval_probes = []
@@ -66,6 +78,10 @@ if __name__ == "__main__":
             "high_pval_probes.csv", index=False, header=False
         )
 
+    # Combine with probes to exclude
+    exclude_probe_list = set(high_pval_probes).union(set(probes_to_exclude))
+    print("Total number of probes to exclude:", len(exclude_probe_list))
+
     # Read beta values and compute standard deviation
     data = []
 
@@ -78,7 +94,7 @@ if __name__ == "__main__":
 
             probe = line[0]
             sd = np.std([float(x) for x in line[1:]])
-            if probe not in high_pval_probes:
+            if probe not in exclude_probe_list:
                 data.append([probe, sd])
 
     sd_df = pd.DataFrame(data, columns=["probe", "sd"]).set_index("probe")
