@@ -73,7 +73,7 @@ workflow methylation {
         scatter (iter_index in range(length(probe_file_batches))){
             call concat_and_uniq { input:
                 files_to_combine = select_all(probe_file_batches[iter_index]),
-                output_file_name = "probes_with_snps_part_~{iter_index}.txt",
+                output_file_name = "probes_with_snps_part_~{iter_index}.tab",
             }
         }
 
@@ -81,7 +81,7 @@ workflow methylation {
             files_to_combine = flatten([
                 concat_and_uniq.combined_file
             ]),
-            output_file_name = "probes_with_snps.txt",
+            output_file_name = "probes_with_snps.tab",
         }
     }
 
@@ -112,7 +112,7 @@ workflow methylation {
         scatter (iter_index in range(length(non_genomic_probe_batches))){
             call concat_and_uniq as non_genomic_concat { input:
                 files_to_combine = select_all(non_genomic_probe_batches[iter_index]),
-                output_file_name = "non_genomic_probes_part_~{iter_index}.txt",
+                output_file_name = "non_genomic_probes_part_~{iter_index}.tab",
             }
         }
 
@@ -120,7 +120,7 @@ workflow methylation {
             files_to_combine = flatten([
                 non_genomic_concat.combined_file
             ]),
-            output_file_name = "non_genomic_probes.txt",
+            output_file_name = "non_genomic_probes.tab",
         }
     }
 
