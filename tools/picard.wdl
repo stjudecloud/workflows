@@ -201,7 +201,7 @@ task validate_bam {
         else ""
     )
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 4) + 50 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -296,12 +296,12 @@ task sort {
         String sort_order = "coordinate"
         String prefix = basename(bam, ".bam") + ".sorted"
         String validation_stringency = "SILENT"
-        Int memory_gb = 25
+        Int memory_gb = 35
         Int modify_disk_size_gb = 0
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 4) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     String outfile_name = prefix + ".bam"
@@ -732,7 +732,7 @@ task collect_insert_size_metrics {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<

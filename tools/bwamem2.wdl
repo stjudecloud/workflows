@@ -45,7 +45,7 @@ task align {
             size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
         ) * 2)
         + ceil(size(reference_index, "GiB"))
-        + 10
+        + 30
         + modify_disk_size_gb
 
     command <<<

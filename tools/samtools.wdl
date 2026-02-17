@@ -179,7 +179,7 @@ task flagstat {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -659,7 +659,7 @@ task addreplacerg {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 50 + modify_disk_size_gb
 
     String outfile_name = prefix + ".bam"
 
@@ -689,7 +689,7 @@ task addreplacerg {
 
     runtime {
         cpu: ncpu
-        memory: "4 GB"
+        memory: "8 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1

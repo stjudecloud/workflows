@@ -57,7 +57,7 @@ task align {
 
     requirements {
         cpu: threads
-        memory: "64 GB"
+        memory: "120 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/hisat2:branch-minimap2-2.2.1-0"
     }

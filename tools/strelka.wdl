@@ -139,7 +139,6 @@ task germline {
             ~{if (exome) then "--exome" else ""} \
             ~{if (rna) then "--rna" else ""}
 
-        
         "~{output_dir}/runWorkflow.py" -m local -j ~{threads}
 
         rm -rf "$ref_fasta"
