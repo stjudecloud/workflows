@@ -1355,3 +1355,63 @@ task faidx {
         maxRetries: 1
     }
 }
+
+task calmd {
+    meta {
+        description: "Calculates MD and NM tags"
+        outputs: {
+            calmd_bam: "A BAM file with the MD and NM tags calculated. Output filename is `basename(bam) + '.calmd.bam'`."
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to quickcheck"
+        reference_fasta: "Reference FASTA format file. Must be indexed with a `.fai` file."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        prefix: "Prefix for the output file. The extension `.bam` will be added."
+        ncpu: "Number of cores to allocate for task"
+    }
+
+    input {
+        File bam
+        File reference_fasta
+        Int modify_disk_size_gb = 0
+        String prefix = basename(bam, ".bam") + ".calmd"
+        Int ncpu = 2
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size * 2.5)
+        + ceil(size(reference_fasta, "GiB") * 2)
+        + 30
+        + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        (( n_cores = ~{ncpu} - 1 || 1 ))
+
+        ref_fasta=~{basename(reference_fasta, ".gz")}
+        gunzip -c "~{reference_fasta}" > "$ref_fasta" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta"
+
+        samtools calmd \
+            --threads "$n_cores" \
+            -b \
+            "~{bam}" \
+            "$ref_fasta" \
+            > "~{prefix}.bam"
+    >>>
+
+    output {
+        File calmd_bam = "~{prefix}.bam"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 2
+    }
+}
