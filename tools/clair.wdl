@@ -12,7 +12,9 @@ task clair3 {
 
     parameter_meta {
         reference_fasta: "Reference genome in FASTA format"
+        reference_fasta_index: "Index file for the reference genome FASTA"
         bam: "Input BAM file with aligned reads"
+        bam_index: "Index file for the input BAM file"
         model: "Pre-trained Clair3 model to use for variant calling"
         bed_regions: "Optional BED file specifying regions to call variants in"
         vcf_candidates: "Optional VCF file with candidate variants to consider"
@@ -34,8 +36,10 @@ task clair3 {
 
     input {
         File reference_fasta
+        File reference_fasta_index
         File bam
-        File model
+        File bam_index
+        Directory model
         File? bed_regions
         File? vcf_candidates
         String output_dir = "clair3_output"
@@ -58,6 +62,7 @@ task clair3 {
         ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c "~{reference_fasta}" > "$ref_fasta" \
             || ln -sf "~{reference_fasta}" "$ref_fasta"
+        ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
         run_clair3.sh \
             --bam_fn="~{bam}" \

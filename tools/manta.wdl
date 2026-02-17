@@ -11,7 +11,9 @@ task manta_germline {
 
     parameter_meta {
         reference_fasta: "Reference genome in FASTA format"
+        reference_fasta_index: "Index file for the reference genome FASTA"
         bam: "Input BAM file with aligned reads"
+        bam_index: "Index file for the input BAM file"
         output_dir: "Directory to store Manta output"
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
@@ -19,7 +21,9 @@ task manta_germline {
 
     input {
         File reference_fasta
+        File reference_fasta_index
         File bam
+        File bam_index
         String output_dir = "manta_output"
         Int threads = 4
         Int modify_disk_size_gb = 0
@@ -36,6 +40,7 @@ task manta_germline {
         ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c "~{reference_fasta}" > "$ref_fasta" \
             || ln -sf "~{reference_fasta}" "$ref_fasta"
+        ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
         configManta.py \
             --bam "~{bam}" \

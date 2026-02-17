@@ -126,6 +126,7 @@ task deepvariant {
         reference_fasta: "Reference genome in FASTA format"
         reference_fasta_index: "Index file for the reference genome FASTA"
         bam: "Input BAM file with aligned reads for sample"
+        bam_index: "Index for input BAM file"
         haploid_chromosomes: "List of chromosomes to be treated as haploid during variant calling"
         output_prefix: "Prefix for output VCF and gVCF files"
         model_type: {
@@ -155,6 +156,7 @@ task deepvariant {
         File reference_fasta
         File reference_fasta_index
         File bam
+        File bam_index
         Array[String] haploid_chromosomes = ["chrX", "chrY"]
         String output_prefix = "deepsomatic_output"
         String model_type = "WGS"
@@ -189,7 +191,6 @@ task deepvariant {
             ~{if runtime_report then "--runtime_report" else ""} \
             ~{if vcf_stats_report then "--vcf_stats_report" else ""} \
             --haploid_contigs="~{sep(",", haploid_chromosomes)}"
-
 
         rm -rf "$ref_fasta"
     >>>

@@ -40,8 +40,8 @@ task germline_variant {
             SingleSampleVariantsDetector \
             -r "$ref_fasta" \
             -i "~{bam}" \
-            -o "~{output_prefix}" \
-            -t "~{threads}"
+            -o "~{output_prefix}"
+            # -t "~{threads}"
 
         rm -rf "$ref_fasta"
     >>>
