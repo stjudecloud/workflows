@@ -87,8 +87,8 @@ task mark_duplicates {
     Int disk_size_gb = (
         (
             if create_bam
-            then ceil((bam_size * 2) + 10)
-            else ceil(bam_size + 10)
+            then ceil((bam_size * 2) + 30)
+            else ceil(bam_size + 30)
         ) + modify_disk_size_gb
     )
 
@@ -600,7 +600,7 @@ task collect_alignment_summary_metrics {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -793,7 +793,7 @@ task quality_score_distribution {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<

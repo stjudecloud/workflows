@@ -21,7 +21,7 @@ task compute_checksum {
     }
 
     Float file_size = size(file, "GiB")
-    Int disk_size_gb = ceil(file_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(file_size) + 30 + modify_disk_size_gb
 
     String outfile_name = basename(file) + ".md5"
 

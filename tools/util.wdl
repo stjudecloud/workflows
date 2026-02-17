@@ -149,7 +149,7 @@ task compression_integrity {
     }
 
     Float file_size = size(bgzipped_file, "GiB")
-    Int disk_size_gb = ceil(file_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(file_size) + 30 + modify_disk_size_gb
 
     command <<<
         bgzip -t "~{bgzipped_file}"
@@ -304,6 +304,7 @@ task make_coverage_regions_bed {
     }
 
     runtime {
+        memory: "8 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0"
         maxRetries: 1
@@ -333,7 +334,7 @@ task global_phred_scores {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
