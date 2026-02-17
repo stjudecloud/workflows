@@ -51,7 +51,7 @@ task germline_variant {
     }
 
     requirements {
-        container: "ghcr.io/stjude/ngsep:5.1.0-0"
+        container: "ghcr.io/stjudecloud/ngsep:branch-minimap2-5.1.0-0"
         cpu: threads
         memory: "20 GB"
         disks: "~{disk_size_gb} GB"
