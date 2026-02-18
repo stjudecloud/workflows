@@ -1,6 +1,7 @@
-## # FlagFilter
-##
+version 1.1
+
 ## A struct to represent the filtering flags used in various `samtools` commands.
+##
 ## The order of precedence is `include_if_all`, `exclude_if_any`, `include_if_any`,
 ## and `exclude_if_all`.
 ## These four fields correspond to the samtools flags
@@ -58,14 +59,15 @@
 ## In short, those are all flags corresponding to the quality of the read
 ## and them being `true` may indicate that the read is of low quality and
 ## should be excluded.
-
-version 1.1
-
 struct FlagFilter {
-    String include_if_all  # samtools -f
-    String exclude_if_any  # samtools -F
-    String include_if_any  # samtools --rf
-    String exclude_if_all  # samtools -G
+    ## Corresponds to `samtools -f`
+    String include_if_all
+    ## Corresponds to `samtools -F`
+    String exclude_if_any
+    ## Corresponds to `samtools --rf`
+    String include_if_any
+    ## Corresponds to `samtools -G`
+    String exclude_if_all
 }
 
 task validate_string_is_12bit_int {
