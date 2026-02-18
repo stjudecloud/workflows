@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - staging/sprocket-doc
 
 jobs:
   gh-pages:
@@ -17,11 +18,11 @@ jobs:
         run: rustup update stable && rustup default stable
       - name: Build Sprocket
         run: |
-          cargo install sprocket --locked
+          cargo install sprocket --locked --git https://github.com/Serial-ATA/sprocket.git --branch doc-tables
       - name: Build Docs
         run: |
           cd $GITHUB_WORKSPACE/workflows
-          sprocket dev doc -v --homepage assets/DOCS.md --prioritize-workflows-view .
+          sprocket dev doc --homepage assets/DOCS.md --with-doc-comments .
           cp -r assets docs/
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
