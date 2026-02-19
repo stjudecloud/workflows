@@ -132,7 +132,7 @@ workflow rnaseq_core {
         Array[File] read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
         Array[String] read_groups
-        String strandedness
+        String? strandedness
         Boolean enable_read_trimming
         Boolean mark_duplicates
         Boolean cleanse_xenograft
@@ -162,15 +162,15 @@ workflow rnaseq_core {
         Int chim_score_drop_max = 30
     }
 
-    Map[String, String] htseq_strandedness_mapping = {
+    Map[String?, String] htseq_strandedness_mapping = {
         "Stranded-Reverse": "reverse",
         "Stranded-Forward": "yes",
         "Unstranded": "no",
         "Inconclusive": "undefined",  # THIS WILL ERRROR (intentional)
-        "": "undefined",
+        None: "undefined",
     }
 
-    String provided_strandedness = strandedness
+    String? provided_strandedness = strandedness
 
     scatter (fq in read_one_fastqs_gz) {
         String read_one_names = basename(fq)
@@ -253,7 +253,7 @@ workflow rnaseq_core {
     }
 
     String htseq_strandedness = (
-        if (provided_strandedness != "")
+        if defined(provided_strandedness)
         then htseq_strandedness_mapping[provided_strandedness]
         else htseq_strandedness_mapping[ngsderive_strandedness.strandedness_string]
     )
@@ -263,11 +263,10 @@ workflow rnaseq_core {
         gtf,
         strandedness = htseq_strandedness,
         prefix = basename(alignment_post.processed_bam, "bam")
-            + (
-                if provided_strandedness == ""
-                then ngsderive_strandedness.strandedness_string
-                else provided_strandedness
-            ),
+            + select_first([
+                provided_strandedness,
+                ngsderive_strandedness.strandedness_string
+            ]),
         pos_sorted = true,
     }
 

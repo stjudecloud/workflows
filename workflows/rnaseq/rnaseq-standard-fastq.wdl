@@ -36,6 +36,15 @@ workflow rnaseq_standard_fastq {
             warning: "See `data_structures/read_group.wdl` for more information and help formatting your input JSON.",
         }
         contaminant_db: "A compressed reference database corresponding to the aligner chosen with `xenocp_aligner` for the contaminant genome"
+        strandedness: {
+            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
+            choices: [
+                "",
+                "Stranded-Reverse",
+                "Stranded-Forward",
+                "Unstranded",
+            ],
+        }
         prefix: {
             description: "Prefix for output files",
             help: "See `../../README.md` for more information on the default prefix evaluation.",
@@ -47,15 +56,6 @@ workflow rnaseq_standard_fastq {
                 "bwa aln",
                 "bwa mem",
                 "star",
-            ],
-        }
-        strandedness: {
-            description: "Strandedness protocol of the RNA-Seq experiment. If unspecified, strandedness will be inferred by `ngsderive`.",
-            choices: [
-                "",
-                "Stranded-Reverse",
-                "Stranded-Forward",
-                "Unstranded",
             ],
         }
         enable_read_trimming: "Enable read trimming with `fastp`?"
@@ -73,13 +73,13 @@ workflow rnaseq_standard_fastq {
         Array[File] read_two_fastqs_gz
         Array[ReadGroup] read_groups
         File? contaminant_db
+        String? strandedness
         String prefix = sub(
             basename(read_one_fastqs_gz[0]),
             "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         String xenocp_aligner = "star"
-        String strandedness = ""
         Boolean enable_read_trimming = false
         Boolean mark_duplicates = false
         Boolean cleanse_xenograft = false
