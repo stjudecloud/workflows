@@ -550,7 +550,7 @@ task merge {
         Array[File] bams
         String prefix
         File? new_header
-        String region = ""
+        String? region
         Boolean attach_rg = true
         Boolean name_sorted = false
         Boolean combine_rg = true
@@ -585,7 +585,7 @@ task merge {
             --threads "$n_cores" \
             ~{"-h \"" + new_header + "\""} \
             ~{if name_sorted then "-n" else ""} \
-            ~{if (region != "") then "-R \"" + region + "\"" else ""} \
+            ~{"-R \"" + region + "\""} \
             ~{if attach_rg then "-r" else ""} \
             ~{if combine_rg then "-c" else ""} \
             ~{if combine_pg then "-p" else ""} \
