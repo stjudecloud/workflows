@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2026 February
+
+### Changed
+
+- Converted size checks to GB from GiB [#302](https://github.com/stjudecloud/workflows/pull/302)
+
 ## 2025 September
 
 ### Added
