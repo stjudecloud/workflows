@@ -63,8 +63,8 @@ task fqlint {
         Int modify_disk_size_gb = 0
     }
 
-    Float read1_size = size(read_one_fastq, "GiB")
-    Float read2_size = size(read_two_fastq, "GiB")
+    Float read1_size = size(read_one_fastq, "GB")
+    Float read2_size = size(read_two_fastq, "GB")
 
     Int memory_gb = (ceil((read1_size + read2_size) * 0.25) + 1 + modify_memory_gb)
 
@@ -131,8 +131,8 @@ task subsample {
         Int modify_disk_size_gb = 0
     }
 
-    Float read1_size = size(read_one_fastq, "GiB")
-    Float read2_size = size(read_two_fastq, "GiB")
+    Float read1_size = size(read_one_fastq, "GB")
+    Float read2_size = size(read_two_fastq, "GB")
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 

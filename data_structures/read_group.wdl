@@ -123,7 +123,7 @@ task get_read_groups {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<

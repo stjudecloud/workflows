@@ -1,4 +1,5 @@
 ## [Homepage](https://github.com/stjudecloud/ngsderive)
+
 version 1.1
 
 task strandedness {
@@ -46,7 +47,7 @@ task strandedness {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
@@ -60,10 +61,7 @@ task strandedness {
         ln -s "~{gene_model}" "$CWD_GFF"
 
         ngsderive strandedness --verbose \
-            ~{if split_by_rg
-                then "--split-by-rg"
-                else ""
-            } \
+            ~{if split_by_rg then "--split-by-rg" else ""} \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
             -q ~{min_mapq} \
@@ -119,7 +117,7 @@ task instrument {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
@@ -178,7 +176,7 @@ task read_length {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
@@ -235,7 +233,7 @@ task encoding {
         Int modify_disk_size_gb = 0
     }
 
-    Float files_size = size(ngs_files, "GiB")
+    Float files_size = size(ngs_files, "GB")
     Int disk_size_gb = ceil(files_size) + 10 + modify_disk_size_gb
 
     command <<<
@@ -303,7 +301,7 @@ task junction_annotation {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
@@ -399,31 +397,22 @@ task endedness {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
-    Int memory_gb = (if calc_rpt
-        then (ceil(bam_size * 2.5) + 4 + modify_memory_gb)
+    Float bam_size = size(bam, "GB")
+    Int memory_gb = (
+        if calc_rpt
+        then (
+            ceil(bam_size * 2.5) + 4 + modify_memory_gb
+        )
         else 4
     )
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         ngsderive endedness --verbose \
-            ~{if lenient
-                then "--lenient"
-                else ""
-            } \
-            ~{if calc_rpt
-                then "-r"
-                else ""
-            } \
-            ~{if round_rpt
-                then "--round-rpt"
-                else ""
-            } \
-            ~{if split_by_rg
-                then "--split-by-rg"
-                else ""
-            } \
+            ~{if lenient then "--lenient" else ""} \
+            ~{if calc_rpt then "-r" else ""} \
+            ~{if round_rpt then "--round-rpt" else ""} \
+            ~{if split_by_rg then "--split-by-rg" else ""} \
             --paired-deviance ~{paired_deviance} \
             -n ~{num_reads} \
             "~{bam}" \

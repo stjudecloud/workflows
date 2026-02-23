@@ -36,7 +36,7 @@ task fastqc {
 
     String out_tar_gz = prefix + ".tar.gz"
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<

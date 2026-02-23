@@ -1,11 +1,12 @@
 ## [Homepage](https://github.com/lh3/bwa)
+
 version 1.1
 
 task bwa_aln {
     meta {
         description: "Maps Single-End FASTQ files to BAM format using bwa aln"
         outputs: {
-            bam: "Aligned BAM format file",
+            bam: "Aligned BAM format file"
         }
     }
 
@@ -35,7 +36,9 @@ task bwa_aln {
         File fastq
         File bwa_db_tar_gz
         String read_group
-        String prefix = sub(basename(fastq), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+        String prefix = sub(
+            basename(fastq),
+            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         Boolean use_all_cores = false
@@ -45,9 +48,10 @@ task bwa_aln {
 
     String output_bam = prefix + ".bam"
 
-    Float input_fastq_size = size(fastq, "GiB")
-    Float reference_size = size(bwa_db_tar_gz, "GiB")
-    Int disk_size_gb = (ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
+    Float input_fastq_size = size(fastq, "GB")
+    Float reference_size = size(bwa_db_tar_gz, "GB")
+    Int disk_size_gb = (
+        ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
     )
 
     command <<<
@@ -94,7 +98,7 @@ task bwa_aln_pe {
     meta {
         description: "Maps Paired-End FASTQ files to BAM format using bwa aln"
         outputs: {
-            bam: "Aligned BAM format file",
+            bam: "Aligned BAM format file"
         }
     }
 
@@ -128,8 +132,11 @@ task bwa_aln_pe {
         File read_two_fastq_gz
         File bwa_db_tar_gz
         String read_group
-        String prefix = sub(basename(read_one_fastq_gz), "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
-            "")
+        String prefix = sub(
+            basename(read_one_fastq_gz),
+            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
+            ""
+        )
         Boolean use_all_cores = false
         Int ncpu = 4
         Int modify_disk_size_gb = 0
@@ -137,10 +144,12 @@ task bwa_aln_pe {
 
     String output_bam = prefix + ".bam"
 
-    Float input_fastq_size = (size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB"
-    ))
-    Float reference_size = size(bwa_db_tar_gz, "GiB")
-    Int disk_size_gb = (ceil((input_fastq_size + reference_size) * 2) + 5 + modify_disk_size_gb
+    Float input_fastq_size = (
+        size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
+    )
+    Float reference_size = size(bwa_db_tar_gz, "GB")
+    Int disk_size_gb = (
+        ceil((input_fastq_size + reference_size) * 2) + 5 + modify_disk_size_gb
     )
 
     command <<<
@@ -193,7 +202,7 @@ task bwa_mem {
     meta {
         description: "Maps FASTQ files to BAM format using bwa mem"
         outputs: {
-            bam: "Aligned BAM format file",
+            bam: "Aligned BAM format file"
         }
     }
 
@@ -221,8 +230,11 @@ task bwa_mem {
         File bwa_db_tar_gz
         String read_group
         File? read_two_fastq_gz
-        String prefix = sub(basename(read_one_fastq_gz), "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
-            "")
+        String prefix = sub(
+            basename(read_one_fastq_gz),
+            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
+            ""
+        )
         Boolean use_all_cores = false
         Int ncpu = 4
         Int modify_disk_size_gb = 0
@@ -230,10 +242,11 @@ task bwa_mem {
 
     String output_bam = prefix + ".bam"
 
-    Float input_fastq_size = size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB"
-    )
-    Float reference_size = size(bwa_db_tar_gz, "GiB")
-    Int disk_size_gb = (ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
+    Float input_fastq_size = size(read_one_fastq_gz, "GB")
+        + size(read_two_fastq_gz, "GB")
+    Float reference_size = size(bwa_db_tar_gz, "GB")
+    Int disk_size_gb = (
+        ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
     )
 
     command <<<
@@ -258,10 +271,9 @@ task bwa_mem {
             -R "~{read_group}" \
             bwa_db/"$PREFIX" \
             "~{basename(read_one_fastq_gz)}" \
-            ~{(if defined(read_two_fastq_gz)
-                then "'" + basename(select_first([
-                    read_two_fastq_gz,
-                ])) + "'"
+            ~{(
+                if defined(read_two_fastq_gz)
+                then "'" + basename(select_first([read_two_fastq_gz])) + "'"
                 else ""
             )} \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
@@ -269,10 +281,9 @@ task bwa_mem {
 
         rm -r bwa_db
         rm "~{basename(read_one_fastq_gz)}"
-        ~{(if defined(read_two_fastq_gz)
-            then "rm '" + basename(select_first([
-                read_two_fastq_gz,
-            ])) + "'"
+        ~{(
+            if defined(read_two_fastq_gz)
+            then "rm '" + basename(select_first([read_two_fastq_gz])) + "'"
             else ""
         )}
     >>>
@@ -294,7 +305,7 @@ task build_bwa_db {
     meta {
         description: "Creates a BWA index and returns it as a compressed tar archive"
         outputs: {
-            bwa_db_tar_gz: "Tarballed bwa reference files",
+            bwa_db_tar_gz: "Tarballed bwa reference files"
         }
     }
 
@@ -313,7 +324,7 @@ task build_bwa_db {
         Int modify_disk_size_gb = 0
     }
 
-    Float input_fasta_size = size(reference_fasta, "GiB")
+    Float input_fasta_size = size(reference_fasta, "GB")
     Int disk_size_gb = ceil(input_fasta_size * 2) + 10 + modify_disk_size_gb
     String bwa_db_out_name = db_name + ".tar.gz"
 
