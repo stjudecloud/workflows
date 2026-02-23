@@ -32,7 +32,7 @@ task librarian {
         Int modify_disk_size_gb = 0
     }
 
-    Float read1_size = size(read_one_fastq, "GiB")
+    Float read1_size = size(read_one_fastq, "GB")
     Int disk_size_gb = (
         ceil(read1_size) + 10 + modify_disk_size_gb
     )

@@ -44,7 +44,7 @@ task dynamic_disk_and_ram_task {
         Int modify_disk_size_gb = 0
     }
 
-    Int input_size_gb = ceil(size(<input files>, "GiB"))
+    Int input_size_gb = ceil(size(<input files>, "GB"))
 
     Int memory_gb = ceil(input_size_gb * X) + modify_memory_gb
     Int disk_size_gb = ceil(input_size_gb * Y) + modify_disk_size_gb

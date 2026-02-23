@@ -450,7 +450,7 @@ task mark_duplicates_spark {
         Int ncpu = 4
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int memory_gb = min(ceil(bam_size + 15), 50) + modify_memory_gb
     Int disk_size_gb = (
         (

@@ -28,7 +28,7 @@ task multiqc {
         Int modify_disk_size_gb = 0
     }
 
-    Float input_size = size(files, "GiB")
+    Float input_size = size(files, "GB")
     Int disk_size_gb = ceil(input_size) * 2 + modify_disk_size_gb
 
     command <<<
