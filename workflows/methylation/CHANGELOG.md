@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - Pipeline writes out list of probes that are affected by SNPs [#283](https://github.com/stjudecloud/workflows/pull/283)
 - Pipeline writes out list of probes that were filtered for not mapping to genomic coordinates [#283](https://github.com/stjudecloud/workflows/pull/283)
 
+### Changed
+
+- Converted size checks to GB from GiB [#302](https://github.com/stjudecloud/workflows/pull/302)
+
 ## 2025 September
 
 ### Added

@@ -20,7 +20,7 @@ task quickcheck {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
@@ -77,7 +77,7 @@ task split {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
@@ -178,7 +178,7 @@ task flagstat {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
@@ -234,7 +234,7 @@ task index {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 1.2) + 10 + modify_disk_size_gb
 
     String outfile_name = basename(bam) + ".bai"
@@ -304,7 +304,7 @@ task subsample {
 
     String suffixed = prefix + ".sampled"
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
@@ -447,7 +447,7 @@ task filter {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
@@ -560,8 +560,8 @@ task merge {
         Int modify_disk_size_gb = 0
     }
 
-    Float bams_size = size(bams, "GiB")
-    Float header_size = size(new_header, "GiB")
+    Float bams_size = size(bams, "GB")
+    Float header_size = size(new_header, "GB")
     Int disk_size_gb = ceil(bams_size * 2 + header_size) + 10 + modify_disk_size_gb
 
     command <<<
@@ -658,7 +658,7 @@ task addreplacerg {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     String outfile_name = prefix + ".bam"
@@ -733,7 +733,7 @@ task collate {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
 
@@ -853,7 +853,7 @@ task bam_to_fastq {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int memory_gb = (
         if (collated || !paired_end)
         then 4
@@ -1027,7 +1027,7 @@ task fixmate {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
@@ -1121,7 +1121,7 @@ task position_sorted_fixmate {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int memory_gb = ceil(bam_size * 0.2) + 4 + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
@@ -1263,7 +1263,7 @@ task markdup {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int memory_gb = ceil(bam_size * 3) + 4 + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
 
@@ -1328,7 +1328,7 @@ task faidx {
         Int modify_disk_size_gb = 0
     }
 
-    Float fasta_size = size(fasta, "GiB")
+    Float fasta_size = size(fasta, "GB")
     Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
 
     String outfile_name = basename(fasta, ".gz") + ".fai"

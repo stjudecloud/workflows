@@ -183,11 +183,11 @@ task combine_data {
         Int modify_memory_gb = 0
     }
 
-    Int memory_gb = ceil(size(files_to_combine, "GiB") *
+    Int memory_gb = ceil(size(files_to_combine, "GB") *
         if simple_merge then 2 else 1)
         + modify_memory_gb
         + 2
-    Int disk_size_gb = ceil(size(files_to_combine, "GiB") * 2) + 2
+    Int disk_size_gb = ceil(size(files_to_combine, "GB") * 2) + 2
 
     command <<<
         python /scripts/methylation/combine.py \
@@ -240,7 +240,7 @@ task filter_probes {
         Int num_probes = 10000
     }
 
-    Int disk_size_gb = ceil(size(beta_values, "GiB") * 2) + 2
+    Int disk_size_gb = ceil(size(beta_values, "GB") * 2) + 2
 
     command <<<
         python /scripts/methylation/filter.py \
@@ -287,7 +287,7 @@ task generate_umap {
         String prefix = "umap"
     }
 
-    Int disk_size_gb = ceil(size(filtered_beta_values, "GiB") * 2) + 2
+    Int disk_size_gb = ceil(size(filtered_beta_values, "GB") * 2) + 2
 
     command <<<
         python /scripts/methylation/generate_umap.py \

@@ -82,7 +82,7 @@ task mark_duplicates {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int memory_gb = min(ceil(bam_size + 12), 50) + modify_memory_gb
     Int disk_size_gb = (
         (
@@ -201,7 +201,7 @@ task validate_bam {
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
     )
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -302,7 +302,7 @@ task sort {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -391,7 +391,7 @@ task merge_sam_files {
         Int modify_disk_size_gb = 0
     }
 
-    Float bams_size = size(bams, "GiB")
+    Float bams_size = size(bams, "GB")
     Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -464,7 +464,7 @@ task clean_sam {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -536,7 +536,7 @@ task collect_wgs_metrics {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -599,7 +599,7 @@ task collect_alignment_summary_metrics {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -667,7 +667,7 @@ task collect_gc_bias_metrics {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -733,7 +733,7 @@ task collect_insert_size_metrics {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -792,7 +792,7 @@ task quality_score_distribution {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -844,7 +844,7 @@ task bam_to_fastq {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -902,7 +902,7 @@ task merge_vcfs {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(vcfs, "GiB") * 2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(vcfs, "GB") * 2) + 10 + modify_disk_size_gb
 
     command <<<
         picard -Xms2000m \
@@ -1025,7 +1025,7 @@ task create_sequence_dictionary {
         Int modify_disk_size_gb = 0
     }
 
-    Float fasta_size = size(fasta, "GiB")
+    Float fasta_size = size(fasta, "GB")
     Int disk_size_gb = ceil(fasta_size * 2) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 

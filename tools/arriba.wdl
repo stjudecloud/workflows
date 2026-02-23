@@ -175,10 +175,10 @@ task arriba {
         Int modify_disk_size_gb = 0
     }
 
-    Int bam_size_gb = ceil(size(bam, "GiB"))
+    Int bam_size_gb = ceil(size(bam, "GB"))
     Int disk_size_gb = bam_size_gb
-        + ceil(size(gtf, "GiB"))
-        + ceil(size(reference_fasta_gz, "GiB"))
+        + ceil(size(gtf, "GB"))
+        + ceil(size(reference_fasta_gz, "GB"))
         + modify_disk_size_gb
     Int memory_gb = bam_size_gb + modify_memory_gb
 
@@ -273,9 +273,9 @@ task arriba_tsv_to_vcf {
         Int modify_disk_size_gb = 0
     }
 
-    Int input_size_gb = ceil(size(fusions, "GiB"))
+    Int input_size_gb = ceil(size(fusions, "GB"))
     Int disk_size_gb = ceil(input_size_gb)
-        + (ceil(size(reference_fasta, "GiB")) * 3)
+        + (ceil(size(reference_fasta, "GB")) * 3)
         + modify_disk_size_gb
 
     command <<<
@@ -329,7 +329,7 @@ task arriba_extract_fusion_supporting_alignments {
         Int modify_disk_size_gb = 0
     }
 
-    Int input_size_gb = ceil(size(bam, "GiB"))
+    Int input_size_gb = ceil(size(bam, "GB"))
     Int disk_size_gb = ceil(input_size_gb) + 5 + modify_disk_size_gb
 
     command <<<
@@ -374,7 +374,7 @@ task arriba_annotate_exon_numbers {
         Int modify_disk_size_gb = 0
     }
 
-    Int input_size_gb = ceil(size(gtf, "GiB"))
+    Int input_size_gb = ceil(size(gtf, "GB"))
     Int disk_size_gb = ceil(input_size_gb) + 5 + modify_disk_size_gb
 
     command <<<

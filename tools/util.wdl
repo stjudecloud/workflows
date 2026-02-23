@@ -111,7 +111,7 @@ task calc_feature_lengths {
         Int modify_disk_size_gb = 0
     }
 
-    Float gtf_size = size(gtf, "GiB")
+    Float gtf_size = size(gtf, "GB")
     Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
@@ -148,7 +148,7 @@ task compression_integrity {
         Int modify_disk_size_gb = 0
     }
 
-    Float file_size = size(bgzipped_file, "GiB")
+    Float file_size = size(bgzipped_file, "GB")
     Int disk_size_gb = ceil(file_size) + 10 + modify_disk_size_gb
 
     command <<<
@@ -187,7 +187,7 @@ task add_to_bam_header {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     String outfile_name = prefix + ".bam"
@@ -229,7 +229,7 @@ task unpack_tarball {
         Int modify_disk_size_gb = 0
     }
 
-    Float tarball_size = size(tarball, "GiB")
+    Float tarball_size = size(tarball, "GB")
     Int disk_size_gb = ceil(tarball_size * 8) + modify_disk_size_gb
 
     command <<<
@@ -287,7 +287,7 @@ task make_coverage_regions_bed {
         Int modify_disk_size_gb = 0
     }
 
-    Float gtf_size = size(gtf, "GiB")
+    Float gtf_size = size(gtf, "GB")
     Int disk_size_gb = ceil(gtf_size * 1.2) + 10 + modify_disk_size_gb
 
     command <<<
@@ -332,7 +332,7 @@ task global_phred_scores {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
@@ -437,7 +437,7 @@ task split_fastq {
         Int ncpu = 2
     }
 
-    Float fastq_size = size(fastq, "GiB")
+    Float fastq_size = size(fastq, "GB")
     Int disk_size_gb = ceil(fastq_size * 5) + 10 + modify_disk_size_gb
 
     command <<<
