@@ -40,7 +40,6 @@
 ##     }
 ## }
 ## ```
-
 version 1.1
 
 #@ except: SnakeCase
@@ -99,8 +98,7 @@ workflow read_group_to_string {
     }
 
     output {
-        String validated_read_group
-            = inner_read_group_to_string.stringified_read_group
+        String validated_read_group = inner_read_group_to_string.stringified_read_group
     }
 }
 
@@ -109,7 +107,7 @@ task get_read_groups {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
         warning: "This task will uppercase any lowercase `PL` values it finds, as is required by the [SAM specification](https://samtools.github.io/hts-specs/SAMv1.pdf)."
         outputs: {
-            read_groups: "An array of `ReadGroup` structs containing read group information."
+            read_groups: "An array of `ReadGroup` structs containing read group information.",
         }
     }
 
@@ -167,8 +165,18 @@ task validate_read_group {
     String sample_pattern = "sample.?"
     String restrictive_pattern = "\\ "  # Disallow spaces
     Array[String] platforms = [
-        "CAPILLARY", "DNBSEQ", "ELEMENT", "HELICOS", "ILLUMINA", "IONTORRENT", "LS454",
-        "ONT", "PACBIO", "SINGULAR", "SOLID", "ULTIMA",
+        "CAPILLARY",
+        "DNBSEQ",
+        "ELEMENT",
+        "HELICOS",
+        "ILLUMINA",
+        "IONTORRENT",
+        "LS454",
+        "ONT",
+        "PACBIO",
+        "SINGULAR",
+        "SOLID",
+        "ULTIMA",
     ]
 
     command <<<
@@ -366,7 +374,7 @@ task inner_read_group_to_string {
         description: "Converts a `ReadGroup` struct to a `String` **without any validation**."
         warning: "Please use the `read_group_to_string` workflow, which has validation of the `ReadGroup` contents."
         outputs: {
-            stringified_read_group: "Input `ReadGroup` as a string"
+            stringified_read_group: "Input `ReadGroup` as a string",
         }
     }
 

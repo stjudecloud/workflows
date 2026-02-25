@@ -27,7 +27,9 @@ workflow bam_to_fastqs {
         Boolean use_all_cores = false
     }
 
-    call samtools.quickcheck { input: bam }
+    call samtools.quickcheck { input:
+        bam,
+    }
 
     call samtools.split after quickcheck { input:
         bam,
@@ -42,11 +44,13 @@ workflow bam_to_fastqs {
     }
 
     if (paired_end) {
-        scatter (reads in
-            zip(bam_to_fastq.read_one_fastq_gz, bam_to_fastq.read_two_fastq_gz)
-        ) {
+        scatter (reads in zip(bam_to_fastq.read_one_fastq_gz, bam_to_fastq.read_two_fastq_gz
+            )) {
             call fq.fqlint { input:
-                read_one_fastq = select_first([reads.left, "undefined"]),
+                read_one_fastq = select_first([
+                    reads.left,
+                    "undefined",
+                ]),
                 read_two_fastq = reads.right,
             }
         }
@@ -54,17 +58,17 @@ workflow bam_to_fastqs {
     if (!paired_end) {
         scatter (fq in bam_to_fastq.single_end_reads_fastq_gz) {
             call fq.fqlint as se_fqlint { input:
-                read_one_fastq = select_first([fq, "undefined"]),
+                read_one_fastq = select_first([
+                    fq,
+                    "undefined",
+                ]),
             }
         }
     }
 
     output {
-        Array[File] read1s = (
-            if paired_end
-            then select_all(bam_to_fastq.read_one_fastq_gz)
-            else select_all(bam_to_fastq.single_end_reads_fastq_gz)
-        )
+        Array[File] read1s = (if paired_end then select_all(bam_to_fastq.read_one_fastq_gz
+            ) else select_all(bam_to_fastq.single_end_reads_fastq_gz))
         Array[File?] read2s = bam_to_fastq.read_two_fastq_gz
     }
 }

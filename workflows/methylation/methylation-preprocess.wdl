@@ -53,10 +53,8 @@ task process_raw_idats {
     >>>
 
     output {
-        File beta_swan_norm_unfiltered
-            = out_base + ".beta_swan_norm_unfiltered.csv"
-        File beta_swan_norm_unfiltered_genomic
-            = out_base + ".beta_swan_norm_unfiltered.genomic.csv"
+        File beta_swan_norm_unfiltered = out_base + ".beta_swan_norm_unfiltered.csv"
+        File beta_swan_norm_unfiltered_genomic = out_base + ".beta_swan_norm_unfiltered.genomic.csv"
         File annotation = out_base + ".annotation.csv"
         File beta_unnorm = out_base + ".beta.csv"
         File cn_values = out_base + ".cn_values.csv"
@@ -81,13 +79,15 @@ task list_sex_probes {
     meta {
         description: "List probes that map to the sex chromosomes"
         outputs: {
-            probe_list: "List of probe names that map to the sex chromosomes"
+            probe_list: "List of probe names that map to the sex chromosomes",
         }
     }
 
-    parameter_meta {}
+    parameter_meta {
+    }
 
-    input {}
+    input {
+    }
 
     command <<<
         set -euo pipefail
