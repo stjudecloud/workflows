@@ -451,7 +451,7 @@ task mark_duplicates_spark {
     Float bam_size = size(bam, "GB")
     Int memory_gb = min(ceil(bam_size + 15), 50) + modify_memory_gb
     Int disk_size_gb = ((if create_bam then ceil((bam_size * 2) + 10) else ceil(bam_size + 10
-        )) + modify_disk_size_gb)
+    )) + modify_disk_size_gb)
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -468,7 +468,7 @@ task mark_duplicates_spark {
             --read-validation-stringency "~{validation_stringency}" \
             --duplicate-scoring-strategy "~{duplicate_scoring_strategy}" \
             --read-name-regex '~{if (optical_distance > 0) then read_name_regex else "null"
-                }' \
+            }' \
             --duplicate-tagging-policy "~{tagging_policy}" \
             --optical-duplicate-pixel-distance ~{optical_distance} \
             --spark-master local[~{ncpu}]

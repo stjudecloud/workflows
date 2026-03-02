@@ -97,7 +97,7 @@ task fastp {
         File? read_two_fastq
         String prefix = sub(basename(read_one_fastq), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
-            ) + ".trimmed"
+        ) + ".trimmed"
         Boolean output_fastq = true
         Boolean deduplicate = false
         Boolean disable_duplicate_eval = false

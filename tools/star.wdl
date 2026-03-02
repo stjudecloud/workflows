@@ -86,7 +86,7 @@ task build_star_db {
     Float reference_fasta_size = size(reference_fasta, "GB")
     Float gtf_size = size(gtf, "GB")
     Int disk_size_gb = (ceil((reference_fasta_size + gtf_size) * 3) + 10 + modify_disk_size_gb
-        )
+    )
 
     # Leave 2GB as system overhead
     String memory_limit_bytes = "~{memory_gb - 2}000000000"
@@ -599,7 +599,7 @@ task alignment {
         Pair[Int, Int] clip_5p_n_bases = (0, 0)
         String prefix = sub(basename(read_one_fastqs_gz[0]), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
-            )
+        )
         String read_name_separator = "/"
         String clip_adapter_type = "Hamming"
         String out_sam_strand_field = "intronMotif"
@@ -708,7 +708,7 @@ task alignment {
     Float read_two_fastqs_size = size(read_twos, "GB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GB")
     Int disk_size_gb = ((ceil(read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size
-        ) * 3) + 10 + modify_disk_size_gb)
+    ) * 3) + 10 + modify_disk_size_gb)
 
     command <<<
         set -euo pipefail
@@ -769,15 +769,17 @@ task alignment {
             --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{(if (length(read_twos) != 0
             ) then "'" + clip_3p_adapter_seq.right + "'" else "")} \
             --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(if (length(read_twos) != 0)
-             then clip_3p_adapter_mmp.right else None)} \
+                then clip_3p_adapter_mmp.right
+                else None)} \
             --alignEndsProtrude ~{align_ends_protrude.left} "~{(if (length(read_twos) != 0
-             ) then align_ends_protrude.right else None)}" \
+            ) then align_ends_protrude.right else None)}" \
             --clip3pNbases ~{clip_3p_n_bases.left} ~{(if (length(read_twos) != 0) then clip_3p_n_bases.right
-             else None)} \
+                else None)} \
             --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{(if (length(
-             read_twos) != 0) then clip_3p_after_adapter_n_bases.right else None)} \
+                read_twos
+            ) != 0) then clip_3p_after_adapter_n_bases.right else None)} \
             --clip5pNbases ~{clip_5p_n_bases.left} ~{(if (length(read_twos) != 0) then clip_5p_n_bases.right
-             else None)} \
+                else None)} \
             --readNameSeparator "~{read_name_separator}" \
             --clipAdapterType "~{clip_adapter_type}" \
             --outSAMstrandField "~{out_sam_strand_field}" \

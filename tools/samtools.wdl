@@ -855,7 +855,7 @@ task bam_to_fastq {
     Int memory_gb = (if (collated || !paired_end) then 4 else (ceil(bam_size * 0.4) + 4))
         + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * (if (retain_collated_bam && !collated && paired_end
-        ) then 5 else 2)) + 10 + modify_disk_size_gb
+    ) then 5 else 2)) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -891,9 +891,9 @@ task bam_to_fastq {
             -G "~{bitwise_filter.exclude_if_all}" \
             ~{(if append_read_number then "-N" else "-n")} \
             -1 ~{(if paired_end then "\"" + prefix + ".R1.fastq.gz\"" else "\"" + prefix + ".fastq.gz\""
-                )} \
+            )} \
             -2 ~{(if paired_end then "\"" + prefix + ".R2.fastq.gz\"" else "\"" + prefix + ".fastq.gz\""
-                )} \
+            )} \
             ~{(if paired_end then (if output_singletons then "-s \"" + prefix + ".singleton.fastq.gz\""
                 else "-s junk.singleton.fastq.gz") else "")} \
             -0 ~{(if paired_end then "junk.unknown_bit_setting.fastq.gz" else "\"" + prefix

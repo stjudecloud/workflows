@@ -97,7 +97,8 @@ task download_library {
 
     #@ except: ExpressionSpacing
     Int disk_size_gb = ((if library_name == "bacteria" then 300 else if library_name == "nr"
-        then 600 else if library_name == "nt" then 2500 else 25) + modify_disk_size_gb)
+        then 600
+        else if library_name == "nt" then 2500 else 25) + modify_disk_size_gb)
 
     command <<<
         set -euo pipefail
@@ -347,7 +348,7 @@ task kraken {
         File db
         String prefix = sub(basename(read_one_fastq_gz), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
-            )
+        )
         Boolean store_sequences = false
         Boolean use_names = true
         Boolean use_all_cores = false
@@ -361,7 +362,7 @@ task kraken {
     Float read1_size = size(read_one_fastq_gz, "GB")
     Float read2_size = size(read_two_fastq_gz, "GB")
     Int disk_size_gb_calculation = (ceil((db_size * 2) + read1_size + read2_size) + 10 + modify_disk_size_gb
-        )
+    )
     Int disk_size_gb = (if store_sequences then disk_size_gb_calculation + ceil(read1_size
         + read2_size) else disk_size_gb_calculation)
 

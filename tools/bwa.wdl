@@ -37,7 +37,7 @@ task bwa_aln {
         String read_group
         String prefix = sub(basename(fastq), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
-            )
+        )
         Boolean use_all_cores = false
         Int ncpu = 2
         Int modify_disk_size_gb = 0
@@ -48,7 +48,7 @@ task bwa_aln {
     Float input_fastq_size = size(fastq, "GB")
     Float reference_size = size(bwa_db_tar_gz, "GB")
     Int disk_size_gb = (ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
-        )
+    )
 
     command <<<
         set -euo pipefail
@@ -138,10 +138,10 @@ task bwa_aln_pe {
     String output_bam = prefix + ".bam"
 
     Float input_fastq_size = (size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB"
-        ))
+    ))
     Float reference_size = size(bwa_db_tar_gz, "GB")
     Int disk_size_gb = (ceil((input_fastq_size + reference_size) * 2) + 5 + modify_disk_size_gb
-        )
+    )
 
     command <<<
         set -euo pipefail
@@ -233,7 +233,7 @@ task bwa_mem {
     Float input_fastq_size = size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
     Float reference_size = size(bwa_db_tar_gz, "GB")
     Int disk_size_gb = (ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
-        )
+    )
 
     command <<<
         set -euo pipefail

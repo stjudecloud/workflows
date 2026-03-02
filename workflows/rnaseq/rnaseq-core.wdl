@@ -146,7 +146,7 @@ workflow rnaseq_core {
         }
         String prefix = sub(basename(read_one_fastqs_gz[0]), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
-            )
+        )
         String xenocp_aligner = "star"
         Float align_spliced_mate_map_l_min_over_l_mate = 0.5
         Int out_filter_multimap_n_max = 50
@@ -200,9 +200,9 @@ workflow rnaseq_core {
     }
 
     Array[File] chosen_r1s = (if enable_read_trimming then select_all(trim.read_one_fastq_gz
-        ) else read_one_fastqs_gz)
+    ) else read_one_fastqs_gz)
     Array[File] chosen_r2s = (if enable_read_trimming then select_all(trim.read_two_fastq_gz
-        ) else read_two_fastqs_gz)
+    ) else read_two_fastqs_gz)
 
     call star.alignment after validate { input:
         read_one_fastqs_gz = chosen_r1s,
@@ -245,8 +245,8 @@ workflow rnaseq_core {
     }
 
     String htseq_strandedness = (if (provided_strandedness != "") then htseq_strandedness_mapping[
-        provided_strandedness] else htseq_strandedness_mapping[ngsderive_strandedness.strandedness_string
-        ])
+        provided_strandedness
+    ] else htseq_strandedness_mapping[ngsderive_strandedness.strandedness_string])
 
     call htseq.count as htseq_count { input:
         bam = alignment_post.processed_bam,
@@ -254,7 +254,7 @@ workflow rnaseq_core {
         strandedness = htseq_strandedness,
         prefix = basename(alignment_post.processed_bam, "bam") + (if provided_strandedness
             == "" then ngsderive_strandedness.strandedness_string else provided_strandedness
-            ),
+        ),
         pos_sorted = true,
     }
 

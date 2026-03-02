@@ -61,7 +61,7 @@ workflow methylation {
             # Get the sublist of probe files
             scatter (probe_num in range(max_length)) {
                 Int num = (if merge_num > 0 then probe_num + (merge_num * max_length) else probe_num
-                    )
+                )
                 if (num < probelist_length) {
                     File probe_file_batches = probe_files[num]
                 }

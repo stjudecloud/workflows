@@ -120,7 +120,7 @@ task count {
             --nonunique ~{if nonunique then "all" else "none"} \
             --secondary-alignments ~{if secondary_alignments then "score" else "ignore"} \
             --supplementary-alignments ~{(if supplementary_alignments then "score" else "ignore"
-                )} \
+            )} \
             "~{bam}" \
             "~{gtf}" \
             >> "~{outfile_name}"

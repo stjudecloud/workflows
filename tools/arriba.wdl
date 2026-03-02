@@ -227,7 +227,7 @@ task arriba {
             ~{(if length(viral_contigs) > 0 then "-v " + sep(",", quote(viral_contigs))
                 else "")} \
             ~{(if length(disable_filters) > 0 then "-f " + sep(",", quote(disable_filters)
-                ) else "")} \
+            ) else "")} \
             -E ~{max_e_value} \
             -S ~{min_supporting_reads} \
             -m ~{max_mismappers} \
