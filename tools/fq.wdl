@@ -75,7 +75,10 @@ task fqlint {
             ~{sep(" ", prefix("--disable-validator ", squote(disable_validator_codes)))} \
             --single-read-validation-level "~{single_read_validation_level}" \
             --paired-read-validation-level "~{paired_read_validation_level}" \
-            --lint-mode ~{if panic then "panic" else "log"} \
+            --lint-mode ~{if panic
+                then "panic"
+                else "log"
+            } \
             "~{read_one_fastq}" \
             ~{"'" + read_two_fastq + "'"}
     >>>
@@ -133,10 +136,13 @@ task subsample {
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
-    String probability_arg = (if (probability < 1.0 && probability > 0) then "-p ~{
-        probability
-    }" else "")
-    String record_count_arg = if (record_count > 0) then "-n ~{record_count}" else ""
+    String probability_arg = (if (probability < 1.0 && probability > 0)
+        then "-p ~{probability}"
+        else ""
+    )
+    String record_count_arg = if (record_count > 0)
+        then "-n ~{record_count}"
+        else ""
 
     String r1_dst = prefix + ".R1.subsampled.fastq.gz"
     String r2_dst = prefix + ".R2.subsampled.fastq.gz"

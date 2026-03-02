@@ -767,19 +767,33 @@ task alignment {
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
             ]))} \
             --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{(if (length(read_twos) != 0
-            ) then "'" + clip_3p_adapter_seq.right + "'" else "")} \
+            )
+                then "'" + clip_3p_adapter_seq.right + "'"
+                else ""
+            )} \
             --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(if (length(read_twos) != 0)
                 then clip_3p_adapter_mmp.right
-                else None)} \
+                else None
+            )} \
             --alignEndsProtrude ~{align_ends_protrude.left} "~{(if (length(read_twos) != 0
-            ) then align_ends_protrude.right else None)}" \
-            --clip3pNbases ~{clip_3p_n_bases.left} ~{(if (length(read_twos) != 0) then clip_3p_n_bases.right
-                else None)} \
+            )
+                then align_ends_protrude.right
+                else None
+            )}" \
+            --clip3pNbases ~{clip_3p_n_bases.left} ~{(if (length(read_twos) != 0)
+                then clip_3p_n_bases.right
+                else None
+            )} \
             --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{(if (length(
                 read_twos
-            ) != 0) then clip_3p_after_adapter_n_bases.right else None)} \
-            --clip5pNbases ~{clip_5p_n_bases.left} ~{(if (length(read_twos) != 0) then clip_5p_n_bases.right
-                else None)} \
+            ) != 0)
+                then clip_3p_after_adapter_n_bases.right
+                else None
+            )} \
+            --clip5pNbases ~{clip_5p_n_bases.left} ~{(if (length(read_twos) != 0)
+                then clip_5p_n_bases.right
+                else None
+            )} \
             --readNameSeparator "~{read_name_separator}" \
             --clipAdapterType "~{clip_adapter_type}" \
             --outSAMstrandField "~{out_sam_strand_field}" \
@@ -787,9 +801,13 @@ task alignment {
             --outSAMunmapped "~{out_sam_unmapped}" \
             --outSAMorder "~{out_sam_order}" \
             --outSAMreadID "~{out_sam_read_id}" \
-            --outSAMtlen ~{(if (out_sam_tlen == "left_plus") then "1" else (if (
-                out_sam_tlen == "left_any"
-            ) then "2" else "error"))} \
+            --outSAMtlen ~{(if (out_sam_tlen == "left_plus")
+                then "1"
+                else (if (out_sam_tlen == "left_any")
+                    then "2"
+                    else "error"
+                )
+            )} \
             --outFilterType "~{out_filter_type}" \
             --outFilterIntronMotifs "~{out_filter_intron_motifs}" \
             --outFilterIntronStrands "~{out_filter_intron_strands}" \

@@ -209,8 +209,10 @@ workflow quality_check_standard {
         subsample_index.bam_index,
         bam_index,
     ])
-    String post_subsample_prefix = (if (defined(subsample.sampled_bam)) then prefix + ".subsampled"
-        else prefix)
+    String post_subsample_prefix = (if (defined(subsample.sampled_bam))
+        then prefix + ".subsampled"
+        else prefix
+    )
 
     call picard.validate_bam after quickcheck { input:
         bam = post_subsample_bam,
@@ -481,9 +483,12 @@ workflow quality_check_standard {
             markdups_post.mosdepth_region_dist,
             [],
         ]),
-        (if (mark_duplicates && optical_distance > 0) then [
-            markdups.mark_duplicates_metrics,
-        ] else []),
+        (if (mark_duplicates && optical_distance > 0)
+            then [
+                markdups.mark_duplicates_metrics,
+            ]
+            else []
+        ),
     ]))
 
     call multiqc_tasks.multiqc { input:
@@ -588,8 +593,10 @@ task parse_input {
     >>>
 
     output {
-        Array[String] labels = (if (coverage_beds_len > 0) then read_lines("labels.txt")
-            else [])
+        Array[String] labels = (if (coverage_beds_len > 0)
+            then read_lines("labels.txt")
+            else []
+        )
     }
 
     runtime {

@@ -52,7 +52,10 @@ task coverage {
             -n \
             ~{"-b '" + coverage_bed + "'"} \
             -Q ~{min_mapping_quality} \
-            ~{if (use_fast_mode) then "-x" else ""} \
+            ~{if (use_fast_mode)
+                then "-x"
+                else ""
+            } \
             "~{prefix}" \
             "$CWD_BAM"
 

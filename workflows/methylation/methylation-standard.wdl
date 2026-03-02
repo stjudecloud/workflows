@@ -60,7 +60,9 @@ workflow methylation {
         scatter (merge_num in range((probelist_length / max_length) + 1)) {
             # Get the sublist of probe files
             scatter (probe_num in range(max_length)) {
-                Int num = (if merge_num > 0 then probe_num + (merge_num * max_length) else probe_num
+                Int num = (if merge_num > 0
+                    then probe_num + (merge_num * max_length)
+                    else probe_num
                 )
                 if (num < probelist_length) {
                     File probe_file_batches = probe_files[num]
@@ -96,8 +98,10 @@ workflow methylation {
         scatter (merge_num in range((non_genomic_probelist_length / max_length) + 1)) {
             # Get the sublist of probe files
             scatter (probe_num in range(max_length)) {
-                Int num_ng = (if merge_num > 0 then probe_num + (merge_num * max_length)
-                    else probe_num)
+                Int num_ng = (if merge_num > 0
+                    then probe_num + (merge_num * max_length)
+                    else probe_num
+                )
                 if (num_ng < non_genomic_probelist_length) {
                     File non_genomic_probe_batches = non_genomic_probe_list[num_ng]
                 }

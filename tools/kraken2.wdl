@@ -26,7 +26,10 @@ task download_taxonomy {
         set -euo pipefail
 
         kraken2-build --download-taxonomy \
-            ~{if protein then "--protein" else ""} \
+            ~{if protein
+                then "--protein"
+                else ""
+            } \
             --use-ftp \
             --db "~{db_name}" 2>&1 \
             | awk '/gunzip:/ { print; exit 42 } !/gunzip:/ { print }' 1>&2
@@ -96,16 +99,24 @@ task download_library {
     String db_name = "kraken2_" + library_name + "_library"
 
     #@ except: ExpressionSpacing
-    Int disk_size_gb = ((if library_name == "bacteria" then 300 else if library_name == "nr"
-        then 600
-        else if library_name == "nt" then 2500 else 25) + modify_disk_size_gb)
+    Int disk_size_gb = ((if library_name == "bacteria"
+        then 300
+        else if library_name == "nr"
+            then 600
+            else if library_name == "nt"
+                then 2500
+                else 25
+    ) + modify_disk_size_gb)
 
     command <<<
         set -euo pipefail
 
         kraken2-build --download-library \
             "~{library_name}" \
-            ~{if protein then "--protein" else ""} \
+            ~{if protein
+                then "--protein"
+                else ""
+            } \
             --use-ftp \
             --db "~{db_name}" 2>&1 \
             | awk '/gunzip:/ { print; exit 42 } !/gunzip:/ { print }' 1>&2
@@ -166,7 +177,10 @@ task create_library_from_fastas {
         while read -r fasta; do
             gunzip -c "$fasta" > tmp.fa
             kraken2-build \
-                ~{if protein then "--protein" else ""} \
+                ~{if protein
+                    then "--protein"
+                    else ""
+                } \
                 --add-to-library tmp.fa \
                 --db "~{db_name}"
         done < fastas.txt
@@ -232,9 +246,15 @@ task build_db {
         String db_name = "kraken2_db"
         Boolean protein = false
         Boolean use_all_cores = false
-        Int kmer_len = if protein then 15 else 35
-        Int minimizer_len = if protein then 12 else 31
-        Int minimizer_spaces = if protein then 0 else 7
+        Int kmer_len = if protein
+            then 15
+            else 35
+        Int minimizer_len = if protein
+            then 12
+            else 31
+        Int minimizer_spaces = if protein
+            then 0
+            else 7
         Int max_db_size_gb = -1
         Int ncpu = 4
         Int modify_memory_gb = 0
@@ -243,9 +263,10 @@ task build_db {
 
     Float tarballs_size = size(tarballs, "GB")
     Int disk_size_gb = ceil(tarballs_size * 6) + 10 + modify_disk_size_gb
-    Int memory_gb = ((if (max_db_size_gb > 0) then ceil(max_db_size_gb * 1.2) else ceil(
-        tarballs_size * 2
-    )) + modify_memory_gb)
+    Int memory_gb = ((if (max_db_size_gb > 0)
+        then ceil(max_db_size_gb * 1.2)
+        else ceil(tarballs_size * 2)
+    ) + modify_memory_gb)
 
     String max_db_size_bytes = "~{max_db_size_gb}000000000"
 
@@ -267,12 +288,17 @@ task build_db {
 
         >&2 echo "*** start DB build ***"
         kraken2-build --build \
-            ~{if protein then "--protein" else ""} \
+            ~{if protein
+                then "--protein"
+                else ""
+            } \
             --kmer-len ~{kmer_len} \
             --minimizer-len ~{minimizer_len} \
             --minimizer-spaces ~{minimizer_spaces} \
-            ~{(if (max_db_size_gb > 0) then "--max-db-size '" + max_db_size_bytes + "'"
-                else "")} \
+            ~{(if (max_db_size_gb > 0)
+                then "--max-db-size '" + max_db_size_bytes + "'"
+                else ""
+            )} \
             --threads "$n_cores" \
             --db "~{db_name}"
 
@@ -363,8 +389,10 @@ task kraken {
     Float read2_size = size(read_two_fastq_gz, "GB")
     Int disk_size_gb_calculation = (ceil((db_size * 2) + read1_size + read2_size) + 10 + modify_disk_size_gb
     )
-    Int disk_size_gb = (if store_sequences then disk_size_gb_calculation + ceil(read1_size
-        + read2_size) else disk_size_gb_calculation)
+    Int disk_size_gb = (if store_sequences
+        then disk_size_gb_calculation + ceil(read1_size + read2_size)
+        else disk_size_gb_calculation
+    )
 
     Int memory_gb = ceil(db_size * 2) + modify_memory_gb
 
@@ -384,12 +412,18 @@ task kraken {
 
         kraken2 --db kraken2_db/ \
             --paired \
-            --output ~{if store_sequences then "'" + out_sequences + "'" else "-"} \
+            --output ~{if store_sequences
+                then "'" + out_sequences + "'"
+                else "-"
+            } \
             --threads "$n_cores" \
             --minimum-base-quality ~{min_base_quality} \
             --report "~{out_report}" \
             --report-zero-counts \
-            ~{if use_names then "--use-names" else ""} \
+            ~{if use_names
+                then "--use-names"
+                else ""
+            } \
             "~{read_one_fastq_gz}" \
             "~{read_two_fastq_gz}"
 

@@ -257,17 +257,23 @@ task bwa_mem {
             -R "~{read_group}" \
             bwa_db/"$PREFIX" \
             "~{basename(read_one_fastq_gz)}" \
-            ~{(if defined(read_two_fastq_gz) then "'" + basename(select_first([
-                read_two_fastq_gz,
-            ])) + "'" else "")} \
+            ~{(if defined(read_two_fastq_gz)
+                then "'" + basename(select_first([
+                    read_two_fastq_gz,
+                ])) + "'"
+                else ""
+            )} \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > "~{output_bam}"
 
         rm -r bwa_db
         rm "~{basename(read_one_fastq_gz)}"
-        ~{(if defined(read_two_fastq_gz) then "rm '" + basename(select_first([
-            read_two_fastq_gz,
-        ])) + "'" else "")}
+        ~{(if defined(read_two_fastq_gz)
+            then "rm '" + basename(select_first([
+                read_two_fastq_gz,
+            ])) + "'"
+            else ""
+        )}
     >>>
 
     output {

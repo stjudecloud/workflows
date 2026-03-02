@@ -156,7 +156,10 @@ task sort {
         sambamba sort \
             --nthreads ~{ncpu} \
             -o "~{outfile_name}" \
-            ~{if queryname_sort then "-n" else ""} \
+            ~{if queryname_sort
+                then "-n"
+                else ""
+            } \
             "~{bam}"
     >>>
 
@@ -208,7 +211,10 @@ task markdup {
     command <<<
         sambamba markdup \
             --nthreads ~{ncpu} \
-            ~{if remove_duplicates then "--remove-duplicates" else ""} \
+            ~{if remove_duplicates
+                then "--remove-duplicates"
+                else ""
+            } \
             "~{bam}" \
             "~{prefix}.markdup.bam" \
             > "~{prefix}.markdup_log.txt"

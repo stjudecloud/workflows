@@ -338,7 +338,10 @@ task global_phred_scores {
 
     command <<<
         python3 /scripts/util/calc_global_phred_scores.py \
-            ~{if fast_mode then "--fast_mode" else ""} \
+            ~{if fast_mode
+                then "--fast_mode"
+                else ""
+            } \
             "~{bam}" \
             "~{prefix}"
     >>>
@@ -391,9 +394,10 @@ task check_fastq_and_rg_concordance {
     command <<<
         python3 /scripts/util/check_FQs_and_RGs.py \
             --read-one-fastqs "~{sep(",", read_one_names)}" \
-            ~{(if length(read_twos) > 0 then "--read-two-fastqs \"" + sep(",", squote(
-                read_twos
-            )) + "\"" else "")} \
+            ~{(if length(read_twos) > 0
+                then "--read-two-fastqs \"" + sep(",", squote(read_twos)) + "\""
+                else ""
+            )} \
             --read-groups "~{sep(",", read_groups)}"
     >>>
 

@@ -582,11 +582,26 @@ task merge {
         samtools merge \
             --threads "$n_cores" \
             ~{"-h \"" + new_header + "\""} \
-            ~{if name_sorted then "-n" else ""} \
-            ~{if (region != "") then "-R \"" + region + "\"" else ""} \
-            ~{if attach_rg then "-r" else ""} \
-            ~{if combine_rg then "-c" else ""} \
-            ~{if combine_pg then "-p" else ""} \
+            ~{if name_sorted
+                then "-n"
+                else ""
+            } \
+            ~{if (region != "")
+                then "-R \"" + region + "\""
+                else ""
+            } \
+            ~{if attach_rg
+                then "-r"
+                else ""
+            } \
+            ~{if combine_rg
+                then "-c"
+                else ""
+            } \
+            ~{if combine_pg
+                then "-p"
+                else ""
+            } \
             "~{prefix}.bam" \
             "${bams[@]}"
 
@@ -675,8 +690,14 @@ task addreplacerg {
             --threads "$n_cores" \
             ~{sep(" ", prefix("-r ", squote(read_group_line)))} \
             ~{"-R \"" + read_group_id + "\""} \
-            -m ~{if orphan_only then "orphan_only" else "overwrite_all"} \
-            ~{if overwrite_header_record then "-w" else ""} \
+            -m ~{if orphan_only
+                then "orphan_only"
+                else "overwrite_all"
+            } \
+            ~{if overwrite_header_record
+                then "-w"
+                else ""
+            } \
             -o "~{outfile_name}" \
             "~{bam}"
     >>>
@@ -749,7 +770,10 @@ task collate {
 
         samtools collate \
             --threads "$n_cores" \
-            ~{if fast_mode then "-f" else ""} \
+            ~{if fast_mode
+                then "-f"
+                else ""
+            } \
             -o "~{outfile_name}" \
             "~{bam}"
     >>>
@@ -852,10 +876,15 @@ task bam_to_fastq {
     }
 
     Float bam_size = size(bam, "GB")
-    Int memory_gb = (if (collated || !paired_end) then 4 else (ceil(bam_size * 0.4) + 4))
-        + modify_memory_gb
+    Int memory_gb = (if (collated || !paired_end)
+        then 4
+        else (ceil(bam_size * 0.4) + 4)
+    ) + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * (if (retain_collated_bam && !collated && paired_end
-    ) then 5 else 2)) + 10 + modify_disk_size_gb
+    )
+        then 5
+        else 2
+    )) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -870,13 +899,21 @@ task bam_to_fastq {
         mkfifo bam_pipe
         if ! ~{collated} && ~{paired_end}; then
             samtools collate \
-                ~{if retain_collated_bam then "" else "-u"} \
+                ~{if retain_collated_bam
+                    then ""
+                    else "-u"
+                } \
                 --threads "$n_cores" \
-                ~{if fast_mode then "-f" else ""} \
+                ~{if fast_mode
+                    then "-f"
+                    else ""
+                } \
                 -O \
                 "~{bam}" \
-                | tee ~{(if retain_collated_bam then "\"" + prefix + ".collated.bam\""
-                    else "")} \
+                | tee ~{(if retain_collated_bam
+                    then "\"" + prefix + ".collated.bam\""
+                    else ""
+                )} \
                 > bam_pipe \
                 &
         else
@@ -889,15 +926,29 @@ task bam_to_fastq {
             -F "~{bitwise_filter.exclude_if_any}" \
             --rf "~{bitwise_filter.include_if_any}" \
             -G "~{bitwise_filter.exclude_if_all}" \
-            ~{(if append_read_number then "-N" else "-n")} \
-            -1 ~{(if paired_end then "\"" + prefix + ".R1.fastq.gz\"" else "\"" + prefix + ".fastq.gz\""
+            ~{(if append_read_number
+                then "-N"
+                else "-n"
             )} \
-            -2 ~{(if paired_end then "\"" + prefix + ".R2.fastq.gz\"" else "\"" + prefix + ".fastq.gz\""
+            -1 ~{(if paired_end
+                then "\"" + prefix + ".R1.fastq.gz\""
+                else "\"" + prefix + ".fastq.gz\""
             )} \
-            ~{(if paired_end then (if output_singletons then "-s \"" + prefix + ".singleton.fastq.gz\""
-                else "-s junk.singleton.fastq.gz") else "")} \
-            -0 ~{(if paired_end then "junk.unknown_bit_setting.fastq.gz" else "\"" + prefix
-                + ".fastq.gz\"")} \
+            -2 ~{(if paired_end
+                then "\"" + prefix + ".R2.fastq.gz\""
+                else "\"" + prefix + ".fastq.gz\""
+            )} \
+            ~{(if paired_end
+                then (if output_singletons
+                    then "-s \"" + prefix + ".singleton.fastq.gz\""
+                    else "-s junk.singleton.fastq.gz"
+                )
+                else ""
+            )} \
+            -0 ~{(if paired_end
+                then "junk.unknown_bit_setting.fastq.gz"
+                else "\"" + prefix + ".fastq.gz\""
+            )} \
             bam_pipe
 
         rm bam_pipe
@@ -1011,11 +1062,26 @@ task fixmate {
 
         samtools fixmate \
             --threads "$n_cores" \
-            ~{if remove_unaligned_and_secondary then "-r" else ""} \
-            ~{if disable_proper_pair_check then "-p" else ""} \
-            ~{if add_cigar then "-c" else ""} \
-            ~{if add_mate_score then "-m" else ""} \
-            ~{if disable_flag_sanitization then "-z off" else ""} \
+            ~{if remove_unaligned_and_secondary
+                then "-r"
+                else ""
+            } \
+            ~{if disable_proper_pair_check
+                then "-p"
+                else ""
+            } \
+            ~{if add_cigar
+                then "-c"
+                else ""
+            } \
+            ~{if add_mate_score
+                then "-m"
+                else ""
+            } \
+            ~{if disable_flag_sanitization
+                then "-z off"
+                else ""
+            } \
             "~{bam}" \
             "~{prefix}~{extension}"
     >>>
@@ -1106,18 +1172,36 @@ task position_sorted_fixmate {
 
         samtools collate \
             --threads "$n_cores" \
-            ~{if fast_mode then "-f" else ""} \
+            ~{if fast_mode
+                then "-f"
+                else ""
+            } \
             -u \
             -O \
             "~{bam}" \
             | samtools fixmate \
                 --threads "$n_cores" \
                 -u \
-                ~{if remove_unaligned_and_secondary then "-r" else ""} \
-                ~{if disable_proper_pair_check then "-p" else ""} \
-                ~{if add_cigar then "-c" else ""} \
-                ~{if add_mate_score then "-m" else ""} \
-                ~{if disable_flag_sanitization then "-z off" else ""} \
+                ~{if remove_unaligned_and_secondary
+                    then "-r"
+                    else ""
+                } \
+                ~{if disable_proper_pair_check
+                    then "-p"
+                    else ""
+                } \
+                ~{if add_cigar
+                    then "-c"
+                    else ""
+                } \
+                ~{if add_mate_score
+                    then "-m"
+                    else ""
+                } \
+                ~{if disable_flag_sanitization
+                    then "-z off"
+                    else ""
+                } \
                 - \
                 - \
                 | samtools sort \
@@ -1248,25 +1332,54 @@ task markdup {
 
         samtools markdup \
             --threads "$n_cores" \
-            -f "~{prefix + if json then ".json" else ".txt"}" \
+            -f "~{prefix + if json
+                then ".json"
+                else ".txt"
+            }" \
             --read-coords '~{read_coords_regex}' \
             --coords-order "~{coordinates_order}" \
-            ~{if remove_duplicates then "-r" else ""} \
-            ~{if mark_supp_or_sec_or_unmapped_as_duplicates then "-S" else ""} \
-            ~{if mark_duplicates_with_do_tag then "-t" else ""} \
-            ~{if duplicate_count then "--duplicate-count" else ""} \
-            ~{if include_qc_fails then "--include-fails" else ""} \
-            ~{if duplicates_of_duplicates_check then "" else "--no-multi-dup"} \
-            ~{if use_read_groups then "--use-read-groups" else ""} \
+            ~{if remove_duplicates
+                then "-r"
+                else ""
+            } \
+            ~{if mark_supp_or_sec_or_unmapped_as_duplicates
+                then "-S"
+                else ""
+            } \
+            ~{if mark_duplicates_with_do_tag
+                then "-t"
+                else ""
+            } \
+            ~{if duplicate_count
+                then "--duplicate-count"
+                else ""
+            } \
+            ~{if include_qc_fails
+                then "--include-fails"
+                else ""
+            } \
+            ~{if duplicates_of_duplicates_check
+                then ""
+                else "--no-multi-dup"
+            } \
+            ~{if use_read_groups
+                then "--use-read-groups"
+                else ""
+            } \
             -l ~{max_readlen} \
             -d ~{optical_distance} \
             -c \
             "~{bam}" \
-            "~{if create_bam then prefix + ".bam" else "/dev/null"}"
+            "~{if create_bam
+                then prefix + ".bam"
+                else "/dev/null"
+            }"
     >>>
 
     output {
-        File markdup_report = prefix + if json then ".json" else ".txt"
+        File markdup_report = prefix + if json
+            then ".json"
+            else ".txt"
         File? markdup_bam = prefix + ".bam"
     }
 
