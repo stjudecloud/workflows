@@ -1367,16 +1367,16 @@ task calmd {
     parameter_meta {
         bam: "Input BAM format file to quickcheck"
         reference_fasta: "Reference FASTA format file. Must be indexed with a `.fai` file."
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         prefix: "Prefix for the output file. The extension `.bam` will be added."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
         ncpu: "Number of cores to allocate for task"
     }
 
     input {
         File bam
         File reference_fasta
-        Int modify_disk_size_gb = 0
         String prefix = basename(bam, ".bam") + ".calmd"
+        Int modify_disk_size_gb = 0
         Int ncpu = 2
     }
 
