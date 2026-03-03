@@ -51,8 +51,8 @@ task clair3 {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GiB") * 2)
-        + ceil(size(bam, "GiB"))
+    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
+        + ceil(size(bam, "GB"))
         + 20
         + modify_disk_size_gb
 

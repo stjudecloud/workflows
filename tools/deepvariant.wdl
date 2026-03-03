@@ -57,9 +57,9 @@ task deepsomatic {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GiB") * 2)
-        + ceil(size(tumor_bam, "GiB"))
-        + ceil(size(normal_bam, "GiB"))
+    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
+        + ceil(size(tumor_bam, "GB"))
+        + ceil(size(normal_bam, "GB"))
         + 50
         + modify_disk_size_gb
 
@@ -166,8 +166,8 @@ task deepvariant {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GiB") * 2)
-        + ceil(size(bam, "GiB"))
+    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
+        + ceil(size(bam, "GB"))
         + 50
         + modify_disk_size_gb
 

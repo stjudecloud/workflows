@@ -35,12 +35,12 @@ task somatic {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GiB") * 2)
-        + ceil(size(normal_bam, "GiB"))
-        + ceil(size(tumor_bam, "GiB"))
+    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
+        + ceil(size(normal_bam, "GB"))
+        + ceil(size(tumor_bam, "GB"))
         + (
             if defined(indel_candidates)
-            then ceil(size(indel_candidates, "GiB"))
+            then ceil(size(indel_candidates, "GB"))
             else 0
         )
         + 20
@@ -119,8 +119,8 @@ task germline {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GiB") * 2)
-        + ceil(size(bam, "GiB"))
+    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
+        + ceil(size(bam, "GB"))
         + 20
         + modify_disk_size_gb
 

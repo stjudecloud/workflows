@@ -67,9 +67,9 @@ task align {
 
     Int disk_size_gb = ceil(
         (
-            size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+            size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
         ) * 3)
-        + ceil(size(reference_index, "GiB"))
+        + ceil(size(reference_index, "GB"))
         + 10
         + modify_disk_size_gb
 
@@ -138,7 +138,7 @@ task index {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GiB")) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(reference_fasta, "GB")) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

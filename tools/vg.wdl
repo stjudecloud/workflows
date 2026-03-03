@@ -66,12 +66,12 @@ task giraffe {
     }
 
     Int disk_size_gb = ceil((
-            size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+            size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
         ) * 2)
-        + ceil(size(gbz_graph, "GiB"))
-        + ceil(size(minimizer_index, "GiB"))
-        + ceil(size(distance_index, "GiB"))
-        + ceil(size(zipcode_name, "GiB"))
+        + ceil(size(gbz_graph, "GB"))
+        + ceil(size(minimizer_index, "GB"))
+        + ceil(size(distance_index, "GB"))
+        + ceil(size(zipcode_name, "GB"))
         + 10
         + modify_disk_size_gb
 
@@ -147,9 +147,9 @@ task index {
         Int threads = 4
     }
 
-    Float input_fasta_size = size(reference_fasta, "GiB")
-    Float vcf_size = size(vcf_files, "GiB")
-    Float transcript_gff_size = size(transcript_gff, "GiB")
+    Float input_fasta_size = size(reference_fasta, "GB")
+    Float vcf_size = size(vcf_files, "GB")
+    Float transcript_gff_size = size(transcript_gff, "GB")
     Int disk_size_gb = ceil(input_fasta_size * 2)
         + ceil(vcf_size * 2)
         + ceil(transcript_gff_size * 2)

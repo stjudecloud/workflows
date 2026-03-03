@@ -42,9 +42,9 @@ task align {
 
     String output_name = prefix + ".bam"
     Int disk_size_gb = ceil((
-            size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+            size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
         ) * 2)
-        + ceil(size(reference_index, "GiB"))
+        + ceil(size(reference_index, "GB"))
         + 30
         + modify_disk_size_gb
 
@@ -102,7 +102,7 @@ task index {
         Int modify_disk_size_gb = 0
     }
 
-    Float input_fasta_size = size(reference_fasta, "GiB")
+    Float input_fasta_size = size(reference_fasta, "GB")
     Int disk_size_gb = ceil(input_fasta_size * 2) + 10 + modify_disk_size_gb
     String bwa_db_out_name = db_name + ".tar.gz"
 
