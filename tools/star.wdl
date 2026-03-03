@@ -84,8 +84,8 @@ task build_star_db {
 
     String star_db_tar_gz = db_name + ".tar.gz"
 
-    Float reference_fasta_size = size(reference_fasta, "GiB")
-    Float gtf_size = size(gtf, "GiB")
+    Float reference_fasta_size = size(reference_fasta, "GB")
+    Float gtf_size = size(gtf, "GB")
     Int disk_size_gb = (
         ceil((reference_fasta_size + gtf_size) * 3) + 10 + modify_disk_size_gb
     )
@@ -701,9 +701,9 @@ task alignment {
 
     Array[File] read_twos = select_first([read_two_fastqs_gz, []])
 
-    Float read_one_fastqs_size = size(read_one_fastqs_gz, "GiB")
-    Float read_two_fastqs_size = size(read_twos, "GiB")
-    Float star_db_tar_gz_size = size(star_db_tar_gz, "GiB")
+    Float read_one_fastqs_size = size(read_one_fastqs_gz, "GB")
+    Float read_two_fastqs_size = size(read_twos, "GB")
+    Float star_db_tar_gz_size = size(star_db_tar_gz, "GB")
     Int disk_size_gb = (
         (
             ceil(read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size) * 3

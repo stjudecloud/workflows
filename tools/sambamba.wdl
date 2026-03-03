@@ -30,7 +30,7 @@ task index {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 1.2) + 10 + modify_disk_size_gb
 
     String outfile_name = basename(bam) + ".bai"
@@ -89,7 +89,7 @@ task merge {
         Int modify_disk_size_gb = 0
     }
 
-    Float bams_size = size(bams, "GiB")
+    Float bams_size = size(bams, "GB")
     Int disk_size_gb = ceil(bams_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
@@ -146,7 +146,7 @@ task sort {
         Int ncpu = 2
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 3) + 10 + modify_disk_size_gb
 
     String outfile_name = prefix + ".bam"
@@ -203,7 +203,7 @@ task markdup {
         Int ncpu = 2
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
 
     command <<<
@@ -260,7 +260,7 @@ task flagstat {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<

@@ -38,58 +38,96 @@ set.seed(args$seed)
 
 dir <- getwd()
 
-rg_set <- read.metharray(args$idat_base, verbose = TRUE, force = TRUE)
-saveRDS(rg_set, paste0(args$out_base, ".RGSet.rds"))
+red_green_channel_set <-
+  read.metharray(args$idat_base, verbose = TRUE, force = TRUE)
+saveRDS(red_green_channel_set, paste0(args$out_base, ".RGSet.rds"))
 
 # Generate detection p-values for all probed positions
-det_p <- detectionP(rg_set)
+det_p <- detectionP(red_green_channel_set)
 det_p <-
   det_p[order(rownames(det_p)), , drop = FALSE]
 
 # The manifest is needed by preprocessRAW
-manifest <- getManifest(rg_set)
+manifest <- getManifest(red_green_channel_set)
 manifest
 
 # Load raw data into a MethylSet object be converting red/green
 # channels into a matrix of methlyated and unmethylated signals.
-m_set <- preprocessRaw(rg_set)
-saveRDS(m_set, paste0(args$out_base, ".MSet.rds"))
+methyl_set <- preprocessRaw(red_green_channel_set)
+saveRDS(methyl_set, paste0(args$out_base, ".MSet.rds"))
 
 # Convert to a RatioSet
-r_set <- ratioConvert(m_set, what = "both", keepCN = TRUE)
-saveRDS(r_set, paste0(args$out_base, ".RSet.rds"))
+ratio_set <- ratioConvert(methyl_set, what = "both", keepCN = TRUE)
+saveRDS(ratio_set, paste0(args$out_base, ".RSet.rds"))
 
 # Add genomic coordinates to each probe (plus additional annotation)
-gr_set <- mapToGenome(r_set)
-saveRDS(gr_set, paste0(args$out_base, ".GRSet.rds"))
+genomic_ratio_set <- mapToGenome(ratio_set)
+saveRDS(genomic_ratio_set, paste0(args$out_base, ".GRSet.rds"))
+
+non_genomic_probes <-
+  setdiff(featureNames(ratio_set), featureNames(genomic_ratio_set))
+
+# Get the list of sites with SNPs
+snps <- getSnpInfo(genomic_ratio_set)
+genomic_ratio_set_snps <- addSnpInfo(genomic_ratio_set)
+# Remove probes with SNPs at CpG or single-base extension sites
+genomic_ratio_set_snps <-
+  dropLociWithSnps(genomic_ratio_set_snps, snps = c("SBE", "CpG"), maf = 0)
+probes_without_snps <- featureNames(genomic_ratio_set_snps)
 
 # Take the genomic mapped RatioSet and fill Beta values (non-normalized).
 # Get the NON-normalized beta values:
-beta <- getBeta(gr_set)
+beta <- getBeta(genomic_ratio_set)
 write.csv(beta, paste0(args$out_base, ".beta.csv"))
 
 # Get M-value matrix and copy-number matrix
 # Get M and CN vals if interested:
-m <- getM(gr_set)
+m <- getM(genomic_ratio_set)
 write.csv(m, paste0(args$out_base, ".m_values.csv"))
-cn <- getCN(gr_set)
+cn <- getCN(genomic_ratio_set)
 write.csv(cn, paste0(args$out_base, ".cn_values.csv"))
 
 # Get sample names and probe names
-sample_names <- sampleNames(gr_set)
+sample_names <- sampleNames(genomic_ratio_set)
 write.csv(sample_names, paste0(args$out_base, ".sampleNames.csv"))
-probe_names <- featureNames(gr_set)
+probe_names <- featureNames(genomic_ratio_set)
 write.csv(probe_names, paste0(args$out_base, ".probeNames.csv"))
 
-gr <- granges(gr_set)
+# Write probes with SNPs
+probes_with_snps <- setdiff(probe_names, probes_without_snps)
+write.table(
+  probes_with_snps,
+  paste0(args$out_base, ".probes_with_snps.tab"),
+  row.names = FALSE,
+  col.names = FALSE,
+  quote = FALSE,
+)
+write.table(
+  probes_without_snps,
+  paste0(args$out_base, ".probes_without_snps.tab"),
+  row.names = FALSE,
+  col.names = FALSE,
+  quote = FALSE,
+)
+
+# Write non-genomic probe list
+write.table(
+  non_genomic_probes,
+  paste0(args$out_base, ".non_genomic_probes.tab"),
+  row.names = FALSE,
+  col.names = FALSE,
+  quote = FALSE,
+)
+
+gr <- granges(genomic_ratio_set)
 write.csv(gr, paste0(args$out_base, ".gr.csv"))
 
-annotation <- getAnnotation(gr_set)
+annotation <- getAnnotation(genomic_ratio_set)
 write.csv(annotation, paste0(args$out_base, ".annotation.csv"))
 
 # Perform SWAN normalization on beta values
-gr_set_swan_norm <- preprocessSWAN(rg_set)
-beta_swan_norm <- getBeta(gr_set_swan_norm)
+genomic_ratio_set_swan_norm <- preprocessSWAN(red_green_channel_set)
+beta_swan_norm <- getBeta(genomic_ratio_set_swan_norm)
 
 # Write the normalized beta-values that have NOT yet had
 # low-variance probes filtered out
@@ -101,9 +139,9 @@ write.csv(
 # Write the normalized beta-values that have NOT yet had
 # low-variance probes filtered out
 # Filter to only those that are mappable to the genome.
-r_set <- ratioConvert(gr_set_swan_norm)
-gr_set <- mapToGenome(r_set)
-beta_swan_norm <- getBeta(gr_set)
+ratio_set <- ratioConvert(genomic_ratio_set_swan_norm)
+genomic_ratio_set <- mapToGenome(ratio_set)
+beta_swan_norm <- getBeta(genomic_ratio_set)
 beta_swan_norm <-
   beta_swan_norm[order(rownames(beta_swan_norm)), , drop = FALSE]
 write.csv(

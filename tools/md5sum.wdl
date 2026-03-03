@@ -20,7 +20,7 @@ task compute_checksum {
         Int modify_disk_size_gb = 0
     }
 
-    Float file_size = size(file, "GiB")
+    Float file_size = size(file, "GB")
     Int disk_size_gb = ceil(file_size) + 30 + modify_disk_size_gb
 
     String outfile_name = basename(file) + ".md5"
@@ -35,7 +35,7 @@ task compute_checksum {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }

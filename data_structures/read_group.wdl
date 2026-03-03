@@ -123,7 +123,7 @@ task get_read_groups {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
@@ -138,7 +138,7 @@ task get_read_groups {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }
@@ -356,7 +356,7 @@ task validate_read_group {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }
@@ -412,7 +412,7 @@ task inner_read_group_to_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }

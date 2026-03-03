@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2026 January
+
+### Removed
+
+- Removed the long deprecated and unused `ESTIMATE.wdl` tool [#292](https://github.com/stjudecloud/workflows/pull/292)
+
 ## 2025 July
 
 ### Added

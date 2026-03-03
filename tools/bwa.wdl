@@ -48,8 +48,8 @@ task bwa_aln {
 
     String output_bam = prefix + ".bam"
 
-    Float input_fastq_size = size(fastq, "GiB")
-    Float reference_size = size(bwa_db_tar_gz, "GiB")
+    Float input_fastq_size = size(fastq, "GB")
+    Float reference_size = size(bwa_db_tar_gz, "GB")
     Int disk_size_gb = (
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
     )
@@ -145,9 +145,9 @@ task bwa_aln_pe {
     String output_bam = prefix + ".bam"
 
     Float input_fastq_size = (
-        size(read_one_fastq_gz, "GiB") + size(read_two_fastq_gz, "GiB")
+        size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
     )
-    Float reference_size = size(bwa_db_tar_gz, "GiB")
+    Float reference_size = size(bwa_db_tar_gz, "GB")
     Int disk_size_gb = (
         ceil((input_fastq_size + reference_size) * 2) + 5 + modify_disk_size_gb
     )
@@ -242,9 +242,9 @@ task bwa_mem {
 
     String output_bam = prefix + ".bam"
 
-    Float input_fastq_size = size(read_one_fastq_gz, "GiB")
-        + size(read_two_fastq_gz, "GiB")
-    Float reference_size = size(bwa_db_tar_gz, "GiB")
+    Float input_fastq_size = size(read_one_fastq_gz, "GB")
+        + size(read_two_fastq_gz, "GB")
+    Float reference_size = size(bwa_db_tar_gz, "GB")
     Int disk_size_gb = (
         ceil((input_fastq_size + reference_size) * 2) + 10 + modify_disk_size_gb
     )
@@ -324,7 +324,7 @@ task build_bwa_db {
         Int modify_disk_size_gb = 0
     }
 
-    Float input_fasta_size = size(reference_fasta, "GiB")
+    Float input_fasta_size = size(reference_fasta, "GB")
     Int disk_size_gb = ceil(input_fasta_size * 2) + 10 + modify_disk_size_gb
     String bwa_db_out_name = db_name + ".tar.gz"
 

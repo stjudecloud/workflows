@@ -41,7 +41,7 @@ task download {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }
@@ -80,7 +80,7 @@ task split_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }
@@ -111,7 +111,7 @@ task calc_feature_lengths {
         Int modify_disk_size_gb = 0
     }
 
-    Float gtf_size = size(gtf, "GiB")
+    Float gtf_size = size(gtf, "GB")
     Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
@@ -128,7 +128,7 @@ task calc_feature_lengths {
     runtime {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }
@@ -148,7 +148,7 @@ task compression_integrity {
         Int modify_disk_size_gb = 0
     }
 
-    Float file_size = size(bgzipped_file, "GiB")
+    Float file_size = size(bgzipped_file, "GB")
     Int disk_size_gb = ceil(file_size) + 30 + modify_disk_size_gb
 
     command <<<
@@ -187,7 +187,7 @@ task add_to_bam_header {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     String outfile_name = prefix + ".bam"
@@ -229,7 +229,7 @@ task unpack_tarball {
         Int modify_disk_size_gb = 0
     }
 
-    Float tarball_size = size(tarball, "GiB")
+    Float tarball_size = size(tarball, "GB")
     Int disk_size_gb = ceil(tarball_size * 8) + modify_disk_size_gb
 
     command <<<
@@ -247,7 +247,7 @@ task unpack_tarball {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }
@@ -287,7 +287,7 @@ task make_coverage_regions_bed {
         Int modify_disk_size_gb = 0
     }
 
-    Float gtf_size = size(gtf, "GiB")
+    Float gtf_size = size(gtf, "GB")
     Int disk_size_gb = ceil(gtf_size * 1.2) + 10 + modify_disk_size_gb
 
     command <<<
@@ -333,7 +333,7 @@ task global_phred_scores {
         Int modify_disk_size_gb = 0
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
@@ -352,7 +352,7 @@ task global_phred_scores {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }
@@ -399,7 +399,7 @@ task check_fastq_and_rg_concordance {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }
@@ -438,7 +438,7 @@ task split_fastq {
         Int ncpu = 2
     }
 
-    Float fastq_size = size(fastq, "GiB")
+    Float fastq_size = size(fastq, "GB")
     Int disk_size_gb = ceil(fastq_size * 5) + 10 + modify_disk_size_gb
 
     command <<<
@@ -463,7 +463,7 @@ task split_fastq {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }

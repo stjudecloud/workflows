@@ -12,6 +12,9 @@ task process_raw_idats {
             m_values: "M values",
             probe_names: "Probe names found on the array",
             probe_pvalues: "Matrix (in CSV format) containing detection p-values for every (common) probe on the array as rows.",
+            probes_with_snps: "List of probes that contain SNPs",
+            probes_without_snps: "List of probes that do not contain SNPs",
+            non_genomic_probes: "List of probes that do not map to the genome",
         }
     }
 
@@ -45,6 +48,8 @@ task process_raw_idats {
             --idat_base "~{idat_base}" \
             --out_base "~{out_base}" \
             --seed ~{seed}
+
+        rm ./*.idat
     >>>
 
     output {
@@ -58,13 +63,47 @@ task process_raw_idats {
         File m_values = out_base + ".m_values.csv"
         File probe_names = out_base + ".probeNames.csv"
         File probe_pvalues = out_base + ".detectionP.csv"
+        File probes_with_snps = out_base + ".probes_with_snps.tab"
+        File probes_without_snps = out_base + ".probes_without_snps.tab"
+        File non_genomic_probes = out_base + ".non_genomic_probes.tab"
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/minfi:1.48.0-7"
+        container: "ghcr.io/stjudecloud/minfi:1.48.0-8"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
+        maxRetries: 1
+    }
+}
+
+task list_sex_probes {
+    meta {
+        description: "List probes that map to the sex chromosomes"
+        outputs: {
+            probe_list: "List of probe names that map to the sex chromosomes"
+        }
+    }
+
+    parameter_meta {}
+
+    input {}
+
+    command <<<
+        set -euo pipefail
+
+        Rscript /scripts/methylation/list-sex-probes.R
+    >>>
+
+    output {
+        File probe_list = "sex_probes.txt"
+    }
+
+    runtime {
+        container: "ghcr.io/stjudecloud/minfi:1.48.0-8"
+        memory: "3 GB"
+        cpu: 1
+        disks: "2 GB"
         maxRetries: 1
     }
 }

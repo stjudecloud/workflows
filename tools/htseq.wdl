@@ -93,8 +93,8 @@ task count {
 
     String outfile_name = prefix + ".feature-counts.txt"
 
-    Float bam_size = size(bam, "GiB")
-    Float gtf_size = size(gtf, "GiB")
+    Float bam_size = size(bam, "GB")
+    Float gtf_size = size(gtf, "GB")
 
     Int memory_gb = (if pos_sorted then ceil(bam_size) + 4 else 4) + modify_memory_gb
 
@@ -190,7 +190,7 @@ task calc_tpm {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }
