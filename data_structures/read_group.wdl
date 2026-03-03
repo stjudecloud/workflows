@@ -459,7 +459,7 @@ task read_group_to_array {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }
