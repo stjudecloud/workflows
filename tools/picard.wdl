@@ -201,7 +201,7 @@ task validate_bam {
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
     )
-    
+
     Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 4) + 50 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
