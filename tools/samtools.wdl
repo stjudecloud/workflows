@@ -1415,3 +1415,67 @@ task calmd {
         maxRetries: 2
     }
 }
+
+task sort {
+    meta {
+        description: "Sorts the input BAM file using `samtools sort`."
+        outputs: {
+            sorted_bam: "A sorted BAM file"
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to sort"
+        prefix: "Prefix for the output file. The extension `.bam` will be added."
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments.",
+            group: "Common",
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task",
+            group: "Common",
+        }
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam") + ".sorted"
+        Boolean use_all_cores = false
+        Int ncpu = 4
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
+    }
+
+    Int disk_size_gb = ceil(size(bam, "GB") * 2) + 10 + modify_disk_size_gb
+    Int memory_gb = ncpu + 4 + modify_memory_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        (( n_cores -= 1 ))
+
+        samtools sort \
+            --threads "$n_cores" \
+            -o "~{prefix}.bam" \
+            "~{bam}"
+    >>>
+
+    output {
+        File sorted_bam = "~{prefix}.bam"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "~{memory_gb} GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 1
+    }
+}
