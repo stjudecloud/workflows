@@ -141,7 +141,7 @@ task germline {
 
         "~{output_dir}/runWorkflow.py" -m local -j ~{threads}
 
-        rm -rf "$ref_fasta"
+        rm -rf "$ref_fasta" "~{output_dir}/workspace/pyflow.data/logs/tmp"
     >>>
 
     output {

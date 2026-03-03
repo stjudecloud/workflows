@@ -54,7 +54,7 @@ task manta_germline {
 
     output {
         Directory manta_output = output_dir
-        File log_file = "~{output_dir}/manta.log"
+        File log_file = "~{output_dir}/workspace/pyflow.data/logs/pyflow_log.txt"
     }
 
     requirements {
