@@ -304,7 +304,8 @@ task sort {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size * 4) + 30 + modify_disk_size_gb
+    # Original BAM, sorted fragments (~2.5x original BAM size), final BAM
+    Int disk_size_gb = ceil(bam_size * 5) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     String outfile_name = prefix + ".bam"

@@ -1448,7 +1448,8 @@ task sort {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(bam, "GB") * 2) + 10 + modify_disk_size_gb
+    # Original BAM, intermediate BAM chunks (~1.5x), final BAM, hence 4x
+    Int disk_size_gb = ceil(size(bam, "GB") * 4) + 10 + modify_disk_size_gb
     Int memory_gb = ncpu + 4 + modify_memory_gb
 
     command <<<
