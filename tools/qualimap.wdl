@@ -53,10 +53,10 @@ task rnaseq {
 
     # Qualimap has an inefficient name sorting algorithm and will
     # use an excessive amount of storage.
-    Int disk_size_gb = ((if name_sorted
+    Int disk_size_gb = (if name_sorted
         then ceil(bam_size + gtf_size + 15)
         else ceil(((bam_size + gtf_size) * 12) + 10)
-    ) + modify_disk_size_gb)
+    ) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

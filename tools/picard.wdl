@@ -83,10 +83,10 @@ task mark_duplicates {
 
     Float bam_size = size(bam, "GB")
     Int memory_gb = min(ceil(bam_size + 12), 50) + modify_memory_gb
-    Int disk_size_gb = ((if create_bam
+    Int disk_size_gb = (if create_bam
         then ceil((bam_size * 2) + 10)
         else ceil(bam_size + 10)
-    ) + modify_disk_size_gb)
+    ) + modify_disk_size_gb
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -200,10 +200,9 @@ task validate_bam {
     String mode_arg = if (summary_mode)
         then "--MODE SUMMARY"
         else ""
-    String stringency_arg = (if (index_validation_stringency_less_exhaustive)
+    String stringency_arg = if (index_validation_stringency_less_exhaustive)
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
-    )
     Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -861,10 +860,10 @@ task bam_to_fastq {
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT="~{bam}" \
             FASTQ="~{prefix}.R1.fastq" \
-            ~{(if paired
+            ~{if paired
                 then "SECOND_END_FASTQ='" + prefix + ".R2.fastq'"
                 else ""
-            )} \
+            } \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
 

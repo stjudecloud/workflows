@@ -880,11 +880,10 @@ task bam_to_fastq {
         then 4
         else (ceil(bam_size * 0.4) + 4)
     ) + modify_memory_gb
-    Int disk_size_gb = ceil(bam_size * (if (retain_collated_bam && !collated && paired_end
-    )
+    Int disk_size_gb = ceil(bam_size * if (retain_collated_bam && !collated && paired_end)
         then 5
         else 2
-    )) + 10 + modify_disk_size_gb
+    ) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -910,10 +909,10 @@ task bam_to_fastq {
                 } \
                 -O \
                 "~{bam}" \
-                | tee ~{(if retain_collated_bam
+                | tee ~{if retain_collated_bam
                     then "\"" + prefix + ".collated.bam\""
                     else ""
-                )} \
+                } \
                 > bam_pipe \
                 &
         else
@@ -926,29 +925,28 @@ task bam_to_fastq {
             -F "~{bitwise_filter.exclude_if_any}" \
             --rf "~{bitwise_filter.include_if_any}" \
             -G "~{bitwise_filter.exclude_if_all}" \
-            ~{(if append_read_number
+            ~{if append_read_number
                 then "-N"
                 else "-n"
-            )} \
-            -1 ~{(if paired_end
+            } \
+            -1 ~{if paired_end
                 then "\"" + prefix + ".R1.fastq.gz\""
                 else "\"" + prefix + ".fastq.gz\""
-            )} \
-            -2 ~{(if paired_end
+            } \
+            -2 ~{if paired_end
                 then "\"" + prefix + ".R2.fastq.gz\""
                 else "\"" + prefix + ".fastq.gz\""
-            )} \
-            ~{(if paired_end
-                then (if output_singletons
+            } \
+            ~{if paired_end
+                then if output_singletons
                     then "-s \"" + prefix + ".singleton.fastq.gz\""
                     else "-s junk.singleton.fastq.gz"
-                )
                 else ""
-            )} \
-            -0 ~{(if paired_end
+            } \
+            -0 ~{if paired_end
                 then "junk.unknown_bit_setting.fastq.gz"
                 else "\"" + prefix + ".fastq.gz\""
-            )} \
+            } \
             bam_pipe
 
         rm bam_pipe

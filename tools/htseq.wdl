@@ -134,10 +134,10 @@ task count {
                 then "score"
                 else "ignore"
             } \
-            --supplementary-alignments ~{(if supplementary_alignments
+            --supplementary-alignments ~{if supplementary_alignments
                 then "score"
                 else "ignore"
-            )} \
+            } \
             "~{bam}" \
             "~{gtf}" \
             >> "~{outfile_name}"

@@ -126,10 +126,10 @@ task base_recalibrator {
             BaseRecalibratorSpark \
             -R "~{fasta}" \
             -I "~{bam}" \
-            ~{(if use_original_quality_scores
+            ~{if use_original_quality_scores
                 then "--use-original-qualities"
                 else ""
-            )} \
+            } \
             -O "~{outfile_name}" \
             --known-sites "~{dbSNP_vcf}" \
             ~{sep(" ", prefix("--known-sites ", squote(known_indels_sites_vcfs)))} \
@@ -459,10 +459,10 @@ task mark_duplicates_spark {
 
     Float bam_size = size(bam, "GB")
     Int memory_gb = min(ceil(bam_size + 15), 50) + modify_memory_gb
-    Int disk_size_gb = ((if create_bam
+    Int disk_size_gb = (if create_bam
         then ceil((bam_size * 2) + 10)
         else ceil(bam_size + 10)
-    ) + modify_disk_size_gb)
+    ) + modify_disk_size_gb
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
