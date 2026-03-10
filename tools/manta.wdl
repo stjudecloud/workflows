@@ -77,7 +77,9 @@ task manta_somatic {
     parameter_meta {
         reference_fasta: "Reference genome in FASTA format"
         tumor_bam: "Input BAM file with aligned reads from tumor sample"
+        tumor_bam_index: "Index file for the tumor BAM file"
         normal_bam: "Input BAM file with aligned reads from normal sample"
+        normal_bam_index: "Index file for the normal BAM file"
         output_dir: "Directory to store Manta output"
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
@@ -86,7 +88,9 @@ task manta_somatic {
     input {
         File reference_fasta
         File tumor_bam
+        File tumor_bam_index
         File normal_bam
+        File normal_bam_index
         String output_dir = "manta_output"
         Int threads = 4
         Int modify_disk_size_gb = 0

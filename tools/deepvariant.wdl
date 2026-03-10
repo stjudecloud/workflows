@@ -30,7 +30,9 @@ task deepsomatic {
         reference_fasta: "Reference genome in FASTA format"
         reference_fasta_index: "Index file for the reference genome FASTA"
         tumor_bam: "Input BAM file with aligned reads for tumor sample"
+        tumor_bam_index: "Index for tumor BAM file"
         normal_bam: "Input BAM file with aligned reads for normal sample"
+        normal_bam_index: "Index for normal BAM file"
         output_prefix: "Prefix for output VCF and gVCF files"
         tumor_sample_name: "Sample name for the tumor sample"
         normal_sample_name: "Sample name for the normal sample"
@@ -61,7 +63,9 @@ task deepsomatic {
         File reference_fasta
         File reference_fasta_index
         File tumor_bam
+        File tumor_bam_index
         File normal_bam
+        File normal_bam_index
         String output_prefix = "deepsomatic_output"
         String tumor_sample_name = "tumor"
         String normal_sample_name = "normal"
