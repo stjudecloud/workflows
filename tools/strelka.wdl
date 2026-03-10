@@ -120,7 +120,7 @@ task germline {
     }
 
     Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
-        + ceil(size(bam, "GB"))
+        + ceil(size(bam, "GB") * 2)
         + 20
         + modify_disk_size_gb
 
@@ -141,7 +141,7 @@ task germline {
 
         "~{output_dir}/runWorkflow.py" -m local -j ~{threads}
 
-        rm -rf "$ref_fasta" "~{output_dir}/workspace/pyflow.data/logs/tmp"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{output_dir}/workspace/pyflow.data/logs/tmp"
     >>>
 
     output {
