@@ -114,9 +114,10 @@ task deepsomatic {
     }
 
     requirements {
-        container: "google/deepsomatic:1.9.0-gpu"
+        container: "google/deepsomatic:1.10.0-gpu"
+        #container: "google/deepsomatic:1.10.0"
         cpu: threads
-        memory: "32 GB"
+        memory: "64 GB"
         disks: "~{disk_size_gb} GB"
         gpu: true
     }
@@ -194,7 +195,8 @@ task deepvariant {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
-        run_deepvariant \
+        mkdir "test"
+        TMPDIR="test" run_deepvariant \
             --model_type="~{model_type}" \
             --ref="$ref_fasta" \
             --reads="~{bam}" \
@@ -203,6 +205,7 @@ task deepvariant {
             --num_shards="~{threads}" \
             --logging_dir="logs" \
             --intermediate_results_dir="intermediate_results" \
+            --test_tmpdir="test" \
             ~{if runtime_report then "--runtime_report" else ""} \
             ~{if vcf_stats_report then "--vcf_stats_report" else ""} \
             --haploid_contigs="~{sep(",", haploid_chromosomes)}"
@@ -218,9 +221,10 @@ task deepvariant {
     }
 
     requirements {
-        container: "google/deepvariant:1.9.0-gpu"
+        #container: "google/deepvariant:1.10.0-gpu"
+        container: "google/deepvariant:1.10.0"
         cpu: threads
-        memory: "32 GB"
+        memory: "64 GB"
         disks: "~{disk_size_gb} GB"
         gpu: true
     }
