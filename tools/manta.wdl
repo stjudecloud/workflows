@@ -34,6 +34,8 @@ task manta_germline {
         + 20
         + modify_disk_size_gb
 
+    String filename = basename(bam)
+
     command <<<
         set -euo pipefail
 
@@ -42,14 +44,17 @@ task manta_germline {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
+        ln -s "~{bam}" "~{filename}"
+        ln -s "~{bam_index}" "~{filename}.bai"
+
         configManta.py \
-            --bam "~{bam}" \
+            --bam "~{filename}" \
             --referenceFasta "$ref_fasta" \
             --runDir "~{output_dir}"
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{filename}" "~{filename}.bai"
     >>>
 
     output {
@@ -104,6 +109,9 @@ task manta_somatic {
         + 20
         + modify_disk_size_gb
 
+    String tumor = basename(tumor_bam)
+    String normal = basename(normal_bam)
+
     command <<<
         set -euo pipefail
 
@@ -112,15 +120,20 @@ task manta_somatic {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
+        ln -s "~{tumor_bam}" "~{tumor}"
+        ln -s "~{tumor_bam_index}" "~{tumor}.bai"
+        ln -s "~{normal_bam}" "~{normal}"
+        ln -s "~{normal_bam_index}" "~{normal}.bai"
+
         configManta.py \
-            --normalBam "~{normal_bam}" \
-            --tumorBam "~{tumor_bam}" \
+            --normalBam "~{normal}" \
+            --tumorBam "~{tumor}" \
             --referenceFasta "$ref_fasta" \
             --runDir "~{output_dir}"
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{normal}.bai"
     >>>
 
     output {

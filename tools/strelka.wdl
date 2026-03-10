@@ -50,6 +50,9 @@ task somatic {
         + 20
         + modify_disk_size_gb
 
+    String tumor = basename(tumor_bam)
+    String normal = basename(normal_bam)
+
     command <<<
         set -euo pipefail
 
@@ -58,11 +61,16 @@ task somatic {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
+        ln -s "~{tumor_bam}" "~{tumor}"
+        ln -s "~{tumor_bam_index}" "~{tumor}.bai"
+        ln -s "~{normal_bam}" "~{normal}"
+        ln -s "~{normal_bam_index}" "~{normal}.bai"
+
         configureStrelkaSomaticWorkflow.py \
             --referenceFasta "$ref_fasta" \
             --runDir "~{output_dir}" \
-            --tumorBam "~{tumor_bam}" \
-            --normalBam "~{normal_bam}" \
+            --tumorBam "~{tumor}" \
+            --normalBam "~{normal}" \
             ~{if (exome) then "--exome" else ""} \
             ~{if (rna) then "--rna" else ""} \
             ~{(
@@ -74,7 +82,7 @@ task somatic {
         
         "~{output_dir}/runWorkflow.py" -m local -j ~{threads}
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{normal}.bai"
     >>>
 
     output {

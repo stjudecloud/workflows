@@ -69,7 +69,7 @@ task deepsomatic {
         String output_prefix = "deepsomatic_output"
         String tumor_sample_name = "tumor"
         String normal_sample_name = "normal"
-        ModelType model_type = ModelType.WGS
+        ModelType model_type
         Boolean runtime_report = false
         Boolean vcf_stats_report = false
         Int threads = 8
@@ -82,6 +82,9 @@ task deepsomatic {
         + 50
         + modify_disk_size_gb
 
+    String tumor = basename(tumor_bam)
+    String normal = basename(normal_bam)
+
     command <<<
         set -euo pipefail
 
@@ -90,11 +93,16 @@ task deepsomatic {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
+        ln -s "~{tumor_bam}" "~{tumor}"
+        ln -s "~{tumor_bam_index}" "~{tumor}.bai"
+        ln -s "~{normal_bam}" "~{normal}"
+        ln -s "~{normal_bam_index}" "~{normal}.bai"
+
         run_deepsomatic \
             --model_type="~{model_type}" \
             --ref="$ref_fasta" \
-            --tumor_bam="~{tumor_bam}" \
-            --normal_bam="~{normal_bam}" \
+            --tumor_bam="~{tumor}" \
+            --normal_bam="~{normal}" \
             --output_vcf="~{output_prefix}.vcf.gz" \
             --output_gvcf="~{output_prefix}.g.vcf.gz" \
             --tumor_sample_name="~{tumor_sample_name}" \
@@ -106,8 +114,7 @@ task deepsomatic {
             ~{if vcf_stats_report then "--vcf_stats_report" else ""}
 
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai"
-
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{normal}.bai"
     >>>
 
     output {
