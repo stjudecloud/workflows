@@ -49,7 +49,7 @@ task manta_germline {
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
 
-        rm -rf "$ref_fasta"
+        rm -rf "$ref_fasta" "$ref_fasta.fai"
     >>>
 
     output {
