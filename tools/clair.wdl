@@ -53,7 +53,7 @@ task clair3 {
 
     Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
         + ceil(size(bam, "GB"))
-        + 20
+        + 50
         + modify_disk_size_gb
 
     command <<<
@@ -77,7 +77,7 @@ task clair3 {
             ~{if defined(vcf_candidates) then "--vcf_fn='~{vcf_candidates}'" else ""} \
             ~{if gvcf then "--gvcf" else ""}
 
-        rm -rf "$ref_fasta"
+        rm -rf "$ref_fasta" "$ref_fasta.fai"
     >>>
 
     output {
@@ -87,9 +87,10 @@ task clair3 {
     }
 
     requirements {
-        container: "quay.io/biocontainers/clair3:1.2.0--py310h779eee5_0"
+        # container: "quay.io/biocontainers/clair3:1.2.0--py310h779eee5_0"
+        container: "hkubal/clair3:v2.0.0"
         cpu: threads
-        memory: "16 GB"
+        memory: "64 GB"
         disks: "~{disk_size_gb} GB"
     }
 }
