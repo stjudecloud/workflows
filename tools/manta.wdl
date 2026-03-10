@@ -76,6 +76,7 @@ task manta_somatic {
 
     parameter_meta {
         reference_fasta: "Reference genome in FASTA format"
+        reference_fasta_index: "Index file for the reference genome FASTA"
         tumor_bam: "Input BAM file with aligned reads from tumor sample"
         tumor_bam_index: "Index file for the tumor BAM file"
         normal_bam: "Input BAM file with aligned reads from normal sample"
@@ -87,6 +88,7 @@ task manta_somatic {
 
     input {
         File reference_fasta
+        File reference_fasta_index
         File tumor_bam
         File tumor_bam_index
         File normal_bam
@@ -108,6 +110,7 @@ task manta_somatic {
         ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c "~{reference_fasta}" > "$ref_fasta" \
             || ln -sf "~{reference_fasta}" "$ref_fasta"
+        ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
         configManta.py \
             --normalBam "~{normal_bam}" \
@@ -117,7 +120,7 @@ task manta_somatic {
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
 
-        rm -rf "$ref_fasta"
+        rm -rf "$ref_fasta" "$ref_fasta.fai"
     >>>
 
     output {
