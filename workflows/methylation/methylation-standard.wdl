@@ -42,7 +42,8 @@ workflow methylation {
         }
     }
 
-    call preprocess.list_sex_probes {}
+    call preprocess.list_sex_probes {
+    }
 
     call cohort.methylation_cohort { input:
         unfiltered_normalized_beta = process_raw_idats.beta_swan_norm_unfiltered_genomic,
@@ -55,21 +56,19 @@ workflow methylation {
     Int probelist_length = length(probe_files)
     Int max_length = 100
 
-    if (probelist_length > max_length){
-        scatter (merge_num in range((probelist_length / max_length) + 1)){
+    if (probelist_length > max_length) {
+        scatter (merge_num in range((probelist_length / max_length) + 1)) {
             # Get the sublist of probe files
-            scatter (probe_num in range(max_length)){
-                Int num = (
-                    if merge_num > 0
+            scatter (probe_num in range(max_length)) {
+                Int num = if merge_num > 0
                     then probe_num + (merge_num * max_length)
                     else probe_num
-                )
-                if (num < probelist_length){
+                if (num < probelist_length) {
                     File probe_file_batches = probe_files[num]
                 }
             }
         }
-        scatter (iter_index in range(length(probe_file_batches))){
+        scatter (iter_index in range(length(probe_file_batches))) {
             call concat_and_uniq { input:
                 files_to_combine = select_all(probe_file_batches[iter_index]),
                 output_file_name = "probes_with_snps_part_~{iter_index}.tab",
@@ -78,13 +77,13 @@ workflow methylation {
 
         call concat_and_uniq as final_cat { input:
             files_to_combine = flatten([
-                concat_and_uniq.combined_file
+                concat_and_uniq.combined_file,
             ]),
             output_file_name = "probes_with_snps.tab",
         }
     }
 
-    if (probelist_length <= max_length){
+    if (probelist_length <= max_length) {
         call concat_and_uniq as simple_merge { input:
             files_to_combine = probe_files,
             output_file_name = "probes_with_snps.tab",
@@ -94,21 +93,19 @@ workflow methylation {
     Array[File] non_genomic_probe_list = process_raw_idats.non_genomic_probes
     Int non_genomic_probelist_length = length(non_genomic_probe_list)
 
-    if (non_genomic_probelist_length > max_length){
-        scatter (merge_num in range((non_genomic_probelist_length / max_length) + 1)){
+    if (non_genomic_probelist_length > max_length) {
+        scatter (merge_num in range((non_genomic_probelist_length / max_length) + 1)) {
             # Get the sublist of probe files
-            scatter (probe_num in range(max_length)){
-                Int num_ng = (
-                    if merge_num > 0
+            scatter (probe_num in range(max_length)) {
+                Int num_ng = if merge_num > 0
                     then probe_num + (merge_num * max_length)
                     else probe_num
-                )
-                if (num_ng < non_genomic_probelist_length){
+                if (num_ng < non_genomic_probelist_length) {
                     File non_genomic_probe_batches = non_genomic_probe_list[num_ng]
                 }
             }
         }
-        scatter (iter_index in range(length(non_genomic_probe_batches))){
+        scatter (iter_index in range(length(non_genomic_probe_batches))) {
             call concat_and_uniq as non_genomic_concat { input:
                 files_to_combine = select_all(non_genomic_probe_batches[iter_index]),
                 output_file_name = "non_genomic_probes_part_~{iter_index}.tab",
@@ -117,13 +114,13 @@ workflow methylation {
 
         call concat_and_uniq as final_cat_non_genomic { input:
             files_to_combine = flatten([
-                non_genomic_concat.combined_file
+                non_genomic_concat.combined_file,
             ]),
             output_file_name = "non_genomic_probes.tab",
         }
     }
 
-    if (non_genomic_probelist_length <= max_length){
+    if (non_genomic_probelist_length <= max_length) {
         call concat_and_uniq as simple_merge_non_genomic { input:
             files_to_combine = non_genomic_probe_list,
             output_file_name = "non_genomic_probes.tab",
@@ -155,7 +152,7 @@ task concat_and_uniq {
     meta {
         description: "Concatenate multiple files and retain unique lines"
         outputs: {
-            combined_file: "File containing unique lines from all input files"
+            combined_file: "File containing unique lines from all input files",
         }
     }
 

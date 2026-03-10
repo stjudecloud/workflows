@@ -48,8 +48,8 @@ task rnaseq {
         else ""
 
     Int java_heap_size = ceil(memory_gb * 0.9)
-    Float bam_size = size(bam, "GB")
-    Float gtf_size = size(gtf, "GB")
+    Float bam_size = size(bam, "GiB")
+    Float gtf_size = size(gtf, "GiB")
 
     # Qualimap has an inefficient name sorting algorithm and will
     # use an excessive amount of storage.
@@ -124,7 +124,7 @@ task bamqc {
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    Float bam_size = size(bam, "GB")
+    Float bam_size = size(bam, "GiB")
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<

@@ -79,13 +79,15 @@ task list_sex_probes {
     meta {
         description: "List probes that map to the sex chromosomes"
         outputs: {
-            probe_list: "List of probe names that map to the sex chromosomes"
+            probe_list: "List of probe names that map to the sex chromosomes",
         }
     }
 
-    parameter_meta {}
+    parameter_meta {
+    }
 
-    input {}
+    input {
+    }
 
     command <<<
         set -euo pipefail

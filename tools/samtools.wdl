@@ -1,5 +1,4 @@
 ## [Homepage](http://samtools.sourceforge.net/)
-
 version 1.1
 
 import "../data_structures/flag_filter.wdl"
@@ -38,7 +37,7 @@ task split {
     meta {
         description: "Runs Samtools split on the input BAM file. This splits the BAM by read group into one or more output files."
         outputs: {
-            split_bams: "The split BAM files. The extensions will contain read group IDs, and will end in `.bam`."
+            split_bams: "The split BAM files. The extensions will contain read group IDs, and will end in `.bam`.",
         }
     }
 
@@ -131,12 +130,12 @@ task split {
                 rm first_read.sam
             done
         fi
-        
+
         exit $EXITCODE
     >>>
 
     output {
-       Array[File] split_bams = glob("*.bam")
+        Array[File] split_bams = glob("*.bam")
     }
 
     runtime {
@@ -152,7 +151,7 @@ task flagstat {
     meta {
         description: "Produces a `samtools flagstat` report containing statistics about the alignments based on the bit flags set in the BAM"
         outputs: {
-            flagstat_report: "`samtools flagstat` STDOUT redirected to a file"
+            flagstat_report: "`samtools flagstat` STDOUT redirected to a file",
         }
     }
 
@@ -195,7 +194,7 @@ task flagstat {
     >>>
 
     output {
-       File flagstat_report = outfile_name
+        File flagstat_report = outfile_name
     }
 
     runtime {
@@ -210,7 +209,7 @@ task index {
     meta {
         description: "Creates a `.bai` BAM index for the input BAM"
         outputs: {
-            bam_index: "A `.bai` BAM index associated with the input BAM. Filename will be `basename(bam) + '.bai'`."
+            bam_index: "A `.bai` BAM index associated with the input BAM. Filename will be `basename(bam) + '.bai'`.",
         }
     }
 
@@ -397,7 +396,6 @@ task subsample {
             fi
             rm first_read.sam
         fi
-
     >>>
 
     output {
@@ -419,7 +417,7 @@ task filter {
         description: "Filters a BAM based on its bitwise flag value."
         help: "This task is a wrapper around `samtools view`. This task will fail if there are no reads in the output BAM. This can happen either because the input BAM was empty or because the supplied `bitwise_filter` was too strict. If you want to down-sample a BAM, use the `subsample` task instead."
         outputs: {
-            filtered_bam: "BAM file that has been filtered based on the input flags"
+            filtered_bam: "BAM file that has been filtered based on the input flags",
         }
     }
 
@@ -505,7 +503,7 @@ task merge {
     meta {
         description: "Merges multiple sorted BAMs into a single BAM"
         outputs: {
-            merged_bam: "The BAM resulting from merging all the input BAMs"
+            merged_bam: "The BAM resulting from merging all the input BAMs",
         }
     }
 
@@ -584,11 +582,26 @@ task merge {
         samtools merge \
             --threads "$n_cores" \
             ~{"-h \"" + new_header + "\""} \
-            ~{if name_sorted then "-n" else ""} \
-            ~{if (region != "") then "-R \"" + region + "\"" else ""} \
-            ~{if attach_rg then "-r" else ""} \
-            ~{if combine_rg then "-c" else ""} \
-            ~{if combine_pg then "-p" else ""} \
+            ~{if name_sorted
+                then "-n"
+                else ""
+            } \
+            ~{if (region != "")
+                then "-R \"" + region + "\""
+                else ""
+            } \
+            ~{if attach_rg
+                then "-r"
+                else ""
+            } \
+            ~{if combine_rg
+                then "-c"
+                else ""
+            } \
+            ~{if combine_pg
+                then "-p"
+                else ""
+            } \
             "~{prefix}.bam" \
             "${bams[@]}"
 
@@ -613,7 +626,7 @@ task addreplacerg {
     meta {
         description: "Adds or replaces read group tags"
         outputs: {
-            tagged_bam: "The transformed input BAM after read group modifications have been applied"
+            tagged_bam: "The transformed input BAM after read group modifications have been applied",
         }
     }
 
@@ -677,8 +690,14 @@ task addreplacerg {
             --threads "$n_cores" \
             ~{sep(" ", prefix("-r ", squote(read_group_line)))} \
             ~{"-R \"" + read_group_id + "\""} \
-            -m ~{if orphan_only then "orphan_only" else "overwrite_all"} \
-            ~{if overwrite_header_record then "-w" else ""} \
+            -m ~{if orphan_only
+                then "orphan_only"
+                else "overwrite_all"
+            } \
+            ~{if overwrite_header_record
+                then "-w"
+                else ""
+            } \
             -o "~{outfile_name}" \
             "~{bam}"
     >>>
@@ -700,7 +719,7 @@ task collate {
     meta {
         description: "Runs `samtools collate` on the input BAM file. Shuffles and groups reads together by their names."
         outputs: {
-            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)"
+            collated_bam: "A collated BAM (reads sharing a name next to each other, no other guarantee of sort order)",
         }
     }
 
@@ -751,7 +770,10 @@ task collate {
 
         samtools collate \
             --threads "$n_cores" \
-            ~{if fast_mode then "-f" else ""} \
+            ~{if fast_mode
+                then "-f"
+                else ""
+            } \
             -o "~{outfile_name}" \
             "~{bam}"
     >>>
@@ -854,16 +876,14 @@ task bam_to_fastq {
     }
 
     Float bam_size = size(bam, "GB")
-    Int memory_gb = (
-        if (collated || !paired_end)
+    Int memory_gb = (if (collated || !paired_end)
         then 4
         else (ceil(bam_size * 0.4) + 4)
     ) + modify_memory_gb
-    Int disk_size_gb = ceil(bam_size * (
-        if (retain_collated_bam && !collated && paired_end)
+    Int disk_size_gb = ceil(bam_size * if (retain_collated_bam && !collated && paired_end)
         then 5
         else 2
-    )) + 10 + modify_disk_size_gb
+    ) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -878,16 +898,21 @@ task bam_to_fastq {
         mkfifo bam_pipe
         if ! ~{collated} && ~{paired_end}; then
             samtools collate \
-                ~{if retain_collated_bam then "" else "-u"} \
+                ~{if retain_collated_bam
+                    then ""
+                    else "-u"
+                } \
                 --threads "$n_cores" \
-                ~{if fast_mode then "-f" else ""} \
+                ~{if fast_mode
+                    then "-f"
+                    else ""
+                } \
                 -O \
                 "~{bam}" \
-                | tee ~{(
-                    if retain_collated_bam
+                | tee ~{if retain_collated_bam
                     then "\"" + prefix + ".collated.bam\""
                     else ""
-                )} \
+                } \
                 > bam_pipe \
                 &
         else
@@ -900,35 +925,28 @@ task bam_to_fastq {
             -F "~{bitwise_filter.exclude_if_any}" \
             --rf "~{bitwise_filter.include_if_any}" \
             -G "~{bitwise_filter.exclude_if_all}" \
-            ~{(
-                if append_read_number
+            ~{if append_read_number
                 then "-N"
                 else "-n"
-            )} \
-            -1 ~{(
-                if paired_end
+            } \
+            -1 ~{if paired_end
                 then "\"" + prefix + ".R1.fastq.gz\""
                 else "\"" + prefix + ".fastq.gz\""
-            )} \
-            -2 ~{(
-                if paired_end
+            } \
+            -2 ~{if paired_end
                 then "\"" + prefix + ".R2.fastq.gz\""
                 else "\"" + prefix + ".fastq.gz\""
-            )} \
-            ~{(
-                if paired_end
-                then (
-                    if output_singletons
+            } \
+            ~{if paired_end
+                then if output_singletons
                     then "-s \"" + prefix + ".singleton.fastq.gz\""
                     else "-s junk.singleton.fastq.gz"
-                )
                 else ""
-            )} \
-            -0 ~{(
-                if paired_end
+            } \
+            -0 ~{if paired_end
                 then "junk.unknown_bit_setting.fastq.gz"
                 else "\"" + prefix + ".fastq.gz\""
-            )} \
+            } \
             bam_pipe
 
         rm bam_pipe
@@ -971,7 +989,7 @@ task fixmate {
         description: "Runs `samtools fixmate` on the input BAM file. This fills in mate coordinates and insert size fields among other tags and fields."
         warning: "This task assumes a name-sorted or name-collated input BAM. If you have a position-sorted BAM, please use the `position_sorted_fixmate` task."
         outputs: {
-            fixmate_bam: "The BAM resulting from running `samtools fixmate` on the input BAM"
+            fixmate_bam: "The BAM resulting from running `samtools fixmate` on the input BAM",
         }
     }
 
@@ -1042,11 +1060,26 @@ task fixmate {
 
         samtools fixmate \
             --threads "$n_cores" \
-            ~{if remove_unaligned_and_secondary then "-r" else ""} \
-            ~{if disable_proper_pair_check then "-p" else ""} \
-            ~{if add_cigar then "-c" else ""} \
-            ~{if add_mate_score then "-m" else ""} \
-            ~{if disable_flag_sanitization then "-z off" else ""} \
+            ~{if remove_unaligned_and_secondary
+                then "-r"
+                else ""
+            } \
+            ~{if disable_proper_pair_check
+                then "-p"
+                else ""
+            } \
+            ~{if add_cigar
+                then "-c"
+                else ""
+            } \
+            ~{if add_mate_score
+                then "-m"
+                else ""
+            } \
+            ~{if disable_flag_sanitization
+                then "-z off"
+                else ""
+            } \
             "~{bam}" \
             "~{prefix}~{extension}"
     >>>
@@ -1070,7 +1103,7 @@ task position_sorted_fixmate {
         warning: "If you already have a collated BAM, please use the `fixmate` task."
         help: "`fixmate` fills in mate coordinates and insert size fields among other tags and fields. This task collates the input BAM, runs `fixmate`, and then resorts the output into a position-sorted BAM."
         outputs: {
-            fixmate_bam: "BAM file with mate information added"
+            fixmate_bam: "BAM file with mate information added",
         }
     }
 
@@ -1137,18 +1170,36 @@ task position_sorted_fixmate {
 
         samtools collate \
             --threads "$n_cores" \
-            ~{if fast_mode then "-f" else ""} \
+            ~{if fast_mode
+                then "-f"
+                else ""
+            } \
             -u \
             -O \
             "~{bam}" \
             | samtools fixmate \
                 --threads "$n_cores" \
                 -u \
-                ~{if remove_unaligned_and_secondary then "-r" else ""} \
-                ~{if disable_proper_pair_check then "-p" else ""} \
-                ~{if add_cigar then "-c" else ""} \
-                ~{if add_mate_score then "-m" else ""} \
-                ~{if disable_flag_sanitization then "-z off" else ""} \
+                ~{if remove_unaligned_and_secondary
+                    then "-r"
+                    else ""
+                } \
+                ~{if disable_proper_pair_check
+                    then "-p"
+                    else ""
+                } \
+                ~{if add_cigar
+                    then "-c"
+                    else ""
+                } \
+                ~{if add_mate_score
+                    then "-m"
+                    else ""
+                } \
+                ~{if disable_flag_sanitization
+                    then "-z off"
+                    else ""
+                } \
                 - \
                 - \
                 | samtools sort \
@@ -1279,25 +1330,54 @@ task markdup {
 
         samtools markdup \
             --threads "$n_cores" \
-            -f "~{prefix + if json then ".json" else ".txt"}" \
+            -f "~{prefix + if json
+                then ".json"
+                else ".txt"
+            }" \
             --read-coords '~{read_coords_regex}' \
             --coords-order "~{coordinates_order}" \
-            ~{if remove_duplicates then "-r" else ""} \
-            ~{if mark_supp_or_sec_or_unmapped_as_duplicates then "-S" else ""} \
-            ~{if mark_duplicates_with_do_tag then "-t" else ""} \
-            ~{if duplicate_count then "--duplicate-count" else ""} \
-            ~{if include_qc_fails then "--include-fails" else ""} \
-            ~{if duplicates_of_duplicates_check then "" else "--no-multi-dup"} \
-            ~{if use_read_groups then "--use-read-groups" else ""} \
+            ~{if remove_duplicates
+                then "-r"
+                else ""
+            } \
+            ~{if mark_supp_or_sec_or_unmapped_as_duplicates
+                then "-S"
+                else ""
+            } \
+            ~{if mark_duplicates_with_do_tag
+                then "-t"
+                else ""
+            } \
+            ~{if duplicate_count
+                then "--duplicate-count"
+                else ""
+            } \
+            ~{if include_qc_fails
+                then "--include-fails"
+                else ""
+            } \
+            ~{if duplicates_of_duplicates_check
+                then ""
+                else "--no-multi-dup"
+            } \
+            ~{if use_read_groups
+                then "--use-read-groups"
+                else ""
+            } \
             -l ~{max_readlen} \
             -d ~{optical_distance} \
             -c \
             "~{bam}" \
-            "~{if create_bam then prefix + ".bam" else "/dev/null"}"
+            "~{if create_bam
+                then prefix + ".bam"
+                else "/dev/null"
+            }"
     >>>
 
     output {
-        File markdup_report = prefix + if json then ".json" else ".txt"
+        File markdup_report = prefix + if json
+            then ".json"
+            else ".txt"
         File? markdup_bam = prefix + ".bam"
     }
 
@@ -1314,7 +1394,7 @@ task faidx {
     meta {
         description: "Creates a `.fai` FASTA index for the input FASTA"
         outputs: {
-            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`."
+            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`.",
         }
     }
 
