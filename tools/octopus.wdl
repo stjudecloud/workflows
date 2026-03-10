@@ -3,6 +3,7 @@ version 1.2
 task germline {
     meta {
         description: "Run Octopus individual germline variant caller"
+        warning: "octopus appears to functionally be abandonware at this point. the random forest filtering models are no longer available."
         outputs: {
             output_vcf: "VCF file with called germline variants"
         }
@@ -65,6 +66,7 @@ task germline {
 task somatic {
     meta {
         description: "Run Octopus individual somatic variant caller"
+        warning: "octopus appears to functionally be abandonware at this point. the random forest filtering models are no longer available."
         outputs: {
             output_vcf: "VCF file with called somatic variants"
         }
