@@ -54,7 +54,7 @@ workflow rnaseq_variant_calling {
         Int scatter_count = 6
     }
 
-    if (!bam_is_dup_marked){
+    if (!bam_is_dup_marked) {
         call picard.mark_duplicates { input:
             bam,
             create_bam = true,
@@ -62,8 +62,14 @@ workflow rnaseq_variant_calling {
     }
 
     call gatk.split_n_cigar_reads { input:
-        bam = select_first([mark_duplicates.duplicate_marked_bam, bam]),
-        bam_index = select_first([mark_duplicates.duplicate_marked_bam_index, bam_index]),
+        bam = select_first([
+            mark_duplicates.duplicate_marked_bam,
+            bam,
+        ]),
+        bam_index = select_first([
+            mark_duplicates.duplicate_marked_bam_index,
+            bam_index,
+        ]),
         fasta,
         fasta_index,
         dict,
