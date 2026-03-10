@@ -40,15 +40,16 @@ task split_n_cigar_reads {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
-         set -euo pipefail
+        set -euo pipefail
 
-         gatk \
-             --java-options "-Xms4000m -Xmx~{java_heap_size}g" \
-             SplitNCigarReads \
-             -R "~{fasta}" \
-             -I "~{bam}" \
-             -O "~{prefix}.bam" \
-             -OBM true
+        gatk \
+            --java-options "-Xms4000m -Xmx~{java_heap_size}g" \
+            SplitNCigarReads \
+            -R "~{fasta}" \
+            -I "~{bam}" \
+            -O "~{prefix}.bam" \
+            -OBM true
+
         # GATK is unreasonable and uses the plain ".bai" suffix.
         mv "~{prefix}.bai" "~{prefix}.bam.bai"
     >>>
@@ -120,9 +121,8 @@ task base_recalibrator {
     command <<<
         # shellcheck disable=SC2102
         gatk \
-            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{
-                java_heap_size
-            }g" \
+            --java-options \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
             BaseRecalibratorSpark \
             -R "~{fasta}" \
             -I "~{bam}" \
@@ -190,9 +190,8 @@ task apply_bqsr {
 
         # shellcheck disable=SC2102
         gatk \
-            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{
-                java_heap_size
-            }g" \
+            --java-options \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
             ApplyBQSRSpark \
             --spark-master local[~{ncpu}] \
             -I "~{bam}" \
@@ -276,7 +275,8 @@ task haplotype_caller {
     #@ except: LineWidth
     command <<<
         gatk \
-           --java-options "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
+            --java-options \
+                "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
             HaplotypeCaller \
             -R "~{fasta}" \
             -I "~{bam}" \

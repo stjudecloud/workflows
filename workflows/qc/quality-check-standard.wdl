@@ -482,12 +482,12 @@ workflow quality_check_standard {
             markdups_post.mosdepth_region_dist,
             [],
         ]),
-        if (mark_duplicates && optical_distance > 0)
+        (if (mark_duplicates && optical_distance > 0)
             then [
                 markdups.mark_duplicates_metrics,
             ]
             else []
-        ,
+        ),
     ]))
 
     call multiqc_tasks.multiqc { input:

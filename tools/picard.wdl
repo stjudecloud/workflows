@@ -197,10 +197,10 @@ task validate_bam {
     String outfile = if summary_mode
         then outfile_name
         else outfile_name + ".gz"
-    String mode_arg = if (summary_mode)
+    String mode_arg = if summary_mode
         then "--MODE SUMMARY"
         else ""
-    String stringency_arg = if (index_validation_stringency_less_exhaustive)
+    String stringency_arg = if index_validation_stringency_less_exhaustive
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
     Float bam_size = size(bam, "GB")

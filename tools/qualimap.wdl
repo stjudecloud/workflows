@@ -40,10 +40,10 @@ task rnaseq {
     }
 
     String out_tar_gz = prefix + ".tar.gz"
-    String name_sorted_arg = if (name_sorted)
+    String name_sorted_arg = if name_sorted
         then "-s"
         else ""
-    String paired_end_arg = if (paired_end)
+    String paired_end_arg = if paired_end
         then "-pe"
         else ""
 
@@ -68,12 +68,12 @@ task rnaseq {
         # '-oc qualimap_counts.txt' puts the file in '-outdir'
         # shellcheck disable=SC2086
         qualimap rnaseq -bam "~{bam}" \
-                        -oc qualimap_counts.txt \
-                        -gtf "$gtf_name" \
-                        -outdir "~{prefix}" \
-                        ~{name_sorted_arg} \
-                        ~{paired_end_arg} \
-                        --java-mem-size=~{java_heap_size}G
+            -oc qualimap_counts.txt \
+            -gtf "$gtf_name" \
+            -outdir "~{prefix}" \
+            ~{name_sorted_arg} \
+            ~{paired_end_arg} \
+            --java-mem-size=~{java_heap_size}G
         rm "$gtf_name"
 
         tar -czf "~{out_tar_gz}" "~{prefix}"

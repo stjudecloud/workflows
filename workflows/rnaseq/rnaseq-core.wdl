@@ -254,11 +254,11 @@ workflow rnaseq_core {
         bam = alignment_post.processed_bam,
         gtf,
         strandedness = htseq_strandedness,
-        prefix = basename(alignment_post.processed_bam, "bam") + if provided_strandedness
+        prefix = basename(alignment_post.processed_bam, "bam") + (if provided_strandedness
             == ""
             then ngsderive_strandedness.strandedness_string
             else provided_strandedness
-        ,
+        ),
         pos_sorted = true,
     }
 
