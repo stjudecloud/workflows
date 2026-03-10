@@ -1,4 +1,19 @@
-version 1.2
+version 1.3
+
+enum ModelType {
+    WGS,
+    WES,
+    PACBIO,
+    ONT,
+    FFPE_WGS,
+    FFPE_WES,
+    FFPE_WGS_TUMOR_ONLY,
+    FFPE_WES_TUMOR_ONLY,
+    WGS_TUMOR_ONLY,
+    WES_TUMOR_ONLY,
+    PACBIO_TUMOR_ONLY,
+    ONT_TUMOR_ONLY
+}
 
 task deepsomatic {
     meta {
@@ -50,7 +65,7 @@ task deepsomatic {
         String output_prefix = "deepsomatic_output"
         String tumor_sample_name = "tumor"
         String normal_sample_name = "normal"
-        String model_type = "WGS"
+        ModelType model_type = ModelType.WGS
         Boolean runtime_report = false
         Boolean vcf_stats_report = false
         Int threads = 8
@@ -87,7 +102,7 @@ task deepsomatic {
             ~{if vcf_stats_report then "--vcf_stats_report" else ""}
 
 
-        rm -rf "$ref_fasta"
+        rm -rf "$ref_fasta" "$ref_fasta.fai"
 
     >>>
 
@@ -192,7 +207,7 @@ task deepvariant {
             ~{if vcf_stats_report then "--vcf_stats_report" else ""} \
             --haploid_contigs="~{sep(",", haploid_chromosomes)}"
 
-        rm -rf "$ref_fasta"
+        rm -rf "$ref_fasta" "$ref_fasta.fai"
     >>>
 
     output {

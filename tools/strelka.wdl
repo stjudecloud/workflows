@@ -70,7 +70,7 @@ task somatic {
         
         "~{output_dir}/runWorkflow.py" -m local -j ~{threads}
 
-        rm -rf "$ref_fasta"
+        rm -rf "$ref_fasta" "$ref_fasta.fai"
     >>>
 
     output {
