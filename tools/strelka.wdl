@@ -32,6 +32,7 @@ task somatic {
         File tumor_bam
         File tumor_bam_index
         File? indel_candidates
+        File? indel_candidates_index
         String output_dir = "strelka_somatic_output"
         Boolean exome = false
         Boolean rna = false

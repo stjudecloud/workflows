@@ -139,6 +139,7 @@ task manta_somatic {
     output {
         Directory manta_output = output_dir
         File indel_candidates = "~{output_dir}/results/variants/candidateSmallIndels.vcf.gz"
+        File indel_candidates_index = "~{output_dir}/results/variants/candidateSmallIndels.vcf.gz.tbi"
         File log_file = "~{output_dir}/workspace/pyflow.data/logs/pyflow_log.txt"
     }
 
