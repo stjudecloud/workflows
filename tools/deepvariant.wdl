@@ -101,12 +101,12 @@ task deepsomatic {
         run_deepsomatic \
             --model_type="~{model_type}" \
             --ref="$ref_fasta" \
-            --tumor_bam="~{tumor}" \
-            --normal_bam="~{normal}" \
+            --reads_tumor="~{tumor}" \
+            --reads_normal="~{normal}" \
             --output_vcf="~{output_prefix}.vcf.gz" \
             --output_gvcf="~{output_prefix}.g.vcf.gz" \
-            --tumor_sample_name="~{tumor_sample_name}" \
-            --normal_sample_name="~{normal_sample_name}" \
+            --sample_name_tumor="~{tumor_sample_name}" \
+            --sample_name_normal="~{normal_sample_name}" \
             --num_shards="~{threads}" \
             --logging_dir="logs" \
             --intermediate_results_dir="intermediate_results" \
