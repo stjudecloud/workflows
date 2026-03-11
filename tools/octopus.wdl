@@ -14,7 +14,7 @@ task germline {
         reference_fasta_index: "Index file for the reference genome FASTA"
         bam: "Input BAM file with aligned reads"
         forest: "Pre-trained random forest model for variant filtering"
-        output_vcf: "Output VCF file with called variants"
+        output_vcf_name: "Output VCF file with called variants"
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
     }
@@ -24,7 +24,7 @@ task germline {
         File reference_fasta_index
         File bam
         File forest
-        String output_vcf = "octopus_germline_output.vcf"
+        String output_vcf_name = "octopus_germline_output.vcf"
         Int threads = 4
         Int modify_disk_size_gb = 0
     }
@@ -45,7 +45,7 @@ task germline {
         octopus \
             -R "$ref_fasta" \
             -I "~{bam}" \
-            -o "~{output_vcf}" \
+            -o "~{output_vcf_name}" \
             --forest "~{forest}" \
             --threads "~{threads}"
 
@@ -53,7 +53,7 @@ task germline {
     >>>
 
     output {
-        File output_vcf = "~{output_vcf}"
+        File output_vcf = "~{output_vcf_name}"
     }
 
     requirements {
@@ -61,6 +61,7 @@ task germline {
         cpu: threads
         memory: "30 GB"
         disks: "~{disk_size_gb} GB"
+    }
 }
 
 task somatic {
@@ -78,7 +79,7 @@ task somatic {
         normal_bam: "Input BAM file with aligned reads from normal sample"
         tumor_bam: "Input BAM file with aligned reads from tumor sample"
         forest: "Pre-trained random forest model for variant filtering"
-        output_vcf: "Output VCF file with called variants"
+        output_vcf_name: "Output VCF file with called variants"
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
     }
@@ -89,13 +90,14 @@ task somatic {
         File normal_bam
         File tumor_bam
         File forest
-        String output_vcf = "octopus_germline_output.vcf"
+        String output_vcf_name = "octopus_germline_output.vcf"
         Int threads = 4
         Int modify_disk_size_gb = 0
     }
 
     Int disk_size_gb = ceil(size(reference_fasta, "GiB") * 2)
-        + ceil(size(bam, "GiB"))
+        + ceil(size(tumor_bam, "GiB"))
+        + ceil(size(normal_bam, "GiB"))
         + 20
         + modify_disk_size_gb
 
@@ -112,7 +114,7 @@ task somatic {
             -R "$ref_fasta" \
             -I "~{normal_bam}" "~{tumor_bam}" \
             --normal-sample "~{basename(normal_bam, ".bam")}" \
-            -o "~{output_vcf}" \
+            -o "~{output_vcf_name}" \
             --forest "~{forest}" \
             --threads "~{threads}"
 
@@ -120,7 +122,7 @@ task somatic {
     >>>
 
     output {
-        File output_vcf = "~{output_vcf}"
+        File output_vcf = "~{output_vcf_name}"
     }
 
     requirements {
@@ -128,4 +130,5 @@ task somatic {
         cpu: threads
         memory: "30 GB"
         disks: "~{disk_size_gb} GB"
+    }
 }
