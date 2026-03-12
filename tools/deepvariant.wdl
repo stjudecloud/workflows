@@ -33,9 +33,6 @@ task deepsomatic {
         tumor_bam_index: "Index for tumor BAM file"
         normal_bam: "Input BAM file with aligned reads for normal sample"
         normal_bam_index: "Index for normal BAM file"
-        output_prefix: "Prefix for output VCF and gVCF files"
-        tumor_sample_name: "Sample name for the tumor sample"
-        normal_sample_name: "Sample name for the normal sample"
         model_type: {
             description: "Type of model to use for variant calling",
             choices: [
@@ -53,6 +50,9 @@ task deepsomatic {
                 "ONT_TUMOR_ONLY",
             ],
         }
+        output_prefix: "Prefix for output VCF and gVCF files"
+        tumor_sample_name: "Sample name for the tumor sample"
+        normal_sample_name: "Sample name for the normal sample"
         runtime_report: "Output make_examples_somatic runtime metrics and create a visual runtime report using runtime_by_region_vis."
         vcf_stats_report: "Output a visual report (HTML) of statistics about the output VCF."
         threads: "Number of threads to use"
@@ -66,10 +66,10 @@ task deepsomatic {
         File tumor_bam_index
         File normal_bam
         File normal_bam_index
+        ModelType model_type
         String output_prefix = "deepsomatic_output"
         String tumor_sample_name = "tumor"
         String normal_sample_name = "normal"
-        ModelType model_type
         Boolean runtime_report = false
         Boolean vcf_stats_report = false
         Int threads = 8

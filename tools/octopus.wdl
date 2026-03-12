@@ -5,7 +5,7 @@ task germline {
         description: "Run Octopus individual germline variant caller"
         warning: "octopus appears to functionally be abandonware at this point. the random forest filtering models are no longer available."
         outputs: {
-            output_vcf: "VCF file with called germline variants"
+            vcf: "VCF file with called germline variants"
         }
     }
 
@@ -53,7 +53,7 @@ task germline {
     >>>
 
     output {
-        File output_vcf = "~{output_vcf_name}"
+        File vcf = "~{output_vcf_name}"
     }
 
     requirements {
@@ -69,7 +69,7 @@ task somatic {
         description: "Run Octopus individual somatic variant caller"
         warning: "octopus appears to functionally be abandonware at this point. the random forest filtering models are no longer available."
         outputs: {
-            output_vcf: "VCF file with called somatic variants"
+            vcf: "VCF file with called somatic variants"
         }
     }
 
@@ -122,7 +122,7 @@ task somatic {
     >>>
 
     output {
-        File output_vcf = "~{output_vcf_name}"
+        File vcf = "~{output_vcf_name}"
     }
 
     requirements {

@@ -75,6 +75,8 @@ task manta_somatic {
         description: "Run Manta structural variant and indel caller in somatic mode"
         outputs: {
             manta_output: "Directory containing Manta variant calls",
+            indel_candidates: "VCF file with candidate small indels",
+            indel_candidates_index: "Index file for the candidate small indels VCF",
             log_file: "Log file from the Manta workflow execution",
         }
     }
