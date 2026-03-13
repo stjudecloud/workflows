@@ -14,6 +14,7 @@ task manta_germline {
         reference_fasta_index: "Index file for the reference genome FASTA"
         bam: "Input BAM file with aligned reads"
         bam_index: "Index file for the input BAM file"
+        calling_regions_bed: "Optional BED file specifying regions to call variants"
         output_dir: "Directory to store Manta output"
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
@@ -24,6 +25,7 @@ task manta_germline {
         File reference_fasta_index
         File bam
         File bam_index
+        File? calling_regions_bed
         String output_dir = "manta_output"
         Int threads = 4
         Int modify_disk_size_gb = 0
@@ -50,6 +52,7 @@ task manta_germline {
         configManta.py \
             --bam "~{filename}" \
             --referenceFasta "$ref_fasta" \
+            ~{if defined(calling_regions_bed) then "--callRegions '" + calling_regions_bed + "'" else ""} \
             --runDir "~{output_dir}"
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
@@ -88,6 +91,7 @@ task manta_somatic {
         tumor_bam_index: "Index file for the tumor BAM file"
         normal_bam: "Input BAM file with aligned reads from normal sample"
         normal_bam_index: "Index file for the normal BAM file"
+        calling_regions_bed: "Optional BED file specifying regions to call variants"
         output_dir: "Directory to store Manta output"
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
@@ -100,6 +104,7 @@ task manta_somatic {
         File tumor_bam_index
         File normal_bam
         File normal_bam_index
+        File? calling_regions_bed
         String output_dir = "manta_output"
         Int threads = 4
         Int modify_disk_size_gb = 0
@@ -131,6 +136,7 @@ task manta_somatic {
             --normalBam "~{normal}" \
             --tumorBam "~{tumor}" \
             --referenceFasta "$ref_fasta" \
+            ~{if defined(calling_regions_bed) then "--callRegions '" + calling_regions_bed + "'" else ""} \
             --runDir "~{output_dir}"
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
