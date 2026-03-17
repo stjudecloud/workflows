@@ -42,8 +42,8 @@ task somatic {
     }
 
     Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
-        + ceil(size(normal_bam, "GB"))
-        + ceil(size(tumor_bam, "GB"))
+        + ceil(size(normal_bam, "GB") * 2)
+        + ceil(size(tumor_bam, "GB") * 2)
         + (
             if defined(indel_candidates)
             then ceil(size(indel_candidates, "GB"))
@@ -93,7 +93,7 @@ task somatic {
     }
 
     requirements {
-        container: "quay.io/biocontainers/strelka:2.9.10--hdfd78af_2"
+        container: "quay.io/biocontainers/strelka:2.9.10--h9ee0642_1"
         cpu: threads
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
@@ -164,7 +164,7 @@ task germline {
     }
 
     requirements {
-        container: "quay.io/biocontainers/strelka:2.9.10--hdfd78af_2"
+        container: "quay.io/biocontainers/strelka:2.9.10--h9ee0642_1"
         cpu: threads
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"

@@ -77,8 +77,8 @@ task deepsomatic {
     }
 
     Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
-        + ceil(size(tumor_bam, "GB"))
-        + ceil(size(normal_bam, "GB"))
+        + ceil(size(tumor_bam, "GB") * 2)
+        + ceil(size(normal_bam, "GB") * 2)
         + 50
         + modify_disk_size_gb
 
@@ -232,8 +232,8 @@ task deepvariant {
     }
 
     requirements {
-        #container: "google/deepvariant:1.10.0-gpu"
-        container: "google/deepvariant:1.10.0"
+        container: "google/deepvariant:1.10.0-gpu"
+        #container: "google/deepvariant:1.10.0"
         cpu: threads
         memory: "64 GB"
         disks: "~{disk_size_gb} GB"

@@ -26,8 +26,9 @@ task manta_germline {
         File bam
         File bam_index
         File? calling_regions_bed
+        File? calling_regions_index
         String output_dir = "manta_output"
-        Int threads = 4
+        Int threads = 20
         Int modify_disk_size_gb = 0
     }
 
@@ -105,8 +106,9 @@ task manta_somatic {
         File normal_bam
         File normal_bam_index
         File? calling_regions_bed
+        File? calling_regions_index
         String output_dir = "manta_output"
-        Int threads = 4
+        Int threads = 20
         Int modify_disk_size_gb = 0
     }
 
@@ -127,10 +129,10 @@ task manta_somatic {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
-        ln -s "~{tumor_bam}" "~{tumor}"
-        ln -s "~{tumor_bam_index}" "~{tumor}.bai"
-        ln -s "~{normal_bam}" "~{normal}"
-        ln -s "~{normal_bam_index}" "~{normal}.bai"
+        ln -sf "~{tumor_bam}" "~{tumor}"
+        ln -sf "~{tumor_bam_index}" "~{tumor}.bai"
+        ln -sf "~{normal_bam}" "~{normal}"
+        ln -sf "~{normal_bam_index}" "~{normal}.bai"
 
         configManta.py \
             --normalBam "~{normal}" \

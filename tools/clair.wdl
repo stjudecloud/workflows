@@ -184,6 +184,7 @@ task clairs {
         Int? indel_min_qual
         String prefix = "output"
         String sample_name = "SAMPLE"
+        String output_dir = "output"
         Boolean all_contigs = false
         Boolean print_ref_calls = false
         Boolean print_germline_calls = false
@@ -220,6 +221,7 @@ task clairs {
             --ref_fn "$ref_fasta" \
             --threads "~{threads}" \
             --platform "~{platform}" \
+            --output_dir "~{output_dir}" \
             --output_prefix "~{prefix}" \
             --min_coverage "~{min_coverage}" \
             --chunk_size "~{chunk_size}" \
@@ -272,7 +274,7 @@ task clairs {
     >>>
 
     output {
-        File vcf = "~{prefix}.vcf.gz"
+        File vcf = "~{output_dir}/~{prefix}.vcf.gz"
     }
 
     requirements {
