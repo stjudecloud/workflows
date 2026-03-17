@@ -5,6 +5,10 @@ task somatic {
         description: "Run Strelka somatic variant calling workflow"
         outputs: {
             strelka_output: "Directory containing Strelka somatic variant calls",
+            somatic_indels: "VCF file with somatic indels",
+            somatic_indels_index: "Index file for the somatic indels VCF",
+            somatic_snvs: "VCF file with somatic SNVs",
+            somatic_snvs_index: "Index file for the somatic SNVs VCF",
             log_file: "Log file from the Strelka workflow execution",
         }
     }
@@ -89,6 +93,10 @@ task somatic {
 
     output {
         Directory strelka_output = output_dir
+        File somatic_indels = "~{output_dir}/results/variants/somatic.indels.vcf.gz"
+        File somatic_indels_index = "~{output_dir}/results/variants/somatic.indels.vcf.gz.tbi"
+        File somatic_snvs = "~{output_dir}/results/variants/somatic.snvs.vcf.gz"
+        File somatic_snvs_index = "~{output_dir}/results/variants/somatic.snvs.vcf.gz.tbi"
         File log_file = "~{output_dir}/workspace/pyflow.data/logs/pyflow_log.txt"
     }
 

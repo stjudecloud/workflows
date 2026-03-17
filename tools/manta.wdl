@@ -81,6 +81,12 @@ task manta_somatic {
             manta_output: "Directory containing Manta variant calls",
             indel_candidates: "VCF file with candidate small indels",
             indel_candidates_index: "Index file for the candidate small indels VCF",
+            sv_candidates: "VCF file with candidate structural variants",
+            sv_candidates_index: "Index file for the candidate structural variants VCF",
+            somatic_sv: "VCF file with candidate somatic structural variants",
+            somatic_sv_index: "Index file for the candidate somatic structural variants VCF",
+            diploid_sv: "VCF file with candidate diploid structural variants",
+            diploid_sv_index: "Index file for the candidate diploid structural variants VCF",
             log_file: "Log file from the Manta workflow execution",
         }
     }
@@ -150,6 +156,12 @@ task manta_somatic {
         Directory manta_output = output_dir
         File indel_candidates = "~{output_dir}/results/variants/candidateSmallIndels.vcf.gz"
         File indel_candidates_index = "~{output_dir}/results/variants/candidateSmallIndels.vcf.gz.tbi"
+        File sv_candidates = "~{output_dir}/results/variants/candidateSV.vcf.gz"
+        File sv_candidates_index = "~{output_dir}/results/variants/candidateSV.vcf.gz.tbi"
+        File somatic_sv = "~{output_dir}/results/variants/somaticSV.vcf.gz"
+        File somatic_sv_index = "~{output_dir}/results/variants/somaticSV.vcf.gz.tbi"
+        File diploid_sv = "~{output_dir}/results/variants/diploidSV.vcf.gz"
+        File diploid_sv_index = "~{output_dir}/results/variants/diploidSV.vcf.gz.tbi"
         File log_file = "~{output_dir}/workspace/pyflow.data/logs/pyflow_log.txt"
     }
 
