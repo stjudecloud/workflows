@@ -14,6 +14,7 @@ task mutect2 {
     parameter_meta {
         reference_fasta: "Reference genome in FASTA format"
         reference_fasta_index: "Index file for the reference genome FASTA"
+        reference_fasta_dict: "Dictionary file for the reference genome FASTA"
         normal_bam: "Input BAM file with aligned reads for normal sample"
         normal_bam_index: "Index file for the normal BAM file"
         tumor_bam: "Input BAM file with aligned reads for tumor sample"
@@ -32,6 +33,7 @@ task mutect2 {
     input {
         File reference_fasta
         File reference_fasta_index
+        File reference_fasta_dict
         File normal_bam
         File normal_bam_index
         File tumor_bam
@@ -63,6 +65,7 @@ task mutect2 {
         gunzip -c "~{reference_fasta}" > "$ref_fasta" \
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
+        ln -sf "~{reference_fasta_dict}" "$ref_fasta.dict"
 
         ln -s "~{tumor_bam}" "~{tumor}"
         ln -s "~{tumor_bam_index}" "~{tumor}.bai"
@@ -80,7 +83,7 @@ task mutect2 {
             -O "~{output_dir}/somatic_variants.vcf.gz" \
             --native-pair-hmm-threads "~{threads}"
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{normal}.bai"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "$ref_fasta.dict" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{normal}.bai"
      >>>
 
      output {
