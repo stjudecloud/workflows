@@ -48,10 +48,8 @@ task process_raw_idats {
     >>>
 
     output {
-        File beta_swan_norm_unfiltered
-            = out_base + ".beta_swan_norm_unfiltered.csv"
-        File beta_swan_norm_unfiltered_genomic
-            = out_base + ".beta_swan_norm_unfiltered.genomic.csv"
+        File beta_swan_norm_unfiltered = out_base + ".beta_swan_norm_unfiltered.csv"
+        File beta_swan_norm_unfiltered_genomic = out_base + ".beta_swan_norm_unfiltered.genomic.csv"
         File annotation = out_base + ".annotation.csv"
         File beta_unnorm = out_base + ".beta.csv"
         File cn_values = out_base + ".cn_values.csv"

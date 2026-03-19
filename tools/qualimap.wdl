@@ -1,5 +1,4 @@
 ## [Homepage](http://qualimap.bioinfo.cipf.es/)
-
 version 1.1
 
 task rnaseq {
@@ -41,8 +40,12 @@ task rnaseq {
     }
 
     String out_tar_gz = prefix + ".tar.gz"
-    String name_sorted_arg = if (name_sorted) then "-s" else ""
-    String paired_end_arg = if (paired_end) then "-pe" else ""
+    String name_sorted_arg = if (name_sorted)
+        then "-s"
+        else ""
+    String paired_end_arg = if (paired_end)
+        then "-pe"
+        else ""
 
     Int java_heap_size = ceil(memory_gb * 0.9)
     Float bam_size = size(bam, "GiB")
@@ -50,13 +53,10 @@ task rnaseq {
 
     # Qualimap has an inefficient name sorting algorithm and will
     # use an excessive amount of storage.
-    Int disk_size_gb = (
-        (
-            if name_sorted
-            then ceil(bam_size + gtf_size + 15)
-            else ceil(((bam_size + gtf_size) * 12) + 10)
-        ) + modify_disk_size_gb
-    )
+    Int disk_size_gb = ((if name_sorted
+        then ceil(bam_size + gtf_size + 15)
+        else ceil(((bam_size + gtf_size) * 12) + 10)
+    ) + modify_disk_size_gb)
 
     command <<<
         set -euo pipefail
@@ -81,8 +81,7 @@ task rnaseq {
 
     output {
         File raw_summary = "~{prefix}/rnaseq_qc_results.txt"
-        File raw_coverage
-            = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
+        File raw_coverage = "~{prefix}/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt"
         File results = out_tar_gz
     }
 

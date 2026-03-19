@@ -1,5 +1,4 @@
 ## [Homepage](https://github.com/htseq/htseq)
-
 version 1.1
 
 task count {
@@ -9,7 +8,7 @@ task count {
             feature_counts: {
                 description: "A two column TSV file. First column is feature names and second column is counts.",
                 help: "Presence of a header is determined by the `include_custom_header` parameter.",
-            }
+            },
         }
     }
 
@@ -89,10 +88,14 @@ task count {
     Float bam_size = size(bam, "GiB")
     Float gtf_size = size(gtf, "GiB")
 
-    Int memory_gb = (if pos_sorted then ceil(bam_size) + 4 else 4) + modify_memory_gb
+    Int memory_gb = (if pos_sorted
+        then ceil(bam_size) + 4
+        else 4
+    ) + modify_memory_gb
 
-    Int disk_size_gb = ceil(
-        (bam_size + gtf_size) * if pos_sorted then 4 else 1
+    Int disk_size_gb = ceil((bam_size + gtf_size) * if pos_sorted
+        then 4
+        else 1
     ) + 10 + modify_disk_size_gb
 
     command <<<
@@ -105,16 +108,24 @@ task count {
         # 9223372036854776000 == max 64 bit Float
         htseq-count -f bam \
             --max-reads-in-buffer 9223372036854776000 \
-            -r ~{if pos_sorted then "pos" else "name"} \
+            -r ~{if pos_sorted
+                then "pos"
+                else "name"
+            } \
             -s "~{strandedness}" \
             -a ~{minaqual} \
             -t "~{feature_type}" \
             -m "~{mode}" \
             -i "~{idattr}" \
-            --nonunique ~{if nonunique then "all" else "none"} \
-            --secondary-alignments ~{if secondary_alignments then "score" else "ignore"} \
-            --supplementary-alignments ~{(
-                if supplementary_alignments
+            --nonunique ~{if nonunique
+                then "all"
+                else "none"
+            } \
+            --secondary-alignments ~{if secondary_alignments
+                then "score"
+                else "ignore"
+            } \
+            --supplementary-alignments ~{(if supplementary_alignments
                 then "score"
                 else "ignore"
             )} \
@@ -139,7 +150,7 @@ task calc_tpm {
     meta {
         description: "Given a feature counts file and a feature lengths file, calculate Transcripts Per Million (TPM)"
         outputs: {
-            tpm_file: "Transcripts Per Million (TPM) file. A two column headered TSV file."
+            tpm_file: "Transcripts Per Million (TPM) file. A two column headered TSV file.",
         }
     }
 
@@ -171,7 +182,10 @@ task calc_tpm {
             "~{counts}" \
             "~{feature_lengths}" \
             "~{outfile_name}" \
-            ~{if has_header then "--counts_has_header" else ""}
+            ~{if has_header
+                then "--counts_has_header"
+                else ""
+            }
     >>>
 
     output {

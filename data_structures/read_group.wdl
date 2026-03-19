@@ -40,7 +40,6 @@
 ##     }
 ## }
 ## ```
-
 version 1.1
 
 #@ except: SnakeCase
@@ -83,7 +82,9 @@ workflow read_group_to_string {
 
     input {
         ReadGroup read_group
-        Array[String] required_fields = ["SM"]
+        Array[String] required_fields = [
+            "SM",
+        ]
         Boolean format_as_sam_record = false
         Boolean restrictive = true
     }
@@ -99,8 +100,7 @@ workflow read_group_to_string {
     }
 
     output {
-        String validated_read_group
-            = inner_read_group_to_string.stringified_read_group
+        String validated_read_group = inner_read_group_to_string.stringified_read_group
     }
 }
 
@@ -109,7 +109,7 @@ task get_read_groups {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
         warning: "This task will uppercase any lowercase `PL` values it finds, as is required by the [SAM specification](https://samtools.github.io/hts-specs/SAMv1.pdf)."
         outputs: {
-            read_groups: "An array of `ReadGroup` structs containing read group information."
+            read_groups: "An array of `ReadGroup` structs containing read group information.",
         }
     }
 
@@ -165,8 +165,18 @@ task validate_read_group {
     # We have the opinion that is too permissive for ID and SM.
     String restrictive_pattern = "\\ "  # Disallow spaces
     Array[String] platforms = [
-        "CAPILLARY", "DNBSEQ", "ELEMENT", "HELICOS", "ILLUMINA", "IONTORRENT", "LS454",
-        "ONT", "PACBIO", "SINGULAR", "SOLID", "ULTIMA",
+        "CAPILLARY",
+        "DNBSEQ",
+        "ELEMENT",
+        "HELICOS",
+        "ILLUMINA",
+        "IONTORRENT",
+        "LS454",
+        "ONT",
+        "PACBIO",
+        "SINGULAR",
+        "SOLID",
+        "ULTIMA",
     ]
 
     command <<<
@@ -262,7 +272,10 @@ task validate_read_group {
             fi
         fi
         if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "KS")" -eq 1 ]; then
-            if [ -z "~{if defined(read_group.KS) then read_group.KS else ""}" ]; then
+            if [ -z "~{if defined(read_group.KS)
+                then read_group.KS
+                else ""
+            }" ]; then
                 >&2 echo "KS is required"
                 exit_code=1
             fi
@@ -360,7 +373,7 @@ task inner_read_group_to_string {
         description: "Converts a `ReadGroup` struct to a `String` **without any validation**."
         warning: "Please use the `read_group_to_string` workflow, which has validation of the `ReadGroup` contents."
         outputs: {
-            stringified_read_group: "Input `ReadGroup` as a string"
+            stringified_read_group: "Input `ReadGroup` as a string",
         }
     }
 
@@ -377,7 +390,9 @@ task inner_read_group_to_string {
         Boolean format_as_sam_record
     }
 
-    String delimiter = if format_as_sam_record then "\\t" else " "
+    String delimiter = if format_as_sam_record
+        then "\\t"
+        else " "
 
     command <<<
         if ~{format_as_sam_record}; then

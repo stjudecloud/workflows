@@ -1,5 +1,4 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-
 version 1.1
 
 import "../../data_structures/read_group.wdl"
@@ -55,7 +54,7 @@ workflow dnaseq_standard_experimental {
     }
 
     call parse_input { input:
-        aligner
+        aligner,
     }
 
     if (validate_input) {
@@ -71,7 +70,10 @@ workflow dnaseq_standard_experimental {
             use_all_cores,
         }
     }
-    File selected_bam = select_first([subsample.sampled_bam, bam])
+    File selected_bam = select_first([
+        subsample.sampled_bam,
+        bam,
+    ])
 
     call read_group.get_read_groups after parse_input { input:
         bam = selected_bam,
@@ -95,7 +97,10 @@ workflow dnaseq_standard_experimental {
                 SM: sample_override,
             }
         }
-        ReadGroup selected_rg = select_first([overriden_rg, rg])
+        ReadGroup selected_rg = select_first([
+            overriden_rg,
+            rg,
+        ])
         call read_group.read_group_to_string { input:
             read_group = selected_rg,
             format_as_sam_record = true,

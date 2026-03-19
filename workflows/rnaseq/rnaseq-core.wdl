@@ -144,9 +144,7 @@ workflow rnaseq_core {
             GC_AG_and_CT_GC_motif: 5,
             AT_AC_and_GT_AT_motif: 5,
         }
-        String prefix = sub(
-            basename(read_one_fastqs_gz[0]),
-            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+        String prefix = sub(basename(read_one_fastqs_gz[0]), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         String xenocp_aligner = "star"
@@ -201,13 +199,11 @@ workflow rnaseq_core {
         }
     }
 
-    Array[File] chosen_r1s = (
-        if enable_read_trimming
+    Array[File] chosen_r1s = (if enable_read_trimming
         then select_all(trim.read_one_fastq_gz)
         else read_one_fastqs_gz
     )
-    Array[File] chosen_r2s = (
-        if enable_read_trimming
+    Array[File] chosen_r2s = (if enable_read_trimming
         then select_all(trim.read_two_fastq_gz)
         else read_two_fastqs_gz
     )
@@ -252,8 +248,7 @@ workflow rnaseq_core {
         gene_model = gtf,
     }
 
-    String htseq_strandedness = (
-        if (provided_strandedness != "")
+    String htseq_strandedness = (if (provided_strandedness != "")
         then htseq_strandedness_mapping[provided_strandedness]
         else htseq_strandedness_mapping[ngsderive_strandedness.strandedness_string]
     )
@@ -262,12 +257,11 @@ workflow rnaseq_core {
         bam = alignment_post.processed_bam,
         gtf,
         strandedness = htseq_strandedness,
-        prefix = basename(alignment_post.processed_bam, "bam")
-            + (
-                if provided_strandedness == ""
-                then ngsderive_strandedness.strandedness_string
-                else provided_strandedness
-            ),
+        prefix = basename(alignment_post.processed_bam, "bam") + (if provided_strandedness
+            == ""
+            then ngsderive_strandedness.strandedness_string
+            else provided_strandedness
+        ),
         pos_sorted = true,
     }
 
@@ -280,9 +274,13 @@ workflow rnaseq_core {
         File feature_counts = htseq_count.feature_counts
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
         String inferred_strandedness_string = ngsderive_strandedness.strandedness_string
-        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
-        Array[File] fastp_jsons = select_all(flatten(
-            [fastp.report_json, trim.report_json]
-        ))
+        Array[File] fastp_reports = select_all(flatten([
+            fastp.report,
+            trim.report,
+        ]))
+        Array[File] fastp_jsons = select_all(flatten([
+            fastp.report_json,
+            trim.report_json,
+        ]))
     }
 }

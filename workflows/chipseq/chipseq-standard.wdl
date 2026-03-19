@@ -9,11 +9,14 @@ import "../../tools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/bam-to-fastqs.wdl" as b2fq
 #@ except: LineWidth
-import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl" as seaseq_map
+import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl"
+    as seaseq_map
 #@ except: LineWidth
-import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl" as seaseq_samtools
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl"
+    as seaseq_samtools
 #@ except: LineWidth
-import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl" as seaseq_util
+import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/seaseq_util.wdl"
+    as seaseq_util
 
 workflow chipseq_standard_experimental {
     meta {
@@ -67,7 +70,10 @@ workflow chipseq_standard_experimental {
             use_all_cores,
         }
     }
-    File selected_bam = select_first([subsample.sampled_bam, bam])
+    File selected_bam = select_first([
+        subsample.sampled_bam,
+        bam,
+    ])
 
     call read_group.get_read_groups after validate_input_bam { input:
         bam = selected_bam,
@@ -79,7 +85,7 @@ workflow chipseq_standard_experimental {
         use_all_cores,
     }
 
-    scatter (pair in zip(bam_to_fastqs.read1s, get_read_groups.read_groups)){
+    scatter (pair in zip(bam_to_fastqs.read1s, get_read_groups.read_groups)) {
         if (enable_read_trimming) {
             call fp.fastp as trim { input:
                 read_one_fastq = pair.left,
@@ -93,10 +99,13 @@ workflow chipseq_standard_experimental {
             }
         }
 
-        File chosen_fastq = select_first([trim.single_end_reads_fastq_gz, pair.left])
+        File chosen_fastq = select_first([
+            trim.single_end_reads_fastq_gz,
+            pair.left,
+        ])
 
         call seaseq_util.basicfastqstats as basic_stats { input:
-            fastqfile = chosen_fastq
+            fastqfile = chosen_fastq,
         }
         call seaseq_map.mapping as bowtie_single_end_mapping { input:
             fastqfile = chosen_fastq,
@@ -104,13 +113,11 @@ workflow chipseq_standard_experimental {
             metricsfile = basic_stats.metrics_out,
             blacklist = excludelist,
         }
-        File chosen_bam = select_first(
-            [
-                bowtie_single_end_mapping.bklist_bam,
-                bowtie_single_end_mapping.mkdup_bam,
-                bowtie_single_end_mapping.sorted_bam,
-            ]
-        )
+        File chosen_bam = select_first([
+            bowtie_single_end_mapping.bklist_bam,
+            bowtie_single_end_mapping.mkdup_bam,
+            bowtie_single_end_mapping.sorted_bam,
+        ])
 
         call read_group.read_group_to_string { input:
             read_group = pair.right,
@@ -127,7 +134,7 @@ workflow chipseq_standard_experimental {
     }
 
     Array[File] aligned_bams = addreplacerg.tagged_bam
-    scatter(aligned_bam in aligned_bams){
+    scatter (aligned_bam in aligned_bams) {
         call picard.clean_sam as picard_clean { input:
             bam = aligned_bam,
         }
@@ -147,7 +154,9 @@ workflow chipseq_standard_experimental {
         use_all_cores,
     }
     #@ except: UnusedCall
-    call picard.validate_bam { input: bam = markdup.mkdupbam }
+    call picard.validate_bam { input:
+        bam = markdup.mkdupbam,
+    }
 
     call md5sum.compute_checksum { input:
         file = markdup.mkdupbam,
@@ -164,9 +173,13 @@ workflow chipseq_standard_experimental {
         File bam_checksum = compute_checksum.md5sum
         File bam_index = samtools_index.bam_index
         File bigwig = deeptools_bam_coverage.bigwig
-        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
-        Array[File] fastp_jsons = select_all(flatten(
-            [fastp.report_json, trim.report_json]
-        ))
+        Array[File] fastp_reports = select_all(flatten([
+            fastp.report,
+            trim.report,
+        ]))
+        Array[File] fastp_jsons = select_all(flatten([
+            fastp.report_json,
+            trim.report_json,
+        ]))
     }
 }

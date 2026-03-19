@@ -1,5 +1,4 @@
 ## [Homepage](https://broadinstitute.github.io/picard/)
-
 version 1.1
 
 task mark_duplicates {
@@ -84,13 +83,10 @@ task mark_duplicates {
 
     Float bam_size = size(bam, "GiB")
     Int memory_gb = min(ceil(bam_size + 12), 50) + modify_memory_gb
-    Int disk_size_gb = (
-        (
-            if create_bam
-            then ceil((bam_size * 2) + 10)
-            else ceil(bam_size + 10)
-        ) + modify_disk_size_gb
-    )
+    Int disk_size_gb = ((if create_bam
+        then ceil((bam_size * 2) + 10)
+        else ceil(bam_size + 10)
+    ) + modify_disk_size_gb)
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -100,13 +96,17 @@ task mark_duplicates {
         picard -Xmx~{java_heap_size}g MarkDuplicates \
             -I "~{bam}" \
             --METRICS_FILE "~{prefix}.metrics.txt" \
-            -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
+            -O "~{if create_bam
+                then prefix + ".bam"
+                else "/dev/null"
+            }" \
             --CREATE_INDEX ~{create_bam} \
             --CREATE_MD5_FILE ~{create_bam} \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
             --DUPLICATE_SCORING_STRATEGY "~{duplicate_scoring_strategy}" \
-            --READ_NAME_REGEX '~{
-                if (optical_distance > 0) then read_name_regex else "null"
+            --READ_NAME_REGEX '~{if (optical_distance > 0)
+                then read_name_regex
+                else "null"
             }' \
             --TAGGING_POLICY "~{tagging_policy}" \
             --CLEAR_DT ~{clear_dt} \
@@ -194,9 +194,10 @@ task validate_bam {
         Int modify_disk_size_gb = 0
     }
 
-    String mode_arg = if (summary_mode) then "--MODE SUMMARY" else ""
-    String stringency_arg = (
-        if (index_validation_stringency_less_exhaustive)
+    String mode_arg = if (summary_mode)
+        then "--MODE SUMMARY"
+        else ""
+    String stringency_arg = (if (index_validation_stringency_less_exhaustive)
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
     )
@@ -418,8 +419,10 @@ task merge_sam_files {
         File merged_bam_md5 = outfile_name + ".md5"
     }
 
-    runtime{
-        cpu: if threading then 2 else 1
+    runtime {
+        cpu: if threading
+            then 2
+            else 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -504,7 +507,7 @@ task collect_wgs_metrics {
             wgs_metrics: {
                 description: "Output report of `picard CollectWgsMetrics`",
                 external_help: "https://broadinstitute.github.io/picard/picard-metric-definitions.html#CollectWgsMetrics.WgsMetrics",
-            }
+            },
         }
     }
 
@@ -851,8 +854,7 @@ task bam_to_fastq {
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT="~{bam}" \
             FASTQ="~{prefix}.R1.fastq" \
-            ~{(
-                if paired
+            ~{(if paired
                 then "SECOND_END_FASTQ='" + prefix + ".R2.fastq'"
                 else ""
             )} \
@@ -860,7 +862,10 @@ task bam_to_fastq {
             VALIDATION_STRINGENCY=SILENT
 
         gzip "~{prefix}.R1.fastq" \
-            ~{if paired then "'" + prefix + ".R2.fastq'" else ""}
+            ~{if paired
+                then "'" + prefix + ".R2.fastq'"
+                else ""
+            }
     >>>
 
     output {
@@ -868,7 +873,7 @@ task bam_to_fastq {
         File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
     }
 
-    runtime{
+    runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -932,7 +937,7 @@ task scatter_interval_list {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         interval_list: "Input interval list to split"
         scatter_count: "Number of interval lists to create"
         subdivision_mode: {
@@ -999,7 +1004,7 @@ task create_sequence_dictionary {
         description: "Creates a sequence dictionary for the input FASTA file using Picard"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832748622491-CreateSequenceDictionary-Picard-"
         outputs: {
-            dictionary: "Sequence dictionary produced by `picard CreateSequenceDictionary`."
+            dictionary: "Sequence dictionary produced by `picard CreateSequenceDictionary`.",
         }
     }
 
