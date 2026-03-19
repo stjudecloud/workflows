@@ -61,19 +61,19 @@ task mutect2 {
     command <<<
         set -euo pipefail
 
-        ref_fasta=~{basename(reference_fasta, ".gz")}
-        gunzip -c "~{reference_fasta}" > "$ref_fasta" \
-            || ln -sf "~{reference_fasta}" "$ref_fasta"
-        ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
+        ref_fasta=~{sub(basename(reference_fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{reference_fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta.fa"
+        ln -sf "~{reference_fasta_index}" "$ref_fasta.fa.fai"
         ln -sf "~{reference_fasta_dict}" "$ref_fasta.dict"
 
-        ln -s "~{tumor_bam}" "~{tumor}"
-        ln -s "~{tumor_bam_index}" "~{tumor}.bai"
-        ln -s "~{normal_bam}" "~{normal}"
-        ln -s "~{normal_bam_index}" "~{normal}.bai"
+        ln -sf "~{tumor_bam}" "~{tumor}"
+        ln -sf "~{tumor_bam_index}" "~{tumor}.bai"
+        ln -sf "~{normal_bam}" "~{normal}"
+        ln -sf "~{normal_bam_index}" "~{normal}.bai"
 
         gatk Mutect2 \
-            -R "$ref_fasta" \
+            -R "$ref_fasta.fa" \
             -I "~{tumor}" \
             -I "~{normal}" \
             -normal "~{normal_sample_name}" \
@@ -83,7 +83,7 @@ task mutect2 {
             -O "~{output_dir}/somatic_variants.vcf.gz" \
             --native-pair-hmm-threads "~{threads}"
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai" "$ref_fasta.dict" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{normal}.bai"
+        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{normal}.bai"
      >>>
 
      output {
