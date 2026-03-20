@@ -198,6 +198,8 @@ task deepvariant {
         + 50
         + modify_disk_size_gb
 
+    String filename = basename(bam)
+
     command <<<
         set -euo pipefail
 
@@ -206,11 +208,14 @@ task deepvariant {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
+        ln -s "~{bam}" "~{filename}"
+        ln -s "~{bam_index}" "~{filename}.bai"
+
         mkdir "test"
         TMPDIR="test" run_deepvariant \
             --model_type="~{model_type}" \
             --ref="$ref_fasta" \
-            --reads="~{bam}" \
+            --reads="~{filename}" \
             --output_vcf="~{output_prefix}.vcf.gz" \
             --output_gvcf="~{output_prefix}.g.vcf.gz" \
             --num_shards="~{threads}" \
@@ -221,7 +226,7 @@ task deepvariant {
             ~{if vcf_stats_report then "--vcf_stats_report" else ""} \
             --haploid_contigs="~{sep(",", haploid_chromosomes)}"
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{filename}" "~{filename}.bai"
     >>>
 
     output {
