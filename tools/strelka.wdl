@@ -146,6 +146,8 @@ task germline {
         + 20
         + modify_disk_size_gb
 
+    String filename = basename(bam)
+
     command <<<
         set -euo pipefail
 
@@ -154,16 +156,19 @@ task germline {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
+        ln -s "~{bam}" "~{filename}"
+        ln -s "~{bam_index}" "~{filename}.bai"
+
         configureStrelkaGermlineWorkflow.py \
             --referenceFasta "$ref_fasta" \
             --runDir "~{output_dir}" \
-            --bam "~{bam}" \
+            --bam "~{filename}" \
             ~{if (exome) then "--exome" else ""} \
             ~{if (rna) then "--rna" else ""}
 
         "~{output_dir}/runWorkflow.py" -m local -j ~{threads}
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{output_dir}/workspace/pyflow.data/logs/tmp"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{filename}" "~{filename}.bai" "~{output_dir}/workspace/pyflow.data/logs/tmp"
     >>>
 
     output {

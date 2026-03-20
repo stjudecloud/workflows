@@ -66,6 +66,8 @@ task clair3 {
     Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2) + ceil(size(bam, "GB")) + 50
         + modify_disk_size_gb
 
+    String filename = basename(bam)
+
     command <<<
         set -euo pipefail
 
@@ -74,8 +76,11 @@ task clair3 {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
+        ln -s "~{bam}" "~{filename}"
+        ln -s "~{bam_index}" "~{filename}.bai"
+
         run_clair3.sh \
-            --bam_fn="~{bam}" \
+            --bam_fn="~{filename}" \
             --ref_fn="$ref_fasta" \
             --threads="~{threads}" \
             --platform="~{platform}" \
@@ -102,7 +107,7 @@ task clair3 {
                 else ""
             }
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{filename}" "~{filename}.bai"
     >>>
 
     output {
