@@ -1,6 +1,12 @@
 ## [Homepage](https://software.broadinstitute.org/gatk)
 
-version 1.1
+version 1.3
+
+enum ref_confidence {
+    NONE,
+    GVCF,
+    BP_RESOLUTION
+}
 
 task split_n_cigar_reads {
     meta {
@@ -62,7 +68,7 @@ task split_n_cigar_reads {
         File split_n_reads_bam_md5 = "~{prefix}.bam.md5"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -121,7 +127,6 @@ task base_recalibrator {
         + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    #@ except: LineWidth
     command <<<
         # shellcheck disable=SC2102
         gatk \
@@ -144,7 +149,7 @@ task base_recalibrator {
         File recalibration_report = "~{outfile_name}"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -188,7 +193,6 @@ task apply_bqsr {
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -208,7 +212,7 @@ task apply_bqsr {
         File recalibrated_bam_index = "~{prefix}.bqsr.bam.bai"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -239,6 +243,11 @@ task haplotype_caller {
         dict: "Dictionary file for FASTA format genome"
         dbSNP_vcf: "dbSNP VCF file"
         dbSNP_vcf_index: "dbSNP VCF index file"
+        reference_confidence: {
+            description: "Reference confidence mode to run HaplotypeCaller in.",
+            help: "If `NONE`, HaplotypeCaller will run in default mode and only output variant sites. If `GVCF`, HaplotypeCaller will run in GVCF mode and output both variant and non-variant sites with reference confidence scores. If `BP_RESOLUTION`, HaplotypeCaller will run in GVCF mode but output non-variant sites at base pair resolution instead of block resolution.",
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller#--emit-ref-confidence",
+        }
         prefix: "Prefix for the output VCF. The extension `.vcf.gz` will be added."
         use_soft_clipped_bases: "Use soft clipped bases in variant calling. Default is to ignore soft clipped bases."
         stand_call_conf: {
@@ -261,6 +270,7 @@ task haplotype_caller {
         File dbSNP_vcf
         #@ except: SnakeCase
         File dbSNP_vcf_index
+        ref_confidence reference_confidence = ref_confidence.NONE
         String prefix = basename(bam, ".bam")
         Boolean use_soft_clipped_bases = false
         Int stand_call_conf = 20
@@ -275,18 +285,36 @@ task haplotype_caller {
         + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    #@ except: LineWidth
+    String sample = basename(bam)
+
     command <<<
+        set -euo pipefail
+
+        ref_fasta=~{sub(basename(fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{fasta}" "$ref_fasta.fa"
+        ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{dict}" "$ref_fasta.dict"
+
+        ln -sf "~{bam}" "~{sample}"
+        ln -sf "~{bam_index}" "~{sample}.bai"
+
+        ln -sf "~{dbSNP_vcf}" "dbSNP.vcf.gz"
+        ln -sf "~{dbSNP_vcf_index}" "dbSNP.vcf.gz.tbi"
+
         gatk \
            --java-options "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
             HaplotypeCaller \
-            -R "~{fasta}" \
-            -I "~{bam}" \
+            -R "$ref_fasta.fa" \
+            -I "~{sample}" \
             -L "~{interval_list}" \
             -O "~{prefix}.vcf.gz" \
             ~{if use_soft_clipped_bases then "" else "--dont-use-soft-clipped-bases"} \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
-            --dbsnp "~{dbSNP_vcf}"
+            --dbsnp "dbSNP.vcf.gz" \
+            --emit-ref-confidence "~{reference_confidence}"
+
+        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{sample}" "~{sample}.bai" "dbSNP.vcf.gz" "dbSNP.vcf.gz.tbi"
     >>>
 
     output {
@@ -294,7 +322,7 @@ task haplotype_caller {
         File vcf_index = "~{prefix}.vcf.gz.tbi"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -367,7 +395,7 @@ task variant_filtration {
         File vcf_filtered_index = "~{prefix}.filtered.vcf.gz.tbi"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "15 GB"
         disks: "~{disk_size_gb} GB"
@@ -488,7 +516,7 @@ task mark_duplicates_spark {
         File mark_duplicates_metrics = "~{prefix}.metrics.txt"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
