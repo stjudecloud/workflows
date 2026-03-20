@@ -4,10 +4,8 @@ task mutect2 {
     meta {
         description: "Run GATK Mutect2 somatic variant calling workflow"
         outputs: {
-            mutect2_output: "Directory containing Mutect2 somatic variant calls",
             somatic_vcf: "VCF file with somatic variants called by Mutect2",
             somatic_vcf_index: "Index file for the Mutect2 somatic variants VCF",
-            log_file: "Log file from the Mutect2 workflow execution",
         }
     }
 
@@ -25,7 +23,7 @@ task mutect2 {
         panel_of_normals_vcf_index: "Index file for the panel of normals VCF"
         normal_sample_name: "Name of the normal sample"
         tumor_sample_name: "Name of the tumor sample"
-        output_dir: "Directory to store Mutect2 output"
+        output_prefix: "Prefix for output file. The extension '.vcf.gz' will be added."
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
     }
@@ -44,7 +42,7 @@ task mutect2 {
         File? panel_of_normals_vcf_index
         String normal_sample_name = basename(normal_bam, ".bam")
         String tumor_sample_name = basename(tumor_bam, ".bam")
-        String output_dir = "mutect2_somatic_output"
+        String output_prefix = "mutect2_somatic_variants"
         Int threads = 4
         Int modify_disk_size_gb = 0
     }
@@ -80,17 +78,15 @@ task mutect2 {
             -tumor "~{tumor_sample_name}" \
             ~{if defined(germline_resource_vcf) then "-germline-resource '" + germline_resource_vcf + "'" else ""} \
             ~{if defined(panel_of_normals_vcf) then "-panel-of-normals '" + panel_of_normals_vcf + "'" else ""} \
-            -O "~{output_dir}/somatic_variants.vcf.gz" \
+            -O "~{output_prefix}.vcf.gz" \
             --native-pair-hmm-threads "~{threads}"
 
         rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{normal}.bai"
      >>>
 
      output {
-         Directory mutect2_output = output_dir
-         File somatic_vcf = "~{output_dir}/somatic_variants.vcf.gz"
-         File somatic_vcf_index = "~{output_dir}/somatic_variants.vcf.gz.tbi"
-         File log_file = "~{output_dir}/gatk_mutect2.log"
+         File somatic_vcf = "~{output_prefix}.vcf.gz"
+         File somatic_vcf_index = "~{output_prefix}.vcf.gz.tbi"
     }
 
     requirements {
