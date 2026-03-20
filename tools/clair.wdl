@@ -162,6 +162,7 @@ task clairs {
         indel_min_qual: "Minimum quality score required to call an indel"
         prefix: "Prefix for ClairS output files"
         sample_name: "Sample name to use in the output VCF"
+        output_dir: "Directory to store ClairS output"
         all_contigs: "Boolean indicating whether to include all contigs in variant calling. If false only chr{1..22,X,Y} are called."
         print_ref_calls: "Boolean indicating whether to print reference calls in the output VCF"
         print_germline_calls: "Boolean indicating whether to print germline calls in the output VCF"
