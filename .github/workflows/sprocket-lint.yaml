@@ -3,12 +3,16 @@ name: Workflows Sprocket Lint
 on: [push]
 
 jobs:
-    sprocket_lint:
-        runs-on: ubuntu-latest
-        steps:
-        - uses: actions/checkout@v2
-        - name: Run sprocket
-          uses: stjude-rust-labs/sprocket-action@main
-          with:
-            lint: true
-            except: KnownRules
+  sprocket_lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run 'sprocket lint'
+      uses: stjude-rust-labs/sprocket-action@main
+      with:
+        lint: true
+        except: KnownRules
+    - name: Run 'sprocket format'
+      uses: stjude-rust-labs/sprocket-action@feat/format
+      with:
+        action: format
