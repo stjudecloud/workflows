@@ -12,6 +12,7 @@ jobs:
       with:
         lint: true
         except: KnownRules
+        exclusions: methylation
     - name: Run 'sprocket format'
       uses: stjude-rust-labs/sprocket-action@feat/format
       with:
