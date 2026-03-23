@@ -116,7 +116,6 @@ task base_recalibrator {
     Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    #@ except: LineWidth
     command <<<
         # shellcheck disable=SC2102
         gatk \
@@ -184,7 +183,6 @@ task apply_bqsr {
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
@@ -273,7 +271,6 @@ task haplotype_caller {
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
-    #@ except: LineWidth
     command <<<
         gatk \
            --java-options "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
