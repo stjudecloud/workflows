@@ -350,6 +350,8 @@ task haplotype_caller {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     String sample = basename(bam)
+    String snp_vcf = basename(dbSNP_vcf)
+    String snp_vcf_index = basename(dbSNP_vcf_index)
 
     command <<<
         set -euo pipefail
@@ -363,8 +365,8 @@ task haplotype_caller {
         ln -sf "~{bam}" "~{sample}"
         ln -sf "~{bam_index}" "~{sample}.bai"
 
-        ln -sf "~{dbSNP_vcf}" "dbSNP.vcf.gz"
-        ln -sf "~{dbSNP_vcf_index}" "dbSNP.vcf.gz.tbi"
+        ln -sf "~{dbSNP_vcf}" "~{snp_vcf}"
+        ln -sf "~{dbSNP_vcf_index}" "~{snp_vcf_index}"
 
         gatk \
            --java-options "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
@@ -375,10 +377,10 @@ task haplotype_caller {
             -O "~{prefix}.vcf.gz" \
             ~{if use_soft_clipped_bases then "" else "--dont-use-soft-clipped-bases"} \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
-            --dbsnp "dbSNP.vcf.gz" \
+            --dbsnp "~{snp_vcf}" \
             --emit-ref-confidence "~{reference_confidence}"
 
-        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{sample}" "~{sample}.bai" "dbSNP.vcf.gz" "dbSNP.vcf.gz.tbi"
+        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{sample}" "~{sample}.bai" "~{snp_vcf}" "~{snp_vcf_index}"
     >>>
 
     output {
