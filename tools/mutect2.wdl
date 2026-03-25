@@ -1,5 +1,116 @@
 version 1.3
 
+workflow mutect {
+    meta {
+        description: "Workflow for calling somatic variants using GATK Mutect2 and filtering with FilterMutectCalls"
+        outputs: {
+            filtered_somatic_vcf: "VCF file with filtered somatic variants from Mutect2",
+            filtered_somatic_vcf_index: "Index file for the filtered Mutect2 somatic variants VCF",
+        }
+    }
+
+    parameter_meta {
+        reference_fasta: "Reference genome in FASTA format"
+        reference_fasta_index: "Index file for the reference genome FASTA"
+        reference_fasta_dict: "Dictionary file for the reference genome FASTA"
+        normal_bam: "Input BAM file with aligned reads for normal sample"
+        normal_bam_index: "Index file for the normal BAM file"
+        tumor_bam: "Input BAM file with aligned reads for tumor sample"
+        tumor_bam_index: "Index file for the tumor BAM file"
+        variant_vcf: "VCF file with variants and allele frequencies to summarize pileups over."
+        variant_vcf_index: "Index file for the variant VCF"
+        intervals: "One or more genomic intervals over which to operate. Often the same file as `variants`"
+        intervals_index: "Index file for the intervals file"
+        germline_resource_vcf: "Optional VCF file with germline variants for Mutect2, recommended to be from gnomAD or similar population resource"
+        germline_resource_vcf_index: "Index file for the germline resource VCF"
+        panel_of_normals_vcf: "Optional VCF file with panel of normals for Mutect2, recommended to be generated from a large set of normal samples processed with Mutect2"
+        panel_of_normals_vcf_index: "Index file for the panel of normals VCF"
+        normal_sample_name: "Name of the normal sample"
+        tumor_sample_name: "Name of the tumor sample"
+        output_prefix: "Prefix for output files. The extensions '.vcf.gz' and '.vcf.gz.tbi' will be added."
+    }
+
+    input {
+        File reference_fasta
+        File reference_fasta_index
+        File reference_fasta_dict
+        File normal_bam
+        File normal_bam_index
+        File tumor_bam
+        File tumor_bam_index
+        File variant_vcf
+        File variant_vcf_index
+        File intervals
+        File intervals_index
+        File? germline_resource_vcf
+        File? germline_resource_vcf_index
+        File? panel_of_normals_vcf
+        File? panel_of_normals_vcf_index
+        String normal_sample_name = basename(normal_bam, ".bam")
+        String tumor_sample_name = basename(tumor_bam, ".bam")
+        String output_prefix = basename(tumor_bam, ".bam") + "_v_" + basename(normal_bam, ".bam")
+    }
+
+    call mutect2 {
+        reference_fasta,
+        reference_fasta_index,
+        reference_fasta_dict,
+        normal_bam,
+        normal_bam_index,
+        tumor_bam,
+        tumor_bam_index,
+        normal_sample_name,
+        tumor_sample_name,
+        output_prefix = output_prefix + "_unfiltered",
+        germline_resource_vcf,
+        germline_resource_vcf_index,
+        panel_of_normals_vcf,
+        panel_of_normals_vcf_index,
+    }
+
+    call get_pileup_summaries as get_tumor_pileups {
+        bam = tumor_bam,
+        bam_index = tumor_bam_index,
+        intervals,
+        intervals_index,
+        variants = variant_vcf,
+        variants_index = variant_vcf_index,
+        prefix = output_prefix + "_tumor",
+    }
+
+    call get_pileup_summaries as get_normal_pileups {
+        bam = normal_bam,
+        bam_index = normal_bam_index,
+        intervals,
+        intervals_index,
+        variants = variant_vcf,
+        variants_index = variant_vcf_index,
+        prefix = output_prefix + "_normal",
+    }
+
+    call calculate_contamination {
+        tumor_pileups = get_tumor_pileups.pileup_summaries,
+        normal_pileups = get_normal_pileups.pileup_summaries,
+        prefix = output_prefix,
+    }
+
+    call filter_mutect {
+        unfiltered_somatic_vcf = mutect2.somatic_vcf,
+        unfiltered_somatic_vcf_index = mutect2.somatic_vcf_index,
+        reference_fasta,
+        reference_fasta_index,
+        reference_fasta_dict,
+        contamination_table = calculate_contamination.contamination_table,
+        maf_segments = calculate_contamination.maf_segments,
+        prefix = output_prefix,
+    }
+
+    output {
+        File filtered_somatic_vcf = filter_mutect.filtered_somatic_vcf
+        File filtered_somatic_vcf_index = filter_mutect.filtered_somatic_vcf_index
+    }
+}
+
 task mutect2 {
     meta {
         description: "Run GATK Mutect2 somatic variant calling workflow"
@@ -144,6 +255,9 @@ task filter_mutect {
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fa.fai"
         ln -sf "~{reference_fasta_dict}" "$ref_fasta.dict"
 
+        ln -sf "~{unfiltered_somatic_vcf}" "~{basename(unfiltered_somatic_vcf)}"
+        ln -sf "~{unfiltered_somatic_vcf_index}" "~{basename(unfiltered_somatic_vcf_index)}"
+
         gatk --java-options "-Xmx~{24000}m" \
             FilterMutectCalls \
             -R "$ref_fasta.fa" \
@@ -152,7 +266,7 @@ task filter_mutect {
             --tumor-segmentation "~{maf_segments}" \
             -O "~{prefix}.vcf.gz"
 
-        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
+        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{basename(unfiltered_somatic_vcf)}" "~{basename(unfiltered_somatic_vcf_index)}"
     >>>
 
     output {
@@ -236,7 +350,9 @@ task get_pileup_summaries {
         bam: "Input BAM file with aligned reads"
         bam_index: "Index file for the input BAM file"
         intervals: "One or more genomic intervals over which to operate. Often the same file as `variants`"
+        intervals_index: "Index file for the intervals file"
         variants: "VCF file with variants and allele frequencies to summarize pileups over."
+        variants_index: "Index file for the variant VCF"
         prefix: "Prefix for output file. The extension '.table' will be added."
         modify_disk_size_gb: "Additional disk size in GB to allocate"
     }
@@ -245,7 +361,9 @@ task get_pileup_summaries {
         File bam
         File bam_index
         File intervals
+        File intervals_index
         File variants
+        File variants_index
         String prefix = basename(bam, ".bam") + "_pileup_summaries"
         Int modify_disk_size_gb = 0
     }
@@ -256,8 +374,17 @@ task get_pileup_summaries {
         + 20
         + modify_disk_size_gb
 
+    String name = basename(bam, ".bam")
+
     command <<<
         set -euo pipefail
+
+        ln -sf "~{bam}" "~{name}"
+        ln -sf "~{bam_index}" "~{name}.bai"
+        ln -sf "~{intervals}" "~{basename(intervals)}"
+        ln -sf "~{intervals_index}" "~{basename(intervals_index)}"
+        ln -sf "~{variants}" "~{basename(variants)}"
+        ln -sf "~{variants_index}" "~{basename(variants_index)}"
 
         gatk --java-options "-Xmx~{24000}m" \
             GetPileupSummaries \
@@ -265,6 +392,8 @@ task get_pileup_summaries {
             -V "~{variants}" \
             -L "~{intervals}" \
             -O "~{prefix}.table"
+
+        rm -rf "~{name}" "~{name}.bai" "~{basename(intervals)}" "~{basename(intervals_index)}" "~{basename(variants)}" "~{basename(variants_index)}"
     >>>
 
     output {
