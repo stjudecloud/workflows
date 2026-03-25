@@ -1,6 +1,6 @@
 version 1.3
 
-workflow mutect {
+workflow mutect2_wf {
     meta {
         description: "Workflow for calling somatic variants using GATK Mutect2 and filtering with FilterMutectCalls"
         outputs: {
