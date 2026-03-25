@@ -63,7 +63,7 @@ task clair3 {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2) + ceil(size(bam, "GB")) + 50
+    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2) + ceil(size(bam, "GB") * 2) + 150
         + modify_disk_size_gb
 
     String filename = basename(bam)
@@ -76,8 +76,9 @@ task clair3 {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
-        ln -s "~{bam}" "~{filename}"
-        ln -s "~{bam_index}" "~{filename}.bai"
+        # Clair-3 resolves the BAM path...
+        cp "~{bam}" "~{filename}"
+        cp "~{bam_index}" "~{filename}.bai"
 
         run_clair3.sh \
             --bam_fn="~{filename}" \
@@ -216,10 +217,10 @@ task clairs {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
-        ln -s "~{tumor_bam}" "~{tumor}"
-        ln -s "~{tumor_bam_index}" "~{tumor}.bai"
-        ln -s "~{normal_bam}" "~{normal}"
-        ln -s "~{normal_bam_index}" "~{normal}.bai"
+        cp "~{tumor_bam}" "~{tumor}"
+        cp "~{tumor_bam_index}" "~{tumor}.bai"
+        cp "~{normal_bam}" "~{normal}"
+        cp "~{normal_bam_index}" "~{normal}.bai"
 
         run_clairs \
             --tumor_bam_fn "~{tumor}" \
