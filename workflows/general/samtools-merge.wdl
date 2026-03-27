@@ -35,10 +35,9 @@ workflow samtools_merge {
         scatter (merge_num in range((bam_length / max_length) + 1)) {
             # Get the sublist of bams
             scatter (bam_num in range(max_length)) {
-                Int num = (if merge_num > 0
+                Int num = if merge_num > 0
                     then bam_num + (merge_num * max_length)
                     else bam_num
-                )
                 if (num < bam_length) {
                     File bam_list = bams[num]
                 }

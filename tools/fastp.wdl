@@ -159,17 +159,16 @@ task fastp {
         fastp \
             -i "~{read_one_fastq}" \
             ~{"-I '" + read_two_fastq + "'"} \
-            ~{(if output_fastq
-                then "-o '" + (if defined(read_two_fastq)
+            ~{if output_fastq
+                then "-o '" + if defined(read_two_fastq)
                     then "~{prefix}.R1.fastq.gz"
-                    else "~{prefix}.fastq.gz"
-                ) + "'"
+                    else "~{prefix}.fastq.gz" + "'"
                 else ""
-            )} \
-            ~{(if (defined(read_two_fastq) && output_fastq)
+            } \
+            ~{if (defined(read_two_fastq) && output_fastq)
                 then "-O '" + prefix + ".R2.fastq.gz'"
                 else ""
-            )} \
+            } \
             --reads_to_process ~{first_n_reads} \
             ~{if deduplicate
                 then "--dedup"
@@ -249,10 +248,9 @@ task fastp {
 
     runtime {
         cpu: ncpu
-        memory: (if disable_duplicate_eval
+        memory: if disable_duplicate_eval
             then "4 GB"
             else dup_acc_to_mem[duplicate_accuracy]
-        )
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fastp:1.0.1--heae3180_0"
         maxRetries: 1

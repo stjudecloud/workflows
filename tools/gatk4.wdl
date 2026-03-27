@@ -40,15 +40,16 @@ task split_n_cigar_reads {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
-         set -euo pipefail
+        set -euo pipefail
 
-         gatk \
-             --java-options "-Xms4000m -Xmx~{java_heap_size}g" \
-             SplitNCigarReads \
-             -R "~{fasta}" \
-             -I "~{bam}" \
-             -O "~{prefix}.bam" \
-             -OBM true
+        gatk \
+            --java-options "-Xms4000m -Xmx~{java_heap_size}g" \
+            SplitNCigarReads \
+            -R "~{fasta}" \
+            -I "~{bam}" \
+            -O "~{prefix}.bam" \
+            -OBM true
+
         # GATK is unreasonable and uses the plain ".bai" suffix.
         mv "~{prefix}.bai" "~{prefix}.bam.bai"
     >>>
@@ -116,19 +117,19 @@ task base_recalibrator {
     Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
+    #@ except: LineWidth
     command <<<
         # shellcheck disable=SC2102
         gatk \
-            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{
-                java_heap_size
-            }g" \
+            --java-options \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
             BaseRecalibratorSpark \
             -R "~{fasta}" \
             -I "~{bam}" \
-            ~{(if use_original_quality_scores
+            ~{if use_original_quality_scores
                 then "--use-original-qualities"
                 else ""
-            )} \
+            } \
             -O "~{outfile_name}" \
             --known-sites "~{dbSNP_vcf}" \
             ~{sep(" ", prefix("--known-sites ", squote(known_indels_sites_vcfs)))} \
@@ -183,14 +184,14 @@ task apply_bqsr {
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
+    #@ except: LineWidth
     command <<<
         set -euo pipefail
 
         # shellcheck disable=SC2102
         gatk \
-            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{
-                java_heap_size
-            }g" \
+            --java-options \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
             ApplyBQSRSpark \
             --spark-master local[~{ncpu}] \
             -I "~{bam}" \
@@ -271,9 +272,11 @@ task haplotype_caller {
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
+    #@ except: LineWidth
     command <<<
         gatk \
-           --java-options "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
+            --java-options \
+                "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
             HaplotypeCaller \
             -R "~{fasta}" \
             -I "~{bam}" \
@@ -454,12 +457,12 @@ task mark_duplicates_spark {
         Int ncpu = 4
     }
 
-    Float bam_size = size(bam, "GiB")
+    Float bam_size = size(bam, "GB")
     Int memory_gb = min(ceil(bam_size + 15), 50) + modify_memory_gb
-    Int disk_size_gb = ((if create_bam
+    Int disk_size_gb = (if create_bam
         then ceil((bam_size * 2) + 10)
         else ceil(bam_size + 10)
-    ) + modify_disk_size_gb)
+    ) + modify_disk_size_gb
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
