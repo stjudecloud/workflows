@@ -20,7 +20,9 @@ task deepsomatic {
         description: "Call variants using DeepSomatic"
         outputs: {
             vcf_output: "VCF file containing called somatic variants",
+            vcf_output_index: "Index file for the called somatic variants VCF",
             gvcf_output: "gVCF file containing called somatic variants",
+            gvcf_output_index: "Index file for the called somatic variants gVCF",
             runtime: "Optional HTML report of runtime metrics",
             vcf_stats: "Optional HTML report of VCF statistics",
         }
@@ -119,9 +121,11 @@ task deepsomatic {
 
     output {
         File vcf_output = "~{output_prefix}.vcf.gz"
+        File vcf_output_index = "~{output_prefix}.vcf.gz.tbi"
         File gvcf_output = "~{output_prefix}.g.vcf.gz"
-        File? runtime = "logs/runtime_by_region_vis.html"
-        File? vcf_stats = "logs/vcf_stats_report.html"
+        File gvcf_output_index = "~{output_prefix}.g.vcf.gz.tbi"
+        File? runtime = "logs/make_examples_runtime_by_region_report.html"
+        File? vcf_stats = "~{output_prefix}.visual_report.html"
     }
 
     requirements {
@@ -143,7 +147,9 @@ task deepvariant {
         description: "Call variants using DeepVariant"
         outputs: {
             vcf_output: "VCF file containing called variants",
+            vcf_output_index: "Index file for the called variants VCF",
             gvcf_output: "gVCF file containing called variants",
+            gvcf_output_index: "Index file for the called variants gVCF",
             runtime: "Optional HTML report of runtime metrics",
             vcf_stats: "Optional HTML report of VCF statistics",
         }
@@ -231,7 +237,9 @@ task deepvariant {
 
     output {
         File vcf_output = "~{output_prefix}.vcf.gz"
+        File vcf_output_index = "~{output_prefix}.vcf.gz.tbi"
         File gvcf_output = "~{output_prefix}.g.vcf.gz"
+        File gvcf_output_index = "~{output_prefix}.g.vcf.gz.tbi"
         File? runtime = "logs/runtime_by_region_vis.html"
         File? vcf_stats = "logs/vcf_stats_report.html"
     }
