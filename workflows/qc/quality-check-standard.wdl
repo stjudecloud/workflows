@@ -125,6 +125,7 @@ workflow quality_check_standard {
         File bam_index
         File kraken_db
         File? gtf
+        #@ except: LineWidth
         File multiqc_config = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/multiqc_config/multiqc_config.yaml"
         Array[File] extra_multiqc_inputs = []
         Array[File] coverage_beds = []
@@ -208,10 +209,9 @@ workflow quality_check_standard {
         subsample_index.bam_index,
         bam_index,
     ])
-    String post_subsample_prefix = (if (defined(subsample.sampled_bam))
+    String post_subsample_prefix = if (defined(subsample.sampled_bam))
         then prefix + ".subsampled"
         else prefix
-    )
 
     call picard.validate_bam after quickcheck { input:
         bam = post_subsample_bam,
@@ -592,14 +592,13 @@ task parse_input {
     >>>
 
     output {
-        Array[String] labels = (if (coverage_beds_len > 0)
+        Array[String] labels = if (coverage_beds_len > 0)
             then read_lines("labels.txt")
             else []
-        )
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.1"
+        container: "ghcr.io/stjudecloud/util:3.0.3"
         maxRetries: 1
     }
 }

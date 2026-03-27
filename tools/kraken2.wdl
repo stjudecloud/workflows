@@ -98,14 +98,14 @@ task download_library {
 
     String db_name = "kraken2_" + library_name + "_library"
 
-    Int disk_size_gb = ((if library_name == "bacteria"
+    Int disk_size_gb = (if library_name == "bacteria"
         then 300
         else if library_name == "nr"
-        then 600
-        else if library_name == "nt"
-        then 2500
-        else 25
-    ) + modify_disk_size_gb)
+            then 600
+            else if library_name == "nt"
+                then 2500
+                else 25
+    ) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -262,10 +262,10 @@ task build_db {
 
     Float tarballs_size = size(tarballs, "GB")
     Int disk_size_gb = ceil(tarballs_size * 6) + 10 + modify_disk_size_gb
-    Int memory_gb = ((if (max_db_size_gb > 0)
+    Int memory_gb = (if (max_db_size_gb > 0)
         then ceil(max_db_size_gb * 1.2)
         else ceil(tarballs_size * 2)
-    ) + modify_memory_gb)
+    ) + modify_memory_gb
 
     String max_db_size_bytes = "~{max_db_size_gb}000000000"
 
@@ -294,10 +294,10 @@ task build_db {
             --kmer-len ~{kmer_len} \
             --minimizer-len ~{minimizer_len} \
             --minimizer-spaces ~{minimizer_spaces} \
-            ~{(if (max_db_size_gb > 0)
+            ~{if (max_db_size_gb > 0)
                 then "--max-db-size '" + max_db_size_bytes + "'"
                 else ""
-            )} \
+            } \
             --threads "$n_cores" \
             --db "~{db_name}"
 
@@ -388,11 +388,9 @@ task kraken {
     Float read2_size = size(read_two_fastq_gz, "GB")
     Int disk_size_gb_calculation = (ceil((db_size * 2) + read1_size + read2_size) + 10 + modify_disk_size_gb
     )
-    Int disk_size_gb = (if store_sequences
+    Int disk_size_gb = if store_sequences
         then disk_size_gb_calculation + ceil(read1_size + read2_size)
         else disk_size_gb_calculation
-    )
-
     Int memory_gb = ceil(db_size * 2) + modify_memory_gb
 
     String out_report = prefix + ".kraken2.txt"
