@@ -131,6 +131,7 @@ task clairs {
         description: "Run ClairS paired sample variant caller"
         outputs: {
             vcf: "VCF file with somatic variants called by ClairS",
+            vcf_index: "Index for `vcf`",
         }
     }
 
@@ -282,6 +283,7 @@ task clairs {
 
     output {
         File vcf = "~{output_dir}/~{prefix}.vcf.gz"
+        File vcf_index = "~{output_dir}/~{prefix}.vcf.gz.tbi"
     }
 
     requirements {
