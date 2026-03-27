@@ -313,10 +313,15 @@ task sort {
     command <<<
         set -euo pipefail
 
-        picard -Xmx~{java_heap_size}g SortSam \
+        mkdir tmp
+
+        picard -Xmx~{java_heap_size}g \
+            -Djava.io.tmpdir=`pwd`/tmp \
+            SortSam \
             -I "~{bam}" \
             -O "~{outfile_name}" \
             -SO "~{sort_order}" \
+            --TMP_DIR `pwd`/tmp \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY "~{validation_stringency}"
@@ -326,6 +331,8 @@ task sort {
         if [ -f "~{prefix}.bai" ]; then
             mv "~{prefix}.bai" "~{outfile_name}.bai"
         fi
+
+        rm -rf ./tmp
     >>>
 
     output {
