@@ -165,7 +165,7 @@ task create_library_from_fastas {
 
     String db_name = "kraken2_custom_library"
 
-    Float fastas_size = size(fastas_gz, "GiB")
+    Float fastas_size = size(fastas_gz, "GB")
     Int disk_size_gb = ceil(fastas_size * 5) + 10 + modify_disk_size_gb
 
     command <<<
@@ -260,7 +260,7 @@ task build_db {
         Int modify_disk_size_gb = 0
     }
 
-    Float tarballs_size = size(tarballs, "GiB")
+    Float tarballs_size = size(tarballs, "GB")
     Int disk_size_gb = ceil(tarballs_size * 6) + 10 + modify_disk_size_gb
     Int memory_gb = ((if (max_db_size_gb > 0)
         then ceil(max_db_size_gb * 1.2)
@@ -383,9 +383,9 @@ task kraken {
         Int modify_disk_size_gb = 0
     }
 
-    Float db_size = size(db, "GiB")
-    Float read1_size = size(read_one_fastq_gz, "GiB")
-    Float read2_size = size(read_two_fastq_gz, "GiB")
+    Float db_size = size(db, "GB")
+    Float read1_size = size(read_one_fastq_gz, "GB")
+    Float read2_size = size(read_two_fastq_gz, "GB")
     Int disk_size_gb_calculation = (ceil((db_size * 2) + read1_size + read2_size) + 10 + modify_disk_size_gb
     )
     Int disk_size_gb = (if store_sequences
