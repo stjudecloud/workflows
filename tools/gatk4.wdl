@@ -181,7 +181,7 @@ task base_recalibrator {
         Array[File] known_indels_sites_indices
         String outfile_name = basename(bam, ".bam") + ".recal.txt"
         Boolean use_original_quality_scores = false
-        Int memory_gb = 25
+        Int memory_gb = 50
         Int modify_disk_size_gb = 0
         Int ncpu = 4
         }
@@ -192,11 +192,19 @@ task base_recalibrator {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
+        ref_fasta=~{sub(basename(fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{fasta}" "$ref_fasta.fa"
+        ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{dict}" "$ref_fasta.dict"
+
         # shellcheck disable=SC2102
         gatk \
             --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
             BaseRecalibratorSpark \
-            -R "~{fasta}" \
+            -R "$ref_fasta.fa" \
             -I "~{bam}" \
             ~{(
                 if use_original_quality_scores
@@ -207,6 +215,8 @@ task base_recalibrator {
             --known-sites "~{dbSNP_vcf}" \
             ~{sep(" ", prefix("--known-sites ", squote(known_indels_sites_vcfs)))} \
             --spark-master local[~{ncpu}]
+
+        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
     >>>
 
     output {
@@ -217,7 +227,7 @@ task base_recalibrator {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
+        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
     }
 }
