@@ -290,7 +290,7 @@ task apply_bqsr {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
+        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
     }
 }
@@ -897,14 +897,14 @@ task genotype_gvcfs {
             GenotypeGVCFs \
             -R "$ref_fasta.fa" \
             -V "~{basename(gvcf)}" \
-            -O "~{prefix}.vcf.gz" \
+            -O "~{prefix}.g.vcf.gz" \
 
         rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{basename(gvcf)}" "~{basename(gvcf_index)}"
     >>>
 
     output {
-        File vcf = "~{prefix}.vcf.gz"
-        File vcf_index = "~{prefix}.vcf.gz.tbi"
+        File vcf = "~{prefix}.g.vcf.gz"
+        File vcf_index = "~{prefix}.g.vcf.gz.tbi"
     }
 
     requirements {
