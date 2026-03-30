@@ -97,7 +97,10 @@ task mark_duplicates {
     command <<<
         set -euo pipefail
 
+        mkdir tmp
+
         picard -Xmx~{java_heap_size}g MarkDuplicates \
+             -Djava.io.tmpdir=`pwd`/tmp \
             -I "~{bam}" \
             --METRICS_FILE "~{prefix}.metrics.txt" \
             -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
@@ -117,6 +120,8 @@ task mark_duplicates {
         if ~{create_bam}; then
             mv "~{prefix}.bai" "~{prefix}.bam.bai"
         fi
+
+        rm -rf ./tmp
     >>>
 
     output {
