@@ -998,6 +998,7 @@ workflow germline_variant_calling_wf {
         dbSNP_vcf,
         dbSNP_vcf_index,
         prefix,
+        reference_confidence = ref_confidence.GVCF,
     }
 
     call genotype_gvcfs {
