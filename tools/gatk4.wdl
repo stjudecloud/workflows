@@ -755,6 +755,7 @@ task variant_recalibrator {
             -O "~{prefix}.recal" \
             --tranches-file "~{prefix}.tranches" \
             --rscript-file "~{prefix}.plots.R" \
+            --dont-run-rscript \
             ~{sep(" ", prefix("--resource:", resources))} \
             ~{sep(" ", prefix("-an ", quote(annotations)))}
 
@@ -770,7 +771,9 @@ task variant_recalibrator {
 
     output {
         File recal_file = "~{prefix}.recal"
+        File recal_index = "~{prefix}.recal.idx"
         File tranches_file = "~{prefix}.tranches"
+        File rscript_file = "~{prefix}.plots.R"
     }
 
     requirements {
