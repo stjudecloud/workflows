@@ -635,6 +635,7 @@ task apply_vqsr {
         File vcf
         File vcf_index
         File recal_file
+        File recal_file_index
         File tranches_file
         VariantMode mode = VariantMode.SNP
         String prefix = basename(vcf, ".vcf.gz")
@@ -1031,6 +1032,7 @@ workflow germline_variant_calling_wf {
         vcf = genotype_gvcfs.vcf,
         vcf_index = genotype_gvcfs.vcf_index,
         recal_file = variant_recalibrator.recal_file,
+        recal_file_index = variant_recalibrator.recal_index,
         tranches_file = variant_recalibrator.tranches_file,
         prefix = prefix + ".vqsr",
     }
