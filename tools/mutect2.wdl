@@ -97,6 +97,7 @@ workflow mutect2_wf {
     call filter_mutect {
         unfiltered_somatic_vcf = mutect2.somatic_vcf,
         unfiltered_somatic_vcf_index = mutect2.somatic_vcf_index,
+        unfiltered_somatic_vcf_stats = mutect2.stats,
         reference_fasta,
         reference_fasta_index,
         reference_fasta_dict,
@@ -117,6 +118,7 @@ task mutect2 {
         outputs: {
             somatic_vcf: "VCF file with somatic variants called by Mutect2",
             somatic_vcf_index: "Index file for the Mutect2 somatic variants VCF",
+            stats: "VCF file with statistics about the Mutect2 somatic variant calls",
         }
     }
 
@@ -198,6 +200,7 @@ task mutect2 {
      output {
          File somatic_vcf = "~{output_prefix}.vcf.gz"
          File somatic_vcf_index = "~{output_prefix}.vcf.gz.tbi"
+         File stats = "~{output_prefix}.vcf.gz.stats"
     }
 
     requirements {
@@ -220,6 +223,7 @@ task filter_mutect {
     parameter_meta {
         unfiltered_somatic_vcf: "Input VCF file with unfiltered somatic variants from Mutect2"
         unfiltered_somatic_vcf_index: "Index file for the unfiltered Mutect2 somatic variants VCF"
+        unfiltered_somatic_vcf_stats: "VCF file with statistics about the unfiltered Mutect2 somatic variant calls"
         reference_fasta: "Reference genome in FASTA format"
         reference_fasta_index: "Index file for the reference genome FASTA"
         reference_fasta_dict: "Dictionary file for the reference genome FASTA"
@@ -232,6 +236,7 @@ task filter_mutect {
     input {
         File unfiltered_somatic_vcf
         File unfiltered_somatic_vcf_index
+        File unfiltered_somatic_vcf_stats
         File reference_fasta
         File reference_fasta_index
         File reference_fasta_dict
@@ -257,11 +262,12 @@ task filter_mutect {
 
         ln -sf "~{unfiltered_somatic_vcf}" "~{basename(unfiltered_somatic_vcf)}"
         ln -sf "~{unfiltered_somatic_vcf_index}" "~{basename(unfiltered_somatic_vcf_index)}"
+        ln -sf "~{unfiltered_somatic_vcf_stats}" "~{basename(unfiltered_somatic_vcf_stats)}"
 
         gatk --java-options "-Xmx~{24000}m" \
             FilterMutectCalls \
             -R "$ref_fasta.fa" \
-            -V "~{unfiltered_somatic_vcf}" \
+            -V "~{basename(unfiltered_somatic_vcf)}" \
             --contamination-table "~{contamination_table}" \
             --tumor-segmentation "~{maf_segments}" \
             -O "~{prefix}.vcf.gz"
@@ -379,8 +385,8 @@ task get_pileup_summaries {
     command <<<
         set -euo pipefail
 
-        ln -sf "~{bam}" "~{name}"
-        ln -sf "~{bam_index}" "~{name}.bai"
+        ln -sf "~{bam}" "~{name}.bam"
+        ln -sf "~{bam_index}" "~{name}.bam.bai"
         ln -sf "~{intervals}" "~{basename(intervals)}"
         ln -sf "~{intervals_index}" "~{basename(intervals_index)}"
         ln -sf "~{variants}" "~{basename(variants)}"
@@ -388,12 +394,12 @@ task get_pileup_summaries {
 
         gatk --java-options "-Xmx~{24000}m" \
             GetPileupSummaries \
-            -I "~{bam}" \
-            -V "~{variants}" \
-            -L "~{intervals}" \
+            -I "~{name}.bam" \
+            -V "~{basename(variants)}" \
+            -L "~{basename(intervals)}" \
             -O "~{prefix}.table"
 
-        rm -rf "~{name}" "~{name}.bai" "~{basename(intervals)}" "~{basename(intervals_index)}" "~{basename(variants)}" "~{basename(variants_index)}"
+        rm -rf "~{name}.bam" "~{name}.bam.bai" "~{basename(intervals)}" "~{basename(intervals_index)}" "~{basename(variants)}" "~{basename(variants_index)}"
     >>>
 
     output {
@@ -402,7 +408,7 @@ task get_pileup_summaries {
 
     requirements {
         container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
-        memory: "25 GB"
+        memory: "50 GB"
         disks: "~{disk_size_gb} GB"
         maxRetries: 1
         cpu: 1

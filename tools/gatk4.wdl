@@ -259,7 +259,7 @@ task apply_bqsr {
         File recalibration_report
         String prefix = basename(bam, ".bam")
         Boolean use_original_quality_scores = false
-        Int memory_gb = 25
+        Int memory_gb = 50
         Int modify_disk_size_gb = 0
         Int ncpu = 4
     }
