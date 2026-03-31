@@ -17,6 +17,7 @@ task manta_germline {
         calling_regions_bed: "Optional BED file specifying regions to call variants"
         calling_regions_index: "Index file for the calling regions BED file"
         output_dir: "Directory to store Manta output"
+        exome: "Whether to run Manta in exome mode, which disables high depth filters for calling variants in exome data"
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
     }
@@ -29,6 +30,7 @@ task manta_germline {
         File? calling_regions_bed
         File? calling_regions_index
         String output_dir = "manta_output"
+        Boolean exome = false
         Int threads = 20
         Int modify_disk_size_gb = 0
     }
@@ -55,6 +57,7 @@ task manta_germline {
             --bam "~{filename}" \
             --referenceFasta "$ref_fasta" \
             ~{if defined(calling_regions_bed) then "--callRegions '" + calling_regions_bed + "'" else ""} \
+            ~{if exome then "--exome" else ""} \
             --runDir "~{output_dir}"
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
@@ -102,6 +105,7 @@ task manta_somatic {
         calling_regions_bed: "Optional BED file specifying regions to call variants"
         calling_regions_index: "Index file for the calling regions BED file"
         output_dir: "Directory to store Manta output"
+        exome: "Whether to run Manta in exome mode, which disables high depth filters for calling variants in exome data"
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
     }
@@ -116,6 +120,7 @@ task manta_somatic {
         File? calling_regions_bed
         File? calling_regions_index
         String output_dir = "manta_output"
+        Boolean exome = false
         Int threads = 20
         Int modify_disk_size_gb = 0
     }
@@ -146,6 +151,7 @@ task manta_somatic {
             --normalBam "~{normal}" \
             --tumorBam "~{tumor}" \
             --referenceFasta "$ref_fasta" \
+            ~{if exome then "--exome" else ""} \
             ~{if defined(calling_regions_bed) then "--callRegions '" + calling_regions_bed + "'" else ""} \
             --runDir "~{output_dir}"
 
