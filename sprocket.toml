@@ -7,3 +7,7 @@ deny_notes = true
 cpu_limit_behavior = "try_with_max"
 memory_limit_behavior = "try_with_max"
 
+[doc]
+index_page = "assets/DOCS.md"
+homepage_url = "https://stjude.cloud"
+github_url = "https://github.com/stjudecloud/workflows"
