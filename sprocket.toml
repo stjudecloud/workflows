@@ -10,3 +10,7 @@ sort_inputs = true
 cpu_limit_behavior = "try_with_max"
 memory_limit_behavior = "try_with_max"
 
+[test]
+parallelism = 50
+throttle = 50
+

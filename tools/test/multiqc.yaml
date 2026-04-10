@@ -1,0 +1,18 @@
+multiqc:
+  - name: works
+    inputs:
+      files:
+        - ["test.bwa_aln_pe.chrY_chrM.readlength.txt"]
+      report_name:
+        - test
+  - name: bad_inputs_fail
+    inputs:
+      files:
+        - ["README.md", "test.tar.gz"]
+        - []
+      report_name:
+        - will_fail
+    assertions:
+      exit_code: 1
+      stderr:
+        - MultiQC didn't find any valid files\!

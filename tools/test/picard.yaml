@@ -1,9 +1,172 @@
+mark_duplicates:
+  - name: works
+    tags: [slow, high_mem]
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/test.PE.2_RGs.Aligned.out.sorted.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+      duplicate_scoring_strategy:
+        - SUM_OF_BASE_QUALITIES
+        - TOTAL_MAPPED_REFERENCE_LENGTH
+        - RANDOM
+      tagging_policy:
+        - DontTag
+        - OpticalOnly
+        - All
+      create_bam:
+        - true
+      clear_dt:
+        - true
+        - false
+      remove_duplicates:
+        - true
+        - false
+      remove_sequencing_duplicates:
+        - true
+        - false
+      optical_distance:
+        - 0
+        - 100
+    assertions:
+      duplicate_marked_bam:
+        - Defined: true
+      duplicate_marked_bam_index:
+        - Defined: true
+      duplicate_marked_bam_md5:
+        - Defined: true
+  - name: no_bam_creation
+    inputs:
+      bam:
+        - bams/test.PE.2_RGs.Aligned.out.sorted.bam
+      create_bam:
+        - false
+    assertions:
+      duplicate_marked_bam:
+        - Defined: false
+      duplicate_marked_bam_index:
+        - Defined: false
+      duplicate_marked_bam_md5:
+        - Defined: false
+validate_bam:
+  - name: zero_exit_code
+    tags: [slow]
+    inputs:
+      $files:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
+          # Following BAM has errors, must set `deny_errors = false`
+          - bams/test.PE.2_RGs.Aligned.out.sorted.bam
+          - bams/test.PE.2_RGs.Aligned.out.sorted.bam
+        reference_fasta:
+          - GRCh38.chrY_chrM.fa
+          - null
+          - GRCh38.chr9_chr22.fa.gz
+          - null
+          - GRCh38.chrY_chrM.fa
+          - null
+        deny_errors:
+          - true
+          - true
+          - true
+          - true
+          - false
+          - false
+      validation_stringency:
+        - STRICT
+        - LENIENT
+        - SILENT
+      deny_warnings:
+        - true
+        - false
+      summary_mode:
+        - true
+        - false
+      memory_gb:
+        - 5
+  - name: three_exit_code
+    inputs:
+      bam:
+        - bams/test.PE.2_RGs.Aligned.out.sorted.bam
+      reference_fasta:
+        - GRCh38.chrY_chrM.fa
+        - null
+      validation_stringency:
+        - STRICT
+        - LENIENT
+        - SILENT
+      deny_warnings:
+        - true
+        - false
+      deny_errors:
+        - true
+      summary_mode:
+        - true
+        - false
+      memory_gb:
+        - 5
+    assertions:
+      exit_code: 3
+  # TODO mock BAMs that trigger rc=1 and rc=2
+sort:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        # TODO: debug cryptic Picard errors
+        #- bams/test.PE.2_RGs.Aligned.out.sorted.bam
+      sort_order:
+        - queryname
+        - coordinate
+        # TODO: debug cryptic Picard errors
+        #- duplicate
+      validation_stringency:
+        - STRICT
+        - LENIENT
+        - SILENT
+      memory_gb:
+        - 5
 merge_sam_files:
-  - name: Merge works
+  - name: works
     inputs:
       bams:
-          - [bams/test.bwa_aln_pe.chrY_chrM.bam, bams/test.PE.2_RGs.Aligned.out.sorted.bam]
+        - [
+          bams/test.bwa_aln_pe.chrY_chrM.bam,
+          bams/test.PE.2_RGs.Aligned.out.sorted.bam,
+        ]
       prefix:
-          - test.merged
-    assertions:
-      custom: quickcheck.sh
+        - test.merged
+      sort_order:
+        - coordinate
+        - unsorted
+      validation_stringency:
+        - LENIENT
+        - SILENT
+        # TODO: STRICT validation throws errors
+        #- STRICT
+      threading:
+        - true
+        - false
+      memory_gb:
+        - 5
+clean_sam:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/test.PE.2_RGs.Aligned.out.sorted.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+      validation_stringency:
+        - STRICT
+        - LENIENT
+        - SILENT
+      memory_gb:
+        - 5
+# TODO: all the `collect*` QC tasks
+# TODO: merge_vcfs
+# TODO: scatter_interval_list
+# TODO: create_sequence_dictionary

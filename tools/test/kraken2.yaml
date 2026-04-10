@@ -1,0 +1,34 @@
+# download_taxonomy cannot be mocked
+# download_library cannot be mocked
+
+create_library_from_fastas:
+  - name: c_elegans_download
+    inputs:
+      fastas_gz:
+        - ["https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/reference/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_genomic.fna.gz"]
+build_db:
+  - name: works
+    inputs:
+      tarballs:
+        - ["reference/kraken2_taxonomy.tar.gz", "reference/kraken2_C_elegans_library.tar.gz"]
+kraken:
+  - name: works
+    inputs:
+      $samples:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/random10k.r1.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r2.fq.gz
+      db:
+        - reference/kraken2_db.mini.tar.gz
+      store_sequences:
+        - true
+        - false
+      use_names:
+        - true
+        - false
+      min_base_quality:
+        - 0
+        - 20

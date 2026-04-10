@@ -1,0 +1,7 @@
+compute_checksum:
+  - name: works
+    inputs:
+      file:
+        - umap.csv
+        - README.md
+        - test.tar.gz
