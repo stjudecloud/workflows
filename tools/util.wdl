@@ -40,7 +40,7 @@ task download {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
         maxRetries: 1
     }
 }
@@ -79,7 +79,7 @@ task split_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
         maxRetries: 1
     }
 }
@@ -127,7 +127,7 @@ task calc_feature_lengths {
     runtime {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
         maxRetries: 1
     }
 }
@@ -246,7 +246,7 @@ task unpack_tarball {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
         maxRetries: 1
     }
 }
@@ -353,7 +353,7 @@ task global_phred_scores {
     runtime {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
         maxRetries: 1
     }
 }
@@ -393,16 +393,16 @@ task check_fastq_and_rg_concordance {
 
     command <<<
         python3 /scripts/util/check_FQs_and_RGs.py \
-            --read-one-fastqs "~{sep(",", read_one_names)}" \
+            --read-one-fastqs "~{sep(",", squote(read_one_names))}" \
             ~{if length(read_twos) > 0
                 then "--read-two-fastqs \"" + sep(",", squote(read_twos)) + "\""
                 else ""
             } \
-            --read-groups "~{sep(",", read_groups)}"
+            --read-groups "~{sep(",", squote(read_groups))}"
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
         maxRetries: 1
     }
 }
@@ -462,7 +462,7 @@ task split_fastq {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
         maxRetries: 1
     }
 }

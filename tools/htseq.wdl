@@ -204,7 +204,7 @@ task calc_tpm {
     runtime {
         memory: "4 GB"
         disks: "10 GB"
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
         maxRetries: 1
     }
 }
