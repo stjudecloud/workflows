@@ -68,9 +68,9 @@ check_fastq_and_rg_concordance:
       read_groups:
         - ["ID:random10k"]
         - ["@RG ID:random10k"]
-        - ["@RG\tID:random10k"]
+        - ["@RG\\tID:random10k"]
         - ["ID:random10k SM:foo"]
-        - ["ID:random10k\tSM:foo"]
+        - ["ID:random10k\\tSM:foo"]
   - name: gt_one_valid
     inputs:
       read_one_names:
@@ -86,6 +86,19 @@ check_fastq_and_rg_concordance:
       read_groups:
         - ["ID:random10k", "ID:test"]
         - ["@RG ID:random10k", "@RG ID:test"]
-        - ["@RG\tID:random10k", "@RG\tID:test"]
+        - ["@RG\\tID:random10k", "@RG\\tID:test"]
         - ["ID:random10k SM:foo", "ID:test SM:foo"]
-        - ["ID:random10k\tSM:foo", "ID:test\tSM:foo"]
+        - ["ID:random10k\\tSM:foo", "ID:test\\tSM:foo"]
+split_fastq:
+  - name: works
+    inputs:
+      fastq:
+        - fastqs/random10k.r1.fq.gz
+        - fastqs/random10k.r2.fq.gz
+        - fastqs/test_R1.fq.gz
+        - fastqs/test_Rs.fq.gz
+      reads_per_file:
+        - 100
+        - 1000
+        - 10000
+        - 100000
