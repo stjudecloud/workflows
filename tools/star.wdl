@@ -613,12 +613,12 @@ task alignment {
         String out_filter_intron_strands = "RemoveInconsistentStrands"
         String out_sj_filter_reads = "All"
         String align_ends_type = "Local"
-        String align_soft_clip_at_reference_ends = "Yes" # TODO: make a boolean
+        String align_soft_clip_at_reference_ends = "Yes"  # TODO: make a boolean
         String align_insertion_flush = "None"
         String chim_out_type = "WithinBAM HardClip"
         String chim_filter = "banGenomicN"
-        String chim_out_junction_format = "plain" # TODO: make a boolean
-        String twopass_mode = "Basic" # TODO: make a boolean
+        String chim_out_junction_format = "plain"  # TODO: make a boolean
+        String twopass_mode = "Basic"  # TODO: make a boolean
         Boolean use_all_cores = false
         Float out_filter_mismatch_n_over_l_max = 0.3
         Float out_filter_mismatch_n_over_read_l_max = 1.0
@@ -802,8 +802,8 @@ task alignment {
             --outSAMtlen ~{if (out_sam_tlen == "left_plus")
                 then "1"
                 else if (out_sam_tlen == "left_any")
-                    then "2"
-                    else "error"
+                then "2"
+                else "error"
             } \
             --outFilterType "~{out_filter_type}" \
             --outFilterIntronMotifs "~{out_filter_intron_motifs}" \

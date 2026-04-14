@@ -7,7 +7,9 @@ calc_feature_lengths:
         - reference/gencode.v31.chrY_chrM.gtf.gz
       idattr:
         - gene_name
-        - exon_name
+        - transcript_name
+        - gene_id
+        - exon_id
 compression_integrity:
   # TODO: mock a corrupted file
   - name: passes
@@ -21,8 +23,11 @@ add_to_bam_header:
       bam:
         - bams/test.bam
       additional_header:
-        - "this is invalid but will work"
-        - "@PG:foobar"
+        - "@HD something"
+        - "@SQ\tother"
+        - "@RG"
+        - "@PG foobar"
+        - "@CO some comment"
 unpack_tarball:
   - name: works
     inputs:

@@ -146,7 +146,7 @@ merge_sam_files:
       validation_stringency:
         - LENIENT
         - SILENT
-        # TODO: STRICT validation throws errors
+        # TODO: STRICT validation throws errors for only this task
         #- STRICT
       threading:
         - true

@@ -132,7 +132,7 @@ merge:
         - true
         - false
 addreplacerg:
-  # TODO assertions to check the new RGs are right
+  # TODO: assertions to check the new RGs are right
   - name: existing_rg
     inputs:
       $sample:

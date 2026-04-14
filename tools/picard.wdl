@@ -141,7 +141,7 @@ task validate_bam {
         outputs: {
             validate_report: {
                 description: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
-                help: "TODO"
+                help: "If `summary_mode` is not enabled, then this file will be gzipped and contain one line for every warning or error logged by Picard. If `summary_mode == true` this will be a plaintext summary of warnings and errors encountered by Picard.",
             },
         }
     }
@@ -165,11 +165,11 @@ task validate_bam {
             tool_default: "STRICT",
         }
         deny_errors: {
-            description: "TODO",
+            description: "Fail the task if any errors are detected by Picard.",
             group: "Common",
         }
         deny_warnings: {
-            description: "TODO",
+            description: "Fail the task if any errors or warnings are detected by Picard.",
             group: "Common",
         }
         summary_mode: {
@@ -400,7 +400,10 @@ task merge_sam_files {
             --ASSUME_SORTED true \
             --SORT_ORDER "~{sort_order}" \
             --USE_THREADING ~{threading} \
-            ~{if sort_order == "coordinate" then "--CREATE_INDEX true" else ""} \
+            ~{if sort_order == "coordinate"
+                then "--CREATE_INDEX true"
+                else ""
+            } \
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY "~{validation_stringency}"
 
@@ -815,6 +818,7 @@ task quality_score_distribution {
         maxRetries: 1
     }
 }
+
 task merge_vcfs {
     meta {
         description: "Merges the input VCF files into a single VCF file"
@@ -1052,4 +1056,3 @@ task bam_to_fastq {
         maxRetries: 1
     }
 }
-
