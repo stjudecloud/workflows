@@ -96,7 +96,7 @@ split_fastq:
         - fastqs/random10k.r1.fq.gz
         - fastqs/random10k.r2.fq.gz
         - fastqs/test_R1.fq.gz
-        - fastqs/test_Rs.fq.gz
+        - fastqs/test_R2.fq.gz
       reads_per_file:
         - 100
         - 1000
