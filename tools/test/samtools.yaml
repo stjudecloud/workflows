@@ -295,4 +295,4 @@ faidx:
       fasta:
         - reference/GRCh38.chr1_chr19.fa
         - reference/GRCh38.chr9_chr22.fa.gz
-        - reference/GRCh38.chrY_chrM.fa.gz
+        - reference/GRCh38.chrY_chrM.fa

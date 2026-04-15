@@ -23,10 +23,10 @@ add_to_bam_header:
       bam:
         - bams/test.bam
       additional_header:
-        - "@HD something"
+        - "@HD\tsomething"
         - "@SQ\tother"
-        - "@RG"
-        - "@PG foobar"
+        - "@RG\t"
+        - "@PG\tfoobar"
         - "@CO some comment"
 unpack_tarball:
   - name: works

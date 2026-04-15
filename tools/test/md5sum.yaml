@@ -4,4 +4,4 @@ compute_checksum:
       file:
         - umap.csv
         - README.md
-        - test.tar.gz
+        - tarball.tar.gz

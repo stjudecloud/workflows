@@ -161,8 +161,8 @@ task fastp {
             ~{"-I '" + read_two_fastq + "'"} \
             ~{if output_fastq
                 then "-o '" + if defined(read_two_fastq)
-                    then "~{prefix}.R1.fastq.gz"
-                    else "~{prefix}.fastq.gz" + "'"
+                    then "~{prefix}.R1.fastq.gz'"
+                    else "~{prefix}.fastq.gz'"
                 else ""
             } \
             ~{if (defined(read_two_fastq) && output_fastq)

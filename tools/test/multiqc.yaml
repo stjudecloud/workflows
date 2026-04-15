@@ -8,7 +8,7 @@ multiqc:
   - name: bad_inputs_fail
     inputs:
       files:
-        - ["README.md", "test.tar.gz"]
+        - ["README.md", "tarball.tar.gz"]
         - []
       report_name:
         - will_fail
