@@ -148,6 +148,7 @@ task fastp {
     Float input_size = size(read_one_fastq, "GB") + size(read_two_fastq, "GB")
     Int disk_size_gb = ceil(input_size) * 2 + 10 + modify_disk_size_gb
 
+    #@ except: ShellCheck
     command <<<
         set -euo pipefail
 
