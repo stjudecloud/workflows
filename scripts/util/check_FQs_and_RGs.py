@@ -60,12 +60,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     read1_fastqs = [
-        fq.strip().strip("'").split(os.sep)[-1] for fq in args.read_one_fastqs.split(",")
+        fq.strip().strip("'").split(os.sep)[-1]
+        for fq in args.read_one_fastqs.split(",")
     ]
     read2_fastqs = []
     if args.read_two_fastqs:
         read2_fastqs = [
-            fq.strip().strip("'").split(os.sep)[-1] for fq in args.read_two_fastqs.split(",")
+            fq.strip().strip("'").split(os.sep)[-1]
+            for fq in args.read_two_fastqs.split(",")
         ]
 
     if read2_fastqs != []:
