@@ -14,6 +14,6 @@ jobs:
         except: KnownRules
         ignore-patterns: methylation
     - name: Run 'sprocket format'
-      uses: stjude-rust-labs/sprocket-action@feat/format
+      uses: stjude-rust-labs/sprocket-action@main
       with:
         action: format
