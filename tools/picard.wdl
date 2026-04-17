@@ -97,7 +97,7 @@ task mark_duplicates {
         mkdir tmp
 
         picard -Xmx~{java_heap_size}g MarkDuplicates \
-             -Djava.io.tmpdir=`pwd`/tmp \
+             -Djava.io.tmpdir="$(pwd)/tmp" \
             -I "~{bam}" \
             --METRICS_FILE "~{prefix}.metrics.txt" \
             -O "~{if create_bam
@@ -327,12 +327,12 @@ task sort {
         mkdir tmp
 
         picard -Xmx~{java_heap_size}g \
-            -Djava.io.tmpdir=`pwd`/tmp \
+            -Djava.io.tmpdir="$(pwd)/tmp" \
             SortSam \
             -I "~{bam}" \
             -O "~{outfile_name}" \
             -SO "~{sort_order}" \
-            --TMP_DIR `pwd`/tmp \
+            --TMP_DIR "$(pwd)/tmp" \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY "~{validation_stringency}"
@@ -921,6 +921,7 @@ task merge_vcfs {
 
     input {
         Array[File] vcfs
+        #@except: UnusedInput
         Array[File] vcfs_indexes
         String output_vcf_name
         Int modify_disk_size_gb = 0
