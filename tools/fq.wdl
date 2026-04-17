@@ -1,5 +1,4 @@
 ## [Homepage](https://github.com/stjude-rust-labs/fq)
-
 version 1.1
 
 task fqlint {
@@ -67,9 +66,7 @@ task fqlint {
     Float read1_size = size(read_one_fastq, "GB")
     Float read2_size = size(read_two_fastq, "GB")
 
-    Int memory_gb = (
-        ceil((read1_size + read2_size) * 0.25) + 1 + modify_memory_gb
-    )
+    Int memory_gb = (ceil((read1_size + read2_size) * 0.25) + 1 + modify_memory_gb)
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
@@ -78,7 +75,10 @@ task fqlint {
             ~{sep(" ", prefix("--disable-validator ", squote(disable_validator_codes)))} \
             --single-read-validation-level "~{single_read_validation_level}" \
             --paired-read-validation-level "~{paired_read_validation_level}" \
-            --lint-mode ~{if panic then "panic" else "log"} \
+            --lint-mode ~{if panic
+                then "panic"
+                else "log"
+            } \
             "~{read_one_fastq}" \
             ~{"'" + read_two_fastq + "'"}
     >>>
@@ -123,9 +123,7 @@ task subsample {
     input {
         File read_one_fastq
         File? read_two_fastq
-        String prefix = sub(
-            basename(read_one_fastq),
-            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+        String prefix = sub(basename(read_one_fastq), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         Float probability = 1.0
@@ -138,12 +136,12 @@ task subsample {
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
-    String probability_arg = (
-        if (probability < 1.0 && probability > 0)
+    String probability_arg = if (probability < 1.0 && probability > 0)
         then "-p ~{probability}"
         else ""
-    )
-    String record_count_arg = if (record_count > 0) then "-n ~{record_count}" else ""
+    String record_count_arg = if (record_count > 0)
+        then "-n ~{record_count}"
+        else ""
 
     String r1_dst = prefix + ".R1.subsampled.fastq.gz"
     String r2_dst = prefix + ".R2.subsampled.fastq.gz"

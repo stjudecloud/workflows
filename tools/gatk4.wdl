@@ -1,5 +1,3 @@
-## [Homepage](https://software.broadinstitute.org/gatk)
-
 version 1.3
 
 enum ref_confidence {
@@ -83,7 +81,7 @@ task split_n_cigar_reads {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         bam: "Input BAM format file to with unsplit reads containing Ns in their CIGAR strings."
         bam_index: "BAM index file corresponding to the input BAM"
         fasta: "Reference genome in FASTA format. Must be uncompressed."
@@ -107,9 +105,7 @@ task split_n_cigar_reads {
         Int ncpu = 8
     }
 
-    Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3
-        + ceil(size(fasta, "GB"))
-        + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -122,8 +118,9 @@ task split_n_cigar_reads {
             -I "~{bam}" \
             -O "~{prefix}.bam" \
             -OBM true
-       # GATK is unreasonable and uses the plain ".bai" suffix.
-       mv "~{prefix}.bai" "~{prefix}.bam.bai"
+
+        # GATK is unreasonable and uses the plain ".bai" suffix.
+        mv "~{prefix}.bai" "~{prefix}.bam.bai"
     >>>
 
     output {
@@ -146,11 +143,11 @@ task base_recalibrator {
         description: "Generates recalibration report for base quality score recalibration."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360036897372-BaseRecalibratorSpark-BETA"
         outputs: {
-            recalibration_report: "Recalibration report file"
+            recalibration_report: "Recalibration report file",
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         bam: "Input BAM format file on which to recabilbrate base quality scores"
         bam_index: "BAM index file corresponding to the input BAM"
         fasta: "Reference genome in FASTA format"
@@ -184,11 +181,9 @@ task base_recalibrator {
         Int memory_gb = 50
         Int modify_disk_size_gb = 0
         Int ncpu = 4
-        }
+    }
 
-    Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3
-        + ceil(size(fasta, "GB"))
-        + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(bam, "GB") + 1) * 3 + ceil(size(fasta, "GB")) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -202,15 +197,15 @@ task base_recalibrator {
 
         # shellcheck disable=SC2102
         gatk \
-            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
+            --java-options \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
             BaseRecalibratorSpark \
             -R "$ref_fasta.fa" \
             -I "~{bam}" \
-            ~{(
-                if use_original_quality_scores
+            ~{if use_original_quality_scores
                 then "--use-original-qualities"
                 else ""
-            )} \
+            } \
             -O "~{outfile_name}" \
             --known-sites "~{dbSNP_vcf}" \
             ~{sep(" ", prefix("--known-sites ", squote(known_indels_sites_vcfs)))} \
@@ -242,7 +237,7 @@ task apply_bqsr {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         bam: "Input BAM format file on which to apply base quality score recalibration"
         bam_index: "BAM index file corresponding to the input BAM"
         recalibration_report: "Recalibration report file"
@@ -272,11 +267,15 @@ task apply_bqsr {
 
         # shellcheck disable=SC2102
         gatk \
-            --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
+            --java-options \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
             ApplyBQSRSpark \
             --spark-master local[~{ncpu}] \
             -I "~{bam}" \
-            ~{if use_original_quality_scores then "--use-original-qualities" else "" } \
+            ~{if use_original_quality_scores
+                then "--use-original-qualities"
+                else ""
+            } \
             -O "~{prefix}.bqsr.bam" \
             --bqsr-recal-file "~{recalibration_report}"
     >>>
@@ -305,7 +304,7 @@ task haplotype_caller {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         bam: "Input BAM format file on which to call variants"
         bam_index: "BAM index file corresponding to the input BAM"
         interval_list: {
@@ -353,10 +352,7 @@ task haplotype_caller {
         Int ncpu = 4
     }
 
-    Int disk_size_gb = ceil(size(bam, "GB") * 2)
-        + 30
-        + ceil(size(fasta, "GB"))
-        + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     String sample = basename(bam)
@@ -379,13 +375,17 @@ task haplotype_caller {
         ln -sf "~{dbSNP_vcf_index}" "~{snp_vcf_index}"
 
         gatk \
-           --java-options "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
+            --java-options \
+                "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
             HaplotypeCaller \
             -R "$ref_fasta.fa" \
             -I "~{sample}" \
             -L "~{interval_list}" \
             -O "~{prefix}.vcf.gz" \
-            ~{if use_soft_clipped_bases then "" else "--dont-use-soft-clipped-bases"} \
+            ~{if use_soft_clipped_bases
+                then ""
+                else "--dont-use-soft-clipped-bases"
+            } \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
             --dbsnp "~{snp_vcf}" \
             --emit-ref-confidence "~{reference_confidence}"
@@ -417,7 +417,7 @@ task variant_filtration {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         vcf: "Input VCF format file to filter"
         vcf_index: "VCF index file corresponding to the input VCF"
         fasta: "Reference genome in FASTA format"
@@ -444,8 +444,14 @@ task variant_filtration {
         File fasta
         File fasta_index
         File dict
-        Array[String] filter_names = ["FS", "QD"]
-        Array[String] filter_expressions = ["FS > 30.0", "QD < 2.0"]
+        Array[String] filter_names = [
+            "FS",
+            "QD",
+        ]
+        Array[String] filter_expressions = [
+            "FS > 30.0",
+            "QD < 2.0",
+        ]
         String prefix = basename(vcf, ".vcf.gz")
         Int cluster = 3
         Int window = 35
@@ -481,7 +487,7 @@ task variant_filtration {
 }
 
 task mark_duplicates_spark {
-     meta {
+    meta {
         description: "Marks duplicate reads in the input BAM file using GATK's Spark implementation of Picard's MarkDuplicates."
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832682540699-MarkDuplicatesSpark"
         outputs: {
@@ -531,7 +537,7 @@ task mark_duplicates_spark {
             group: "Common",
         }
         optical_distance: {
-            description:  "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled.",
+            description: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled.",
             help: "Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines.",
             warning: "Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`.",
         }
@@ -556,13 +562,10 @@ task mark_duplicates_spark {
 
     Float bam_size = size(bam, "GB")
     Int memory_gb = min(ceil(bam_size + 15), 50) + modify_memory_gb
-    Int disk_size_gb = (
-        (
-            if create_bam
-            then ceil((bam_size * 2) + 10)
-            else ceil(bam_size + 10)
-        ) + modify_disk_size_gb
-    )
+    Int disk_size_gb = (if create_bam
+        then ceil((bam_size * 2) + 10)
+        else ceil(bam_size + 10)
+    ) + modify_disk_size_gb
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -574,12 +577,16 @@ task mark_duplicates_spark {
             --java-options "-Xmx~{java_heap_size}g" \
             -I "~{bam}" \
             -M "~{prefix}.metrics.txt" \
-            -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
+            -O "~{if create_bam
+                then prefix + ".bam"
+                else "/dev/null"
+            }" \
             --create-output-bam-index ~{create_bam} \
             --read-validation-stringency "~{validation_stringency}" \
             --duplicate-scoring-strategy "~{duplicate_scoring_strategy}" \
-            --read-name-regex '~{
-                if (optical_distance > 0) then read_name_regex else "null"
+            --read-name-regex '~{if (optical_distance > 0)
+                then read_name_regex
+                else "null"
             }' \
             --duplicate-tagging-policy "~{tagging_policy}" \
             --optical-duplicate-pixel-distance ~{optical_distance} \

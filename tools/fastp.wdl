@@ -95,9 +95,7 @@ task fastp {
     input {
         File read_one_fastq
         File? read_two_fastq
-        String prefix = sub(
-            basename(read_one_fastq),
-            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+        String prefix = sub(basename(read_one_fastq), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         ) + ".trimmed"
         Boolean output_fastq = true
@@ -114,7 +112,9 @@ task fastp {
         Boolean phred64 = false
         Boolean use_all_cores = false
         Int first_n_reads = 0
-        Int duplicate_accuracy = if deduplicate then 3 else 1
+        Int duplicate_accuracy = if deduplicate
+            then 3
+            else 1
         Int n_base_limit = 5
         Int qualified_quality = 15
         Int unqualified_percent = 40
@@ -148,9 +148,9 @@ task fastp {
     Float input_size = size(read_one_fastq, "GB") + size(read_two_fastq, "GB")
     Int disk_size_gb = ceil(input_size) * 2 + 10 + modify_disk_size_gb
 
-    command <<< 
+    command <<<
         set -euo pipefail
-        
+
         n_cores=~{ncpu}
         if ~{use_all_cores}; then
             n_cores=$(nproc)
@@ -159,41 +159,70 @@ task fastp {
         fastp \
             -i "~{read_one_fastq}" \
             ~{"-I '" + read_two_fastq + "'"} \
-            ~{(
-                if output_fastq
-                then "-o '" + (
-                    if defined(read_two_fastq)
+            ~{if output_fastq
+                then "-o '" + if defined(read_two_fastq)
                     then "~{prefix}.R1.fastq.gz"
-                    else "~{prefix}.fastq.gz"
-                ) + "'"
+                    else "~{prefix}.fastq.gz" + "'"
                 else ""
-            )} \
-            ~{(
-                if (defined(read_two_fastq) && output_fastq)
+            } \
+            ~{if (defined(read_two_fastq) && output_fastq)
                 then "-O '" + prefix + ".R2.fastq.gz'"
                 else ""
-            )} \
+            } \
             --reads_to_process ~{first_n_reads} \
-            ~{if deduplicate then "--dedup" else ""} \
+            ~{if deduplicate
+                then "--dedup"
+                else ""
+            } \
             --dup_calc_accuracy ~{duplicate_accuracy} \
-            ~{if disable_duplicate_eval then "--dont_eval_duplication" else ""} \
-            ~{if phred64 then "--phred64" else ""} \
-            ~{if disable_quality_filter then "--disable_quality_filtering" else ""} \
+            ~{if disable_duplicate_eval
+                then "--dont_eval_duplication"
+                else ""
+            } \
+            ~{if phred64
+                then "--phred64"
+                else ""
+            } \
+            ~{if disable_quality_filter
+                then "--disable_quality_filtering"
+                else ""
+            } \
             -n ~{n_base_limit} \
             -q ~{qualified_quality} \
             -u ~{unqualified_percent} \
             -e ~{average_quality} \
-            ~{if disable_length_filter then "--disable_length_filtering" else ""} \
+            ~{if disable_length_filter
+                then "--disable_length_filtering"
+                else ""
+            } \
             -l ~{length_required} \
             --length_limit ~{length_limit} \
-            ~{if enable_complexity_filter then "-y" else ""} \
+            ~{if enable_complexity_filter
+                then "-y"
+                else ""
+            } \
             -Y ~{complexity_threshold} \
-            ~{if enable_overrepresentation_eval then "-p" else ""} \
+            ~{if enable_overrepresentation_eval
+                then "-p"
+                else ""
+            } \
             -P ~{overrepresentation_sampling} \
-            ~{if disable_adapter_trimming then "--disable_adapter_trimming" else ""} \
-            ~{if enable_pe_adapter_trimming then "-2" else ""} \
-            ~{if allow_gap_overlap_trimming then "--allow_gap_overlap_trimming" else ""} \
-            ~{if enable_base_correction then "-c" else ""} \
+            ~{if disable_adapter_trimming
+                then "--disable_adapter_trimming"
+                else ""
+            } \
+            ~{if enable_pe_adapter_trimming
+                then "-2"
+                else ""
+            } \
+            ~{if allow_gap_overlap_trimming
+                then "--allow_gap_overlap_trimming"
+                else ""
+            } \
+            ~{if enable_base_correction
+                then "-c"
+                else ""
+            } \
             --overlap_len_require ~{overlap_len_require} \
             --overlap_diff_limit ~{overlap_diff_limit} \
             --overlap_diff_percent_limit ~{overlap_diff_percent_limit} \
@@ -219,11 +248,9 @@ task fastp {
 
     runtime {
         cpu: ncpu
-        memory: (
-            if disable_duplicate_eval
+        memory: if disable_duplicate_eval
             then "4 GB"
             else dup_acc_to_mem[duplicate_accuracy]
-        )
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fastp:1.0.1--heae3180_0"
         maxRetries: 1
