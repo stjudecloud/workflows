@@ -59,7 +59,7 @@ task mark_duplicates {
         optical_distance: {
             description: "Maximum distance between read coordinates to consider them optical duplicates. If `0`, then optical duplicate marking is disabled. ",
             help: "Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Calculation of distance depends on coordinate data embedded in the read names, typically produced by the Illumina sequencing machines.",
-            warninhttps://github.com/stjudecloud/workflows/pull/282/conflict?name=workflows%252Fgeneral%252Falignment-post.wdl&ancestor_oid=53c18d64a10a64e2321608fa058db195e13153fc&base_oid=043fea6452bc60467e02481c1af3a0e77fc3e25e&head_oid=9caa5344ced046a8699e646b9004a8bf5dc174a9g: "Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`.",
+            warning: "Optical duplicate detection will not work on non-standard names without modifying `read_name_regex`.",
         }
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -209,7 +209,6 @@ task validate_bam {
     String stringency_arg = if index_validation_stringency_less_exhaustive
         then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
         else ""
-    )
 
     Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 4) + 50 + modify_disk_size_gb
