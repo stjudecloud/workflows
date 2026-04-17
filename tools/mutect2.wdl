@@ -150,8 +150,10 @@ task mutect2 {
         File tumor_bam
         File tumor_bam_index
         File? germline_resource_vcf
+        #@except: UnusedInput
         File? germline_resource_vcf_index
         File? panel_of_normals_vcf
+        #@except: UnusedInput
         File? panel_of_normals_vcf_index
         String normal_sample_name = basename(normal_bam, ".bam")
         String tumor_sample_name = basename(tumor_bam, ".bam")

@@ -14,7 +14,8 @@ enum VariantMode {
 
 struct Resource {
     meta {
-        description: "Struct representing a resource to be used in GATK VariantRecalibrator. This includes both the VCF file for the resource and metadata about how to use the resource in building the recalibration model."
+        description: "Struct representing a resource to be used in GATK VariantRecalibrator."
+        help: "This includes both the VCF file for the resource and metadata about how to use the resource in building the recalibration model."
     }
 
     parameter_meta {
@@ -111,16 +112,27 @@ task split_n_cigar_reads {
     command <<<
         set -euo pipefail
 
+        bam_name=~{basename(bam)}
+        ln -sf "~{bam}" "$bam_name"
+        ln -sf "~{bam_index}" "$bam_name.bai"
+
+        ref_fasta=~{sub(basename(fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{fasta}" "$ref_fasta.fa"
+        ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{dict}" "$ref_fasta.dict"
+
         gatk \
             --java-options "-Xms4000m -Xmx~{java_heap_size}g" \
             SplitNCigarReads \
             -R "~{fasta}" \
-            -I "~{bam}" \
+            -I "$bam_name" \
             -O "~{prefix}.bam" \
             -OBM true
 
         # GATK is unreasonable and uses the plain ".bai" suffix.
         mv "~{prefix}.bai" "~{prefix}.bam.bai"
+        rm "$bam_name" "$bam_name.bai" "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
     >>>
 
     output {
@@ -172,9 +184,10 @@ task base_recalibrator {
         File dict
         #@ except: SnakeCase
         File dbSNP_vcf
-        #@ except: SnakeCase
+        #@ except: SnakeCase, UnusedInput
         File dbSNP_vcf_index
         Array[File] known_indels_sites_vcfs
+        #@ except: UnusedInput
         Array[File] known_indels_sites_indices
         String outfile_name = basename(bam, ".bam") + ".recal.txt"
         Boolean use_original_quality_scores = false
@@ -189,6 +202,10 @@ task base_recalibrator {
     command <<<
         set -euo pipefail
 
+        bam_name=~{basename(bam)}
+        ln -sf "~{bam}" "$bam_name"
+        ln -sf "~{bam_index}" "$bam_name.bai"
+
         ref_fasta=~{sub(basename(fasta, ".gz"), ".(fasta|fa)?$", "")}
         gunzip -c "~{fasta}" > "$ref_fasta.fa" \
             || ln -sf "~{fasta}" "$ref_fasta.fa"
@@ -201,7 +218,7 @@ task base_recalibrator {
                 "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
             BaseRecalibratorSpark \
             -R "$ref_fasta.fa" \
-            -I "~{bam}" \
+            -I "$bam_name" \
             ~{if use_original_quality_scores
                 then "--use-original-qualities"
                 else ""
@@ -211,7 +228,7 @@ task base_recalibrator {
             ~{sep(" ", prefix("--known-sites ", squote(known_indels_sites_vcfs)))} \
             --spark-master local[~{ncpu}]
 
-        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
+        rm -rf "$bam_name" "$bam_name.bai" "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
     >>>
 
     output {
@@ -265,19 +282,25 @@ task apply_bqsr {
     command <<<
         set -euo pipefail
 
+        bam_name=~{basename(bam)}
+        ln -sf "~{bam}" "$bam_name"
+        ln -sf "~{bam_index}" "$bam_name.bai"
+
         # shellcheck disable=SC2102
         gatk \
             --java-options \
                 "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
             ApplyBQSRSpark \
             --spark-master local[~{ncpu}] \
-            -I "~{bam}" \
+            -I "$bam_name" \
             ~{if use_original_quality_scores
                 then "--use-original-qualities"
                 else ""
             } \
             -O "~{prefix}.bqsr.bam" \
             --bqsr-recal-file "~{recalibration_report}"
+
+        rm "$bam_name" "$bam_name.bai"
     >>>
 
     output {
@@ -462,14 +485,29 @@ task variant_filtration {
     Int disk_size_gb = ceil(size(vcf, "GB") * 2) + 30 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
+        vcf_name=~{basename(vcf)}
+        ln -sf "~{vcf}" "$vcf_name"
+        ln -sf "~{vcf_index}" "$vcf_name.tbi"
+
+        ref_fasta=~{sub(basename(fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{fasta}" "$ref_fasta.fa"
+        ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{dict}" "$ref_fasta.dict"
+
+
         gatk VariantFiltration \
-            --R "~{fasta}" \
-            --V "~{vcf}" \
+            --R "$ref_fasta.fa" \
+            --V "$vcf_name" \
             --window ~{window} \
             --cluster ~{cluster} \
             ~{sep(" ", prefix("--filter-name ", quote(filter_names)))} \
             ~{sep(" ", prefix("--filter-expression ", squote(filter_expressions)))} \
             -O "~{prefix}.filtered.vcf.gz"
+
+        rm "$vcf_name" "$vcf_name.tbi" "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
     >>>
 
     output {
@@ -625,8 +663,12 @@ task apply_vqsr {
         vcf: "Input VCF format file on which to apply variant quality score recalibration"
         vcf_index: "VCF index file corresponding to the input VCF"
         recal_file: "Recalibration file generated by the VariantRecalibrator tool"
+        recal_file_index: "Index file for the recalibration file"
         tranches_file: "Tranches file generated by the VariantRecalibrator tool"
-        mode: "Variant type (SNP or INDEL) to apply variant quality score recalibration for. If `BOTH`, then the same model will be applied to both SNPs and indels."
+        mode: {
+            description: "Variant type to apply variant quality score recalibration for.",
+            help: "If `BOTH`, then the same model will be applied to both SNPs and indels."
+        }
         prefix: "Prefix for the output recalibrated VCF. The extension `.recalibrated.vcf.gz` will be added."
         truth_sensitivity_filter_level: {
             description: "Truth sensitivity level at which to filter variants.",
@@ -642,6 +684,7 @@ task apply_vqsr {
         File vcf
         File vcf_index
         File recal_file
+        #@except: UnusedInput
         File recal_file_index
         File tranches_file
         VariantMode mode = VariantMode.SNP
@@ -698,7 +741,9 @@ task variant_recalibrator {
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/35967662766235-VariantRecalibrator"
         outputs: {
             recal_file: "Recalibration file containing the model generated by VariantRecalibrator",
+            recal_index: "Index file for the recalibration file",
             tranches_file: "Tranches file containing information about the sensitivity and specificity of the model at different score thresholds",
+            rscript_file: "R script file for generating plots to evaluate the model."
         }
     }
 
@@ -736,6 +781,7 @@ task variant_recalibrator {
         + ceil(size(reference_fasta, "GB") * 2)
         + 30 + modify_disk_size_gb
 
+    #@except: ShellCheck
     command <<<
         set -euo pipefail
 
