@@ -1,0 +1,24 @@
+align:
+  - name: works
+    inputs:
+      $samples:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r1.fq.gz
+          - fastqs/random10k.r2.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - null
+          - fastqs/random10k.r2.fq.gz
+          - null
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      reference_index:
+        - reference/GRCh38.chrY_chrM.mmi
+index:
+  - name: works
+    tags: [ reference, slow ]
+    inputs:
+      reference_fasta:
+        - reference/GRCh38.chrY_chrM.fa
