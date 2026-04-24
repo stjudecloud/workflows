@@ -1,0 +1,3 @@
+@HD	VN:1.0	SO:unsorted
+@SQ	SN:chrY	LN:57227415	M5:ce3e31103314a704255f3cd90369ecce	UR:file:///Users/afrantz/workflows/tests/input/GRCh38.chrY_chrM.fa.gz
+@SQ	SN:chrM	LN:16569	M5:c68f52674c9fb33aef52dcf399755519	UR:file:///Users/afrantz/workflows/tests/input/GRCh38.chrY_chrM.fa.gz

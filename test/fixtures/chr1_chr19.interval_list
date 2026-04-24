@@ -1,0 +1,19 @@
+@HD	VN:1.5	SO:coordinate
+@SQ	SN:chr1	LN:248956422	M5:6aef897c3d6ff0c78aff06ac189178dd	AS:38	UR:/seq/references/Homo_sapiens_assembly38/v0/Homo_sapiens_assembly38.fasta	SP:Homo sapiens
+@SQ	SN:chr19	LN:58617616	M5:85f9f4fc152c58cb7913c06d6b98573a	AS:38	UR:/seq/references/Homo_sapiens_assembly38/v0/Homo_sapiens_assembly38.fasta	SP:Homo sapiens
+chr1	10001	207666	+	. intersection ACGTmer
+chr1	257667	297968	+	. intersection ACGTmer
+chr1	347969	535988	+	. intersection ACGTmer
+chr1	585989	2702781	+	. intersection ACGTmer
+chr1	2746291	12954384	+	. intersection ACGTmer
+chr1	13004385	16799163	+	. intersection ACGTmer
+chr1	16849164	29552233	+	. intersection ACGTmer
+chr1	29553836	121976459	+	. intersection ACGTmer
+chr1	122026460	124977944	+	. intersection ACGTmer
+chr1	124978327	125130246	+	. intersection ACGTmer
+chr1	125131848	125171347	+	. intersection ACGTmer
+chr1	125173584	125184587	+	. intersection ACGTmer
+chr1	143184588	223558935	+	. intersection ACGTmer
+chr1	223608936	228558364	+	. intersection ACGTmer
+chr1	228608365	248946422	+	. intersection ACGTmer
+chr19	20002	208000	+	. intersection ACGTmer
