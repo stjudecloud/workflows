@@ -4,24 +4,22 @@ on:
   workflow_call:
 
 jobs:
-  list-tags:
+  list-files:
     runs-on: ubuntu-latest
     outputs:
-        tags: ${{ steps.set-tags.outputs.tags }}
+        files: ${{ steps.set-files.outputs.files }}
     steps:
         - name: checkout
           uses: actions/checkout@v4
-        - name: set tags
-          id: set-tags
-          # remove the "reference" tag as it's redundant with other tags
-          # remove the "slow" tag as it is unwanted for CI runs
-          run: echo "tags=$(find . -name '*.yaml' -exec yq --output-format yaml '.[].tags[] ' {} \; | sort | uniq | grep -vE 'reference|slow' | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
+        - name: set files
+          id: set-files
+          run: echo "files=$(find . -name '*.wdl'" >> $GITHUB_OUTPUT
   sprocket_test:
-    needs: list-tags
+    needs: list-files
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tag: ${{ fromJson(needs.list-tags.outputs.tags) }}
+        file: ${{ fromJson(needs.list-files.outputs.files) }}
         runner: [sprocket]
       fail-fast: false
     steps:
@@ -40,4 +38,4 @@ jobs:
       env: 
         RUNNER: ${{ matrix.runner }}
       run: |
-        sprocket dev test --include-tag ${{ matrix.tag }} --filter-tag reference --filter-tag slow
+        sprocket dev test --filter-tag reference --filter-tag slow ${{ matrix.file }}
