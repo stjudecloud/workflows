@@ -106,7 +106,7 @@ task validate_string_is_12bit_int {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }

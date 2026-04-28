@@ -138,7 +138,7 @@ task get_read_groups {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }
@@ -363,7 +363,7 @@ task validate_read_group {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }
@@ -421,7 +421,7 @@ task inner_read_group_to_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:branch-sprocket-test-3.0.4"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }

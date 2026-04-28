@@ -193,7 +193,7 @@ task combine_data {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-sprocket-test-2.2.1-7"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-7"
         memory: "~{memory_gb} GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -253,7 +253,7 @@ task filter_probes {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/pandas:branch-sprocket-test-2.2.1-7"
+        container: "ghcr.io/stjudecloud/pandas:2.2.1-7"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -292,7 +292,7 @@ task generate_umap {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/umap:branch-sprocket-test-0.5.7-11"
+        container: "ghcr.io/stjudecloud/umap:0.5.7-11"
         memory: "8 GB"
         cpu: 1
         disks: "~{disk_size_gb} GB"
@@ -332,7 +332,7 @@ task plot_umap {
         cpu: 1
         memory: "4 GB"
         disks: "4 GB"
-        container: "ghcr.io/stjudecloud/python-plotting:branch-sprocket-test-2.0.9"
+        container: "ghcr.io/stjudecloud/python-plotting:2.0.9"
         maxRetries: 1
     }
 }
