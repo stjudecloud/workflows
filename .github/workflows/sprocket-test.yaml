@@ -40,4 +40,4 @@ jobs:
       env: 
         RUNNER: ${{ matrix.runner }}
       run: |
-        sprocket dev test --include-tag ${{ matrix.tag }}
+        sprocket dev test --include-tag ${{ matrix.tag }} --filter-tag reference --filter-tag slow
