@@ -15,8 +15,8 @@ jobs:
           id: set-tags
           # remove the "reference" tag as it's redundant with other tags
           # remove the "slow" tag as it is unwanted for CI runs
-          run: echo "tags=$(find tests -name '*.yaml' -exec yq --output-format yaml '.[].tags[] ' {} \; | sort | uniq | grep -vE 'reference|slow' | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
-  pytest_check:
+          run: echo "tags=$(find . -name '*.yaml' -exec yq --output-format yaml '.[].tags[] ' {} \; | sort | uniq | grep -vE 'reference|slow' | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
+  sprocket_test:
     needs: list-tags
     runs-on: ubuntu-latest
     strategy:
