@@ -9,4 +9,4 @@ jobs:
         secrets: inherit
     call-test:
         uses: ./.github/workflows/sprocket-test.yaml
-        secrets: inherit
+        needs: call-build
