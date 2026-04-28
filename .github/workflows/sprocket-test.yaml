@@ -1,0 +1,43 @@
+name: Sprocket Test
+
+on:
+  workflow_call:
+
+jobs:
+  list-tags:
+    runs-on: ubuntu-latest
+    outputs:
+        tags: ${{ steps.set-tags.outputs.tags }}
+    steps:
+        - name: checkout
+          uses: actions/checkout@v4
+        - name: set tags
+          id: set-tags
+          # remove the "reference" tag as it's redundant with other tags
+          # remove the "slow" tag as it is unwanted for CI runs
+          run: echo "tags=$(find tests -name '*.yaml' -exec yq --output-format yaml '.[].tags[] ' {} \; | sort | uniq | grep -vE 'reference|slow' | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
+  pytest_check:
+    needs: list-tags
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tag: ${{ fromJson(needs.list-tags.outputs.tags) }}
+        runner: [sprocket]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        lfs: true
+    - name: Update Rust
+      run: rustup update stable && rustup default stable
+    - name: Build Sprocket
+      run: |
+        cargo install sprocket --locked
+    - name: Update containers
+      run: |
+        ./developer_scripts/update_container_tags.sh ${GITHUB_REF##*/}
+    - name: Run sprocket test
+      env: 
+        RUNNER: ${{ matrix.runner }}
+      run: |
+        sprocket dev test --include-tag ${{ matrix.tag }}
