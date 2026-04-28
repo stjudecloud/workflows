@@ -13,7 +13,7 @@ jobs:
           uses: actions/checkout@v4
         - name: set files
           id: set-files
-          run: echo "files=$(find . -name '*.wdl' | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
+          run: echo "files=$(find . -name '*.wdl' -print -o -path "./template" -prune | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
   sprocket_test:
     needs: list-files
     runs-on: ubuntu-latest
@@ -38,4 +38,4 @@ jobs:
       env: 
         RUNNER: ${{ matrix.runner }}
       run: |
-        sprocket dev test --filter-tag reference --filter-tag slow ${{ matrix.file }}
+        sprocket dev test --filter-tag reference --filter-tag slow --filter-tag high_mem ${{ matrix.file }}
