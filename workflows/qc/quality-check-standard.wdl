@@ -215,7 +215,7 @@ workflow quality_check_standard {
     call picard.validate_bam after quickcheck { input:
         bam = post_subsample_bam,
         outfile_name = post_subsample_prefix + ".ValidateSamFile.txt",
-        succeed_on_errors = true,
+        deny_errors = false,
         ignore_list = [],
         summary_mode = true,
     }
@@ -597,7 +597,7 @@ task parse_input {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }

@@ -1,0 +1,109 @@
+# TODO: test download
+calc_feature_lengths:
+  - name: works
+    inputs:
+      gtf:
+        - reference/gencode.v31.chr9_chr22.gtf.gz
+        - reference/gencode.v31.chrY_chrM.gtf.gz
+      idattr:
+        - gene_name
+        - transcript_name
+        - gene_id
+        - exon_id
+compression_integrity:
+  # TODO: mock a corrupted file
+  - name: passes
+    inputs:
+      bgzipped_file:
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bam
+add_to_bam_header:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bam
+      additional_header:
+        - "@HD\tsomething"
+        - "@SQ\tother"
+        - "@RG\t"
+        - "@PG\tfoobar"
+        - "@CO some comment"
+unpack_tarball:
+  - name: works
+    inputs:
+      tarball:
+        - tarball.tar.gz
+    assertions:
+      outputs:
+        tarball_contents:
+          - Length: 2
+make_coverage_regions_bed:
+  - name: works
+    inputs:
+      gtf:
+        - reference/gencode.v31.chr9_chr22.gtf.gz
+        - reference/gencode.v31.chrY_chrM.gtf.gz
+      feature_type:
+        - gene
+        - start_codon
+        - stop_codon
+        - Selenocysteine
+global_phred_scores:
+  - name: works
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      fast_mode:
+        - true
+        - false
+check_fastq_and_rg_concordance:
+  - name: one_valid
+    inputs:
+      read_one_names:
+        - [random10k.r1.fq.gz]
+        - [/this/is/an/abs/path with space/random10k.r1.fq.gz]
+        - [rel_path/random10k.r1.fq.gz]
+      read_two_names:
+        - [random10k.r2.fq.gz]
+        - [rel path with space/random10k.r2.fq.gz]
+        - null
+        - []
+      read_groups:
+        - ["ID:random10k"]
+        - ["@RG ID:random10k"]
+        - ["@RG\\tID:random10k"]
+        - ["ID:random10k SM:foo"]
+        - ["ID:random10k\\tSM:foo"]
+  - name: gt_one_valid
+    inputs:
+      read_one_names:
+        - [random10k.r1.fq.gz, test_R1.fq.gz]
+        - [/this/is/an/abs/path with different space/random10k.r1.fq.gz, /this/is/an/abs/path_different/test_R1.fq.gz]
+        - [rel_path/random10k.r1.fq.gz, rel path/test_R1.fq.gz]
+      read_two_names:
+        - [random10k.r2.fq.gz, test_R2.fq.gz]
+        - [/this/is/an/abs/path with a space/random10k.r2.fq.gz, /this/is/an/abs/path_different/test_R2.fq.gz]
+        - [rel_path/random10k.r2.fq.gz, rel path/test_R2.fq.gz]
+        - null
+        - []
+      read_groups:
+        - ["ID:random10k", "ID:test"]
+        - ["@RG ID:random10k", "@RG ID:test"]
+        - ["@RG\\tID:random10k", "@RG\\tID:test"]
+        - ["ID:random10k SM:foo", "ID:test SM:foo"]
+        - ["ID:random10k\\tSM:foo", "ID:test\\tSM:foo"]
+split_fastq:
+  - name: works
+    inputs:
+      fastq:
+        - fastqs/random10k.r1.fq.gz
+        - fastqs/random10k.r2.fq.gz
+        - fastqs/test_R1.fq.gz
+        - fastqs/test_R2.fq.gz
+      reads_per_file:
+        - 100
+        - 1000
+        - 10000
+        - 100000

@@ -1,0 +1,163 @@
+build_star_db:
+  - name: works
+    tags: [reference, slow, high_mem]
+    inputs:
+      $ref:
+        reference_fasta:
+          - reference/GRCh38.chr9_chr22.fa.gz
+          - reference/GRCh38.chrY_chrM.fa
+        gtf:
+          - reference/gencode.v31.chr9_chr22.gtf.gz
+          - reference/gencode.v31.chrY_chrM.gtf.gz
+      genome_chr_bin_n_bits:
+        - 18
+        - 10
+      genome_SA_index_n_bases:
+        - 14
+        - 10
+      genome_SA_sparse_d:
+        - 1
+        - 5
+      genome_suffix_length_max:
+        - -1
+        - 250
+      sjdb_overhang:
+        - 100
+        - 125
+alignment:
+  # TODO: test **all** options :'(
+  - name: works
+    tags: [slow]
+    inputs:
+      runtime.memory:
+        - "10 GB"
+      ncpu:
+        - 4
+      star_db_tar_gz:
+        - reference/star_db.chrY_chrM.tar.gz
+      $samples:
+        read_one_fastqs_gz:
+          - [fastqs/test_R1.fq.gz]
+          - [fastqs/test_R1.fq.gz, fastqs/random10k.r1.fq.gz]
+          - [fastqs/test_R2.fq.gz]
+          - [fastqs/test_R2.fq.gz, fastqs/random10k.r2.fq.gz]
+        read_two_fastqs_gz:
+          - [fastqs/test_R2.fq.gz]
+          - [fastqs/test_R2.fq.gz, fastqs/random10k.r2.fq.gz]
+          - []
+          - null
+        read_groups:
+          - ["ID:test"]
+          - ["ID:test PU:flowcell1.lane1 SM:sample1", "ID:random10k PU:flowcell1.lane1 SM:sample1"]
+          - ["ID:test SM:sample1 PL:ILLUMINA"]
+          - ["ID:test PU:flowcell1.lane1 SM:sample1", "ID:random10k PU:flowcell1.lane1 SM:sample1"]
+      # TODO: unbork this by breaking into multiple tests (currently expands into several bajillion test executions)
+      # clip_3p_adapter_seq:
+      #   - { left: "None", right: "None" }
+      #   - { left: "sequence", right: "polyA" }
+      # out_sam_strand_field:
+      #   - intronMotif
+      #   - None
+      # out_sam_attributes:
+      #   - "NH HI AS nM NM MD XS"
+      #   - "NH HS AS nM"
+      # out_filter_type:
+      #   - Normal
+      #   - BySJout
+      # out_filter_intron_motifs:
+      #   - None
+      #   - RemoveNoncanonical
+      #   - RemoveNoncanonicalUnannotated
+      # out_filter_intron_strands:
+      #   - None
+      #   - RemoveInconsistentStrands
+      # out_sj_filter_reads:
+      #   - All
+      #   - Unique
+      # align_soft_clip_at_reference_ends:
+      #   - Yes
+      #   - No
+      # align_insertion_flush:
+      #   - None
+      #   - Right
+      # chim_out_type:
+      #   - Junctions
+      #   - WithinBAM HardClip
+      #   - WithinBAM SoftClip
+      # chim_out_junction_format:
+      #   - plain
+      #   - comments
+      # twopass_mode:
+      #   - Basic
+      #   - None
+      # run_rng_seed:
+      #   - 777
+      #   - 42
+      # sjdb_score:
+      #   - 2
+      #   - 4
+      # read_map_number:
+      #   - -1
+      #   - 100
+      # out_filter_multimap_n_max:
+      #   - 10
+      #   - 0
+      #   - 1
+      # out_filter_mismatch_n_max:
+      #   - 10
+      #   - 0
+      #   - 1
+      # out_filter_score_min:
+      #   - 0
+      #   - 15
+      #   - 255
+      # out_filter_match_n_min:
+      #   - 0
+      #   - 10
+      #   - 1000
+      # align_intron_min:
+      #   - 21
+      #   - 0
+      #   - 1
+      #   - 200
+      # align_intron_max:
+      #   - 0
+      #   - 500000
+      # align_mates_gap_max:
+      #   - 0
+      #   - 1000000
+      # align_sj_overhang_min:
+      #   - 5
+      #   - 0
+      #   - 100
+      # align_sjdb_overhang_min:
+      #   - 1
+      #   - 0
+      #   - 100
+      # chim_segment_min:
+      #   - 10
+      #   - 0
+      #   - 100
+      # chim_score_min:
+      #   - 10
+      #   - 0
+      #   - 100
+      # chim_score_drop_max:
+      #   - 20
+      #   - 0
+      #   - 100
+      # chim_junction_overhang_min:
+      #   - 20
+      #   - 0
+      #   - 100
+      # chim_main_segment_multi_n_max:
+      #   - 10
+      #   - 0
+      #   - 1
+      # chim_multimap_n_max:
+      #   - 0
+      #   - 5
+      # two_pass1_reads_n:
+      #   - -1
+      #   - 0
+      #   - 100

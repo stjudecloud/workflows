@@ -34,7 +34,7 @@ task compute_checksum {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }

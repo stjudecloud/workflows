@@ -168,7 +168,7 @@ task alignment {
         read_groups: {
             description: "An array of `String`s where each `String` corresponds to one read group.",
             help: "Each read group string should start with the `ID` field followed by any other read group fields, where fields are delimited by a space. See `../data_structures/read_group.wdl` for information about possible fields and utility tasks for constructing, validating, and \"stringifying\" read groups.",
-            warning: "The `ID` field for each read group _must_ be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `[\"ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1\", \"ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1\"]`. These two read groups could be associated with the following four FASTQs: `[\"sample1.rg1.R1.fastq\", \"sample1.rg2.R1.fastq\"]` and `[\"sample1.rg1.R2.fastq\", \"sample1.rg2.R2.fastq\"]`",
+            warning: "The `ID` field for each read group _must_ be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `[\"ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:ILLUMINA LB:sample1_lib1\", \"ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:ILLUMINA LB:sample1_lib1\"]`. These two read groups could be associated with the following four FASTQs: `[\"sample1.rg1.R1.fastq\", \"sample1.rg2.R1.fastq\"]` and `[\"sample1.rg1.R2.fastq\", \"sample1.rg2.R2.fastq\"]`",
         }
         read_two_fastqs_gz: {
             description: "An array of gzipped FASTQ files containing read two information",
@@ -613,12 +613,12 @@ task alignment {
         String out_filter_intron_strands = "RemoveInconsistentStrands"
         String out_sj_filter_reads = "All"
         String align_ends_type = "Local"
-        String align_soft_clip_at_reference_ends = "Yes"
+        String align_soft_clip_at_reference_ends = "Yes"  # TODO: make a boolean
         String align_insertion_flush = "None"
         String chim_out_type = "WithinBAM HardClip"
         String chim_filter = "banGenomicN"
-        String chim_out_junction_format = "plain"
-        String twopass_mode = "Basic"
+        String chim_out_junction_format = "plain"  # TODO: make a boolean
+        String twopass_mode = "Basic"  # TODO: make a boolean
         Boolean use_all_cores = false
         Float out_filter_mismatch_n_over_l_max = 0.3
         Float out_filter_mismatch_n_over_read_l_max = 1.0
@@ -802,8 +802,8 @@ task alignment {
             --outSAMtlen ~{if (out_sam_tlen == "left_plus")
                 then "1"
                 else if (out_sam_tlen == "left_any")
-                    then "2"
-                    else "error"
+                then "2"
+                else "error"
             } \
             --outFilterType "~{out_filter_type}" \
             --outFilterIntronMotifs "~{out_filter_intron_motifs}" \

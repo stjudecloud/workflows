@@ -1,0 +1,6 @@
+librarian:
+  - name: works
+    inputs:
+      read_one_fastq:
+        - fastqs/test_R1.fq.gz
+        - fastqs/random10k.r1.fq.gz

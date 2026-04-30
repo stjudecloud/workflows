@@ -1,0 +1,68 @@
+# TODO: test advanced options
+fastp:
+  - name: SE_trimming
+    inputs:
+      read_one_fastq:
+        - fastqs/test_R1.fq.gz
+        - fastqs/random10k.r1.fq.gz
+        - fastqs/test_R2.fq.gz
+        - fastqs/random10k.r2.fq.gz
+    assertions:
+      outputs:
+        single_end_reads_fastq_gz:
+          - Defined: true
+        read_one_fastq_gz:
+          - Defined: false
+        read_two_fastq_gz:
+          - Defined: false
+  - name: PE_trimming
+    inputs:
+      read_one_fastq:
+        - fastqs/test_R1.fq.gz
+        - fastqs/random10k.r1.fq.gz
+      read_two_fastq:
+        - fastqs/test_R2.fq.gz
+        - fastqs/random10k.r2.fq.gz
+    assertions:
+      outputs:
+        single_end_reads_fastq_gz:
+          - Defined: false
+        read_one_fastq_gz:
+          - Defined: true
+        read_two_fastq_gz:
+          - Defined: true
+  - name: SE_qc
+    inputs:
+      read_one_fastq:
+        - fastqs/test_R1.fq.gz
+        - fastqs/random10k.r1.fq.gz
+        - fastqs/test_R2.fq.gz
+        - fastqs/random10k.r2.fq.gz
+      output_fastq:
+        - false
+    assertions:
+      outputs:
+        single_end_reads_fastq_gz:
+          - Defined: false
+        read_one_fastq_gz:
+          - Defined: false
+        read_two_fastq_gz:
+          - Defined: false
+  - name: PE_qc
+    inputs:
+      read_one_fastq:
+        - fastqs/test_R1.fq.gz
+        - fastqs/random10k.r1.fq.gz
+      read_two_fastq:
+        - fastqs/test_R2.fq.gz
+        - fastqs/random10k.r2.fq.gz
+      output_fastq:
+        - false
+    assertions:
+      outputs:
+        single_end_reads_fastq_gz:
+          - Defined: false
+        read_one_fastq_gz:
+          - Defined: false
+        read_two_fastq_gz:
+          - Defined: false
