@@ -101,10 +101,10 @@ task download_library {
     Int disk_size_gb = (if library_name == "bacteria"
         then 300
         else if library_name == "nr"
-            then 600
-            else if library_name == "nt"
-                then 2500
-                else 25
+        then 600
+        else if library_name == "nt"
+        then 2500
+        else 25
     ) + modify_disk_size_gb
 
     command <<<

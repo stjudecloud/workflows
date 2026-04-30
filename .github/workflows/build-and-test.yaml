@@ -8,5 +8,5 @@ jobs:
         uses: ./.github/workflows/docker-build.yaml
         secrets: inherit
     call-test:
-        uses: ./.github/workflows/pytest.yaml
+        uses: ./.github/workflows/sprocket-test.yaml
         needs: call-build

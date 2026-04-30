@@ -392,7 +392,7 @@ task subsample {
                 >&2 echo "No reads are in the output BAM!"
                 >&2 echo "This should not be possible! Please report this as a bug."
                 rm first_read.sam
-                exit 42
+                exit 1
             fi
             rm first_read.sam
         fi
@@ -514,7 +514,8 @@ task merge {
             description: "Copy the `@` headers from this file to the merged BAM.",
             help: "This will replace any header lines that would otherwise be copied from the first BAM file in the list. File may actually be in SAM format, though any alignment records it may contain are ignored.",
         }
-        region: "Merge files in the specified region (Format: `chr:start-end`)"
+        # TODO: using `region` requires BAM indices be passed in
+        # region: "Merge files in the specified region (Format: `chr:start-end`)"
         attach_rg: {
             description: "Attach an RG tag to each alignment. The tag value is inferred from file names.",
             group: "Common",
@@ -548,7 +549,7 @@ task merge {
         Array[File] bams
         String prefix
         File? new_header
-        String region = ""
+        # String region = ""
         Boolean attach_rg = true
         Boolean name_sorted = false
         Boolean combine_rg = true
@@ -584,10 +585,6 @@ task merge {
             ~{"-h \"" + new_header + "\""} \
             ~{if name_sorted
                 then "-n"
-                else ""
-            } \
-            ~{if (region != "")
-                then "-R \"" + region + "\""
                 else ""
             } \
             ~{if attach_rg
@@ -632,10 +629,14 @@ task addreplacerg {
 
     parameter_meta {
         bam: "Input BAM format file to add read group information"
-        read_group_id: "Allows you to specify the read group ID of an existing @RG line and applies it to the reads specified by the `orphan_only` option"
+        read_group_id: {
+            description: "Allows you to specify the read group ID of an existing @RG line and applies it to the reads specified by the `orphan_only` option",
+            warning: "Mutually exclusive with `read_group_line`",
+            group: "Common",
+        }
         read_group_line: {
             description: "A read group to append to (or replace in) the header and apply to the reads specified by the `orphan_only` option.",
-            warning: "Only **one** read group line can be supplied per invocation of this task.",
+            warning: "Mutually exclusive with `read_group_id`. Only **one** read group line can be supplied per invocation of this task.",
             help: "Each String in the Array should correspond to one field of the read group line. Tab literals will be inserted between each entry in the final BAM.",
             group: "Common",
         }
@@ -1221,6 +1222,52 @@ task position_sorted_fixmate {
     }
 }
 
+task faidx {
+    meta {
+        description: "Creates a `.fai` FASTA index for the input FASTA"
+        outputs: {
+            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`.",
+        }
+    }
+
+    parameter_meta {
+        fasta: "Input FASTA format file to index. Optionally gzip compressed."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fasta
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fasta_size = size(fasta, "GB")
+    Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
+
+    String outfile_name = basename(fasta, ".gz") + ".fai"
+
+    command <<<
+        set -euo pipefail
+
+        ref_fasta=~{basename(fasta, ".gz")}
+        gunzip -c "~{fasta}" > "$ref_fasta" \
+            || ln -sf "~{fasta}" "$ref_fasta"
+
+        samtools faidx -o "~{outfile_name}" "$ref_fasta"
+    >>>
+
+    output {
+        File fasta_index = outfile_name
+    }
+
+    runtime {
+        cpu: 1
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 1
+    }
+}
+
 #@ except: MatchingOutputMeta
 task markdup {
     meta {
@@ -1385,52 +1432,6 @@ task markdup {
         cpu: ncpu
         disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
-        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
-        maxRetries: 1
-    }
-}
-
-task faidx {
-    meta {
-        description: "Creates a `.fai` FASTA index for the input FASTA"
-        outputs: {
-            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`.",
-        }
-    }
-
-    parameter_meta {
-        fasta: "Input FASTA format file to index. Optionally gzip compressed."
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
-
-    input {
-        File fasta
-        Int modify_disk_size_gb = 0
-    }
-
-    Float fasta_size = size(fasta, "GB")
-    Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
-
-    String outfile_name = basename(fasta, ".gz") + ".fai"
-
-    command <<<
-        set -euo pipefail
-
-        ref_fasta=~{basename(fasta, ".gz")}
-        gunzip -c "~{fasta}" > "$ref_fasta" \
-            || ln -sf "~{fasta}" "$ref_fasta"
-
-        samtools faidx -o "~{outfile_name}" "$ref_fasta"
-    >>>
-
-    output {
-        File fasta_index = outfile_name
-    }
-
-    runtime {
-        cpu: 1
-        memory: "4 GB"
-        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }

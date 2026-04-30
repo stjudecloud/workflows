@@ -125,7 +125,6 @@ workflow quality_check_standard {
         File bam_index
         File kraken_db
         File? gtf
-        #@ except: LineWidth
         File multiqc_config = "https://raw.githubusercontent.com/stjudecloud/workflows/main/workflows/qc/multiqc_config/multiqc_config.yaml"
         Array[File] extra_multiqc_inputs = []
         Array[File] coverage_beds = []
@@ -216,7 +215,7 @@ workflow quality_check_standard {
     call picard.validate_bam after quickcheck { input:
         bam = post_subsample_bam,
         outfile_name = post_subsample_prefix + ".ValidateSamFile.txt",
-        succeed_on_errors = true,
+        deny_errors = false,
         ignore_list = [],
         summary_mode = true,
     }
@@ -598,7 +597,7 @@ task parse_input {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }

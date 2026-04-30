@@ -16,7 +16,7 @@ task multiqc {
 
     parameter_meta {
         files: "An array of files for MultiQC to compile into a report. Invalid files will be gracefully ignored by MultiQC."
-        report_name: "A name for the MultiQC outputs: <report_name>.html and <report_name>_data.zip"
+        report_name: "A name for the MultiQC outputs: <report_name>.html, <report_name>_data.tar.gz, <report_name>.parquet"
         config: "YAML file for configuring generated report"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
     }

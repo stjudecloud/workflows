@@ -1,9 +1,0 @@
-{
-    "arriba.bam": "../../input/Aligned.sortedByCoord.chr9_chr22.bam",
-    "arriba.gtf": "../../input/gencode.v31.chr9_chr22.gtf.gz",
-    "arriba.reference_fasta_gz": "../../input/GRCh38.chr9_chr22.fa.gz",
-    "arriba.disable_filters": [
-        "blacklist"
-    ],
-    "arriba.prefix": "fusions"
-}
