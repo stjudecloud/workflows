@@ -39,6 +39,7 @@ task clair3 {
                 "ilmn",
             ],
         }
+        contigs: "Optional list of contigs to call variants in. If undefined, all contigs in the reference FASTA will be considered."
         all_contigs: "Boolean indicating whether to include all contigs in variant calling. If false only chr{1..22,X,Y} are called."
         print_ref_calls: "Boolean indicating whether to print reference calls in the output VCF"
         gvcf: "Boolean indicating whether to output gVCF format"
@@ -51,11 +52,12 @@ task clair3 {
         File reference_fasta_index
         File bam
         File bam_index
-        Directory model
+        String model
         File? bed_regions
         File? vcf_candidates
         String output_dir = "clair3_output"
         String platform = "ilmn"
+        Array[String] contigs = []
         Boolean all_contigs = false
         Boolean print_ref_calls = false
         Boolean gvcf = false
@@ -85,8 +87,12 @@ task clair3 {
             --ref_fn="$ref_fasta" \
             --threads="~{threads}" \
             --platform="~{platform}" \
-            --model_path="~{model}" \
+            --model_path="/opt/models/~{model}" \
             --output="~{output_dir}" \
+            ~{if length(contigs) > 0
+                then "--ctg_name='~{sep(",", contigs)}'"
+                else ""
+            } \
             ~{if all_contigs
                 then "--include_all_ctgs"
                 else ""
@@ -165,6 +171,7 @@ task clairs {
         prefix: "Prefix for ClairS output files"
         sample_name: "Sample name to use in the output VCF"
         output_dir: "Directory to store ClairS output"
+        contigs: "Optional list of contigs to call variants in. If undefined, all contigs in the reference FASTA will be considered."
         all_contigs: "Boolean indicating whether to include all contigs in variant calling. If false only chr{1..22,X,Y} are called."
         print_ref_calls: "Boolean indicating whether to print reference calls in the output VCF"
         print_germline_calls: "Boolean indicating whether to print germline calls in the output VCF"
@@ -193,6 +200,7 @@ task clairs {
         String prefix = "output"
         String sample_name = "SAMPLE"
         String output_dir = "output"
+        Array[String] contigs = []
         Boolean all_contigs = false
         Boolean print_ref_calls = false
         Boolean print_germline_calls = false
@@ -235,6 +243,10 @@ task clairs {
             --chunk_size "~{chunk_size}" \
             --snv_min_af "~{snv_min_af}" \
             --sample_name "~{sample_name}" \
+            ~{if length(contigs) > 0
+                then "--ctg_name='~{sep(",", contigs)}'"
+                else ""
+            } \
             ~{if defined(bed_regions)
                 then "--bed_fn '~{bed_regions}'"
                 else ""

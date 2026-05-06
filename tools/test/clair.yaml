@@ -1,6 +1,6 @@
 # The `clair3` task requires a `Directory model` input containing pre-trained neural network
 # weights. The `hkubal/clair3:v2.0.0` container ships built-in models at `/opt/models/`.
-# Tests use the bundled Illumina model at `/opt/models/ilmn` (absolute in-container path).
+# Tests use the bundled Illumina model at `ilmn`.
 clair3:
   - name: works
     tags: [slow]
@@ -16,7 +16,7 @@ clair3:
         bam_index:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
       model:
-        - /opt/models/ilmn
+        - ilmn
 
   - name: with_vcf_candidates
     tags: [slow]
@@ -32,9 +32,11 @@ clair3:
         bam_index:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
       model:
-        - /opt/models/ilmn
+        - ilmn
       vcf_candidates:
-        - vcfs/test1.vcf.gz
+        - vcfs/testY.vcf.gz
+      contigs:
+        - chrY
 
   - name: gvcf_mode
     tags: [slow]
@@ -50,7 +52,7 @@ clair3:
         bam_index:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
       model:
-        - /opt/models/ilmn
+        - ilmn
       gvcf:
         - true
 
@@ -68,7 +70,7 @@ clair3:
         bam_index:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
       model:
-        - /opt/models/ilmn
+        - ilmn
       all_contigs:
         - true
 
@@ -86,7 +88,7 @@ clair3:
         bam_index:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
       model:
-        - /opt/models/ilmn
+        - ilmn
       print_ref_calls:
         - true
 
@@ -133,7 +135,10 @@ clairs:
       platform:
         - ilmn
       vcf_candidates:
-        - vcfs/test1.vcf.gz
+        - vcfs/testY.vcf.gz
+      contigs:
+        - chrY
+        - chrM
 
   - name: all_contigs
     tags: [slow]
