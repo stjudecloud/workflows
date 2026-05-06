@@ -826,7 +826,7 @@ task calculate_genotype_posteriors {
 
         gatk CalculateGenotypePosteriors \
             -V "~{basename(vcf)}" \
-            --supporting-variants "supporting.vcf.gz" \
+            -supporting "supporting.vcf.gz" \
             -O "~{prefix}.posteriors.vcf.gz"
 
         rm -rf "~{basename(vcf)}" "~{basename(vcf_index)}" "supporting.vcf.gz" "supporting.vcf.gz.tbi"
