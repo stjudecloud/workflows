@@ -1,5 +1,4 @@
 ## [Homepage](https://broadinstitute.github.io/picard/)
-
 version 1.1
 
 task mark_duplicates {
@@ -84,13 +83,11 @@ task mark_duplicates {
 
     Float bam_size = size(bam, "GB")
     Int memory_gb = min(ceil(bam_size + 12), 50) + modify_memory_gb
-    Int disk_size_gb = (
-        (
-            if create_bam
-            then ceil((bam_size * 2) + 30)
-            else ceil(bam_size + 30)
-        ) + modify_disk_size_gb
-    )
+
+    Int disk_size_gb = (if create_bam
+        then ceil((bam_size * 2) + 30)
+        else ceil(bam_size + 30)
+    ) + modify_disk_size_gb
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -100,16 +97,20 @@ task mark_duplicates {
         mkdir tmp
 
         picard -Xmx~{java_heap_size}g MarkDuplicates \
-             -Djava.io.tmpdir=`pwd`/tmp \
+             -Djava.io.tmpdir="$(pwd)/tmp" \
             -I "~{bam}" \
             --METRICS_FILE "~{prefix}.metrics.txt" \
-            -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
+            -O "~{if create_bam
+                then prefix + ".bam"
+                else "/dev/null"
+            }" \
             --CREATE_INDEX ~{create_bam} \
             --CREATE_MD5_FILE ~{create_bam} \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
             --DUPLICATE_SCORING_STRATEGY "~{duplicate_scoring_strategy}" \
-            --READ_NAME_REGEX '~{
-                if (optical_distance > 0) then read_name_regex else "null"
+            --READ_NAME_REGEX '~{if (optical_distance > 0)
+                then read_name_regex
+                else "null"
             }' \
             --TAGGING_POLICY "~{tagging_policy}" \
             --CLEAR_DT ~{clear_dt} \
@@ -144,7 +145,10 @@ task validate_bam {
         description: "Validates the input BAM file for correct formatting using Picard"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360057440611-ValidateSamFile-Picard-"
         outputs: {
-            validate_report: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
+            validate_report: {
+                description: "Validation report produced by `picard ValidateSamFile`. Validation warnings and errors are logged.",
+                help: "If `summary_mode` is not enabled, then this file will be gzipped and contain one line for every warning or error logged by Picard. If `summary_mode == true` this will be a plaintext summary of warnings and errors encountered by Picard.",
+            },
         }
     }
 
@@ -166,19 +170,18 @@ task validate_bam {
             ],
             tool_default: "STRICT",
         }
-        succeed_on_errors: {
-            description: "Succeed the task even if errors *and/or* warnings are detected",
+        deny_errors: {
+            description: "Fail the task if any errors are detected by Picard.",
             group: "Common",
         }
-        succeed_on_warnings: {
-            description: "Succeed the task if warnings are detected and there are no errors. Overridden by `succeed_on_errors`",
+        deny_warnings: {
+            description: "Fail the task if any errors or warnings are detected by Picard.",
             group: "Common",
         }
         summary_mode: {
             description: "Enable SUMMARY mode?",
             group: "Common",
         }
-        index_validation_stringency_less_exhaustive: "Set `INDEX_VALIDATION_STRINGENCY=LESS_EXHAUSTIVE`?"
         max_errors: "Set the value of MAX_OUTPUT for `picard ValidateSamFile`. The Picard default is 100, a lower number can enable fast fail behavior"
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -190,23 +193,20 @@ task validate_bam {
         Array[String] ignore_list = []
         String outfile_name = basename(bam, ".bam") + ".ValidateSamFile.txt"
         String validation_stringency = "LENIENT"
-        Boolean succeed_on_errors = false
-        Boolean succeed_on_warnings = true
+        Boolean deny_errors = true
+        Boolean deny_warnings = false
         Boolean summary_mode = false
-        Boolean index_validation_stringency_less_exhaustive = false
         Int max_errors = 2147483647  # max 32-bit INT
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
     }
 
-    String outfile = if summary_mode then outfile_name else outfile_name + ".gz"
-    String mode_arg = if (summary_mode) then "--MODE SUMMARY" else ""
-    String stringency_arg = (
-        if (index_validation_stringency_less_exhaustive)
-        then "--INDEX_VALIDATION_STRINGENCY LESS_EXHAUSTIVE"
+    String outfile = if summary_mode
+        then outfile_name
+        else outfile_name + ".gz"
+    String mode_arg = if summary_mode
+        then "--MODE SUMMARY"
         else ""
-    )
-
     Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 4) + 50 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -220,11 +220,13 @@ task validate_bam {
             -I "~{bam}" \
             ~{"-R '" + reference_fasta + "'"} \
             ~{mode_arg} \
-            ~{stringency_arg} \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
             ~{sep(" ", prefix("--IGNORE ", squote(ignore_list)))} \
             --MAX_OUTPUT ~{max_errors} \
-            ~{if !summary_mode then "| gzip" else ""} \
+            ~{if !summary_mode
+                then "| gzip"
+                else ""
+            } \
             > "~{outfile}" \
             || rc=$?
 
@@ -233,20 +235,11 @@ task validate_bam {
         # rc = 2 = validation errors and warnings
         # rc = 3 = validation errors (no warnings)
         if [ $rc -ne 0 ] && [ $rc -ne 1 ] && [ $rc -ne 2 ] && [ $rc -ne 3 ]; then
+            >&2 echo "Unexpected exit code from Picard ValidateSamFile"
             exit $rc
-        fi
-
-        if ~{succeed_on_warnings}; then
-            GREP_PATTERN="ERROR"
-        else
-            GREP_PATTERN="(ERROR|WARNING)"
-        fi
-
-        if ! ~{succeed_on_errors} \
-            && [ "$(grep -Ec "$GREP_PATTERN" "~{outfile}")" -gt 0 ]
+        elif [ "$rc" -gt 0 ] && ~{deny_warnings} || [ "$rc" -gt 1 ] && ~{deny_errors}
         then
             >&2 echo "Problems detected by Picard ValidateSamFile"
-            >&2 grep -E "$GREP_PATTERN" "~{outfile}"
             exit $rc
         fi
     >>>
@@ -321,12 +314,12 @@ task sort {
         mkdir tmp
 
         picard -Xmx~{java_heap_size}g \
-            -Djava.io.tmpdir=`pwd`/tmp \
+            -Djava.io.tmpdir="$(pwd)/tmp" \
             SortSam \
             -I "~{bam}" \
             -O "~{outfile_name}" \
             -SO "~{sort_order}" \
-            --TMP_DIR `pwd`/tmp \
+            --TMP_DIR "$(pwd)/tmp" \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY "~{validation_stringency}"
@@ -421,21 +414,30 @@ task merge_sam_files {
             --ASSUME_SORTED true \
             --SORT_ORDER "~{sort_order}" \
             --USE_THREADING ~{threading} \
-            --CREATE_INDEX true \
+            ~{if sort_order == "coordinate"
+                then "--CREATE_INDEX true"
+                else ""
+            } \
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY "~{validation_stringency}"
 
-        mv "~{prefix}.bai" "~{outfile_name}.bai"
+        # CREATE_INDEX true only applies when the sort order
+        # is coordinate. So the index may not exist.
+        if [ -f "~{prefix}.bai" ]; then
+            mv "~{prefix}.bai" "~{outfile_name}.bai"
+        fi
     >>>
 
     output {
         File merged_bam = outfile_name
-        File merged_bam_index = outfile_name + ".bai"
+        File? merged_bam_index = outfile_name + ".bai"
         File merged_bam_md5 = outfile_name + ".md5"
     }
 
-    runtime{
-        cpu: if threading then 2 else 1
+    runtime {
+        cpu: if threading
+            then 2
+            else 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -520,7 +522,7 @@ task collect_wgs_metrics {
             wgs_metrics: {
                 description: "Output report of `picard CollectWgsMetrics`",
                 external_help: "https://broadinstitute.github.io/picard/picard-metric-definitions.html#CollectWgsMetrics.WgsMetrics",
-            }
+            },
         }
     }
 
@@ -831,67 +833,6 @@ task quality_score_distribution {
     }
 }
 
-#@ except: MatchingOutputMeta
-task bam_to_fastq {
-    meta {
-        description: "This WDL task converts the input BAM file into FASTQ format files."
-        warning: "**[Deprecated]** This task has been deprecated in favor of `samtools.bam_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
-        deprecated: true
-    }
-
-    parameter_meta {
-        bam: "Input BAM format file to convert to FASTQ"
-        prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
-        paired: {
-            description: "Is the data Paired-End (true) or Single-End (false)?",
-            group: "Common",
-        }
-        memory_gb: "RAM to allocate for task, specified in GB"
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
-
-    input {
-        File bam
-        String prefix = basename(bam, ".bam")
-        Boolean paired = true
-        Int memory_gb = 56
-        Int modify_disk_size_gb = 0
-    }
-
-    Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
-    Int java_heap_size = ceil(memory_gb * 0.9)
-
-    command <<<
-        set -euo pipefail
-
-        picard -Xmx~{java_heap_size}g SamToFastq INPUT="~{bam}" \
-            FASTQ="~{prefix}.R1.fastq" \
-            ~{(
-                if paired
-                then "SECOND_END_FASTQ='" + prefix + ".R2.fastq'"
-                else ""
-            )} \
-            RE_REVERSE=true \
-            VALIDATION_STRINGENCY=SILENT
-
-        gzip "~{prefix}.R1.fastq" \
-            ~{if paired then "'" + prefix + ".R2.fastq'" else ""}
-    >>>
-
-    output {
-        File read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
-        File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
-    }
-
-    runtime{
-        memory: "~{memory_gb} GB"
-        disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
-        maxRetries: 1
-    }
-}
-
 task merge_vcfs {
     meta {
         description: "Merges the input VCF files into a single VCF file"
@@ -911,6 +852,7 @@ task merge_vcfs {
 
     input {
         Array[File] vcfs
+        #@except: UnusedInput
         Array[File] vcfs_indexes
         String output_vcf_name
         Int modify_disk_size_gb = 0
@@ -948,7 +890,7 @@ task scatter_interval_list {
         }
     }
 
-    parameter_meta  {
+    parameter_meta {
         interval_list: "Input interval list to split"
         scatter_count: "Number of interval lists to create"
         subdivision_mode: {
@@ -1015,7 +957,7 @@ task create_sequence_dictionary {
         description: "Creates a sequence dictionary for the input FASTA file using Picard"
         external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/13832748622491-CreateSequenceDictionary-Picard-"
         outputs: {
-            dictionary: "Sequence dictionary produced by `picard CreateSequenceDictionary`."
+            dictionary: "Sequence dictionary produced by `picard CreateSequenceDictionary`.",
         }
     }
 
@@ -1060,6 +1002,69 @@ task create_sequence_dictionary {
 
     runtime {
         cpu: 1
+        memory: "~{memory_gb} GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
+        maxRetries: 1
+    }
+}
+
+#@ except: MatchingOutputMeta
+task bam_to_fastq {
+    meta {
+        description: "This WDL task converts the input BAM file into FASTQ format files."
+        warning: "**[Deprecated]** This task has been deprecated in favor of `samtools.bam_to_fastq` which is more performant and doesn't error on 'illegal mate states'."
+        deprecated: true
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to convert to FASTQ"
+        prefix: "Prefix for the <type of file> file. The extension `<extension>` will be added."
+        paired: {
+            description: "Is the data Paired-End (true) or Single-End (false)?",
+            group: "Common",
+        }
+        memory_gb: "RAM to allocate for task, specified in GB"
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam")
+        Boolean paired = true
+        Int memory_gb = 56
+        Int modify_disk_size_gb = 0
+    }
+
+    Float bam_size = size(bam, "GB")
+    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
+    Int java_heap_size = ceil(memory_gb * 0.9)
+
+    command <<<
+        set -euo pipefail
+
+        picard -Xmx~{java_heap_size}g SamToFastq INPUT="~{bam}" \
+            FASTQ="~{prefix}.R1.fastq" \
+            ~{if paired
+                then "SECOND_END_FASTQ='" + prefix + ".R2.fastq'"
+                else ""
+            } \
+            RE_REVERSE=true \
+            VALIDATION_STRINGENCY=SILENT
+
+        gzip "~{prefix}.R1.fastq" \
+            ~{if paired
+                then "'" + prefix + ".R2.fastq'"
+                else ""
+            }
+    >>>
+
+    output {
+        File read_one_fastq_gz = "~{prefix}.R1.fastq.gz"
+        File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
+    }
+
+    runtime {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"

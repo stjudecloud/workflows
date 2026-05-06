@@ -1,0 +1,23 @@
+coverage:
+  - name: works
+    inputs:
+      $samples:
+        bam:
+          - bams/test_rnaseq_variant.bam
+          - bams/test.bam
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        bam_index:
+          - bams/test_rnaseq_variant.bam.bai
+          - bams/test.bam.bai
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam.bai
+      coverage_bed:
+        - reference/gencode.v31.chrY_chrM.gene.bed
+        - null
+      use_fast_mode:
+        - true
+        - false
+      min_mapping_quality:
+        - 0
+        - 20

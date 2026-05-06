@@ -1,0 +1,166 @@
+strandedness:
+  - name: unstranded
+    inputs:
+      $files:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam.bai
+        gene_model:
+          - reference/gencode.v31.chrY_chrM.gtf.gz
+          - reference/gencode.v31.chr9_chr22.gtf.gz
+      split_by_rg:
+        - false
+      min_reads_per_gene:
+        - 10
+        - 5
+      num_genes:
+        - 1000
+        - 500
+      min_mapq:
+        - 30
+        - 0
+    assertions:
+      strandedness_string:
+        StrEquals: Unstranded
+  - name: split_by_rg
+    inputs:
+      $files:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam.bai
+        gene_model:
+          - reference/gencode.v31.chrY_chrM.gtf.gz
+          - reference/gencode.v31.chr9_chr22.gtf.gz
+      split_by_rg:
+        - true
+      min_reads_per_gene:
+        - 10
+        - 5
+      num_genes:
+        - 100
+        - 50
+      min_mapq:
+        - 30
+        - 0
+    assertions:
+      strandedness_string:
+        StrEquals: N/A
+  # TODO: test other strandedness values
+instrument:
+  # TODO: split by expected result and test "instrument_string" output
+  - name: works
+    inputs:
+      bam:
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/test.PE.2_RGs.Aligned.out.sorted.bam
+        - bams/test2.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+      num_reads:
+        - 10000
+        - 1000
+read_length:
+  - name: works
+    inputs:
+      $bams:
+        bam:
+          - bams/test_rnaseq_variant.bam
+          - bams/test.bam
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        bam_index:
+          - bams/test_rnaseq_variant.bam.bai
+          - bams/test.bam.bai
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam.bai
+      majority_vote_cutoff:
+        - 0.7
+        - 0.2
+      num_reads:
+        - -1
+        - 1000
+encoding:
+  - name: bams
+    inputs:
+      ngs_files:
+        - [
+          bams/test_rnaseq_variant.bam,
+          bams/test.bam,
+          bams/test.bwa_aln_pe.chrY_chrM.bam,
+          bams/test.PE.2_RGs.Aligned.out.sorted.bam,
+          bams/test2.bam,
+          bams/Aligned.sortedByCoord.chr9_chr22.bam,
+        ]
+      outfile_name:
+        - test.encoding.tsv
+  - name: fastqs
+    inputs:
+      ngs_files:
+        - [
+          fastqs/random10k.r1.fq.gz,
+          fastqs/random10k.r2.fq.gz,
+          fastqs/test_R1.fq.gz,
+          fastqs/test_R2.fq.gz,
+        ]
+      outfile_name:
+        - test.encoding.tsv
+junction_annotation:
+  - name: works
+    inputs:
+      $files:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam.bai
+        gene_model:
+          - reference/gencode.v31.chrY_chrM.gtf.gz
+          - reference/gencode.v31.chr9_chr22.gtf.gz
+      min_intron:
+        - 50
+        - 75
+      min_mapq:
+        - 30
+        - 0
+      min_reads:
+        - 2
+        - 1
+      fuzzy_junction_match_range:
+        - 0
+        - 10
+endedness:
+  - name: works
+    inputs:
+      bam:
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/test.PE.2_RGs.Aligned.out.sorted.bam
+        - bams/test2.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+      lenient:
+        - true
+      calc_rpt:
+        - true
+        - false
+      round_rpt:
+        - true
+        - false
+      split_by_rg:
+        - true
+        - false
+      $args:
+        num_reads:
+          - -1
+          - 10000
+        paired_deviance:
+          - 0.0
+          - 0.1

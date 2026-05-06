@@ -58,7 +58,6 @@
 ## In short, those are all flags corresponding to the quality of the read
 ## and them being `true` may indicate that the read is of low quality and
 ## should be excluded.
-
 version 1.1
 
 struct FlagFilter {
@@ -107,7 +106,7 @@ task validate_string_is_12bit_int {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }
@@ -127,15 +126,15 @@ workflow validate_flag_filter {
     }
 
     call validate_string_is_12bit_int as validate_include_if_any { input:
-        number = flags.include_if_any
+        number = flags.include_if_any,
     }
     call validate_string_is_12bit_int as validate_include_if_all { input:
-        number = flags.include_if_all
+        number = flags.include_if_all,
     }
     call validate_string_is_12bit_int as validate_exclude_if_any { input:
-        number = flags.exclude_if_any
+        number = flags.exclude_if_any,
     }
     call validate_string_is_12bit_int as validate_exclude_if_all { input:
-        number = flags.exclude_if_all
+        number = flags.exclude_if_all,
     }
 }

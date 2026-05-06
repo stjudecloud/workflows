@@ -92,7 +92,10 @@ workflow rnaseq_standard {
             use_all_cores,
         }
     }
-    File selected_bam = select_first([subsample.sampled_bam, bam])
+    File selected_bam = select_first([
+        subsample.sampled_bam,
+        bam,
+    ])
 
     call read_group.get_read_groups after validate_input_bam { input:
         bam = selected_bam,
@@ -181,7 +184,7 @@ task parse_input {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }

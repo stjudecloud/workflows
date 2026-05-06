@@ -1,0 +1,167 @@
+deepvariant:
+  - name: works
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $sample:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+
+  - name: wes_model
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $sample:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      model_type:
+        - WES
+
+  - name: runtime_report
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $sample:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      runtime_report:
+        - true
+
+  - name: vcf_stats_report
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $sample:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      vcf_stats_report:
+        - true
+
+  - name: custom_haploid_chromosomes
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $sample:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      haploid_chromosomes:
+        - ["chrY"]
+
+deepsomatic:
+  - name: works
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $tumor:
+        tumor_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        tumor_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      $normal:
+        normal_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        normal_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      model_type:
+        - WGS
+
+  - name: wes_model
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $tumor:
+        tumor_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        tumor_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      $normal:
+        normal_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        normal_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      model_type:
+        - WES
+
+  - name: runtime_report
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $tumor:
+        tumor_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        tumor_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      $normal:
+        normal_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        normal_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      model_type:
+        - WGS
+      runtime_report:
+        - true
+
+  - name: vcf_stats_report
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $tumor:
+        tumor_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        tumor_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      $normal:
+        normal_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        normal_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      model_type:
+        - WGS
+      vcf_stats_report:
+        - true

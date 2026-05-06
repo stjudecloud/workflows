@@ -40,7 +40,6 @@
 ##     }
 ## }
 ## ```
-
 version 1.1
 
 #@ except: SnakeCase
@@ -83,7 +82,9 @@ workflow read_group_to_string {
 
     input {
         ReadGroup read_group
-        Array[String] required_fields = []
+        Array[String] required_fields = [
+            "SM",
+        ]
         Boolean format_as_sam_record = false
         Boolean restrictive = true
     }
@@ -99,8 +100,7 @@ workflow read_group_to_string {
     }
 
     output {
-        String validated_read_group
-            = inner_read_group_to_string.stringified_read_group
+        String validated_read_group = inner_read_group_to_string.stringified_read_group
     }
 }
 
@@ -109,7 +109,7 @@ task get_read_groups {
         description: "Gets read group information from a BAM file and writes it out as JSON which is converted to a WDL struct."
         warning: "This task will uppercase any lowercase `PL` values it finds, as is required by the [SAM specification](https://samtools.github.io/hts-specs/SAMv1.pdf)."
         outputs: {
-            read_groups: "An array of `ReadGroup` structs containing read group information."
+            read_groups: "An array of `ReadGroup` structs containing read group information.",
         }
     }
 
@@ -138,7 +138,7 @@ task get_read_groups {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }
@@ -149,36 +149,42 @@ task validate_read_group {
     }
 
     parameter_meta {
-        read_group: "`ReadGroup` struct to validate"
         required_fields: "Array of read group fields that must be defined. The ID field is always required and does not need to be specified."
+        read_group: "`ReadGroup` struct to validate"
         restrictive: "If true, run a stricter validation of field values. Otherwise, check against SAM spec-defined values."
     }
 
     input {
+        Array[String] required_fields
         ReadGroup read_group
-        Array[String] required_fields = []
-        Boolean restrictive = true
+        Boolean restrictive
     }
 
     # The SAM spec allows any printable ASCII character in header fields.
     String sam_spec_pattern = "[\\ -~]+"
     # We have the opinion that is too permissive for ID and SM.
-    String id_pattern = "id"
-    String sample_pattern = "sample.?"
     String restrictive_pattern = "\\ "  # Disallow spaces
     Array[String] platforms = [
-        "CAPILLARY", "DNBSEQ", "ELEMENT", "HELICOS", "ILLUMINA", "IONTORRENT", "LS454",
-        "ONT", "PACBIO", "SINGULAR", "SOLID", "ULTIMA",
+        "CAPILLARY",
+        "DNBSEQ",
+        "ELEMENT",
+        "HELICOS",
+        "ILLUMINA",
+        "IONTORRENT",
+        "LS454",
+        "ONT",
+        "PACBIO",
+        "SINGULAR",
+        "SOLID",
+        "ULTIMA",
     ]
 
     command <<<
         exit_code=0
         if ~{restrictive}; then
-            if [[ ~{read_group.ID} =~ ^~{id_pattern}$ ]] \
-                || [[ ~{read_group.ID} =~ ~{restrictive_pattern} ]]
+            if [[ "~{read_group.ID}" =~ ~{restrictive_pattern} ]]
             then
-                >&2 echo "ID (~{read_group.ID}) must not match patterns:"
-                >&2 echo "'~{id_pattern}' or '~{restrictive_pattern}'"
+                >&2 echo "ID must not contain spaces"
                 exit_code=1
             fi
         fi
@@ -194,11 +200,9 @@ task validate_read_group {
         fi
         if ~{defined(read_group.SM)}; then
             if ~{restrictive}; then
-                if [[ "~{read_group.SM}" =~ ^~{sample_pattern}$ ]] \
-                    || [[ "~{read_group.SM}" =~ ~{restrictive_pattern} ]]
+                if [[ "~{read_group.SM}" =~ ~{restrictive_pattern} ]]
                 then
-                    >&2 echo "SM must not match patterns:"
-                    >&2 echo "'~{sample_pattern}' or '~{restrictive_pattern}'"
+                    >&2 echo "SM must not contain spaces"
                     exit_code=1
                 fi
             fi
@@ -268,7 +272,10 @@ task validate_read_group {
             fi
         fi
         if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "KS")" -eq 1 ]; then
-            if [ -z "~{if defined(read_group.KS) then read_group.KS else ""}" ]; then
+            if [ -z "~{if defined(read_group.KS)
+                then read_group.KS
+                else ""
+            }" ]; then
                 >&2 echo "KS is required"
                 exit_code=1
             fi
@@ -356,7 +363,7 @@ task validate_read_group {
     >>>
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }
@@ -366,7 +373,7 @@ task inner_read_group_to_string {
         description: "Converts a `ReadGroup` struct to a `String` **without any validation**."
         warning: "Please use the `read_group_to_string` workflow, which has validation of the `ReadGroup` contents."
         outputs: {
-            stringified_read_group: "Input `ReadGroup` as a string"
+            stringified_read_group: "Input `ReadGroup` as a string",
         }
     }
 
@@ -380,10 +387,12 @@ task inner_read_group_to_string {
 
     input {
         ReadGroup read_group
-        Boolean format_as_sam_record = false
+        Boolean format_as_sam_record
     }
 
-    String delimiter = if format_as_sam_record then "\\t" else " "
+    String delimiter = if format_as_sam_record
+        then "\\t"
+        else " "
 
     command <<<
         if ~{format_as_sam_record}; then
@@ -412,7 +421,7 @@ task inner_read_group_to_string {
     }
 
     runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }

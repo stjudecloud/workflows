@@ -1,0 +1,298 @@
+quickcheck:
+  # TODO: mock BAMs which fail quickcheck
+  - name: works
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+split:
+  - name: works
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      reject_unaccounted_reads:
+        - true
+        - false
+      reject_empty_output:
+        - true
+        - false
+  - name: unaccounted_reads
+    inputs:
+      bam:
+        - bams/test.unaccounted_read.bam
+    assertions:
+      exit_code: 21
+  - name: empty_RG
+    inputs:
+      bam:
+        - bams/test.extra_RG.bam
+    assertions:
+      exit_code: 42
+flagstat:
+  - name: works
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+index:
+  - name: works
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+subsample:
+  - name: works
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      desired_reads:
+        - 10
+    outputs:
+      sampled_bam:
+        defined: true
+  - name: desired_gt_read_count
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      desired_reads:
+        - 9999999
+    outputs:
+      sampled_bam:
+        defined: false
+  - name: fails_for_zero
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      desired_reads:
+        - 0
+    assertions:
+      exit_code: 42
+filter:
+  - name: works
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      bitwise_filter:
+        - include_if_all: "0x0"
+          exclude_if_any: "0x900"
+          include_if_any: "0x0"
+          exclude_if_all: "0x0"
+        - include_if_all: "00"
+          exclude_if_any: "0x904"
+          include_if_any: "3"
+          exclude_if_all: "0"
+  - name: filter_everything_fails
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      bitwise_filter:
+        - include_if_all: "0x999"
+          exclude_if_any: "0x999"
+          include_if_any: "0x0"
+          exclude_if_all: "0x0"
+    assertions:
+      exit_code: 42
+merge:
+  - name: works
+    inputs:
+      bams:
+        - [
+          bams/test.bwa_aln_pe.chrY_chrM.bam,
+          bams/test.PE.2_RGs.Aligned.out.sorted.bam,
+        ]
+      # TODO: mock name sorted bams and test those
+      prefix:
+        - test
+      # TODO: fix `region` input and test
+      # region:
+      #   - chrY:0-99999
+      #   - ""
+      attach_rg:
+        - true
+        - false
+      combine_rg:
+        - true
+        - false
+      combine_pg:
+        - true
+        - false
+addreplacerg:
+  # TODO: assertions to check the new RGs are right
+  - name: existing_rg
+    inputs:
+      $sample:
+        bam:
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        read_group_id:
+          - rg1
+          - test
+      orphan_only:
+        - true
+        - false
+      overwrite_header_record:
+        - true
+        - false
+  - name: nonexisting_rg
+    inputs:
+      $sample:
+        bam:
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        read_group_id:
+          - test
+          - rg1
+      orphan_only:
+        - true
+        - false
+      overwrite_header_record:
+        - true
+        - false
+    assertions:
+      exit_code: 1
+      stderr:
+        - RG ID supplied does not exist in header
+  - name: new_rg_line
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      read_group_line:
+        - ["ID:replaced", "SM:new"]
+        - []
+      orphan_only:
+        - true
+        - false
+      overwrite_header_record:
+        - true
+        - false
+  - name: overwrite
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      read_group_line:
+        - ["ID:rg1", "SM:new"]
+        - ["ID:test", "SM:new"]
+      orphan_only:
+        - true
+        - false
+      overwrite_header_record:
+        - true
+collate:
+  - name: works
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      fast_mode:
+        - true
+        - false
+
+bam_to_fastq:
+  # TODO: fail conditions
+  - name: kitchen_sink
+    tags: [slow]
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      bitwise_filter:
+        - include_if_all: "0x0"
+          exclude_if_any: "0x900"
+          include_if_any: "0x0"
+          exclude_if_all: "0x0"
+        - include_if_all: "00"
+          exclude_if_any: "0x904"
+          include_if_any: "3"
+          exclude_if_all: "0"
+      paired_end:
+        - true
+        - false
+      retain_collated_bam:
+        - true
+        - false
+      fast_mode:
+        - true
+        - false
+      append_read_number:
+        - true
+        - false
+      output_singletons:
+        - true
+        - false
+      fail_on_unexpected_reads:
+        - true
+        - false
+# TODO: need name sorted BAM for fixmate tests
+# fixmate:
+#   - name: works
+#     inputs:
+#       bam:
+#         - bams/Aligned.sortedByCoord.chr9_chr22.bam
+#         - bams/test_rnaseq_variant.bam
+#         - bams/test.bwa_aln_pe.chrY_chrM.bam
+#       extension:
+#         - ".bam"
+#         - ".cram"
+#       add_cigar:
+#         - true
+#         - false
+#       add_mate_score:
+#         - true
+#         - false
+#       disable_flag_sanitization:
+#         - true
+#         - false
+#       remove_unaligned_and_secondary:
+#         - true
+#         - false
+position_sorted_fixmate:
+  - name: works
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      fast_mode:
+        - true
+        - false
+      add_cigar:
+        - true
+        - false
+      add_mate_score:
+        - true
+        - false
+      disable_flag_sanitization:
+        - true
+        - false
+      disable_proper_pair_check:
+        - true
+        - false
+      remove_unaligned_and_secondary:
+        - true
+        - false
+faidx:
+  - name: works
+    inputs:
+      fasta:
+        - reference/GRCh38.chr1_chr19.fa
+        - reference/GRCh38.chr9_chr22.fa.gz
+        - reference/GRCh38.chrY_chrM.fa

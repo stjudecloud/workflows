@@ -1,9 +1,16 @@
 [check]
 all_lint_rules = true
-except = ["ContainerUri"]
+except = ["ContainerUri", "TodoComment", "UnusedInput"]
 deny_notes = true
+
+[format]
+sort_inputs = true
 
 [run.task]
 cpu_limit_behavior = "try_with_max"
 memory_limit_behavior = "try_with_max"
 
+[doc]
+index_page = "assets/DOCS.md"
+homepage_url = "https://stjude.cloud"
+github_url = "https://github.com/stjudecloud/workflows"

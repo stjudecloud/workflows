@@ -60,12 +60,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     read1_fastqs = [
-        fq.strip().split(os.sep)[-1] for fq in args.read_one_fastqs.split(",")
+        fq.strip().strip("'").split(os.sep)[-1]
+        for fq in args.read_one_fastqs.split(",")
     ]
     read2_fastqs = []
     if args.read_two_fastqs:
         read2_fastqs = [
-            fq.strip().split(os.sep)[-1] for fq in args.read_two_fastqs.split(",")
+            fq.strip().strip("'").split(os.sep)[-1]
+            for fq in args.read_two_fastqs.split(",")
         ]
 
     if read2_fastqs != []:
@@ -74,7 +76,7 @@ if __name__ == "__main__":
                 "Must have the same number of read one FASTQs as read two FASTQs"
             )
 
-    rg_records = [rg.strip() for rg in args.read_groups.split(",")]
+    rg_records = [rg.strip().strip("'") for rg in args.read_groups.split(",")]
 
     if len(rg_records) != len(read1_fastqs):
         raise SystemExit("Must have the same number of RG records as read one FASTQs")

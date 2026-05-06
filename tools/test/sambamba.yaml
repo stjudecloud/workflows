@@ -1,0 +1,44 @@
+index:
+  - name: works
+    inputs:
+      bam:
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+merge:
+  - name: works
+    inputs:
+      bams:
+        - [
+          bams/test.bwa_aln_pe.chrY_chrM.bam,
+          bams/test.PE.2_RGs.Aligned.out.sorted.bam,
+        ]
+      prefix:
+        - test
+sort:
+  - name: works
+    inputs:
+      bam:
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+      queryname_sort:
+        - true
+        - false
+markdup:
+  - name: works
+    inputs:
+      bam:
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+      remove_duplicates:
+        - true
+        - false
+flagstat:
+  - name: works
+    inputs:
+      bam:
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam

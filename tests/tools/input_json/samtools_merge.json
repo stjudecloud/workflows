@@ -1,7 +1,0 @@
-{
-    "merge.bams": [
-        "../../input/test.bwa_aln_pe.chrY_chrM.bam",
-        "../../input/test.PE.2_RGs.Aligned.out.sorted.bam"
-    ],
-    "merge.prefix": "test.merged"
-}

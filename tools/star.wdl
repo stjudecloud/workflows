@@ -1,12 +1,11 @@
 ## [Homepage](https://github.com/alexdobin/STAR)
-
 version 1.1
 
 task build_star_db {
     meta {
         description: "Runs STAR's build command to generate a STAR format reference for alignment"
         outputs: {
-            star_db: "A gzipped TAR file containing the STAR reference files. Suitable as the `star_db_tar_gz` input to the `alignment` task."
+            star_db: "A gzipped TAR file containing the STAR reference files. Suitable as the `star_db_tar_gz` input to the `alignment` task.",
         }
     }
 
@@ -86,8 +85,7 @@ task build_star_db {
 
     Float reference_fasta_size = size(reference_fasta, "GB")
     Float gtf_size = size(gtf, "GB")
-    Int disk_size_gb = (
-        ceil((reference_fasta_size + gtf_size) * 3) + 10 + modify_disk_size_gb
+    Int disk_size_gb = (ceil((reference_fasta_size + gtf_size) * 3) + 10 + modify_disk_size_gb
     )
 
     # Leave 2GB as system overhead
@@ -170,7 +168,7 @@ task alignment {
         read_groups: {
             description: "An array of `String`s where each `String` corresponds to one read group.",
             help: "Each read group string should start with the `ID` field followed by any other read group fields, where fields are delimited by a space. See `../data_structures/read_group.wdl` for information about possible fields and utility tasks for constructing, validating, and \"stringifying\" read groups.",
-            warning: "The `ID` field for each read group _must_ be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `[\"ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:illumina LB:sample1_lib1\", \"ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:illumina LB:sample1_lib1\"]`. These two read groups could be associated with the following four FASTQs: `[\"sample1.rg1.R1.fastq\", \"sample1.rg2.R1.fastq\"]` and `[\"sample1.rg1.R2.fastq\", \"sample1.rg2.R2.fastq\"]`",
+            warning: "The `ID` field for each read group _must_ be contained in the basename of a FASTQ file or pair of FASTQ files if Paired-End. Example: `[\"ID:rg1 PU:flowcell1.lane1 SM:sample1 PL:ILLUMINA LB:sample1_lib1\", \"ID:rg2 PU:flowcell1.lane2 SM:sample1 PL:ILLUMINA LB:sample1_lib1\"]`. These two read groups could be associated with the following four FASTQs: `[\"sample1.rg1.R1.fastq\", \"sample1.rg2.R1.fastq\"]` and `[\"sample1.rg1.R2.fastq\", \"sample1.rg2.R2.fastq\"]`",
         }
         read_two_fastqs_gz: {
             description: "An array of gzipped FASTQ files containing read two information",
@@ -558,7 +556,11 @@ task alignment {
         Array[File] read_one_fastqs_gz
         Array[String] read_groups
         Array[File]? read_two_fastqs_gz
-        Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
+        Array[Int] out_sj_filter_intron_max_vs_read_n = [
+            50000,
+            100000,
+            200000,
+        ]
         SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,
             GT_AG_and_CT_AC_motif: 12,
@@ -595,9 +597,7 @@ task alignment {
         Pair[Int, Int] clip_3p_n_bases = (0, 0)
         Pair[Int, Int] clip_3p_after_adapter_n_bases = (0, 0)
         Pair[Int, Int] clip_5p_n_bases = (0, 0)
-        String prefix = sub(
-            basename(read_one_fastqs_gz[0]),
-            "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+        String prefix = sub(basename(read_one_fastqs_gz[0]), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3
         )
         String read_name_separator = "/"
@@ -613,12 +613,12 @@ task alignment {
         String out_filter_intron_strands = "RemoveInconsistentStrands"
         String out_sj_filter_reads = "All"
         String align_ends_type = "Local"
-        String align_soft_clip_at_reference_ends = "Yes"
+        String align_soft_clip_at_reference_ends = "Yes"  # TODO: make a boolean
         String align_insertion_flush = "None"
         String chim_out_type = "WithinBAM HardClip"
         String chim_filter = "banGenomicN"
-        String chim_out_junction_format = "plain"
-        String twopass_mode = "Basic"
+        String chim_out_junction_format = "plain"  # TODO: make a boolean
+        String twopass_mode = "Basic"  # TODO: make a boolean
         Boolean use_all_cores = false
         Float out_filter_mismatch_n_over_l_max = 0.3
         Float out_filter_mismatch_n_over_read_l_max = 1.0
@@ -699,16 +699,16 @@ task alignment {
         Int modify_disk_size_gb = 0
     }
 
-    Array[File] read_twos = select_first([read_two_fastqs_gz, []])
+    Array[File] read_twos = select_first([
+        read_two_fastqs_gz,
+        [],
+    ])
 
     Float read_one_fastqs_size = size(read_one_fastqs_gz, "GB")
     Float read_two_fastqs_size = size(read_twos, "GB")
     Float star_db_tar_gz_size = size(star_db_tar_gz, "GB")
-    Int disk_size_gb = (
-        (
-            ceil(read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size) * 3
-        ) + 10 + modify_disk_size_gb
-    )
+    Int disk_size_gb = ((ceil(read_one_fastqs_size + read_two_fastqs_size + star_db_tar_gz_size
+    ) * 3) + 10 + modify_disk_size_gb)
 
     command <<<
         set -euo pipefail
@@ -733,9 +733,9 @@ task alignment {
             --outFileNamePrefix "~{prefix + "."}" \
             --twopassMode "~{twopass_mode}" \
             --outSAMattrRGline ~{sep(" , ", read_groups)} \
-            --outSJfilterIntronMaxVsReadN ~{
-                sep(" ", quote(out_sj_filter_intron_max_vs_read_n))
-            } \
+            --outSJfilterIntronMaxVsReadN ~{sep(" ", quote(
+                out_sj_filter_intron_max_vs_read_n
+            ))} \
             --outSJfilterOverhangMin ~{sep(" ", quote([
                 out_sj_filter_overhang_min.noncanonical_motifs,
                 out_sj_filter_overhang_min.GT_AG_and_CT_AC_motif,
@@ -766,36 +766,32 @@ task alignment {
                 align_sj_stitch_mismatch_n_max.GC_AG_and_CT_GC_motif,
                 align_sj_stitch_mismatch_n_max.AT_AC_and_GT_AT_motif,
             ]))} \
-            --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{(
-                if (length(read_twos) != 0)
+            --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{if (length(read_twos) != 0)
                 then "'" + clip_3p_adapter_seq.right + "'"
                 else ""
-            )} \
-            --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{(
-                if (length(read_twos) != 0)
+            } \
+            --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{if (length(read_twos) != 0)
                 then clip_3p_adapter_mmp.right
                 else None
-            )} \
-            --alignEndsProtrude ~{align_ends_protrude.left} "~{(
-                if (length(read_twos) != 0)
+            } \
+            --alignEndsProtrude ~{align_ends_protrude.left} "~{if (length(read_twos) != 0)
                 then align_ends_protrude.right
                 else None
-            )}" \
-            --clip3pNbases ~{clip_3p_n_bases.left} ~{(
-                if (length(read_twos) != 0)
+            }" \
+            --clip3pNbases ~{clip_3p_n_bases.left} ~{if (length(read_twos) != 0)
                 then clip_3p_n_bases.right
                 else None
-            )} \
-            --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{(
-                if (length(read_twos) != 0)
+            } \
+            --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{if (length(
+                read_twos
+            ) != 0)
                 then clip_3p_after_adapter_n_bases.right
                 else None
-            )} \
-            --clip5pNbases ~{clip_5p_n_bases.left} ~{(
-                if (length(read_twos) != 0)
+            } \
+            --clip5pNbases ~{clip_5p_n_bases.left} ~{if (length(read_twos) != 0)
                 then clip_5p_n_bases.right
                 else None
-            )} \
+            } \
             --readNameSeparator "~{read_name_separator}" \
             --clipAdapterType "~{clip_adapter_type}" \
             --outSAMstrandField "~{out_sam_strand_field}" \
@@ -803,13 +799,12 @@ task alignment {
             --outSAMunmapped "~{out_sam_unmapped}" \
             --outSAMorder "~{out_sam_order}" \
             --outSAMreadID "~{out_sam_read_id}" \
-            --outSAMtlen ~{(
-                if (out_sam_tlen == "left_plus")
+            --outSAMtlen ~{if (out_sam_tlen == "left_plus")
                 then "1"
-                else (
-                    if (out_sam_tlen == "left_any") then "2" else "error"
-                )
-            )} \
+                else if (out_sam_tlen == "left_any")
+                then "2"
+                else "error"
+            } \
             --outFilterType "~{out_filter_type}" \
             --outFilterIntronMotifs "~{out_filter_intron_motifs}" \
             --outFilterIntronStrands "~{out_filter_intron_strands}" \

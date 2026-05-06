@@ -1,12 +1,11 @@
 ## [Homepage](https://github.com/coreutils/coreutils)
-
 version 1.1
 
 task compute_checksum {
     meta {
         description: "Generates an MD5 checksum for the input file"
         outputs: {
-            md5sum: "STDOUT of the `md5sum` command that has been redirected to a file"
+            md5sum: "STDOUT of the `md5sum` command that has been redirected to a file",
         }
     }
 
@@ -35,7 +34,7 @@ task compute_checksum {
 
     runtime {
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }

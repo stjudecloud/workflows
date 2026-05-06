@@ -1,0 +1,130 @@
+align:
+  - name: works
+    inputs:
+      $samples:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r1.fq.gz
+          - fastqs/random10k.r2.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - null
+          - fastqs/random10k.r2.fq.gz
+          - null
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      reference_index:
+        - reference/GRCh38.chrY_chrM.mmi
+  - name: fasta_reference
+    inputs:
+      $samples:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r1.fq.gz
+          - fastqs/random10k.r2.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - null
+          - fastqs/random10k.r2.fq.gz
+          - null
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      reference_index:
+        - reference/GRCh38.chrY_chrM.fa
+  - name: fasta_reference_paf
+    inputs:
+      $samples:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r1.fq.gz
+          - fastqs/random10k.r2.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - null
+          - fastqs/random10k.r2.fq.gz
+          - null
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      reference_index:
+        - reference/GRCh38.chrY_chrM.fa
+      output_paf:
+        - true
+      cigar_in_paf:
+        - true
+        - false
+  - name: fasta_reference_flags
+    inputs:
+      $samples:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r1.fq.gz
+          - fastqs/random10k.r2.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - null
+          - fastqs/random10k.r2.fq.gz
+          - null
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      reference_index:
+        - reference/GRCh38.chrY_chrM.fa
+      ignore_base_quality:
+        - true
+        - false
+      output_md_tag:
+        - true
+        - false
+      soft_clip:
+        - true
+        - false
+      secondary_alignments:
+        - true
+        - false
+  # eqx (-X) is incompatible with --secondary=no in minimap2, so it is tested
+  # separately with secondary_alignments at its default (true)
+  - name: fasta_reference_eqx
+    inputs:
+      $samples:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r1.fq.gz
+          - fastqs/random10k.r2.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - null
+          - fastqs/random10k.r2.fq.gz
+          - null
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      reference_index:
+        - reference/GRCh38.chrY_chrM.fa
+      eqx:
+        - true
+        - false
+  - name: fasta_reference_eqx_no_secondary_fails
+    inputs:
+      read_one_fastq_gz:
+        - fastqs/test_R1.fq.gz
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      reference_index:
+        - reference/GRCh38.chrY_chrM.fa
+      eqx:
+        - true
+      secondary_alignments:
+        - false
+    assertions:
+      exit_code: 1
+      stderr:
+        - "-X/-P and --secondary=no can't be applied at the same time"
+index:
+  - name: works
+    tags: [ reference, slow ]
+    inputs:
+      reference_fasta:
+        - reference/GRCh38.chrY_chrM.fa

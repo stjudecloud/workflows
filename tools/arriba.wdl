@@ -1,5 +1,4 @@
 ## [Homepage](https://arriba.readthedocs.io/en/latest/)
-
 version 1.1
 
 task arriba {
@@ -138,14 +137,39 @@ task arriba {
         File? protein_domains
         File? wgs_svs
         Array[String] interesting_contigs = [
-            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-            "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y", "AC_*", "NC_*",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "X",
+            "Y",
+            "AC_*",
+            "NC_*",
         ]
-        Array[String] viral_contigs = ["AC_*", "NC_*"]
+        Array[String] viral_contigs = [
+            "AC_*",
+            "NC_*",
+        ]
         Array[String] disable_filters = []
-        #@ except: LineWidth
-        String feature_name
-            = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
+        String feature_name = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
         String prefix = basename(bam, ".bam") + ".fusions"
         String strandedness = "auto"
         Boolean mark_duplicates = true
@@ -176,10 +200,8 @@ task arriba {
     }
 
     Int bam_size_gb = ceil(size(bam, "GB"))
-    Int disk_size_gb = bam_size_gb
-        + ceil(size(gtf, "GB"))
-        + ceil(size(reference_fasta_gz, "GB"))
-        + modify_disk_size_gb
+    Int disk_size_gb = bam_size_gb + ceil(size(gtf, "GB")) + ceil(size(reference_fasta_gz,
+        "GB")) + modify_disk_size_gb
     Int memory_gb = bam_size_gb + modify_memory_gb
 
     command <<<
@@ -198,21 +220,18 @@ task arriba {
             ~{"-d '" + wgs_svs + "'"} \
             -D ~{max_genomic_breakpoint_distance} \
             -s "~{strandedness}" \
-            ~{(
-                if length(interesting_contigs) > 0
+            ~{if length(interesting_contigs) > 0
                 then "-i " + sep(",", quote(interesting_contigs))
                 else ""
-            )} \
-            ~{(
-                if length(viral_contigs) > 0
+            } \
+            ~{if length(viral_contigs) > 0
                 then "-v " + sep(",", quote(viral_contigs))
                 else ""
-            )} \
-            ~{(
-                if length(disable_filters) > 0
+            } \
+            ~{if length(disable_filters) > 0
                 then "-f " + sep(",", quote(disable_filters))
                 else ""
-            )} \
+            } \
             -E ~{max_e_value} \
             -S ~{min_supporting_reads} \
             -m ~{max_mismappers} \
@@ -232,9 +251,18 @@ task arriba {
             -l ~{max_itd_length} \
             -z ~{min_itd_allele_fraction} \
             -Z ~{min_itd_supporting_reads} \
-            ~{if mark_duplicates then "" else "-u"} \
-            ~{if report_additional_columns then "-X" else ""} \
-            ~{if fill_gaps then "-I" else ""}
+            ~{if mark_duplicates
+                then ""
+                else "-u"
+            } \
+            ~{if report_additional_columns
+                then "-X"
+                else ""
+            } \
+            ~{if fill_gaps
+                then "-I"
+                else ""
+            }
     >>>
 
     output {
@@ -255,7 +283,7 @@ task arriba_tsv_to_vcf {
     meta {
         description: "Convert Arriba TSV format fusions to VCF format."
         outputs: {
-            fusions_vcf: "Output file of fusions in VCF format"
+            fusions_vcf: "Output file of fusions in VCF format",
         }
     }
 
@@ -274,9 +302,7 @@ task arriba_tsv_to_vcf {
     }
 
     Int input_size_gb = ceil(size(fusions, "GB"))
-    Int disk_size_gb = ceil(input_size_gb)
-        + (ceil(size(reference_fasta, "GB")) * 3)
-        + modify_disk_size_gb
+    Int disk_size_gb = ceil(input_size_gb) + (ceil(size(reference_fasta, "GB")) * 3) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -333,10 +359,18 @@ task arriba_extract_fusion_supporting_alignments {
     Int disk_size_gb = ceil(input_size_gb) + 5 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
+        bam_name=~{basename(bam)}
+        ln -sf "~{bam}" "$bam_name"
+        ln -sf "~{bam_index}" "$bam_name.bai"
+
         extract_fusion-supporting_alignments.sh \
             "~{fusions}" \
-            "~{bam}" \
+            "$bam_name" \
             "~{prefix}"
+
+        rm "$bam_name" "$bam_name.bai"
     >>>
 
     output {
@@ -356,7 +390,7 @@ task arriba_annotate_exon_numbers {
     meta {
         description: "Annotate fusions with exon numbers."
         outputs: {
-            fusion_tsv: "TSV file with fusions annotated with exon numbers"
+            fusion_tsv: "TSV file with fusions annotated with exon numbers",
         }
     }
 
