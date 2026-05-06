@@ -76,6 +76,9 @@ workflow mutect2_wf {
         variants = variant_vcf,
         variants_index = variant_vcf_index,
         prefix = output_prefix + "_tumor",
+        reference_fasta,
+        reference_fasta_index,
+        reference_fasta_dict,
     }
 
     call get_pileup_summaries as get_normal_pileups {
@@ -86,6 +89,9 @@ workflow mutect2_wf {
         variants = variant_vcf,
         variants_index = variant_vcf_index,
         prefix = output_prefix + "_normal",
+        reference_fasta,
+        reference_fasta_index,
+        reference_fasta_dict,
     }
 
     call calculate_contamination {
@@ -272,7 +278,7 @@ task filter_mutect {
             --tumor-segmentation "~{maf_segments}" \
             -O "~{prefix}.vcf.gz"
 
-        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{basename(unfiltered_somatic_vcf)}" "~{basename(unfiltered_somatic_vcf_index)}"
+        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{basename(unfiltered_somatic_vcf)}" "~{basename(unfiltered_somatic_vcf_index)}" "~{basename(unfiltered_somatic_vcf_stats)}"
     >>>
 
     output {
@@ -359,6 +365,9 @@ task get_pileup_summaries {
         intervals_index: "Index file for the intervals file"
         variants: "VCF file with variants and allele frequencies to summarize pileups over."
         variants_index: "Index file for the variant VCF"
+        reference_fasta: "Reference genome in FASTA format"
+        reference_fasta_index: "Index file for the reference genome FASTA"
+        reference_fasta_dict: "Dictionary file for the reference genome FASTA"
         prefix: "Prefix for output file. The extension '.table' will be added."
         modify_disk_size_gb: "Additional disk size in GB to allocate"
     }
@@ -370,6 +379,9 @@ task get_pileup_summaries {
         File intervals_index
         File variants
         File variants_index
+        File reference_fasta
+        File reference_fasta_index
+        File reference_fasta_dict
         String prefix = basename(bam, ".bam") + "_pileup_summaries"
         Int modify_disk_size_gb = 0
     }
@@ -377,6 +389,7 @@ task get_pileup_summaries {
     Int disk_size_gb = ceil(size(bam, "GB") * 2)
         + ceil(size(intervals, "GB") * 2)
         + ceil(size(variants, "GB") * 2)
+        + ceil(size(reference_fasta, "GB") * 2)
         + 20
         + modify_disk_size_gb
 
@@ -391,15 +404,21 @@ task get_pileup_summaries {
         ln -sf "~{intervals_index}" "~{basename(intervals_index)}"
         ln -sf "~{variants}" "~{basename(variants)}"
         ln -sf "~{variants_index}" "~{basename(variants_index)}"
+        ref_fasta=~{sub(basename(reference_fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{reference_fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta.fa"
+        ln -sf "~{reference_fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{reference_fasta_dict}" "$ref_fasta.dict"
 
-        gatk --java-options "-Xmx~{24000}m" \
+        gatk --java-options "-Xmx~{(task.memory / (1024 * 1024)) - 3000}m" \
             GetPileupSummaries \
+            --disable-bam-index-caching \
             -I "~{name}.bam" \
             -V "~{basename(variants)}" \
             -L "~{basename(intervals)}" \
             -O "~{prefix}.table"
 
-        rm -rf "~{name}.bam" "~{name}.bam.bai" "~{basename(intervals)}" "~{basename(intervals_index)}" "~{basename(variants)}" "~{basename(variants_index)}"
+        rm -rf "~{name}.bam" "~{name}.bam.bai" "~{basename(intervals)}" "~{basename(intervals_index)}" "~{basename(variants)}" "~{basename(variants_index)}" "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
     >>>
 
     output {
