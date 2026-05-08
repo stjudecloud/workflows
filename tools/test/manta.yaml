@@ -40,9 +40,9 @@ manta_somatic:
           - reference/GRCh38.chrY_chrM.fa.fai
       $normal:
         normal_bam:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
         normal_bam_index:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
       $tumor:
         tumor_bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
@@ -59,9 +59,9 @@ manta_somatic:
           - reference/GRCh38.chrY_chrM.fa.fai
       $normal:
         normal_bam:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
         normal_bam_index:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
       $tumor:
         tumor_bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
