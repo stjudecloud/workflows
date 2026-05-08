@@ -103,9 +103,9 @@ clairs:
           - reference/GRCh38.chrY_chrM.fa.fai
       $tumor:
         tumor_bam:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
         tumor_bam_index:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
       $normal:
         normal_bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
@@ -124,9 +124,9 @@ clairs:
           - reference/GRCh38.chrY_chrM.fa.fai
       $tumor:
         tumor_bam:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
         tumor_bam_index:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
       $normal:
         normal_bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
@@ -150,9 +150,9 @@ clairs:
           - reference/GRCh38.chrY_chrM.fa.fai
       $tumor:
         tumor_bam:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
         tumor_bam_index:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
       $normal:
         normal_bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
@@ -173,9 +173,9 @@ clairs:
           - reference/GRCh38.chrY_chrM.fa.fai
       $tumor:
         tumor_bam:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
         tumor_bam_index:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
       $normal:
         normal_bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
