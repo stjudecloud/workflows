@@ -12,6 +12,8 @@ deepvariant:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
         bam_index:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+        threads:
+          - 2
 
   - name: wes_model
     tags: [slow]
@@ -28,6 +30,8 @@ deepvariant:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
       model_type:
         - WES
+      threads:
+        - 2
 
   - name: runtime_report
     tags: [slow]
@@ -44,6 +48,8 @@ deepvariant:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
       runtime_report:
         - true
+      threads:
+          - 2
 
   - name: vcf_stats_report
     tags: [slow]
@@ -60,6 +66,8 @@ deepvariant:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
       vcf_stats_report:
         - true
+      threads:
+          - 2
 
   - name: custom_haploid_chromosomes
     tags: [slow]
@@ -76,6 +84,8 @@ deepvariant:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
       haploid_chromosomes:
         - ["chrY"]
+      threads:
+          - 2
 
 deepsomatic:
   - name: works
@@ -88,9 +98,9 @@ deepsomatic:
           - reference/GRCh38.chrY_chrM.fa.fai
       $tumor:
         tumor_bam:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
         tumor_bam_index:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
       $normal:
         normal_bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
@@ -109,9 +119,9 @@ deepsomatic:
           - reference/GRCh38.chrY_chrM.fa.fai
       $tumor:
         tumor_bam:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
         tumor_bam_index:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
       $normal:
         normal_bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
@@ -130,9 +140,9 @@ deepsomatic:
           - reference/GRCh38.chrY_chrM.fa.fai
       $tumor:
         tumor_bam:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
         tumor_bam_index:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
       $normal:
         normal_bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
@@ -153,9 +163,9 @@ deepsomatic:
           - reference/GRCh38.chrY_chrM.fa.fai
       $tumor:
         tumor_bam:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
         tumor_bam_index:
-          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
       $normal:
         normal_bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
