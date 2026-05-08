@@ -19,3 +19,11 @@ Single position VCF file
 ## test2.vcf.gz.tbi
 
 Index file for `test2.vcf.gz`.
+
+## testY.vcf.gz
+
+Single position VCF file on `chrY`
+
+## testY.vcf.gz.tbi
+
+Index file for `testY.vcf.gz`.

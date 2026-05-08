@@ -92,7 +92,6 @@ workflow alignment_post {
     File aligned_bam_index = samtools_index.bam_index
     call picard.validate_bam { input:
         bam = aligned_bam,
-        succeed_on_errors = true,
     }
 
     call md5sum.compute_checksum { input:

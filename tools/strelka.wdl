@@ -68,10 +68,10 @@ task somatic {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
-        ln -s "~{tumor_bam}" "~{tumor}"
-        ln -s "~{tumor_bam_index}" "~{tumor}.bai"
-        ln -s "~{normal_bam}" "~{normal}"
-        ln -s "~{normal_bam_index}" "~{normal}.bai"
+        ln -sf "~{tumor_bam}" "~{tumor}"
+        ln -sf "~{tumor_bam_index}" "~{tumor}.bai"
+        ln -sf "~{normal_bam}" "~{normal}"
+        ln -sf "~{normal_bam_index}" "~{normal}.bai"
 
         configureStrelkaSomaticWorkflow.py \
             --referenceFasta "$ref_fasta" \
@@ -157,8 +157,8 @@ task germline {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
-        ln -s "~{bam}" "~{filename}"
-        ln -s "~{bam_index}" "~{filename}.bai"
+        ln -sf "~{bam}" "~{filename}"
+        ln -sf "~{bam_index}" "~{filename}.bai"
 
         configureStrelkaGermlineWorkflow.py \
             --referenceFasta "$ref_fasta" \
