@@ -4,7 +4,7 @@ task align {
     meta {
         description: "Align DNA or mRNA sequences against a large reference database"
         outputs: {
-            alignments: "The output alignment file in SAM or PAF format"
+            alignments: "The output alignment file in SAM or PAF format",
         }
     }
 
@@ -65,32 +65,54 @@ task align {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(
-        (
-            size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
-        ) * 3)
-        + ceil(size(reference_index, "GB"))
-        + 10
-        + modify_disk_size_gb
+    Int disk_size_gb = ceil((size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
+    ) * 3) + ceil(size(reference_index, "GB")) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
 
         minimap2 \
-            ~{if defined(preset) then "-x \"~{preset}\"" else ""} \
-            ~{if output_paf then "" else "-a"} \
-            ~{if output_paf && cigar_in_paf then "-c" else ""} \
-            ~{if ignore_base_quality then "-Q" else ""} \
-            ~{if output_md_tag then "--MD" else ""} \
-            ~{if eqx then "-X" else ""} \
-            ~{if soft_clip then "-Y" else ""} \
-            ~{if secondary_alignments then "--secondary=yes" else "--secondary=no"} \
+            ~{if defined(preset)
+                then "-x \"~{preset}\""
+                else ""
+            } \
+            ~{if output_paf
+                then ""
+                else "-a"
+            } \
+            ~{if output_paf && cigar_in_paf
+                then "-c"
+                else ""
+            } \
+            ~{if ignore_base_quality
+                then "-Q"
+                else ""
+            } \
+            ~{if output_md_tag
+                then "--MD"
+                else ""
+            } \
+            ~{if eqx
+                then "-X"
+                else ""
+            } \
+            ~{if soft_clip
+                then "-Y"
+                else ""
+            } \
+            ~{if secondary_alignments
+                then "--secondary=yes"
+                else "--secondary=no"
+            } \
             -t ~{threads} \
             --seed ~{seed} \
             -R "~{read_group}" \
             "~{reference_index}" \
             "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz) then "\"~{read_two_fastq_gz}\"" else ""} \
+            ~{if defined(read_two_fastq_gz)
+                then "\"~{read_two_fastq_gz}\""
+                else ""
+            } \
             | if ~{output_paf}; then
                 cat - > "~{output_name}"
             else
@@ -114,7 +136,7 @@ task index {
     meta {
         description: "Create a minimap2 index for a reference genome"
         outputs: {
-            reference_index: "The generated minimap2 index file"
+            reference_index: "The generated minimap2 index file",
         }
     }
 
@@ -150,7 +172,10 @@ task index {
         minimap2 \
             -k ~{minimizer_kmer_size} \
             -w ~{minimizer_window_size} \
-            ~{if defined(alt_contigs) then "--alt \"~{alt_contigs}\"" else ""} \
+            ~{if defined(alt_contigs)
+                then "--alt \"~{alt_contigs}\""
+                else ""
+            } \
             -t ~{threads} \
             -d "~{index_name}" \
             "$ref_fasta"

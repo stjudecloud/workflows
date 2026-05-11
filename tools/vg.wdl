@@ -4,7 +4,7 @@ task giraffe {
     meta {
         description: "Align DNA sequences against a variation graph using vg giraffe"
         outputs: {
-            alignments: "The output alignment file in GAM format"
+            alignments: "The output alignment file in GAM format",
         }
     }
 
@@ -65,15 +65,10 @@ task giraffe {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil((
-            size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
-        ) * 2)
-        + ceil(size(gbz_graph, "GB"))
-        + ceil(size(minimizer_index, "GB"))
-        + ceil(size(distance_index, "GB"))
-        + ceil(size(zipcode_name, "GB"))
-        + 10
-        + modify_disk_size_gb
+    Int disk_size_gb = ceil((size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
+    ) * 2) + ceil(size(gbz_graph, "GB")) + ceil(size(minimizer_index, "GB")) + ceil(size(
+        distance_index, "GB"
+    )) + ceil(size(zipcode_name, "GB")) + 10 + modify_disk_size_gb
 
     command <<<
         vg giraffe \
@@ -83,12 +78,27 @@ task giraffe {
             -d "~{distance_index}" \
             -z "~{zipcode_name}" \
             -f "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz) then "-f \"~{read_two_fastq_gz}\"" else ""} \
+            ~{if defined(read_two_fastq_gz)
+                then "-f \"~{read_two_fastq_gz}\""
+                else ""
+            } \
             -o "~{output_format}" \
-            ~{if defined(sample_name) then "--sample \"~{sample_name}\"" else ""} \
-            ~{if defined(read_group) then "--read-group \"~{read_group}\"" else ""} \
-            ~{if defined(haploytype) then "--haplotype-name \"~{haploytype}\"" else ""} \
-            ~{if defined(kff) then "--kff-name \"~{kff}\"" else ""} \
+            ~{if defined(sample_name)
+                then "--sample \"~{sample_name}\""
+                else ""
+            } \
+            ~{if defined(read_group)
+                then "--read-group \"~{read_group}\""
+                else ""
+            } \
+            ~{if defined(haploytype)
+                then "--haplotype-name \"~{haploytype}\""
+                else ""
+            } \
+            ~{if defined(kff)
+                then "--kff-name \"~{kff}\""
+                else ""
+            } \
             --parameter-preset "~{preset}" \
             > "~{output_name}"
     >>>
@@ -109,7 +119,7 @@ task index {
     meta {
         description: "Index a reference genome for alignment with vg giraffe"
         outputs: {
-            reference_index: "The vg giraffe index file for the reference genome"
+            reference_index: "The vg giraffe index file for the reference genome",
         }
     }
 
@@ -150,10 +160,9 @@ task index {
     Float input_fasta_size = size(reference_fasta, "GB")
     Float vcf_size = size(vcf_files, "GB")
     Float transcript_gff_size = size(transcript_gff, "GB")
-    Int disk_size_gb = ceil(input_fasta_size * 2)
-        + ceil(vcf_size * 2)
-        + ceil(transcript_gff_size * 2)
-        + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(input_fasta_size * 2) + ceil(vcf_size * 2) + ceil(
+        transcript_gff_size * 2
+    ) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

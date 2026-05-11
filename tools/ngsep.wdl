@@ -4,7 +4,7 @@ task germline_variant {
     meta {
         description: "Call germline variants using NGSEP"
         outputs: {
-            vcf_output: "VCF file containing called germline variants"
+            vcf_output: "VCF file containing called germline variants",
         }
     }
 
@@ -24,9 +24,7 @@ task germline_variant {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
-        + ceil(size(bam, "GB"))
-        + 20
+    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2) + ceil(size(bam, "GB")) + 20
         + modify_disk_size_gb
 
     command <<<

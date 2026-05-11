@@ -4,7 +4,7 @@ task align {
     meta {
         description: "Align DNA sequences against a large reference database using BWA-MEM2"
         outputs: {
-            alignments: "The output alignment file in SAM format"
+            alignments: "The output alignment file in SAM format",
         }
     }
 
@@ -27,11 +27,8 @@ task align {
         File reference_index
         String read_group
         File? read_two_fastq_gz
-        String prefix = sub(
-            basename(read_one_fastq_gz),
-            "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
-            ""
-        )
+        String prefix = sub(basename(read_one_fastq_gz), "([_\\.][rR][12])?(\\.subsampled)?\\.(fastq|fq)(\\.gz)?$",
+            "")
         Boolean smart_pairing = false
         Boolean skip_mate_rescue = false
         Int threads = 4
@@ -41,12 +38,8 @@ task align {
     }
 
     String output_name = prefix + ".bam"
-    Int disk_size_gb = ceil((
-            size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
-        ) * 2)
-        + ceil(size(reference_index, "GB"))
-        + 30
-        + modify_disk_size_gb
+    Int disk_size_gb = ceil((size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
+    ) * 2) + ceil(size(reference_index, "GB")) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -60,11 +53,20 @@ task align {
             -R "~{read_group}" \
             -k ~{seed_length} \
             -T ~{min_score} \
-            ~{if smart_pairing then "-p" else ""} \
-            ~{if skip_mate_rescue then "-S" else ""} \
+            ~{if smart_pairing
+                then "-p"
+                else ""
+            } \
+            ~{if skip_mate_rescue
+                then "-S"
+                else ""
+            } \
             bwa_db/"$PREFIX" \
             "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz) then "\"~{read_two_fastq_gz}\"" else ""} |
+            ~{if defined(read_two_fastq_gz)
+                then "\"~{read_two_fastq_gz}\""
+                else ""
+            } |
         samtools view -b -o "~{output_name}" -
 
         rm -r bwa_db
@@ -86,7 +88,7 @@ task index {
     meta {
         description: "Index a reference genome for alignment with minimap2"
         outputs: {
-            reference_index: "The minimap2 index file for the reference genome"
+            reference_index: "The minimap2 index file for the reference genome",
         }
     }
 

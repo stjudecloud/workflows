@@ -55,9 +55,9 @@ task clair3 {
         String model
         File? bed_regions
         File? vcf_candidates
+        Array[String] contigs = []
         String output_dir = "clair3_output"
         String platform = "ilmn"
-        Array[String] contigs = []
         Boolean all_contigs = false
         Boolean print_ref_calls = false
         Boolean gvcf = false
@@ -70,7 +70,7 @@ task clair3 {
 
     String filename = basename(bam)
 
-    #@except: ShellCheck
+    #@ except: ShellCheck
     command <<<
         set -euo pipefail
 
@@ -198,10 +198,10 @@ task clairs {
         File? full_alignment_model
         Int? snv_min_qual
         Int? indel_min_qual
+        Array[String] contigs = []
         String prefix = "output"
         String sample_name = "SAMPLE"
         String output_dir = "output"
-        Array[String] contigs = []
         Boolean all_contigs = false
         Boolean print_ref_calls = false
         Boolean print_germline_calls = false
@@ -219,7 +219,7 @@ task clairs {
     String tumor = basename(tumor_bam)
     String normal = basename(normal_bam)
 
-    #@except: ShellCheck
+    #@ except: ShellCheck
     command <<<
         set -euo pipefail
 

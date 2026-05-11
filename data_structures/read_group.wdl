@@ -430,7 +430,7 @@ task read_group_to_array {
     meta {
         description: "Converts a `ReadGroup` struct to a `Array[String]` **without any validation**."
         outputs: {
-            converted_read_group: "Input `ReadGroup` as a `Array[String]`"
+            converted_read_group: "Input `ReadGroup` as a `Array[String]`",
         }
     }
 

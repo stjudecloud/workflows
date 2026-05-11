@@ -26,12 +26,8 @@ task align {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil((
-            size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
-        ) * 2)
-        + ceil(size(reference_index, "GB") * 5)
-        + 10
-        + modify_disk_size_gb
+    Int disk_size_gb = ceil((size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
+    ) * 2) + ceil(size(reference_index, "GB") * 5) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -45,7 +41,10 @@ task align {
             -p ~{threads} \
             -x "hisat2_db/$PREFIX" \
             -1 "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz) then "-2 \"~{read_two_fastq_gz}\"" else ""} \
+            ~{if defined(read_two_fastq_gz)
+                then "-2 \"~{read_two_fastq_gz}\""
+                else ""
+            } \
             | samtools view -bS - > "~{output_name}"
 
         rm -r hisat2_db
@@ -137,31 +136,75 @@ task index {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
 
         hisat2-build \
-            ~{if force_large_index then "--large-index" else ""} \
-            ~{if disable_auto_fitting then "--disable-auto-fitting" else ""} \
+            ~{if force_large_index
+                then "--large-index"
+                else ""
+            } \
+            ~{if disable_auto_fitting
+                then "--disable-auto-fitting"
+                else ""
+            } \
             -p ~{threads} \
-            ~{if defined(bmax) then "--bmax \"~{bmax}\"" else ""} \
-            ~{if defined(bmaxdivn) then "--bmaxdivn \"~{bmaxdivn}\"" else ""} \
-            ~{if !nodc then "--dcv \"~{dcv}\"" else ""} \
-            ~{if no_ref then "--no-ref" else ""} \
-            ~{if just_ref then "--just-ref" else ""} \
+            ~{if defined(bmax)
+                then "--bmax \"~{bmax}\""
+                else ""
+            } \
+            ~{if defined(bmaxdivn)
+                then "--bmaxdivn \"~{bmaxdivn}\""
+                else ""
+            } \
+            ~{if !nodc
+                then "--dcv \"~{dcv}\""
+                else ""
+            } \
+            ~{if no_ref
+                then "--no-ref"
+                else ""
+            } \
+            ~{if just_ref
+                then "--just-ref"
+                else ""
+            } \
             --offrate "~{offrate}" \
             --ftabchars "~{ftabchars}" \
             --localoffrate "~{localoffrate}" \
             --localftabchars "~{localftabchars}" \
-            ~{if defined(snp) then "--snp \"~{snp}\"" else ""} \
-            ~{if defined(haplotype) then "--haplotype \"~{haplotype}\"" else ""} \
-            ~{if defined(splice_site) then "--ss \"~{splice_site}\"" else ""} \
-            ~{if defined(exon) then "--exon \"~{exon}\"" else ""} \
-            ~{if defined(repeat_ref) then "--repeat-ref \"~{repeat_ref}\"" else ""} \
-            ~{if defined(repeat_info) then "--repeat-info \"~{repeat_info}\"" else ""} \
-            ~{if defined(repeat_snp) then "--repeat-snp \"~{repeat_snp}\"" else ""} \
-            ~{(
-                if defined(repeat_haplotype)
+            ~{if defined(snp)
+                then "--snp \"~{snp}\""
+                else ""
+            } \
+            ~{if defined(haplotype)
+                then "--haplotype \"~{haplotype}\""
+                else ""
+            } \
+            ~{if defined(splice_site)
+                then "--ss \"~{splice_site}\""
+                else ""
+            } \
+            ~{if defined(exon)
+                then "--exon \"~{exon}\""
+                else ""
+            } \
+            ~{if defined(repeat_ref)
+                then "--repeat-ref \"~{repeat_ref}\""
+                else ""
+            } \
+            ~{if defined(repeat_info)
+                then "--repeat-info \"~{repeat_info}\""
+                else ""
+            } \
+            ~{if defined(repeat_snp)
+                then "--repeat-snp \"~{repeat_snp}\""
+                else ""
+            } \
+            ~{(if defined(repeat_haplotype)
                 then "--repeat-haplotype \"~{repeat_haplotype}\""
                 else ""
             )} \
-            ~{if defined(seed) then "--seed \"~{seed}\"" else ""} \
+            ~{if defined(seed)
+                then "--seed \"~{seed}\""
+                else ""
+            } \
             "$ref_fasta" \
             "~{index_base_name}"
 

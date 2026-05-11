@@ -5,7 +5,7 @@ task germline {
         description: "Run Octopus individual germline variant caller"
         warning: "octopus appears to functionally be abandonware at this point. the random forest filtering models are no longer available."
         outputs: {
-            vcf: "VCF file with called germline variants"
+            vcf: "VCF file with called germline variants",
         }
     }
 
@@ -29,9 +29,7 @@ task germline {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GiB") * 2)
-        + ceil(size(bam, "GiB"))
-        + 20
+    Int disk_size_gb = ceil(size(reference_fasta, "GiB") * 2) + ceil(size(bam, "GiB")) + 20
         + modify_disk_size_gb
 
     command <<<
@@ -69,7 +67,7 @@ task somatic {
         description: "Run Octopus individual somatic variant caller"
         warning: "octopus appears to functionally be abandonware at this point. the random forest filtering models are no longer available."
         outputs: {
-            vcf: "VCF file with called somatic variants"
+            vcf: "VCF file with called somatic variants",
         }
     }
 
@@ -95,11 +93,8 @@ task somatic {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GiB") * 2)
-        + ceil(size(tumor_bam, "GiB"))
-        + ceil(size(normal_bam, "GiB"))
-        + 20
-        + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(reference_fasta, "GiB") * 2) + ceil(size(tumor_bam, "GiB"
+    )) + ceil(size(normal_bam, "GiB")) + 20 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

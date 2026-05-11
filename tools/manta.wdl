@@ -28,7 +28,7 @@ task manta_germline {
         File bam
         File bam_index
         File? calling_regions_bed
-        #@except: UnusedInput
+        #@ except: UnusedInput
         File? calling_regions_index
         String output_dir = "manta_output"
         Boolean exome = false
@@ -36,9 +36,7 @@ task manta_germline {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
-        + ceil(size(bam, "GB"))
-        + 20
+    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2) + ceil(size(bam, "GB")) + 20
         + modify_disk_size_gb
 
     String filename = basename(bam)
@@ -57,8 +55,14 @@ task manta_germline {
         configManta.py \
             --bam "~{filename}" \
             --referenceFasta "$ref_fasta" \
-            ~{if defined(calling_regions_bed) then "--callRegions '" + calling_regions_bed + "'" else ""} \
-            ~{if exome then "--exome" else ""} \
+            ~{if defined(calling_regions_bed)
+                then "--callRegions '" + calling_regions_bed + "'"
+                else ""
+            } \
+            ~{if exome
+                then "--exome"
+                else ""
+            } \
             --runDir "~{output_dir}"
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
@@ -119,7 +123,7 @@ task manta_somatic {
         File normal_bam
         File normal_bam_index
         File? calling_regions_bed
-        #@except: UnusedInput
+        #@ except: UnusedInput
         File? calling_regions_index
         String output_dir = "manta_output"
         Boolean exome = false
@@ -127,11 +131,8 @@ task manta_somatic {
         Int modify_disk_size_gb = 0
     }
 
-    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2)
-        + ceil(size(tumor_bam, "GB"))
-        + ceil(size(normal_bam, "GB"))
-        + 20
-        + modify_disk_size_gb
+    Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2) + ceil(size(tumor_bam, "GB"))
+        + ceil(size(normal_bam, "GB")) + 20 + modify_disk_size_gb
 
     String tumor = basename(tumor_bam)
     String normal = basename(normal_bam)
@@ -153,13 +154,21 @@ task manta_somatic {
             --normalBam "~{normal}" \
             --tumorBam "~{tumor}" \
             --referenceFasta "$ref_fasta" \
-            ~{if exome then "--exome" else ""} \
-            ~{if defined(calling_regions_bed) then "--callRegions '" + calling_regions_bed + "'" else ""} \
+            ~{if exome
+                then "--exome"
+                else ""
+            } \
+            ~{if defined(calling_regions_bed)
+                then "--callRegions '" + calling_regions_bed + "'"
+                else ""
+            } \
             --runDir "~{output_dir}"
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{normal}.bai"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{
+            normal
+        }.bai"
     >>>
 
     output {

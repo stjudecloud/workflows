@@ -852,7 +852,7 @@ task merge_vcfs {
 
     input {
         Array[File] vcfs
-        #@except: UnusedInput
+        #@ except: UnusedInput
         Array[File] vcfs_indexes
         String output_vcf_name
         Int modify_disk_size_gb = 0

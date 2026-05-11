@@ -1441,7 +1441,7 @@ task calmd {
     meta {
         description: "Calculates MD and NM tags"
         outputs: {
-            calmd_bam: "A BAM file with the MD and NM tags calculated. Output filename is `basename(bam) + '.calmd.bam'`."
+            calmd_bam: "A BAM file with the MD and NM tags calculated. Output filename is `basename(bam) + '.calmd.bam'`.",
         }
     }
 
@@ -1462,9 +1462,7 @@ task calmd {
     }
 
     Float bam_size = size(bam, "GiB")
-    Int disk_size_gb = ceil(bam_size * 2.5)
-        + ceil(size(reference_fasta, "GiB") * 2)
-        + 30
+    Int disk_size_gb = ceil(bam_size * 2.5) + ceil(size(reference_fasta, "GiB") * 2) + 30
         + modify_disk_size_gb
 
     command <<<
@@ -1501,7 +1499,7 @@ task sort {
     meta {
         description: "Sorts the input BAM file using `samtools sort`."
         outputs: {
-            sorted_bam: "A sorted BAM file"
+            sorted_bam: "A sorted BAM file",
         }
     }
 
