@@ -38,4 +38,4 @@ jobs:
       env: 
         RUNNER: ${{ matrix.runner }}
       run: |
-        sprocket dev test --filter-tag reference --filter-tag slow --filter-tag high_mem ${{ matrix.file }}
+        sprocket dev test -vvv --filter-tag reference --filter-tag slow --filter-tag high_mem ${{ matrix.file }}
