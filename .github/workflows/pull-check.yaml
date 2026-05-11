@@ -10,7 +10,7 @@ jobs:
   import_syntax_check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Check import syntax
       run: |
         EXITCODE=0
@@ -41,7 +41,7 @@ jobs:
   docker_pull_check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Ensure current SemVer'd docker images are being pulled
       run: |
         EXITCODE=0
