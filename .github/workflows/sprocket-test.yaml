@@ -38,4 +38,4 @@ jobs:
       env: 
         RUNNER: ${{ matrix.runner }}
       run: |
-        sprocket dev test --filter-tag reference --filter-tag slow --filter-tag high_mem ${{ matrix.file }} || cat test/runs/*/*/*/attempts/0/std* > /dev/stderr
+        sprocket dev test --filter-tag reference --filter-tag slow --filter-tag high_mem ${{ matrix.file }} || for file in $(ls test/runs/*/*/*/attempts/0/std*); do echo $file > /dev/stderr ; cat $file > /dev/stderr; done

@@ -289,7 +289,7 @@ task apply_bqsr {
         # shellcheck disable=SC2102
         gatk \
             --java-options \
-                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g -XX:-UseContainerSupport" \
             ApplyBQSRSpark \
             --spark-master local[~{ncpu}] \
             -I "$bam_name" \
