@@ -28,7 +28,6 @@ jobs:
         lfs: true
     - name: Install Sprocket
       run: |
-        cargo install sprocket --locked
         SPROCKET_URL=$(curl -sSL https://api.github.com/repos/stjude-rust-labs/sprocket/releases/latest \
           | jq -r '.assets[] | select(.name | test("x86_64-unknown-linux-gnu.tar.gz")) | .browser_download_url')
         curl -sSL "$SPROCKET_URL" | tar -xz -C /usr/local/bin sprocket
