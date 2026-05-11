@@ -641,7 +641,7 @@ task mark_duplicates_spark {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
+        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
     }
 }
