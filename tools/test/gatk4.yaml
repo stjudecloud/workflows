@@ -9,6 +9,8 @@ apply_bqsr:
           - bams/test_rnaseq_variant.bam.bai
         recalibration_report:
           - test_rnaseq_variant.recal.txt
+        ncpu:
+          - 1
 base_recalibrator:
   - name: works
     inputs:
@@ -34,6 +36,8 @@ base_recalibrator:
           - [ reference/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz ]
         known_indels_sites_indices:
           - [ reference/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi ]
+      ncpu:
+        - 1
 haplotype_caller:
   - name: works
     tags: [ slow ]
@@ -99,3 +103,5 @@ mark_duplicates_spark:
         - bams/Aligned.sortedByCoord.chr9_chr22.bam
         - bams/test_rnaseq_variant.bam
         - bams/test.bam
+    ncpu:
+      - 1
