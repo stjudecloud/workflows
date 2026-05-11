@@ -30,6 +30,7 @@ task clair3 {
         model: "Pre-trained Clair3 model to use for variant calling"
         bed_regions: "Optional BED file specifying regions to call variants in"
         vcf_candidates: "Optional VCF file with candidate variants to consider"
+        contigs: "Optional list of contigs to call variants in. If undefined, all contigs in the reference FASTA will be considered."
         output_dir: "Directory to store Clair3 output"
         platform: {
             description: "Sequencing platform used to generate the reads",
@@ -39,7 +40,6 @@ task clair3 {
                 "ilmn",
             ],
         }
-        contigs: "Optional list of contigs to call variants in. If undefined, all contigs in the reference FASTA will be considered."
         all_contigs: "Boolean indicating whether to include all contigs in variant calling. If false only chr{1..22,X,Y} are called."
         print_ref_calls: "Boolean indicating whether to print reference calls in the output VCF"
         gvcf: "Boolean indicating whether to output gVCF format"
@@ -169,10 +169,10 @@ task clairs {
         full_alignment_model: "Optional pre-trained ClairS full-alignment model to use for variant calling"
         snv_min_qual: "Minimum quality score required to call a SNV"
         indel_min_qual: "Minimum quality score required to call an indel"
+        contigs: "Optional list of contigs to call variants in. If undefined, all contigs in the reference FASTA will be considered."
         prefix: "Prefix for ClairS output files"
         sample_name: "Sample name to use in the output VCF"
         output_dir: "Directory to store ClairS output"
-        contigs: "Optional list of contigs to call variants in. If undefined, all contigs in the reference FASTA will be considered."
         all_contigs: "Boolean indicating whether to include all contigs in variant calling. If false only chr{1..22,X,Y} are called."
         print_ref_calls: "Boolean indicating whether to print reference calls in the output VCF"
         print_germline_calls: "Boolean indicating whether to print germline calls in the output VCF"
