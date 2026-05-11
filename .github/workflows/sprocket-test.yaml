@@ -39,3 +39,4 @@ jobs:
         RUNNER: ${{ matrix.runner }}
       run: |
         sprocket dev test -vvv --filter-tag reference --filter-tag slow --filter-tag high_mem ${{ matrix.file }}
+        cat test/runs/*/*/*/attempts/0/std*
