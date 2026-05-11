@@ -82,6 +82,7 @@ task clair3 {
         cp "~{bam}" "~{filename}"
         cp "~{bam_index}" "~{filename}.bai"
 
+        #@except: ShellCheck
         run_clair3.sh \
             --bam_fn="~{filename}" \
             --ref_fn="$ref_fasta" \
@@ -231,6 +232,7 @@ task clairs {
         cp "~{normal_bam}" "~{normal}"
         cp "~{normal_bam_index}" "~{normal}.bai"
 
+        #@except: ShellCheck
         run_clairs \
             --tumor_bam_fn "~{tumor}" \
             --normal_bam_fn "~{normal}" \
