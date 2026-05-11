@@ -70,6 +70,7 @@ task clair3 {
 
     String filename = basename(bam)
 
+    #@except: ShellCheck
     command <<<
         set -euo pipefail
 
@@ -82,7 +83,6 @@ task clair3 {
         cp "~{bam}" "~{filename}"
         cp "~{bam_index}" "~{filename}.bai"
 
-        #@except: ShellCheck
         run_clair3.sh \
             --bam_fn="~{filename}" \
             --ref_fn="$ref_fasta" \
@@ -219,6 +219,7 @@ task clairs {
     String tumor = basename(tumor_bam)
     String normal = basename(normal_bam)
 
+    #@except: ShellCheck
     command <<<
         set -euo pipefail
 
