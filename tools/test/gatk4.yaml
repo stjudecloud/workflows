@@ -26,9 +26,9 @@ base_recalibrator:
           - reference/GRCh38.chr1_chr19.dict
       $dbsnp:
         dbSNP_vcf: 
-          - reference/Homo_sapiens_assembly38.dbsnp138.top5000.vcf
+          - reference/Homo_sapiens_assembly38.dbsnp138.top5000.vcf.gz
         dbSNP_vcf_index:
-          - reference/Homo_sapiens_assembly38.dbsnp138.top5000.vcf.idx
+          - reference/Homo_sapiens_assembly38.dbsnp138.top5000.vcf.gz.tbi
       $known_indels:
         known_indels_sites_vcfs:
           - [ reference/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz ]
