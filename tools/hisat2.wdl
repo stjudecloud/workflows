@@ -3,6 +3,7 @@ version 1.2
 task align {
     meta {
         description: "Align RNA-seq reads against a reference genome using HISAT2"
+        deprecated: true
         outputs: {
             alignments: "The output alignment file in SAM format",
         }
@@ -65,6 +66,7 @@ task align {
 task index {
     meta {
         description: "Index a reference genome for alignment with HISAT2"
+        deprecated: true
         outputs: {
             reference_index: "The HISAT2 index files for the reference genome",
         }
