@@ -6,9 +6,36 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## 2026 May
 
+### Added
+
+- New `bwamem2.wdl` tool wrapper for the BWA-MEM2 aligner [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `clair.wdl` tool wrapper for the Clair3 variant caller [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `deepvariant.wdl` tool wrapper for Google DeepVariant [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `hisat2.wdl` tool wrapper for HISAT2 (tasks marked deprecated on introduction) [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `manta.wdl` tool wrapper for the Manta structural variant caller [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `minimap2.wdl` tool wrapper for minimap2 [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `mutect2.wdl` tool wrapper for the GATK Mutect2 somatic variant calling workflow [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `ngsep.wdl` tool wrapper for NGSEP germline variant calling [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `strelka.wdl` tool wrapper for the Strelka2 germline and somatic variant callers [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `vg.wdl` tool wrapper for the `vg` variant graph aligner [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `gatk4` tasks `apply_vqsr`, `variant_recalibrator`, `calculate_genotype_posteriors`, `genotype_gvcfs`, and `resource_to_string`, plus `Resource` struct and `ref_confidence`/`VariantMode` enums [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `samtools.calmd` and `samtools.sort` tasks [#282](https://github.com/stjudecloud/workflows/pull/282)
+
+### Changed
+
+- `gatk4.wdl` bumped from WDL 1.1 to WDL 1.3 [#282](https://github.com/stjudecloud/workflows/pull/282)
+- Raised default disk allocations across most `tools/*.wdl` tasks (typically +10 → +30 GB) to accommodate larger inputs [#282](https://github.com/stjudecloud/workflows/pull/282)
+- `bwa.bwa_mem` memory raised from 25 GB to 120 GB; `samtools_cores` calculation now floors at 1 for low-CPU runs (applies to all three `bwa.bwa_*` tasks) [#282](https://github.com/stjudecloud/workflows/pull/282)
+- `samtools.addreplacerg` memory raised from 4 GB to 8 GB; default disk allocation raised by 40 GB [#282](https://github.com/stjudecloud/workflows/pull/282)
+- `picard.mark_duplicates` and `picard.sort` now use a task-local `tmp/` directory for Java temp files [#282](https://github.com/stjudecloud/workflows/pull/282)
+- `picard.sort` default memory raised from 25 GB to 35 GB [#282](https://github.com/stjudecloud/workflows/pull/282)
+- `picard.validate_bam` default disk allocation now scales with BAM size (`bam_size * 4 + 50`) instead of `bam_size + 10` [#282](https://github.com/stjudecloud/workflows/pull/282)
+- `arriba.arriba_extract_fusion_supporting_alignments` now localizes BAM and BAI into the task working directory before invocation [#282](https://github.com/stjudecloud/workflows/pull/282)
+- `util.make_coverage_regions_bed` now explicitly requests 8 GB of memory [#282](https://github.com/stjudecloud/workflows/pull/282)
+
 ### Fixed
 
-- `picard.create_sequence_dictionary` now correctly derives the default `outfile_name` for FASTA inputs with `.fasta`, `.fna`, or `.gz`-compressed extensions (previously only `.fa` was stripped, producing names like `genome.fa.gz.dict`)
+- `picard.create_sequence_dictionary` now correctly derives the default `outfile_name` for FASTA inputs with `.fasta`, `.fna`, or `.gz`-compressed extensions (previously only `.fa` was stripped, producing names like `genome.fa.gz.dict`) [#282](https://github.com/stjudecloud/workflows/pull/282)
 
 ## 2026 February
 
