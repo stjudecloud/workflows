@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2026 May
+
+### Fixed
+
+- `picard.create_sequence_dictionary` now correctly derives the default `outfile_name` for FASTA inputs with `.fasta`, `.fna`, or `.gz`-compressed extensions (previously only `.fa` was stripped, producing names like `genome.fa.gz.dict`)
+
 ## 2026 February
 
 ### Changed

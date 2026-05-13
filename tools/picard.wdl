@@ -976,7 +976,7 @@ task create_sequence_dictionary {
         String? assembly_name
         String? fasta_url
         String? species
-        String outfile_name = basename(fasta, ".fa") + ".dict"
+        String outfile_name = sub(basename(fasta), "\\.(fa|fasta|fna)(\\.gz)?$", "") + ".dict"
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
     }
