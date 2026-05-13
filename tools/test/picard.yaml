@@ -166,7 +166,40 @@ clean_sam:
         - SILENT
       memory_gb:
         - 5
-# TODO: all the `collect*` QC tasks
+collect_wgs_metrics:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      reference_fasta:
+        - reference/GRCh38.chrY_chrM.fa
+
+collect_alignment_summary_metrics:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+
+collect_gc_bias_metrics:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      reference_fasta:
+        - reference/GRCh38.chrY_chrM.fa
+
+collect_insert_size_metrics:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+
+quality_score_distribution:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+
 # TODO: merge_vcfs
 # TODO: scatter_interval_list
 # TODO: create_sequence_dictionary
