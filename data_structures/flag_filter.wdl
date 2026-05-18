@@ -67,6 +67,7 @@ struct FlagFilter {
     String exclude_if_all  # samtools -G
 }
 
+#@ except: EmptyOutputs
 task validate_string_is_12bit_int {
     meta {
         description: "Validates that a string is a octal, decimal, or hexadecimal number and less than 2^12."
