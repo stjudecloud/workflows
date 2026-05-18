@@ -109,6 +109,10 @@ workflow quality_check_standard {
             warning: "These files can be very large.",
         }
         use_all_cores: "Use all cores? Recommended for cloud environments."
+        run_fastq_analysis: {
+            description: "Create FASTQs from the input BAM and run FASTQ-level analyses?",
+            help: "If false, the pipeline skips SAMtools bam-to-fastq, fqlint, Kraken2, fastp, librarian, and comparative Kraken2. Also disables qualimap_rnaseq (requires a collated BAM from bam_to_fastq).",
+        }
         optical_distance: {
             description: "Maximum distance between read coordinates to consider them optical duplicates instead of library duplicates (e.g. PCR duplicates).",
             help: "If `mark_duplicates == false`, this parameter is ignored. If `0`, then _optical_ duplicate marking is disabled and only traditional duplicate marking will be performed. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Review the `mark_duplicates` task in `../../tools/picard.wdl` for more information.",
@@ -117,10 +121,6 @@ workflow quality_check_standard {
         subsample_n_reads: {
             description: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input.",
             warning: "Subsampling is done probabalistically so the exact number of reads in the output will have some variation.",
-        }
-        run_fastq_analysis: {
-            description: "Create FASTQs from the input BAM and run FASTQ-level analyses?",
-            help: "If false, the pipeline skips SAMtools bam-to-fastq, fqlint, Kraken2, fastp, librarian, and comparative Kraken2. Also disables qualimap_rnaseq (requires a collated BAM from bam_to_fastq).",
         }
     }
 
@@ -155,9 +155,9 @@ workflow quality_check_standard {
         Boolean store_kraken_sequences = false
         Boolean output_intermediate_files = false
         Boolean use_all_cores = false
+        Boolean run_fastq_analysis = true
         Int optical_distance = 0
         Int subsample_n_reads = -1
-        Boolean run_fastq_analysis = true
     }
 
     call parse_input { input:
