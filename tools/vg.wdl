@@ -130,7 +130,7 @@ task index {
         db_prefix: "The base name for the output index files"
         gff_feature: "The feature type in the GFF to use for transcripts"
         gff_id_tag: "The attribute tag in the GFF to use as transcript ID"
-        workflow: {
+        autoindex_workflow: {
             description: "The vg autoindex workflow to use",
             choices: [
                 "map",
@@ -152,7 +152,7 @@ task index {
         String db_prefix = "reference"
         String gff_feature = "exon"
         String gff_id_tag = "transcript_id"
-        String workflow = "giraffe"
+        String autoindex_workflow = "giraffe"
         Int modify_disk_size_gb = 0
         Int threads = 4
     }
@@ -172,7 +172,7 @@ task index {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
 
         vg autoindex \
-            --workflow "~{workflow}" \
+            --workflow "~{autoindex_workflow}" \
             -r "$ref_fasta" \
             -p "~{db_prefix}" \
             ~{sep(" ", prefix("-v ", quote(vcf_files)))} \
