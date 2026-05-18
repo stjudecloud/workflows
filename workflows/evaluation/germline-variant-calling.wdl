@@ -143,7 +143,7 @@ workflow variant_calling {
         File? clair_merged_vcf = clair3.merged_vcf
         File? deepvariant_vcf = deepvariant.vcf_output
         File? deepvariant_gvcf = deepvariant.gvcf_output
-        File? deepvariant_runtime_report = deepvariant.runtime
+        File? deepvariant_runtime_report = deepvariant.runtime_report
         File? deepvariant_vcf_stats = deepvariant.vcf_stats
         Directory? manta_output = manta_germline.manta_output
         File? manta_log = manta_germline.log_file
