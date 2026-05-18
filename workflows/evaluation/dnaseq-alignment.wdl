@@ -6,7 +6,7 @@ import "../../tools/bwamem2.wdl" as bwamem2
 import "../../tools/minimap2.wdl" as minimap2
 import "../../tools/samtools.wdl" as samtools
 import "../../tools/vg.wdl" as vg
-import "alignment-post.wdl" as alignment_post
+import "../general/alignment-post.wdl" as alignment_post
 
 workflow align {
     meta {
@@ -92,7 +92,7 @@ workflow align {
     }
 
     call read_group_ds.read_group_to_array {
-        read_group
+        read_group,
     }
 
     call samtools.addreplacerg {

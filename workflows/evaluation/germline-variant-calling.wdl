@@ -9,7 +9,8 @@ import "../../tools/strelka.wdl"
 
 workflow variant_calling {
     meta {
-        description: "Runs a series of variant calling tools on a processed BAM file. The workflow is designed to be flexible and allow users to choose which variant callers to run based on their specific needs and preferences."
+        description: "Runs a series of variant calling tools on a processed BAM file."
+        help: "The workflow is designed to be flexible and allow users to choose which variant callers to run based on their specific needs and preferences."
         outputs: {
             clair_vcf: "VCF file produced by Clair",
             clair_full_vcf: "VCF file produced by Clair containing all variants before filtering",
@@ -23,6 +24,8 @@ workflow variant_calling {
             ngsep_vcf: "VCF file produced by NGSEP",
             strelka_output: "Directory containing Strelka somatic variant calls and associated files",
             strelka_log: "Log file from the Strelka workflow execution",
+            haplotype_caller_vcf: "VCF file output by GATK HaplotypeCaller after VQSR and genotype posterior calculation",
+            haplotype_caller_vcf_index: "Index file for the HaplotypeCaller VCF output",
         }
         allowNestedInputs: true
     }
@@ -40,6 +43,9 @@ workflow variant_calling {
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035531852-Intervals-and-interval-lists",
         }
         clair3_model: "Pre-trained Clair3 model file to use for variant calling with Clair"
+        known_indels_sites_vcfs: "Optional array of VCF files containing known indel sites to be used in variant calling and filtering"
+        known_indels_sites_indices: "Optional array of index files corresponding to the known indel site VCF files"
+        resources: "Optional array of additional resource files to be used in variant calling and filtering, such as additional VCFs or BED files"
         run_clair: "Whether to run Clair for variant calling"
         run_deepvariant: "Whether to run DeepVariant for variant calling"
         run_haplotype_caller: "Whether to run GATK's Haplotype Caller for variant calling"
@@ -54,10 +60,15 @@ workflow variant_calling {
         File reference_genome
         File reference_genome_index
         File reference_genome_dictionary
+        #@ except: SnakeCase
         File dbSNP_vcf
+        #@ except: SnakeCase
         File dbSNP_vcf_index
         File interval_list
         Directory clair3_model
+        Array[File] known_indels_sites_vcfs = []
+        Array[File] known_indels_sites_indices = []
+        Array[Resource] resources = []
         Boolean run_clair = true
         Boolean run_deepvariant = true
         Boolean run_haplotype_caller = true
@@ -120,18 +131,10 @@ workflow variant_calling {
             reference_dict = reference_genome_dictionary,
             dbSNP_vcf,
             dbSNP_vcf_index,
+            known_indels_sites_vcfs,
+            known_indels_sites_indices,
+            resources,
         }
-#        call gatk4.haplotype_caller {
-#            bam = processed_bam,
-#            bam_index = processed_bam_index,
-#            interval_list,
-#            fasta = reference_genome,
-#            fasta_index = reference_genome_index,
-#            dict = reference_genome_dictionary,
-#            dbSNP_vcf,
-#            dbSNP_vcf_index,
-#            reference_confidence = ref_confidence.GVCF,
-#        }
     }
 
     output {
