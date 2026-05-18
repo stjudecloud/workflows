@@ -141,6 +141,7 @@ workflow rnaseq_standard {
     }
 }
 
+#@ except: EmptyOutputs
 task parse_input {
     meta {
         description: "Parses and validates the `rnaseq_standard[_fastq]` workflows' provided inputs"
