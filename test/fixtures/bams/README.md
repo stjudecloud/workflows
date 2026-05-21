@@ -40,6 +40,14 @@ Coordinate sorted BAM with 1 read group (`ID:test`). Aligned using BWA `aln` (us
 
 BAM index corresponding to `test.bwa_aln_pe.chrY_chrM.bam`.
 
+## test.bwa_aln_pe.with_variants.chrY_chrM.bam
+
+Coordinate sorted BAM with 1 read group (`ID:test`). Aligned using BWA `aln` (using the `bwa.bwa_aln_pe` WDL task). 100,000 Paired-End reads mapped to GRCh38 `chrY` and `chrM` from `test_variants_R1.fq.gz` and `test_variants_R2.fq.gz`.
+
+## test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
+
+BAM index corresponding to `test.bwa_aln_pe.with_variants.chrY_chrM.bam`.
+
 ## test.extra_RG.bam
 
 A duplicate of `test.bam` with an added `@RG` entry with the ID `no_match`. There are no reads corresponding to the `no_match` RG entry.

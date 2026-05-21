@@ -166,7 +166,65 @@ clean_sam:
         - SILENT
       memory_gb:
         - 5
-# TODO: all the `collect*` QC tasks
-# TODO: merge_vcfs
-# TODO: scatter_interval_list
-# TODO: create_sequence_dictionary
+collect_wgs_metrics:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      reference_fasta:
+        - reference/GRCh38.chrY_chrM.fa
+
+collect_alignment_summary_metrics:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+
+collect_gc_bias_metrics:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      reference_fasta:
+        - reference/GRCh38.chrY_chrM.fa
+
+collect_insert_size_metrics:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+
+quality_score_distribution:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+
+merge_vcfs:
+  - name: works
+    inputs:
+      $vcfs:
+        vcfs:
+          - [vcfs/test1.vcf.gz, vcfs/test2.vcf.gz]
+        vcfs_indexes:
+          - [vcfs/test1.vcf.gz.tbi, vcfs/test2.vcf.gz.tbi]
+      output_vcf_name:
+        - merged.vcf.gz
+
+scatter_interval_list:
+  - name: works
+    inputs:
+      interval_list:
+        - chr1_chr19.interval_list
+      scatter_count:
+        - 2
+
+create_sequence_dictionary:
+  - name: works
+    inputs:
+      fasta:
+        - reference/GRCh38.chrY_chrM.fa
+  - name: gzipped_fasta
+    inputs:
+      fasta:
+        - reference/GRCh38.chr9_chr22.fa.gz

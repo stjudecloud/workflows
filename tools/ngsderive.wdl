@@ -47,7 +47,7 @@ task strandedness {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -120,7 +120,7 @@ task instrument {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -179,7 +179,7 @@ task read_length {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -236,7 +236,7 @@ task encoding {
     }
 
     Float files_size = size(ngs_files, "GB")
-    Int disk_size_gb = ceil(files_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(files_size) + 30 + modify_disk_size_gb
 
     command <<<
         ngsderive encoding --verbose \
@@ -304,7 +304,7 @@ task junction_annotation {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -403,7 +403,7 @@ task endedness {
     Int memory_gb = if calc_rpt
         then (ceil(bam_size * 2.5) + 4 + modify_memory_gb)
         else 4
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         ngsderive endedness --verbose \

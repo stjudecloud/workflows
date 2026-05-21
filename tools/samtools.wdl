@@ -20,7 +20,7 @@ task quickcheck {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         samtools quickcheck "~{bam}"
@@ -178,7 +178,7 @@ task flagstat {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -673,7 +673,7 @@ task addreplacerg {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 50 + modify_disk_size_gb
 
     String outfile_name = prefix + ".bam"
 
@@ -709,7 +709,7 @@ task addreplacerg {
 
     runtime {
         cpu: ncpu
-        memory: "4 GB"
+        memory: "8 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -884,7 +884,7 @@ task bam_to_fastq {
     Int disk_size_gb = ceil(bam_size * if (retain_collated_bam && !collated && paired_end)
         then 5
         else 2
-    ) + 10 + modify_disk_size_gb
+    ) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -1222,52 +1222,6 @@ task position_sorted_fixmate {
     }
 }
 
-task faidx {
-    meta {
-        description: "Creates a `.fai` FASTA index for the input FASTA"
-        outputs: {
-            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`.",
-        }
-    }
-
-    parameter_meta {
-        fasta: "Input FASTA format file to index. Optionally gzip compressed."
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
-
-    input {
-        File fasta
-        Int modify_disk_size_gb = 0
-    }
-
-    Float fasta_size = size(fasta, "GB")
-    Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
-
-    String outfile_name = basename(fasta, ".gz") + ".fai"
-
-    command <<<
-        set -euo pipefail
-
-        ref_fasta=~{basename(fasta, ".gz")}
-        gunzip -c "~{fasta}" > "$ref_fasta" \
-            || ln -sf "~{fasta}" "$ref_fasta"
-
-        samtools faidx -o "~{outfile_name}" "$ref_fasta"
-    >>>
-
-    output {
-        File fasta_index = outfile_name
-    }
-
-    runtime {
-        cpu: 1
-        memory: "4 GB"
-        disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
-        maxRetries: 1
-    }
-}
-
 #@ except: MatchingOutputMeta
 task markdup {
     meta {
@@ -1432,6 +1386,175 @@ task markdup {
         cpu: ncpu
         disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 1
+    }
+}
+
+task faidx {
+    meta {
+        description: "Creates a `.fai` FASTA index for the input FASTA"
+        outputs: {
+            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`.",
+        }
+    }
+
+    parameter_meta {
+        fasta: "Input FASTA format file to index. Optionally gzip compressed."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fasta
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fasta_size = size(fasta, "GB")
+    Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
+
+    String outfile_name = basename(fasta, ".gz") + ".fai"
+
+    command <<<
+        set -euo pipefail
+
+        ref_fasta=~{basename(fasta, ".gz")}
+        gunzip -c "~{fasta}" > "$ref_fasta" \
+            || ln -sf "~{fasta}" "$ref_fasta"
+
+        samtools faidx -o "~{outfile_name}" "$ref_fasta"
+    >>>
+
+    output {
+        File fasta_index = outfile_name
+    }
+
+    runtime {
+        cpu: 1
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 1
+    }
+}
+
+task calmd {
+    meta {
+        description: "Calculates MD and NM tags"
+        outputs: {
+            calmd_bam: "A BAM file with the MD and NM tags calculated. Output filename is `basename(bam) + '.calmd.bam'`.",
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to quickcheck"
+        reference_fasta: "Reference FASTA format file. Must be indexed with a `.fai` file."
+        prefix: "Prefix for the output file. The extension `.bam` will be added."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
+    }
+
+    input {
+        File bam
+        File reference_fasta
+        String prefix = basename(bam, ".bam") + ".calmd"
+        Int modify_disk_size_gb = 0
+        Int ncpu = 2
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size * 2.5) + ceil(size(reference_fasta, "GiB") * 2) + 30
+        + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        (( n_cores = ~{ncpu} - 1 || 1 ))
+
+        ref_fasta=~{basename(reference_fasta, ".gz")}
+        gunzip -c "~{reference_fasta}" > "$ref_fasta" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta"
+
+        samtools calmd \
+            --threads "$n_cores" \
+            -b \
+            "~{bam}" \
+            "$ref_fasta" \
+            > "~{prefix}.bam"
+    >>>
+
+    output {
+        File calmd_bam = "~{prefix}.bam"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 2
+    }
+}
+
+task sort {
+    meta {
+        description: "Sorts the input BAM file using `samtools sort`."
+        outputs: {
+            sorted_bam: "A sorted BAM file",
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to sort"
+        prefix: "Prefix for the output file. The extension `.bam` will be added."
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments.",
+            group: "Common",
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task",
+            group: "Common",
+        }
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam") + ".sorted"
+        Boolean use_all_cores = false
+        Int ncpu = 4
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
+    }
+
+    # Original BAM, intermediate BAM chunks (~1.5x), final BAM, hence 4x
+    Int disk_size_gb = ceil(size(bam, "GB") * 5) + 10 + modify_disk_size_gb
+    Int memory_gb = ncpu + 4 + modify_memory_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        (( n_cores -= 1 ))
+
+        samtools sort \
+            --threads "$n_cores" \
+            -o "~{prefix}.bam" \
+            "~{bam}"
+    >>>
+
+    output {
+        File sorted_bam = "~{prefix}.bam"
+    }
+
+    runtime {
+        cpu: ncpu
+        memory: "~{memory_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }
