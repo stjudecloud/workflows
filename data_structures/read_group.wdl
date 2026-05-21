@@ -143,6 +143,7 @@ task get_read_groups {
     }
 }
 
+#@ except: EmptyOutputs
 task validate_read_group {
     meta {
         description: "Validate a `ReadGroup` struct's fields are defined and well-formed"

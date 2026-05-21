@@ -133,6 +133,7 @@ workflow dnaseq_standard_experimental {
     }
 }
 
+#@ except: EmptyOutputs
 task parse_input {
     meta {
         description: "Parses and validates the `dnaseq_standard` workflow's provided inputs"

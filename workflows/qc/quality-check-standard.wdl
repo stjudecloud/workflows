@@ -109,6 +109,10 @@ workflow quality_check_standard {
             warning: "These files can be very large.",
         }
         use_all_cores: "Use all cores? Recommended for cloud environments."
+        run_fastq_analysis: {
+            description: "Create FASTQs from the input BAM and run FASTQ-level analyses?",
+            help: "If false, the pipeline skips SAMtools bam-to-fastq, fqlint, Kraken2, fastp, librarian, and comparative Kraken2. Also disables qualimap_rnaseq (requires a collated BAM from bam_to_fastq).",
+        }
         optical_distance: {
             description: "Maximum distance between read coordinates to consider them optical duplicates instead of library duplicates (e.g. PCR duplicates).",
             help: "If `mark_duplicates == false`, this parameter is ignored. If `0`, then _optical_ duplicate marking is disabled and only traditional duplicate marking will be performed. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Review the `mark_duplicates` task in `../../tools/picard.wdl` for more information.",
@@ -151,6 +155,7 @@ workflow quality_check_standard {
         Boolean store_kraken_sequences = false
         Boolean output_intermediate_files = false
         Boolean use_all_cores = false
+        Boolean run_fastq_analysis = true
         Int optical_distance = 0
         Int subsample_n_reads = -1
     }
@@ -164,7 +169,7 @@ workflow quality_check_standard {
     call flag_filter.validate_flag_filter as kraken_filter_validator { input:
         flags = standard_filter,
     }
-    if (run_comparative_kraken) {
+    if (run_comparative_kraken && run_fastq_analysis) {
         call flag_filter.validate_flag_filter as comparative_kraken_filter_validator { input:
             flags = comparative_filter,
         }
@@ -254,47 +259,23 @@ workflow quality_check_standard {
         prefix = post_subsample_prefix,
     }
 
-    call samtools.bam_to_fastq after quickcheck after kraken_filter_validator { input:
-        bam = post_subsample_bam,
-        bitwise_filter = standard_filter,
-        prefix = post_subsample_prefix,
-        # RNA needs a collated BAM for Qualimap
-        # DNA can skip the associated storage costs
-        retain_collated_bam = rna,
-        # disabling fast_mode enables writing of secondary and supplementary alignments
-        # to the collated BAM when processing RNA.
-        # Those alignments are used downstream by Qualimap.
-        fast_mode = (!rna),
-        paired_end = true,  # matches default but prevents user from overriding
-        use_all_cores,
-    }
+    if (run_fastq_analysis) {
+        call samtools.bam_to_fastq after quickcheck after kraken_filter_validator { input:
+            bam = post_subsample_bam,
+            bitwise_filter = standard_filter,
+            prefix = post_subsample_prefix,
+            # RNA needs a collated BAM for Qualimap
+            # DNA can skip the associated storage costs
+            retain_collated_bam = rna,
+            # disabling fast_mode enables writing of secondary and supplementary alignments
+            # to the collated BAM when processing RNA.
+            # Those alignments are used downstream by Qualimap.
+            fast_mode = (!rna),
+            paired_end = true,  # matches default but prevents user from overriding
+            use_all_cores,
+        }
 
-    call fq.fqlint { input:
-        read_one_fastq = select_first([
-            bam_to_fastq.read_one_fastq_gz,
-            "undefined",
-        ]),
-        read_two_fastq = select_first([
-            bam_to_fastq.read_two_fastq_gz,
-            "undefined",
-        ]),
-    }
-    call kraken2.kraken after fqlint { input:
-        read_one_fastq_gz = select_first([
-            bam_to_fastq.read_one_fastq_gz,
-            "undefined",
-        ]),
-        read_two_fastq_gz = select_first([
-            bam_to_fastq.read_two_fastq_gz,
-            "undefined",
-        ]),
-        db = kraken_db,
-        store_sequences = store_kraken_sequences,
-        prefix = post_subsample_prefix,
-        use_all_cores,
-    }
-    if (run_fastp) {
-        call fp.fastp after fqlint { input:
+        call fq.fqlint { input:
             read_one_fastq = select_first([
                 bam_to_fastq.read_one_fastq_gz,
                 "undefined",
@@ -303,59 +284,85 @@ workflow quality_check_standard {
                 bam_to_fastq.read_two_fastq_gz,
                 "undefined",
             ]),
-            output_fastq = false,
         }
-    }
-    if (run_librarian) {
-        call libraran_tasks.librarian after fqlint { input:
-            read_one_fastq = select_first([
+        call kraken2.kraken after fqlint { input:
+            read_one_fastq_gz = select_first([
                 bam_to_fastq.read_one_fastq_gz,
                 "undefined",
             ]),
-        }
-    }
-
-    if (run_comparative_kraken) {
-        call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck after comparative_kraken_filter_validator {
-            input:
-            bam = post_subsample_bam,
-            bitwise_filter = comparative_filter,
-            prefix = post_subsample_prefix + ".alt_filtered",
-            # matches default but prevents user from overriding
-            # If the user wants a collated BAM, they should save the one
-            # from the first bam_to_fastq call.
-            retain_collated_bam = false,
-            # matches default but prevents user from overriding
-            # Since the only output here is FASTQs, we can disable fast mode.
-            # This discards secondary and supplementary alignments, which should not
-            # be converted to FASTQs. (Is that true?)
-            fast_mode = true,
-            paired_end = true,  # matches default but prevents user from overriding
-            use_all_cores,
-        }
-        call fq.fqlint as alt_filtered_fqlint { input:
-            read_one_fastq = select_first([
-                alt_filtered_fastq.read_one_fastq_gz,
-                "undefined",
-            ]),
-            read_two_fastq = select_first([
-                alt_filtered_fastq.read_two_fastq_gz,
-                "undefined",
-            ]),
-        }
-        call kraken2.kraken as comparative_kraken after alt_filtered_fqlint { input:
-            read_one_fastq_gz = select_first([
-                alt_filtered_fastq.read_one_fastq_gz,
-                "undefined",
-            ]),
             read_two_fastq_gz = select_first([
-                alt_filtered_fastq.read_two_fastq_gz,
+                bam_to_fastq.read_two_fastq_gz,
                 "undefined",
             ]),
             db = kraken_db,
             store_sequences = store_kraken_sequences,
-            prefix = post_subsample_prefix + ".alt_filtered",
+            prefix = post_subsample_prefix,
             use_all_cores,
+        }
+        if (run_fastp) {
+            call fp.fastp after fqlint { input:
+                read_one_fastq = select_first([
+                    bam_to_fastq.read_one_fastq_gz,
+                    "undefined",
+                ]),
+                read_two_fastq = select_first([
+                    bam_to_fastq.read_two_fastq_gz,
+                    "undefined",
+                ]),
+                output_fastq = false,
+            }
+        }
+        if (run_librarian) {
+            call libraran_tasks.librarian after fqlint { input:
+                read_one_fastq = select_first([
+                    bam_to_fastq.read_one_fastq_gz,
+                    "undefined",
+                ]),
+            }
+        }
+
+        if (run_comparative_kraken) {
+            call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck after comparative_kraken_filter_validator {
+                input:
+                bam = post_subsample_bam,
+                bitwise_filter = comparative_filter,
+                prefix = post_subsample_prefix + ".alt_filtered",
+                # matches default but prevents user from overriding
+                # If the user wants a collated BAM, they should save the one
+                # from the first bam_to_fastq call.
+                retain_collated_bam = false,
+                # matches default but prevents user from overriding
+                # Since the only output here is FASTQs, we can disable fast mode.
+                # This discards secondary and supplementary alignments, which should not
+                # be converted to FASTQs. (Is that true?)
+                fast_mode = true,
+                paired_end = true,  # matches default but prevents user from overriding
+                use_all_cores,
+            }
+            call fq.fqlint as alt_filtered_fqlint { input:
+                read_one_fastq = select_first([
+                    alt_filtered_fastq.read_one_fastq_gz,
+                    "undefined",
+                ]),
+                read_two_fastq = select_first([
+                    alt_filtered_fastq.read_two_fastq_gz,
+                    "undefined",
+                ]),
+            }
+            call kraken2.kraken as comparative_kraken after alt_filtered_fqlint { input:
+                read_one_fastq_gz = select_first([
+                    alt_filtered_fastq.read_one_fastq_gz,
+                    "undefined",
+                ]),
+                read_two_fastq_gz = select_first([
+                    alt_filtered_fastq.read_two_fastq_gz,
+                    "undefined",
+                ]),
+                db = kraken_db,
+                store_sequences = store_kraken_sequences,
+                prefix = post_subsample_prefix + ".alt_filtered",
+                use_all_cores,
+            }
         }
     }
 
@@ -392,18 +399,20 @@ workflow quality_check_standard {
             ]),
             outfile_name = post_subsample_prefix + ".strandedness.tsv",
         }
-        call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam = select_first([
-                bam_to_fastq.collated_bam,
-                "undefined",
-            ]),
-            prefix = post_subsample_prefix + ".qualimap_rnaseq_results",
-            gtf = select_first([
-                gtf,
-                "undefined",
-            ]),
-            name_sorted = true,
-            paired_end = true,  # matches default but prevents user from overriding
+        if (run_fastq_analysis) {
+            call qualimap.rnaseq as qualimap_rnaseq { input:
+                bam = select_first([
+                    bam_to_fastq.collated_bam,
+                    "undefined",
+                ]),
+                prefix = post_subsample_prefix + ".qualimap_rnaseq_results",
+                gtf = select_first([
+                    gtf,
+                    "undefined",
+                ]),
+                name_sorted = true,
+                paired_end = true,  # matches default but prevents user from overriding
+            }
         }
     }
     if (mark_duplicates) {
