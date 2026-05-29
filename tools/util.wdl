@@ -132,6 +132,7 @@ task calc_feature_lengths {
     }
 }
 
+#@ except: EmptyOutputs
 task compression_integrity {
     meta {
         description: "Checks the compression integrity of a bgzipped file"
@@ -358,6 +359,7 @@ task global_phred_scores {
     }
 }
 
+#@ except: EmptyOutputs
 task check_fastq_and_rg_concordance {
     meta {
         description: "Validates FASTQs and read group records are concordant"
