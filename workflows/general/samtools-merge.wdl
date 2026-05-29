@@ -1,7 +1,7 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
 version 1.1
 
-import "../../tools/samtools.wdl"
+import "../../tools/samtools/samtools.wdl"
 
 workflow samtools_merge {
     meta {
