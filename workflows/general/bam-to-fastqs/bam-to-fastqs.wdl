@@ -1,7 +1,7 @@
 version 1.1
 
-import "../../tools/fq.wdl"
-import "../../tools/samtools.wdl"
+import "../../tools/fq/fq.wdl"
+import "../../tools/samtools/samtools.wdl"
 
 workflow bam_to_fastqs {
     meta {
