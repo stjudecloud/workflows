@@ -1,0 +1,30 @@
+{
+    "name": "bam-to-fastqs",
+    "version": "1.0.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ari Frantz",
+            "email": "Ari.Frantz@STJUDE.ORG"
+        },
+        {
+            "name": "Andrew Thrasher",
+            "email": "Andrew.Thrasher@STJUDE.ORG"
+        }
+    ],
+    "description": "Convert BAM files to FASTQ(s) with Samtools",
+    "repository": "https://github.com/stjudecloud/workflows",
+    "entrypoint": "bam-to-fastqs.wdl",
+    "dependencies": {
+        "fq": {
+            "git": "https://github.com/stjudecloud/workflows",
+            "branch": "main",
+            "path": "tools/fq"
+        },
+        "samtools": {
+            "git": "https://github.com/stjudecloud/workflows",
+            "branch": "main",
+            "path": "tools/samtools"
+        }
+    }
+}
