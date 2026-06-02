@@ -1,0 +1,26 @@
+{
+    "name": "samtools",
+    "version": "1.0.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ari Frantz",
+            "email": "Ari.Frantz@STJUDE.ORG"
+        },
+        {
+            "name": "Andrew Thrasher",
+            "email": "Andrew.Thrasher@STJUDE.ORG"
+        }
+    ],
+    "description": "Module for handling SAM/BAM files",
+    "repository": "https://github.com/stjudecloud/workflows",
+    "entrypoint": "samtools.wdl",
+    "tools": [
+        {
+            "name": "samtools",
+            "version": "1.19.2",
+            "license": "MIT",
+            "homepage": "https://www.htslib.org/"
+        }
+    ]
+}

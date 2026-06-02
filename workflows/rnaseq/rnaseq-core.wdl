@@ -4,7 +4,7 @@ import "../../tools/deeptools.wdl"
 import "../../tools/fastp.wdl" as fp
 import "../../tools/htseq.wdl"
 import "../../tools/ngsderive.wdl"
-import "../../tools/star.wdl"
+import "../../tools/alignment/star.wdl"
 import "../../tools/util.wdl"
 import "../general/alignment-post.wdl" as alignment_post_wf
 

@@ -1,7 +1,7 @@
 version 1.1
 
 import "../../tools/picard.wdl"
-import "../../tools/samtools.wdl"
+import "../../tools/samtools/samtools.wdl"
 import "../../tools/util.wdl"
 
 workflow gatk_reference {

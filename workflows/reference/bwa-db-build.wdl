@@ -1,6 +1,6 @@
 version 1.1
 
-import "../../tools/bwa.wdl"
+import "../../tools/alignment/bwa.wdl"
 import "../../tools/util.wdl"
 
 workflow bwa_db_build {

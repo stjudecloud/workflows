@@ -5,9 +5,9 @@ import "../../tools/deeptools.wdl"
 import "../../tools/fastp.wdl" as fp
 import "../../tools/md5sum.wdl"
 import "../../tools/picard.wdl"
-import "../../tools/samtools.wdl"
+import "../../tools/samtools/samtools.wdl"
 import "../../tools/util.wdl"
-import "../general/bam-to-fastqs.wdl" as b2fq
+import "../general/bam-to-fastqs/bam-to-fastqs.wdl" as b2fq
 import "https://raw.githubusercontent.com/stjude/seaseq/2.3/workflows/workflows/mapping.wdl"
     as seaseq_map
 import "https://raw.githubusercontent.com/stjude/seaseq/3.0/workflows/tasks/samtools.wdl"

@@ -1,10 +1,10 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
 version 1.1
 
-import "../../tools/bwa.wdl"
+import "../../tools/alignment/bwa.wdl"
 import "../../tools/fastp.wdl" as fp
 import "../../tools/picard.wdl"
-import "../../tools/samtools.wdl"
+import "../../tools/samtools/samtools.wdl"
 import "../../tools/util.wdl"
 import "../general/samtools-merge.wdl" as samtools_merge_wf
 
