@@ -1,6 +1,6 @@
 version 1.1
 
-import "../../tools/star.wdl"
+import "../../tools/alignment/star.wdl"
 import "../../tools/util.wdl"
 
 workflow star_db_build {
