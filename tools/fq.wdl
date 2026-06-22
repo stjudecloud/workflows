@@ -1,6 +1,7 @@
 ## [Homepage](https://github.com/stjude-rust-labs/fq)
 version 1.1
 
+#@ except: EmptyOutputs
 task fqlint {
     meta {
         description: "Performs quality control on the input FASTQs to ensure proper formatting"

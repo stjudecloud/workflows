@@ -13,7 +13,7 @@ jobs:
       images: ${{ steps.set-matrix.outputs.images }}
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: set matrix
@@ -29,7 +29,7 @@ jobs:
       fail-fast: false
       
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set Env
         run: |
           echo "TOOL=$(jq -r .name ${{ matrix.image }}/package.json)" >> $GITHUB_ENV
@@ -58,9 +58,9 @@ jobs:
           fi
       - name: Log in to the Container registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
-      - uses: docker/setup-qemu-action@v2
-      - uses: docker/setup-buildx-action@v2
-      - uses: docker/build-push-action@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
         id: build
         with:
           context: ${{ matrix.image }}
@@ -74,7 +74,7 @@ jobs:
         # Snyk can be used to break the build when it detects vulnerabilities.
         # In this case we want to upload the issues to GitHub Code Scanning
         continue-on-error: true
-        uses: snyk/actions/docker@0.4.0
+        uses: snyk/actions/docker@v0
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
