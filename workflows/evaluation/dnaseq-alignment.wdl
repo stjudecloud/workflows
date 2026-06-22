@@ -35,6 +35,7 @@ workflow align {
         giraffe_distance_index: "The vg distance index file for the reference genome"
         minimap2_reference: "The minimap2 index file for the reference genome"
         bwamem_reference: "The BWA index tar.gz file for the reference genome"
+        reference_fasta: "Reference genome in FASTA format"
         read_group: "The read group to be included in the SAM header"
         read_two_fastq_gz: "Input gzipped FASTQ read two file to align (for paired-end data)"
         output_prefix: "Output file prefix for aligned reads"
@@ -51,6 +52,7 @@ workflow align {
         File giraffe_distance_index
         File minimap2_reference
         File bwamem_reference
+        File reference_fasta
         ReadGroup read_group
         File? read_two_fastq_gz
         String output_prefix = "aligned_output"
@@ -100,9 +102,13 @@ workflow align {
         orphan_only = false,
         read_group_line = read_group_to_array.converted_read_group,
     }
+    call samtools.calmd {
+        bam = addreplacerg.tagged_bam,
+        reference_fasta,
+    }
 
     call alignment_post.alignment_post as giraffe_post {
-        bam = addreplacerg.tagged_bam,
+        bam = calmd.calmd_bam,
         mark_duplicates = true,
     }
 
