@@ -7,6 +7,26 @@ import "../../tools/manta.wdl"
 import "../../tools/ngsep.wdl"
 import "../../tools/strelka.wdl"
 
+# Includes the pre-built models (with the exception of "r941_prom_hac_g360+g422").
+enum clair3 {
+    hifi,
+    hifi_revio,
+    hifi_sequel2,
+    ilmn,
+    ont_guppy5,
+    ont,
+    r1041_e82_400bps_hac_v410,
+    r1041_e82_400bps_hac_v520_with_mv,
+    r1041_e82_400bps_sup_v410,
+    r1041_e82_400bps_sup_v500,
+    r1041_e82_400bps_sup_with_mv,
+    r941_prom_sup_g5014,
+    r1041_e82_400bps_hac_v500,
+    r1041_e82_400bps_hac_with_mv,
+    r1041_e82_400bps_sup_v430_bacteria_finetuned,
+    r1041_e82_400bps_sup_v520_with_mv,
+}
+
 workflow variant_calling {
     meta {
         description: "Runs a series of variant calling tools on a processed BAM file."
@@ -42,7 +62,7 @@ workflow variant_calling {
             description: "Interval list indicating regions in which to call variants",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360035531852-Intervals-and-interval-lists",
         }
-        clair3_model: "Pre-trained Clair3 model file to use for variant calling with Clair"
+        clair3_model: "Name of pre-trained Clair3 model to use for variant calling with Clair"
         known_indels_sites_vcfs: "Optional array of VCF files containing known indel sites to be used in variant calling and filtering"
         known_indels_sites_indices: "Optional array of index files corresponding to the known indel site VCF files"
         resources: "Optional array of additional resource files to be used in variant calling and filtering, such as additional VCFs or BED files"
@@ -65,7 +85,7 @@ workflow variant_calling {
         #@ except: SnakeCase
         File dbSNP_vcf_index
         File interval_list
-        Directory clair3_model
+        clair3 clair3_model
         Array[File] known_indels_sites_vcfs = []
         Array[File] known_indels_sites_indices = []
         Array[Resource] resources = []
