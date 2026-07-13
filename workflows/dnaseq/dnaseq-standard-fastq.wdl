@@ -1,8 +1,8 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-version 1.1
+version 1.4
 
 import "../../data_structures/read_group.wdl"
-import "../../tools/fq/fq.wdl"
+import {fqlint, subsample} from fq
 import "./dnaseq-core.wdl" as dnaseq_core_wf
 import "./dnaseq-standard.wdl" as dnaseq_standard
 
@@ -77,7 +77,7 @@ workflow dnaseq_standard_fastq_experimental {
 
     if (validate_input) {
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-            call fq.fqlint after read_group_to_string { input:
+            call fqlint after read_group_to_string { input:
                 read_one_fastq = reads.left,
                 read_two_fastq = reads.right,
             }
@@ -87,7 +87,7 @@ workflow dnaseq_standard_fastq_experimental {
     if (subsample_n_reads > 0) {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-            call fq.subsample after fqlint { input:
+            call subsample after fqlint { input:
                 read_one_fastq = reads.left,
                 read_two_fastq = reads.right,
                 record_count = reads_per_pair,

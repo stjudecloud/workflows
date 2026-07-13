@@ -1,8 +1,8 @@
 ## [Homepage](http://samtools.sourceforge.net/)
-version 1.1
+version 1.4
 
 #import "../../data_structures/flag_filter.wdl"
-import * from samtools
+import * from flag_filter
 
 task quickcheck {
     meta {

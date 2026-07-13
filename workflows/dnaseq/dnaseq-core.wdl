@@ -1,10 +1,10 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-version 1.1
+version 1.4
 
 import "../../tools/alignment/bwa.wdl"
 import "../../tools/fastp.wdl" as fp
 import "../../tools/picard.wdl"
-import "../../tools/samtools/samtools.wdl"
+import {index} from samtools
 import "../../tools/util.wdl"
 import "../general/samtools-merge.wdl" as samtools_merge_wf
 
@@ -138,7 +138,7 @@ workflow dnaseq_core_experimental {
         use_all_cores,
     }
 
-    call samtools.index { input:
+    call index { input:
         bam = merge.merged_bam,
     }
 

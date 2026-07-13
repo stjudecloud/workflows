@@ -1,9 +1,9 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-version 1.1
+version 1.4
 
 import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"
-import "../../tools/samtools/samtools.wdl"
+import {subsample} from samtools
 import "../general/bam-to-fastqs/bam-to-fastqs.wdl" as bam_to_fastqs_wf
 import "./dnaseq-core.wdl" as dnaseq_core_wf
 
@@ -64,7 +64,7 @@ workflow dnaseq_standard_experimental {
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample after validate_input_bam { input:
+        call subsample after validate_input_bam { input:
             bam,
             desired_reads = subsample_n_reads,
             use_all_cores,

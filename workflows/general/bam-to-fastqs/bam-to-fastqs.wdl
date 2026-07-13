@@ -1,4 +1,4 @@
-version 1.1
+version 1.4
 
 import "../../../tools/fq/fq.wdl"
 import "../../../tools/samtools/samtools.wdl"

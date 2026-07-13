@@ -1,5 +1,5 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-version 1.1
+version 1.4
 
 import "../../tools/samtools/samtools.wdl"
 
