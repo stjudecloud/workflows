@@ -58,8 +58,8 @@ task align {
         Boolean ignore_base_quality = false
         Boolean output_md_tag = true
         Boolean eqx = false
-        Boolean soft_clip = true
-        Boolean secondary_alignments = true
+        Boolean soft_clip = false
+        Boolean secondary_alignments = false
         Int seed = 11
         Int threads = 3
         Int modify_disk_size_gb = 0
