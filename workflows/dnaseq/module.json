@@ -15,5 +15,8 @@
         "fq": {
             "path": "../../tools/fq"
         }
-    }
+    },
+    "exclude": [
+        "dnaseq-core.wdl"
+    ]
 }
