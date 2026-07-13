@@ -1,25 +1,19 @@
 {
-    "name": "arriba",
-    "version": "1.0.0",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Ari Frantz",
-            "email": "Ari.Frantz@STJUDE.ORG"
-        },
-        {
-            "name": "Andrew Thrasher",
-            "email": "Andrew.Thrasher@STJUDE.ORG"
-        }
-    ],
-    "description": "Module for gene fusion detection in RNA-Seq",
-    "repository": "https://github.com/stjudecloud/workflows",
-    "tools": [
-        {
-            "name": "arriba",
-            "version": "2.4.0",
-            "license": "MIT",
-            "homepage": "https://github.com/suhrig/arriba"
-        }
-    ]
+  "name": "arriba",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "Module for gene fusion detection in RNA-Seq",
+  "authors": [
+    "Andrew Thrasher <Andrew.Thrasher@STJUDE.org>",
+    "Ari Frantzz <Ari.Frantz@STJUDE.ORG>"
+  ],
+  "repository": "https://github.com/stjudecloud/workflows.git",
+  "tools": [
+      {
+          "name": "arriba",
+          "version": "2.4.0",
+          "license": "MIT",
+          "homepage": "https://github.com/suhrig/arriba"
+      }
+  ]
 }

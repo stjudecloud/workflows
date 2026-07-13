@@ -1,0 +1,11 @@
+{
+  "name": "flag_filter",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "The `flag_filter` WDL module.",
+  "authors": [
+   "Ari Frantz <Ari.Frantz@STJUDE.ORG>"
+  ],
+  "entrypoint": "flag_filter.wdl",
+  "repository": "https://github.com/stjudecloud/workflows.git"
+}
