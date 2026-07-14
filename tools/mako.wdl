@@ -28,6 +28,7 @@ task sort {
             group: "Common",
         }
         prefix: "Prefix for the sorted BAM file and accessory files. The extension `.bam` will be added."
+        write_index: "Write a BAM index file for the sorted BAM file."
         verify: "Only verify sort order. Does not sort the BAM file."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
@@ -37,9 +38,11 @@ task sort {
         File bam
         String sort_order = "coordinate"
         String prefix = basename(bam, ".bam") + ".sorted"
+        Boolean write_index = true
         Boolean verify = false
         Int memory_gb = 25
         Int modify_disk_size_gb = 0
+        Int ncpu = 1
     }
 
     Float bam_size = size(bam, "GB")
@@ -51,16 +54,21 @@ task sort {
         set -euo pipefail
 
         mako sort \
-            -i "~{bam}" \
             ~{if verify then "--verify" else "-o \"~{outfile_name}\""} \
-            --order "~{sort_order}"
+            ~{if write_index then "--write-index" else ""} \
+            --order "~{sort_order}" \
+            --max-memory "auto" \
+            --threads "~{ncpu}" \
+            -i "~{bam}"
     >>>
 
     output {
         File sorted_bam = outfile_name
+        File? sorted_bam_index = outfile_name + ".bai"
     }
 
     requirements {
+        cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/mako:0.1.3-0"
