@@ -106,6 +106,8 @@ align:
       eqx:
         - true
         - false
+      secondary_alignments:
+        - true
   - name: fasta_reference_eqx_no_secondary_fails
     inputs:
       read_one_fastq_gz:
