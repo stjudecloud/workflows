@@ -12,7 +12,7 @@ task sort {
         description: "Sorts the input BAM file"
         outputs: {
             sorted_bam: "The input BAM after it has been sorted according to `sort_order`",
-            sorted_bam_index: "The index file for the sorted BAM file, if `write_index` is true"
+            sorted_bam_index: "The index file for the sorted BAM file, if `write_index` is true",
         }
     }
 
@@ -52,14 +52,20 @@ task sort {
 
     String outfile_name = prefix + ".bam"
 
-    Int task_mem_gb = max(memory_gb - 2, 2) # Reserve 2GB for overhead
+    Int task_mem_gb = max(memory_gb - 2, 2)  # Reserve 2GB for overhead
 
     command <<<
         set -euo pipefail
 
         mako sort \
-            ~{if verify then "--verify" else "-o \"~{outfile_name}\""} \
-            ~{if write_index then "--write-index" else ""} \
+            ~{if verify
+                then "--verify"
+                else "-o \"~{outfile_name}\""
+            } \
+            ~{if write_index
+                then "--write-index"
+                else ""
+            } \
             --order "~{sort_order}" \
             --max-memory "~{task_mem_gb}GB" \
             --threads "~{ncpu}" \
