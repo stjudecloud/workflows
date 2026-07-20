@@ -1,4 +1,4 @@
-version 1.4
+version 1.3
 
 enum SortOrder[String] {
     queryname = "queryname",
@@ -52,6 +52,8 @@ task sort {
 
     String outfile_name = prefix + ".bam"
 
+    Int task_mem_gb = max(memory_gb - 2, 2) # Reserve 2GB for overhead
+
     command <<<
         set -euo pipefail
 
@@ -59,7 +61,7 @@ task sort {
             ~{if verify then "--verify" else "-o \"~{outfile_name}\""} \
             ~{if write_index then "--write-index" else ""} \
             --order "~{sort_order}" \
-            --max-memory "auto" \
+            --max-memory "~{task_mem_gb}GB" \
             --threads "~{ncpu}" \
             -i "~{bam}"
     >>>
