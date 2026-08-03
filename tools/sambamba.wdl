@@ -209,6 +209,8 @@ task markdup {
     Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         sambamba markdup \
             --nthreads ~{ncpu} \
             ~{if remove_duplicates

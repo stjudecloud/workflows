@@ -118,6 +118,8 @@ task base_recalibrator {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         # shellcheck disable=SC2102
         gatk \
             --java-options \
@@ -271,6 +273,8 @@ task haplotype_caller {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         gatk \
             --java-options \
                 "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
@@ -356,6 +360,8 @@ task variant_filtration {
     Int disk_size_gb = ceil(size(vcf, "GB") * 2) + 30 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         gatk VariantFiltration \
             --R "~{fasta}" \
             --V "~{vcf}" \
