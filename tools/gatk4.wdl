@@ -1,5 +1,7 @@
 version 1.3
 
+import "picard.wdl"
+
 enum ref_confidence {
     NONE,
     GVCF,
@@ -1181,10 +1183,10 @@ workflow germline_variant_calling_wf {
         prefix = prefix + ".recal",
     }
 
-    call scatter_interval_list {
+    call picard.scatter_interval_list {
         interval_list,
         scatter_count = 23,
-        break_bands_at_multiples_of = 10,
+        # break_bands_at_multiples_of = 10,
     }
 
     scatter (index in range(scatter_interval_list.interval_count)) {
@@ -1202,7 +1204,7 @@ workflow germline_variant_calling_wf {
         }
     }
 
-    call merge_vcfs {
+    call picard.merge_vcfs {
         vcfs = haplotype_caller.vcf,
         vcfs_indexes = haplotype_caller.vcf_index,
         output_vcf_name = prefix + ".vcf.gz",
@@ -1210,8 +1212,8 @@ workflow germline_variant_calling_wf {
 
 
     call genotype_gvcfs {
-        gvcf = merge_vcfs.vcf,
-        gvcf_index = merge_vcfs.vcf_index,
+        gvcf = merge_vcfs.merged_vcf,
+        gvcf_index = merge_vcfs.merged_vcf_index,
         fasta = reference_fasta,
         fasta_index = reference_fasta_index,
         dict = reference_dict,
@@ -1250,8 +1252,8 @@ workflow germline_variant_calling_wf {
     }
 
     output {
-        File raw_gvcf = merge_vcfs.vcf
-        File raw_gvcf_index = merge_vcfs.vcf_index
+        File raw_gvcf = merge_vcfs.merged_vcf
+        File raw_gvcf_index = merge_vcfs.merged_vcf_index
         File raw_vcf = genotype_gvcfs.vcf
         File raw_vcf_index = genotype_gvcfs.vcf_index
         File recalibrated_vcf = apply_vqsr.vcf_recalibrated

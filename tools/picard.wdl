@@ -933,7 +933,7 @@ task scatter_interval_list {
            I=\$((I+1))
            dir=\$(dirname \$list)
            name=\$(basename \$list)
-           mv \$list \${dir}/\${I}\${name}
+           mv \$list \${dir}/\${I}.\${name}
         done
         echo \$I > interval_count.txt
         CODE
