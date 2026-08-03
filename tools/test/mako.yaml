@@ -1,0 +1,11 @@
+sort:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+      sort_order:
+        - queryname
+        - coordinate
+      memory_gb:
+        - 5
