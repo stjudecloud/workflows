@@ -327,16 +327,14 @@ workflow quality_check_standard {
                 bam = post_subsample_bam,
                 bitwise_filter = comparative_filter,
                 prefix = post_subsample_prefix + ".alt_filtered",
-                # matches default but prevents user from overriding
                 # If the user wants a collated BAM, they should save the one
                 # from the first bam_to_fastq call.
                 retain_collated_bam = false,
-                # matches default but prevents user from overriding
-                # Since the only output here is FASTQs, we can disable fast mode.
+                # Since the only output here is FASTQs, we can enable fast mode.
                 # This discards secondary and supplementary alignments, which should not
-                # be converted to FASTQs. (Is that true?)
+                # be converted to FASTQs.
                 fast_mode = true,
-                paired_end = true,  # matches default but prevents user from overriding
+                paired_end = true,  # INVARIANT: this workflow only supports PE data
                 use_all_cores,
             }
             call fq.fqlint as alt_filtered_fqlint { input:
@@ -411,7 +409,7 @@ workflow quality_check_standard {
                     "undefined",
                 ]),
                 name_sorted = true,
-                paired_end = true,  # matches default but prevents user from overriding
+                paired_end = true,  # INVARIANT: this workflow only supports PE data
             }
         }
     }
