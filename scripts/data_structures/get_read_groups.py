@@ -1,5 +1,6 @@
-import pysam
 import json
+
+import pysam
 
 
 def main(bam_path, outfile_path):

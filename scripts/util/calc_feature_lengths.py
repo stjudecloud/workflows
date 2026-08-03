@@ -1,14 +1,15 @@
+from collections import defaultdict
+
 import gtfparse
 import numpy as np
-from collections import defaultdict
 
 
 def main(gtf_path, outfile_path, id_attr):
     gtf = gtfparse.read_gtf(gtf_path)
 
     only_exons = gtf[gtf["feature"] == "exon"]
-    exon_starts = defaultdict(lambda: [])
-    exon_ends = defaultdict(lambda: [])
+    exon_starts = defaultdict(list)
+    exon_ends = defaultdict(list)
     gene_start_offset = {}
     gene_end_offset = {}
     gene_exon_intersection = {}
