@@ -111,7 +111,7 @@ workflow quality_check_standard {
         use_all_cores: "Use all cores? Recommended for cloud environments."
         run_fastq_analysis: {
             description: "Create FASTQs from the input BAM and run FASTQ-level analyses?",
-            help: "If false, the pipeline skips SAMtools bam-to-fastq, fqlint, Kraken2, fastp, librarian, and comparative Kraken2. Also disables qualimap_rnaseq (requires a collated BAM from bam_to_fastq).",
+            help: "If false, the pipeline skips FASTQ generation and subsequent FASTQ checks (Kraken2, fastp, librarian, comparative Kraken2, and fqlint). Also disables qualimap_rnaseq (requires a collated BAM from bam_to_fastq).",
         }
         optical_distance: {
             description: "Maximum distance between read coordinates to consider them optical duplicates instead of library duplicates (e.g. PCR duplicates).",
