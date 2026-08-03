@@ -1,36 +1,32 @@
 def main(counts_name_path, feature_lengths_path, outfile_path, has_header):
-    counts_file = open(counts_name_path, "r")
-    counts = {}
-    if has_header:
-        counts_file.readline()
-    for line in counts_file:
-        gene, count = line.split("\t")
-        if gene[0:2] == "__":
-            break
-        counts[gene.strip()] = int(count.strip())
-    counts_file.close()
+    with open(counts_name_path, "r") as counts_file:
+        counts = {}
+        if has_header:
+            counts_file.readline()
+        for line in counts_file:
+            gene, count = line.split("\t")
+            if gene[0:2] == "__":
+                break
+            counts[gene.strip()] = int(count.strip())
 
-    lengths_file = open(feature_lengths_path, "r")
-    rpks = {}  # Reads Per Kilobase
-    tot_rpk = 0
-    lengths_file.readline()  # discard header
-    for line in lengths_file:
-        gene, length = line.split("\t")
-        rpk = counts[gene.strip()] / int(length.strip()) * 1000
-        tot_rpk += rpk
-        rpks[gene.strip()] = rpk
-    lengths_file.close()
+    with open(feature_lengths_path, "r") as lengths_file:
+        rpks = {}  # Reads Per Kilobase
+        tot_rpk = 0
+        lengths_file.readline()  # discard header
+        for line in lengths_file:
+            gene, length = line.split("\t")
+            rpk = counts[gene.strip()] / int(length.strip()) * 1000
+            tot_rpk += rpk
+            rpks[gene.strip()] = rpk
 
     scaling_factor = tot_rpk / 1000000
 
     sample_name = ".".join(outfile_path.split(".")[:-2])  # assumed to end in `.TPM.txt`
-    outfile = open(outfile_path, "w")
-    print(f"feature\t{sample_name}", file=outfile)
-    for gene, rpk in sorted(rpks.items()):
-        tpm = rpk / scaling_factor
-        print(f"{gene}\t{tpm:.3f}", file=outfile)
-    outfile.close()
-
+    with open(outfile_path, "w") as outfile:
+        print(f"feature\t{sample_name}", file=outfile)
+        for gene, rpk in sorted(rpks.items()):
+            tpm = rpk / scaling_factor
+            print(f"{gene}\t{tpm:.3f}", file=outfile)
 
 if __name__ == "__main__":
     import argparse

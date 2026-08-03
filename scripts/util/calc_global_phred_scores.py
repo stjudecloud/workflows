@@ -84,136 +84,132 @@ def main(bam_path, prefix, fast_mode):
             middle_mapped_quals[middle_score] += 1
             last_mapped_quals[last_score] += 1
 
-    outfile = open(prefix + ".global_PHRED_scores.tsv", "w")
-
-    # print header
-    header = ["sample"]
-    if not fast_mode:
+    with open(prefix + ".global_PHRED_scores.tsv", "w") as outfile:
+        # print header
+        header = ["sample"]
+        if not fast_mode:
+            header += [
+                "total average",
+                "total median",
+                "total stdev",
+                "mapped average",
+                "mapped median",
+                "mapped stdev",
+                "unmapped average",
+                "unmapped median",
+                "unmapped stdev",
+            ]
         header += [
-            "total average",
-            "total median",
-            "total stdev",
-            "mapped average",
-            "mapped median",
-            "mapped stdev",
-            "unmapped average",
-            "unmapped median",
-            "unmapped stdev",
+            "first position total average",
+            "first position total median",
+            "first position total stdev",
+            "first position mapped average",
+            "first position mapped median",
+            "first position mapped stdev",
+            "first position unmapped average",
+            "first position unmapped median",
+            "first position unmapped stdev",
+            "middle position total average",
+            "middle position total median",
+            "middle position total stdev",
+            "middle position mapped average",
+            "middle position mapped median",
+            "middle position mapped stdev",
+            "middle position unmapped average",
+            "middle position unmapped median",
+            "middle position unmapped stdev",
+            "last position total average",
+            "last position total median",
+            "last position total stdev",
+            "last position mapped average",
+            "last position mapped median",
+            "last position mapped stdev",
+            "last position unmapped average",
+            "last position unmapped median",
+            "last position unmapped stdev",
         ]
-    header += [
-        "first position total average",
-        "first position total median",
-        "first position total stdev",
-        "first position mapped average",
-        "first position mapped median",
-        "first position mapped stdev",
-        "first position unmapped average",
-        "first position unmapped median",
-        "first position unmapped stdev",
-        "middle position total average",
-        "middle position total median",
-        "middle position total stdev",
-        "middle position mapped average",
-        "middle position mapped median",
-        "middle position mapped stdev",
-        "middle position unmapped average",
-        "middle position unmapped median",
-        "middle position unmapped stdev",
-        "last position total average",
-        "last position total median",
-        "last position total stdev",
-        "last position mapped average",
-        "last position mapped median",
-        "last position mapped stdev",
-        "last position unmapped average",
-        "last position unmapped median",
-        "last position unmapped stdev",
-    ]
-    print(
-        "\t".join(header),
-        file=outfile,
-    )
-    print(prefix, file=outfile, end="\t")
+        print(
+            "\t".join(header),
+            file=outfile,
+        )
+        print(prefix, file=outfile, end="\t")
 
-    if not fast_mode:
-        tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
-        print(f"{tot_avg}", file=outfile, end="\t")
-        print(f"{tot_median}", file=outfile, end="\t")
-        print(f"{tot_stdev}", file=outfile, end="\t")
+        if not fast_mode:
+            tot_avg, tot_median, tot_stdev = stats_from_dict(tot_quals)
+            print(f"{tot_avg}", file=outfile, end="\t")
+            print(f"{tot_median}", file=outfile, end="\t")
+            print(f"{tot_stdev}", file=outfile, end="\t")
 
-        mapped_avg, mapped_median, mapped_stdev = stats_from_dict(mapped_quals)
-        print(f"{mapped_avg}", file=outfile, end="\t")
-        print(f"{mapped_median}", file=outfile, end="\t")
-        print(f"{mapped_stdev}", file=outfile, end="\t")
+            mapped_avg, mapped_median, mapped_stdev = stats_from_dict(mapped_quals)
+            print(f"{mapped_avg}", file=outfile, end="\t")
+            print(f"{mapped_median}", file=outfile, end="\t")
+            print(f"{mapped_stdev}", file=outfile, end="\t")
 
-        unmapped_avg, unmapped_median, unmapped_stdev = stats_from_dict(unmapped_quals)
-        print(f"{unmapped_avg}", file=outfile, end="\t")
-        print(f"{unmapped_median}", file=outfile, end="\t")
-        print(f"{unmapped_stdev}", file=outfile, end="\t")
+            unmapped_avg, unmapped_median, unmapped_stdev = stats_from_dict(unmapped_quals)
+            print(f"{unmapped_avg}", file=outfile, end="\t")
+            print(f"{unmapped_median}", file=outfile, end="\t")
+            print(f"{unmapped_stdev}", file=outfile, end="\t")
 
-    first_tot_avg, first_tot_median, first_tot_stdev = stats_from_dict(first_tot_quals)
-    print(f"{first_tot_avg}", file=outfile, end="\t")
-    print(f"{first_tot_median}", file=outfile, end="\t")
-    print(f"{first_tot_stdev}", file=outfile, end="\t")
+        first_tot_avg, first_tot_median, first_tot_stdev = stats_from_dict(first_tot_quals)
+        print(f"{first_tot_avg}", file=outfile, end="\t")
+        print(f"{first_tot_median}", file=outfile, end="\t")
+        print(f"{first_tot_stdev}", file=outfile, end="\t")
 
-    first_mapped_avg, first_mapped_median, first_mapped_stdev = stats_from_dict(
-        first_mapped_quals
-    )
-    print(f"{first_mapped_avg}", file=outfile, end="\t")
-    print(f"{first_mapped_median}", file=outfile, end="\t")
-    print(f"{first_mapped_stdev}", file=outfile, end="\t")
+        first_mapped_avg, first_mapped_median, first_mapped_stdev = stats_from_dict(
+            first_mapped_quals
+        )
+        print(f"{first_mapped_avg}", file=outfile, end="\t")
+        print(f"{first_mapped_median}", file=outfile, end="\t")
+        print(f"{first_mapped_stdev}", file=outfile, end="\t")
 
-    first_unmapped_avg, first_unmapped_median, first_unmapped_stdev = stats_from_dict(
-        first_unmapped_quals
-    )
-    print(f"{first_unmapped_avg}", file=outfile, end="\t")
-    print(f"{first_unmapped_median}", file=outfile, end="\t")
-    print(f"{first_unmapped_stdev}", file=outfile, end="\t")
+        first_unmapped_avg, first_unmapped_median, first_unmapped_stdev = stats_from_dict(
+            first_unmapped_quals
+        )
+        print(f"{first_unmapped_avg}", file=outfile, end="\t")
+        print(f"{first_unmapped_median}", file=outfile, end="\t")
+        print(f"{first_unmapped_stdev}", file=outfile, end="\t")
 
-    middle_tot_avg, middle_tot_median, middle_tot_stdev = stats_from_dict(
-        middle_tot_quals
-    )
-    print(f"{middle_tot_avg}", file=outfile, end="\t")
-    print(f"{middle_tot_median}", file=outfile, end="\t")
-    print(f"{middle_tot_stdev}", file=outfile, end="\t")
+        middle_tot_avg, middle_tot_median, middle_tot_stdev = stats_from_dict(
+            middle_tot_quals
+        )
+        print(f"{middle_tot_avg}", file=outfile, end="\t")
+        print(f"{middle_tot_median}", file=outfile, end="\t")
+        print(f"{middle_tot_stdev}", file=outfile, end="\t")
 
-    middle_mapped_avg, middle_mapped_median, middle_mapped_stdev = stats_from_dict(
-        middle_mapped_quals
-    )
-    print(f"{middle_mapped_avg}", file=outfile, end="\t")
-    print(f"{middle_mapped_median}", file=outfile, end="\t")
-    print(f"{middle_mapped_stdev}", file=outfile, end="\t")
+        middle_mapped_avg, middle_mapped_median, middle_mapped_stdev = stats_from_dict(
+            middle_mapped_quals
+        )
+        print(f"{middle_mapped_avg}", file=outfile, end="\t")
+        print(f"{middle_mapped_median}", file=outfile, end="\t")
+        print(f"{middle_mapped_stdev}", file=outfile, end="\t")
 
-    (
-        middle_unmapped_avg,
-        middle_unmapped_median,
-        middle_unmapped_stdev,
-    ) = stats_from_dict(middle_unmapped_quals)
-    print(f"{middle_unmapped_avg}", file=outfile, end="\t")
-    print(f"{middle_unmapped_median}", file=outfile, end="\t")
-    print(f"{middle_unmapped_stdev}", file=outfile, end="\t")
+        (
+            middle_unmapped_avg,
+            middle_unmapped_median,
+            middle_unmapped_stdev,
+        ) = stats_from_dict(middle_unmapped_quals)
+        print(f"{middle_unmapped_avg}", file=outfile, end="\t")
+        print(f"{middle_unmapped_median}", file=outfile, end="\t")
+        print(f"{middle_unmapped_stdev}", file=outfile, end="\t")
 
-    last_tot_avg, last_tot_median, last_tot_stdev = stats_from_dict(last_tot_quals)
-    print(f"{last_tot_avg}", file=outfile, end="\t")
-    print(f"{last_tot_median}", file=outfile, end="\t")
-    print(f"{last_tot_stdev}", file=outfile, end="\t")
+        last_tot_avg, last_tot_median, last_tot_stdev = stats_from_dict(last_tot_quals)
+        print(f"{last_tot_avg}", file=outfile, end="\t")
+        print(f"{last_tot_median}", file=outfile, end="\t")
+        print(f"{last_tot_stdev}", file=outfile, end="\t")
 
-    last_mapped_avg, last_mapped_median, last_mapped_stdev = stats_from_dict(
-        last_mapped_quals
-    )
-    print(f"{last_mapped_avg}", file=outfile, end="\t")
-    print(f"{last_mapped_median}", file=outfile, end="\t")
-    print(f"{last_mapped_stdev}", file=outfile, end="\t")
+        last_mapped_avg, last_mapped_median, last_mapped_stdev = stats_from_dict(
+            last_mapped_quals
+        )
+        print(f"{last_mapped_avg}", file=outfile, end="\t")
+        print(f"{last_mapped_median}", file=outfile, end="\t")
+        print(f"{last_mapped_stdev}", file=outfile, end="\t")
 
-    last_unmapped_avg, last_unmapped_median, last_unmapped_stdev = stats_from_dict(
-        last_unmapped_quals
-    )
-    print(f"{last_unmapped_avg}", file=outfile, end="\t")
-    print(f"{last_unmapped_median}", file=outfile, end="\t")
-    print(f"{last_unmapped_stdev}", file=outfile)  # end="\n"
-
-    outfile.close()
-
+        last_unmapped_avg, last_unmapped_median, last_unmapped_stdev = stats_from_dict(
+            last_unmapped_quals
+        )
+        print(f"{last_unmapped_avg}", file=outfile, end="\t")
+        print(f"{last_unmapped_median}", file=outfile, end="\t")
+        print(f"{last_unmapped_stdev}", file=outfile)  # end="\n"
 
 if __name__ == "__main__":
     import argparse

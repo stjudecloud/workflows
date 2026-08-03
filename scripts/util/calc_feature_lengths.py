@@ -44,17 +44,14 @@ def main(gtf_path, outfile_path, id_attr):
                 - gene_start_offset[feature_id]
             ] = True
 
-    outfile = open(outfile_path, "w")
-    print("feature\tlength", file=outfile)
-    for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
-        # np.count_nonzero() is faster than sum
-        # np.count_nonzero() evaluates the "truthfulness" of
-        # of all elements (by calling their '.__bool__()' method)
-        length = np.count_nonzero(exonic_intersection)
-        print(f"{gene}\t{length}", file=outfile)
-
-    outfile.close()
-
+    with open(outfile_path, "w") as outfile:
+        print("feature\tlength", file=outfile)
+        for gene, exonic_intersection in sorted(gene_exon_intersection.items()):
+            # np.count_nonzero() is faster than sum
+            # np.count_nonzero() evaluates the "truthfulness" of
+            # of all elements (by calling their '.__bool__()' method)
+            length = np.count_nonzero(exonic_intersection)
+            print(f"{gene}\t{length}", file=outfile)
 
 if __name__ == "__main__":
     import argparse
