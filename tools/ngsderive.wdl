@@ -239,6 +239,8 @@ task encoding {
     Int disk_size_gb = ceil(files_size) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         ngsderive encoding --verbose \
             -n ~{num_reads} \
             ~{sep(" ", squote(ngs_files))} \
@@ -406,6 +408,8 @@ task endedness {
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         ngsderive endedness --verbose \
             ~{if lenient
                 then "--lenient"

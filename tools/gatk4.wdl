@@ -118,10 +118,12 @@ task base_recalibrator {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         # shellcheck disable=SC2102
         gatk \
             --java-options \
-                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g -XX:-UseContainerSupport" \
             BaseRecalibratorSpark \
             -R "~{fasta}" \
             -I "~{bam}" \
@@ -189,7 +191,7 @@ task apply_bqsr {
         # shellcheck disable=SC2102
         gatk \
             --java-options \
-                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g -XX:-UseContainerSupport" \
             ApplyBQSRSpark \
             --spark-master local[~{ncpu}] \
             -I "~{bam}" \
@@ -271,6 +273,8 @@ task haplotype_caller {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         gatk \
             --java-options \
                 "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
@@ -356,6 +360,8 @@ task variant_filtration {
     Int disk_size_gb = ceil(size(vcf, "GB") * 2) + 30 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         gatk VariantFiltration \
             --R "~{fasta}" \
             --V "~{vcf}" \
@@ -468,7 +474,7 @@ task mark_duplicates_spark {
 
         # shellcheck disable=SC2102
         gatk MarkDuplicatesSpark \
-            --java-options "-Xmx~{java_heap_size}g" \
+            --java-options "-Xmx~{java_heap_size}g -XX:-UseContainerSupport" \
             -I "~{bam}" \
             -M "~{prefix}.metrics.txt" \
             -O "~{if create_bam

@@ -179,6 +179,8 @@ task combine_data {
     Int disk_size_gb = ceil(size(files_to_combine, "GB") * 2) + 2
 
     command <<<
+        set -euo pipefail
+
         python /scripts/methylation/combine.py \
             --output-name "~{combined_file_name}" \
             ~{if simple_merge
@@ -235,6 +237,8 @@ task filter_probes {
     Int disk_size_gb = ceil(size(beta_values, "GB") * 2) + 2
 
     command <<<
+        set -euo pipefail
+
         python /scripts/methylation/filter.py \
             --output-name "~{prefix}.beta.csv" \
             --filtered-probes "~{prefix}.probes.csv" \
@@ -282,6 +286,8 @@ task generate_umap {
     Int disk_size_gb = ceil(size(filtered_beta_values, "GB") * 2) + 2
 
     command <<<
+        set -euo pipefail
+
         python /scripts/methylation/generate_umap.py \
             --beta "~{filtered_beta_values}" \
             --output-name "~{prefix}.csv"
@@ -319,6 +325,8 @@ task plot_umap {
     }
 
     command <<<
+        set -euo pipefail
+
         python /scripts/methylation/plot_umap.py \
             --umap "~{umap}" \
             --output-name "~{plot_file}"
