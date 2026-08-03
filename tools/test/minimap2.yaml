@@ -105,7 +105,8 @@ align:
         - reference/GRCh38.chrY_chrM.fa
       eqx:
         - true
-        - false
+      secondary_alignments:
+        - true
   - name: fasta_reference_eqx_no_secondary_fails
     inputs:
       read_one_fastq_gz:

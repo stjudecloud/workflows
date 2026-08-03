@@ -1,4 +1,4 @@
-version 1.4
+version 1.3
 
 enum SortOrder[String] {
     queryname = "queryname",
@@ -12,6 +12,7 @@ task sort {
         description: "Sorts the input BAM file"
         outputs: {
             sorted_bam: "The input BAM after it has been sorted according to `sort_order`",
+            sorted_bam_index: "The index file for the sorted BAM file, if `write_index` is true",
         }
     }
 
@@ -32,6 +33,7 @@ task sort {
         verify: "Only verify sort order. Does not sort the BAM file."
         memory_gb: "RAM to allocate for task, specified in GB"
         modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of CPUs to allocate for task"
     }
 
     input {
@@ -50,12 +52,20 @@ task sort {
 
     String outfile_name = prefix + ".bam"
 
+    Int task_mem_gb = max(memory_gb - 2, 2)  # Reserve 2GB for overhead
+
     command <<<
         set -euo pipefail
 
         mako \
-            ~{if verify then "--verify" else "-o \"~{outfile_name}\""} \
-            ~{if write_index then "--write-index" else ""} \
+            ~{if verify
+                then "--verify"
+                else "-o \"~{outfile_name}\""
+            } \
+            ~{if write_index
+                then "--write-index"
+                else ""
+            } \
             --order "~{sort_order}" \
             --max-memory "~{memory_gb - 5}GB" \
             --memory-per-thread false \
