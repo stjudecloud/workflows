@@ -154,6 +154,8 @@ task parse_input {
     }
 
     command <<<
+        set -euo pipefail
+
         if [ "~{aligner}" != "mem" ] \
             && [ "~{aligner}" != "aln" ]
         then

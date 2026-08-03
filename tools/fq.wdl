@@ -72,6 +72,8 @@ task fqlint {
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         fq lint \
             ~{sep(" ", prefix("--disable-validator ", squote(disable_validator_codes)))} \
             --single-read-validation-level "~{single_read_validation_level}" \
@@ -148,6 +150,8 @@ task subsample {
     String r2_dst = prefix + ".R2.subsampled.fastq.gz"
 
     command <<<
+        set -euo pipefail
+
         # shellcheck disable=SC2086
         fq subsample \
             ~{probability_arg} \

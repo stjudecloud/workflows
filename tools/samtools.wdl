@@ -24,6 +24,8 @@ task quickcheck {
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         samtools quickcheck "~{bam}"
     >>>
 

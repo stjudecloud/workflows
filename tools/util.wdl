@@ -114,6 +114,8 @@ task calc_feature_lengths {
     Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         python3 /scripts/util/calc_feature_lengths.py \
             --id_attr "~{idattr}" \
             "~{gtf}" \
@@ -152,6 +154,8 @@ task compression_integrity {
     Int disk_size_gb = ceil(file_size) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         bgzip -t "~{bgzipped_file}"
     >>>
 
@@ -338,6 +342,8 @@ task global_phred_scores {
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
     command <<<
+        set -euo pipefail
+
         python3 /scripts/util/calc_global_phred_scores.py \
             ~{if fast_mode
                 then "--fast_mode"
@@ -394,6 +400,8 @@ task check_fastq_and_rg_concordance {
     ])
 
     command <<<
+        set -euo pipefail
+
         python3 /scripts/util/check_FQs_and_RGs.py \
             --read-one-fastqs "~{sep(",", squote(read_one_names))}" \
             ~{if length(read_twos) > 0

@@ -83,6 +83,8 @@ task validate_string_is_12bit_int {
     }
 
     command <<<
+        set -euo pipefail
+
         if [[ "~{number}" =~ ^[1-9][0-9]*$ ]]; then
             # number is in decimal
             if [ "~{number}" -lt 4096 ]; then

@@ -187,6 +187,8 @@ task calc_tpm {
     String outfile_name = prefix + ".TPM.txt"
 
     command <<<
+        set -euo pipefail
+
         python3 /scripts/htseq/calc_tpm.py \
             "~{counts}" \
             "~{feature_lengths}" \
