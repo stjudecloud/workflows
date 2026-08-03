@@ -145,12 +145,16 @@ def main(bam_path, prefix, fast_mode):
             print(f"{mapped_median}", file=outfile, end="\t")
             print(f"{mapped_stdev}", file=outfile, end="\t")
 
-            unmapped_avg, unmapped_median, unmapped_stdev = stats_from_dict(unmapped_quals)
+            unmapped_avg, unmapped_median, unmapped_stdev = stats_from_dict(
+                unmapped_quals
+            )
             print(f"{unmapped_avg}", file=outfile, end="\t")
             print(f"{unmapped_median}", file=outfile, end="\t")
             print(f"{unmapped_stdev}", file=outfile, end="\t")
 
-        first_tot_avg, first_tot_median, first_tot_stdev = stats_from_dict(first_tot_quals)
+        first_tot_avg, first_tot_median, first_tot_stdev = stats_from_dict(
+            first_tot_quals
+        )
         print(f"{first_tot_avg}", file=outfile, end="\t")
         print(f"{first_tot_median}", file=outfile, end="\t")
         print(f"{first_tot_stdev}", file=outfile, end="\t")
@@ -162,8 +166,8 @@ def main(bam_path, prefix, fast_mode):
         print(f"{first_mapped_median}", file=outfile, end="\t")
         print(f"{first_mapped_stdev}", file=outfile, end="\t")
 
-        first_unmapped_avg, first_unmapped_median, first_unmapped_stdev = stats_from_dict(
-            first_unmapped_quals
+        first_unmapped_avg, first_unmapped_median, first_unmapped_stdev = (
+            stats_from_dict(first_unmapped_quals)
         )
         print(f"{first_unmapped_avg}", file=outfile, end="\t")
         print(f"{first_unmapped_median}", file=outfile, end="\t")
@@ -210,6 +214,7 @@ def main(bam_path, prefix, fast_mode):
         print(f"{last_unmapped_avg}", file=outfile, end="\t")
         print(f"{last_unmapped_median}", file=outfile, end="\t")
         print(f"{last_unmapped_stdev}", file=outfile)  # end="\n"
+
 
 if __name__ == "__main__":
     import argparse

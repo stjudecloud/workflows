@@ -53,6 +53,7 @@ def main(gtf_path, outfile_path, id_attr):
             length = np.count_nonzero(exonic_intersection)
             print(f"{gene}\t{length}", file=outfile)
 
+
 if __name__ == "__main__":
     import argparse
 

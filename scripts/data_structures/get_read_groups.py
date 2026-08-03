@@ -15,6 +15,7 @@ def main(bam_path, outfile_path):
             )
         json.dump(modified_header, out_file)
 
+
 if __name__ == "__main__":
     import argparse
 

@@ -28,6 +28,7 @@ def main(counts_name_path, feature_lengths_path, outfile_path, has_header):
             tpm = rpk / scaling_factor
             print(f"{gene}\t{tpm:.3f}", file=outfile)
 
+
 if __name__ == "__main__":
     import argparse
 
