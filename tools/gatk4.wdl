@@ -1205,7 +1205,7 @@ workflow germline_variant_calling_wf {
     call merge_vcfs {
         vcfs = haplotype_caller.vcf,
         vcfs_indexes = haplotype_caller.vcf_index,
-        output_vcf_name = "merged.vcf",
+        output_vcf_name = prefix + ".vcf.gz",
     }
 
 
