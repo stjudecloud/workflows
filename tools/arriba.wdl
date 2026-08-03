@@ -205,6 +205,8 @@ task arriba {
     Int memory_gb = bam_size_gb + modify_memory_gb
 
     command <<<
+        set -euo pipefail
+
         arriba \
             -x "~{bam}" \
             ~{"-c '" + chimeric_sam + "'"} \

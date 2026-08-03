@@ -168,6 +168,8 @@ task parse_input {
     }
 
     command <<<
+        set -euo pipefail
+
         if [ -n "~{strand}" ] \
             && [ "~{strand}" != "Stranded-Reverse" ] \
             && [ "~{strand}" != "Stranded-Forward" ] \

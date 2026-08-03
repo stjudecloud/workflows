@@ -567,6 +567,8 @@ task parse_input {
     Int coverage_labels_len = length(coverage_labels)
 
     command <<<
+        set -euo pipefail
+
         EXITCODE=0
 
         if ~{rna} && ! ~{gtf_provided}; then

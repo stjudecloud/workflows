@@ -557,6 +557,8 @@ task collect_wgs_metrics {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g CollectWgsMetrics \
             -I "~{bam}" \
             -R "~{reference_fasta}" \
@@ -620,6 +622,8 @@ task collect_alignment_summary_metrics {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g CollectAlignmentSummaryMetrics \
             -I "~{bam}" \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
@@ -688,6 +692,8 @@ task collect_gc_bias_metrics {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g CollectGcBiasMetrics \
             -I "~{bam}" \
             -R "~{reference_fasta}" \
@@ -754,6 +760,8 @@ task collect_insert_size_metrics {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g CollectInsertSizeMetrics \
             -I "~{bam}" \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
@@ -813,6 +821,8 @@ task quality_score_distribution {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g QualityScoreDistribution \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
             -I "~{bam}" \
@@ -861,6 +871,8 @@ task merge_vcfs {
     Int disk_size_gb = ceil(size(vcfs, "GB") * 2) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         picard -Xms2000m \
             MergeVcfs \
             ~{sep(" ", prefix("--INPUT ", squote(vcfs)))} \

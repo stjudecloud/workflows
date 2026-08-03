@@ -127,6 +127,8 @@ task get_read_groups {
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         python3 /scripts/data_structures/get_read_groups.py \
             "~{bam}" \
             read_groups.json
@@ -181,6 +183,8 @@ task validate_read_group {
     ]
 
     command <<<
+        set -euo pipefail
+
         exit_code=0
         if ~{restrictive}; then
             if [[ "~{read_group.ID}" =~ ~{restrictive_pattern} ]]
@@ -396,6 +400,8 @@ task inner_read_group_to_string {
         else " "
 
     command <<<
+        set -euo pipefail
+
         if ~{format_as_sam_record}; then
             echo -n "@RG~{delimiter}" > out.txt
         fi

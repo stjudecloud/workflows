@@ -9,8 +9,8 @@ apply_bqsr:
           - bams/test_rnaseq_variant.bam.bai
         recalibration_report:
           - test_rnaseq_variant.recal.txt
-        ncpu:
-          - 1
+      ncpu:
+        - 1
 base_recalibrator:
   - name: works
     inputs:

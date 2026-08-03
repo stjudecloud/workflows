@@ -504,7 +504,6 @@ task variant_filtration {
         ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
         ln -sf "~{dict}" "$ref_fasta.dict"
 
-
         gatk VariantFiltration \
             --R "$ref_fasta.fa" \
             --V "$vcf_name" \

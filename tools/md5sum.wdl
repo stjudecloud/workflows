@@ -25,6 +25,8 @@ task compute_checksum {
     String outfile_name = basename(file) + ".md5"
 
     command <<<
+        set -euo pipefail
+
         md5sum "~{file}" > "~{outfile_name}"
     >>>
 
