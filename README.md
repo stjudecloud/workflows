@@ -26,7 +26,7 @@ The repository is laid out as follows:
 * `data_structures/` - WDL `struct` definitions and tasks or workflows related to their construction, parsing, or validation.
 * `docker/` - Dockerfiles used in our workflows. All docker images are published to the [GitHub Container Registry](https://github.com/orgs/stjudecloud/packages?repo_name=workflows) as a part of our CI and are versioned.
 * `scripts/` - This directory is passed to the docker build step as a context, and contains scripts that can be copied to our docker containers.
-* `test/fixtures/` - Home to all of our test fixtures. We use [Sprocket](https://sprocket.bio)'s `test` command for validating our code. Note that this directory is quite large by Git standards and we intend to prune it or otherwise reduce it's size in the future.
+* `test/fixtures/` - Home to all of our test fixtures. We use [Sprocket](https://sprocket.bio)'s `test` command for validating our code. Note that this directory is quite large by Git standards, and we intend to prune it or otherwise reduce its size in the future.
 * `developer_scripts` - Home to any scripts that ease the development process.
 
 ## Expected FASTQ file name conventions
@@ -64,7 +64,7 @@ This repository implements workflows using the Workflow Description Language (WD
 
 The workflows and tasks in this repository should require minimal set-up and configuration before you're ready to run. You don't even need to clone the repo! The bare minimum requirements are a locally installed WDL runner and an internet connection.
 
-The exact steps for installation, configuration, and execution are going to depend on you environment and preferred engine. There are a variety of WDL engines you could use; we ensure our WDL code executes with [Sprocket](https://sprocket.bio).
+The exact steps for installation, configuration, and execution depend on your environment and preferred engine. There are a variety of WDL engines you could use; we ensure our WDL code executes with [Sprocket](https://sprocket.bio).
 
 Most WDL runners are capable of running a WDL file from a URL. This is how we most commonly execute our workflows and tasks. The below command is a mock example of of what could be used to submit a run of our rnaseq-standard workflow using `sprocket`:
 
@@ -102,5 +102,6 @@ Most of our tasks are run inside a [BioContainers image](https://github.com/BioC
 
 ## 📝 License
 
-Copyright © 2020-Present [St. Jude Cloud Team](https://github.com/stjudecloud).<br />
+Copyright © 2020-Present [St. Jude Cloud Team](https://github.com/stjudecloud).
+
 This project is [MIT](https://github.com/stjudecloud/workflows/blob/master/LICENSE.md) licensed.
