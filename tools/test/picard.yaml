@@ -29,12 +29,13 @@ mark_duplicates:
         - 0
         - 100
     assertions:
-      duplicate_marked_bam:
-        - Defined: true
-      duplicate_marked_bam_index:
-        - Defined: true
-      duplicate_marked_bam_md5:
-        - Defined: true
+      outputs:
+        duplicate_marked_bam:
+          Defined: true
+        duplicate_marked_bam_index:
+          Defined: true
+        duplicate_marked_bam_md5:
+          Defined: true
   - name: no_bam_creation
     inputs:
       bam:
@@ -42,12 +43,13 @@ mark_duplicates:
       create_bam:
         - false
     assertions:
-      duplicate_marked_bam:
-        - Defined: false
-      duplicate_marked_bam_index:
-        - Defined: false
-      duplicate_marked_bam_md5:
-        - Defined: false
+      outputs:
+        duplicate_marked_bam:
+          Defined: false
+        duplicate_marked_bam_index:
+          Defined: false
+        duplicate_marked_bam_md5:
+          Defined: false
 validate_bam:
   - name: zero_exit_code
     tags: [slow]
