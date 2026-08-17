@@ -54,9 +54,10 @@ subsample:
         - bams/test.bwa_aln_pe.chrY_chrM.bam
       desired_reads:
         - 10
-    outputs:
-      sampled_bam:
-        defined: true
+    assertions:
+      outputs:
+        sampled_bam:
+          Defined: true
   - name: desired_gt_read_count
     inputs:
       bam:
@@ -65,9 +66,10 @@ subsample:
         - bams/test.bwa_aln_pe.chrY_chrM.bam
       desired_reads:
         - 9999999
-    outputs:
-      sampled_bam:
-        defined: false
+    assertions:
+      outputs:
+        sampled_bam:
+          Defined: false
   - name: fails_for_zero
     inputs:
       bam:

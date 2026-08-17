@@ -23,8 +23,9 @@ strandedness:
         - 30
         - 0
     assertions:
-      strandedness_string:
-        StrEquals: Unstranded
+      outputs:
+        strandedness_string:
+          StrEquals: Unstranded
   - name: split_by_rg
     inputs:
       $files:
@@ -49,8 +50,9 @@ strandedness:
         - 30
         - 0
     assertions:
-      strandedness_string:
-        StrEquals: N/A
+      outputs:
+        strandedness_string:
+          StrEquals: N/A
   # TODO: test other strandedness values
 instrument:
   # TODO: split by expected result and test "instrument_string" output

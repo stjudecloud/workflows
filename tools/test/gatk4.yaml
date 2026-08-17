@@ -103,5 +103,5 @@ mark_duplicates_spark:
         - bams/Aligned.sortedByCoord.chr9_chr22.bam
         - bams/test_rnaseq_variant.bam
         - bams/test.bam
-    ncpu:
-      - 1
+      ncpu:
+        - 1
