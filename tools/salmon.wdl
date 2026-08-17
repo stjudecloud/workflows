@@ -87,7 +87,7 @@ task quant {
         }
         lib_type: {
             description: "Salmon library type describing the relative orientation and strandedness of paired reads.",
-            help: "Use `A` to let Salmon auto-detect the library type — recommended for most users.",
+            help: "Use `A` to let Salmon auto-detect the library type â€” recommended for most users.",
             group: "Common",
         }
         prefix: {
@@ -215,6 +215,8 @@ task quant {
         mkdir salmon_index
         tar -xzf "~{salmon_index_tar_gz}" -C salmon_index --strip-components 1
 
+        # shellcheck disable=SC2086
+        # shellcheck disable=SC2086
         salmon quant \
             -i salmon_index \
             -l "~{lib_type}" \
@@ -225,8 +227,8 @@ task quant {
             --numBootstraps ~{num_bootstraps} \
             --incompatPrior ~{incompat_prior} \
             --rangeFactorizationBins ~{range_factorization_bins} \
-            "~{if length(read_twos) == 0 then "--fldMean " + fld_mean else ""}" \
-            "~{if length(read_twos) == 0 then "--fldSD " + fld_sd else ""}" \
+            ~{if length(read_twos) == 0 then "--fldMean " + fld_mean else ""} \
+            ~{if length(read_twos) == 0 then "--fldSD " + fld_sd else ""} \
             ~{if seq_bias then "--seqBias" else ""} \
             ~{if gc_bias then "--gcBias" else ""} \
             ~{if pos_bias then "--posBias" else ""} \
