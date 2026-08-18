@@ -31,6 +31,10 @@ task build_salmon_index {
             description: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.",
             group: "Resources",
         }
+        modify_memory_gb: {
+            description: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.",
+            group: "Resources",
+        }
     }
 
     input {
@@ -40,6 +44,7 @@ task build_salmon_index {
         Boolean use_all_cores = false
         Int ncpu = 4
         Int modify_disk_size_gb = 0
+        Int modify_memory_gb = 0
     }
 
     String salmon_index_filename = index_name + ".tar.gz"
@@ -76,7 +81,7 @@ task build_salmon_index {
 
     runtime {
         cpu: ncpu
-        memory: "8 GB"
+        memory: "~{ceil(transcripts_fasta_size * 4) + 4 + modify_memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/salmon:1.9.0--h7e5ed60_0"
         maxRetries: 1
@@ -187,6 +192,10 @@ task quant {
             description: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB.",
             group: "Resources",
         }
+        modify_memory_gb: {
+            description: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB.",
+            group: "Resources",
+        }
     }
 
     input {
@@ -213,6 +222,7 @@ task quant {
         Boolean use_all_cores = false
         Int ncpu = 4
         Int modify_disk_size_gb = 0
+        Int modify_memory_gb = 0
     }
 
     Array[File] read_twos = select_first([read_two_fastqs_gz, []])
@@ -221,6 +231,7 @@ task quant {
     Float read_two_size = size(read_twos, "GB")
     Float index_size = size(salmon_index_tar_gz, "GB")
     Int disk_size_gb = ceil((read_one_size + read_two_size + index_size) * 3) + 10 + modify_disk_size_gb
+    Int memory_gb = ceil(index_size * 4) + 8 + modify_memory_gb
 
     command <<<
         set -euo pipefail
@@ -266,7 +277,7 @@ task quant {
 
     runtime {
         cpu: ncpu
-        memory: "16 GB"
+        memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/salmon:1.9.0--h7e5ed60_0"
         maxRetries: 1
