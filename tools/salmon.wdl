@@ -94,6 +94,10 @@ task quant {
             description: "Prefix for the Salmon quantification output. The extension `.tar.gz` will be added.",
             group: "Common",
         }
+        validate_mappings: {
+            description: "Validate mappings using an alignment-based verification step.",
+            group: "Salmon Options",
+        }
         num_bootstraps: {
             description: "Salmon has the ability to optionally compute bootstrapped abundance estimates.",
             help: "This is done by resampling (with replacement) from the counts assigned to the fragment equivalence classes, and then re-running the optimization procedure for each such sample.",
@@ -178,6 +182,7 @@ task quant {
         Array[File]? read_two_fastqs_gz
         String lib_type = "A"
         String prefix = basename(read_one_fastqs_gz[0], ".fastq.gz")
+        Boolean validate_mappings = true
         Int num_bootstraps = 0
         Float incompat_prior = 0.0
         Int range_factorization_bins = 4
@@ -221,7 +226,7 @@ task quant {
             -i salmon_index \
             -l "~{lib_type}" \
             ~{if length(read_twos) > 0 then "-1 " + sep(" ", squote(read_one_fastqs_gz)) + " -2 " + sep(" ", squote(read_twos)) else "-r " + sep(" ", squote(read_one_fastqs_gz))} \
-            --validateMappings \
+            ~{if validate_mappings then "--validateMappings" else ""} \
             -p "$n_cores" \
             --numBootstraps ~{num_bootstraps} \
             --incompatPrior ~{incompat_prior} \
