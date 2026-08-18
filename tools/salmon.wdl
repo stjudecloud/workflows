@@ -220,8 +220,7 @@ task quant {
         salmon quant \
             -i salmon_index \
             -l "~{lib_type}" \
-            -1 ~{sep(" ", squote(read_one_fastqs_gz))} \
-            ~{if length(read_twos) > 0 then "-2 " + sep(" ", squote(read_twos)) else ""} \
+            ~{if length(read_twos) > 0 then "-1 " + sep(" ", squote(read_one_fastqs_gz)) + " -2 " + sep(" ", squote(read_twos)) else "-r " + sep(" ", squote(read_one_fastqs_gz))} \
             --validateMappings \
             -p "$n_cores" \
             --numBootstraps ~{num_bootstraps} \
