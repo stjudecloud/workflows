@@ -174,7 +174,7 @@ task quant {
 
     input {
         File salmon_index_tar_gz
-        Array[File] read_one_fastqs_gz
+        Array[File]+ read_one_fastqs_gz
         Array[File]? read_two_fastqs_gz
         String lib_type = "A"
         String prefix = basename(read_one_fastqs_gz[0], ".fastq.gz")
