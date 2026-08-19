@@ -1311,7 +1311,7 @@ task markdup {
         }
         json: "Output a JSON report instead of a text report? Either are parseable by MultiQC."
         mark_duplicates_with_do_tag: {
-            description: "Mark duplicates with the `do` (`d`uplicate `o`riginal) tag?",
+            description: "Mark duplicates with the `do` (`d`uplicate `o`riginal) tag?",  # cSpell:disable-line
             help: "The `do` tag contains the name of the \"original\" read that was duplicated. Ignored if `create_bam == false`.",
         }
         duplicate_count: "Record the original primary read duplication count (include itself) in a `dc` tag? Ignored if `create_bam == false`."

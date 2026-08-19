@@ -33,7 +33,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manaully specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
+- "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manually specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
 
 ### Removed
 

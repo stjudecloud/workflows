@@ -11,7 +11,7 @@ mark_duplicates:
         - TOTAL_MAPPED_REFERENCE_LENGTH
         - RANDOM
       tagging_policy:
-        - DontTag
+        - DontTag  # cSpell:disable-line
         - OpticalOnly
         - All
       create_bam:

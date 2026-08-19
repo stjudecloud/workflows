@@ -177,7 +177,7 @@ task fastp {
             } \
             --dup_calc_accuracy ~{duplicate_accuracy} \
             ~{if disable_duplicate_eval
-                then "--dont_eval_duplication"
+                then "--dont_eval_duplication"  # cSpell:disable-line
                 else ""
             } \
             ~{if phred64

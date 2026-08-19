@@ -25,7 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - "validation tasks" no longer have output sections [#240](https://github.com/stjudecloud/workflows/pull/240).
-- "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manaully specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
+- "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manually specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
 - Added `after` clauses to many calls to prevent wasted compute on validation failures [#235](https://github.com/stjudecloud/workflows/pull/235).
 
 ## 2025 May

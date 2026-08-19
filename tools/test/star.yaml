@@ -51,7 +51,7 @@ alignment:
           - ["ID:test PU:flowcell1.lane1 SM:sample1", "ID:random10k PU:flowcell1.lane1 SM:sample1"]
           - ["ID:test SM:sample1 PL:ILLUMINA"]
           - ["ID:test PU:flowcell1.lane1 SM:sample1", "ID:random10k PU:flowcell1.lane1 SM:sample1"]
-      # TODO: unbork this by breaking into multiple tests (currently expands into several bajillion test executions)
+      # TODO: fix this by breaking into multiple tests (currently expands into an excessive number of test executions)
       # clip_3p_adapter_seq:
       #   - { left: "None", right: "None" }
       #   - { left: "sequence", right: "polyA" }
