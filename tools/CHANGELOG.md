@@ -1,8 +1,14 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
- 
+
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
+
+## 2026 August
+
+### Changed
+
+- Enforced non-empty qualifiers on `Array[*]` types that cannot be empty [#328](https://github.com/stjudecloud/workflows/pull/328)
 
 ## 2026 February
 
@@ -56,8 +62,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 - Upstream bug in Sprocket patched locally [#251](https://github.com/stjudecloud/workflows/pull/251)
-    - Upstream bug [here](https://github.com/stjude-rust-labs/wdl/issues/574)
-    - Local fix was moving a private declaration in `samtools.merge_sam_files` to the command body 
+  - Upstream bug [here](https://github.com/stjude-rust-labs/wdl/issues/574)
+  - Local fix was moving a private declaration in `samtools.merge_sam_files` to the command body
 
 ### Removed
 
@@ -77,18 +83,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - "validation tasks" no longer have output sections [#240](https://github.com/stjudecloud/workflows/pull/240).
 - "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manually specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` now specifies `read_one_fastqs_gz` and `read_groups` must be non-empty [#235](https://github.com/stjudecloud/workflows/pull/235).
-    - immediately reverted in [#240](https://github.com/stjudecloud/workflows/pull/240).
+  - immediately reverted in [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` input `read_two_fastqs_gz` is now an `Array[File]+?`, allowing it to be omitted entirely [#235](https://github.com/stjudecloud/workflows/pull/235).
-    - immediately reverted in [#240](https://github.com/stjudecloud/workflows/pull/240).
+  - immediately reverted in [#240](https://github.com/stjudecloud/workflows/pull/240).
 
 ### Removed
 
 - removed interleaved FASTQ option from `samtools.bam_to_fastq` [#244](https://github.com/stjudecloud/workflows/pull/244).
 - removed all uses of non-empty (`+`) array qualifier [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` no longer sorts inputs prior to passing to STAR [#235](https://github.com/stjudecloud/workflows/pull/235).
-    - This means you have to ensure the FASTQs and RG records are concordant in your inputs!
+  - This means you have to ensure the FASTQs and RG records are concordant in your inputs!
 - `util.get_read_groups` has been removed [#235](https://github.com/stjudecloud/workflows/pull/235).
-    - see `data_structures/read_group.wdl` for an alternative.
+  - see `data_structures/read_group.wdl` for an alternative.
 
 ## 2025 May
 
@@ -106,7 +112,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - `ngsderive.encoding` removed the `String inferred_encoding` output [#216](https://github.com/stjudecloud/workflows/pull/216).
 - Improved the REGEX used to calculate a prefix for FASTQ input files in various tools [#220](https://github.com/stjudecloud/workflows/pull/220).
- 
+
 ## 2025 January
 
 ### Changed
