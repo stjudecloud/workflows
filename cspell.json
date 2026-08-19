@@ -284,7 +284,8 @@
         "sex_probes.txt",
         "*.csv",
         "*.dot",
-        "LICENSE.md"
+        "LICENSE.md",
+        "cspell.json"
     ],
     "ignoreRegExpList": [
         "/\\b[ACGTUN]{5,}\\b/",       // DNA sequences
