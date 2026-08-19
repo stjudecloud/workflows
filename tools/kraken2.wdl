@@ -158,7 +158,7 @@ task create_library_from_fastas {
     }
 
     input {
-        Array[File] fastas_gz
+        Array[File]+ fastas_gz
         Boolean protein = false
         Int modify_disk_size_gb = 0
     }
@@ -241,7 +241,7 @@ task build_db {
     }
 
     input {
-        Array[File] tarballs
+        Array[File]+ tarballs
         String db_name = "kraken2_db"
         Boolean protein = false
         Boolean use_all_cores = false

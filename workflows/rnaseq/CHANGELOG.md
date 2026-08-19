@@ -1,8 +1,14 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
- 
+
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
+
+## 2026 August
+
+### Changed
+
+- Enforced non-empty qualifiers on `Array[*]` types that cannot be empty [#328](https://github.com/stjudecloud/workflows/pull/328)
 
 ## 2026 January
 
@@ -20,7 +26,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 - FASTQ entrypoint now specifies that FASTQ and read group record inputs must be non-empty [#235](https://github.com/stjudecloud/workflows/pull/235).
-    - immediately reverted in [#240](https://github.com/stjudecloud/workflows/pull/240).
+  - immediately reverted in [#240](https://github.com/stjudecloud/workflows/pull/240).
 
 ### Changed
 
@@ -39,7 +45,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - Added a default `prefix` calculation for `rnaseq-standard-fastq` and `rnaseq-core` [#220](https://github.com/stjudecloud/workflows/pull/220).
- 
+
 ## 2025 January
 
 ### Changed

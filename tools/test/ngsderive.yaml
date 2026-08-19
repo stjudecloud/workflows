@@ -4,13 +4,10 @@ strandedness:
       $files:
         bam:
           - bams/test.bwa_aln_pe.chrY_chrM.bam
-          - bams/Aligned.sortedByCoord.chr9_chr22.bam
         bam_index:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
-          - bams/Aligned.sortedByCoord.chr9_chr22.bam.bai
         gene_model:
           - reference/gencode.v31.chrY_chrM.gtf.gz
-          - reference/gencode.v31.chr9_chr22.gtf.gz
       split_by_rg:
         - false
       min_reads_per_gene:
@@ -26,6 +23,30 @@ strandedness:
       outputs:
         strandedness_string:
           - StrEquals: Unstranded
+  - name: inconclusive
+    inputs:
+      $files:
+        bam:
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        bam_index:
+          - bams/Aligned.sortedByCoord.chr9_chr22.bam.bai
+        gene_model:
+          - reference/gencode.v31.chr9_chr22.gtf.gz
+      split_by_rg:
+        - false
+      min_reads_per_gene:
+        - 10
+        - 5
+      num_genes:
+        - 1000
+        - 500
+      min_mapq:
+        - 30
+        - 0
+    assertions:
+      outputs:
+        strandedness_string:
+          - StrEquals: Inconclusive
   - name: split_by_rg
     inputs:
       $files:

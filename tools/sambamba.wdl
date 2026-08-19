@@ -81,7 +81,7 @@ task merge {
     }
 
     input {
-        Array[File] bams
+        Array[File]+ bams
         String prefix
         Boolean use_all_cores = false
         Int ncpu = 2

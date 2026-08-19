@@ -45,7 +45,7 @@ workflow chipseq_standard_experimental {
 
     input {
         File bam
-        Array[File] bowtie_indexes
+        Array[File]+ bowtie_indexes
         File? excludelist
         String prefix = basename(bam, ".bam")
         Boolean enable_read_trimming = false

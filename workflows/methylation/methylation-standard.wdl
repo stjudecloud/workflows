@@ -31,8 +31,8 @@ workflow methylation {
     }
 
     input {
-        Array[File] green_idats
-        Array[File] red_idats
+        Array[File]+ green_idats
+        Array[File]+ red_idats
         File? additional_probes_to_exclude
     }
 
@@ -162,7 +162,7 @@ task concat_and_uniq {
     }
 
     input {
-        Array[File] files_to_combine
+        Array[File]+ files_to_combine
         String output_file_name = "unique_lines.txt"
     }
 

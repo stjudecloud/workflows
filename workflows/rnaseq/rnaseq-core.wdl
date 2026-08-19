@@ -129,9 +129,9 @@ workflow rnaseq_core {
     input {
         File gtf
         File star_db
-        Array[File] read_one_fastqs_gz
+        Array[File]+ read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
-        Array[String] read_groups
+        Array[String]+ read_groups
         String strandedness
         Boolean enable_read_trimming
         Boolean mark_duplicates

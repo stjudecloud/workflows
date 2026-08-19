@@ -22,7 +22,7 @@ task multiqc {
     }
 
     input {
-        Array[File] files
+        Array[File]+ files
         String report_name
         File? config
         Int modify_disk_size_gb = 0
