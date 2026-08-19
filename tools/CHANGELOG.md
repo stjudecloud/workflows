@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2026 August
+### Added
+- Added WDL implementation for Salmon (`build_salmon_index` and `quant` tasks) [#326](https://github.com/stjudecloud/workflows/pull/326)
+
 ## 2026 February
 
 ### Changed
