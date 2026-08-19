@@ -57,7 +57,7 @@ subsample:
     assertions:
       outputs:
         sampled_bam:
-          Defined: true
+          - Defined: true
   - name: desired_gt_read_count
     inputs:
       bam:
@@ -69,7 +69,7 @@ subsample:
     assertions:
       outputs:
         sampled_bam:
-          Defined: false
+          - Defined: false
   - name: fails_for_zero
     inputs:
       bam:

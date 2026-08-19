@@ -79,7 +79,7 @@ task base_recalibrator {
     }
 
     parameter_meta {
-        bam: "Input BAM format file on which to recabilbrate base quality scores"
+        bam: "Input BAM format file on which to recalibrate base quality scores"
         bam_index: "BAM index file corresponding to the input BAM"
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
@@ -285,7 +285,7 @@ task haplotype_caller {
             -O "~{prefix}.vcf.gz" \
             ~{if use_soft_clipped_bases
                 then ""
-                else "--dont-use-soft-clipped-bases"
+                else "--dont-use-soft-clipped-bases"  # cSpell:disable-line
             } \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
             --dbsnp "~{dbSNP_vcf}"
@@ -418,7 +418,7 @@ task mark_duplicates_spark {
         tagging_policy: {
             description: "Tagging policy for the output BAM.",
             choices: [
-                "DontTag",
+                "DontTag",  # cSpell:disable-line
                 "OpticalOnly",
                 "All",
             ],

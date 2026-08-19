@@ -11,7 +11,7 @@ mark_duplicates:
         - TOTAL_MAPPED_REFERENCE_LENGTH
         - RANDOM
       tagging_policy:
-        - DontTag
+        - DontTag  # cSpell:disable-line
         - OpticalOnly
         - All
       create_bam:
@@ -31,11 +31,11 @@ mark_duplicates:
     assertions:
       outputs:
         duplicate_marked_bam:
-          Defined: true
+          - Defined: true
         duplicate_marked_bam_index:
-          Defined: true
+          - Defined: true
         duplicate_marked_bam_md5:
-          Defined: true
+          - Defined: true
   - name: no_bam_creation
     inputs:
       bam:
@@ -45,11 +45,11 @@ mark_duplicates:
     assertions:
       outputs:
         duplicate_marked_bam:
-          Defined: false
+          - Defined: false
         duplicate_marked_bam_index:
-          Defined: false
+          - Defined: false
         duplicate_marked_bam_md5:
-          Defined: false
+          - Defined: false
 validate_bam:
   - name: zero_exit_code
     tags: [slow]

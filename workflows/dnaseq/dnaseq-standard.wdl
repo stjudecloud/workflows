@@ -80,7 +80,7 @@ workflow dnaseq_standard_experimental {
     }
     scatter (rg in get_read_groups.read_groups) {
         if (defined(sample_override)) {
-            ReadGroup overriden_rg = ReadGroup {
+            ReadGroup overridden_rg = ReadGroup {
                 ID: rg.ID,
                 BC: rg.BC,
                 CN: rg.CN,
@@ -98,7 +98,7 @@ workflow dnaseq_standard_experimental {
             }
         }
         ReadGroup selected_rg = select_first([
-            overriden_rg,
+            overridden_rg,
             rg,
         ])
         call read_group.read_group_to_string { input:

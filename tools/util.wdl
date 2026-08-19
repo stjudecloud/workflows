@@ -57,7 +57,7 @@ task split_string {
     }
 
     parameter_meta {
-        string: "String to split on occurences of `delimiter`"
+        string: "String to split on occurrences of `delimiter`"
         delimiter: {
             description: "Delimiter on which to split `input_string`",
         }
@@ -369,7 +369,7 @@ task global_phred_scores {
 task check_fastq_and_rg_concordance {
     meta {
         description: "Validates FASTQs and read group records are concordant"
-        help: "Each read1 FASTQ must correspond to exactly one read group record. This correspondance is encoded in two ways, both of which must match. 1) the FASTQ and its read group share the same index of their respective lists and 2) the `ID` field value must be contained somewhere within the FASTQ file basename. If `read_two_names` is non-empty, the same checks are performed on each of these names as well (i.e. all 3 of the read1 FASTQ, read2 FASTQ, and read group ID must match and be in the same position of their list). Additionally, the `ID` field must be the first field of the read group record, and each `ID` value must be unique."
+        help: "Each read1 FASTQ must correspond to exactly one read group record. This correspondence is encoded in two ways, both of which must match. 1) the FASTQ and its read group share the same index of their respective lists and 2) the `ID` field value must be contained somewhere within the FASTQ file basename. If `read_two_names` is non-empty, the same checks are performed on each of these names as well (i.e. all 3 of the read1 FASTQ, read2 FASTQ, and read group ID must match and be in the same position of their list). Additionally, the `ID` field must be the first field of the read group record, and each `ID` value must be unique."
         warning: "This task does not do any validation outside of what is described. i.e. only the first field of read group records are checked, and any malformed records beyond that field will go undetected."
     }
 

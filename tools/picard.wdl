@@ -35,7 +35,7 @@ task mark_duplicates {
         tagging_policy: {
             description: "Tagging policy for the output BAM.",
             choices: [
-                "DontTag",
+                "DontTag",  # cSpell:disable-line
                 "OpticalOnly",
                 "All",
             ],

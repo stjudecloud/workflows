@@ -4,7 +4,7 @@ import "../../data_structures/flag_filter.wdl"
 import "../../tools/fastp.wdl" as fp
 import "../../tools/fq.wdl"
 import "../../tools/kraken2.wdl"
-import "../../tools/librarian.wdl" as libraran_tasks
+import "../../tools/librarian.wdl" as librarian_tasks
 import "../../tools/md5sum.wdl"
 import "../../tools/mosdepth.wdl"
 import "../../tools/multiqc.wdl" as multiqc_tasks
@@ -29,7 +29,7 @@ workflow quality_check_standard {
             },
             multiqc_data: {
                 description: "Parquet format file output by MultiQC.",
-                help: "Can be used to recapitualate the created HTML report without access to all the raw data files analyzed.",
+                help: "Can be used to recapitulate the created HTML report without access to all the raw data files analyzed.",
             },
             analyzed_by_multiqc: {
                 description: "All files produced during QC which were analyzed by MultiQC",
@@ -84,11 +84,11 @@ workflow quality_check_standard {
         mark_duplicates: {
             description: "Mark duplicates before select analyses?",
             help: "Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. If set to `true`, a BAM will be generated and passed to selected downstream analyses. For more details about what analyses are run, review `./markdups-post.wdl`.",
-            warning: "This duplicate marked BAM is _not_ ouput by default. If you would like to output this file, set `output_intermediate_files = true`.",
+            warning: "This duplicate marked BAM is _not_ output by default. If you would like to output this file, set `output_intermediate_files = true`.",
         }
         run_fastp: {
             description: "Run the `fastp` tool on generated FASTQs?",
-            help: "`fastp` produces similar metrics as `fastqc`, but more comprehensively and efficiently. We always recommend running `fastp` for the valuable metrics it produces, but `fastp` is also run during our harmonization workflows so users of those workflows should supply the `fastp_json` output as an input via `extra_multiqc_inputs` and set this option to `false` to prevent runnning the tool twice.",
+            help: "`fastp` produces similar metrics as `fastqc`, but more comprehensively and efficiently. We always recommend running `fastp` for the valuable metrics it produces, but `fastp` is also run during our harmonization workflows so users of those workflows should supply the `fastp_json` output as an input via `extra_multiqc_inputs` and set this option to `false` to prevent running the tool twice.",
         }
         run_librarian: {
             description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data",
@@ -120,7 +120,7 @@ workflow quality_check_standard {
         }
         subsample_n_reads: {
             description: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input.",
-            warning: "Subsampling is done probabalistically so the exact number of reads in the output will have some variation.",
+            warning: "Subsampling is done probabilistically so the exact number of reads in the output will have some variation.",
         }
     }
 
@@ -313,7 +313,7 @@ workflow quality_check_standard {
             }
         }
         if (run_librarian) {
-            call libraran_tasks.librarian after fqlint { input:
+            call librarian_tasks.librarian after fqlint { input:
                 read_one_fastq = select_first([
                     bam_to_fastq.read_one_fastq_gz,
                     "undefined",
