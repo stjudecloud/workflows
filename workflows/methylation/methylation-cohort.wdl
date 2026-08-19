@@ -26,7 +26,7 @@ workflow methylation_cohort {
     }
 
     input {
-        Array[File] unfiltered_normalized_beta
+        Array[File]+ unfiltered_normalized_beta
         File? sex_probe_list
         File? additional_probes_to_exclude
         Array[File] p_values = []
@@ -166,7 +166,7 @@ task combine_data {
     }
 
     input {
-        Array[File] files_to_combine
+        Array[File]+ files_to_combine
         String combined_file_name = "combined.csv"
         Boolean simple_merge = false
         Int modify_memory_gb = 0

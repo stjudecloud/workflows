@@ -9,7 +9,6 @@ multiqc:
     inputs:
       files:
         - ["README.md", "tarball.tar.gz"]
-        - []
       report_name:
         - will_fail
     assertions:

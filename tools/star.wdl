@@ -553,8 +553,8 @@ task alignment {
 
     input {
         File star_db_tar_gz
-        Array[File] read_one_fastqs_gz
-        Array[String] read_groups
+        Array[File]+ read_one_fastqs_gz
+        Array[String]+ read_groups
         Array[File]? read_two_fastqs_gz
         Array[Int] out_sj_filter_intron_max_vs_read_n = [
             50000,

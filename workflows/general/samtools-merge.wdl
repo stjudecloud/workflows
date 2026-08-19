@@ -22,7 +22,7 @@ workflow samtools_merge {
     }
 
     input {
-        Array[File] bams
+        Array[File]+ bams
         String prefix
         Boolean use_all_cores = false
         Int max_length = 100

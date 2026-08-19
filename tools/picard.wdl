@@ -375,7 +375,7 @@ task merge_sam_files {
     }
 
     input {
-        Array[File] bams
+        Array[File]+ bams
         String prefix
         String sort_order = "coordinate"
         String validation_stringency = "SILENT"
@@ -847,8 +847,8 @@ task merge_vcfs {
     }
 
     input {
-        Array[File] vcfs
-        Array[File] vcfs_indexes
+        Array[File]+ vcfs
+        Array[File]+ vcfs_indexes
         String output_vcf_name
         Int modify_disk_size_gb = 0
     }

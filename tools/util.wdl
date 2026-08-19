@@ -389,8 +389,8 @@ task check_fastq_and_rg_concordance {
     }
 
     input {
-        Array[String] read_one_names
-        Array[String] read_groups
+        Array[String]+ read_one_names
+        Array[String]+ read_groups
         Array[String]? read_two_names
     }
 

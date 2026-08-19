@@ -229,7 +229,7 @@ task encoding {
     }
 
     input {
-        Array[File] ngs_files
+        Array[File]+ ngs_files
         String outfile_name
         Int num_reads = 1000000
         Int modify_disk_size_gb = 0

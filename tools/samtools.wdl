@@ -549,7 +549,7 @@ task merge {
     }
 
     input {
-        Array[File] bams
+        Array[File]+ bams
         String prefix
         File? new_header
         # String region = ""
