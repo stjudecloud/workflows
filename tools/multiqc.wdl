@@ -9,7 +9,7 @@ task multiqc {
             data: "Gzipped tar archive of data compiled by MultiQC",
             parquet: {
                 description: "Parquet format file output by MultiQC.",
-                help: "Can be used to recapitualate the created HTML report without access to all the raw data files used as input for this task.",
+                help: "Can be used to recapitulate the created HTML report without access to all the raw data files used as input for this task.",
             },
         }
     }

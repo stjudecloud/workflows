@@ -270,7 +270,7 @@ task index {
 task subsample {
     meta {
         description: "Randomly subsamples the input BAM, in order to produce an output BAM with approximately the desired number of reads."
-        help: "A `desired_reads` **greater than zero** must be supplied. A `desired_reads <= 0` will result in task failure. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
+        help: "A `desired_reads` **greater than zero** must be supplied. A `desired_reads <= 0` will result in task failure. Sampling is probabilistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
             orig_read_count: {
                 description: "A TSV report containing the original read count before subsampling.",
@@ -282,7 +282,7 @@ task subsample {
 
     parameter_meta {
         bam: "Input BAM format file to subsample"
-        desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value. **Must be greater than zero.**"
+        desired_reads: "How many reads should be in the output BAM? Output BAM read count will be approximate to this value. **Must be greater than zero.**"
         prefix: "Prefix for the BAM file. The extension `.sampled.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",

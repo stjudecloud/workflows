@@ -75,7 +75,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `util.check_fastq_and_rg_concordance` task no longer accepts tab literal delimiters. Use `\t` instead [#247](https://github.com/stjudecloud/workflows/pull/247).
 - `bwa` alignment tasks now require the `read_group` argument [#244](https://github.com/stjudecloud/workflows/pull/244).
 - "validation tasks" no longer have output sections [#240](https://github.com/stjudecloud/workflows/pull/240).
-- "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manaully specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
+- "lightweight tasks" now rely on the WDL spec's default `memory` and `disks` values instead of manually specifying something arbitrary [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` now specifies `read_one_fastqs_gz` and `read_groups` must be non-empty [#235](https://github.com/stjudecloud/workflows/pull/235).
     - immediately reverted in [#240](https://github.com/stjudecloud/workflows/pull/240).
 - `star.alignment` input `read_two_fastqs_gz` is now an `Array[File]+?`, allowing it to be omitted entirely [#235](https://github.com/stjudecloud/workflows/pull/235).
@@ -112,4 +112,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - `util.get_read_groups` had the param `format_for_star` reworked to a more generic `clean` parameter [#205](https://github.com/stjudecloud/workflows/pull/205).
-- `star.allignment` now takes an `Array[String]` for `read_groups` instead of a single `String` [#205](https://github.com/stjudecloud/workflows/pull/205).
+- `star.alignment` now takes an `Array[String]` for `read_groups` instead of a single `String` [#205](https://github.com/stjudecloud/workflows/pull/205).

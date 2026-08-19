@@ -97,7 +97,7 @@ task instrument {
     meta {
         description: "Derives the instrument used to sequence the input BAM file. Reports evidence supporting final results."
         outputs: {
-            instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file",
+            instrument_file: "TSV file containing the `ngsderive instrument` report for the input BAM file",
             instrument_string: "The derived instrument, in string format",
         }
     }

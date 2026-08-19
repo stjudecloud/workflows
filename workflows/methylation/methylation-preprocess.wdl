@@ -20,7 +20,7 @@ task process_raw_idats {
 
     parameter_meta {
         idats: {
-            description: "Array of raw IDAT files from the Illumina methlyation array.",
+            description: "Array of raw IDAT files from the Illumina methylation array.",
             warning: "These files must follow the normal naming convention for Illumina array data, that is the sample name followed by the green or red channel (e.g. `5723646052_R02C02_Grn.idat` and `5723646052_R02C02_Red.idat`).",
         }
         seed: {

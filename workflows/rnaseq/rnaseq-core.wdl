@@ -164,7 +164,7 @@ workflow rnaseq_core {
         "Stranded-Reverse": "reverse",
         "Stranded-Forward": "yes",
         "Unstranded": "no",
-        "Inconclusive": "undefined",  # THIS WILL ERRROR (intentional)
+        "Inconclusive": "undefined",  # THIS WILL ERROR (intentional)
         "": "undefined",
     }
 

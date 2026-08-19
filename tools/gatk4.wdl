@@ -79,7 +79,7 @@ task base_recalibrator {
     }
 
     parameter_meta {
-        bam: "Input BAM format file on which to recabilbrate base quality scores"
+        bam: "Input BAM format file on which to recalibrate base quality scores"
         bam_index: "BAM index file corresponding to the input BAM"
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
