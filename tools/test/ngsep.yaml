@@ -1,0 +1,11 @@
+germline_variant:
+  - name: works
+    inputs:
+      reference_fasta:
+        - reference/GRCh38.chrY_chrM.fa
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      threads:
+        - 1
+      requirements.memory:
+        - "4 GB"

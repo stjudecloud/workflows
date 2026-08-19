@@ -19,3 +19,11 @@ The following list is sorted alphabetically:
 ## test_R2.fq.gz
 
 10,000 reads in FASTQ format. Can be used by itself to represent a Single-End sample or used with `test_R1.fq.gz` to represent a Paired-End sample. Generated with `fq generate`.
+
+## test_variants_R1.fq.gz
+
+10,000 reads in FASTQ format. Can be used by itself to represent a Single-End sample or used with `test_variants.R2.fq.gz` to represent a Paired-End sample. Generated with `fq generate` on `chrY` and `chrM`. Simulated from a reference sequence containing variants.
+
+## test_variants_R2.fq.gz
+
+10,000 reads in FASTQ format. Can be used by itself to represent a Single-End sample or used with `test_variants.R1.fq.gz` to represent a Paired-End sample. Generated with `fq generate` on `chrY` and `chrM`. Simulated from a reference sequence containing variants.

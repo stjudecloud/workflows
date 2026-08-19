@@ -58,7 +58,7 @@ task bwa_aln {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( samtools_cores = n_cores - 1 ))
+        (( samtools_cores = n_cores - 1 || 1 ))
 
         mkdir bwa_db
         tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
@@ -151,7 +151,7 @@ task bwa_aln_pe {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( samtools_cores = n_cores - 1 ))
+        (( samtools_cores = n_cores - 1 || 1 ))
 
         mkdir bwa_db
         tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
@@ -236,14 +236,14 @@ task bwa_mem {
     )
 
     command <<<
-        set -euo pipefail
+        set -xeuo pipefail
 
         n_cores=~{ncpu}
         if ~{use_all_cores}; then
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( samtools_cores = n_cores - 1 ))
+        (( samtools_cores = n_cores - 1 || 1 ))
 
         mkdir bwa_db
         tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
@@ -282,7 +282,7 @@ task bwa_mem {
 
     runtime {
         cpu: ncpu
-        memory: "25 GB"
+        memory: "120 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/bwa:0.7.17-2"
         maxRetries: 1

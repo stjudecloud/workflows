@@ -363,10 +363,16 @@ task arriba_extract_fusion_supporting_alignments {
     command <<<
         set -euo pipefail
 
+        bam_name=~{basename(bam)}
+        ln -sf "~{bam}" "$bam_name"
+        ln -sf "~{bam_index}" "$bam_name.bai"
+
         extract_fusion-supporting_alignments.sh \
             "~{fusions}" \
-            "~{bam}" \
+            "$bam_name" \
             "~{prefix}"
+
+        rm "$bam_name" "$bam_name.bai"
     >>>
 
     output {
