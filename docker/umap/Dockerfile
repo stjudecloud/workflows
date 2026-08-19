@@ -1,4 +1,4 @@
-FROM python:3.14.2-alpine
+FROM python:3.14.4-alpine
 
 # Downstream requires llvm20, but that is out-of-date
 # llvm20 installs with the -20 suffix, so we need to symlink
