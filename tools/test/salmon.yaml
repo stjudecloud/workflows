@@ -1,0 +1,33 @@
+build_salmon_index:
+  - name: builds_index_successfully
+    inputs:
+      transcripts_fasta:
+        - salmon/transcripts.fasta
+    assertions:
+      outputs:
+        salmon_index_tar_gz:
+          - Name: salmon_index.tar.gz
+
+quant:
+  - name: quantifies_paired_end_reads
+    inputs:
+      salmon_index_tar_gz:
+        - salmon/salmon_index.tar.gz
+      read_one_fastqs_gz:
+        - - fastqs/test_R1.fq.gz
+      read_two_fastqs_gz:
+        - - fastqs/test_R2.fq.gz
+    assertions:
+      outputs:
+        quant_results_tar_gz:
+          - Name: test_R1.fq.gz.tar.gz
+  - name: quantifies_single_end_reads
+    inputs:
+      salmon_index_tar_gz:
+        - salmon/salmon_index.tar.gz
+      read_one_fastqs_gz:
+        - - fastqs/test_R1.fq.gz
+    assertions:
+      outputs:
+        quant_results_tar_gz:
+          - Name: test_R1.fq.gz.tar.gz
