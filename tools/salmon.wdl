@@ -90,7 +90,7 @@ task index {
     requirements {
         cpu: ncpu
         # Based on n of 1 test with GRCh38 and GENCODE v50.
-        memory: "~{(transcripts_fasta_size * 5) + (decoys_fasta_size * 15)  + 4 + modify_memory_gb} GB"
+        memory: "~{if defined(decoys_fasta) then 52 else 5}  + 4 + modify_memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/salmon:2.6.0--hfa8f182_0"
         maxRetries: 1
