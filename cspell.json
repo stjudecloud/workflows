@@ -93,6 +93,7 @@
         "excludelist",
         "bklist",
         "probelist",
+        "incompat",
         // genomics / sequencing terms
         "phred",
         "mapq",
@@ -111,6 +112,7 @@
         "exonic",
         "intragenic",
         "transcriptomic",
+        "transcriptome",
         "endedness",
         "unstranded",
         "Unstranded",
