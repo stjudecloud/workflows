@@ -146,6 +146,16 @@ task build_star_db {
 task alignment {
     meta {
         description: "Runs the STAR aligner on a set of RNA-Seq FASTQ files"
+        omitted_parameters: [
+            {
+                flag: "--outSAMtype",
+                reason: "STAR's default sort implementation is inefficient in the worst case and can blow up memory/time on some samples. Sorting is disabled here and handled by a dedicated downstream sorting task instead.",
+            },
+            {
+                flag: "--outMultimapperOrder",
+                reason: "Hardcoded to `Random`. The alternative, `Old_2.4`, is a biased quasi-random order used before STAR 2.5.0 and is expected to be deprecated in future STAR releases.",
+            },
+        ]
         external_help: "https://github.com/alexdobin/STAR/blob/2.7.11b/doc/STARmanual.pdf"
         outputs: {
             star_log: {

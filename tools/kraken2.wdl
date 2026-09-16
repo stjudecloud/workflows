@@ -358,6 +358,12 @@ task kraken {
             group: "Common",
         }
         min_base_quality: "Minimum base quality used in classification"
+        confidence: {
+            description: "Confidence score threshold. Classifications below this threshold are unclassified.",
+            external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#confidence-scoring",
+        }
+        minimum_hit_groups: "Minimum number of hit groups (overlapping k-mers sharing the same minimizer) needed to make a classification call"
+        quick: "Stop classification at the first hit instead of an exhaustive k-mer search? Faster but less accurate."
         ncpu: {
             description: "Number of cores to allocate for task",
             group: "Common",
@@ -378,6 +384,9 @@ task kraken {
         Boolean use_names = true
         Boolean use_all_cores = false
         Int min_base_quality = 0
+        Float confidence = 0.0
+        Int minimum_hit_groups = 2
+        Boolean quick = false
         Int ncpu = 4
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
@@ -415,6 +424,9 @@ task kraken {
             } \
             --threads "$n_cores" \
             --minimum-base-quality ~{min_base_quality} \
+            --confidence ~{confidence} \
+            --minimum-hit-groups ~{minimum_hit_groups} \
+            ~{if quick then "--quick" else ""} \
             --report "~{out_report}" \
             --report-zero-counts \
             ~{if use_names
