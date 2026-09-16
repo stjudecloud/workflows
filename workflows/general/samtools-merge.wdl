@@ -73,9 +73,6 @@ workflow samtools_merge {
     }
 
     output {
-        File merged_bam = select_first([
-            final_merge.merged_bam,
-            basic_merge.merged_bam,
-        ])
+        File merged_bam = select_first([final_merge.merged_bam, basic_merge.merged_bam])
     }
 }

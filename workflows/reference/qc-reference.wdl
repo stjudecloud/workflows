@@ -84,11 +84,7 @@ workflow qc_reference {
             "protozoa",
             "UniVec_Core",
         ]
-        Array[String] coverage_feature_types = [
-            "exon",
-            "CDS",
-            "UTR",
-        ]
+        Array[String] coverage_feature_types = ["exon", "CDS", "UTR"]
         Boolean protein = false
         Int reference_fa_disk_size_gb = 10
         Int gtf_disk_size_gb = 10
@@ -136,10 +132,7 @@ workflow qc_reference {
         }
     }
 
-    Array[File] custom_fastas = flatten([
-        kraken_fastas,
-        fastas_download.downloaded_file,
-    ])
+    Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.downloaded_file])
     if (length(custom_fastas) > 0) {
         call kraken2.create_library_from_fastas { input:
             fastas_gz = custom_fastas,
@@ -148,13 +141,9 @@ workflow qc_reference {
     }
 
     Array[File] kraken_tarballs = flatten([
-        select_all([
-            download_taxonomy.taxonomy,
-        ]),
+        select_all([download_taxonomy.taxonomy]),
         download_library.library,
-        select_all([
-            create_library_from_fastas.custom_library,
-        ]),
+        select_all([create_library_from_fastas.custom_library]),
     ])
     if (length(kraken_tarballs) > 0) {
         call kraken2.build_db as kraken_build_db { input:

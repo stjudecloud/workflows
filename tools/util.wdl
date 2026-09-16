@@ -345,10 +345,7 @@ task global_phred_scores {
         set -euo pipefail
 
         python3 /scripts/util/calc_global_phred_scores.py \
-            ~{if fast_mode
-                then "--fast_mode"
-                else ""
-            } \
+            ~{if fast_mode then "--fast_mode" else ""} \
             "~{bam}" \
             "~{prefix}"
     >>>
@@ -394,10 +391,7 @@ task check_fastq_and_rg_concordance {
         Array[String]? read_two_names
     }
 
-    Array[String] read_twos = select_first([
-        read_two_names,
-        [],
-    ])
+    Array[String] read_twos = select_first([read_two_names, []])
 
     command <<<
         set -euo pipefail
@@ -406,8 +400,7 @@ task check_fastq_and_rg_concordance {
             --read-one-fastqs "~{sep(",", squote(read_one_names))}" \
             ~{if length(read_twos) > 0
                 then "--read-two-fastqs \"" + sep(",", squote(read_twos)) + "\""
-                else ""
-            } \
+                else ""} \
             --read-groups "~{sep(",", squote(read_groups))}"
     >>>
 

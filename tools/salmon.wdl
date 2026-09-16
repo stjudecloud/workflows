@@ -4,7 +4,7 @@ task index {
     meta {
         description: "Builds a Salmon index from a transcriptome FASTA file, for use in quantification"
         outputs: {
-            index_tar_gz: "A gzipped TAR file containing the Salmon index files."
+            index_tar_gz: "A gzipped TAR file containing the Salmon index files.",
         }
     }
 
@@ -50,7 +50,8 @@ task index {
 
     Float transcripts_fasta_size = size(transcripts_fasta, "GB")
     Float decoys_fasta_size = size(decoys_fasta, "GB")
-    Int disk_size_gb = ceil(transcripts_fasta_size * 4) + ceil(decoys_fasta_size * 4) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(transcripts_fasta_size * 4) + ceil(decoys_fasta_size * 4) + 10
+        + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -61,10 +62,14 @@ task index {
         fi
 
         transcripts_name="~{basename(transcripts_fasta, ".gz")}"
-        gunzip -c "~{transcripts_fasta}" > "$transcripts_name" || ln -sf "~{transcripts_fasta}" "$transcripts_name"
+        gunzip -c "~{transcripts_fasta}" > "$transcripts_name" || ln -sf "~{
+            transcripts_fasta
+        }" "$transcripts_name"
         fasta="$transcripts_name"
 
-        decoys_name="~{if defined(decoys_fasta) then basename(select_first([decoys_fasta]), ".gz") else ""}"
+        decoys_name="~{if defined(decoys_fasta)
+            then basename(select_first([decoys_fasta]), ".gz")
+            else ""}"
         if [ -n "$decoys_name" ]; then
             gunzip -c "~{decoys_fasta}" > "$decoys_name" || ln -sf "~{decoys_fasta}" "$decoys_name"
             grep "^>" "$decoys_name" | cut -d " " -f1 | sed "s/^>//" > decoys.txt
@@ -102,7 +107,7 @@ task quant {
         description: "Runs `salmon quant` in mapping-based mode to quantify transcript-level expression from RNA-Seq reads, using a pre-built Salmon index."
         outputs: {
             quant_results_tar_gz: "A gzipped TAR file containing the Salmon quantification output directory, including `quant.sf`.",
-            quant_sf: "The raw `quant.sf` file, renamed to `<prefix>.quant.sf`, provided alongside the tarballed output."
+            quant_sf: "The raw `quant.sf` file, renamed to `<prefix>.quant.sf`, provided alongside the tarballed output.",
         }
     }
 
@@ -210,12 +215,8 @@ task quant {
         Array[File]+ read_one_fastqs_gz
         Array[File]? read_two_fastqs_gz
         String lib_type = "A"
-        String prefix = sub(basename(read_one_fastqs_gz[0]), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$", "")
-        Int num_bootstraps = 0
-        Float incompat_prior = 0.0
-        Int range_factorization_bins = 4
-        Int fld_mean = 250
-        Int fld_sd = 25
+        String prefix = sub(basename(read_one_fastqs_gz[0]), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
+            "")
         Boolean seq_bias = false
         Boolean gc_bias = false
         Boolean pos_bias = false
@@ -226,6 +227,11 @@ task quant {
         Boolean dump_eq = false
         Boolean write_unmapped_names = false
         Boolean use_all_cores = false
+        Float incompat_prior = 0.0
+        Int num_bootstraps = 0
+        Int range_factorization_bins = 4
+        Int fld_mean = 250
+        Int fld_sd = 25
         Int ncpu = 4
         Int modify_disk_size_gb = 0
         Int modify_memory_gb = 0
@@ -254,7 +260,11 @@ task quant {
         salmon quant \
             -i salmon_index \
             -l "~{lib_type}" \
-            ~{if length(read_twos) > 0 then "-1 " + sep(" ", squote(read_one_fastqs_gz)) + " -2 " + sep(" ", squote(read_twos)) else "-r " + sep(" ", squote(read_one_fastqs_gz))} \
+            ~{if length(read_twos) > 0
+                then "-1 " + sep(" ", squote(read_one_fastqs_gz)) + " -2 " + sep(" ", squote(
+                    read_twos
+                ))
+                else "-r " + sep(" ", squote(read_one_fastqs_gz))} \
             -p "$n_cores" \
             --numBootstraps ~{num_bootstraps} \
             --incompatPrior ~{incompat_prior} \

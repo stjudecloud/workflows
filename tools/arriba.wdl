@@ -164,10 +164,7 @@ task arriba {
             "AC_*",
             "NC_*",
         ]
-        Array[String] viral_contigs = [
-            "AC_*",
-            "NC_*",
-        ]
+        Array[String] viral_contigs = ["AC_*", "NC_*"]
         Array[String] disable_filters = []
         String feature_name = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
         String prefix = basename(bam, ".bam") + ".fusions"
@@ -200,8 +197,8 @@ task arriba {
     }
 
     Int bam_size_gb = ceil(size(bam, "GB"))
-    Int disk_size_gb = bam_size_gb + ceil(size(gtf, "GB")) + ceil(size(reference_fasta_gz,
-        "GB")) + modify_disk_size_gb
+    Int disk_size_gb = bam_size_gb + ceil(size(gtf, "GB")) + ceil(size(reference_fasta_gz, "GB"
+    )) + modify_disk_size_gb
     Int memory_gb = bam_size_gb + modify_memory_gb
 
     command <<<
@@ -224,16 +221,13 @@ task arriba {
             -s "~{strandedness}" \
             ~{if length(interesting_contigs) > 0
                 then "-i " + sep(",", quote(interesting_contigs))
-                else ""
-            } \
+                else ""} \
             ~{if length(viral_contigs) > 0
                 then "-v " + sep(",", quote(viral_contigs))
-                else ""
-            } \
+                else ""} \
             ~{if length(disable_filters) > 0
                 then "-f " + sep(",", quote(disable_filters))
-                else ""
-            } \
+                else ""} \
             -E ~{max_e_value} \
             -S ~{min_supporting_reads} \
             -m ~{max_mismappers} \
@@ -253,18 +247,9 @@ task arriba {
             -l ~{max_itd_length} \
             -z ~{min_itd_allele_fraction} \
             -Z ~{min_itd_supporting_reads} \
-            ~{if mark_duplicates
-                then ""
-                else "-u"
-            } \
-            ~{if report_additional_columns
-                then "-X"
-                else ""
-            } \
-            ~{if fill_gaps
-                then "-I"
-                else ""
-            }
+            ~{if mark_duplicates then "" else "-u"} \
+            ~{if report_additional_columns then "-X" else ""} \
+            ~{if fill_gaps then "-I" else ""}
     >>>
 
     output {

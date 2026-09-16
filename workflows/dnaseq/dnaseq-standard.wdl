@@ -70,10 +70,7 @@ workflow dnaseq_standard_experimental {
             use_all_cores,
         }
     }
-    File selected_bam = select_first([
-        subsample.sampled_bam,
-        bam,
-    ])
+    File selected_bam = select_first([subsample.sampled_bam, bam])
 
     call read_group.get_read_groups after parse_input { input:
         bam = selected_bam,
@@ -97,10 +94,7 @@ workflow dnaseq_standard_experimental {
                 SM: sample_override,
             }
         }
-        ReadGroup selected_rg = select_first([
-            overridden_rg,
-            rg,
-        ])
+        ReadGroup selected_rg = select_first([overridden_rg, rg])
         call read_group.read_group_to_string { input:
             read_group = selected_rg,
             format_as_sam_record = true,

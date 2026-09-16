@@ -261,8 +261,7 @@ task bwa_mem {
                 then "'" + basename(select_first([
                     read_two_fastq_gz,
                 ])) + "'"
-                else ""
-            } \
+                else ""} \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > "~{output_bam}"
 
@@ -272,8 +271,7 @@ task bwa_mem {
             then "rm '" + basename(select_first([
                 read_two_fastq_gz,
             ])) + "'"
-            else ""
-        }
+            else ""}
     >>>
 
     output {
