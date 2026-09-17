@@ -27,6 +27,8 @@ jobs:
       with:
         lfs: true
     - uses: stjude-rust-labs/setup-sprocket@v1
+      with:
+        github-token: ${{ github.token }}
     - name: Update containers
       run: |
         ./developer_scripts/update_container_tags.sh ${GITHUB_REF##*/}
