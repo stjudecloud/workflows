@@ -48,8 +48,7 @@ task somatic {
     Int disk_size_gb = ceil(size(reference_fasta, "GB") * 2) + ceil(size(normal_bam, "GB")
         * 2) + ceil(size(tumor_bam, "GB") * 2) + (if defined(indel_candidates)
         then ceil(size(indel_candidates, "GB"))
-        else 0
-    ) + 20 + modify_disk_size_gb
+        else 0) + 20 + modify_disk_size_gb
 
     String tumor = basename(tumor_bam)
     String normal = basename(normal_bam)
@@ -72,18 +71,11 @@ task somatic {
             --runDir "~{output_dir}" \
             --tumorBam "~{tumor}" \
             --normalBam "~{normal}" \
-            ~{if (exome)
-                then "--exome"
-                else ""
-            } \
-            ~{if (rna)
-                then "--rna"
-                else ""
-            } \
+            ~{if (exome) then "--exome" else ""} \
+            ~{if (rna) then "--rna" else ""} \
             ~{(if (defined(indel_candidates))
                 then "--indelCandidates '~{indel_candidates}'"
-                else ""
-            )}
+                else "")}
 
 
         "~{output_dir}/runWorkflow.py" -m local -j ~{threads}
@@ -163,19 +155,12 @@ task germline {
             --referenceFasta "$ref_fasta" \
             --runDir "~{output_dir}" \
             --bam "~{filename}" \
-            ~{if (exome)
-                then "--exome"
-                else ""
-            } \
-            ~{if (rna)
-                then "--rna"
-                else ""
-            }
+            ~{if (exome) then "--exome" else ""} \
+            ~{if (rna) then "--rna" else ""}
 
         "~{output_dir}/runWorkflow.py" -m local -j ~{threads}
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{filename}" "~{filename}.bai" "~{output_dir
-        }/workspace/pyflow.data/logs/tmp"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{filename}" "~{filename}.bai" "~{output_dir}/workspace/pyflow.data/logs/tmp"
     >>>
 
     output {

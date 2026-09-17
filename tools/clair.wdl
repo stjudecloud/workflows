@@ -90,30 +90,12 @@ task clair3 {
             --platform="~{platform}" \
             --model_path="/opt/models/~{model}" \
             --output="~{output_dir}" \
-            ~{if length(contigs) > 0
-                then "--ctg_name='~{sep(",", contigs)}'"
-                else ""
-            } \
-            ~{if all_contigs
-                then "--include_all_ctgs"
-                else ""
-            } \
-            ~{if print_ref_calls
-                then "--print_ref_calls"
-                else ""
-            } \
-            ~{if defined(bed_regions)
-                then "--bed_fn='~{bed_regions}'"
-                else ""
-            } \
-            ~{if defined(vcf_candidates)
-                then "--vcf_fn='~{vcf_candidates}'"
-                else ""
-            } \
-            ~{if gvcf
-                then "--gvcf"
-                else ""
-            }
+            ~{if length(contigs) > 0 then "--ctg_name='~{sep(",", contigs)}'" else ""} \
+            ~{if all_contigs then "--include_all_ctgs" else ""} \
+            ~{if print_ref_calls then "--print_ref_calls" else ""} \
+            ~{if defined(bed_regions) then "--bed_fn='~{bed_regions}'" else ""} \
+            ~{if defined(vcf_candidates) then "--vcf_fn='~{vcf_candidates}'" else ""} \
+            ~{if gvcf then "--gvcf" else ""}
 
         rm -rf "$ref_fasta" "$ref_fasta.fai" "~{filename}" "~{filename}.bai"
     >>>
@@ -246,50 +228,27 @@ task clairs {
             --chunk_size "~{chunk_size}" \
             --snv_min_af "~{snv_min_af}" \
             --sample_name "~{sample_name}" \
-            ~{if length(contigs) > 0
-                then "--ctg_name='~{sep(",", contigs)}'"
-                else ""
-            } \
-            ~{if defined(bed_regions)
-                then "--bed_fn '~{bed_regions}'"
-                else ""
-            } \
+            ~{if length(contigs) > 0 then "--ctg_name='~{sep(",", contigs)}'" else ""} \
+            ~{if defined(bed_regions) then "--bed_fn '~{bed_regions}'" else ""} \
             ~{if defined(vcf_candidates)
                 then "--genotyping_mode_vcf_fn '~{vcf_candidates}'"
-                else ""
-            } \
-            ~{if all_contigs
-                then "--include_all_ctgs"
-                else ""
-            } \
-            ~{if print_ref_calls
-                then "--print_ref_calls"
-                else ""
-            } \
-            ~{if print_germline_calls
-                then "--print_germline_calls"
-                else ""
-            } \
+                else ""} \
+            ~{if all_contigs then "--include_all_ctgs" else ""} \
+            ~{if print_ref_calls then "--print_ref_calls" else ""} \
+            ~{if print_germline_calls then "--print_germline_calls" else ""} \
             ~{if defined(pileup_model)
                 then "--pileup_model_path '~{pileup_model}'"
-                else ""
-            } \
+                else ""} \
             ~{if defined(full_alignment_model)
                 then "--full_alignment_model_path '~{full_alignment_model}'"
-                else ""
-            } \
-            ~{if defined(snv_min_qual)
-                then "--snv_min_qual '~{snv_min_qual}'"
-                else ""
-            } \
+                else ""} \
+            ~{if defined(snv_min_qual) then "--snv_min_qual '~{snv_min_qual}'" else ""} \
             ~{if defined(indel_min_qual)
                 then "--indel_min_qual '~{indel_min_qual}'"
-                else ""
-            } \
+                else ""} \
             ~{if remove_intermediate_directory
                 then "--remove_intermediate_directory"
-                else ""
-            }
+                else ""}
 
         rm -rf "$ref_fasta" "$ref_fasta.fai" \
             "~{tumor}" "~{tumor}.bai" \

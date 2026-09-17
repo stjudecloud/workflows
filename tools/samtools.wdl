@@ -863,8 +863,7 @@ task bam_to_fastq {
         + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * if (retain_collated_bam && !collated && paired_end)
         then 5
-        else 2
-    ) + 30 + modify_disk_size_gb
+        else 2) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail

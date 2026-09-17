@@ -58,14 +58,8 @@ task sort {
         set -euo pipefail
 
         mako \
-            ~{if verify
-                then "--verify"
-                else "-o \"~{outfile_name}\""
-            } \
-            ~{if write_index
-                then "--write-index"
-                else ""
-            } \
+            ~{if verify then "--verify" else "-o \"~{outfile_name}\""} \
+            ~{if write_index then "--write-index" else ""} \
             --order "~{sort_order}" \
             --max-memory "~{task_mem_gb}GB" \
             --threads "~{ncpu}" \

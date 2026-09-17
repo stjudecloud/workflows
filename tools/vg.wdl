@@ -79,27 +79,12 @@ task giraffe {
             -d "~{distance_index}" \
             -z "~{zipcode_name}" \
             -f "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz)
-                then "-f \"~{read_two_fastq_gz}\""
-                else ""
-            } \
+            ~{if defined(read_two_fastq_gz) then "-f \"~{read_two_fastq_gz}\"" else ""} \
             -o "~{output_format}" \
-            ~{if defined(sample_name)
-                then "--sample \"~{sample_name}\""
-                else ""
-            } \
-            ~{if defined(read_group)
-                then "--read-group \"~{read_group}\""
-                else ""
-            } \
-            ~{if defined(haploytype)
-                then "--haplotype-name \"~{haploytype}\""
-                else ""
-            } \
-            ~{if defined(kff)
-                then "--kff-name \"~{kff}\""
-                else ""
-            } \
+            ~{if defined(sample_name) then "--sample \"~{sample_name}\"" else ""} \
+            ~{if defined(read_group) then "--read-group \"~{read_group}\"" else ""} \
+            ~{if defined(haploytype) then "--haplotype-name \"~{haploytype}\"" else ""} \
+            ~{if defined(kff) then "--kff-name \"~{kff}\"" else ""} \
             --parameter-preset "~{preset}" \
             > "~{output_name}"
     >>>

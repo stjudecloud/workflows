@@ -56,12 +56,8 @@ task manta_germline {
             --referenceFasta "$ref_fasta" \
             ~{if defined(calling_regions_bed)
                 then "--callRegions '" + calling_regions_bed + "'"
-                else ""
-            } \
-            ~{if exome
-                then "--exome"
-                else ""
-            } \
+                else ""} \
+            ~{if exome then "--exome" else ""} \
             --runDir "~{output_dir}"
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
@@ -152,14 +148,10 @@ task manta_somatic {
             --normalBam "~{normal}" \
             --tumorBam "~{tumor}" \
             --referenceFasta "$ref_fasta" \
-            ~{if exome
-                then "--exome"
-                else ""
-            } \
+            ~{if exome then "--exome" else ""} \
             ~{if defined(calling_regions_bed)
                 then "--callRegions '" + calling_regions_bed + "'"
-                else ""
-            } \
+                else ""} \
             --runDir "~{output_dir}"
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"

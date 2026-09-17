@@ -72,47 +72,20 @@ task align {
         set -euo pipefail
 
         minimap2 \
-            ~{if defined(preset)
-                then "-x \"~{preset}\""
-                else ""
-            } \
-            ~{if output_paf
-                then ""
-                else "-a"
-            } \
-            ~{if output_paf && cigar_in_paf
-                then "-c"
-                else ""
-            } \
-            ~{if ignore_base_quality
-                then "-Q"
-                else ""
-            } \
-            ~{if output_md_tag
-                then "--MD"
-                else ""
-            } \
-            ~{if eqx
-                then "-X"
-                else ""
-            } \
-            ~{if soft_clip
-                then "-Y"
-                else ""
-            } \
-            ~{if secondary_alignments
-                then "--secondary=yes"
-                else "--secondary=no"
-            } \
+            ~{if defined(preset) then "-x \"~{preset}\"" else ""} \
+            ~{if output_paf then "" else "-a"} \
+            ~{if output_paf && cigar_in_paf then "-c" else ""} \
+            ~{if ignore_base_quality then "-Q" else ""} \
+            ~{if output_md_tag then "--MD" else ""} \
+            ~{if eqx then "-X" else ""} \
+            ~{if soft_clip then "-Y" else ""} \
+            ~{if secondary_alignments then "--secondary=yes" else "--secondary=no"} \
             -t ~{threads} \
             --seed ~{seed} \
             -R "~{read_group}" \
             "~{reference_index}" \
             "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz)
-                then "\"~{read_two_fastq_gz}\""
-                else ""
-            } \
+            ~{if defined(read_two_fastq_gz) then "\"~{read_two_fastq_gz}\"" else ""} \
             | if ~{output_paf}; then
                 cat - > "~{output_name}"
             else
@@ -172,10 +145,7 @@ task index {
         minimap2 \
             -k ~{minimizer_kmer_size} \
             -w ~{minimizer_window_size} \
-            ~{if defined(alt_contigs)
-                then "--alt \"~{alt_contigs}\""
-                else ""
-            } \
+            ~{if defined(alt_contigs) then "--alt \"~{alt_contigs}\"" else ""} \
             -t ~{threads} \
             -d "~{index_name}" \
             "$ref_fasta"

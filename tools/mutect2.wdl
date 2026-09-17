@@ -195,12 +195,10 @@ task mutect2 {
             -tumor "~{tumor_sample_name}" \
             ~{if defined(germline_resource_vcf)
                 then "-germline-resource '" + germline_resource_vcf + "'"
-                else ""
-            } \
+                else ""} \
             ~{if defined(panel_of_normals_vcf)
                 then "-panel-of-normals '" + panel_of_normals_vcf + "'"
-                else ""
-            } \
+                else ""} \
             -O "~{output_prefix}.vcf.gz" \
             --native-pair-hmm-threads "~{threads}"
 
@@ -272,10 +270,8 @@ task filter_mutect {
         ln -sf "~{reference_fasta_dict}" "$ref_fasta.dict"
 
         ln -sf "~{unfiltered_somatic_vcf}" "~{basename(unfiltered_somatic_vcf)}"
-        ln -sf "~{unfiltered_somatic_vcf_index}" "~{basename(unfiltered_somatic_vcf_index)
-        }"
-        ln -sf "~{unfiltered_somatic_vcf_stats}" "~{basename(unfiltered_somatic_vcf_stats)
-        }"
+        ln -sf "~{unfiltered_somatic_vcf_index}" "~{basename(unfiltered_somatic_vcf_index)}"
+        ln -sf "~{unfiltered_somatic_vcf_stats}" "~{basename(unfiltered_somatic_vcf_stats)}"
 
         gatk --java-options "-Xmx~{24000}m" \
             FilterMutectCalls \
@@ -342,10 +338,7 @@ task calculate_contamination {
             -I "~{tumor_pileups}" \
             -O "~{prefix}.contamination.table" \
             --tumor-segmentation "~{prefix}.segments.table" \
-            ~{if defined(normal_pileups)
-                then "-matched '" + normal_pileups + "'"
-                else ""
-            }
+            ~{if defined(normal_pileups) then "-matched '" + normal_pileups + "'" else ""}
     >>>
 
     output {

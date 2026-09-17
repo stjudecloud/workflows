@@ -123,14 +123,9 @@ workflow somatic_variant_calling {
         normal_bam_index,
         tumor_bam,
         tumor_bam_index,
-        normal_sample_name = select_first([
-            normal_read_groups.read_groups[0].SM,
-            "normal",
-        ]),
-        tumor_sample_name = select_first([
-            tumor_read_groups.read_groups[0].SM,
-            "tumor",
-        ]),
+        normal_sample_name = select_first([normal_read_groups.read_groups[0].SM, "normal"]
+        ),
+        tumor_sample_name = select_first([tumor_read_groups.read_groups[0].SM, "tumor"]),
         variant_vcf,
         variant_vcf_index,
         intervals,

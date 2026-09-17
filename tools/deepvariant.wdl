@@ -109,14 +109,8 @@ task deepsomatic {
             --num_shards="~{threads}" \
             --logging_dir="logs" \
             --intermediate_results_dir="intermediate_results" \
-            ~{if runtime_report
-                then "--runtime_report"
-                else ""
-            } \
-            ~{if vcf_stats_report
-                then "--vcf_stats_report"
-                else ""
-            }
+            ~{if runtime_report then "--runtime_report" else ""} \
+            ~{if vcf_stats_report then "--vcf_stats_report" else ""}
 
 
         rm -rf "$ref_fasta" "$ref_fasta.fai" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{
@@ -195,10 +189,7 @@ task deepvariant {
         File reference_fasta_index
         File bam
         File bam_index
-        Array[String] haploid_chromosomes = [
-            "chrX",
-            "chrY",
-        ]
+        Array[String] haploid_chromosomes = ["chrX", "chrY"]
         String output_prefix = "deepsomatic_output"
         String model_type = "WGS"
         Boolean runtime_report = false
@@ -234,14 +225,8 @@ task deepvariant {
             --logging_dir="logs" \
             --intermediate_results_dir="intermediate_results" \
             --test_tmpdir="test" \
-            ~{if runtime_report
-                then "--runtime_report"
-                else ""
-            } \
-            ~{if vcf_stats_report
-                then "--vcf_stats_report"
-                else ""
-            } \
+            ~{if runtime_report then "--runtime_report" else ""} \
+            ~{if vcf_stats_report then "--vcf_stats_report" else ""} \
             --haploid_contigs="~{sep(",", haploid_chromosomes)}"
 
         rm -rf "$ref_fasta" "$ref_fasta.fai" "~{filename}" "~{filename}.bai"

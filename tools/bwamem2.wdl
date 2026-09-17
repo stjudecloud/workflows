@@ -53,20 +53,11 @@ task align {
             -R "~{read_group}" \
             -k ~{seed_length} \
             -T ~{min_score} \
-            ~{if smart_pairing
-                then "-p"
-                else ""
-            } \
-            ~{if skip_mate_rescue
-                then "-S"
-                else ""
-            } \
+            ~{if smart_pairing then "-p" else ""} \
+            ~{if skip_mate_rescue then "-S" else ""} \
             bwa_db/"$PREFIX" \
             "~{read_one_fastq_gz}" \
-            ~{if defined(read_two_fastq_gz)
-                then "\"~{read_two_fastq_gz}\""
-                else ""
-            } |
+            ~{if defined(read_two_fastq_gz) then "\"~{read_two_fastq_gz}\"" else ""} |
         samtools view -b -o "~{output_name}" -
 
         rm -r bwa_db
