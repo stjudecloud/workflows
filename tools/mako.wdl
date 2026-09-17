@@ -54,12 +54,14 @@ task sort {
 
     Int task_mem_gb = max(memory_gb - 2, 2)  # Reserve 2GB for overhead
 
+    Boolean index = if sort_order == "queryname" then false else write_index
+
     command <<<
         set -euo pipefail
 
         mako \
             ~{if verify then "--verify" else "-o \"~{outfile_name}\""} \
-            ~{if write_index then "--write-index" else ""} \
+            ~{if index then "--write-index" else ""} \
             --order "~{sort_order}" \
             --max-memory "~{task_mem_gb}GB" \
             --threads "~{ncpu}" \
