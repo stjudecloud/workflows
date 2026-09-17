@@ -35,7 +35,7 @@ task mark_duplicates {
         tagging_policy: {
             description: "Tagging policy for the output BAM.",
             choices: [
-                "DontTag",
+                "DontTag",  # cSpell:disable-line
                 "OpticalOnly",
                 "All",
             ],
@@ -100,18 +100,14 @@ task mark_duplicates {
              -Djava.io.tmpdir="$(pwd)/tmp" \
             -I "~{bam}" \
             --METRICS_FILE "~{prefix}.metrics.txt" \
-            -O "~{if create_bam
-                then prefix + ".bam"
-                else "/dev/null"
-            }" \
+            -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
             --CREATE_INDEX ~{create_bam} \
             --CREATE_MD5_FILE ~{create_bam} \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
             --DUPLICATE_SCORING_STRATEGY "~{duplicate_scoring_strategy}" \
             --READ_NAME_REGEX '~{if (optical_distance > 0)
                 then read_name_regex
-                else "null"
-            }' \
+                else "null"}' \
             --TAGGING_POLICY "~{tagging_policy}" \
             --CLEAR_DT ~{clear_dt} \
             --REMOVE_DUPLICATES ~{remove_duplicates} \
@@ -201,12 +197,8 @@ task validate_bam {
         Int modify_disk_size_gb = 0
     }
 
-    String outfile = if summary_mode
-        then outfile_name
-        else outfile_name + ".gz"
-    String mode_arg = if summary_mode
-        then "--MODE SUMMARY"
-        else ""
+    String outfile = if summary_mode then outfile_name else outfile_name + ".gz"
+    String mode_arg = if summary_mode then "--MODE SUMMARY" else ""
     Float bam_size = size(bam, "GB")
     Int disk_size_gb = ceil(bam_size * 4) + 50 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
@@ -223,10 +215,7 @@ task validate_bam {
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
             ~{sep(" ", prefix("--IGNORE ", squote(ignore_list)))} \
             --MAX_OUTPUT ~{max_errors} \
-            ~{if !summary_mode
-                then "| gzip"
-                else ""
-            } \
+            ~{if !summary_mode then "| gzip" else ""} \
             > "~{outfile}" \
             || rc=$?
 
@@ -389,7 +378,7 @@ task merge_sam_files {
     }
 
     input {
-        Array[File] bams
+        Array[File]+ bams
         String prefix
         String sort_order = "coordinate"
         String validation_stringency = "SILENT"
@@ -414,10 +403,7 @@ task merge_sam_files {
             --ASSUME_SORTED true \
             --SORT_ORDER "~{sort_order}" \
             --USE_THREADING ~{threading} \
-            ~{if sort_order == "coordinate"
-                then "--CREATE_INDEX true"
-                else ""
-            } \
+            ~{if sort_order == "coordinate" then "--CREATE_INDEX true" else ""} \
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY "~{validation_stringency}"
 
@@ -435,9 +421,7 @@ task merge_sam_files {
     }
 
     runtime {
-        cpu: if threading
-            then 2
-            else 1
+        cpu: if threading then 2 else 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -861,9 +845,8 @@ task merge_vcfs {
     }
 
     input {
-        Array[File] vcfs
-        #@ except: UnusedInput
-        Array[File] vcfs_indexes
+        Array[File]+ vcfs
+        Array[File]+ vcfs_indexes
         String output_vcf_name
         Int modify_disk_size_gb = 0
     }
@@ -1057,18 +1040,12 @@ task bam_to_fastq {
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT="~{bam}" \
             FASTQ="~{prefix}.R1.fastq" \
-            ~{if paired
-                then "SECOND_END_FASTQ='" + prefix + ".R2.fastq'"
-                else ""
-            } \
+            ~{if paired then "SECOND_END_FASTQ='" + prefix + ".R2.fastq'" else ""} \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
 
         gzip "~{prefix}.R1.fastq" \
-            ~{if paired
-                then "'" + prefix + ".R2.fastq'"
-                else ""
-            }
+            ~{if paired then "'" + prefix + ".R2.fastq'" else ""}
     >>>
 
     output {

@@ -17,9 +17,9 @@
 - All requirement values are overridable at runtime. However, tasks should have easily configurable memory and disk space allocations.
   - Often, tasks have a dynamic calculation for resource requirements based on input sizes. Users of a WDL should have an easy way to fine tune this calculation.
   - This may mean incorporating an `Int` or `Float` in the inputs of the task that is applied to the dynamic calculation.
-  - For WDL 1.3 and later, WDL authors can change resource requirements between retry attempts. This enables mitigation of errors relating to resources limits, but users may inadvertantly disable these mitigations by introducing runtime overrides. WDL authors should expose resource fine tuning via the input section and incorporate those user values in any dynamic calculations to prevent runtime locking.
+  - For WDL 1.3 and later, WDL authors can change resource requirements between retry attempts. This enables mitigation of errors relating to resources limits, but users may inadvertently disable these mitigations by introducing runtime overrides. WDL authors should expose resource fine tuning via the input section and incorporate those user values in any dynamic calculations to prevent runtime locking.
 - Tasks which assume a file and any accessory files (e.g. a BAM and a BAI) have specific extensions and/or are in the same directory should *always* create symlinks from the mounted inputs to the work directory of the task
-  - This is because individual `File` types are not guarenteed to be in the same mounted directory.
+  - This is because individual `File` types are not guaranteed to be in the same mounted directory.
   - The `command` may include something like: `ln -s "~{<input name>}" "./<expected name>"`
 - Tasks should `rm` any temporary or intermediate files created in the work directory (including symlinks).
   - This helps reduce disk bloat from keeping unnecessary files around.

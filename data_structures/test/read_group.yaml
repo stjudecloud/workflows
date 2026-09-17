@@ -64,7 +64,7 @@ read_group_to_string:
   - name: spaces_allowed
     inputs:
       read_group:
-        - ID: technically permissable but gross
+        - ID: technically permissible but gross
           SM: same here!
       restrictive:
         - false

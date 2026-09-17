@@ -31,8 +31,8 @@ workflow methylation {
     }
 
     input {
-        Array[File] green_idats
-        Array[File] red_idats
+        Array[File]+ green_idats
+        Array[File]+ red_idats
         File? additional_probes_to_exclude
     }
 
@@ -42,8 +42,7 @@ workflow methylation {
         }
     }
 
-    call preprocess.list_sex_probes {
-    }
+    call preprocess.list_sex_probes
 
     call cohort.methylation_cohort { input:
         unfiltered_normalized_beta = process_raw_idats.beta_swan_norm_unfiltered_genomic,
@@ -76,9 +75,7 @@ workflow methylation {
         }
 
         call concat_and_uniq as final_cat { input:
-            files_to_combine = flatten([
-                concat_and_uniq.combined_file,
-            ]),
+            files_to_combine = flatten([concat_and_uniq.combined_file]),
             output_file_name = "probes_with_snps.tab",
         }
     }
@@ -113,9 +110,7 @@ workflow methylation {
         }
 
         call concat_and_uniq as final_cat_non_genomic { input:
-            files_to_combine = flatten([
-                non_genomic_concat.combined_file,
-            ]),
+            files_to_combine = flatten([non_genomic_concat.combined_file]),
             output_file_name = "non_genomic_probes.tab",
         }
     }
@@ -162,7 +157,7 @@ task concat_and_uniq {
     }
 
     input {
-        Array[File] files_to_combine
+        Array[File]+ files_to_combine
         String output_file_name = "unique_lines.txt"
     }
 

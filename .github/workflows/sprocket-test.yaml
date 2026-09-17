@@ -23,14 +23,12 @@ jobs:
         runner: [sprocket]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         lfs: true
-    - name: Install Sprocket
-      run: |
-        SPROCKET_URL=$(curl -sSL https://api.github.com/repos/stjude-rust-labs/sprocket/releases/latest \
-          | jq -r '.assets[] | select(.name | test("x86_64-unknown-linux-gnu.tar.gz")) | .browser_download_url')
-        curl -sSL "$SPROCKET_URL" | tar -xz -C /usr/local/bin sprocket
+    - uses: stjude-rust-labs/setup-sprocket@v1
+      with:
+        github-token: ${{ github.token }}
     - name: Update containers
       run: |
         ./developer_scripts/update_container_tags.sh ${GITHUB_REF##*/}
@@ -38,4 +36,4 @@ jobs:
       env: 
         RUNNER: ${{ matrix.runner }}
       run: |
-        sprocket dev test --exclude-tag reference --exclude-tag slow --exclude-tag high_mem ${{ matrix.file }}
+        sprocket dev test --exclude-tag slow --exclude-tag high_mem ${{ matrix.file }}

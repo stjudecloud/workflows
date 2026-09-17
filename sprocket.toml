@@ -1,10 +1,12 @@
 [check]
-all_lint_rules = true
 except = ["ContainerUri", "TodoComment", "UnusedInput"]
 deny_notes = true
 
 [format]
 sort_inputs = true
+quote_style = "double"
+reorder_sections = true
+upgrade_deprecations = true
 
 [run.task]
 cpu_limit_behavior = "try_with_max"

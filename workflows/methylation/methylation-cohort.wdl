@@ -3,7 +3,7 @@ version 1.1
 workflow methylation_cohort {
     meta {
         description: "Process methylation data for a cohort of samples"
-        warning: "We recommend against running this workflow direcly, and would suggest instead running the `methylation` workflow defined in `./methylation-standard.wdl`."
+        warning: "We recommend against running this workflow directly, and would suggest instead running the `methylation` workflow defined in `./methylation-standard.wdl`."
         outputs: {
             combined_beta: "Matrix (in CSV format) containing beta values for every (common) probe on the array as rows and all of the input samples as columns.",
             filtered_beta: "Matrix (in CSV format) containing only beta values for the retained probes (top N highest standard deviation) for all provided samples.",
@@ -26,7 +26,7 @@ workflow methylation_cohort {
     }
 
     input {
-        Array[File] unfiltered_normalized_beta
+        Array[File]+ unfiltered_normalized_beta
         File? sex_probe_list
         File? additional_probes_to_exclude
         Array[File] p_values = []
@@ -110,10 +110,8 @@ workflow methylation_cohort {
         else None
 
     call filter_probes { input:
-        beta_values = select_first([
-            final_merge.combined_file,
-            simple_merge.combined_file,
-        ]),
+        beta_values = select_first([final_merge.combined_file, simple_merge.combined_file]
+        ),
         p_values = pval_file,
         num_probes,
         additional_probes_to_exclude = select_all([
@@ -166,16 +164,14 @@ task combine_data {
     }
 
     input {
-        Array[File] files_to_combine
+        Array[File]+ files_to_combine
         String combined_file_name = "combined.csv"
         Boolean simple_merge = false
         Int modify_memory_gb = 0
     }
 
-    Int memory_gb = ceil(size(files_to_combine, "GB") * if simple_merge
-        then 2
-        else 1
-    ) + modify_memory_gb + 2
+    Int memory_gb = ceil(size(files_to_combine, "GB") * if simple_merge then 2 else 1) + modify_memory_gb
+        + 2
     Int disk_size_gb = ceil(size(files_to_combine, "GB") * 2) + 2
 
     command <<<
@@ -183,10 +179,7 @@ task combine_data {
 
         python /scripts/methylation/combine.py \
             --output-name "~{combined_file_name}" \
-            ~{if simple_merge
-                then "--simple-merge"
-                else ""
-            } \
+            ~{if simple_merge then "--simple-merge" else ""} \
             ~{sep(" ", quote(files_to_combine))}
     >>>
 

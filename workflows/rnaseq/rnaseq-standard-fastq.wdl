@@ -69,9 +69,9 @@ workflow rnaseq_standard_fastq {
     input {
         File gtf
         File star_db
-        Array[File] read_one_fastqs_gz
+        Array[File]+ read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
-        Array[ReadGroup] read_groups
+        Array[ReadGroup]+ read_groups
         File? contaminant_db
         String prefix = sub(basename(read_one_fastqs_gz[0]), "(([_.][rR](?:ead)?[12])((?:[_.-][^_.-]*?)*?))?\\.(fastq|fq)(\\.gz)?$",
             ""  # Once replacing with capturing groups is supported, replace with group 3

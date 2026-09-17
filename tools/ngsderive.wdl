@@ -60,10 +60,7 @@ task strandedness {
         ln -s "~{gene_model}" "$CWD_GFF"
 
         ngsderive strandedness --verbose \
-            ~{if split_by_rg
-                then "--split-by-rg"
-                else ""
-            } \
+            ~{if split_by_rg then "--split-by-rg" else ""} \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
             -q ~{min_mapq} \
@@ -97,7 +94,7 @@ task instrument {
     meta {
         description: "Derives the instrument used to sequence the input BAM file. Reports evidence supporting final results."
         outputs: {
-            instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file",
+            instrument_file: "TSV file containing the `ngsderive instrument` report for the input BAM file",
             instrument_string: "The derived instrument, in string format",
         }
     }
@@ -229,7 +226,7 @@ task encoding {
     }
 
     input {
-        Array[File] ngs_files
+        Array[File]+ ngs_files
         String outfile_name
         Int num_reads = 1000000
         Int modify_disk_size_gb = 0
@@ -411,22 +408,10 @@ task endedness {
         set -euo pipefail
 
         ngsderive endedness --verbose \
-            ~{if lenient
-                then "--lenient"
-                else ""
-            } \
-            ~{if calc_rpt
-                then "-r"
-                else ""
-            } \
-            ~{if round_rpt
-                then "--round-rpt"
-                else ""
-            } \
-            ~{if split_by_rg
-                then "--split-by-rg"
-                else ""
-            } \
+            ~{if lenient then "--lenient" else ""} \
+            ~{if calc_rpt then "-r" else ""} \
+            ~{if round_rpt then "--round-rpt" else ""} \
+            ~{if split_by_rg then "--split-by-rg" else ""} \
             --paired-deviance ~{paired_deviance} \
             -n ~{num_reads} \
             "~{bam}" \

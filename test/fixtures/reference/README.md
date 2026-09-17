@@ -20,6 +20,10 @@ Unheadered 2 column TSV file containing genelengths with `gene_name` labels from
 
 Gencode v31 release GTF (or GFFv2) file, subsetted to only contain annotations for `chrY` and `chrM`. Gzipped.
 
+## gencode.v50.BCR_ABL1.transcripts.fa.gz
+
+Gencode v50 release protein-coding transcript sequences FASTA, subsetted to only contain sequences from the genes BCR and ABL1. Gzipped.
+
 ## GRCh38.chr1_chr19.dict
 
 Sequence dictionary for GRCh38 reference containing `chr1` and `chr19` only
