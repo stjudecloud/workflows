@@ -127,10 +127,7 @@ task base_recalibrator {
             BaseRecalibratorSpark \
             -R "~{fasta}" \
             -I "~{bam}" \
-            ~{if use_original_quality_scores
-                then "--use-original-qualities"
-                else ""
-            } \
+            ~{if use_original_quality_scores then "--use-original-qualities" else ""} \
             -O "~{outfile_name}" \
             --known-sites "~{dbSNP_vcf}" \
             ~{sep(" ", prefix("--known-sites ", squote(known_indels_sites_vcfs)))} \
@@ -195,10 +192,7 @@ task apply_bqsr {
             ApplyBQSRSpark \
             --spark-master local[~{ncpu}] \
             -I "~{bam}" \
-            ~{if use_original_quality_scores
-                then "--use-original-qualities"
-                else ""
-            } \
+            ~{if use_original_quality_scores then "--use-original-qualities" else ""} \
             -O "~{prefix}.bqsr.bam" \
             --bqsr-recal-file "~{recalibration_report}"
     >>>
@@ -286,7 +280,7 @@ task haplotype_caller {
             ~{if use_soft_clipped_bases
                 then ""
                 else "--dont-use-soft-clipped-bases"  # cSpell:disable-line
-            } \
+} \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
             --dbsnp "~{dbSNP_vcf}"
     >>>
@@ -342,14 +336,8 @@ task variant_filtration {
         File fasta
         File fasta_index
         File dict
-        Array[String] filter_names = [
-            "FS",
-            "QD",
-        ]
-        Array[String] filter_expressions = [
-            "FS > 30.0",
-            "QD < 2.0",
-        ]
+        Array[String] filter_names = ["FS", "QD"]
+        Array[String] filter_expressions = ["FS > 30.0", "QD < 2.0"]
         String prefix = basename(vcf, ".vcf.gz")
         Int cluster = 3
         Int window = 35
@@ -464,8 +452,7 @@ task mark_duplicates_spark {
     Int memory_gb = min(ceil(bam_size + 15), 50) + modify_memory_gb
     Int disk_size_gb = (if create_bam
         then ceil((bam_size * 2) + 10)
-        else ceil(bam_size + 10)
-    ) + modify_disk_size_gb
+        else ceil(bam_size + 10)) + modify_disk_size_gb
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -477,17 +464,13 @@ task mark_duplicates_spark {
             --java-options "-Xmx~{java_heap_size}g -XX:-UseContainerSupport" \
             -I "~{bam}" \
             -M "~{prefix}.metrics.txt" \
-            -O "~{if create_bam
-                then prefix + ".bam"
-                else "/dev/null"
-            }" \
+            -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
             --create-output-bam-index ~{create_bam} \
             --read-validation-stringency "~{validation_stringency}" \
             --duplicate-scoring-strategy "~{duplicate_scoring_strategy}" \
             --read-name-regex '~{if (optical_distance > 0)
                 then read_name_regex
-                else "null"
-            }' \
+                else "null"}' \
             --duplicate-tagging-policy "~{tagging_policy}" \
             --optical-duplicate-pixel-distance ~{optical_distance} \
             --spark-master local[~{ncpu}]

@@ -62,14 +62,8 @@ workflow rnaseq_variant_calling {
     }
 
     call gatk.split_n_cigar_reads { input:
-        bam = select_first([
-            mark_duplicates.duplicate_marked_bam,
-            bam,
-        ]),
-        bam_index = select_first([
-            mark_duplicates.duplicate_marked_bam_index,
-            bam_index,
-        ]),
+        bam = select_first([mark_duplicates.duplicate_marked_bam, bam]),
+        bam_index = select_first([mark_duplicates.duplicate_marked_bam_index, bam_index]),
         fasta,
         fasta_index,
         dict,

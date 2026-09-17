@@ -82,9 +82,7 @@ workflow read_group_to_string {
 
     input {
         ReadGroup read_group
-        Array[String] required_fields = [
-            "SM",
-        ]
+        Array[String] required_fields = ["SM"]
         Boolean format_as_sam_record = false
         Boolean restrictive = true
     }
@@ -277,10 +275,7 @@ task validate_read_group {
             fi
         fi
         if [ "$(echo "~{sep(" ", required_fields)}" | grep -Ewc "KS")" -eq 1 ]; then
-            if [ -z "~{if defined(read_group.KS)
-                then read_group.KS
-                else ""
-            }" ]; then
+            if [ -z "~{if defined(read_group.KS) then read_group.KS else ""}" ]; then
                 >&2 echo "KS is required"
                 exit_code=1
             fi
@@ -395,9 +390,7 @@ task inner_read_group_to_string {
         Boolean format_as_sam_record
     }
 
-    String delimiter = if format_as_sam_record
-        then "\\t"
-        else " "
+    String delimiter = if format_as_sam_record then "\\t" else " "
 
     command <<<
         set -euo pipefail

@@ -83,14 +83,8 @@ workflow dnaseq_core_experimental {
                 output_fastq = enable_read_trimming,
             }
         }
-        File chosen_r1_fastq = select_first([
-            trim.read_one_fastq_gz,
-            tuple.left.left,
-        ])
-        File chosen_r2_fastq = select_first([
-            trim.read_two_fastq_gz,
-            tuple.left.right,
-        ])
+        File chosen_r1_fastq = select_first([trim.read_one_fastq_gz, tuple.left.left])
+        File chosen_r2_fastq = select_first([trim.read_two_fastq_gz, tuple.left.right])
 
         call util.split_fastq as read_ones after validate { input:
             fastq = chosen_r1_fastq,
@@ -125,10 +119,7 @@ workflow dnaseq_core_experimental {
                 }
             }
             call picard.sort as sort { input:
-                bam = select_first([
-                    bwa_mem.bam,
-                    bwa_aln_pe.bam,
-                ]),
+                bam = select_first([bwa_mem.bam, bwa_aln_pe.bam]),
             }
         }
     }
@@ -145,13 +136,8 @@ workflow dnaseq_core_experimental {
     output {
         File harmonized_bam = merge.merged_bam
         File harmonized_bam_index = index.bam_index
-        Array[File] fastp_reports = select_all(flatten([
-            fastp.report,
-            trim.report,
-        ]))
-        Array[File] fastp_jsons = select_all(flatten([
-            fastp.report_json,
-            trim.report_json,
-        ]))
+        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
+        Array[File] fastp_jsons = select_all(flatten([fastp.report_json, trim.report_json]
+        ))
     }
 }

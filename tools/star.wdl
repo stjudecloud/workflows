@@ -566,11 +566,7 @@ task alignment {
         Array[File]+ read_one_fastqs_gz
         Array[String]+ read_groups
         Array[File]? read_two_fastqs_gz
-        Array[Int] out_sj_filter_intron_max_vs_read_n = [
-            50000,
-            100000,
-            200000,
-        ]
+        Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
         SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,
             GT_AG_and_CT_AC_motif: 12,
@@ -709,10 +705,7 @@ task alignment {
         Int modify_disk_size_gb = 0
     }
 
-    Array[File] read_twos = select_first([
-        read_two_fastqs_gz,
-        [],
-    ])
+    Array[File] read_twos = select_first([read_two_fastqs_gz, []])
 
     Float read_one_fastqs_size = size(read_one_fastqs_gz, "GB")
     Float read_two_fastqs_size = size(read_twos, "GB")
@@ -778,30 +771,24 @@ task alignment {
             ]))} \
             --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{if (length(read_twos) != 0)
                 then "'" + clip_3p_adapter_seq.right + "'"
-                else ""
-            } \
+                else ""} \
             --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{if (length(read_twos) != 0)
                 then clip_3p_adapter_mmp.right
-                else None
-            } \
+                else None} \
             --alignEndsProtrude ~{align_ends_protrude.left} "~{if (length(read_twos) != 0)
                 then align_ends_protrude.right
-                else None
-            }" \
+                else None}" \
             --clip3pNbases ~{clip_3p_n_bases.left} ~{if (length(read_twos) != 0)
                 then clip_3p_n_bases.right
-                else None
-            } \
+                else None} \
             --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{if (length(
                 read_twos
             ) != 0)
                 then clip_3p_after_adapter_n_bases.right
-                else None
-            } \
+                else None} \
             --clip5pNbases ~{clip_5p_n_bases.left} ~{if (length(read_twos) != 0)
                 then clip_5p_n_bases.right
-                else None
-            } \
+                else None} \
             --readNameSeparator "~{read_name_separator}" \
             --clipAdapterType "~{clip_adapter_type}" \
             --outSAMstrandField "~{out_sam_strand_field}" \
@@ -813,8 +800,7 @@ task alignment {
                 then "1"
                 else if (out_sam_tlen == "left_any")
                 then "2"
-                else "error"
-            } \
+                else "error"} \
             --outFilterType "~{out_filter_type}" \
             --outFilterIntronMotifs "~{out_filter_intron_motifs}" \
             --outFilterIntronStrands "~{out_filter_intron_strands}" \

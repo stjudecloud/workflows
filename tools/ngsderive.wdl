@@ -60,10 +60,7 @@ task strandedness {
         ln -s "~{gene_model}" "$CWD_GFF"
 
         ngsderive strandedness --verbose \
-            ~{if split_by_rg
-                then "--split-by-rg"
-                else ""
-            } \
+            ~{if split_by_rg then "--split-by-rg" else ""} \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
             -q ~{min_mapq} \
@@ -402,31 +399,17 @@ task endedness {
     }
 
     Float bam_size = size(bam, "GB")
-    Int memory_gb = if calc_rpt
-        then (ceil(bam_size * 2.5) + 4 + modify_memory_gb)
-        else 4
+    Int memory_gb = if calc_rpt then (ceil(bam_size * 2.5) + 4 + modify_memory_gb) else 4
     Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
 
         ngsderive endedness --verbose \
-            ~{if lenient
-                then "--lenient"
-                else ""
-            } \
-            ~{if calc_rpt
-                then "-r"
-                else ""
-            } \
-            ~{if round_rpt
-                then "--round-rpt"
-                else ""
-            } \
-            ~{if split_by_rg
-                then "--split-by-rg"
-                else ""
-            } \
+            ~{if lenient then "--lenient" else ""} \
+            ~{if calc_rpt then "-r" else ""} \
+            ~{if round_rpt then "--round-rpt" else ""} \
+            ~{if split_by_rg then "--split-by-rg" else ""} \
             --paired-deviance ~{paired_deviance} \
             -n ~{num_reads} \
             "~{bam}" \
