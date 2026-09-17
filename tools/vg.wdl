@@ -71,6 +71,7 @@ task giraffe {
     )) + ceil(size(zipcode_name, "GB")) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
         vg giraffe \
             -t ~{threads} \
             -Z "~{gbz_graph}" \

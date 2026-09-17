@@ -445,6 +445,7 @@ task read_group_to_array {
     String delimiter = "\n"
 
     command <<<
+        set -euo pipefail
         {
             echo -n "~{"ID:" + read_group.ID}"  # required field. All others optional
             echo -n "~{delimiter + "BC:" + read_group.BC}"

@@ -190,10 +190,9 @@ task base_recalibrator {
         File dict
         #@ except: SnakeCase
         File dbSNP_vcf
-        #@ except: SnakeCase, UnusedInput
+        #@ except: SnakeCase
         File dbSNP_vcf_index
         Array[File] known_indels_sites_vcfs
-        #@ except: UnusedInput
         Array[File] known_indels_sites_indices
         String outfile_name = basename(bam, ".bam") + ".recal.txt"
         Boolean use_original_quality_scores = false
@@ -679,7 +678,6 @@ task apply_vqsr {
         File vcf
         File vcf_index
         File recal_file
-        #@ except: UnusedInput
         File recal_file_index
         File tranches_file
         VariantMode mode = VariantMode.SNP

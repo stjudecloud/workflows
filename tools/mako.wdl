@@ -67,8 +67,7 @@ task sort {
                 else ""
             } \
             --order "~{sort_order}" \
-            --max-memory "~{memory_gb - 5}GB" \
-            --memory-per-thread false \
+            --max-memory "~{task_mem_gb}GB" \
             --threads "~{ncpu}" \
             -i "~{bam}"
     >>>
@@ -82,7 +81,7 @@ task sort {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/mako:branch-wdl_modules-0.1.3-0"
+        container: "ghcr.io/stjudecloud/mako:0.1.3-0"
         maxRetries: 1
     }
 }

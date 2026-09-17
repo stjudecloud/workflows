@@ -28,7 +28,6 @@ task manta_germline {
         File bam
         File bam_index
         File? calling_regions_bed
-        #@ except: UnusedInput
         File? calling_regions_index
         String output_dir = "manta_output"
         Boolean exome = false
@@ -123,7 +122,6 @@ task manta_somatic {
         File normal_bam
         File normal_bam_index
         File? calling_regions_bed
-        #@ except: UnusedInput
         File? calling_regions_index
         String output_dir = "manta_output"
         Boolean exome = false
