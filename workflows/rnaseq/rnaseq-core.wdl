@@ -257,8 +257,7 @@ workflow rnaseq_core {
         prefix = basename(alignment_post.processed_bam, "bam") + (if provided_strandedness
             == ""
             then ngsderive_strandedness.strandedness_string
-            else provided_strandedness
-        ),
+            else provided_strandedness),
         pos_sorted = true,
     }
 
@@ -271,13 +270,8 @@ workflow rnaseq_core {
         File feature_counts = htseq_count.feature_counts
         File inferred_strandedness = ngsderive_strandedness.strandedness_file
         String inferred_strandedness_string = ngsderive_strandedness.strandedness_string
-        Array[File] fastp_reports = select_all(flatten([
-            fastp.report,
-            trim.report,
-        ]))
-        Array[File] fastp_jsons = select_all(flatten([
-            fastp.report_json,
-            trim.report_json,
-        ]))
+        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
+        Array[File] fastp_jsons = select_all(flatten([fastp.report_json, trim.report_json]
+        ))
     }
 }

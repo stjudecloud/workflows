@@ -195,24 +195,15 @@ workflow quality_check_standard {
         }
         if (defined(subsample.sampled_bam)) {
             call samtools.index as subsample_index { input:
-                bam = select_first([
-                    subsample.sampled_bam,
-                    "undefined",
-                ]),
+                bam = select_first([subsample.sampled_bam, "undefined"]),
                 use_all_cores,
             }
         }
     }
     # If subsampling is disabled **or** input BAM has fewer reads than
     # `subsample_n_reads` this will be `bam`
-    File post_subsample_bam = select_first([
-        subsample.sampled_bam,
-        bam,
-    ])
-    File post_subsample_bam_index = select_first([
-        subsample_index.bam_index,
-        bam_index,
-    ])
+    File post_subsample_bam = select_first([subsample.sampled_bam, bam])
+    File post_subsample_bam_index = select_first([subsample_index.bam_index, bam_index])
     String post_subsample_prefix = if (defined(subsample.sampled_bam))
         then prefix + ".subsampled"
         else prefix
@@ -243,9 +234,7 @@ workflow quality_check_standard {
         outfile_name = post_subsample_prefix + ".readlength.tsv",
     }
     call ngsderive.encoding after quickcheck { input:
-        ngs_files = [
-            post_subsample_bam,
-        ],
+        ngs_files = [post_subsample_bam],
         outfile_name = post_subsample_prefix + ".encoding.tsv",
         num_reads = -1,
     }
@@ -276,24 +265,14 @@ workflow quality_check_standard {
         }
 
         call fq.fqlint { input:
-            read_one_fastq = select_first([
-                bam_to_fastq.read_one_fastq_gz,
-                "undefined",
-            ]),
-            read_two_fastq = select_first([
-                bam_to_fastq.read_two_fastq_gz,
-                "undefined",
-            ]),
+            read_one_fastq = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
+            read_two_fastq = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
         }
         call kraken2.kraken after fqlint { input:
-            read_one_fastq_gz = select_first([
-                bam_to_fastq.read_one_fastq_gz,
-                "undefined",
-            ]),
-            read_two_fastq_gz = select_first([
-                bam_to_fastq.read_two_fastq_gz,
-                "undefined",
-            ]),
+            read_one_fastq_gz = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]
+            ),
+            read_two_fastq_gz = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]
+            ),
             db = kraken_db,
             store_sequences = store_kraken_sequences,
             prefix = post_subsample_prefix,
@@ -322,8 +301,7 @@ workflow quality_check_standard {
         }
 
         if (run_comparative_kraken) {
-            call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck after comparative_kraken_filter_validator {
-                input:
+            call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck after comparative_kraken_filter_validator { input:
                 bam = post_subsample_bam,
                 bitwise_filter = comparative_filter,
                 prefix = post_subsample_prefix + ".alt_filtered",
@@ -382,32 +360,20 @@ workflow quality_check_standard {
         call ngsderive.junction_annotation after quickcheck { input:
             bam = post_subsample_bam,
             bam_index = post_subsample_bam_index,
-            gene_model = select_first([
-                gtf,
-                "undefined",
-            ]),
+            gene_model = select_first([gtf, "undefined"]),
             prefix = post_subsample_prefix,
         }
         call ngsderive.strandedness after quickcheck { input:
             bam = post_subsample_bam,
             bam_index = post_subsample_bam_index,
-            gene_model = select_first([
-                gtf,
-                "undefined",
-            ]),
+            gene_model = select_first([gtf, "undefined"]),
             outfile_name = post_subsample_prefix + ".strandedness.tsv",
         }
         if (run_fastq_analysis) {
             call qualimap.rnaseq as qualimap_rnaseq { input:
-                bam = select_first([
-                    bam_to_fastq.collated_bam,
-                    "undefined",
-                ]),
+                bam = select_first([bam_to_fastq.collated_bam, "undefined"]),
                 prefix = post_subsample_prefix + ".qualimap_rnaseq_results",
-                gtf = select_first([
-                    gtf,
-                    "undefined",
-                ]),
+                gtf = select_first([gtf, "undefined"]),
                 name_sorted = true,
                 paired_end = true,  # INVARIANT: this workflow only supports PE data
             }
@@ -424,10 +390,7 @@ workflow quality_check_standard {
             File markdups_metrics = markdups.mark_duplicates_metrics
         }
         call markdups_post_wf.markdups_post { input:
-            markdups_bam = select_first([
-                markdups.duplicate_marked_bam,
-                "undefined",
-            ]),
+            markdups_bam = select_first([markdups.duplicate_marked_bam, "undefined"]),
             markdups_bam_index = select_first([
                 markdups.duplicate_marked_bam_index,
                 "undefined",
@@ -480,27 +443,15 @@ workflow quality_check_standard {
         ],
         regions_coverage.summary,
         select_all(regions_coverage.region_dist),
-        select_first([
-            markdups_post.mosdepth_region_summary,
-            [],
-        ]),
-        select_first([
-            markdups_post.mosdepth_region_dist,
-            [],
-        ]),
+        select_first([markdups_post.mosdepth_region_summary, []]),
+        select_first([markdups_post.mosdepth_region_dist, []]),
         (if (mark_duplicates && optical_distance > 0)
-            then [
-                markdups.mark_duplicates_metrics,
-            ]
-            else []
-        ),
+            then [markdups.mark_duplicates_metrics]
+            else []),
     ]))
 
     call multiqc_tasks.multiqc { input:
-        files = flatten([
-            multiqc_files,
-            extra_multiqc_inputs,
-        ]),
+        files = flatten([multiqc_files, extra_multiqc_inputs]),
         config = multiqc_config,
         report_name = post_subsample_prefix + ".multiqc",
     }
@@ -539,10 +490,7 @@ workflow quality_check_standard {
         File? kraken_sequences = kraken.sequences
         File? comparative_kraken_sequences = comparative_kraken.sequences
         File? junctions = junction_annotation.junctions
-        Array[File] intermediate_files = select_first([
-            optional_files,
-            [],
-        ])
+        Array[File] intermediate_files = select_first([optional_files, []])
     }
 }
 

@@ -67,10 +67,7 @@ workflow chipseq_standard_experimental {
             use_all_cores,
         }
     }
-    File selected_bam = select_first([
-        subsample.sampled_bam,
-        bam,
-    ])
+    File selected_bam = select_first([subsample.sampled_bam, bam])
 
     call read_group.get_read_groups after validate_input_bam { input:
         bam = selected_bam,
@@ -96,10 +93,7 @@ workflow chipseq_standard_experimental {
             }
         }
 
-        File chosen_fastq = select_first([
-            trim.single_end_reads_fastq_gz,
-            pair.left,
-        ])
+        File chosen_fastq = select_first([trim.single_end_reads_fastq_gz, pair.left])
 
         call seaseq_util.basicfastqstats as basic_stats { input:
             fastqfile = chosen_fastq,
@@ -170,13 +164,8 @@ workflow chipseq_standard_experimental {
         File bam_checksum = compute_checksum.md5sum
         File bam_index = samtools_index.bam_index
         File bigwig = deeptools_bam_coverage.bigwig
-        Array[File] fastp_reports = select_all(flatten([
-            fastp.report,
-            trim.report,
-        ]))
-        Array[File] fastp_jsons = select_all(flatten([
-            fastp.report_json,
-            trim.report_json,
-        ]))
+        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
+        Array[File] fastp_jsons = select_all(flatten([fastp.report_json, trim.report_json]
+        ))
     }
 }

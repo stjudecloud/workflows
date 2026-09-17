@@ -59,23 +59,14 @@ workflow alignment_post {
         call xenocp_wf.xenocp { input:
             input_bam = picard_sort.sorted_bam,
             input_bai = pre_xenocp_index.bam_index,
-            reference_tar_gz = select_first([
-                contaminant_db,
-                "",
-            ]),
-            aligner = select_first([
-                xenocp_aligner,
-                "undefined",
-            ]),
+            reference_tar_gz = select_first([contaminant_db, ""]),
+            aligner = select_first([xenocp_aligner, "undefined"]),
             skip_duplicate_marking = true,
         }
     }
     if (mark_duplicates) {
         call picard.mark_duplicates as picard_markdup { input:
-            bam = select_first([
-                xenocp.bam,
-                picard_sort.sorted_bam,
-            ]),
+            bam = select_first([xenocp.bam, picard_sort.sorted_bam]),
         }
     }
 
