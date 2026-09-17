@@ -68,7 +68,7 @@ task align {
     }
 
     requirements {
-        container: "ghcr.io/stjudecloud/bwamem2:branch-minimap2-2.3-0"
+        container: "ghcr.io/stjudecloud/bwamem2:2.3-0"
         cpu: threads
         memory: "~{4 * threads} GB"
         disks: "~{disk_size_gb} GB"
@@ -119,7 +119,7 @@ task index {
     }
 
     requirements {
-        container: "ghcr.io/stjudecloud/bwamem2:branch-minimap2-2.3-0"
+        container: "ghcr.io/stjudecloud/bwamem2:2.3-0"
         cpu: 1
         memory: "120 GB"
         disks: "~{disk_size_gb} GB"

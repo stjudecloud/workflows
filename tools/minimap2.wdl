@@ -98,7 +98,7 @@ task align {
     }
 
     requirements {
-        container: "ghcr.io/stjudecloud/minimap2:branch-minimap2-2.30-0"
+        container: "ghcr.io/stjudecloud/minimap2:2.30-0"
         cpu: threads
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
@@ -158,7 +158,7 @@ task index {
     }
 
     requirements {
-        container: "ghcr.io/stjudecloud/minimap2:branch-minimap2-2.30-0"
+        container: "ghcr.io/stjudecloud/minimap2:2.30-0"
         cpu: threads
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"

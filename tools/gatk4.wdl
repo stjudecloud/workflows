@@ -72,7 +72,7 @@ task resource_to_string {
     }
 
     requirements {
-        container: "ghcr.io/stjudecloud/util:3.0.3"
+        container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
 }

@@ -56,7 +56,7 @@ task align {
         cpu: threads
         memory: "120 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/hisat2:branch-minimap2-2.2.1-0"
+        container: "ghcr.io/stjudecloud/hisat2:2.2.1-0"
     }
 }
 
@@ -174,6 +174,6 @@ task index {
         cpu: threads
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/hisat2:branch-minimap2-2.2.1-0"
+        container: "ghcr.io/stjudecloud/hisat2:2.2.1-0"
     }
 }
