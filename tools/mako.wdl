@@ -38,7 +38,7 @@ task sort {
 
     input {
         File bam
-        String sort_order = "coordinate"
+        SortOrder sort_order = SortOrder.coordinate
         String prefix = basename(bam, ".bam") + ".sorted"
         Boolean write_index = true
         Boolean verify = false
@@ -54,7 +54,7 @@ task sort {
 
     Int task_mem_gb = max(memory_gb - 2, 2)  # Reserve 2GB for overhead
 
-    Boolean index = if sort_order == "queryname" then false else write_index
+    Boolean index = if sort_order == SortOrder.queryname then false else write_index
 
     command <<<
         set -euo pipefail
