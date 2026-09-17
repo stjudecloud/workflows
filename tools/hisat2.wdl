@@ -80,7 +80,7 @@ task index {
         repeat_snp: ""
         repeat_haplotype: ""
         bmax: "Maximum number of suffixes allowed in a block"
-        seed: "Seed for psuedo-random number generator"
+        seed: "Seed for pseudo-random number generator"
         bmaxdivn: "Maximum number of suffixes allowed in a block, expressed as a fraction of the length of the reference"
         index_base_name: "The base name for the output index files"
         force_large_index: "Force creation of a large index"
