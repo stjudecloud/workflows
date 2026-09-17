@@ -23,14 +23,10 @@ jobs:
         runner: [sprocket]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         lfs: true
-    - name: Update Rust
-      run: rustup update stable && rustup default stable
-    - name: Build Sprocket
-      run: |
-        cargo install sprocket --locked
+    - uses: stjude-rust-labs/setup-sprocket@v1
     - name: Update containers
       run: |
         ./developer_scripts/update_container_tags.sh ${GITHUB_REF##*/}
@@ -38,4 +34,4 @@ jobs:
       env: 
         RUNNER: ${{ matrix.runner }}
       run: |
-        sprocket dev test --exclude-tag reference --exclude-tag slow --exclude-tag high_mem ${{ matrix.file }}
+        sprocket dev test --exclude-tag slow --exclude-tag high_mem ${{ matrix.file }}
