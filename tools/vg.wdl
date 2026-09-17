@@ -15,7 +15,7 @@ task giraffe {
         zipcode_name: "The vg zipcode name file for the reference genome"
         distance_index: "The vg distance index file for the reference genome"
         read_two_fastq_gz: "Input gzipped FASTQ read two file to align with vg giraffe"
-        haploytype: "The haplotype information file"
+        haplotype: "The haplotype information file"
         kff: "The KFF file containing kmer counts"
         sample_name: "The sample name to include"
         read_group: "The read group"
@@ -54,7 +54,7 @@ task giraffe {
         File zipcode_name
         File distance_index
         File? read_two_fastq_gz
-        File? haploytype
+        File? haplotype
         File? kff
         String? sample_name
         String? read_group
@@ -83,7 +83,7 @@ task giraffe {
             -o "~{output_format}" \
             ~{if defined(sample_name) then "--sample \"~{sample_name}\"" else ""} \
             ~{if defined(read_group) then "--read-group \"~{read_group}\"" else ""} \
-            ~{if defined(haploytype) then "--haplotype-name \"~{haploytype}\"" else ""} \
+            ~{if defined(haplotype) then "--haplotype-name \"~{haplotype}\"" else ""} \
             ~{if defined(kff) then "--kff-name \"~{kff}\"" else ""} \
             --parameter-preset "~{preset}" \
             > "~{output_name}"
