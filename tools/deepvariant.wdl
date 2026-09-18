@@ -195,8 +195,8 @@ task deepvariant {
         File bam
         File bam_index
         Array[String] haploid_chromosomes = ["chrX", "chrY"]
-        String output_prefix = "deepvariant_output"
         DVModelType model_type = DVModelType.WGS
+        String output_prefix = "deepvariant_output"
         Boolean runtime_report = false
         Boolean vcf_stats_report = false
         Int threads = 8
