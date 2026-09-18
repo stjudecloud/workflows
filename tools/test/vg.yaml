@@ -1,0 +1,90 @@
+giraffe:
+  - name: works
+    inputs:
+      $samples:
+        read_one_fastq_gz:
+          - fastqs/test_R1.fq.gz
+          - fastqs/test_R2.fq.gz
+          - fastqs/random10k.r1.fq.gz
+          - fastqs/random10k.r2.fq.gz
+        read_two_fastq_gz:
+          - fastqs/test_R2.fq.gz
+          - null
+          - fastqs/random10k.r2.fq.gz
+          - null
+      gbz_graph:
+        - reference/GRCh38.chrY_chrM.giraffe.gbz
+      minimizer_index:
+        - reference/GRCh38.chrY_chrM.shortread.withzip.min
+      distance_index:
+        - reference/GRCh38.chrY_chrM.dist
+      zipcode_name:
+        - reference/GRCh38.chrY_chrM.shortread.zipcodes
+  - name: output_formats
+    inputs:
+      read_one_fastq_gz:
+        - fastqs/test_R1.fq.gz
+      read_two_fastq_gz:
+        - fastqs/test_R2.fq.gz
+      gbz_graph:
+        - reference/GRCh38.chrY_chrM.giraffe.gbz
+      minimizer_index:
+        - reference/GRCh38.chrY_chrM.shortread.withzip.min
+      distance_index:
+        - reference/GRCh38.chrY_chrM.dist
+      zipcode_name:
+        - reference/GRCh38.chrY_chrM.shortread.zipcodes
+      output_format:
+        - gam
+        - gaf
+        - json
+        - tsv
+        - SAM
+        - BAM
+        - CRAM
+      output_name:
+        - aligned.out
+  # chaining-based presets (chaining-sr, hifi, r10, srold) do not support
+  # paired-end reads; test all presets unpaired and the non-chaining presets paired
+  - name: presets_unpaired
+    inputs:
+      read_one_fastq_gz:
+        - fastqs/test_R1.fq.gz
+      gbz_graph:
+        - reference/GRCh38.chrY_chrM.giraffe.gbz
+      minimizer_index:
+        - reference/GRCh38.chrY_chrM.shortread.withzip.min
+      distance_index:
+        - reference/GRCh38.chrY_chrM.dist
+      zipcode_name:
+        - reference/GRCh38.chrY_chrM.shortread.zipcodes
+      preset:
+        - chaining-sr
+        - default
+        - fast
+        - hifi
+        - r10
+        - srold
+  - name: presets_paired
+    inputs:
+      read_one_fastq_gz:
+        - fastqs/test_R1.fq.gz
+      read_two_fastq_gz:
+        - fastqs/test_R2.fq.gz
+      gbz_graph:
+        - reference/GRCh38.chrY_chrM.giraffe.gbz
+      minimizer_index:
+        - reference/GRCh38.chrY_chrM.shortread.withzip.min
+      distance_index:
+        - reference/GRCh38.chrY_chrM.dist
+      zipcode_name:
+        - reference/GRCh38.chrY_chrM.shortread.zipcodes
+      preset:
+        - default
+        - fast
+index:
+  - name: works
+    tags: [ reference, slow ]
+    inputs:
+      reference_fasta:
+        - reference/GRCh38.chrY_chrM.fa

@@ -1,0 +1,95 @@
+somatic:
+  - name: works
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $normal:
+        normal_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        normal_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      $tumor:
+        tumor_bam:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
+        tumor_bam_index:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
+
+  - name: with_indel_candidates
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $normal:
+        normal_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        normal_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      $tumor:
+        tumor_bam:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
+        tumor_bam_index:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
+      $indels:
+        indel_candidates:
+          - vcfs/testY.vcf.gz
+        indel_candidates_index:
+          - vcfs/testY.vcf.gz.tbi
+
+  - name: exome_mode
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $normal:
+        normal_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        normal_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      $tumor:
+        tumor_bam:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
+        tumor_bam_index:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
+      exome:
+        - true
+
+germline:
+  - name: works
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $sample:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+
+  - name: exome_mode
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+      $sample:
+        bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      exome:
+        - true

@@ -9,6 +9,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - Added WDL implementation for Salmon (`index` and `quant` tasks) [#326](https://github.com/stjudecloud/workflows/pull/326)
+- New `bwamem2.wdl` tool wrapper for the BWA-MEM2 aligner [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `clair.wdl` tool wrapper for the Clair3 variant caller [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `deepvariant.wdl` tool wrapper for Google DeepVariant [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `manta.wdl` tool wrapper for the Manta structural variant caller [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `minimap2.wdl` tool wrapper for minimap2 [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `mutect2.wdl` tool wrapper for the GATK Mutect2 somatic variant calling workflow [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `ngsep.wdl` tool wrapper for NGSEP germline variant calling [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `strelka.wdl` tool wrapper for the Strelka2 germline and somatic variant callers [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `vg.wdl` tool wrapper for the `vg` variant graph aligner [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `gatk4` tasks `apply_vqsr`, `variant_recalibrator`, `calculate_genotype_posteriors`, `genotype_gvcfs`, and `resource_to_string`, plus `Resource` struct and `ref_confidence`/`VariantMode` enums [#282](https://github.com/stjudecloud/workflows/pull/282)
+- New `samtools.calmd` and `samtools.sort` tasks [#282](https://github.com/stjudecloud/workflows/pull/282)
+
+
+### Changed
+
+- `picard.mark_duplicates` and `picard.sort` now use a task-local `tmp/` directory for Java temp files [#282](https://github.com/stjudecloud/workflows/pull/282)
+- `arriba.arriba_extract_fusion_supporting_alignments` now localizes BAM and BAI into the task working directory before invocation [#282](https://github.com/stjudecloud/workflows/pull/282)
+
+### Fixed
+
+- `picard.create_sequence_dictionary` now correctly derives the default `outfile_name` for FASTA inputs with `.fasta`, `.fna`, or `.gz`-compressed extensions (previously only `.fa` was stripped, producing names like `genome.fa.gz.dict`) [#282](https://github.com/stjudecloud/workflows/pull/282)
 - `kraken2.wdl` `kraken` task now exposes `confidence`, `minimum_hit_groups`, and `quick` parameters [#331](https://github.com/stjudecloud/workflows/pull/331)
 - Documented previously unexposed/undocumented parameters in `star.wdl` (`outSAMtype`, `outMultimapperOrder`) and `qualimap.wdl` (`-p`) using a new `omitted_parameters` `meta` convention [#331](https://github.com/stjudecloud/workflows/pull/331)
 
