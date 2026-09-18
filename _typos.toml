@@ -2,19 +2,16 @@
 extend-exclude = []
 
 [default]
-
 [default.extend-words]
-# <typo> = "<correction>"
+BAMs = "BAMs"
+recal = "recal"
+sampe = "sampe"
 
 [default.extend-identifiers]
 FO = "FO"
-BA = "BA"
 ABL = "ABL"
 ND = "ND"
-recal = "recal"
-PN = "PN"
-sampe = "sampe"
-CAF = "CAF"
-ALLs = "ALLs"
-Alls = "ALLs"
+#PN = "PN"
+#CAF = "CAF"
+Alls = "Alls"
 
