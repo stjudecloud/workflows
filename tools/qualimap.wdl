@@ -6,7 +6,7 @@ task rnaseq {
         description: "Generates runs QualiMap's rnaseq tool on the input BAM file."
         omitted_parameters: [
             {
-                flag: "-p",
+                flag: "-p, --sequencing-protocol",
                 reason: "Used to set the strandedness protocol of the sample; in practice it only disables certain calculations. Omitted so that the full suite of calculations is always performed.",
             },
         ]

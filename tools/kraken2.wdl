@@ -306,6 +306,12 @@ task build_db {
 task kraken {
     meta {
         description: "Runs Kraken2 on a pair of fastq files"
+        omitted_parameters: [
+            {
+                flag: "--memory-mapping",
+                reason: "Would trade an unknown amount of RAM savings for slower runtime and potentially higher disk usage. WDL execution environments are rarely memory-constrained, and time is typically the more limited resource, so this tradeoff isn't worth the added complexity without further investigation.",
+            },
+        ]
         outputs: {
             report: {
                 description: "A Kraken2 summary report",
