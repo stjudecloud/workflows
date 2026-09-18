@@ -39,6 +39,7 @@ task manta_germline {
         + modify_disk_size_gb
 
     String filename = basename(bam)
+    String calling_regions_name = basename(select_first([calling_regions_bed, "unused"]))
 
     command <<<
         set -euo pipefail
@@ -51,18 +52,26 @@ task manta_germline {
         ln -s "~{bam}" "~{filename}"
         ln -s "~{bam_index}" "~{filename}.bai"
 
+        ~{if defined(calling_regions_bed) && defined(calling_regions_index)
+            then "ln -sf '~{calling_regions_bed}' '~{calling_regions_name}' && ln -sf '~{
+                calling_regions_index
+            }' '~{calling_regions_name}.tbi'"
+            else ""}
+
         configManta.py \
             --bam "~{filename}" \
             --referenceFasta "$ref_fasta" \
-            ~{if defined(calling_regions_bed)
-                then "--callRegions '" + calling_regions_bed + "'"
+            ~{if defined(calling_regions_bed) && defined(calling_regions_index)
+                then "--callRegions '" + calling_regions_name + "'"
                 else ""} \
             ~{if exome then "--exome" else ""} \
             --runDir "~{output_dir}"
 
         "~{output_dir}/runWorkflow.py" -j "~{threads}"
 
-        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{filename}" "~{filename}.bai"
+        rm -rf "$ref_fasta" "$ref_fasta.fai" "~{filename}" "~{filename}.bai" "~{
+            calling_regions_name
+        }" "~{calling_regions_name}.tbi"
     >>>
 
     output {
@@ -130,6 +139,7 @@ task manta_somatic {
 
     String tumor = basename(tumor_bam)
     String normal = basename(normal_bam)
+    String calling_regions_name = basename(select_first([calling_regions_bed, "unused"]))
 
     command <<<
         set -euo pipefail
@@ -144,13 +154,19 @@ task manta_somatic {
         ln -sf "~{normal_bam}" "~{normal}"
         ln -sf "~{normal_bam_index}" "~{normal}.bai"
 
+        ~{if defined(calling_regions_bed) && defined(calling_regions_index)
+            then "ln -sf '~{calling_regions_bed}' '~{calling_regions_name}' && ln -sf '~{
+                calling_regions_index
+            }' '~{calling_regions_name}.tbi'"
+            else ""}
+
         configManta.py \
             --normalBam "~{normal}" \
             --tumorBam "~{tumor}" \
             --referenceFasta "$ref_fasta" \
             ~{if exome then "--exome" else ""} \
-            ~{if defined(calling_regions_bed)
-                then "--callRegions '" + calling_regions_bed + "'"
+            ~{if defined(calling_regions_bed) && defined(calling_regions_index)
+                then "--callRegions '" + calling_regions_name + "'"
                 else ""} \
             --runDir "~{output_dir}"
 
@@ -158,7 +174,7 @@ task manta_somatic {
 
         rm -rf "$ref_fasta" "$ref_fasta.fai" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{
             normal
-        }.bai"
+        }.bai" "~{calling_regions_name}" "~{calling_regions_name}.tbi"
     >>>
 
     output {

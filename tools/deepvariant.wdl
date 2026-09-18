@@ -15,6 +15,16 @@ enum ModelType {
     ONT_TUMOR_ONLY,
 }
 
+enum DVModelType {
+    WGS,
+    WES,
+    PACBIO,
+    ONT_R104,
+    HYBRID_PACBIO_ILLUMINA,
+    MASSEQ,
+    RNASEQ,
+}
+
 task deepsomatic {
     meta {
         description: "Call variants using DeepSomatic"
@@ -167,15 +177,10 @@ task deepvariant {
                 "WGS",
                 "WES",
                 "PACBIO",
-                "ONT",
-                "FFPE_WGS",
-                "FFPE_WES",
-                "FFPE_WGS_TUMOR_ONLY",
-                "FFPE_WES_TUMOR_ONLY",
-                "WGS_TUMOR_ONLY",
-                "WES_TUMOR_ONLY",
-                "PACBIO_TUMOR_ONLY",
-                "ONT_TUMOR_ONLY",
+                "ONT_R104",
+                "HYBRID_PACBIO_ILLUMINA",
+                "MASSEQ",
+                "RNASEQ",
             ],
         }
         runtime_report: "Output make_examples_somatic runtime metrics and create a visual runtime report using runtime_by_region_vis."
@@ -190,8 +195,8 @@ task deepvariant {
         File bam
         File bam_index
         Array[String] haploid_chromosomes = ["chrX", "chrY"]
-        String output_prefix = "deepsomatic_output"
-        String model_type = "WGS"
+        String output_prefix = "deepvariant_output"
+        DVModelType model_type = DVModelType.WGS
         Boolean runtime_report = false
         Boolean vcf_stats_report = false
         Int threads = 8

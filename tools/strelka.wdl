@@ -52,6 +52,7 @@ task somatic {
 
     String tumor = basename(tumor_bam)
     String normal = basename(normal_bam)
+    String indel_candidates_name = basename(select_first([indel_candidates, "unused"]))
 
     command <<<
         set -euo pipefail
@@ -66,6 +67,12 @@ task somatic {
         ln -sf "~{normal_bam}" "~{normal}"
         ln -sf "~{normal_bam_index}" "~{normal}.bai"
 
+        ~{if defined(indel_candidates) && defined(indel_candidates_index)
+            then "ln -sf '~{indel_candidates}' '~{indel_candidates_name}' && ln -sf '~{
+                indel_candidates_index
+            }' '~{indel_candidates_name}.tbi'"
+            else ""}
+
         configureStrelkaSomaticWorkflow.py \
             --referenceFasta "$ref_fasta" \
             --runDir "~{output_dir}" \
@@ -73,8 +80,8 @@ task somatic {
             --normalBam "~{normal}" \
             ~{if (exome) then "--exome" else ""} \
             ~{if (rna) then "--rna" else ""} \
-            ~{(if (defined(indel_candidates))
-                then "--indelCandidates '~{indel_candidates}'"
+            ~{(if (defined(indel_candidates) && defined(indel_candidates_index))
+                then "--indelCandidates '~{indel_candidates_name}'"
                 else "")}
 
 
@@ -82,7 +89,7 @@ task somatic {
 
         rm -rf "$ref_fasta" "$ref_fasta.fai" "~{tumor}" "~{tumor}.bai" "~{normal}" "~{
             normal
-        }.bai"
+        }.bai" "~{indel_candidates_name}" "~{indel_candidates_name}.tbi"
     >>>
 
     output {

@@ -39,7 +39,6 @@ task germline_variant {
             -r "$ref_fasta" \
             -i "~{bam}" \
             -o "~{output_prefix}"
-            # -t "~{threads}"
 
         rm -rf "$ref_fasta"
     >>>

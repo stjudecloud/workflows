@@ -69,7 +69,7 @@ task sort {
     >>>
 
     output {
-        File sorted_bam = outfile_name
+        File? sorted_bam = outfile_name
         File? sorted_bam_index = outfile_name + ".bai"
     }
 
