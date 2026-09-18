@@ -12,6 +12,26 @@ enum platform {
     hifi_revio,
 }
 
+enum clair3_model {
+    hifi
+    hifi_sequel2
+    ont
+    r1041_e82_400bps_hac_v410
+    r1041_e82_400bps_hac_v520_with_mv
+    r1041_e82_400bps_sup_v410
+    r1041_e82_400bps_sup_v500
+    r1041_e82_400bps_sup_with_mv
+    r941_prom_sup_g5014
+    hifi_revio
+    ilmn
+    ont_guppy5
+    r1041_e82_400bps_hac_v500
+    r1041_e82_400bps_hac_with_mv
+    r1041_e82_400bps_sup_v430_bacteria_finetuned
+    r1041_e82_400bps_sup_v520_with_mv
+    r941_prom_hac_g360+g422
+}
+
 task clair3 {
     meta {
         description: "Run Clair3 variant caller for small variants using deep neural networks"
@@ -27,7 +47,9 @@ task clair3 {
         reference_fasta_index: "Index file for the reference genome FASTA"
         bam: "Input BAM file with aligned reads"
         bam_index: "Index file for the input BAM file"
-        model: "Pre-trained Clair3 model to use for variant calling"
+        model: {
+            description: "Pre-trained Clair3 model to use for variant calling",
+        }
         bed_regions: "Optional BED file specifying regions to call variants in"
         vcf_candidates: "Optional VCF file with candidate variants to consider"
         contigs: "Optional list of contigs to call variants in. If undefined, all contigs in the reference FASTA will be considered."
@@ -52,7 +74,7 @@ task clair3 {
         File reference_fasta_index
         File bam
         File bam_index
-        String model
+        clair3_model model = clair3_model.ilmn
         File? bed_regions
         File? vcf_candidates
         Array[String] contigs = []
