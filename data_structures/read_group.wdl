@@ -27,19 +27,6 @@
 ## - `PU`: Platform unit (e.g., flowcell-barcode.lane for Illumina or slide
 ##     for SOLiD). Unique identifier.
 ## - `SM`: Sample. Use pool name where a pool is being sequenced.
-##
-## An example input JSON entry for `read_group` might look like this:
-## ```
-## {
-##     "read_group": {
-##         "ID": "rg1",
-##         "PI": 150,
-##         "PL": "ILLUMINA",
-##         "SM": "Sample",
-##         "LB": "Sample"
-##     }
-## }
-## ```
 version 1.1
 
 #@ except: SnakeCase
@@ -66,7 +53,8 @@ workflow read_group_to_string {
         description: "Validates a `ReadGroup` struct is well-formed and then converts it to a `String`"
         category: "Utility"
         outputs: {
-            validated_read_group: "The validated input `ReadGroup` as a `String`",
+            validated_read_group: "The validated input `ReadGroup` as a `String`. Empty string if `split_on_field == true`.",
+            validated_read_group_array: "The validated input `ReadGroup` as an `Array[String]`, one entry per field. Empty array if `split_on_field == false`.",
         }
     }
 
@@ -75,8 +63,9 @@ workflow read_group_to_string {
         required_fields: "Array of read group fields that must be defined. The ID field is always required and does not need to be specified."
         format_as_sam_record: {
             description: "Format the `ReadGroup` as a SAM record?",
-            help: "If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters.",
+            help: "If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters. Takes precedence over `split_on_field`.",
         }
+        split_on_field: "Split the ReadGroup into separate array elements, one per field, instead of a single `String`. Ignored if `format_as_sam_record == true`."
         restrictive: "If true, run a stricter validation of field values. Otherwise, check against SAM spec-defined values."
     }
 
@@ -84,6 +73,7 @@ workflow read_group_to_string {
         ReadGroup read_group
         Array[String] required_fields = ["SM"]
         Boolean format_as_sam_record = false
+        Boolean split_on_field = false
         Boolean restrictive = true
     }
 
@@ -95,12 +85,17 @@ workflow read_group_to_string {
     call inner_read_group_to_string after validate_read_group { input:
         read_group,
         format_as_sam_record,
+        split_on_field,
     }
 
     output {
         String validated_read_group = select_first([
             inner_read_group_to_string.stringified_read_group,
             "",
+        ])
+        Array[String] validated_read_group_array = select_first([
+            inner_read_group_to_string.read_group_array,
+            [],
         ])
     }
 }
@@ -376,8 +371,8 @@ task inner_read_group_to_string {
         description: "Converts a `ReadGroup` struct to a `String` **without any validation**."
         warning: "Please use the `read_group_to_string` workflow, which has validation of the `ReadGroup` contents."
         outputs: {
-            stringified_read_group: "Input `ReadGroup` as a string",
-            read_group_array: "Input `ReadGroup` as an `Array[String]`",
+            stringified_read_group: "Input `ReadGroup` as a string. Undefined if `split_on_field == true`.",
+            read_group_array: "Input `ReadGroup` as an `Array[String]`. Undefined if `split_on_field == false`.",
         }
     }
 
@@ -427,8 +422,12 @@ task inner_read_group_to_string {
     >>>
 
     output {
-        String? stringified_read_group = read_string("out.txt")
-        Array[String]? read_group_array = read_lines("out.txt")
+        String? stringified_read_group = if split_on_field
+            then None
+            else read_string("out.txt")
+        Array[String]? read_group_array = if split_on_field
+            then read_lines("out.txt")
+            else None
     }
 
     runtime {
