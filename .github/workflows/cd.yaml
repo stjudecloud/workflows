@@ -28,3 +28,9 @@ jobs:
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./workflows/docs
+          # `gh-pages` only ever needs to serve the latest build; without
+          # `force_orphan`, every push to `main` appends a full doc-site
+          # rebuild to `gh-pages`'s history, which has bloated the branch to
+          # multiple GB of near-duplicate generated HTML. Force-pushing a
+          # single orphan commit each deploy keeps that branch's history flat.
+          force_orphan: true
