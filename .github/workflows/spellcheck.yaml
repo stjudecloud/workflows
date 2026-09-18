@@ -7,11 +7,6 @@ jobs:
   spellcheck: # run the action
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-        with:
-          persist-credentials: false
-      - uses: streetsidesoftware/cspell-action@v8
-        with:
-          suggestions: true
-          strict: true
-          incremental_files_only: false
+    - name: Spell Check Repo
+      uses: actions/checkout@v7
+      uses: crate-ci/typos@v1  # or v1.50.2
