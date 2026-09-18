@@ -77,7 +77,7 @@ task sort {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "ghcr.io/stjudecloud/mako:0.1.3-0"
+        container: "quay.io/biocontainers/fg-mako:0.1.7--h7296c89_0"
         maxRetries: 1
     }
 }

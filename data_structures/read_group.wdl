@@ -29,7 +29,7 @@
 ## - `SM`: Sample. Use pool name where a pool is being sequenced.
 ##
 ## An example input JSON entry for `read_group` might look like this:
-## ```json
+## ```
 ## {
 ##     "read_group": {
 ##         "ID": "rg1",
@@ -98,7 +98,10 @@ workflow read_group_to_string {
     }
 
     output {
-        String validated_read_group = inner_read_group_to_string.stringified_read_group
+        String validated_read_group = select_first([
+            inner_read_group_to_string.stringified_read_group,
+            "",
+        ])
     }
 }
 
@@ -374,6 +377,7 @@ task inner_read_group_to_string {
         warning: "Please use the `read_group_to_string` workflow, which has validation of the `ReadGroup` contents."
         outputs: {
             stringified_read_group: "Input `ReadGroup` as a string",
+            read_group_array: "Input `ReadGroup` as an `Array[String]`",
         }
     }
 
@@ -381,16 +385,22 @@ task inner_read_group_to_string {
         read_group: "`ReadGroup` struct to stringify"
         format_as_sam_record: {
             description: "Format the `ReadGroup` as a SAM record?",
-            help: "If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters.",
+            help: "If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters. Takes precedence over `split_on_field`.",
         }
+        split_on_field: "Split the ReadGroup into separate lines for each field. Ignored if `format_as_sam_record == true`."
     }
 
     input {
         ReadGroup read_group
-        Boolean format_as_sam_record
+        Boolean format_as_sam_record = false
+        Boolean split_on_field = false
     }
 
-    String delimiter = if format_as_sam_record then "\\t" else " "
+    String delimiter = if format_as_sam_record
+        then "\\t"
+        else if split_on_field
+        then "\n"
+        else " "
 
     command <<<
         set -euo pipefail
@@ -417,55 +427,8 @@ task inner_read_group_to_string {
     >>>
 
     output {
-        String stringified_read_group = read_string("out.txt")
-    }
-
-    runtime {
-        container: "ghcr.io/stjudecloud/util:3.0.4"
-        maxRetries: 1
-    }
-}
-
-task read_group_to_array {
-    meta {
-        description: "Converts a `ReadGroup` struct to a `Array[String]` **without any validation**."
-        outputs: {
-            converted_read_group: "Input `ReadGroup` as a `Array[String]`",
-        }
-    }
-
-    parameter_meta {
-        read_group: "`ReadGroup` struct to convert to array"
-    }
-
-    input {
-        ReadGroup read_group
-    }
-
-    String delimiter = "\n"
-
-    command <<<
-        set -euo pipefail
-        {
-            echo -n "~{"ID:" + read_group.ID}"  # required field. All others optional
-            echo -n "~{delimiter + "BC:" + read_group.BC}"
-            echo -n "~{delimiter + "CN:" + read_group.CN}"
-            echo -n "~{delimiter + "DS:" + read_group.DS}"
-            echo -n "~{delimiter + "DT:" + read_group.DT}"
-            echo -n "~{delimiter + "FO:" + read_group.FO}"
-            echo -n "~{delimiter + "KS:" + read_group.KS}"
-            echo -n "~{delimiter + "LB:" + read_group.LB}"
-            echo -n "~{delimiter + "PG:" + read_group.PG}"
-            echo -n "~{delimiter + "PI:" + read_group.PI}"
-            echo -n "~{delimiter + "PL:" + read_group.PL}"
-            echo -n "~{delimiter + "PM:" + read_group.PM}"
-            echo -n "~{delimiter + "PU:" + read_group.PU}"
-            echo "~{delimiter + "SM:" + read_group.SM}"
-        } >> out.txt
-    >>>
-
-    output {
-        Array[String] converted_read_group = read_lines("out.txt")
+        String? stringified_read_group = read_string("out.txt")
+        Array[String]? read_group_array = read_lines("out.txt")
     }
 
     runtime {

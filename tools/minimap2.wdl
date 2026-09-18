@@ -1,4 +1,4 @@
-version 1.2
+version 1.3
 
 task align {
     meta {
@@ -42,7 +42,7 @@ task align {
         soft_clip: "If true, use soft clipping for secondary alignments in SAM format"
         secondary_alignments: "If true, report secondary alignments"
         seed: "Seed value for the minimap2 aligner"
-        threads: "Number of threads to use for alignment"
+        ncpu: "Number of threads to use for alignment"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
     }
 
@@ -61,7 +61,7 @@ task align {
         Boolean soft_clip = false
         Boolean secondary_alignments = false
         Int seed = 11
-        Int threads = 3
+        Int ncpu = 3
         Int modify_disk_size_gb = 0
     }
 
@@ -80,7 +80,7 @@ task align {
             ~{if eqx then "-X" else ""} \
             ~{if soft_clip then "-Y" else ""} \
             ~{if secondary_alignments then "--secondary=yes" else "--secondary=no"} \
-            -t ~{threads} \
+            -t ~{ncpu} \
             --seed ~{seed} \
             -R "~{read_group}" \
             "~{reference_index}" \
@@ -99,7 +99,7 @@ task align {
 
     requirements {
         container: "ghcr.io/stjudecloud/minimap2:2.30-0"
-        cpu: threads
+        cpu: ncpu
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
     }
@@ -119,7 +119,7 @@ task index {
         index_name: "The name of the output index file"
         minimizer_kmer_size: "K-mer size for minimizer indexing"
         minimizer_window_size: "Window size for minimizer indexing"
-        threads: "Number of threads to use for indexing"
+        ncpu: "Number of threads to use for indexing"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
     }
 
@@ -129,7 +129,7 @@ task index {
         String index_name = "reference.mmi"
         Int minimizer_kmer_size = 15
         Int minimizer_window_size = 10
-        Int threads = 3
+        Int ncpu = 3
         Int modify_disk_size_gb = 0
     }
 
@@ -146,7 +146,7 @@ task index {
             -k ~{minimizer_kmer_size} \
             -w ~{minimizer_window_size} \
             ~{if defined(alt_contigs) then "--alt \"~{alt_contigs}\"" else ""} \
-            -t ~{threads} \
+            -t ~{ncpu} \
             -d "~{index_name}" \
             "$ref_fasta"
 
@@ -159,7 +159,7 @@ task index {
 
     requirements {
         container: "ghcr.io/stjudecloud/minimap2:2.30-0"
-        cpu: threads
+        cpu: ncpu
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
     }

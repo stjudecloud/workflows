@@ -12,7 +12,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - New `bwamem2.wdl` tool wrapper for the BWA-MEM2 aligner [#282](https://github.com/stjudecloud/workflows/pull/282)
 - New `clair.wdl` tool wrapper for the Clair3 variant caller [#282](https://github.com/stjudecloud/workflows/pull/282)
 - New `deepvariant.wdl` tool wrapper for Google DeepVariant [#282](https://github.com/stjudecloud/workflows/pull/282)
-- New `hisat2.wdl` tool wrapper for HISAT2 (tasks marked deprecated on introduction) [#282](https://github.com/stjudecloud/workflows/pull/282)
 - New `manta.wdl` tool wrapper for the Manta structural variant caller [#282](https://github.com/stjudecloud/workflows/pull/282)
 - New `minimap2.wdl` tool wrapper for minimap2 [#282](https://github.com/stjudecloud/workflows/pull/282)
 - New `mutect2.wdl` tool wrapper for the GATK Mutect2 somatic variant calling workflow [#282](https://github.com/stjudecloud/workflows/pull/282)

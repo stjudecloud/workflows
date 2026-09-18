@@ -236,7 +236,7 @@ task bwa_mem {
     )
 
     command <<<
-        set -xeuo pipefail
+        set -euo pipefail
 
         n_cores=~{ncpu}
         if ~{use_all_cores}; then

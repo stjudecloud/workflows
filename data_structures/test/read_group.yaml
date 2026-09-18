@@ -91,3 +91,66 @@ get_read_groups:
         - bams/Aligned.sortedByCoord.chr9_chr22.bam
         - bams/test_rnaseq_variant.bam
         - bams/test.bam
+
+inner_read_group_to_string:
+  - name: space_delimited
+    inputs:
+      read_group:
+        - ID: R1
+          SM: sampleFoo
+    assertions:
+      outputs:
+        stringified_read_group:
+          - StrEquals: "ID:R1 SM:sampleFoo"
+        read_group_array:
+          - Length: 1
+          - First:
+              StrEquals: "ID:R1 SM:sampleFoo"
+  - name: sam_record
+    inputs:
+      read_group:
+        - ID: R1
+          SM: sampleFoo
+      format_as_sam_record:
+        - true
+    assertions:
+      outputs:
+        stringified_read_group:
+          - Contains: "@RG"
+          - Contains: "ID:R1"
+          - Contains: "SM:sampleFoo"
+        read_group_array:
+          - Length: 1
+  - name: split_on_field
+    inputs:
+      read_group:
+        - ID: R1
+          SM: sampleFoo
+      split_on_field:
+        - true
+    assertions:
+      outputs:
+        stringified_read_group:
+          - Contains: "ID:R1"
+          - Contains: "SM:sampleFoo"
+        read_group_array:
+          - Length: 2
+          - First:
+              StrEquals: "ID:R1"
+          - Last:
+              StrEquals: "SM:sampleFoo"
+  - name: sam_record_takes_precedence_over_split_on_field
+    inputs:
+      read_group:
+        - ID: R1
+          SM: sampleFoo
+      format_as_sam_record:
+        - true
+      split_on_field:
+        - true
+    assertions:
+      outputs:
+        stringified_read_group:
+          - Contains: "@RG"
+        read_group_array:
+          - Length: 1

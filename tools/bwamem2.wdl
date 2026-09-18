@@ -16,7 +16,7 @@ task align {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         smart_pairing: "If true, enable smart pairing mode for paired-end reads"
         skip_mate_rescue: "If true, skip mate rescue for paired-end reads"
-        threads: "Number of threads to use for alignment"
+        ncpu: "Number of threads to use for alignment"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
         seed_length: "Seed value for the BWA-MEM2 aligner"
         min_score: "Minimum score threshold for reporting alignments"
@@ -31,10 +31,10 @@ task align {
             "")
         Boolean smart_pairing = false
         Boolean skip_mate_rescue = false
-        Int threads = 4
-        Int modify_disk_size_gb = 0
         Int seed_length = 19
         Int min_score = 30
+        Int ncpu = 4
+        Int modify_disk_size_gb = 0
     }
 
     String output_name = prefix + ".bam"
@@ -49,7 +49,7 @@ task align {
         PREFIX=$(basename bwa_db/*.ann ".ann")
 
         bwa-mem2 mem \
-            -t ~{threads} \
+            -t ~{ncpu} \
             -R "~{read_group}" \
             -k ~{seed_length} \
             -T ~{min_score} \
@@ -69,8 +69,8 @@ task align {
 
     requirements {
         container: "ghcr.io/stjudecloud/bwamem2:2.3-0"
-        cpu: threads
-        memory: "~{4 * threads} GB"
+        cpu: ncpu
+        memory: "~{4 * ncpu} GB"
         disks: "~{disk_size_gb} GB"
     }
 }

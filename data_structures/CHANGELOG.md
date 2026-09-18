@@ -4,11 +4,11 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## 2026 May
+## 2026 September
 
-### Added
+### Changed
 
-- New `read_group.read_group_to_array` task to convert a `ReadGroup` struct to `Array[String]` [#282](https://github.com/stjudecloud/workflows/pull/282)
+- `read_group.inner_read_group_to_string` can now convert a `ReadGroup` struct to `Array[String]` when `split_on_field == true`[#282](https://github.com/stjudecloud/workflows/pull/282)
 
 ## 2026 February
 

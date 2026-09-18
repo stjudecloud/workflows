@@ -43,7 +43,7 @@ task giraffe {
                 "srold",
             ],
         }
-        threads: "Number of threads to use for alignment"
+        ncpu: "Number of threads to use for alignment"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
     }
 
@@ -61,7 +61,7 @@ task giraffe {
         String output_name = "aligned.bam"
         String output_format = "BAM"
         String preset = "default"
-        Int threads = 4
+        Int ncpu = 4
         Int modify_disk_size_gb = 0
     }
 
@@ -73,7 +73,7 @@ task giraffe {
     command <<<
         set -euo pipefail
         vg giraffe \
-            -t ~{threads} \
+            -t ~{ncpu} \
             -Z "~{gbz_graph}" \
             -m "~{minimizer_index}" \
             -d "~{distance_index}" \
@@ -95,7 +95,7 @@ task giraffe {
 
     requirements {
         container: "quay.io/biocontainers/vg:1.70.0--h9ee0642_0"
-        cpu: threads
+        cpu: ncpu
         memory: "60 GB"
         disks: "~{disk_size_gb} GB"
     }
@@ -128,7 +128,7 @@ task index {
             ],
         }
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
-        threads: "Number of threads to use for indexing"
+        ncpu: "Number of threads to use for indexing"
     }
 
     input {
@@ -140,7 +140,7 @@ task index {
         String gff_id_tag = "transcript_id"
         String autoindex_workflow = "giraffe"
         Int modify_disk_size_gb = 0
-        Int threads = 4
+        Int ncpu = 4
     }
 
     Float input_fasta_size = size(reference_fasta, "GB")
@@ -163,7 +163,7 @@ task index {
             -p "~{db_prefix}" \
             ~{sep(" ", prefix("-v ", quote(vcf_files)))} \
             ~{sep(" ", prefix("-x ", quote(transcript_gff)))} \
-            -t ~{threads} \
+            -t ~{ncpu} \
             --gff-feature "~{gff_feature}" \
             --gff-tx-tag "~{gff_id_tag}"
     >>>
@@ -174,7 +174,7 @@ task index {
 
     requirements {
         container: "quay.io/biocontainers/vg:1.70.0--h9ee0642_0"
-        cpu: threads
+        cpu: ncpu
         memory: "120 GB"
         disks: "~{disk_size_gb} GB"
     }

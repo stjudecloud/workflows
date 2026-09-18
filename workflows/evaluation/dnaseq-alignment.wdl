@@ -1,4 +1,4 @@
-version 1.2
+version 1.3
 
 import "../../data_structures/read_group.wdl" as read_group_ds
 import "../../tools/bwa.wdl" as bwa
@@ -39,7 +39,7 @@ workflow align {
         read_group: "The read group to be included in the SAM header"
         read_two_fastq_gz: "Input gzipped FASTQ read two file to align (for paired-end data)"
         output_prefix: "Output file prefix for aligned reads"
-        threads: "Number of threads to use for alignment"
+        ncpu: "Number of threads to use for alignment"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
     }
 
@@ -56,7 +56,7 @@ workflow align {
         ReadGroup read_group
         File? read_two_fastq_gz
         String output_prefix = "aligned_output"
-        Int threads = 30
+        Int ncpu = 30
         Int modify_disk_size_gb = 0
     }
 
@@ -70,7 +70,7 @@ workflow align {
         read_two_fastq_gz,
         reference_index = bwamem2_reference,
         prefix = "~{output_prefix}_bwamem2",
-        threads,
+        ncpu,
         modify_disk_size_gb,
         read_group = read_group_string.validated_read_group,
     }
@@ -89,18 +89,19 @@ workflow align {
         distance_index = giraffe_distance_index,
         output_name = "~{output_prefix}_vg.bam",
         output_format = "BAM",
-        threads,
+        ncpu,
         modify_disk_size_gb,
     }
 
-    call read_group_ds.read_group_to_array {
+    call read_group_ds.inner_read_group_to_string {
         read_group,
+        split_on_field = true,
     }
 
     call samtools.addreplacerg {
         bam = vg_giraffe.alignments,
         orphan_only = false,
-        read_group_line = read_group_to_array.converted_read_group,
+        read_group_line = inner_read_group_to_string.read_group_array,
     }
     call samtools.calmd {
         bam = addreplacerg.tagged_bam,
@@ -117,7 +118,7 @@ workflow align {
         read_two_fastq_gz,
         reference_index = minimap2_reference,
         output_name = "~{output_prefix}_minimap2.bam",
-        threads,
+        ncpu,
         modify_disk_size_gb,
         read_group = read_group_string.validated_read_group,
     }
@@ -132,7 +133,7 @@ workflow align {
         read_two_fastq_gz,
         bwa_db_tar_gz = bwamem_reference,
         prefix = "~{output_prefix}_bwa",
-        ncpu = threads,
+        ncpu,
         modify_disk_size_gb,
         read_group = read_group_string.validated_read_group,
     }
