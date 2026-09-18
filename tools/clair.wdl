@@ -102,8 +102,8 @@ task clair3 {
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
         # Clair-3 resolves the BAM path...
-        cp "~{bam}" "~{filename}"
-        cp "~{bam_index}" "~{filename}.bai"
+        ln -s  "~{bam}" "~{filename}"
+        ln -s  "~{bam_index}" "~{filename}.bai"
 
         run_clair3.sh \
             --bam_fn="~{filename}" \
@@ -129,7 +129,7 @@ task clair3 {
     }
 
     requirements {
-        container: "hkubal/clair3:v2.0.0"
+        container: "hkubal/clair3:v2.0.3"
         cpu: ncpu
         memory: "64 GB"
         disks: "~{disk_size_gb} GB"
@@ -231,10 +231,10 @@ task clairs {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
         ln -sf "~{reference_fasta_index}" "$ref_fasta.fai"
 
-        cp "~{tumor_bam}" "~{tumor}"
-        cp "~{tumor_bam_index}" "~{tumor}.bai"
-        cp "~{normal_bam}" "~{normal}"
-        cp "~{normal_bam_index}" "~{normal}.bai"
+        ln -s "~{tumor_bam}" "~{tumor}"
+        ln -s "~{tumor_bam_index}" "~{tumor}.bai"
+        ln -s "~{normal_bam}" "~{normal}"
+        ln -s "~{normal_bam_index}" "~{normal}.bai"
 
         #@except: ShellCheck
         run_clairs \
@@ -282,7 +282,7 @@ task clairs {
     }
 
     requirements {
-        container: "hkubal/clairs:v0.4.4"
+        container: "hkubal/clairs:v0.5.1"
         cpu: ncpu
         memory: "64 GB"
         disks: "~{disk_size_gb} GB"
