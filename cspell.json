@@ -218,6 +218,7 @@
         "Nanopore",
         "PACBIO",
         "unpatterned",
+        "MASSEQ",
         // STAR / Picard / GATK option fragments
         "Ftag",
         "Ffile",
