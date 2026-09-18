@@ -368,10 +368,10 @@ task kraken {
         Boolean store_sequences = false
         Boolean use_names = true
         Boolean use_all_cores = false
-        Int min_base_quality = 0
-        Float confidence = 0.0
-        Int minimum_hit_groups = 2
         Boolean quick = false
+        Float confidence = 0.0
+        Int min_base_quality = 0
+        Int minimum_hit_groups = 2
         Int ncpu = 4
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
