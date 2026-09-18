@@ -1,0 +1,17 @@
+[files]
+extend-exclude = []
+
+[default]
+[default.extend-words]
+BAMs = "BAMs"
+recal = "recal"
+sampe = "sampe"
+
+[default.extend-identifiers]
+FO = "FO"
+ABL = "ABL"
+ND = "ND"
+PN = "PN"
+CAF = "CAF"
+Alls = "Alls"
+
