@@ -12,24 +12,24 @@ enum platform {
     hifi_revio,
 }
 
-enum clair3_model {
-    hifi
-    hifi_sequel2
-    ont
-    r1041_e82_400bps_hac_v410
-    r1041_e82_400bps_hac_v520_with_mv
-    r1041_e82_400bps_sup_v410
-    r1041_e82_400bps_sup_v500
-    r1041_e82_400bps_sup_with_mv
-    r941_prom_sup_g5014
-    hifi_revio
-    ilmn
-    ont_guppy5
-    r1041_e82_400bps_hac_v500
-    r1041_e82_400bps_hac_with_mv
-    r1041_e82_400bps_sup_v430_bacteria_finetuned
-    r1041_e82_400bps_sup_v520_with_mv
-    r941_prom_hac_g360+g422
+enum clair3_model[String] {
+    hifi,
+    hifi_sequel2,
+    ont,
+    r1041_e82_400bps_hac_v410,
+    r1041_e82_400bps_hac_v520_with_mv,
+    r1041_e82_400bps_sup_v410,
+    r1041_e82_400bps_sup_v500,
+    r1041_e82_400bps_sup_with_mv,
+    r941_prom_sup_g5014,
+    hifi_revio,
+    ilmn,
+    ont_guppy5,
+    r1041_e82_400bps_hac_v500,
+    r1041_e82_400bps_hac_with_mv,
+    r1041_e82_400bps_sup_v430_bacteria_finetuned,
+    r1041_e82_400bps_sup_v520_with_mv,
+    r941_prom_hac_g360_g422 = "r941_prom_hac_g360+g422",
 }
 
 task clair3 {
@@ -74,10 +74,10 @@ task clair3 {
         File reference_fasta_index
         File bam
         File bam_index
-        clair3_model model = clair3_model.ilmn
         File? bed_regions
         File? vcf_candidates
         Array[String] contigs = []
+        clair3_model model = clair3_model.ilmn
         String output_dir = "clair3_output"
         String platform = "ilmn"
         Boolean all_contigs = false
