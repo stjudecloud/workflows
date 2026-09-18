@@ -309,7 +309,7 @@ task kraken {
         omitted_parameters: [
             {
                 flag: "--memory-mapping",
-                reason: "Would trade an unknown amount of RAM savings for slower runtime and potentially higher disk usage. WDL execution environments are rarely memory-constrained, and time is typically the more limited resource, so this tradeoff isn't worth the added complexity without further investigation.",
+                reason: "Enabling this would reduce RAM usage at the cost of a slower run time and higher disk usage. This trade is usually undesirable. Without further investigation to determine the generalized costs and benefits, this option will not be exposed.",
             },
         ]
         outputs: {
