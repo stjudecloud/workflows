@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - Added WDL implementation for Salmon (`index` and `quant` tasks) [#326](https://github.com/stjudecloud/workflows/pull/326)
+- `kraken2.wdl` `kraken` task now exposes `confidence`, `minimum_hit_groups`, and `quick` parameters [#331](https://github.com/stjudecloud/workflows/pull/331)
+- Documented previously unexposed/undocumented parameters in `star.wdl` (`outSAMtype`, `outMultimapperOrder`) and `qualimap.wdl` (`-p`) using a new `omitted_parameters` `meta` convention [#331](https://github.com/stjudecloud/workflows/pull/331)
 
 ## 2026 August
 

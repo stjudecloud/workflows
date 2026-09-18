@@ -171,6 +171,7 @@
         "Nanopore",
         "PACBIO",
         "unpatterned",
+        "mers",
         // STAR / Picard / GATK option fragments
         "Ftag",
         "Ffile",
