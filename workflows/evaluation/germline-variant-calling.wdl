@@ -7,26 +7,6 @@ import "../../tools/manta.wdl"
 import "../../tools/ngsep.wdl"
 import "../../tools/strelka.wdl"
 
-# Includes the pre-built models (with the exception of "r941_prom_hac_g360+g422").
-enum clair3 {
-    hifi,
-    hifi_revio,
-    hifi_sequel2,
-    ilmn,
-    ont_guppy5,
-    ont,
-    r1041_e82_400bps_hac_v410,
-    r1041_e82_400bps_hac_v520_with_mv,
-    r1041_e82_400bps_sup_v410,
-    r1041_e82_400bps_sup_v500,
-    r1041_e82_400bps_sup_with_mv,
-    r941_prom_sup_g5014,
-    r1041_e82_400bps_hac_v500,
-    r1041_e82_400bps_hac_with_mv,
-    r1041_e82_400bps_sup_v430_bacteria_finetuned,
-    r1041_e82_400bps_sup_v520_with_mv,
-}
-
 workflow variant_calling {
     meta {
         description: "Runs a series of variant calling tools on a processed BAM file."
@@ -85,7 +65,7 @@ workflow variant_calling {
         #@ except: SnakeCase
         File dbSNP_vcf_index
         File interval_list
-        clair3 clair3_model
+        clair3_model clair3_model
         Array[File] known_indels_sites_vcfs = []
         Array[File] known_indels_sites_indices = []
         Array[Resource] resources = []
