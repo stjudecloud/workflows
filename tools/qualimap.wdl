@@ -4,7 +4,12 @@ version 1.1
 task rnaseq {
     meta {
         description: "Generates runs QualiMap's rnaseq tool on the input BAM file."
-        help: "Note that we don't expose the `-p` parameter. This is used to set strandedness protocol of the sample, however in practice it only disables certain calculations. We do not expose the parameter so that the full suite of calculations is always performed."
+        omitted_parameters: [
+            {
+                flag: "-p, --sequencing-protocol",
+                reason: "Used to set the strandedness protocol of the sample; in practice it only disables certain calculations. Omitted so that the full suite of calculations is always performed.",
+            },
+        ]
         outputs: {
             raw_summary: "Raw text summary of QualiMap's results. Can be parsed by MultiQC.",
             raw_coverage: "Raw text of QualiMap's coverage analysis results. Can be parsed by MultiQC.",

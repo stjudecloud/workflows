@@ -219,6 +219,7 @@
         "PACBIO",
         "unpatterned",
         "MASSEQ",
+        "mers",
         // STAR / Picard / GATK option fragments
         "Ftag",
         "Ffile",
