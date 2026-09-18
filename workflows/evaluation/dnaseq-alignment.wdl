@@ -93,7 +93,7 @@ workflow align {
         modify_disk_size_gb,
     }
 
-    call read_group_ds.inner_read_group_to_string {
+    call read_group_ds.read_group_to_string as read_group_array_ws {
         read_group,
         split_on_field = true,
     }
@@ -101,7 +101,7 @@ workflow align {
     call samtools.addreplacerg {
         bam = vg_giraffe.alignments,
         orphan_only = false,
-        read_group_line = inner_read_group_to_string.read_group_array,
+        read_group_line = read_group_array_ws.validated_read_group_array,
     }
     call samtools.calmd {
         bam = addreplacerg.tagged_bam,
