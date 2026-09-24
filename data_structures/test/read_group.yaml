@@ -23,6 +23,8 @@ read_group_to_string:
         validated_read_group:
           - Contains: R1
           - Contains: sampleFoo
+        validated_read_group_array:
+          - Defined: false
   - name: id_with_spaces
     inputs:
       read_group:
@@ -92,7 +94,7 @@ read_group_to_string:
     assertions:
       outputs:
         validated_read_group:
-          - StrEquals: ""
+          - Defined: false
         validated_read_group_array:
           - Length: 2
           - First:

@@ -72,7 +72,7 @@ workflow align {
         prefix = "~{output_prefix}_bwamem2",
         ncpu,
         modify_disk_size_gb,
-        read_group = read_group_string.validated_read_group,
+        read_group = select_first([read_group_string.validated_read_group]),
     }
 
     call alignment_post.alignment_post as bwamem2_post {
@@ -101,7 +101,7 @@ workflow align {
     call samtools.addreplacerg {
         bam = vg_giraffe.alignments,
         orphan_only = false,
-        read_group_line = read_group_array_ws.validated_read_group_array,
+        read_group_line = select_first([read_group_array_ws.validated_read_group_array]),
     }
     call samtools.calmd {
         bam = addreplacerg.tagged_bam,
@@ -120,7 +120,7 @@ workflow align {
         output_name = "~{output_prefix}_minimap2.bam",
         ncpu,
         modify_disk_size_gb,
-        read_group = read_group_string.validated_read_group,
+        read_group = select_first([read_group_string.validated_read_group]),
     }
 
     call alignment_post.alignment_post as minimap2_post {
@@ -135,7 +135,7 @@ workflow align {
         prefix = "~{output_prefix}_bwa",
         ncpu,
         modify_disk_size_gb,
-        read_group = read_group_string.validated_read_group,
+        read_group = select_first([read_group_string.validated_read_group]),
     }
 
     call alignment_post.alignment_post as bwa_mem_post {

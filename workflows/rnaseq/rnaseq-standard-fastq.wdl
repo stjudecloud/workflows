@@ -129,7 +129,7 @@ workflow rnaseq_standard_fastq {
     call rnaseq_core_wf.rnaseq_core after fqlint { input:
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,
-        read_groups = read_group_to_string.validated_read_group,
+        read_groups = select_all(read_group_to_string.validated_read_group),
         prefix,
         gtf,
         star_db,

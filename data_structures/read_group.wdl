@@ -53,8 +53,8 @@ workflow read_group_to_string {
         description: "Validates a `ReadGroup` struct is well-formed and then converts it to a `String`"
         category: "Utility"
         outputs: {
-            validated_read_group: "The validated input `ReadGroup` as a `String`. Empty string if `split_on_field == true`.",
-            validated_read_group_array: "The validated input `ReadGroup` as an `Array[String]`, one entry per field. Empty array if `split_on_field == false`.",
+            validated_read_group: "The validated input `ReadGroup` as a `String`. Undefined if `split_on_field == true`.",
+            validated_read_group_array: "The validated input `ReadGroup` as an `Array[String]`, one entry per field. Undefined if `split_on_field == false`.",
         }
     }
 
@@ -89,14 +89,8 @@ workflow read_group_to_string {
     }
 
     output {
-        String validated_read_group = select_first([
-            inner_read_group_to_string.stringified_read_group,
-            "",
-        ])
-        Array[String] validated_read_group_array = select_first([
-            inner_read_group_to_string.read_group_array,
-            [],
-        ])
+        String? validated_read_group = inner_read_group_to_string.stringified_read_group
+        Array[String]? validated_read_group_array = inner_read_group_to_string.read_group_array
     }
 }
 
