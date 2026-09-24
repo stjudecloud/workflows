@@ -1,6 +1,5 @@
 manta_germline:
   - name: works
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -14,7 +13,6 @@ manta_germline:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
 
   - name: exome_mode
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -31,7 +29,6 @@ manta_germline:
 
 manta_somatic:
   - name: works
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -50,7 +47,6 @@ manta_somatic:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
 
   - name: exome_mode
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
