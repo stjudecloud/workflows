@@ -18,6 +18,7 @@ task align {
         skip_mate_rescue: "If true, skip mate rescue for paired-end reads"
         ncpu: "Number of threads to use for alignment"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the number of cores. Specified in GB."
         seed_length: "Seed value for the BWA-MEM2 aligner"
         min_score: "Minimum score threshold for reporting alignments"
     }
@@ -35,11 +36,13 @@ task align {
         Int min_score = 30
         Int ncpu = 4
         Int modify_disk_size_gb = 0
+        Int modify_memory_gb = 0
     }
 
     String output_name = prefix + ".bam"
     Int disk_size_gb = ceil((size(read_one_fastq_gz, "GB") + size(read_two_fastq_gz, "GB")
     ) * 2) + ceil(size(reference_index, "GB")) + 30 + modify_disk_size_gb
+    Int memory_gb = 4 * ncpu + modify_memory_gb
 
     command <<<
         set -euo pipefail
@@ -70,7 +73,7 @@ task align {
     requirements {
         container: "ghcr.io/stjudecloud/bwamem2:2.3-0"
         cpu: ncpu
-        memory: "~{4 * ncpu} GB"
+        memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
     }
 }
