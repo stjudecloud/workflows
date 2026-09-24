@@ -133,6 +133,7 @@ task clair3 {
         cpu: ncpu
         memory: "64 GB"
         disks: "~{disk_size_gb} GB"
+        maxRetries: 1
     }
 }
 
@@ -286,5 +287,6 @@ task clairs {
         cpu: ncpu
         memory: "64 GB"
         disks: "~{disk_size_gb} GB"
+        maxRetries: 1
     }
 }

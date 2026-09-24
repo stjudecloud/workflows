@@ -144,6 +144,7 @@ task deepsomatic {
         memory: "64 GB"
         disks: "~{disk_size_gb} GB"
         gpu: true
+        maxRetries: 1
     }
 
     hints {
@@ -253,6 +254,7 @@ task deepvariant {
         memory: "64 GB"
         disks: "~{disk_size_gb} GB"
         gpu: true
+        maxRetries: 1
     }
 
     hints {

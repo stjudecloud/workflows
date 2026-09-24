@@ -84,6 +84,7 @@ task manta_germline {
         cpu: threads
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
+        maxRetries: 1
     }
 }
 
@@ -195,5 +196,6 @@ task manta_somatic {
         cpu: threads
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
+        maxRetries: 1
     }
 }

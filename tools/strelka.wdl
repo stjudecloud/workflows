@@ -106,6 +106,7 @@ task somatic {
         cpu: threads
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
+        maxRetries: 1
     }
 }
 
@@ -180,5 +181,6 @@ task germline {
         cpu: threads
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
+        maxRetries: 1
     }
 }
