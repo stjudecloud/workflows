@@ -1,4 +1,4 @@
-FROM python:3.14.2-alpine
+FROM python:3.14.6-alpine
 
 RUN apk add --no-cache bash
 
