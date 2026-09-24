@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
+- `bwa.wdl` `bwa_aln`, `bwa_aln_pe`, and `bwa_mem` tasks now correctly scale the `samtools view` thread count with `ncpu` (the previous `(( samtools_cores = n_cores - 1 || 1 ))` expression was misparsed by bash as a logical `||`, so `samtools_cores` was always `1` regardless of `ncpu`); simplified to `samtools_cores=$(( n_cores - 1 ))` since `samtools --threads 0` is not an error [#282](https://github.com/stjudecloud/workflows/pull/282)
 - `picard.create_sequence_dictionary` now correctly derives the default `outfile_name` for FASTA inputs with `.fasta`, `.fna`, or `.gz`-compressed extensions (previously only `.fa` was stripped, producing names like `genome.fa.gz.dict`) [#282](https://github.com/stjudecloud/workflows/pull/282)
 - `kraken2.wdl` `kraken` task now exposes `confidence`, `minimum_hit_groups`, and `quick` parameters [#331](https://github.com/stjudecloud/workflows/pull/331)
 - Documented previously unexposed/undocumented parameters in `star.wdl` (`outSAMtype`, `outMultimapperOrder`) and `qualimap.wdl` (`-p`) using a new `omitted_parameters` `meta` convention [#331](https://github.com/stjudecloud/workflows/pull/331)
