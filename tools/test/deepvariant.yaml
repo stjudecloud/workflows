@@ -1,6 +1,6 @@
 deepvariant:
   - name: works
-    tags: [slow]
+    tags: [gpu]
     inputs:
       $reference:
         reference_fasta:
@@ -16,7 +16,7 @@ deepvariant:
           - 2
 
   - name: wes_model
-    tags: [slow]
+    tags: [gpu]
     inputs:
       $reference:
         reference_fasta:
@@ -34,7 +34,7 @@ deepvariant:
         - 2
 
   - name: runtime_report
-    tags: [slow]
+    tags: [gpu]
     inputs:
       $reference:
         reference_fasta:
@@ -52,7 +52,7 @@ deepvariant:
           - 2
 
   - name: vcf_stats_report
-    tags: [slow]
+    tags: [gpu]
     inputs:
       $reference:
         reference_fasta:
@@ -70,7 +70,7 @@ deepvariant:
           - 2
 
   - name: custom_haploid_chromosomes
-    tags: [slow]
+    tags: [gpu]
     inputs:
       $reference:
         reference_fasta:
@@ -89,7 +89,7 @@ deepvariant:
 
 deepsomatic:
   - name: works
-    tags: [slow]
+    tags: [gpu]
     inputs:
       $reference:
         reference_fasta:
@@ -110,7 +110,7 @@ deepsomatic:
         - WGS
 
   - name: wes_model
-    tags: [slow]
+    tags: [gpu]
     inputs:
       $reference:
         reference_fasta:
@@ -131,7 +131,7 @@ deepsomatic:
         - WES
 
   - name: runtime_report
-    tags: [slow]
+    tags: [gpu]
     inputs:
       $reference:
         reference_fasta:
@@ -154,7 +154,7 @@ deepsomatic:
         - true
 
   - name: vcf_stats_report
-    tags: [slow]
+    tags: [gpu]
     inputs:
       $reference:
         reference_fasta:

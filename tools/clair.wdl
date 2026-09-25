@@ -43,7 +43,7 @@ task clair3 {
         description: "Run Clair3 variant caller for small variants using deep neural networks"
         outputs: {
             pileup_vcf: "VCF file with variants called using pileup model",
-            full_alignment_vcf: "VCF file with variants called using full-alignment model",
+            full_alignment_vcf: "VCF file with variants called using full-alignment model. Undefined if no full-alignment candidates were selected (e.g. too few or no low-quality variants in the pileup output for the called region).",
             merged_vcf: "Final merged VCF file with variants from both models",
         }
     }
@@ -130,7 +130,7 @@ task clair3 {
 
     output {
         File pileup_vcf = "~{output_dir}/pileup.vcf.gz"
-        File full_alignment_vcf = "~{output_dir}/full_alignment.vcf.gz"
+        File? full_alignment_vcf = "~{output_dir}/full_alignment.vcf.gz"
         File merged_vcf = "~{output_dir}/merge_output.vcf.gz"
     }
 

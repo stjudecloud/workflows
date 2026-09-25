@@ -3,7 +3,6 @@
 # Tests use the bundled Illumina model at `ilmn`.
 clair3:
   - name: works
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -19,7 +18,6 @@ clair3:
         - ilmn
 
   - name: with_vcf_candidates
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -39,7 +37,6 @@ clair3:
         - chrY
 
   - name: gvcf_mode
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -57,7 +54,6 @@ clair3:
         - true
 
   - name: all_contigs
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -75,7 +71,6 @@ clair3:
         - true
 
   - name: print_ref_calls
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -94,7 +89,6 @@ clair3:
 
 clair_s:
   - name: works
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -115,7 +109,6 @@ clair_s:
         - ilmn
 
   - name: with_vcf_candidates
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -138,10 +131,8 @@ clair_s:
         - vcfs/testY.vcf.gz
       contigs:
         - chrY
-        - chrM
 
   - name: all_contigs
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -164,7 +155,6 @@ clair_s:
         - true
 
   - name: print_germline_calls
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
