@@ -103,14 +103,14 @@ workflow somatic_variant_calling {
         exome,
     }
 
-    call clair.clairs {
+    call clair.clair_s {
         reference_fasta,
         reference_fasta_index,
         normal_bam,
         normal_bam_index,
         tumor_bam,
         tumor_bam_index,
-        platform = platform.ilmn,
+        platform = ClairSPlatform.ilmn,
         prefix = "~{basename(tumor_bam, ".bam")}_vs_~{basename(normal_bam, ".bam")}",
         sample_name = "~{basename(tumor_bam, ".bam")}",
     }
@@ -134,7 +134,7 @@ workflow somatic_variant_calling {
 
     output {
         # File octopus_vcf = octopus.somatic.output_vcf
-        File clairs_vcf = clairs.vcf
+        File clairs_vcf = clair_s.vcf
         File deepsomatic_vcf = deepsomatic.vcf_output
         Directory manta_output = manta_somatic.manta_output
         Directory strelka_output = somatic.strelka_output

@@ -2,7 +2,7 @@ version 1.3
 
 import "picard.wdl"
 
-enum ref_confidence {
+enum RefConfidence {
     NONE,
     GVCF,
     BP_RESOLUTION,
@@ -74,6 +74,10 @@ task resource_to_string {
     requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
+    }
+
+    hints {
+        localization_optional: true
     }
 }
 
@@ -365,7 +369,7 @@ task haplotype_caller {
         File dbSNP_vcf
         #@ except: SnakeCase
         File dbSNP_vcf_index
-        ref_confidence reference_confidence = ref_confidence.NONE
+        RefConfidence reference_confidence = RefConfidence.NONE
         String prefix = basename(bam, ".bam")
         Boolean use_soft_clipped_bases = false
         Int stand_call_conf = 20
@@ -1005,7 +1009,7 @@ task scatter_interval_list {
             OUTPUT=out
 
 
-        python3 > "interval_count.txt" <<CODE
+        python3 > "interval_count.txt" <<PYTHON
         import glob, os
         # Works around a JES limitation where multiples files with the same name overwrite each other when globbed
         intervals = sorted(glob.glob("out/*/*.interval_list"))
@@ -1014,7 +1018,7 @@ task scatter_interval_list {
             newName = os.path.join(directory, str(i + 1) + "." + filename)
             os.rename(interval, newName)
         print(len(intervals))
-        CODE
+        PYTHON
 
         rm -rf "~{basename(interval_list)}"
     >>>
@@ -1182,7 +1186,7 @@ workflow germline_variant_calling_wf {
             dbSNP_vcf,
             dbSNP_vcf_index,
             prefix,
-            reference_confidence = ref_confidence.GVCF,
+            reference_confidence = RefConfidence.GVCF,
         }
     }
 

@@ -92,7 +92,7 @@ clair3:
       print_ref_calls:
         - true
 
-clairs:
+clair_s:
   - name: works
     tags: [slow]
     inputs:

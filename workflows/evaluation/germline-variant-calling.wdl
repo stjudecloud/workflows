@@ -65,7 +65,7 @@ workflow variant_calling {
         #@ except: SnakeCase
         File dbSNP_vcf_index
         File interval_list
-        clair3_model clair3_model
+        Clair3Model clair3_model
         Array[File] known_indels_sites_vcfs = []
         Array[File] known_indels_sites_indices = []
         Array[Resource] resources = []

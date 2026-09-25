@@ -90,7 +90,7 @@ task split {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools split \
             --threads "$n_cores" \
@@ -191,7 +191,7 @@ task flagstat {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools flagstat --threads "$n_cores" "~{bam}" > "~{outfile_name}"
     >>>
@@ -249,7 +249,7 @@ task index {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools index --threads "$n_cores" "~{bam}" "~{outfile_name}"
     >>>
@@ -317,7 +317,7 @@ task subsample {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         if [[ ~{desired_reads} -le 0 ]]; then
             >&2 echo "'desired_reads' must be greater than zero!"
@@ -459,7 +459,7 @@ task filter {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools view \
             --threads "$n_cores" \
@@ -574,7 +574,7 @@ task merge {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         for file in ~{sep(" ", squote(bams))}; do
           # This will fail (intentionally) if there are duplicate names
@@ -676,7 +676,7 @@ task addreplacerg {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools addreplacerg \
             --threads "$n_cores" \
@@ -752,7 +752,7 @@ task collate {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools collate \
             --threads "$n_cores" \
@@ -873,7 +873,7 @@ task bam_to_fastq {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         mkfifo bam_pipe
         if ! ~{collated} && ~{paired_end}; then
@@ -1022,7 +1022,7 @@ task fixmate {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools fixmate \
             --threads "$n_cores" \
@@ -1117,7 +1117,7 @@ task position_sorted_fixmate {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools collate \
             --threads "$n_cores" \
@@ -1259,7 +1259,7 @@ task markdup {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools markdup \
             --threads "$n_cores" \
@@ -1371,7 +1371,7 @@ task calmd {
     command <<<
         set -euo pipefail
 
-        (( n_cores = ~{ncpu} - 1 || 1 ))
+        n_cores=$(( ~{ncpu} - 1 ))
 
         ref_fasta=~{basename(reference_fasta, ".gz")}
         gunzip -c "~{reference_fasta}" > "$ref_fasta" \
@@ -1442,7 +1442,7 @@ task sort {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools sort \
             --threads "$n_cores" \

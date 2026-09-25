@@ -1,6 +1,6 @@
 version 1.3
 
-enum platform {
+enum ClairSPlatform {
     ont_r10_dorado_sup_4khz,
     ont_r10_dorado_sup_5khz,
     ont_r10_dorado_hac_5khz,
@@ -12,7 +12,13 @@ enum platform {
     hifi_revio,
 }
 
-enum clair3_model[String] {
+enum Clair3Platform {
+    ont,
+    hifi,
+    ilmn,
+}
+
+enum Clair3Model[String] {
     hifi,
     hifi_sequel2,
     ont,
@@ -77,9 +83,9 @@ task clair3 {
         File? bed_regions
         File? vcf_candidates
         Array[String] contigs = []
-        clair3_model model = clair3_model.ilmn
+        Clair3Model model = Clair3Model.ilmn
+        Clair3Platform platform = Clair3Platform.ilmn
         String output_dir = "clair3_output"
-        String platform = "ilmn"
         Boolean all_contigs = false
         Boolean print_ref_calls = false
         Boolean gvcf = false
@@ -137,7 +143,7 @@ task clair3 {
     }
 }
 
-task clairs {
+task clair_s {
     meta {
         description: "Run ClairS paired sample variant caller"
         outputs: {
@@ -195,7 +201,7 @@ task clairs {
         File normal_bam_index
         File reference_fasta
         File reference_fasta_index
-        platform platform
+        ClairSPlatform platform
         File? bed_regions
         File? vcf_candidates
         File? pileup_model
