@@ -1,4 +1,51 @@
-version 1.2
+version 1.3
+
+enum OutputFormat {
+    gam,
+    gaf,
+    json,
+    tsv,
+    SAM,
+    BAM,
+    CRAM,
+}
+
+# [vg giraffe presets source](https://github.com/vgteam/vg/blob/v1.70.0/src/subcommand/giraffe_main.cpp)
+#
+# | `-b`          | Use case                                               | Notes                                                                                                   |
+# | ------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+# | `default`     | General-purpose short/long read mapping                | Balanced default parameters.                                                                            |
+# | `fast`        | Faster mapping with reduced sensitivity                | Lowers hit caps and multimapping limits for speed.                                                      |
+# | `hifi`        | PacBio HiFi long reads                                 | Uses chaining-based alignment (`align-from-chains`) tuned for HiFi error profiles.                      |
+# | `r10`         | Oxford Nanopore R10 long reads                         | Uses chaining-based alignment (`align-from-chains`) tuned for R10 error profiles.                       |
+# | `chaining-sr` | Short reads using the chaining-based codepath          | Shares the chaining algorithm introduced for long-read presets (`hifi`/`r10`), adapted for short reads. |
+# | `srold`       | Short reads using the original (pre-chaining) codepath | Legacy short-read algorithm predating `chaining-sr`.                                                    |
+enum GiraffePreset[String] {
+    chaining_sr = "chaining-sr",
+    default,
+    fast,
+    hifi,
+    r10,
+    srold,
+}
+
+# [vg autoindex source](https://github.com/vgteam/vg/blob/v1.70.0/src/index_registry.hpp#L139-L148)
+#
+# | `-w`                     | Indexes produced                                             | Notes                                         |
+# | ------------------------ | ------------------------------------------------------------ | --------------------------------------------- |
+# | `map`                    | Indexes for `vg map`                                         | The default workflow.                         |
+# | `mpmap`                  | Indexes for `vg mpmap` (multipath mapper)                    |                                               |
+# | `rpvg`                   | Indexes for `rpvg` haplotype-based transcript quantification |                                               |
+# | `giraffe` / `sr-giraffe` | Indexes for `vg giraffe` on short reads                      | `giraffe` is a legacy alias for `sr-giraffe`. |
+# | `lr-giraffe`             | Indexes for `vg giraffe` on long reads                       |                                               |
+enum AutoindexWorkflow[String] {
+    map,
+    mpmap,
+    rpvg,
+    giraffe,
+    sr_giraffe = "sr-giraffe",
+    lr_giraffe = "lr-giraffe",
+}
 
 task giraffe {
     meta {
@@ -20,29 +67,8 @@ task giraffe {
         sample_name: "The sample name to include"
         read_group: "The read group"
         output_name: "The name of the output alignment file"
-        output_format: {
-            description: "The output format for alignments",
-            options: [
-                "gam",
-                "gaf",
-                "json",
-                "tsv",
-                "SAM",
-                "BAM",
-                "CRAM",
-            ],
-        }
-        preset: {
-            description: "vg giraffe preset for alignment",
-            options: [
-                "chaining-sr",
-                "default",
-                "fast",
-                "hifi",
-                "r10",
-                "srold",
-            ],
-        }
+        output_format: "The output format for alignments"
+        preset: "vg giraffe preset for alignment"
         ncpu: "Number of threads to use for alignment"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
     }
@@ -58,9 +84,9 @@ task giraffe {
         File? kff
         String? sample_name
         String? read_group
+        GiraffePreset preset = GiraffePreset.default
+        OutputFormat output_format = OutputFormat.BAM
         String output_name = "aligned.bam"
-        String output_format = "BAM"
-        String preset = "default"
         Int ncpu = 4
         Int modify_disk_size_gb = 0
     }
@@ -116,17 +142,7 @@ task index {
         db_prefix: "The base name for the output index files"
         gff_feature: "The feature type in the GFF to use for transcripts"
         gff_id_tag: "The attribute tag in the GFF to use as transcript ID"
-        autoindex_workflow: {
-            description: "The vg autoindex workflow to use",
-            choices: [
-                "map",
-                "mpmap",
-                "rpvg",
-                "giraffe",
-                "sr-giraffe",
-                "lr-giraffe",
-            ],
-        }
+        autoindex_workflow: "The vg autoindex workflow to use"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
         ncpu: "Number of threads to use for indexing"
     }
@@ -135,10 +151,10 @@ task index {
         File reference_fasta
         Array[File] vcf_files = []
         Array[File] transcript_gff = []
+        AutoindexWorkflow autoindex_workflow = AutoindexWorkflow.giraffe
         String db_prefix = "reference"
         String gff_feature = "exon"
         String gff_id_tag = "transcript_id"
-        String autoindex_workflow = "giraffe"
         Int modify_disk_size_gb = 0
         Int ncpu = 4
     }

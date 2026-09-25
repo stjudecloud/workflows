@@ -1,5 +1,13 @@
 version 1.3
 
+# [mako sort orders](https://github.com/fg-labs/mako#sort-orders)
+#
+# | `--order`             | Order                                      | Typical use                    |
+# | --------------------- | ------------------------------------------ | ------------------------------ |
+# | `coordinate`          | tid → pos → strand                         | IGV, variant calling, indexing |
+# | `queryname`           | Lexicographic read name (default sub-sort) | Fast queryname sort            |
+# | `queryname::natural`  | Natural numeric read name                  | samtools-compatible            |
+# | `template-coordinate` | Paired reads grouped by template           | UMI grouping pipelines         |
 enum SortOrder[String] {
     queryname = "queryname",
     coordinate = "coordinate",
@@ -20,12 +28,6 @@ task sort {
         bam: "Input BAM format file to sort"
         sort_order: {
             description: "Order by which to sort the input BAM",
-            choices: [
-                "queryname",
-                "coordinate",
-                "queryname::natural",
-                "template-coordinate",
-            ],
             group: "Common",
         }
         prefix: "Prefix for the sorted BAM file and accessory files. The extension `.bam` will be added."

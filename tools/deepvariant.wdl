@@ -45,28 +45,13 @@ task deepsomatic {
         tumor_bam_index: "Index for tumor BAM file"
         normal_bam: "Input BAM file with aligned reads for normal sample"
         normal_bam_index: "Index for normal BAM file"
-        model_type: {
-            description: "Type of model to use for variant calling",
-            choices: [
-                "WGS",
-                "WES",
-                "PACBIO",
-                "ONT",
-                "FFPE_WGS",
-                "FFPE_WES",
-                "FFPE_WGS_TUMOR_ONLY",
-                "FFPE_WES_TUMOR_ONLY",
-                "WGS_TUMOR_ONLY",
-                "WES_TUMOR_ONLY",
-                "PACBIO_TUMOR_ONLY",
-                "ONT_TUMOR_ONLY",
-            ],
-        }
+        model_type: "Type of model to use for variant calling"
         output_prefix: "Prefix for output VCF and gVCF files"
         tumor_sample_name: "Sample name for the tumor sample"
         normal_sample_name: "Sample name for the normal sample"
         runtime_report: "Output make_examples_somatic runtime metrics and create a visual runtime report using runtime_by_region_vis."
         vcf_stats_report: "Output a visual report (HTML) of statistics about the output VCF."
+        use_gpu: "Whether to use the GPU accelerated version of DeepSomatic"
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
     }
@@ -84,6 +69,7 @@ task deepsomatic {
         String normal_sample_name = "normal"
         Boolean runtime_report = false
         Boolean vcf_stats_report = false
+        Boolean use_gpu = true
         Int threads = 8
         Int modify_disk_size_gb = 0
     }
@@ -138,12 +124,11 @@ task deepsomatic {
     }
 
     requirements {
-        container: "google/deepsomatic:1.10.0-gpu"
-        #container: "google/deepsomatic:1.10.0"
+        container: "google/deepsomatic:1.10.0~{if (use_gpu) then "-gpu" else ""}"
         cpu: threads
         memory: "64 GB"
         disks: "~{disk_size_gb} GB"
-        gpu: true
+        gpu: use_gpu
         maxRetries: 1
     }
 
@@ -172,20 +157,10 @@ task deepvariant {
         bam_index: "Index for input BAM file"
         haploid_chromosomes: "List of chromosomes to be treated as haploid during variant calling"
         output_prefix: "Prefix for output VCF and gVCF files"
-        model_type: {
-            description: "Type of model to use for variant calling",
-            choices: [
-                "WGS",
-                "WES",
-                "PACBIO",
-                "ONT_R104",
-                "HYBRID_PACBIO_ILLUMINA",
-                "MASSEQ",
-                "RNASEQ",
-            ],
-        }
+        model_type: "Type of model to use for variant calling"
         runtime_report: "Output make_examples_somatic runtime metrics and create a visual runtime report using runtime_by_region_vis."
         vcf_stats_report: "Output a visual report (HTML) of statistics about the output VCF."
+        use_gpu: "Whether to use the GPU accelerated version of DeepVariant"
         threads: "Number of threads to use"
         modify_disk_size_gb: "Additional disk size in GB to allocate"
     }
@@ -200,6 +175,7 @@ task deepvariant {
         String output_prefix = "deepvariant_output"
         Boolean runtime_report = false
         Boolean vcf_stats_report = false
+        Boolean use_gpu = true
         Int threads = 8
         Int modify_disk_size_gb = 0
     }
@@ -248,12 +224,11 @@ task deepvariant {
     }
 
     requirements {
-        container: "google/deepvariant:1.10.0-gpu"
-        #container: "google/deepvariant:1.10.0"
+        container: "google/deepvariant:1.10.0~{if (use_gpu) then "-gpu" else ""}"
         cpu: threads
         memory: "64 GB"
         disks: "~{disk_size_gb} GB"
-        gpu: true
+        gpu: use_gpu
         maxRetries: 1
     }
 

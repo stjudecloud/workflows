@@ -1343,6 +1343,7 @@ task faidx {
 task calmd {
     meta {
         description: "Calculates MD and NM tags"
+        warning: "This is a minimal working implementation. Not all `samtools calmd` parameters are exposed."
         outputs: {
             calmd_bam: "A BAM file with the MD and NM tags calculated. Output filename is `basename(bam) + '.calmd.bam'`.",
         }

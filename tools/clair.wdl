@@ -1,8 +1,23 @@
 version 1.3
 
+# [ClairS pre-trained models](https://github.com/HKU-BAL/ClairS#pre-trained-models)
+#
+# | `--platform`                   | Model                     | Chemistry / Instrument              | Basecaller                                                |
+# | ------------------------------ | ------------------------- | ----------------------------------- | --------------------------------------------------------- |
+# | `ont_r10_dorado_sup_4khz`      | r1041_e82_400bps_sup_v410 | R10.4.1, 4kHz                       | Dorado SUP                                                |
+# | `ont_r10_dorado_sup_5khz_ss`   | r1041_e82_400bps_sup_v420 | R10.4.1, 5kHz                       | Dorado SUP (synthetic-sample trained)                     |
+# | `ont_r10_dorado_sup_5khz_ssrs` | r1041_e82_400bps_sup_v420 | R10.4.1, 5kHz                       | Dorado SUP (synthetic + real-sample trained; recommended) |
+# | `ont_r10_dorado_hac_5khz`      | r1041_e82_400bps_hac_v420 | R10.4.1, 5kHz                       | Dorado HAC                                                |
+# | `ont_r10_dorado_hac_4khz`      | r1041_e82_400bps_hac_v410 | R10.4.1, 4kHz                       | Dorado HAC                                                |
+# | `ont_r10_guppy`                | r104_e81_sup_g5015        | R10.4/R10.4.1, 4kHz                 | Guppy5 SUP                                                |
+# | `ont_r9_guppy`                 | r941_prom_sup_g5014       | R9.4.1, 4kHz                        | Guppy5 SUP                                                |
+# | `ilmn`                         | ilmn                      | NovaSeq / HiSeq X                   | n/a                                                       |
+# | `hifi_sequel2`                 | hifi_sequel2              | PacBio Sequel II, Chemistry 2.0     | n/a                                                       |
+# | `hifi_revio`                   | hifi_revio                | PacBio Revio, SMRTbell prep kit 3.0 | n/a                                                       |
 enum ClairSPlatform {
     ont_r10_dorado_sup_4khz,
-    ont_r10_dorado_sup_5khz,
+    ont_r10_dorado_sup_5khz_ss,
+    ont_r10_dorado_sup_5khz_ssrs,
     ont_r10_dorado_hac_5khz,
     ont_r10_dorado_hac_4khz,
     ont_r10_guppy,
@@ -18,23 +33,52 @@ enum Clair3Platform {
     ilmn,
 }
 
+# [Clair3 pre-trained models](https://github.com/HKU-BAL/Clair3#pre-trained-models)
+#
+# | Model                                          | Platform | Chemistry / Basecaller                 | Notes                                        |
+# | ---------------------------------------------- | -------- | -------------------------------------- | -------------------------------------------- |
+# | `ont`                                          | ont      | ONT (legacy/generic default)           |                                              |
+# | `ont_guppy5`                                   | ont      | R9.4.1, Guppy5 SUP                     | Also usable on HAC reads                     |
+# | `r941_prom_sup_g5014`                          | ont      | R9.4.1, Guppy5 SUP                     |                                              |
+# | `r941_prom_hac_g360+g422`                      | ont      | R9.4.1, Guppy3/4 HAC                   |                                              |
+# | `r1041_e82_400bps_hac_v410`                    | ont      | R10.4.1 E8.2 (4kHz), Dorado v4.1.0 HAC |                                              |
+# | `r1041_e82_400bps_hac_v500`                    | ont      | R10.4.1 E8.2 (5kHz), Dorado v5.0.0 HAC |                                              |
+# | `r1041_e82_400bps_hac_v520`                    | ont      | R10.4.1 E8.2 (5kHz), Dorado v5.2.0 HAC |                                              |
+# | `r1041_e82_400bps_hac_v520_with_mv`            | ont      | R10.4.1 E8.2 (5kHz), Dorado v5.2.0 HAC | Signal-aware; requires `--enable_dwell_time` |
+# | `r1041_e82_400bps_hac_v600`                    | ont      | R10.4.1 E8.2 (5kHz), Dorado v6.0.0 HAC | Latest HAC model                             |
+# | `r1041_e82_400bps_hac_v600_with_mv`            | ont      | R10.4.1 E8.2 (5kHz), Dorado v6.0.0 HAC | Signal-aware; requires `--enable_dwell_time` |
+# | `r1041_e82_400bps_hac_with_mv`                 | ont      | R10.4.1 E8.2, HAC                      | Signal-aware; requires `--enable_dwell_time` |
+# | `r1041_e82_400bps_sup_v410`                    | ont      | R10.4.1 E8.2 (4kHz), Dorado v4.1.0 SUP |                                              |
+# | `r1041_e82_400bps_sup_v430_bacteria_finetuned` | ont      | R10.4.1 E8.2, Dorado v4.3.0 SUP        | Fine-tuned on 12 bacterial genomes           |
+# | `r1041_e82_400bps_sup_v500`                    | ont      | R10.4.1 E8.2 (5kHz), Dorado v5.0.0 SUP |                                              |
+# | `r1041_e82_400bps_sup_v520`                    | ont      | R10.4.1 E8.2 (5kHz), Dorado v5.2.0 SUP | Latest SUP model                             |
+# | `r1041_e82_400bps_sup_v520_with_mv`            | ont      | R10.4.1 E8.2 (5kHz), Dorado v5.2.0 SUP | Signal-aware; requires `--enable_dwell_time` |
+# | `r1041_e82_400bps_sup_with_mv`                 | ont      | R10.4.1 E8.2, SUP                      | Signal-aware; requires `--enable_dwell_time` |
+# | `hifi`                                         | hifi     | PacBio HiFi (legacy/generic default)   |                                              |
+# | `hifi_sequel2`                                 | hifi     | PacBio HiFi, Sequel II                 |                                              |
+# | `hifi_revio`                                   | hifi     | PacBio HiFi, Revio                     |                                              |
+# | `ilmn`                                         | ilmn     | Illumina short-read                    |                                              |
 enum Clair3Model[String] {
     hifi,
     hifi_sequel2,
     ont,
     r1041_e82_400bps_hac_v410,
+    r1041_e82_400bps_hac_v500,
+    r1041_e82_400bps_hac_v520,
     r1041_e82_400bps_hac_v520_with_mv,
+    r1041_e82_400bps_hac_v600,
+    r1041_e82_400bps_hac_v600_with_mv,
+    r1041_e82_400bps_hac_with_mv,
     r1041_e82_400bps_sup_v410,
+    r1041_e82_400bps_sup_v430_bacteria_finetuned,
     r1041_e82_400bps_sup_v500,
+    r1041_e82_400bps_sup_v520,
+    r1041_e82_400bps_sup_v520_with_mv,
     r1041_e82_400bps_sup_with_mv,
     r941_prom_sup_g5014,
     hifi_revio,
     ilmn,
     ont_guppy5,
-    r1041_e82_400bps_hac_v500,
-    r1041_e82_400bps_hac_with_mv,
-    r1041_e82_400bps_sup_v430_bacteria_finetuned,
-    r1041_e82_400bps_sup_v520_with_mv,
     r941_prom_hac_g360_g422 = "r941_prom_hac_g360+g422",
 }
 
@@ -60,14 +104,7 @@ task clair3 {
         vcf_candidates: "Optional VCF file with candidate variants to consider"
         contigs: "Optional list of contigs to call variants in. If undefined, all contigs in the reference FASTA will be considered."
         output_dir: "Directory to store Clair3 output"
-        platform: {
-            description: "Sequencing platform used to generate the reads",
-            choices: [
-                "ont",
-                "hifi",
-                "ilmn",
-            ],
-        }
+        platform: "Sequencing platform used to generate the reads"
         all_contigs: "Boolean indicating whether to include all contigs in variant calling. If false only chr{1..22,X,Y} are called."
         print_ref_calls: "Boolean indicating whether to print reference calls in the output VCF"
         gvcf: "Boolean indicating whether to output gVCF format"
@@ -159,20 +196,7 @@ task clair_s {
         normal_bam_index: "Index file for the normal BAM file"
         reference_fasta: "Reference genome in FASTA format"
         reference_fasta_index: "Index file for the reference genome FASTA"
-        platform: {
-            description: "Sequencing platform used to generate the reads",
-            choices: [
-                "ont_r10_dorado_sup_4khz",
-                "ont_r10_dorado_sup_5khz",
-                "ont_r10_dorado_hac_5khz",
-                "ont_r10_dorado_hac_4khz",
-                "ont_r10_guppy",
-                "ont_r9_guppy",
-                "ilmn",
-                "hifi_sequel2",
-                "hifi_revio",
-            ],
-        }
+        platform: "Sequencing platform used to generate the reads"
         bed_regions: "Optional BED file specifying regions to call variants in"
         vcf_candidates: "Optional VCF file with candidate variants to consider"
         pileup_model: "Optional pre-trained ClairS pileup model to use for variant calling"

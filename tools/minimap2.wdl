@@ -1,5 +1,40 @@
 version 1.3
 
+# [minimap2 preset options](https://lh3.github.io/minimap2/minimap2.html#8)
+#
+# | `-x`        | Use case                                                  | Notes                                                                                                 |
+# | ----------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+# | `map-ont`   | Noisy long reads (~10% error) to a reference genome       | Default mode.                                                                                         |
+# | `lr:hq`     | Accurate long reads (<1% error) to a reference genome     | Recommended for Nanopore v14 chemistry reads (~99% accuracy); works better than `map-hifi` for these. |
+# | `map-hifi`  | PacBio HiFi reads to a reference genome                   | Same as `lr:hq` but with different scoring.                                                           |
+# | `map-pb`    | Older PacBio CLR reads to a reference genome              | Effectively deprecated by HiFi; prefer `map-hifi`/`lr:hq` unless working with old data.               |
+# | `map-iclr`  | Illumina Complete Long Reads (ICLR) to a reference genome | Recommended by Illumina developers.                                                                   |
+# | `asm5`      | Long assembly-to-reference mapping                        | For divergence not much higher than 0.1%.                                                             |
+# | `asm10`     | Long assembly-to-reference mapping                        | For divergence around 1%.                                                                             |
+# | `asm20`     | Long assembly-to-reference mapping                        | For divergence around several percent.                                                                |
+# | `splice`    | Long-read spliced alignment                               | Long deletions become introns (`N` CIGAR op); long insertions disabled.                               |
+# | `splice:hq` | Spliced alignment for accurate long RNA-seq reads         | e.g. PacBio Iso-Seq.                                                                                  |
+# | `splice:sr` | Spliced alignment for short RNA-seq reads                 |                                                                                                       |
+# | `sr`        | Short-read alignment without splicing                     |                                                                                                       |
+# | `ava-pb`    | PacBio CLR all-vs-all overlap mapping                     |                                                                                                       |
+# | `ava-ont`   | Oxford Nanopore all-vs-all overlap mapping                |                                                                                                       |
+enum Preset[String] {
+    sr,
+    map_ont = "map-ont",
+    lr_hq = "lr:hq",
+    map_hifi = "map-hifi",
+    map_pb = "map-pb",
+    map_iclr = "map-iclr",
+    asm5,
+    asm10,
+    asm20,
+    splice,
+    splice_hq = "splice:hq",
+    splice_sr = "splice:sr",
+    ava_pb = "ava-pb",
+    ava_ont = "ava-ont",
+}
+
 task align {
     meta {
         description: "Align DNA or mRNA sequences against a large reference database"
@@ -16,22 +51,6 @@ task align {
         preset: {
             description: "Minimap2 preset for alignment",
             external_help: "https://lh3.github.io/minimap2/minimap2.html#8",
-            options: [
-                "sr",
-                "map-ont",
-                "lr:hq",
-                "map-hifi",
-                "map-pb",
-                "map-iclr",
-                "asm5",
-                "asm10",
-                "asm20",
-                "splice",
-                "splice:hq",
-                "splice:sr",
-                "ava-pb",
-                "ava-ont",
-            ],
         }
         output_name: "The name of the output alignment file"
         output_paf: "If true, output in PAF format instead of BAM"
@@ -51,7 +70,7 @@ task align {
         File reference_index
         String read_group
         File? read_two_fastq_gz
-        String? preset = "sr"
+        Preset? preset = Preset.sr
         String output_name = "aligned.bam"
         Boolean output_paf = false
         Boolean cigar_in_paf = true
