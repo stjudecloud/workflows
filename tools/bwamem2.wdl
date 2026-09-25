@@ -124,7 +124,7 @@ task index {
     requirements {
         container: "ghcr.io/stjudecloud/bwamem2:2.3-0"
         cpu: 1
-        memory: "120 GB"
+        memory: "80 GB"
         disks: "~{disk_size_gb} GB"
     }
 }
