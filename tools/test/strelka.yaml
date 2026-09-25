@@ -1,6 +1,5 @@
 somatic:
   - name: works
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -19,7 +18,6 @@ somatic:
           - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
 
   - name: with_indel_candidates
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -43,7 +41,6 @@ somatic:
           - vcfs/testY.vcf.gz.tbi
 
   - name: exome_mode
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -65,7 +62,6 @@ somatic:
 
 germline:
   - name: works
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
@@ -79,7 +75,6 @@ germline:
           - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
 
   - name: exome_mode
-    tags: [slow]
     inputs:
       $reference:
         reference_fasta:
