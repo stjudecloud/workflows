@@ -83,16 +83,20 @@ task mark_duplicates {
 
     Float bam_size = size(bam, "GB")
     Int memory_gb = min(ceil(bam_size + 12), 50) + modify_memory_gb
+
     Int disk_size_gb = (if create_bam
-        then ceil((bam_size * 2) + 10)
-        else ceil(bam_size + 10)) + modify_disk_size_gb
+        then ceil((bam_size * 2) + 30)
+        else ceil(bam_size + 30)) + modify_disk_size_gb
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
         set -euo pipefail
 
+        mkdir tmp
+
         picard -Xmx~{java_heap_size}g MarkDuplicates \
+             -Djava.io.tmpdir="$(pwd)/tmp" \
             -I "~{bam}" \
             --METRICS_FILE "~{prefix}.metrics.txt" \
             -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
@@ -112,6 +116,8 @@ task mark_duplicates {
         if ~{create_bam}; then
             mv "~{prefix}.bai" "~{prefix}.bam.bai"
         fi
+
+        rm -rf ./tmp
     >>>
 
     output {
@@ -193,7 +199,7 @@ task validate_bam {
     String outfile = if summary_mode then outfile_name else outfile_name + ".gz"
     String mode_arg = if summary_mode then "--MODE SUMMARY" else ""
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 4) + 50 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -279,12 +285,13 @@ task sort {
         String sort_order = "coordinate"
         String prefix = basename(bam, ".bam") + ".sorted"
         String validation_stringency = "SILENT"
-        Int memory_gb = 25
+        Int memory_gb = 35
         Int modify_disk_size_gb = 0
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
+    # Original BAM, sorted fragments (~2.5x original BAM size), final BAM
+    Int disk_size_gb = ceil(bam_size * 5) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     String outfile_name = prefix + ".bam"
@@ -292,10 +299,15 @@ task sort {
     command <<<
         set -euo pipefail
 
-        picard -Xmx~{java_heap_size}g SortSam \
+        mkdir tmp
+
+        picard -Xmx~{java_heap_size}g \
+            -Djava.io.tmpdir="$(pwd)/tmp" \
+            SortSam \
             -I "~{bam}" \
             -O "~{outfile_name}" \
             -SO "~{sort_order}" \
+            --TMP_DIR "$(pwd)/tmp" \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY "~{validation_stringency}"
@@ -305,6 +317,8 @@ task sort {
         if [ -f "~{prefix}.bai" ]; then
             mv "~{prefix}.bai" "~{outfile_name}.bai"
         fi
+
+        rm -rf ./tmp
     >>>
 
     output {
@@ -587,7 +601,7 @@ task collect_alignment_summary_metrics {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -725,7 +739,7 @@ task collect_insert_size_metrics {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -786,7 +800,7 @@ task quality_score_distribution {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -913,7 +927,7 @@ task scatter_interval_list {
            I=\$((I+1))
            dir=\$(dirname \$list)
            name=\$(basename \$list)
-           mv \$list \${dir}/\${I}\${name}
+           mv \$list \${dir}/\${I}.\${name}
         done
         echo \$I > interval_count.txt
         CODE
@@ -956,7 +970,7 @@ task create_sequence_dictionary {
         String? assembly_name
         String? fasta_url
         String? species
-        String outfile_name = basename(fasta, ".fa") + ".dict"
+        String outfile_name = sub(basename(fasta), "\\.(fa|fasta|fna)(\\.gz)?$", "") + ".dict"
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
     }

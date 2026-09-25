@@ -23,6 +23,8 @@ read_group_to_string:
         validated_read_group:
           - Contains: R1
           - Contains: sampleFoo
+        validated_read_group_array:
+          - Defined: false
   - name: id_with_spaces
     inputs:
       read_group:
@@ -82,6 +84,23 @@ read_group_to_string:
           LB: lib
       required_fields:
         - []
+  - name: split_on_field
+    inputs:
+      read_group:
+        - ID: R1
+          SM: sampleFoo
+      split_on_field:
+        - true
+    assertions:
+      outputs:
+        validated_read_group:
+          - Defined: false
+        validated_read_group_array:
+          - Length: 2
+          - First:
+              StrEquals: "ID:R1"
+          - Last:
+              StrEquals: "SM:sampleFoo"
 
 get_read_groups:
   - name: works
@@ -91,3 +110,71 @@ get_read_groups:
         - bams/Aligned.sortedByCoord.chr9_chr22.bam
         - bams/test_rnaseq_variant.bam
         - bams/test.bam
+
+inner_read_group_to_string:
+  - name: space_delimited
+    inputs:
+      read_group:
+        - ID: R1
+          SM: sampleFoo
+    assertions:
+      outputs:
+        stringified_read_group:
+          - Defined: true
+          - StrEquals: "ID:R1 SM:sampleFoo"
+        read_group_array:
+          - Defined: false
+  - name: sam_record
+    inputs:
+      read_group:
+        - ID: R1
+          SM: sampleFoo
+      format_as_sam_record:
+        - true
+    assertions:
+      outputs:
+        stringified_read_group:
+          - Defined: true
+          - Contains: "@RG"
+          - Contains: "ID:R1"
+          - Contains: "SM:sampleFoo"
+        read_group_array:
+          - Defined: false
+  - name: split_on_field
+    inputs:
+      read_group:
+        - ID: R1
+          SM: sampleFoo
+      split_on_field:
+        - true
+    assertions:
+      outputs:
+        stringified_read_group:
+          - Defined: false
+        read_group_array:
+          - Defined: true
+          - Length: 2
+          - First:
+              StrEquals: "ID:R1"
+          - Last:
+              StrEquals: "SM:sampleFoo"
+  - name: sam_record_delimiter_with_split_on_field
+    inputs:
+      read_group:
+        - ID: R1
+          SM: sampleFoo
+      format_as_sam_record:
+        - true
+      split_on_field:
+        - true
+    assertions:
+      outputs:
+        stringified_read_group:
+          - Defined: false
+        read_group_array:
+          - Defined: true
+          # `format_as_sam_record` takes precedence for delimiter selection, so
+          # the tab-delimited content is still a single array element.
+          - Length: 1
+          - First:
+              Contains: "@RG"
