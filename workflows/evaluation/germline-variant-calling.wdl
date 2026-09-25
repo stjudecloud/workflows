@@ -4,7 +4,6 @@ import "../../tools/clair.wdl"
 import "../../tools/deepvariant.wdl"
 import "../../tools/gatk4.wdl"
 import "../../tools/manta.wdl"
-import "../../tools/ngsep.wdl"
 import "../../tools/strelka.wdl"
 
 workflow variant_calling {
@@ -21,7 +20,6 @@ workflow variant_calling {
             deepvariant_vcf_stats: "Optional HTML report of VCF statistics from DeepVariant",
             manta_output: "Directory containing Manta structural variant calls and associated files",
             manta_log: "Log file from the Manta workflow execution",
-            ngsep_vcf: "VCF file produced by NGSEP",
             strelka_output: "Directory containing Strelka somatic variant calls and associated files",
             strelka_log: "Log file from the Strelka workflow execution",
             haplotype_caller_vcf: "VCF file output by GATK HaplotypeCaller after VQSR and genotype posterior calculation",
@@ -50,7 +48,6 @@ workflow variant_calling {
         run_deepvariant: "Whether to run DeepVariant for variant calling"
         run_haplotype_caller: "Whether to run GATK's Haplotype Caller for variant calling"
         run_manta: "Whether to run Manta for structural variant calling"
-        run_ngsep: "Whether to run NGSEP for variant calling"
         run_strelka: "Whether to run Strelka for variant calling"
     }
 
@@ -73,7 +70,6 @@ workflow variant_calling {
         Boolean run_deepvariant = true
         Boolean run_haplotype_caller = true
         Boolean run_manta = true
-        Boolean run_ngsep = true
         Boolean run_strelka = true
     }
 
@@ -102,13 +98,6 @@ workflow variant_calling {
             bam_index = processed_bam_index,
             reference_fasta = reference_genome,
             reference_fasta_index = reference_genome_index,
-        }
-    }
-
-    if (run_ngsep) {
-        call ngsep.germline_variant as ngsep_germline_variant {
-            bam = processed_bam,
-            reference_fasta = reference_genome,
         }
     }
 
@@ -147,7 +136,6 @@ workflow variant_calling {
         File? deepvariant_vcf_stats = deepvariant.vcf_stats
         Directory? manta_output = manta_germline.manta_output
         File? manta_log = manta_germline.log_file
-        Array[File]? ngsep_vcf = ngsep_germline_variant.vcf_output
         Directory? strelka_output = strelka_germline.strelka_output
         File? strelka_log = strelka_germline.log_file
         File? haplotype_caller_vcf = germline_variant_calling_wf.vcf_final
