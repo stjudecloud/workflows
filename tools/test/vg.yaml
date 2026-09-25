@@ -59,7 +59,7 @@ giraffe:
       zipcode_name:
         - reference/GRCh38.chrY_chrM.shortread.zipcodes
       preset:
-        - chaining-sr
+        - chaining_sr
         - default
         - fast
         - hifi

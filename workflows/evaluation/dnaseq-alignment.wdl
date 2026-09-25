@@ -60,12 +60,12 @@ workflow align {
         ReadGroup read_group
         File? read_two_fastq_gz
         String output_prefix = "aligned_output"
-        Int ncpu = 30
-        Int modify_disk_size_gb = 0
         Boolean run_bwamem = true
         Boolean run_bwamem2 = true
         Boolean run_giraffe = true
         Boolean run_minimap2 = true
+        Int ncpu = 30
+        Int modify_disk_size_gb = 0
     }
 
     call read_group_ds.read_group_to_string as read_group_string {
@@ -112,7 +112,9 @@ workflow align {
         call samtools.addreplacerg {
             bam = vg_giraffe.alignments,
             orphan_only = false,
-            read_group_line = select_first([read_group_array_ws.validated_read_group_array]),
+            read_group_line = select_first([
+                read_group_array_ws.validated_read_group_array,
+            ]),
         }
         call samtools.calmd {
             bam = addreplacerg.tagged_bam,

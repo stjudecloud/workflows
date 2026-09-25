@@ -79,6 +79,9 @@
         "hkubal",
         "revio",
         "lintr",
+        "Basecaller",
+        "ssrs",
+        "SMRTbell",
         // tool subcommands & flags
         "flagstat",
         "markdup",
