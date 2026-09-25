@@ -41,6 +41,10 @@ workflow align {
         output_prefix: "Output file prefix for aligned reads"
         ncpu: "Number of threads to use for alignment"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
+        run_bwamem: "Whether to run BWA-MEM alignment"
+        run_bwamem2: "Whether to run BWA-MEM2 alignment"
+        run_giraffe: "Whether to run vg giraffe alignment"
+        run_minimap2: "Whether to run minimap2 alignment"
     }
 
     input {
@@ -58,6 +62,10 @@ workflow align {
         String output_prefix = "aligned_output"
         Int ncpu = 30
         Int modify_disk_size_gb = 0
+        Boolean run_bwamem = true
+        Boolean run_bwamem2 = true
+        Boolean run_giraffe = true
+        Boolean run_minimap2 = true
     }
 
     call read_group_ds.read_group_to_string as read_group_string {
@@ -65,92 +73,100 @@ workflow align {
         format_as_sam_record = true,
     }
 
-    call bwamem2.align as bwamem2 {
-        read_one_fastq_gz,
-        read_two_fastq_gz,
-        reference_index = bwamem2_reference,
-        prefix = "~{output_prefix}_bwamem2",
-        ncpu,
-        modify_disk_size_gb,
-        read_group = select_first([read_group_string.validated_read_group]),
+    if (run_bwamem2) {
+        call bwamem2.align as bwamem2 {
+            read_one_fastq_gz,
+            read_two_fastq_gz,
+            reference_index = bwamem2_reference,
+            prefix = "~{output_prefix}_bwamem2",
+            ncpu,
+            modify_disk_size_gb,
+            read_group = select_first([read_group_string.validated_read_group]),
+        }
+
+        call alignment_post.alignment_post as bwamem2_post {
+            bam = bwamem2.alignments,
+            mark_duplicates = true,
+        }
     }
 
-    call alignment_post.alignment_post as bwamem2_post {
-        bam = bwamem2.alignments,
-        mark_duplicates = true,
+    if (run_giraffe) {
+        call vg.giraffe as vg_giraffe {
+            read_one_fastq_gz,
+            read_two_fastq_gz,
+            gbz_graph = giraffe_gbz_graph,
+            minimizer_index = giraffe_minimizer_index,
+            zipcode_name = giraffe_zipcode_name,
+            distance_index = giraffe_distance_index,
+            output_name = "~{output_prefix}_vg.bam",
+            output_format = "BAM",
+            ncpu,
+            modify_disk_size_gb,
+        }
+
+        call read_group_ds.read_group_to_string as read_group_array_ws {
+            read_group,
+            split_on_field = true,
+        }
+
+        call samtools.addreplacerg {
+            bam = vg_giraffe.alignments,
+            orphan_only = false,
+            read_group_line = select_first([read_group_array_ws.validated_read_group_array]),
+        }
+        call samtools.calmd {
+            bam = addreplacerg.tagged_bam,
+            reference_fasta,
+        }
+
+        call alignment_post.alignment_post as giraffe_post {
+            bam = calmd.calmd_bam,
+            mark_duplicates = true,
+        }
     }
 
-    call vg.giraffe as vg_giraffe {
-        read_one_fastq_gz,
-        read_two_fastq_gz,
-        gbz_graph = giraffe_gbz_graph,
-        minimizer_index = giraffe_minimizer_index,
-        zipcode_name = giraffe_zipcode_name,
-        distance_index = giraffe_distance_index,
-        output_name = "~{output_prefix}_vg.bam",
-        output_format = "BAM",
-        ncpu,
-        modify_disk_size_gb,
+    if (run_minimap2) {
+        call minimap2.align as minimap2 {
+            read_one_fastq_gz,
+            read_two_fastq_gz,
+            reference_index = minimap2_reference,
+            output_name = "~{output_prefix}_minimap2.bam",
+            ncpu,
+            modify_disk_size_gb,
+            read_group = select_first([read_group_string.validated_read_group]),
+        }
+
+        call alignment_post.alignment_post as minimap2_post {
+            bam = minimap2.alignments,
+            mark_duplicates = true,
+        }
     }
 
-    call read_group_ds.read_group_to_string as read_group_array_ws {
-        read_group,
-        split_on_field = true,
-    }
+    if (run_bwamem) {
+        call bwa.bwa_mem as bwa_mem {
+            read_one_fastq_gz,
+            read_two_fastq_gz,
+            bwa_db_tar_gz = bwamem_reference,
+            prefix = "~{output_prefix}_bwa",
+            ncpu,
+            modify_disk_size_gb,
+            read_group = select_first([read_group_string.validated_read_group]),
+        }
 
-    call samtools.addreplacerg {
-        bam = vg_giraffe.alignments,
-        orphan_only = false,
-        read_group_line = select_first([read_group_array_ws.validated_read_group_array]),
-    }
-    call samtools.calmd {
-        bam = addreplacerg.tagged_bam,
-        reference_fasta,
-    }
-
-    call alignment_post.alignment_post as giraffe_post {
-        bam = calmd.calmd_bam,
-        mark_duplicates = true,
-    }
-
-    call minimap2.align as minimap2 {
-        read_one_fastq_gz,
-        read_two_fastq_gz,
-        reference_index = minimap2_reference,
-        output_name = "~{output_prefix}_minimap2.bam",
-        ncpu,
-        modify_disk_size_gb,
-        read_group = select_first([read_group_string.validated_read_group]),
-    }
-
-    call alignment_post.alignment_post as minimap2_post {
-        bam = minimap2.alignments,
-        mark_duplicates = true,
-    }
-
-    call bwa.bwa_mem as bwa_mem {
-        read_one_fastq_gz,
-        read_two_fastq_gz,
-        bwa_db_tar_gz = bwamem_reference,
-        prefix = "~{output_prefix}_bwa",
-        ncpu,
-        modify_disk_size_gb,
-        read_group = select_first([read_group_string.validated_read_group]),
-    }
-
-    call alignment_post.alignment_post as bwa_mem_post {
-        bam = bwa_mem.bam,
-        mark_duplicates = true,
+        call alignment_post.alignment_post as bwa_mem_post {
+            bam = bwa_mem.bam,
+            mark_duplicates = true,
+        }
     }
 
     output {
-        File bwamem2_bam = bwamem2_post.processed_bam
-        File bwamem2_bam_index = bwamem2_post.bam_index
-        File vg_giraffe_bam = giraffe_post.processed_bam
-        File vg_giraffe_bam_index = giraffe_post.bam_index
-        File minimap2_bam = minimap2_post.processed_bam
-        File minimap2_bam_index = minimap2_post.bam_index
-        File bwa_bam = bwa_mem_post.processed_bam
-        File bwa_bam_index = bwa_mem_post.bam_index
+        File? bwamem2_bam = bwamem2_post.processed_bam
+        File? bwamem2_bam_index = bwamem2_post.bam_index
+        File? vg_giraffe_bam = giraffe_post.processed_bam
+        File? vg_giraffe_bam_index = giraffe_post.bam_index
+        File? minimap2_bam = minimap2_post.processed_bam
+        File? minimap2_bam_index = minimap2_post.bam_index
+        File? bwa_bam = bwa_mem_post.processed_bam
+        File? bwa_bam_index = bwa_mem_post.bam_index
     }
 }
