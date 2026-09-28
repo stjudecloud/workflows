@@ -64,7 +64,7 @@ task sort {
         mako \
             ~{if verify then "--verify" else "-o \"~{outfile_name}\""} \
             ~{if index then "--write-index" else ""} \
-            --order "~{sort_order}" \
+            --order "~{value(sort_order)}" \
             --max-memory "~{task_mem_gb}GB" \
             --threads "~{ncpu}" \
             -i "~{bam}"

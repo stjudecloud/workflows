@@ -111,7 +111,7 @@ task giraffe {
             ~{if defined(read_group) then "--read-group \"~{read_group}\"" else ""} \
             ~{if defined(haplotype) then "--haplotype-name \"~{haplotype}\"" else ""} \
             ~{if defined(kff) then "--kff-name \"~{kff}\"" else ""} \
-            --parameter-preset "~{preset}" \
+            --parameter-preset "~{value(preset)}" \
             > "~{output_name}"
     >>>
 
@@ -174,7 +174,7 @@ task index {
             || ln -sf "~{reference_fasta}" "$ref_fasta"
 
         vg autoindex \
-            --workflow "~{autoindex_workflow}" \
+            --workflow "~{value(autoindex_workflow)}" \
             -r "$ref_fasta" \
             -p "~{db_prefix}" \
             ~{sep(" ", prefix("-v ", quote(vcf_files)))} \

@@ -91,7 +91,7 @@ task align {
         set -euo pipefail
 
         minimap2 \
-            ~{if defined(preset) then "-x \"~{preset}\"" else ""} \
+            ~{if defined(preset) then "-x \"~{value(preset)}\"" else ""} \
             ~{if output_paf then "" else "-a"} \
             ~{if output_paf && cigar_in_paf then "-c" else ""} \
             ~{if ignore_base_quality then "-Q" else ""} \

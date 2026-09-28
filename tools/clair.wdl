@@ -153,7 +153,7 @@ task clair3 {
             --ref_fn="$ref_fasta" \
             --threads="~{ncpu}" \
             --platform="~{platform}" \
-            --model_path="/opt/models/~{model}" \
+            --model_path="/opt/models/~{value(model)}" \
             --output="~{output_dir}" \
             ~{if length(contigs) > 0 then "--ctg_name='~{sep(",", contigs)}'" else ""} \
             ~{if all_contigs then "--include_all_ctgs" else ""} \
