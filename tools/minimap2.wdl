@@ -90,6 +90,7 @@ task align {
     command <<<
         set -euo pipefail
 
+        # shellcheck disable=SC2086
         minimap2 \
             ~{if defined(preset) then "-x \"~{value(preset)}\"" else ""} \
             ~{if output_paf then "" else "-a"} \
