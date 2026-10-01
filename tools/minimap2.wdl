@@ -38,6 +38,7 @@ enum Preset[String] {
 task align {
     meta {
         description: "Align DNA or mRNA sequences against a large reference database"
+        warning: "Only the default `sr` `preset` is exercised by this repository's tests. Other presets are provided as-is."
         outputs: {
             alignments: "The output alignment file in SAM or PAF format",
         }

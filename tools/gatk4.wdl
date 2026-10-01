@@ -345,6 +345,7 @@ task haplotype_caller {
         reference_confidence: {
             description: "Reference confidence mode to run HaplotypeCaller in.",
             help: "If `NONE`, HaplotypeCaller will run in default mode and only output variant sites. If `GVCF`, HaplotypeCaller will run in GVCF mode and output both variant and non-variant sites with reference confidence scores. If `BP_RESOLUTION`, HaplotypeCaller will run in GVCF mode but output non-variant sites at base pair resolution instead of block resolution.",
+            warning: "If using a disk-constrained backend and changing this from `NONE`, `modify_disk_size_gb` will likely need to be increased, as `GVCF`/`BP_RESOLUTION` modes can produce substantially larger output than the default.",
             external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller#--emit-ref-confidence",
         }
         prefix: "Prefix for the output VCF. The extension `.vcf.gz` will be added."

@@ -85,6 +85,7 @@ enum Clair3Model[String] {
 task clair3 {
     meta {
         description: "Run Clair3 variant caller for small variants using deep neural networks"
+        warning: "Only the `ilmn` `model`/`platform` combination is exercised by this repository's tests. Other models are provided as-is."
         outputs: {
             pileup_vcf: "VCF file with variants called using pileup model",
             full_alignment_vcf: "VCF file with variants called using full-alignment model. Undefined if no full-alignment candidates were selected (e.g. too few or no low-quality variants in the pileup output for the called region).",
@@ -183,6 +184,7 @@ task clair3 {
 task clair_s {
     meta {
         description: "Run ClairS paired sample variant caller"
+        warning: "Only the `ilmn` `platform` is exercised by this repository's tests. Other platforms are provided as-is."
         outputs: {
             vcf: "VCF file with somatic variants called by ClairS",
             vcf_index: "Index for `vcf`",

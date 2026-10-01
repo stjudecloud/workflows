@@ -52,6 +52,7 @@ workflow read_group_to_string {
         name: "ReadGroup to String"
         description: "Validates a `ReadGroup` struct is well-formed and then converts it to a `String`"
         category: "Utility"
+        warning: "If both `format_as_sam_record` and `split_on_field` are `true`, behavior is undefined. This combination may become an error in the future."
         outputs: {
             validated_read_group: "The validated input `ReadGroup` as a `String`. Undefined if `split_on_field == true`.",
             validated_read_group_array: "The validated input `ReadGroup` as an `Array[String]`, one entry per field. Undefined if `split_on_field == false`.",
@@ -63,9 +64,9 @@ workflow read_group_to_string {
         required_fields: "Array of read group fields that must be defined. The ID field is always required and does not need to be specified."
         format_as_sam_record: {
             description: "Format the `ReadGroup` as a SAM record?",
-            help: "If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters. Takes precedence over `split_on_field`.",
+            help: "If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters.",
         }
-        split_on_field: "Split the ReadGroup into separate array elements, one per field, instead of a single `String`. Ignored if `format_as_sam_record == true`."
+        split_on_field: "Split the ReadGroup into separate array elements, one per field, instead of a single `String`. Behavior is undefined if `format_as_sam_record == true`."
         restrictive: "If true, run a stricter validation of field values. Otherwise, check against SAM spec-defined values."
     }
 
@@ -363,7 +364,7 @@ task validate_read_group {
 task inner_read_group_to_string {
     meta {
         description: "Converts a `ReadGroup` struct to a `String` **without any validation**."
-        warning: "Please use the `read_group_to_string` workflow, which has validation of the `ReadGroup` contents."
+        warning: "Please use the `read_group_to_string` workflow, which has validation of the `ReadGroup` contents. Additionally, if both `format_as_sam_record` and `split_on_field` are `true`, behavior is undefined. This combination may become an error in the future."
         outputs: {
             stringified_read_group: "Input `ReadGroup` as a string. Undefined if `split_on_field == true`.",
             read_group_array: "Input `ReadGroup` as an `Array[String]`. Undefined if `split_on_field == false`.",
@@ -374,9 +375,9 @@ task inner_read_group_to_string {
         read_group: "`ReadGroup` struct to stringify"
         format_as_sam_record: {
             description: "Format the `ReadGroup` as a SAM record?",
-            help: "If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters. Takes precedence over `split_on_field`.",
+            help: "If `true`, the read group string will be prefixed with `@RG` and tab escape sequence (`\t`) delimiters will be used instead of space delimiters.",
         }
-        split_on_field: "Split the ReadGroup into separate lines for each field. Ignored if `format_as_sam_record == true`."
+        split_on_field: "Split the ReadGroup into separate lines for each field. Behavior is undefined if `format_as_sam_record == true`."
     }
 
     input {

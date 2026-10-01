@@ -28,6 +28,7 @@ enum DVModelType {
 task deepsomatic {
     meta {
         description: "Call variants using DeepSomatic"
+        warning: "Only the `WGS` and `WES` `model_type` values are exercised by this repository's tests. Other model types are provided as-is."
         outputs: {
             vcf_output: "VCF file containing called somatic variants",
             vcf_output_index: "Index file for the called somatic variants VCF",
@@ -140,6 +141,7 @@ task deepsomatic {
 task deepvariant {
     meta {
         description: "Call variants using DeepVariant"
+        warning: "Only the `WGS` and `WES` `model_type` values are exercised by this repository's tests. Other model types are provided as-is."
         outputs: {
             vcf_output: "VCF file containing called variants",
             vcf_output_index: "Index file for the called variants VCF",
