@@ -116,7 +116,7 @@ workflow chipseq_standard_experimental {
         }
         call util.add_to_bam_header { input:
             bam = chosen_bam,
-            additional_header = read_group_to_string.validated_read_group,
+            additional_header = select_first([read_group_to_string.validated_read_group]),
         }
         call samtools.addreplacerg { input:
             bam = add_to_bam_header.reheadered_bam,

@@ -1,0 +1,115 @@
+mutect2:
+  - name: works
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+        reference_fasta_dict:
+          - reference/GRCh38.chrY_chrM.dict
+      $normal:
+        normal_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        normal_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      $tumor:
+        tumor_bam:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
+        tumor_bam_index:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
+      tumor_sample_name:
+        - tumor
+      normal_sample_name:
+        - test
+
+  - name: with_germline_resource
+    tags: [slow]
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+        reference_fasta_dict:
+          - reference/GRCh38.chrY_chrM.dict
+      $normal:
+        normal_bam:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam
+        normal_bam_index:
+          - bams/test.bwa_aln_pe.chrY_chrM.bam.bai
+      $tumor:
+        tumor_bam:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
+        tumor_bam_index:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
+      $germline:
+        germline_resource_vcf:
+          - mutect2/af-only-gnomad.hg38.chrY_chrM.vcf.gz
+        germline_resource_vcf_index:
+          - mutect2/af-only-gnomad.hg38.chrY_chrM.vcf.gz.tbi
+      tumor_sample_name:
+        - tumor
+      normal_sample_name:
+        - test
+
+get_pileup_summaries:
+  - name: works
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+        reference_fasta_dict:
+          - reference/GRCh38.chrY_chrM.dict
+      $sample:
+        bam:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam
+        bam_index:
+          - bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam.bai
+      $sites:
+        intervals:
+          - mutect2/af-only-gnomad.hg38.chrY_chrM.vcf.gz
+        intervals_index:
+          - mutect2/af-only-gnomad.hg38.chrY_chrM.vcf.gz.tbi
+        variants:
+          - mutect2/af-only-gnomad.hg38.chrY_chrM.vcf.gz
+        variants_index:
+          - mutect2/af-only-gnomad.hg38.chrY_chrM.vcf.gz.tbi
+
+calculate_contamination:
+  - name: tumor_only
+    inputs:
+      tumor_pileups:
+        - mutect2/test.bwa_aln_pe.with_variants.chrY_chrM_pileup_summaries.table
+
+  - name: with_matched_normal
+    inputs:
+      tumor_pileups:
+        - mutect2/test.bwa_aln_pe.with_variants.chrY_chrM_pileup_summaries.table
+      normal_pileups:
+        - mutect2/test.bwa_aln_pe.chrY_chrM_pileup_summaries.table
+
+filter_mutect:
+  - name: works
+    inputs:
+      $reference:
+        reference_fasta:
+          - reference/GRCh38.chrY_chrM.fa
+        reference_fasta_index:
+          - reference/GRCh38.chrY_chrM.fa.fai
+        reference_fasta_dict:
+          - reference/GRCh38.chrY_chrM.dict
+      $unfiltered:
+        unfiltered_somatic_vcf:
+          - vcfs/test.bwa_aln_pe.chrY_chrM.mutect2.vcf.gz
+        unfiltered_somatic_vcf_index:
+          - vcfs/test.bwa_aln_pe.chrY_chrM.mutect2.vcf.gz.tbi
+        unfiltered_somatic_vcf_stats:
+          - vcfs/test.bwa_aln_pe.chrY_chrM.mutect2.vcf.gz.stats
+      contamination_table:
+        - mutect2/test.bwa_aln_pe.with_variants.chrY_chrM_pileup_summaries.contamination.table
+      maf_segments:
+        - mutect2/test.bwa_aln_pe.with_variants.chrY_chrM_pileup_summaries.segments.table

@@ -111,7 +111,7 @@ workflow rnaseq_standard {
     call rnaseq_core_wf.rnaseq_core { input:
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
-        read_groups = read_group_to_string.validated_read_group,
+        read_groups = select_all(read_group_to_string.validated_read_group),
         prefix,
         gtf,
         star_db,

@@ -17,3 +17,8 @@ bin/check-job-alive !text !filter !merge !diff
 *.conf !text !filter !merge !diff
 .fa filter=lfs diff=lfs merge=lfs -text
 *.fa filter=lfs diff=lfs merge=lfs -text
+*.mmi filter=lfs diff=lfs merge=lfs -text
+*.gbz filter=lfs diff=lfs merge=lfs -text
+*.dist filter=lfs diff=lfs merge=lfs -text
+*.min filter=lfs diff=lfs merge=lfs -text
+*.zipcodes filter=lfs diff=lfs merge=lfs -text

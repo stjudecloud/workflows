@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 import "../../tools/gatk4.wdl" as gatk
 import "../../tools/picard.wdl"

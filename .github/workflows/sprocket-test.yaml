@@ -36,4 +36,4 @@ jobs:
       env: 
         RUNNER: ${{ matrix.runner }}
       run: |
-        sprocket dev test --exclude-tag slow --exclude-tag high_mem ${{ matrix.file }}
+        sprocket dev test --exclude-tag slow --exclude-tag high_mem --exclude-tag gpu ${{ matrix.file }}

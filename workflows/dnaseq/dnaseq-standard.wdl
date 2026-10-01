@@ -111,7 +111,7 @@ workflow dnaseq_standard_experimental {
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
         bwa_db,
-        read_groups = read_group_to_string.validated_read_group,
+        read_groups = select_all(read_group_to_string.validated_read_group),
         prefix,
         aligner,
         enable_read_trimming,

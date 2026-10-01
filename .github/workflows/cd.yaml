@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           path: workflows
+      - name: Install Sprocket
         uses: stjude-rust-labs/setup-sprocket@v1
         with:
           github-token: ${{ github.token }}
