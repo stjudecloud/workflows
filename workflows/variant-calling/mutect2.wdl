@@ -120,4 +120,3 @@ workflow mutect2 {
         File filtered_somatic_vcf_index = filter_mutect.filtered_somatic_vcf_index
     }
 }
-

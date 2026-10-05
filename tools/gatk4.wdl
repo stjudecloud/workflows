@@ -1091,4 +1091,3 @@ task merge_vcfs {
         container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
     }
 }
-
