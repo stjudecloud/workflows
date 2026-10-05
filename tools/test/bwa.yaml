@@ -42,6 +42,18 @@ bwa_mem:
         - "@RG\\tID:test\\tSM:test"
       bwa_db_tar_gz:
         - reference/GRCh38.chrY_chrM.bwa_db.tar.gz
+  - name: single_core
+    inputs:
+      read_one_fastq_gz:
+        - fastqs/test_R1.fq.gz
+      read_two_fastq_gz:
+        - fastqs/test_R2.fq.gz
+      read_group:
+        - "@RG\\tID:test\\tSM:test"
+      bwa_db_tar_gz:
+        - reference/GRCh38.chrY_chrM.bwa_db.tar.gz
+      ncpu:
+        - 1
 build_bwa_db:
   - name: works
     tags: [ reference, slow ]

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2026 September
+
+### Changed
+
+- Adapted to `data_structures/read_group.wdl`'s `read_group_to_string` workflow outputs becoming truly optional; results are now unwrapped with `select_first` at call sites [#282](https://github.com/stjudecloud/workflows/pull/282)
+
 ## 2026 August
 
 ### Changed
