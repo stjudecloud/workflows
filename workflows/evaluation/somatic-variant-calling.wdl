@@ -4,8 +4,8 @@ import "../../data_structures/read_group.wdl"
 import "../../tools/clair.wdl"
 import "../../tools/deepvariant.wdl"
 import "../../tools/manta.wdl"
-import "../../tools/mutect2.wdl"
 import "../../tools/strelka.wdl"
+import "../variant-calling/mutect2.wdl" as mutect2_wf
 
 workflow somatic_variant_calling {
     meta {
@@ -127,7 +127,7 @@ workflow somatic_variant_calling {
     }
 
     if (run_mutect2) {
-        call mutect2.mutect2_wf {
+        call mutect2_wf.mutect2 {
             reference_fasta,
             reference_fasta_index,
             reference_fasta_dict,
@@ -155,7 +155,7 @@ workflow somatic_variant_calling {
         File? deepsomatic_vcf = deepsomatic.vcf_output
         Directory? manta_output = manta_somatic.manta_output
         Directory? strelka_output = somatic.strelka_output
-        File? mutect2_vcf = mutect2_wf.filtered_somatic_vcf
-        File? mutect2_vcf_index = mutect2_wf.filtered_somatic_vcf_index
+        File? mutect2_vcf = mutect2.filtered_somatic_vcf
+        File? mutect2_vcf_index = mutect2.filtered_somatic_vcf_index
     }
 }

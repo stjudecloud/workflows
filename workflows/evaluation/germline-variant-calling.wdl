@@ -5,6 +5,7 @@ import "../../tools/deepvariant.wdl"
 import "../../tools/gatk4.wdl"
 import "../../tools/manta.wdl"
 import "../../tools/strelka.wdl"
+import "../variant-calling/haplotype_caller.wdl" as hc
 
 workflow variant_calling {
     meta {
@@ -111,7 +112,7 @@ workflow variant_calling {
     }
 
     if (run_haplotype_caller) {
-        call gatk4.germline_variant_calling_wf {
+        call hc.haplotype_caller {
             bam = processed_bam,
             bam_index = processed_bam_index,
             interval_list,
@@ -138,7 +139,7 @@ workflow variant_calling {
         File? manta_log = manta_germline.log_file
         Directory? strelka_output = strelka_germline.strelka_output
         File? strelka_log = strelka_germline.log_file
-        File? haplotype_caller_vcf = germline_variant_calling_wf.vcf_final
-        File? haplotype_caller_vcf_index = germline_variant_calling_wf.vcf_final_index
+        File? haplotype_caller_vcf = haplotype_caller.vcf_final
+        File? haplotype_caller_vcf_index = haplotype_caller.vcf_final_index
     }
 }
