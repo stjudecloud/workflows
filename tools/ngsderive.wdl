@@ -82,7 +82,7 @@ task strandedness {
         String strandedness_string = read_string("strandedness.txt")
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
@@ -135,7 +135,7 @@ task instrument {
         String instrument_string = read_string("instrument.txt")
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
@@ -199,7 +199,7 @@ task read_length {
         File read_length_file = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
@@ -248,7 +248,7 @@ task encoding {
         File encoding_file = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
@@ -336,7 +336,7 @@ task junction_annotation {
         File junctions = "~{prefix}.junctions.tsv.gz"
     }
 
-    runtime {
+    requirements {
         memory: "56 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
@@ -420,7 +420,7 @@ task endedness {
         File endedness_file = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"

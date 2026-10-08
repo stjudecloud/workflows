@@ -29,7 +29,7 @@ task quickcheck {
         samtools quickcheck "~{bam}"
     >>>
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -141,7 +141,7 @@ task split {
         Array[File] split_bams = glob("*.bam")
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -200,7 +200,7 @@ task flagstat {
         File flagstat_report = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
@@ -258,7 +258,7 @@ task index {
         File bam_index = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -406,7 +406,7 @@ task subsample {
         File? sampled_bam = suffixed + ".bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -493,7 +493,7 @@ task filter {
         File filtered_bam = prefix + ".bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -601,7 +601,7 @@ task merge {
         File merged_bam = prefix + ".bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -692,7 +692,7 @@ task addreplacerg {
         File tagged_bam = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "8 GB"
         disks: "~{disk_size_gb} GB"
@@ -765,7 +765,7 @@ task collate {
         File collated_bam = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -941,7 +941,7 @@ task bam_to_fastq {
         File? single_end_reads_fastq_gz = "~{prefix}.fastq.gz"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
@@ -1039,7 +1039,7 @@ task fixmate {
         File fixmate_bam = "~{prefix}~{extension}"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -1145,7 +1145,7 @@ task position_sorted_fixmate {
         File fixmate_bam = "~{prefix}.bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -1285,7 +1285,7 @@ task markdup {
         File? markdup_bam = prefix + ".bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
@@ -1331,7 +1331,7 @@ task faidx {
         File fasta_index = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: 1
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -1390,7 +1390,7 @@ task calmd {
         File calmd_bam = "~{prefix}.bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -1455,7 +1455,7 @@ task sort {
         File sorted_bam = "~{prefix}.bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"

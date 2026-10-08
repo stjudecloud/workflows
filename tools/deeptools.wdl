@@ -62,7 +62,7 @@ task bam_coverage {
         File bigwig = "~{prefix}.bw"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"

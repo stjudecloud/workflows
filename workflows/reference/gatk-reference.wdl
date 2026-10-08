@@ -46,48 +46,48 @@ workflow gatk_reference {
         String reference_fa_url
         String reference_fa_name
         String reference_fa_md5
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         String dbSNP_vcf_url
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         String dbSNP_vcf_name
         Int known_vcf_disk_size_gb
         Int reference_fa_disk_size_gb
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int dbSNP_vcf_disk_size_gb
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         String? dbSNP_vcf_index_url
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         String? dbSNP_vcf_index_name
         String? interval_list_url
         String? interval_list_name
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int dbSNP_vcf_index_disk_size_gb = 1
         Int interval_list_disk_size_gb = 1
     }
 
-    call util.download as fasta_download { input:
+    call util.download as fasta_download {
         url = reference_fa_url,
         outfile_name = reference_fa_name,
         md5sum = reference_fa_md5,
         disk_size_gb = reference_fa_disk_size_gb,
     }
 
-    call samtools.faidx { input:
+    call samtools.faidx {
         fasta = fasta_download.downloaded_file,
     }
 
-    call picard.create_sequence_dictionary { input:
+    call picard.create_sequence_dictionary {
         fasta = fasta_download.downloaded_file,
     }
 
-    call util.download as dbsnp { input:
+    call util.download as dbsnp {
         url = dbSNP_vcf_url,
         outfile_name = dbSNP_vcf_name,
         disk_size_gb = dbSNP_vcf_disk_size_gb,
     }
 
     if (defined(dbSNP_vcf_index_url) && defined(dbSNP_vcf_index_name)) {
-        call util.download as dbsnp_index { input:
+        call util.download as dbsnp_index {
             url = select_first([dbSNP_vcf_index_url, "undefined"]),
             outfile_name = select_first([dbSNP_vcf_index_name, "undefined"]),
             disk_size_gb = dbSNP_vcf_index_disk_size_gb,
@@ -95,7 +95,7 @@ workflow gatk_reference {
     }
 
     if (defined(interval_list_url) && defined(interval_list_name)) {
-        call util.download as intervals { input:
+        call util.download as intervals {
             url = select_first([interval_list_url, "undefined"]),
             outfile_name = select_first([interval_list_name, "undefined"]),
             disk_size_gb = interval_list_disk_size_gb,
@@ -103,7 +103,7 @@ workflow gatk_reference {
     }
 
     scatter (pair in zip(known_vcf_urls, known_vcf_names)) {
-        call util.download as known_vcf { input:
+        call util.download as known_vcf {
             url = pair.left,
             outfile_name = pair.right,
             disk_size_gb = known_vcf_disk_size_gb,
@@ -114,9 +114,9 @@ workflow gatk_reference {
         File fasta = fasta_download.downloaded_file
         File fasta_index = faidx.fasta_index
         File fasta_dict = create_sequence_dictionary.dictionary
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File? dbSNP_vcf = dbsnp.downloaded_file
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File? dbSNP_vcf_index = dbsnp_index.downloaded_file
         File? interval_list = intervals.downloaded_file
         Array[File] known_vcfs = known_vcf.downloaded_file

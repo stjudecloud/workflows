@@ -61,7 +61,7 @@ task fastqc {
         File results = out_tar_gz
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"

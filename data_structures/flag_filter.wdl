@@ -108,7 +108,7 @@ task validate_string_is_12bit_int {
         fi
     >>>
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
@@ -128,16 +128,16 @@ workflow validate_flag_filter {
         FlagFilter flags
     }
 
-    call validate_string_is_12bit_int as validate_include_if_any { input:
+    call validate_string_is_12bit_int as validate_include_if_any {
         number = flags.include_if_any,
     }
-    call validate_string_is_12bit_int as validate_include_if_all { input:
+    call validate_string_is_12bit_int as validate_include_if_all {
         number = flags.include_if_all,
     }
-    call validate_string_is_12bit_int as validate_exclude_if_any { input:
+    call validate_string_is_12bit_int as validate_exclude_if_any {
         number = flags.exclude_if_any,
     }
-    call validate_string_is_12bit_int as validate_exclude_if_all { input:
+    call validate_string_is_12bit_int as validate_exclude_if_all {
         number = flags.exclude_if_all,
     }
 }

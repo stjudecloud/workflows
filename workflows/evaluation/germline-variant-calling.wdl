@@ -58,9 +58,9 @@ workflow variant_calling {
         File reference_genome
         File reference_genome_index
         File reference_genome_dictionary
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf_index
         File interval_list
         Clair3Model clair3_model

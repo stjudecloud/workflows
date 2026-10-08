@@ -64,12 +64,12 @@ workflow dnaseq_standard_fastq_experimental {
         Int subsample_n_reads = -1
     }
 
-    call dnaseq_standard.parse_input { input:
+    call dnaseq_standard.parse_input {
         aligner,
     }
 
     scatter (rg in read_groups) {
-        call read_group.read_group_to_string after parse_input { input:
+        call read_group.read_group_to_string after parse_input {
             read_group = rg,
             format_as_sam_record = true,
         }
@@ -77,7 +77,7 @@ workflow dnaseq_standard_fastq_experimental {
 
     if (validate_input) {
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-            call fq.fqlint after read_group_to_string { input:
+            call fq.fqlint after read_group_to_string {
                 read_one_fastq = reads.left,
                 read_two_fastq = reads.right,
             }
@@ -87,7 +87,7 @@ workflow dnaseq_standard_fastq_experimental {
     if (subsample_n_reads > 0) {
         Int reads_per_pair = ceil(subsample_n_reads / length(read_one_fastqs_gz))
         scatter (reads in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
-            call fq.subsample after fqlint { input:
+            call fq.subsample after fqlint {
                 read_one_fastq = reads.left,
                 read_two_fastq = reads.right,
                 record_count = reads_per_pair,
@@ -103,7 +103,7 @@ workflow dnaseq_standard_fastq_experimental {
         read_two_fastqs_gz,
     ]))
 
-    call dnaseq_core_wf.dnaseq_core_experimental after fqlint { input:
+    call dnaseq_core_wf.dnaseq_core_experimental after fqlint {
         read_one_fastqs_gz = selected_read_one_fastqs,
         read_two_fastqs_gz = selected_read_two_fastqs,
         bwa_db,

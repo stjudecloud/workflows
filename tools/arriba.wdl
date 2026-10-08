@@ -257,7 +257,7 @@ task arriba {
         File discarded_fusions = "~{prefix}.discarded.tsv"
     }
 
-    runtime {
+    requirements {
         cpu: 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -308,7 +308,7 @@ task arriba_tsv_to_vcf {
         File fusions_vcf = "~{prefix}.vcf"
     }
 
-    runtime {
+    requirements {
         cpu: 1
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -365,7 +365,7 @@ task arriba_extract_fusion_supporting_alignments {
         Array[File] fusion_bam_indexes = glob("~{prefix}_*.bam.bai")
     }
 
-    runtime {
+    requirements {
         cpu: 1
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/arriba:2.4.0--h0033a41_2"
@@ -414,7 +414,7 @@ task arriba_annotate_exon_numbers {
         File fusion_tsv = "~{prefix}.annotated.tsv"
     }
 
-    runtime {
+    requirements {
         cpu: 1
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/arriba:2.4.0--h0033a41_2"

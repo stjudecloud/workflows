@@ -37,14 +37,14 @@ workflow methylation {
     }
 
     scatter (pair in zip(green_idats, red_idats)) {
-        call preprocess.process_raw_idats { input:
+        call preprocess.process_raw_idats {
             idats = pair,
         }
     }
 
     call preprocess.list_sex_probes
 
-    call cohort.methylation_cohort { input:
+    call cohort.methylation_cohort {
         unfiltered_normalized_beta = process_raw_idats.beta_swan_norm_unfiltered_genomic,
         p_values = process_raw_idats.probe_pvalues,
         sex_probe_list = list_sex_probes.probe_list,
@@ -68,20 +68,20 @@ workflow methylation {
             }
         }
         scatter (iter_index in range(length(probe_file_batches))) {
-            call concat_and_uniq { input:
+            call concat_and_uniq {
                 files_to_combine = select_all(probe_file_batches[iter_index]),
                 output_file_name = "probes_with_snps_part_~{iter_index}.tab",
             }
         }
 
-        call concat_and_uniq as final_cat { input:
+        call concat_and_uniq as final_cat {
             files_to_combine = flatten([concat_and_uniq.combined_file]),
             output_file_name = "probes_with_snps.tab",
         }
     }
 
     if (probelist_length <= max_length) {
-        call concat_and_uniq as simple_merge { input:
+        call concat_and_uniq as simple_merge {
             files_to_combine = probe_files,
             output_file_name = "probes_with_snps.tab",
         }
@@ -103,20 +103,20 @@ workflow methylation {
             }
         }
         scatter (iter_index in range(length(non_genomic_probe_batches))) {
-            call concat_and_uniq as non_genomic_concat { input:
+            call concat_and_uniq as non_genomic_concat {
                 files_to_combine = select_all(non_genomic_probe_batches[iter_index]),
                 output_file_name = "non_genomic_probes_part_~{iter_index}.tab",
             }
         }
 
-        call concat_and_uniq as final_cat_non_genomic { input:
+        call concat_and_uniq as final_cat_non_genomic {
             files_to_combine = flatten([non_genomic_concat.combined_file]),
             output_file_name = "non_genomic_probes.tab",
         }
     }
 
     if (non_genomic_probelist_length <= max_length) {
-        call concat_and_uniq as simple_merge_non_genomic { input:
+        call concat_and_uniq as simple_merge_non_genomic {
             files_to_combine = non_genomic_probe_list,
             output_file_name = "non_genomic_probes.tab",
         }
@@ -171,7 +171,7 @@ task concat_and_uniq {
         File combined_file = "~{output_file_name}"
     }
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/pandas:2.2.1-7"
         memory: "2 GB"
         cpu: 1

@@ -55,13 +55,13 @@ workflow chipseq_standard_experimental {
     }
 
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam { input:
+        call picard.validate_bam as validate_input_bam {
             bam,
         }
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample after validate_input_bam { input:
+        call samtools.subsample after validate_input_bam {
             bam,
             desired_reads = subsample_n_reads,
             use_all_cores,
@@ -69,11 +69,11 @@ workflow chipseq_standard_experimental {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call read_group.get_read_groups after validate_input_bam { input:
+    call read_group.get_read_groups after validate_input_bam {
         bam = selected_bam,
     }
 
-    call b2fq.bam_to_fastqs after validate_input_bam { input:
+    call b2fq.bam_to_fastqs after validate_input_bam {
         bam = selected_bam,
         paired_end = false,
         use_all_cores,
@@ -81,13 +81,13 @@ workflow chipseq_standard_experimental {
 
     scatter (pair in zip(bam_to_fastqs.read1s, get_read_groups.read_groups)) {
         if (enable_read_trimming) {
-            call fp.fastp as trim { input:
+            call fp.fastp as trim {
                 read_one_fastq = pair.left,
                 output_fastq = enable_read_trimming,
             }
         }
         if (!enable_read_trimming) {
-            call fp.fastp { input:
+            call fp.fastp {
                 read_one_fastq = pair.left,
                 output_fastq = enable_read_trimming,
             }
@@ -95,10 +95,10 @@ workflow chipseq_standard_experimental {
 
         File chosen_fastq = select_first([trim.single_end_reads_fastq_gz, pair.left])
 
-        call seaseq_util.basicfastqstats as basic_stats { input:
+        call seaseq_util.basicfastqstats as basic_stats {
             fastqfile = chosen_fastq,
         }
-        call seaseq_map.mapping as bowtie_single_end_mapping { input:
+        call seaseq_map.mapping as bowtie_single_end_mapping {
             fastqfile = chosen_fastq,
             index_files = bowtie_indexes,
             metricsfile = basic_stats.metrics_out,
@@ -110,15 +110,15 @@ workflow chipseq_standard_experimental {
             bowtie_single_end_mapping.sorted_bam,
         ])
 
-        call read_group.read_group_to_string { input:
+        call read_group.read_group_to_string {
             read_group = pair.right,
             format_as_sam_record = true,
         }
-        call util.add_to_bam_header { input:
+        call util.add_to_bam_header {
             bam = chosen_bam,
             additional_header = select_first([read_group_to_string.validated_read_group]),
         }
-        call samtools.addreplacerg { input:
+        call samtools.addreplacerg {
             bam = add_to_bam_header.reheadered_bam,
             read_group_id = pair.right.ID,
         }
@@ -126,34 +126,34 @@ workflow chipseq_standard_experimental {
 
     Array[File] aligned_bams = addreplacerg.tagged_bam
     scatter (aligned_bam in aligned_bams) {
-        call picard.clean_sam as picard_clean { input:
+        call picard.clean_sam as picard_clean {
             bam = aligned_bam,
         }
     }
 
-    call picard.merge_sam_files as picard_merge { input:
+    call picard.merge_sam_files as picard_merge {
         bams = picard_clean.cleaned_bam,
         prefix,
     }
 
-    call seaseq_samtools.markdup { input:
+    call seaseq_samtools.markdup {
         bamfile = picard_merge.merged_bam,
         outputfile = prefix + ".bam",
     }
-    call samtools.index as samtools_index { input:
+    call samtools.index as samtools_index {
         bam = markdup.mkdupbam,
         use_all_cores,
     }
     #@ except: UnusedCall
-    call picard.validate_bam { input:
+    call picard.validate_bam {
         bam = markdup.mkdupbam,
     }
 
-    call md5sum.compute_checksum { input:
+    call md5sum.compute_checksum {
         file = markdup.mkdupbam,
     }
 
-    call deeptools.bam_coverage as deeptools_bam_coverage { input:
+    call deeptools.bam_coverage as deeptools_bam_coverage {
         bam = markdup.mkdupbam,
         bam_index = samtools_index.bam_index,
         prefix,

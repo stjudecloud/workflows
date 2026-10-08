@@ -1,5 +1,5 @@
 [check]
-disable = ["ContainerUri"]
+disable = ["ContainerUri", "MutableContainerTag", "FlaggedComment"]
 deny_notes = true
 
 [format]

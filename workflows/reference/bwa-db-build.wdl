@@ -29,13 +29,13 @@ workflow bwa_db_build {
         Int reference_fa_disk_size_gb = 10
     }
 
-    call util.download as reference_download { input:
+    call util.download as reference_download {
         url = reference_fa_url,
         outfile_name = reference_fa_name,
         disk_size_gb = reference_fa_disk_size_gb,
         md5sum = reference_fa_md5,
     }
-    call bwa.build_bwa_db { input:
+    call bwa.build_bwa_db {
         reference_fasta = reference_download.downloaded_file,
     }
 

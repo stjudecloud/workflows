@@ -29,7 +29,7 @@
 ## - `SM`: Sample. Use pool name where a pool is being sequenced.
 version 1.3
 
-#@ except: SnakeCase
+#@ except: NamingConvention
 struct ReadGroup {
     String ID
     String? BC
@@ -78,12 +78,12 @@ workflow read_group_to_string {
         Boolean restrictive = true
     }
 
-    call validate_read_group { input:
+    call validate_read_group {
         read_group,
         required_fields,
         restrictive,
     }
-    call inner_read_group_to_string after validate_read_group { input:
+    call inner_read_group_to_string after validate_read_group {
         read_group,
         format_as_sam_record,
         split_on_field,
@@ -129,7 +129,7 @@ task get_read_groups {
         Array[ReadGroup] read_groups = read_json("read_groups.json")
     }
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
@@ -355,7 +355,7 @@ task validate_read_group {
         exit $exit_code
     >>>
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
@@ -425,7 +425,7 @@ task inner_read_group_to_string {
             else None
     }
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }

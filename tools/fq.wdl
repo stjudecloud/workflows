@@ -83,7 +83,7 @@ task fqlint {
             ~{"'" + read_two_fastq + "'"}
     >>>
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fq:0.12.0--h9ee0642_0"
@@ -162,7 +162,7 @@ task subsample {
         File? subsampled_read2 = prefix + ".R2.subsampled.fastq.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fq:0.12.0--h9ee0642_0"

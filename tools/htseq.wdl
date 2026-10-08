@@ -131,7 +131,7 @@ task count {
         File feature_counts = "~{outfile_name}"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/htseq:2.0.5--py310h5aa3a86_0"
@@ -184,7 +184,7 @@ task calc_tpm {
         File tpm_file = "~{outfile_name}"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"
