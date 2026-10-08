@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/alexdobin/STAR)
-version 1.1
+version 1.3
 
 task build_star_db {
     meta {

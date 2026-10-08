@@ -1,5 +1,5 @@
 ## [Homepage](https://arriba.readthedocs.io/en/latest/)
-version 1.1
+version 1.3
 
 task arriba {
     meta {

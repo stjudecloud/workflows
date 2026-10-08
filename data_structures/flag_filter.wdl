@@ -58,7 +58,7 @@
 ## In short, those are all flags corresponding to the quality of the read
 ## and them being `true` may indicate that the read is of low quality and
 ## should be excluded.
-version 1.1
+version 1.3
 
 struct FlagFilter {
     String include_if_all  # samtools -f

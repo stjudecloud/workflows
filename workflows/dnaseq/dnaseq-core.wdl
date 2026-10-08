@@ -1,5 +1,5 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-version 1.1
+version 1.3
 
 import "../../tools/bwa.wdl"
 import "../../tools/fastp.wdl" as fp

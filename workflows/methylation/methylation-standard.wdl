@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 import "./methylation-cohort.wdl" as cohort
 import "./methylation-preprocess.wdl" as preprocess

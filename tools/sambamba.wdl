@@ -1,5 +1,5 @@
 ## [Homepage](https://lomereiter.github.io/sambamba/)
-version 1.1
+version 1.3
 
 task index {
     meta {

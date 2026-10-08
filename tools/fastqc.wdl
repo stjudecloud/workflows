@@ -1,5 +1,5 @@
 ## [Homepage](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
-version 1.1
+version 1.3
 
 task fastqc {
     meta {

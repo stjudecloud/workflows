@@ -1,5 +1,5 @@
 [check]
-except = ["ContainerUri", "TodoComment", "UnusedInput"]
+disable = ["ContainerUri"]
 deny_notes = true
 
 [format]

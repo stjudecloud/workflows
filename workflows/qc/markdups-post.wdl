@@ -5,7 +5,7 @@
 ## whether a read is a duplicate or not.
 ## But the tasks called below produce different results depending on whether the
 ## input BAM has been duplicate marked or not.
-version 1.1
+version 1.3
 
 import "../../tools/mosdepth.wdl"
 import "../../tools/picard.wdl"

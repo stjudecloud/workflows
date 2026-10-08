@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"

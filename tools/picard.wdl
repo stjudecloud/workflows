@@ -1,5 +1,5 @@
 ## [Homepage](https://broadinstitute.github.io/picard/)
-version 1.1
+version 1.3
 
 task mark_duplicates {
     meta {

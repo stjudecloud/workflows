@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/brentp/mosdepth)
-version 1.1
+version 1.3
 
 task coverage {
     meta {

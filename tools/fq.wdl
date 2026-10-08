@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/stjude-rust-labs/fq)
-version 1.1
+version 1.3
 
 #@ except: EmptyOutputs
 task fqlint {

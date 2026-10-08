@@ -27,7 +27,7 @@
 ## - `PU`: Platform unit (e.g., flowcell-barcode.lane for Illumina or slide
 ##     for SOLiD). Unique identifier.
 ## - `SM`: Sample. Use pool name where a pool is being sequenced.
-version 1.1
+version 1.3
 
 #@ except: SnakeCase
 struct ReadGroup {

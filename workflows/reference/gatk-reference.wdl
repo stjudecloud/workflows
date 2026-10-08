@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 import "../../tools/picard.wdl"
 import "../../tools/samtools.wdl"

@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 import "../../tools/bwa.wdl"
 import "../../tools/util.wdl"

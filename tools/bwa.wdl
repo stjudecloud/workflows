@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/lh3/bwa)
-version 1.1
+version 1.3
 
 task bwa_aln {
     meta {

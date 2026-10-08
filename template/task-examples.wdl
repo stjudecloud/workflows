@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 task static_disk_and_ram_task {
     meta {

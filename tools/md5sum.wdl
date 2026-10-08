@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/coreutils/coreutils)
-version 1.1
+version 1.3
 
 task compute_checksum {
     meta {

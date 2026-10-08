@@ -1,5 +1,5 @@
 ## # librarian
-version 1.1
+version 1.3
 
 task librarian {
     meta {

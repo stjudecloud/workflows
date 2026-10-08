@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/DerrickWood/kraken2)
-version 1.1
+version 1.3
 
 task download_taxonomy {
     meta {

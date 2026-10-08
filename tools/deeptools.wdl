@@ -1,5 +1,5 @@
 ## [Homepage](https://deeptools.readthedocs.io/en/develop/index.html)
-version 1.1
+version 1.3
 
 task bam_coverage {
     meta {

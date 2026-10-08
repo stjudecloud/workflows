@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 import "../../data_structures/flag_filter.wdl"
 import "../../tools/fastp.wdl" as fp

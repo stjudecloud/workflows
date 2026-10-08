@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 import "../../tools/deeptools.wdl"
 import "../../tools/fastp.wdl" as fp
