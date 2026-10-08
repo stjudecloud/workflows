@@ -190,9 +190,9 @@ task base_recalibrator {
         File fasta
         File fasta_index
         File dict
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf_index
         Array[File] known_indels_sites_vcfs
         Array[File] known_indels_sites_indices
@@ -364,9 +364,9 @@ task haplotype_caller {
         File fasta
         File fasta_index
         File dict
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf_index
         RefConfidence reference_confidence = RefConfidence.NONE
         String prefix = basename(bam, ".bam")
@@ -779,7 +779,6 @@ task variant_recalibrator {
     Int disk_size_gb = ceil(size(vcf, "GB") * 2) + ceil(size(reference_fasta, "GB") * 2) + 30
         + modify_disk_size_gb
 
-    #@ except: ShellCheck
     command <<<
         set -euo pipefail
 

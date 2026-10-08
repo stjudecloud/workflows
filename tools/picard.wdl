@@ -1,5 +1,5 @@
 ## [Homepage](https://broadinstitute.github.io/picard/)
-version 1.1
+version 1.3
 
 task mark_duplicates {
     meta {
@@ -127,7 +127,7 @@ task mark_duplicates {
         File mark_duplicates_metrics = "~{prefix}.metrics.txt"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -236,7 +236,7 @@ task validate_bam {
         File validate_report = outfile
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -327,7 +327,7 @@ task sort {
         File sorted_bam_md5 = outfile_name + ".md5"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -419,7 +419,7 @@ task merge_sam_files {
         File merged_bam_md5 = outfile_name + ".md5"
     }
 
-    runtime {
+    requirements {
         cpu: if threading then 2 else 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -488,7 +488,7 @@ task clean_sam {
         File cleaned_bam_md5 = outfile_name + ".md5"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -554,7 +554,7 @@ task collect_wgs_metrics {
         File wgs_metrics = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -619,7 +619,7 @@ task collect_alignment_summary_metrics {
         File alignment_metrics_pdf = prefix + ".pdf"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -692,7 +692,7 @@ task collect_gc_bias_metrics {
         File gc_bias_metrics_pdf = prefix + ".pdf"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -757,7 +757,7 @@ task collect_insert_size_metrics {
         File insert_size_metrics_pdf = prefix + ".pdf"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -818,7 +818,7 @@ task quality_score_distribution {
         File quality_score_distribution_pdf = prefix + ".pdf"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -866,7 +866,7 @@ task merge_vcfs {
         File merged_vcf_index = "~{output_vcf_name}.tbi"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -938,7 +938,7 @@ task scatter_interval_list {
         Int interval_count = read_int("interval_count.txt")
     }
 
-    runtime {
+    requirements {
         memory: "2 GB"
         disks: "1 GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -994,7 +994,7 @@ task create_sequence_dictionary {
         File dictionary = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -1052,7 +1052,7 @@ task bam_to_fastq {
         File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"

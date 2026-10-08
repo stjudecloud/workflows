@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 task fastp {
     meta {
@@ -146,7 +146,6 @@ task fastp {
     Float input_size = size(read_one_fastq, "GB") + size(read_two_fastq, "GB")
     Int disk_size_gb = ceil(input_size) * 2 + 10 + modify_disk_size_gb
 
-    #@ except: ShellCheck
     command <<<
         set -euo pipefail
 
@@ -212,7 +211,7 @@ task fastp {
         File report_json = prefix + ".fastp.json"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: if disable_duplicate_eval
             then "4 GB"

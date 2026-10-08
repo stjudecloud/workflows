@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 workflow methylation_cohort {
     meta {
@@ -51,13 +51,13 @@ workflow methylation_cohort {
             }
         }
         scatter (iter_index in range(length(bam_list))) {
-            call combine_data as inner_merge { input:
+            call combine_data as inner_merge {
                 files_to_combine = select_all(bam_list[iter_index]),
                 combined_file_name = "~{iter_index}.combined.csv",
             }
         }
 
-        call combine_data as final_merge { input:
+        call combine_data as final_merge {
             files_to_combine = inner_merge.combined_file,
             combined_file_name = "combined_beta.csv",
         }
@@ -76,13 +76,13 @@ workflow methylation_cohort {
                 }
             }
             scatter (iter_index in range(length(pval_list))) {
-                call combine_data as inner_merge_pvals { input:
+                call combine_data as inner_merge_pvals {
                     files_to_combine = select_all(pval_list[iter_index]),
                     combined_file_name = "~{iter_index}.pvals.combined.csv",
                 }
             }
 
-            call combine_data as final_merge_pvals { input:
+            call combine_data as final_merge_pvals {
                 files_to_combine = inner_merge_pvals.combined_file,
                 combined_file_name = "combined_pvals.csv",
             }
@@ -90,12 +90,12 @@ workflow methylation_cohort {
     }
 
     if (beta_length <= max_length) {
-        call combine_data as simple_merge { input:
+        call combine_data as simple_merge {
             files_to_combine = unfiltered_normalized_beta,
             combined_file_name = "combined_beta.csv",
         }
         if (pval_length > 0 && !skip_pvalue_check) {
-            call combine_data as simple_merge_pval { input:
+            call combine_data as simple_merge_pval {
                 files_to_combine = p_values,
                 combined_file_name = "combined_pvals.csv",
             }
@@ -109,7 +109,7 @@ workflow methylation_cohort {
         ])
         else None
 
-    call filter_probes { input:
+    call filter_probes {
         beta_values = select_first([final_merge.combined_file, simple_merge.combined_file]
         ),
         p_values = pval_file,
@@ -120,11 +120,11 @@ workflow methylation_cohort {
         ]),
     }
 
-    call generate_umap { input:
+    call generate_umap {
         filtered_beta_values = filter_probes.filtered_beta_values,
     }
 
-    call plot_umap { input:
+    call plot_umap {
         umap = generate_umap.umap,
     }
 
@@ -187,7 +187,7 @@ task combine_data {
         File combined_file = combined_file_name
     }
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/pandas:2.2.1-7"
         memory: "~{memory_gb} GB"
         cpu: 1
@@ -249,7 +249,7 @@ task filter_probes {
         File? high_pval_probes = "high_pval_probes.csv"
     }
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/pandas:2.2.1-7"
         memory: "8 GB"
         cpu: 1
@@ -290,7 +290,7 @@ task generate_umap {
         File umap = "~{prefix}.csv"
     }
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/umap:0.5.7-11"
         memory: "8 GB"
         cpu: 1
@@ -329,7 +329,7 @@ task plot_umap {
         File umap_plot = "~{plot_file}"
     }
 
-    runtime {
+    requirements {
         cpu: 1
         memory: "4 GB"
         disks: "4 GB"

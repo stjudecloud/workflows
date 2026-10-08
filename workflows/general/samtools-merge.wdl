@@ -1,5 +1,5 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-version 1.1
+version 1.3
 
 import "../../tools/samtools.wdl"
 
@@ -44,7 +44,7 @@ workflow samtools_merge {
             }
         }
         scatter (list in bam_list) {
-            call samtools.merge as inner_merge { input:
+            call samtools.merge as inner_merge {
                 bams = select_all(list),
                 prefix,
                 attach_rg = false,
@@ -52,7 +52,7 @@ workflow samtools_merge {
                 use_all_cores,
             }
         }
-        call samtools.merge as final_merge { input:
+        call samtools.merge as final_merge {
             bams = inner_merge.merged_bam,
             prefix,
             attach_rg = false,
@@ -63,7 +63,7 @@ workflow samtools_merge {
     }
 
     if (bam_length < max_length) {
-        call samtools.merge as basic_merge { input:
+        call samtools.merge as basic_merge {
             bams,
             prefix,
             attach_rg = false,

@@ -1,5 +1,5 @@
 ## [Homepage](https://lomereiter.github.io/sambamba/)
-version 1.1
+version 1.3
 
 task index {
     meta {
@@ -49,7 +49,7 @@ task index {
         File bam_index = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -109,7 +109,7 @@ task merge {
         File merged_bam = prefix + ".bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -164,7 +164,7 @@ task sort {
         File sorted_bam = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
@@ -222,7 +222,7 @@ task markdup {
         File markdup_log = "~{prefix}.markdup_log.txt"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
@@ -279,7 +279,7 @@ task flagstat {
         File flagstat_report = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"

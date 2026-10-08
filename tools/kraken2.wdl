@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/DerrickWood/kraken2)
-version 1.1
+version 1.3
 
 task download_taxonomy {
     meta {
@@ -40,7 +40,7 @@ task download_taxonomy {
         File taxonomy = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "60 GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
@@ -122,7 +122,7 @@ task download_library {
         File library = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
@@ -185,7 +185,7 @@ task create_library_from_fastas {
         File custom_library = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
@@ -294,7 +294,7 @@ task build_db {
         File built_db = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -427,7 +427,7 @@ task kraken {
         File? sequences = out_sequences + ".gz"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"

@@ -136,7 +136,6 @@ task clair3 {
 
     String filename = basename(bam)
 
-    #@ except: ShellCheck
     command <<<
         set -euo pipefail
 
@@ -255,7 +254,6 @@ task clair_s {
     String tumor = basename(tumor_bam)
     String normal = basename(normal_bam)
 
-    #@ except: ShellCheck
     command <<<
         set -euo pipefail
 
