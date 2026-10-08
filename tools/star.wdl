@@ -1,4 +1,3 @@
-## [Homepage](https://github.com/alexdobin/STAR)
 version 1.3
 
 task build_star_db {
@@ -184,6 +183,26 @@ task alignment {
             description: "An array of gzipped FASTQ files containing read two information",
             group: "Common",
         }
+        out_sam_attributes: {
+            description: "an array of desired SAM attributes, in the order desired for the output SAM.",
+            help: "Tags can be listed in any combination/order.",
+            tool_default: "NH HS AS nM",
+            choices: {
+                NH: "number of loci the reads maps to: =1 for unique mappers, >1 for multimappers. Standard SAM tag.",
+                HI: "multiple alignment index, starts with --outSAMattrIHstart (=1 by default). Standard SAM tag.",
+                AS: "local alignment score, +1/-1 for matches/mismatches, score* penalties for indels and gaps. For PE reads, total score for two mates. Standard SAM tag.",
+                nM: "number of mismatches. For PE reads, sum over two mates.",
+                NM: "edit distance to the reference (number of mismatched + inserted + deleted bases) for each mate. Standard SAM tag.",
+                MD: "string encoding mismatched and deleted reference bases (see standard SAM specifications). Standard SAM tag.",
+                jM: "intron motifs for all junctions (i.e. N in CIGAR): 0: non-canonical; 1: GT/AG, 2: CT/AC, 3: GC/AG, 4: CT/GC, 5: AT/AC, 6: GT/AT. If splice junctions database is used, and a junction is annotated, 20 is added to its motif value.",
+                jI: "start and end of introns for all junctions (1-based).",
+                XS: "alignment strand according to --outSAMstrandField.",
+                MC: "mate's CIGAR string. Standard SAM tag.",
+                ch: "marks all segments of all chimeric alignments for --chimOutType WithinBAM output.",
+                cN: "number of bases clipped from the read ends: 5' and 3'",
+            },
+            group: "Common",
+        }
         out_sj_filter_intron_max_vs_read_n: {
             description: "maximum gap allowed for junctions supported by 1,2,3,,,N reads. Does not apply to annotated junctions.",
             help: "i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000b. by >=4 reads any gap <=alignIntronMax.",
@@ -253,26 +272,6 @@ task alignment {
             choices: {
                 None: "not used",
                 intronMotif: "strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out.",
-            },
-            group: "Common",
-        }
-        out_sam_attributes: {
-            description: "a string of desired SAM attributes, in the order desired for the output SAM.",
-            help: "Tags can be listed in any combination/order.",
-            tool_default: "NH HS AS nM",
-            choices: {
-                NH: "number of loci the reads maps to: =1 for unique mappers, >1 for multimappers. Standard SAM tag.",
-                HI: "multiple alignment index, starts with --outSAMattrIHstart (=1 by default). Standard SAM tag.",
-                AS: "local alignment score, +1/-1 for matches/mismatches, score* penalties for indels and gaps. For PE reads, total score for two mates. Standard SAM tag.",
-                nM: "number of mismatches. For PE reads, sum over two mates.",
-                NM: "edit distance to the reference (number of mismatched + inserted + deleted bases) for each mate. Standard SAM tag.",
-                MD: "string encoding mismatched and deleted reference bases (see standard SAM specifications). Standard SAM tag.",
-                jM: "intron motifs for all junctions (i.e. N in CIGAR): 0: non-canonical; 1: GT/AG, 2: CT/AC, 3: GC/AG, 4: CT/GC, 5: AT/AC, 6: GT/AT. If splice junctions database is used, and a junction is annotated, 20 is added to its motif value.",
-                jI: "start and end of introns for all junctions (1-based).",
-                XS: "alignment strand according to --outSAMstrandField.",
-                MC: "mate's CIGAR string. Standard SAM tag.",
-                ch: "marks all segments of all chimeric alignments for --chimOutType WithinBAM output.",
-                cN: "number of bases clipped from the read ends: 5' and 3'",
             },
             group: "Common",
         }
@@ -566,6 +565,7 @@ task alignment {
         Array[File]+ read_one_fastqs_gz
         Array[String]+ read_groups
         Array[File]? read_two_fastqs_gz
+        Array[String] out_sam_attributes = ["NH", "HI", "AS", "nM", "NM", "MD", "XS"]
         Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
         SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,
@@ -609,7 +609,6 @@ task alignment {
         String read_name_separator = "/"
         String clip_adapter_type = "Hamming"
         String out_sam_strand_field = "intronMotif"
-        String out_sam_attributes = "NH HI AS nM NM MD XS"
         String out_sam_unmapped = "Within"
         String out_sam_order = "Paired"
         String out_sam_read_id = "Standard"
@@ -621,7 +620,7 @@ task alignment {
         String align_ends_type = "Local"
         String align_soft_clip_at_reference_ends = "Yes"  # TODO: make a boolean
         String align_insertion_flush = "None"
-        String chim_out_type = "WithinBAM HardClip"
+        String chim_out_type = "WithinBAM HardClip"  # TODO: make Array[enum]
         String chim_filter = "banGenomicN"
         String chim_out_junction_format = "plain"  # TODO: make a boolean
         String twopass_mode = "Basic"  # TODO: make a boolean
@@ -735,7 +734,7 @@ task alignment {
             --outMultimapperOrder Random \
             --outFileNamePrefix "~{prefix + "."}" \
             --twopassMode "~{twopass_mode}" \
-            --outSAMattrRGline ~{sep(" , ", read_groups)} \
+            --outSAMattrRGline ~{sep(" , ", quote(read_groups))} \
             --outSJfilterIntronMaxVsReadN ~{sep(" ", quote(
                 out_sj_filter_intron_max_vs_read_n
             ))} \
@@ -792,7 +791,7 @@ task alignment {
             --readNameSeparator "~{read_name_separator}" \
             --clipAdapterType "~{clip_adapter_type}" \
             --outSAMstrandField "~{out_sam_strand_field}" \
-            --outSAMattributes ~{out_sam_attributes} \
+            --outSAMattributes ~{sep(" ", quote(out_sam_attributes))} \
             --outSAMunmapped "~{out_sam_unmapped}" \
             --outSAMorder "~{out_sam_order}" \
             --outSAMreadID "~{out_sam_read_id}" \
@@ -808,7 +807,7 @@ task alignment {
             --alignEndsType "~{align_ends_type}" \
             --alignSoftClipAtReferenceEnds "~{align_soft_clip_at_reference_ends}" \
             --alignInsertionFlush "~{align_insertion_flush}" \
-            --chimOutType ~{chim_out_type} \
+            --chimOutType ~{sep(" ", squote(split(chim_out_type, " ")))} \
             --chimFilter "~{chim_filter}" \
             --chimOutJunctionFormat "~{chim_out_junction_format}" \
             --outFilterMismatchNoverLmax ~{out_filter_mismatch_n_over_l_max} \
@@ -900,9 +899,9 @@ task alignment {
     }
 }
 
-# There are multiple Splice Junction Motif arguments for STAR
-# that are all formatted the same. Use this struct for consistency.
-#@ except: NamingConvention
+## There are multiple Splice Junction Motif arguments for STAR
+## that are all formatted the same. Use this struct for consistency.
+#@ except: MetaSections, NamingConvention
 struct SpliceJunctionMotifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif

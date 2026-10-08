@@ -1,4 +1,3 @@
-## [Homepage](http://qualimap.bioinfo.cipf.es/)
 version 1.3
 
 task rnaseq {
@@ -71,8 +70,8 @@ task rnaseq {
             -oc qualimap_counts.txt \
             -gtf "$gtf_name" \
             -outdir "~{prefix}" \
-            ~{name_sorted_arg} \
-            ~{paired_end_arg} \
+            "~{name_sorted_arg}" \
+            "~{paired_end_arg}" \
             --java-mem-size=~{java_heap_size}G
         rm "$gtf_name"
 

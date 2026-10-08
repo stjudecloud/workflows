@@ -14,6 +14,7 @@ version 1.3
 # | `ilmn`                         | ilmn                      | NovaSeq / HiSeq X                   | n/a                                                       |
 # | `hifi_sequel2`                 | hifi_sequel2              | PacBio Sequel II, Chemistry 2.0     | n/a                                                       |
 # | `hifi_revio`                   | hifi_revio                | PacBio Revio, SMRTbell prep kit 3.0 | n/a                                                       |
+#@ except: NamingConvention
 enum ClairSPlatform {
     ont_r10_dorado_sup_4khz,
     ont_r10_dorado_sup_5khz_ss,
@@ -27,6 +28,7 @@ enum ClairSPlatform {
     hifi_revio,
 }
 
+#@ except: NamingConvention
 enum Clair3Platform {
     ont,
     hifi,
@@ -58,6 +60,7 @@ enum Clair3Platform {
 # | `hifi_sequel2`                                 | hifi     | PacBio HiFi, Sequel II                 |                                              |
 # | `hifi_revio`                                   | hifi     | PacBio HiFi, Revio                     |                                              |
 # | `ilmn`                                         | ilmn     | Illumina short-read                    |                                              |
+#@ except: NamingConvention
 enum Clair3Model[String] {
     hifi,
     hifi_sequel2,
@@ -98,14 +101,14 @@ task clair3 {
         reference_fasta_index: "Index file for the reference genome FASTA"
         bam: "Input BAM file with aligned reads"
         bam_index: "Index file for the input BAM file"
-        model: {
-            description: "Pre-trained Clair3 model to use for variant calling",
-        }
         bed_regions: "Optional BED file specifying regions to call variants in"
         vcf_candidates: "Optional VCF file with candidate variants to consider"
         contigs: "Optional list of contigs to call variants in. If undefined, all contigs in the reference FASTA will be considered."
-        output_dir: "Directory to store Clair3 output"
+        model: {
+            description: "Pre-trained Clair3 model to use for variant calling",
+        }
         platform: "Sequencing platform used to generate the reads"
+        output_dir: "Directory to store Clair3 output"
         all_contigs: "Boolean indicating whether to include all contigs in variant calling. If false only chr{1..22,X,Y} are called."
         print_ref_calls: "Boolean indicating whether to print reference calls in the output VCF"
         gvcf: "Boolean indicating whether to output gVCF format"
