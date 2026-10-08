@@ -1,16 +1,3 @@
-## # FlagFilter
-##
-## A struct to represent the filtering flags used in various `samtools` commands.
-## The order of precedence is `include_if_all`, `exclude_if_any`, `include_if_any`,
-## and `exclude_if_all`.
-## These four fields correspond to the samtools flags
-## `-f`, `-F`, `--rf`, and `-G` respectively.
-## The values of these fields are strings that represent a 12bit bitwise flag.
-## These strings must evaluate to an integer less than 4096 (2^12).
-## They can be in octal, decimal, or hexadecimal format.
-## Please see the `meta.help` of `validate_string_is_12bit_int`
-## for more information on the valid formats.
-##
 ## The `validate_flag_filter` workflow can be used to validate a `FlagFilter` struct.
 ## **WARNING** The `validate_flag_filter` workflow will only check that all the fields
 ## can be parsed as integers less than 4096. It will not check if the flags are
@@ -23,18 +10,14 @@
 ## We suggest using the Broad Institute's SAM flag explainer to construct the flags.
 ## Find it [here](https://broadinstitute.github.io/picard/explain-flags.html).
 ##
-## ## Example input JSON
+## ## Example
 ##
-## ```json
 ## {
-##    "flags": {
-##        "include_if_all": "0x3",
-##        "exclude_if_any": "0xF04",
-##        "include_if_any": "0x0",
-##        "exclude_if_all": "0x0"
-##    }
+##     "include_if_all": "0x3",
+##     "exclude_if_any": "0xF04",
+##     "include_if_any": "0x0",
+##     "exclude_if_all": "0x0"
 ## }
-## ```
 ##
 ## ### Explanation
 ##
@@ -58,13 +41,28 @@
 ## In short, those are all flags corresponding to the quality of the read
 ## and them being `true` may indicate that the read is of low quality and
 ## should be excluded.
+
 version 1.3
 
+## A struct to represent the filtering flags used in various `samtools` commands.
+##
+## The order of precedence is `include_if_all`, `exclude_if_any`, `include_if_any`,
+## and `exclude_if_all`.
+##
+## The values of these fields are strings that represent a 12bit bitwise flag.
+## These strings must evaluate to an integer less than 4096 (2^12).
+## They can be in octal, decimal, or hexadecimal format.
+## Please see the `meta.help` of `validate_string_is_12bit_int` for more information on the valid formats.
+#@ except: MetaSections
 struct FlagFilter {
-    String include_if_all  # samtools -f
-    String exclude_if_any  # samtools -F
-    String include_if_any  # samtools --rf
-    String exclude_if_all  # samtools -G
+    ## Corresponds to `samtools -f`
+    String include_if_all
+    ## Corresponds to `samtools -F`
+    String exclude_if_any
+    ## Corresponds to `samtools --rf`
+    String include_if_any
+    ## Corresponds to `samtools -G`
+    String exclude_if_all
 }
 
 #@ except: EmptyOutputs
