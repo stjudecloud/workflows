@@ -1,5 +1,5 @@
 ## [Homepage](https://deeptools.readthedocs.io/en/develop/index.html)
-version 1.1
+version 1.3
 
 task bam_coverage {
     meta {
@@ -62,7 +62,7 @@ task bam_coverage {
         File bigwig = "~{prefix}.bw"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"

@@ -1,11 +1,13 @@
 version 1.3
 
+#@ except: NamingConvention
 enum RefConfidence {
     NONE,
     GVCF,
     BP_RESOLUTION,
 }
 
+#@ except: NamingConvention
 enum VariantMode {
     SNP,
     INDEL,
@@ -190,9 +192,9 @@ task base_recalibrator {
         File fasta
         File fasta_index
         File dict
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf_index
         Array[File] known_indels_sites_vcfs
         Array[File] known_indels_sites_indices
@@ -219,6 +221,18 @@ task base_recalibrator {
         ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
         ln -sf "~{dict}" "$ref_fasta.dict"
 
+        ln -sf "~{dbSNP_vcf}" "~{basename(dbSNP_vcf)}"
+        ln -sf "~{dbSNP_vcf_index}" "~{basename(dbSNP_vcf)}".tbi
+
+        indels=( ~{sep(" ", squote(known_indels_sites_vcfs))} )
+        indel_indices=( ~{sep(" ", squote(known_indels_sites_indices))} )
+        for i in "${!indels[@]}"; do
+            basename="$(basename "${indels[i]}")"
+            ln -s "${indels[i]}" "$basename"
+            ln -s "${indel_indices[i]}" "$basename".tbi
+            basenames+=( "$basename" )
+        done
+
         # shellcheck disable=SC2102
         gatk \
             --java-options \
@@ -228,11 +242,11 @@ task base_recalibrator {
             -I "$bam_name" \
             ~{if use_original_quality_scores then "--use-original-qualities" else ""} \
             -O "~{outfile_name}" \
-            --known-sites "~{dbSNP_vcf}" \
-            ~{sep(" ", prefix("--known-sites ", squote(known_indels_sites_vcfs)))} \
+            --known-sites "~{basename(dbSNP_vcf)}" \
+            ~{if length(known_indels_sites_vcfs) > 0 then "\"\${basenames[@]}\"" else ""} \
             --spark-master local[~{ncpu}]
 
-        rm -rf "$bam_name" "$bam_name.bai" "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -364,9 +378,9 @@ task haplotype_caller {
         File fasta
         File fasta_index
         File dict
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf_index
         RefConfidence reference_confidence = RefConfidence.NONE
         String prefix = basename(bam, ".bam")
@@ -415,9 +429,7 @@ task haplotype_caller {
             --dbsnp "~{snp_vcf}" \
             --emit-ref-confidence "~{reference_confidence}"
 
-        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{sample}" "~{sample}.bai" "~{
-            snp_vcf
-        }" "~{snp_vcf_index}"
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -697,20 +709,21 @@ task apply_vqsr {
         ln -sf "~{reference_dict}" "$ref_fasta.dict"
 
         ln -sf "~{vcf}" "~{basename(vcf)}"
-        ln -sf "~{vcf_index}" "~{basename(vcf_index)}"
+        ln -sf "~{vcf_index}" "~{basename(vcf)}".tbi
+
+        ln -sf "~{recal_file}" "~{basename(recal_file)}"
+        ln -sf "~{recal_file_index}" "~{basename(recal_file)}".tbi
 
         gatk ApplyVQSR \
             -R "$ref_fasta.fa" \
             -V "~{basename(vcf)}" \
-            --recal-file "~{recal_file}" \
+            --recal-file "~{basename(recal_file)}" \
             --tranches-file "~{tranches_file}" \
             --truth-sensitivity-filter-level ~{truth_sensitivity_filter_level} \
             --mode "~{mode}" \
             -O "~{prefix}.recalibrated.vcf.gz"
 
-        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{basename(vcf)}" "~{
-            basename(vcf_index)
-        }"
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -762,6 +775,8 @@ task variant_recalibrator {
         File vcf_index
         Array[File] resource_vcfs
         Array[File] resource_vcf_indices
+        # TODO: improve UX for constructing this mess of an argument
+        # It is a string but must reference files in the `resource_vcfs` array.
         Array[String] resources
         Array[String] annotations = [
             "QD",
@@ -779,7 +794,6 @@ task variant_recalibrator {
     Int disk_size_gb = ceil(size(vcf, "GB") * 2) + ceil(size(reference_fasta, "GB") * 2) + 30
         + modify_disk_size_gb
 
-    #@ except: ShellCheck
     command <<<
         set -euo pipefail
 
@@ -792,12 +806,13 @@ task variant_recalibrator {
         ln -sf "~{vcf}" "~{basename(vcf)}"
         ln -sf "~{vcf_index}" "~{basename(vcf_index)}"
 
-        for vcf in ~{sep(" ", resource_vcfs)}; do
-            ln -sf "~{vcf}" "$(basename "$vcf")"
-        done
-
-        for vcf_index in ~{sep(" ", resource_vcf_indices)}; do
-            ln -sf "~{vcf_index}" "$(basename "$vcf_index")"
+        resource_vcf_paths=( ~{sep(" ", squote(resource_vcfs))} )
+        resource_tbi_paths=( ~{sep(" ", squote(resource_vcf_indices))} )
+        for i in "${!resource_vcf_paths[@]}"; do
+            basename="$(basename "${resource_vcf_paths[i]}")"
+            ln -s "${resource_vcf_paths[i]}" "$basename"
+            ln -s "${resource_tbi_paths[i]}" "$basename".tbi
+            vcf_basenames+=( "$basename" )
         done
 
         gatk VariantRecalibrator \
@@ -808,19 +823,10 @@ task variant_recalibrator {
             --tranches-file "~{prefix}.tranches" \
             --rscript-file "~{prefix}.plots.R" \
             --dont-run-rscript \
-            ~{sep(" ", prefix("--resource:", resources))} \
+            ~{sep(" ", prefix("--resource:", quote(resources)))} \
             ~{sep(" ", prefix("-an ", quote(annotations)))}
 
-        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{basename(vcf)}" "~{
-            basename(vcf_index)
-        }"
-        for vcf in ~{sep(" ", resource_vcfs)}; do
-            rm -rf "$(basename "$vcf")"
-        done
-
-        for vcf_index in ~{sep(" ", resource_vcf_indices)}; do
-            rm -rf "$(basename "$vcf_index")"
-        done
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -882,7 +888,7 @@ task calculate_genotype_posteriors {
             -supporting "supporting.vcf.gz" \
             -O "~{prefix}.posteriors.vcf.gz"
 
-        rm -rf "~{basename(vcf)}" "~{basename(vcf_index)}" "supporting.vcf.gz" "supporting.vcf.gz.tbi"
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -950,9 +956,7 @@ task genotype_gvcfs {
             -V "~{basename(gvcf)}" \
             -O "~{prefix}.g.vcf.gz" \
 
-        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{basename(gvcf)}" "~{
-            basename(gvcf_index)
-        }"
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -1019,7 +1023,7 @@ task scatter_interval_list {
         print(len(intervals))
         PYTHON
 
-        rm -rf "~{basename(interval_list)}"
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -1061,13 +1065,13 @@ task merge_vcfs {
     command <<<
         set -euo pipefail
 
-        for f in ~{sep(" ", vcfs)}
+        for f in ~{sep(" ", squote(vcfs))}
         do
             ln -s "$f" .
             basename "$f" >> "interval.list"
         done
 
-        for f in ~{sep(" ", vcfs_indexes)}
+        for f in ~{sep(" ", squote(vcfs_indexes))}
         do
             ln -s "$f" .
         done
@@ -1091,3 +1095,4 @@ task merge_vcfs {
         container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
     }
 }
+

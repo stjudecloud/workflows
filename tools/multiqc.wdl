@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 task multiqc {
     meta {
@@ -63,7 +63,7 @@ task multiqc {
         File parquet = report_name + ".parquet"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/multiqc/multiqc:v1.31"

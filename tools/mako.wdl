@@ -8,6 +8,7 @@ version 1.3
 # | `queryname`           | Lexicographic read name (default sub-sort) | Fast queryname sort            |
 # | `queryname::natural`  | Natural numeric read name                  | samtools-compatible            |
 # | `template-coordinate` | Paired reads grouped by template           | UMI grouping pipelines         |
+#@ except: NamingConvention
 enum SortOrder[String] {
     queryname = "queryname",
     coordinate = "coordinate",

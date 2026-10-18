@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/brentp/mosdepth)
-version 1.1
+version 1.3
 
 task coverage {
     meta {
@@ -65,7 +65,7 @@ task coverage {
         File? region_dist = prefix + ".mosdepth.region.dist.txt"
     }
 
-    runtime {
+    requirements {
         memory: "8 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/mosdepth:0.3.6--hd299d5a_0"

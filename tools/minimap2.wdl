@@ -18,6 +18,7 @@ version 1.3
 # | `sr`        | Short-read alignment without splicing                     |                                                                                                       |
 # | `ava-pb`    | PacBio CLR all-vs-all overlap mapping                     |                                                                                                       |
 # | `ava-ont`   | Oxford Nanopore all-vs-all overlap mapping                |                                                                                                       |
+#@ except: NamingConvention
 enum Preset[String] {
     sr,
     map_ont = "map-ont",

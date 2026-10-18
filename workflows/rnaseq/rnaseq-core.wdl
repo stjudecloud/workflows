@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 import "../../tools/deeptools.wdl"
 import "../../tools/fastp.wdl" as fp
@@ -152,7 +152,7 @@ workflow rnaseq_core {
         Int out_filter_multimap_n_max = 50
         Int pe_overlap_n_bases_min = 10
         Int chim_score_separation = 1
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int chim_score_junction_nonGTAG = 0
         Int chim_junction_overhang_min = 10
         Int chim_segment_read_gap_max = 3
@@ -176,7 +176,7 @@ workflow rnaseq_core {
     scatter (fq in read_two_fastqs_gz) {
         String read_two_names = basename(fq)
     }
-    call util.check_fastq_and_rg_concordance as validate { input:
+    call util.check_fastq_and_rg_concordance as validate {
         read_one_names,
         read_two_names,
         read_groups,
@@ -184,14 +184,14 @@ workflow rnaseq_core {
 
     scatter (pair in zip(read_one_fastqs_gz, read_two_fastqs_gz)) {
         if (enable_read_trimming) {
-            call fp.fastp as trim after validate { input:
+            call fp.fastp as trim after validate {
                 read_one_fastq = pair.left,
                 read_two_fastq = pair.right,
                 output_fastq = enable_read_trimming,
             }
         }
         if (!enable_read_trimming) {
-            call fp.fastp after validate { input:
+            call fp.fastp after validate {
                 read_one_fastq = pair.left,
                 read_two_fastq = pair.right,
                 output_fastq = enable_read_trimming,
@@ -206,7 +206,7 @@ workflow rnaseq_core {
         then select_all(trim.read_two_fastq_gz)
         else read_two_fastqs_gz
 
-    call star.alignment after validate { input:
+    call star.alignment after validate {
         read_one_fastqs_gz = chosen_r1s,
         read_two_fastqs_gz = chosen_r2s,
         star_db_tar_gz = star_db,
@@ -225,7 +225,7 @@ workflow rnaseq_core {
         chim_score_drop_max,
     }
 
-    call alignment_post_wf.alignment_post { input:
+    call alignment_post_wf.alignment_post {
         bam = alignment.star_bam,
         mark_duplicates,
         contaminant_db,
@@ -234,13 +234,13 @@ workflow rnaseq_core {
         use_all_cores,
     }
 
-    call deeptools.bam_coverage as deeptools_bam_coverage { input:
+    call deeptools.bam_coverage as deeptools_bam_coverage {
         bam = alignment_post.processed_bam,
         bam_index = alignment_post.bam_index,
         use_all_cores,
     }
 
-    call ngsderive.strandedness as ngsderive_strandedness { input:
+    call ngsderive.strandedness as ngsderive_strandedness {
         bam = alignment_post.processed_bam,
         bam_index = alignment_post.bam_index,
         gene_model = gtf,
@@ -250,7 +250,7 @@ workflow rnaseq_core {
         then htseq_strandedness_mapping[provided_strandedness]
         else htseq_strandedness_mapping[ngsderive_strandedness.strandedness_string]
 
-    call htseq.count as htseq_count { input:
+    call htseq.count as htseq_count {
         bam = alignment_post.processed_bam,
         gtf,
         strandedness = htseq_strandedness,

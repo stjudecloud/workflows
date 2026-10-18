@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 import "../../tools/kraken2.wdl"
 import "../../tools/util.wdl"
@@ -91,26 +91,26 @@ workflow qc_reference {
         Int kraken_fastas_disk_size_gb = 10
     }
 
-    call util.download as reference_download { input:
+    call util.download as reference_download {
         url = reference_fa_url,
         outfile_name = reference_fa_name,
         disk_size_gb = reference_fa_disk_size_gb,
     }
-    call util.download as gtf_download { input:
+    call util.download as gtf_download {
         url = gtf_url,
         outfile_name = gtf_name,
         disk_size_gb = gtf_disk_size_gb,
     }
 
     scatter (feature_type in coverage_feature_types) {
-        call util.make_coverage_regions_bed { input:
+        call util.make_coverage_regions_bed {
             gtf = gtf_download.downloaded_file,
             feature_type,
         }
     }
 
     scatter (url in kraken_fasta_urls) {
-        call util.download as fastas_download { input:
+        call util.download as fastas_download {
             url,
             outfile_name = "tmp.fa.gz",
             disk_size_gb = kraken_fastas_disk_size_gb,
@@ -120,13 +120,13 @@ workflow qc_reference {
     if ((length(kraken_fastas) > 0) || (length(kraken_fasta_urls) > 0) || (length(
         kraken_libraries
     ) > 0)) {
-        call kraken2.download_taxonomy { input:
+        call kraken2.download_taxonomy {
             protein,
         }
     }
 
     scatter (lib in kraken_libraries) {
-        call kraken2.download_library { input:
+        call kraken2.download_library {
             library_name = lib,
             protein,
         }
@@ -134,7 +134,7 @@ workflow qc_reference {
 
     Array[File] custom_fastas = flatten([kraken_fastas, fastas_download.downloaded_file])
     if (length(custom_fastas) > 0) {
-        call kraken2.create_library_from_fastas { input:
+        call kraken2.create_library_from_fastas {
             fastas_gz = custom_fastas,
             protein,
         }
@@ -146,7 +146,7 @@ workflow qc_reference {
         select_all([create_library_from_fastas.custom_library]),
     ])
     if (length(kraken_tarballs) > 0) {
-        call kraken2.build_db as kraken_build_db { input:
+        call kraken2.build_db as kraken_build_db {
             tarballs = kraken_tarballs,
             protein,
         }

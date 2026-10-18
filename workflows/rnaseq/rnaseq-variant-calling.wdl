@@ -43,9 +43,9 @@ workflow rnaseq_variant_calling {
         File fasta_index
         File dict
         File calling_interval_list
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf_index
         Array[File] known_vcfs
         Array[File] known_vcf_indexes
@@ -55,13 +55,13 @@ workflow rnaseq_variant_calling {
     }
 
     if (!bam_is_dup_marked) {
-        call picard.mark_duplicates { input:
+        call picard.mark_duplicates {
             bam,
             create_bam = true,
         }
     }
 
-    call gatk.split_n_cigar_reads { input:
+    call gatk.split_n_cigar_reads {
         bam = select_first([mark_duplicates.duplicate_marked_bam, bam]),
         bam_index = select_first([mark_duplicates.duplicate_marked_bam_index, bam_index]),
         fasta,
@@ -69,7 +69,7 @@ workflow rnaseq_variant_calling {
         dict,
     }
 
-    call gatk.base_recalibrator { input:
+    call gatk.base_recalibrator {
         bam = split_n_cigar_reads.split_n_reads_bam,
         bam_index = split_n_cigar_reads.split_n_reads_bam_index,
         fasta,
@@ -81,20 +81,20 @@ workflow rnaseq_variant_calling {
         dbSNP_vcf_index,
     }
 
-    call gatk.apply_bqsr { input:
+    call gatk.apply_bqsr {
         bam = split_n_cigar_reads.split_n_reads_bam,
         bam_index = split_n_cigar_reads.split_n_reads_bam_index,
         recalibration_report = base_recalibrator.recalibration_report,
         prefix,
     }
 
-    call picard.scatter_interval_list { input:
+    call picard.scatter_interval_list {
         interval_list = calling_interval_list,
         scatter_count,
     }
 
     scatter (list in scatter_interval_list.interval_lists_scatter) {
-        call gatk.haplotype_caller { input:
+        call gatk.haplotype_caller {
             bam = apply_bqsr.recalibrated_bam,
             bam_index = apply_bqsr.recalibrated_bam_index,
             fasta,
@@ -106,13 +106,13 @@ workflow rnaseq_variant_calling {
         }
     }
 
-    call picard.merge_vcfs { input:
+    call picard.merge_vcfs {
         vcfs = haplotype_caller.vcf,
         vcfs_indexes = haplotype_caller.vcf_index,
         output_vcf_name = "~{prefix}.vcf.gz",
     }
 
-    call gatk.variant_filtration { input:
+    call gatk.variant_filtration {
         vcf = merge_vcfs.merged_vcf,
         vcf_index = merge_vcfs.merged_vcf_index,
         fasta,

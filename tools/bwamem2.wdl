@@ -1,4 +1,4 @@
-version 1.2
+version 1.3
 
 task align {
     meta {
@@ -16,11 +16,11 @@ task align {
         prefix: "Prefix for the BAM file. The extension `.bam` will be added."
         smart_pairing: "If true, enable smart pairing mode for paired-end reads"
         skip_mate_rescue: "If true, skip mate rescue for paired-end reads"
+        seed_length: "Seed value for the BWA-MEM2 aligner"
+        min_score: "Minimum score threshold for reporting alignments"
         ncpu: "Number of threads to use for alignment"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
         modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the number of cores. Specified in GB."
-        seed_length: "Seed value for the BWA-MEM2 aligner"
-        min_score: "Minimum score threshold for reporting alignments"
     }
 
     input {

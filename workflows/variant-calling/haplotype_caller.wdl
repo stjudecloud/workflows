@@ -42,9 +42,9 @@ workflow haplotype_caller {
         File reference_fasta
         File reference_fasta_index
         File reference_dict
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf_index
         File interval_list
         Array[File] known_indels_sites_vcfs

@@ -1,5 +1,5 @@
 ## # librarian
-version 1.1
+version 1.3
 
 task librarian {
     meta {
@@ -46,7 +46,7 @@ task librarian {
         File raw_data = "~{prefix}/librarian_heatmap.txt"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/kartva/librarian:1.2"

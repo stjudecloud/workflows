@@ -1,5 +1,4 @@
-## [Homepage](http://qualimap.bioinfo.cipf.es/)
-version 1.1
+version 1.3
 
 task rnaseq {
     meta {
@@ -71,8 +70,8 @@ task rnaseq {
             -oc qualimap_counts.txt \
             -gtf "$gtf_name" \
             -outdir "~{prefix}" \
-            ~{name_sorted_arg} \
-            ~{paired_end_arg} \
+            "~{name_sorted_arg}" \
+            "~{paired_end_arg}" \
             --java-mem-size=~{java_heap_size}G
         rm "$gtf_name"
 
@@ -85,7 +84,7 @@ task rnaseq {
         File results = out_tar_gz
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/qualimap:2.3--hdfd78af_0"
@@ -153,7 +152,7 @@ task bamqc {
         File results = out_tar_gz
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"

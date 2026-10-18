@@ -39,12 +39,12 @@ workflow align {
         read_group: "The read group to be included in the SAM header"
         read_two_fastq_gz: "Input gzipped FASTQ read two file to align (for paired-end data)"
         output_prefix: "Output file prefix for aligned reads"
-        ncpu: "Number of threads to use for alignment"
-        modify_disk_size_gb: "Additional disk space to allocate (in GB)"
         run_bwamem: "Whether to run BWA-MEM alignment"
         run_bwamem2: "Whether to run BWA-MEM2 alignment"
         run_giraffe: "Whether to run vg giraffe alignment"
         run_minimap2: "Whether to run minimap2 alignment"
+        ncpu: "Number of threads to use for alignment"
+        modify_disk_size_gb: "Additional disk space to allocate (in GB)"
     }
 
     input {

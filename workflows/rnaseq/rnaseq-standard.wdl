@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"
@@ -73,20 +73,20 @@ workflow rnaseq_standard {
         Int subsample_n_reads = -1
     }
 
-    call parse_input { input:
+    call parse_input {
         strand = strandedness,
         cleanse_xenograft,
         contaminant_db = defined(contaminant_db),
     }
 
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam after parse_input { input:
+        call picard.validate_bam as validate_input_bam after parse_input {
             bam,
         }
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample after validate_input_bam { input:
+        call samtools.subsample after validate_input_bam {
             bam,
             desired_reads = subsample_n_reads,
             use_all_cores,
@@ -94,21 +94,21 @@ workflow rnaseq_standard {
     }
     File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call read_group.get_read_groups after validate_input_bam { input:
+    call read_group.get_read_groups after validate_input_bam {
         bam = selected_bam,
     }
     scatter (rg in get_read_groups.read_groups) {
-        call read_group.read_group_to_string { input:
+        call read_group.read_group_to_string {
             read_group = rg,
         }
     }
-    call bam_to_fastqs_wf.bam_to_fastqs after validate_input_bam { input:
+    call bam_to_fastqs_wf.bam_to_fastqs after validate_input_bam {
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding
         use_all_cores,
     }
 
-    call rnaseq_core_wf.rnaseq_core { input:
+    call rnaseq_core_wf.rnaseq_core {
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
         read_groups = select_all(read_group_to_string.validated_read_group),
@@ -183,7 +183,7 @@ task parse_input {
         fi
     >>>
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }

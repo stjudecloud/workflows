@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 task static_disk_and_ram_task {
     meta {
@@ -19,7 +19,7 @@ task static_disk_and_ram_task {
     output {
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "10 GB"
         container: ""
@@ -55,7 +55,7 @@ task dynamic_disk_and_ram_task {
     output {
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: ""
@@ -92,7 +92,7 @@ task use_all_cores_task {
     output {
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         container: ""
         maxRetries: 1
@@ -134,7 +134,7 @@ task localize_files_task {
     output {
     }
 
-    runtime {
+    requirements {
         container: ""
         maxRetries: 1
     }
@@ -163,7 +163,7 @@ task outfile_name_task {
         File <output name> = outfile_name
     }
 
-    runtime {
+    requirements {
         container: ""
         maxRetries: 1
     }
@@ -192,7 +192,7 @@ task prefix_task {
         File <output name> = prefix + ".<new extension>"
     }
 
-    runtime {
+    requirements {
         container: ""
         maxRetries: 1
     }
@@ -235,7 +235,7 @@ task string_choices_task {
     output {
     }
 
-    runtime {
+    requirements {
         container: ""
         maxRetries: 1
     }
