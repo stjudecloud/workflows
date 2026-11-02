@@ -1,17 +1,7 @@
 [[diagnostic]]
-rule = "MeaninglessLintDirective"
-path = "data_structures/flag_filter.wdl"
-source_hash = "81a86e8ea538a20bc3b14cb5dd88836696d64ccd65df7b5d2dda81555ae9385f"
-
-[[diagnostic]]
 rule = "DescriptionLength"
 path = "data_structures/read_group.wdl"
 source_hash = "df227232c5d68c9c68230a9dff26c333ec9527d3b5c81331d259e2a540b20fef"
-
-[[diagnostic]]
-rule = "MeaninglessLintDirective"
-path = "data_structures/read_group.wdl"
-source_hash = "81a86e8ea538a20bc3b14cb5dd88836696d64ccd65df7b5d2dda81555ae9385f"
 
 [[diagnostic]]
 rule = "DescriptionLength"

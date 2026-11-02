@@ -1,7 +1,7 @@
 version 1.3
 
 ## Read group as defined in the SAM specification.
-#@ except: MetaSections, NamingConvention
+#@ except: NamingConvention
 struct ReadGroup {
     ## Read group identifier. Each Read Group must have a unique ID.
     ##

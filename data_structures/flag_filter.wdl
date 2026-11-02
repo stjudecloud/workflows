@@ -53,7 +53,6 @@ version 1.3
 ## These strings must evaluate to an integer less than 4096 (2^12).
 ## They can be in octal, decimal, or hexadecimal format.
 ## Please see the `meta.help` of `validate_string_is_12bit_int` for more information on the valid formats.
-#@ except: MetaSections
 struct FlagFilter {
     ## Corresponds to `samtools -f`
     String include_if_all
