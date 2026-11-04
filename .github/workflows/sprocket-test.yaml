@@ -9,7 +9,7 @@ jobs:
     outputs:
         files: ${{ steps.set-files.outputs.files }}
     steps:
-        - uses: actions/checkout@v4
+        - uses: actions/checkout@v7
         - id: set-files
           run: echo "files=$(find . -name '*.wdl' -print -o -path "./template" -prune | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
   sprocket-test:
