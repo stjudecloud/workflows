@@ -228,7 +228,7 @@ task base_recalibrator {
             basename="$(basename "$vcf")"
             ln -s "$vcf" "$basename"
             ln -s "$index" "$basename".tbi
-            basenames+=( "$basename" )
+            basenames+=( "--known-sites $basename" )
         done 3< "~{write_lines(known_indels_sites_vcfs)}" 4< "~{write_lines(
             known_indels_sites_indices
         )}"
@@ -243,7 +243,7 @@ task base_recalibrator {
             ~{if use_original_quality_scores then "--use-original-qualities" else ""} \
             -O "~{outfile_name}" \
             --known-sites "~{basename(dbSNP_vcf)}" \
-            ~{if length(known_indels_sites_vcfs) > 0 then "\"\${basenames[@]}\"" else ""} \
+            ~{if length(known_indels_sites_vcfs) > 0 then "\${basenames[@]}" else ""} \
             --spark-master local[~{ncpu}]
 
         find . -maxdepth 1 -type l -delete
