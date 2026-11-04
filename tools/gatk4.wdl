@@ -224,14 +224,12 @@ task base_recalibrator {
         ln -sf "~{dbSNP_vcf}" "~{basename(dbSNP_vcf)}"
         ln -sf "~{dbSNP_vcf_index}" "~{basename(dbSNP_vcf)}".tbi
 
-        indels=( ~{sep(" ", squote(known_indels_sites_vcfs))} )
-        indel_indices=( ~{sep(" ", squote(known_indels_sites_indices))} )
-        for i in "${!indels[@]}"; do
-            basename="$(basename "${indels[i]}")"
-            ln -s "${indels[i]}" "$basename"
-            ln -s "${indel_indices[i]}" "$basename".tbi
+        while read -r vcf <&3 && read -r index <&4; do
+            basename="$(basename "$vcf")"
+            ln -s "$vcf" "$basename"
+            ln -s "$index" "$basename".tbi
             basenames+=( "$basename" )
-        done
+        done 3< "~{write_lines(known_indels_sites_vcfs)}" 4< "~{write_lines(known_indels_sites_indices)}"
 
         # shellcheck disable=SC2102
         gatk \
@@ -806,14 +804,12 @@ task variant_recalibrator {
         ln -sf "~{vcf}" "~{basename(vcf)}"
         ln -sf "~{vcf_index}" "~{basename(vcf_index)}"
 
-        resource_vcf_paths=( ~{sep(" ", squote(resource_vcfs))} )
-        resource_tbi_paths=( ~{sep(" ", squote(resource_vcf_indices))} )
-        for i in "${!resource_vcf_paths[@]}"; do
-            basename="$(basename "${resource_vcf_paths[i]}")"
-            ln -s "${resource_vcf_paths[i]}" "$basename"
-            ln -s "${resource_tbi_paths[i]}" "$basename".tbi
+        while read -r vcf <&3 && read -r index <&4; do
+            basename="$(basename "$vcf")"
+            ln -s "$vcf" "$basename"
+            ln -s "$index" "$basename".tbi
             vcf_basenames+=( "$basename" )
-        done
+        done 3< "~{write_lines(resource_vcfs)}" 4< "~{write_lines(resource_vcf_indices)}"
 
         gatk VariantRecalibrator \
             -R "$ref_fasta.fa" \

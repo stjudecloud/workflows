@@ -853,14 +853,12 @@ task merge_vcfs {
     command <<<
         set -euo pipefail
 
-        vcf_paths=( ~{sep(" ", squote(vcfs))} )
-        tbi_paths=( ~{sep(" ", squote(vcfs_indexes))} )
-        for i in "${!vcf_paths[@]}"; do
-            basename="$(basename "${vcf_paths[i]}")"
-            ln -s "${vcf_paths[i]}" "$basename"
-            ln -s "${tbi_paths[i]}" "$basename".tbi
+        while read -r vcf <&3 && read -r index <&4; do
+            basename="$(basename "$vcf")"
+            ln -s "$vcf" "$basename"
+            ln -s "$index" "$basename".tbi
             basenames+=( "$basename" )
-        done
+        done 3< "~{write_lines(vcfs)}" 4< "~{write_lines(vcfs_indexes)}"
 
         # shellcheck disable=SC2046
         picard -Xms2000m \
