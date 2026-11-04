@@ -229,7 +229,9 @@ task base_recalibrator {
             ln -s "$vcf" "$basename"
             ln -s "$index" "$basename".tbi
             basenames+=( "$basename" )
-        done 3< "~{write_lines(known_indels_sites_vcfs)}" 4< "~{write_lines(known_indels_sites_indices)}"
+        done 3< "~{write_lines(known_indels_sites_vcfs)}" 4< "~{write_lines(
+            known_indels_sites_indices
+        )}"
 
         # shellcheck disable=SC2102
         gatk \
