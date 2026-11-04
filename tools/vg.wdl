@@ -1,5 +1,6 @@
 version 1.3
 
+#@ except: NamingConvention
 enum OutputFormat {
     gam,
     gaf,
@@ -20,6 +21,7 @@ enum OutputFormat {
 # | `r10`         | Oxford Nanopore R10 long reads                         | Uses chaining-based alignment (`align-from-chains`) tuned for R10 error profiles.                       |
 # | `chaining-sr` | Short reads using the chaining-based codepath          | Shares the chaining algorithm introduced for long-read presets (`hifi`/`r10`), adapted for short reads. |
 # | `srold`       | Short reads using the original (pre-chaining) codepath | Legacy short-read algorithm predating `chaining-sr`.                                                    |
+#@ except: NamingConvention
 enum GiraffePreset[String] {
     chaining_sr = "chaining-sr",
     default,
@@ -38,6 +40,7 @@ enum GiraffePreset[String] {
 # | `rpvg`                   | Indexes for `rpvg` haplotype-based transcript quantification |                                               |
 # | `giraffe` / `sr-giraffe` | Indexes for `vg giraffe` on short reads                      | `giraffe` is a legacy alias for `sr-giraffe`. |
 # | `lr-giraffe`             | Indexes for `vg giraffe` on long reads                       |                                               |
+#@ except: NamingConvention
 enum AutoindexWorkflow[String] {
     map,
     mpmap,
@@ -66,9 +69,9 @@ task giraffe {
         kff: "The KFF file containing kmer counts"
         sample_name: "The sample name to include"
         read_group: "The read group"
-        output_name: "The name of the output alignment file"
-        output_format: "The output format for alignments"
         preset: "vg giraffe preset for alignment"
+        output_format: "The output format for alignments"
+        output_name: "The name of the output alignment file"
         ncpu: "Number of threads to use for alignment"
         modify_disk_size_gb: "Additional disk space to allocate (in GB)"
     }
@@ -139,12 +142,12 @@ task index {
         reference_fasta: "The reference genome in FASTA format to be indexed"
         vcf_files: "VCF(s) containing variants to augment the graph"
         transcript_gff: "GFF(s) containing transcript annotations"
+        autoindex_workflow: "The vg autoindex workflow to use"
         db_prefix: "The base name for the output index files"
         gff_feature: "The feature type in the GFF to use for transcripts"
         gff_id_tag: "The attribute tag in the GFF to use as transcript ID"
-        autoindex_workflow: "The vg autoindex workflow to use"
-        modify_disk_size_gb: "Additional disk space to allocate (in GB)"
         ncpu: "Number of threads to use for indexing"
+        modify_disk_size_gb: "Additional disk space to allocate (in GB)"
     }
 
     input {
@@ -155,8 +158,8 @@ task index {
         String db_prefix = "reference"
         String gff_feature = "exon"
         String gff_id_tag = "transcript_id"
-        Int modify_disk_size_gb = 0
         Int ncpu = 4
+        Int modify_disk_size_gb = 0
     }
 
     Float input_fasta_size = size(reference_fasta, "GB")

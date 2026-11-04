@@ -5,7 +5,7 @@
 ## whether a read is a duplicate or not.
 ## But the tasks called below produce different results depending on whether the
 ## input BAM has been duplicate marked or not.
-version 1.1
+version 1.3
 
 import "../../tools/mosdepth.wdl"
 import "../../tools/picard.wdl"
@@ -46,22 +46,22 @@ workflow markdups_post {
         String prefix = basename(markdups_bam, ".bam")
     }
 
-    call picard.collect_insert_size_metrics { input:
+    call picard.collect_insert_size_metrics {
         bam = markdups_bam,
         prefix = prefix + ".CollectInsertSizeMetrics",
     }
-    call samtools.flagstat { input:
+    call samtools.flagstat {
         bam = markdups_bam,
         outfile_name = prefix + ".flagstat.txt",
     }
 
-    call mosdepth.coverage as wg_coverage { input:
+    call mosdepth.coverage as wg_coverage {
         bam = markdups_bam,
         bam_index = markdups_bam_index,
         prefix = prefix + "." + "whole_genome",
     }
     scatter (coverage_pair in zip(coverage_beds, coverage_labels)) {
-        call mosdepth.coverage as regions_coverage { input:
+        call mosdepth.coverage as regions_coverage {
             bam = markdups_bam,
             bam_index = markdups_bam_index,
             coverage_bed = coverage_pair.left,

@@ -1,6 +1,15 @@
 [check]
-except = ["ContainerUri", "TodoComment", "UnusedInput"]
+disable = ["ContainerUri", "MutableContainerTag"]
 deny_notes = true
+
+[check.rules.DescriptionLength]
+severity = "note"
+
+[check.rules.DocMetaStrings]
+severity = "warning"
+
+[analyzer]
+lint = true
 
 [format]
 sort_inputs = true

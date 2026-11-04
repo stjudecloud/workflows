@@ -1,0 +1,39 @@
+[[diagnostic]]
+rule = "DescriptionLength"
+path = "data_structures/read_group.wdl"
+source_hash = "df227232c5d68c9c68230a9dff26c333ec9527d3b5c81331d259e2a540b20fef"
+
+[[diagnostic]]
+rule = "DescriptionLength"
+path = "tools/clair.wdl"
+source_hash = "9047db662bdbce0d8a158462cc594bbcab974c752f4f797b3a375dedc37fbe3f"
+
+[[diagnostic]]
+rule = "FlaggedComment"
+path = "tools/gatk4.wdl"
+source_hash = "94cb5879b286d8711d29482d577260c8a983f793f2766fc9c285885177b934f1"
+
+[[diagnostic]]
+rule = "FlaggedComment"
+path = "tools/samtools.wdl"
+source_hash = "94cb5879b286d8711d29482d577260c8a983f793f2766fc9c285885177b934f1"
+
+[[diagnostic]]
+rule = "FlaggedComment"
+path = "tools/star.wdl"
+source_hash = "94cb5879b286d8711d29482d577260c8a983f793f2766fc9c285885177b934f1"
+
+[[diagnostic]]
+rule = "FlaggedComment"
+path = "tools/star.wdl"
+source_hash = "94cb5879b286d8711d29482d577260c8a983f793f2766fc9c285885177b934f1"
+
+[[diagnostic]]
+rule = "FlaggedComment"
+path = "tools/star.wdl"
+source_hash = "94cb5879b286d8711d29482d577260c8a983f793f2766fc9c285885177b934f1"
+
+[[diagnostic]]
+rule = "FlaggedComment"
+path = "tools/star.wdl"
+source_hash = "94cb5879b286d8711d29482d577260c8a983f793f2766fc9c285885177b934f1"

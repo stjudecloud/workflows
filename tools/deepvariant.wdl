@@ -1,5 +1,6 @@
 version 1.3
 
+#@ except: NamingConvention
 enum ModelType {
     WGS,
     WES,
@@ -15,6 +16,7 @@ enum ModelType {
     ONT_TUMOR_ONLY,
 }
 
+#@ except: NamingConvention
 enum DVModelType {
     WGS,
     WES,
@@ -158,8 +160,8 @@ task deepvariant {
         bam: "Input BAM file with aligned reads for sample"
         bam_index: "Index for input BAM file"
         haploid_chromosomes: "List of chromosomes to be treated as haploid during variant calling"
-        output_prefix: "Prefix for output VCF and gVCF files"
         model_type: "Type of model to use for variant calling"
+        output_prefix: "Prefix for output VCF and gVCF files"
         runtime_report: "Output make_examples_somatic runtime metrics and create a visual runtime report using runtime_by_region_vis."
         vcf_stats_report: "Output a visual report (HTML) of statistics about the output VCF."
         use_gpu: "Whether to use the GPU accelerated version of DeepVariant"

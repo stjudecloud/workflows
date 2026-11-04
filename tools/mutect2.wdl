@@ -53,6 +53,8 @@ task mutect2 {
 
     String tumor = basename(tumor_bam)
     String normal = basename(normal_bam)
+    String germline = basename(select_first([germline_resource_vcf, ""]))
+    String panel = basename(select_first([panel_of_normals_vcf, ""]))
 
     command <<<
         set -euo pipefail
@@ -68,6 +70,15 @@ task mutect2 {
         ln -sf "~{normal_bam}" "~{normal}"
         ln -sf "~{normal_bam_index}" "~{normal}.bai"
 
+        if ~{defined(germline_resource_vcf)} && ~{defined(germline_resource_vcf_index)}; then
+            ln -sf "~{germline_resource_vcf}" "~{germline}"
+            ln -sf "~{germline_resource_vcf_index}" "~{germline}".tbi
+        fi
+        if ~{defined(panel_of_normals_vcf)} && ~{defined(panel_of_normals_vcf_index)}; then
+            ln -sf "~{panel_of_normals_vcf}" "~{panel}"
+            ln -sf "~{panel_of_normals_vcf_index}" "~{panel}".tbi
+        fi
+
         gatk Mutect2 \
             -R "$ref_fasta.fa" \
             -I "~{tumor}" \
@@ -75,17 +86,15 @@ task mutect2 {
             -normal "~{normal_sample_name}" \
             -tumor "~{tumor_sample_name}" \
             ~{if defined(germline_resource_vcf)
-                then "-germline-resource '" + germline_resource_vcf + "'"
+                then "-germline-resource '" + germline + "'"
                 else ""} \
             ~{if defined(panel_of_normals_vcf)
-                then "-panel-of-normals '" + panel_of_normals_vcf + "'"
+                then "-panel-of-normals '" + panel + "'"
                 else ""} \
             -O "~{output_prefix}.vcf.gz" \
             --native-pair-hmm-threads "~{threads}"
 
-        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{tumor}" "~{tumor}.bai" "~{
-            normal
-        }" "~{normal}.bai"
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -162,11 +171,7 @@ task filter_mutect {
             --tumor-segmentation "~{maf_segments}" \
             -O "~{prefix}.vcf.gz"
 
-        rm -rf "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict" "~{basename(
-            unfiltered_somatic_vcf
-        )}" "~{basename(unfiltered_somatic_vcf_index)}" "~{basename(
-            unfiltered_somatic_vcf_stats
-        )}"
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -301,9 +306,7 @@ task get_pileup_summaries {
             -L "~{basename(intervals)}" \
             -O "~{prefix}.table"
 
-        rm -rf "~{name}.bam" "~{name}.bam.bai" "~{basename(intervals)}" "~{basename(
-            intervals_index
-        )}" "~{basename(variants)}" "~{basename(variants_index)}" "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {

@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/DerrickWood/kraken2)
-version 1.1
+version 1.3
 
 task download_taxonomy {
     meta {
@@ -40,7 +40,7 @@ task download_taxonomy {
         File taxonomy = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "60 GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
@@ -122,7 +122,7 @@ task download_library {
         File library = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
@@ -185,7 +185,7 @@ task create_library_from_fastas {
         File custom_library = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
@@ -294,7 +294,7 @@ task build_db {
         File built_db = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -338,17 +338,17 @@ task kraken {
             group: "Common",
         }
         use_names: "Print scientific names instead of just taxids?"
+        quick: "Stop classification at the first hit instead of an exhaustive k-mer search? Faster but less accurate."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             group: "Common",
         }
-        min_base_quality: "Minimum base quality used in classification"
         confidence: {
             description: "Confidence score threshold. Classifications below this threshold are unclassified.",
             external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#confidence-scoring",
         }
+        min_base_quality: "Minimum base quality used in classification"
         minimum_hit_groups: "Minimum number of hit groups (overlapping k-mers sharing the same minimizer) needed to make a classification call"
-        quick: "Stop classification at the first hit instead of an exhaustive k-mer search? Faster but less accurate."
         ncpu: {
             description: "Number of cores to allocate for task",
             group: "Common",
@@ -367,8 +367,8 @@ task kraken {
         )
         Boolean store_sequences = false
         Boolean use_names = true
-        Boolean use_all_cores = false
         Boolean quick = false
+        Boolean use_all_cores = false
         Float confidence = 0.0
         Int min_base_quality = 0
         Int minimum_hit_groups = 2
@@ -427,7 +427,7 @@ task kraken {
         File? sequences = out_sequences + ".gz"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"

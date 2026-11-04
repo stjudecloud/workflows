@@ -1,5 +1,5 @@
 ## # Utilities
-version 1.1
+version 1.3
 
 task download {
     meta {
@@ -38,7 +38,7 @@ task download {
         File downloaded_file = outfile_name
     }
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
@@ -78,7 +78,7 @@ task split_string {
         Array[String] split_strings = read_lines("split_strings.txt")
     }
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
@@ -126,7 +126,7 @@ task calc_feature_lengths {
         File feature_lengths = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"
@@ -159,7 +159,7 @@ task compression_integrity {
         bgzip -t "~{bgzipped_file}"
     >>>
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -208,7 +208,7 @@ task add_to_bam_header {
         File reheadered_bam = outfile_name
     }
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -249,7 +249,7 @@ task unpack_tarball {
         Array[File] tarball_contents = read_lines("file_list.txt")
     }
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
@@ -307,7 +307,7 @@ task make_coverage_regions_bed {
         File bed = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "8 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0"
@@ -355,7 +355,7 @@ task global_phred_scores {
         File phred_scores = "~{outfile_name}"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"
@@ -405,7 +405,7 @@ task check_fastq_and_rg_concordance {
             --read-groups "~{sep(",", squote(read_groups))}"
     >>>
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
@@ -462,7 +462,7 @@ task split_fastq {
         Array[File] fastqs = glob("~{prefix}*")
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"

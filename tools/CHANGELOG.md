@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2026 November
+
+### Changed
+
+- Updated all WDL to v1.3 [#338](https://github.com/stjudecloud/workflows/pull/338)
+
 ## 2026 September
 
 ### Added
@@ -20,7 +26,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - New `vg.wdl` tool wrapper for the `vg` variant graph aligner [#282](https://github.com/stjudecloud/workflows/pull/282)
 - New `gatk4` tasks `apply_vqsr`, `variant_recalibrator`, `calculate_genotype_posteriors`, `genotype_gvcfs`, and `resource_to_string`, plus `Resource` struct and `RefConfidence`/`VariantMode` enums [#282](https://github.com/stjudecloud/workflows/pull/282)
 - New `samtools.calmd` and `samtools.sort` tasks [#282](https://github.com/stjudecloud/workflows/pull/282)
-
 
 ### Changed
 

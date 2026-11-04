@@ -84,7 +84,7 @@ For an introduction to WDL, there are many guides, one of which is [from Terra](
 
 ## Tests
 
-Every task in this repository is covered by at least one test. These are run using [`sprocket dev test`](https://sprocket.bio/subcommands/test.html).
+Every task in this repository is covered by at least one test. These are run using [`sprocket test`](https://sprocket.bio/subcommands/test.html).
 
 ## 🤝 Contributing
 

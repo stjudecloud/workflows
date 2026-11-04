@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/stjude-rust-labs/fq)
-version 1.1
+version 1.3
 
 #@ except: EmptyOutputs
 task fqlint {
@@ -83,7 +83,7 @@ task fqlint {
             ~{"'" + read_two_fastq + "'"}
     >>>
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fq:0.12.0--h9ee0642_0"
@@ -136,21 +136,15 @@ task subsample {
 
     Int disk_size_gb = ceil((read1_size + read2_size) * 2) + modify_disk_size_gb
 
-    String probability_arg = if (probability < 1.0 && probability > 0)
-        then "-p ~{probability}"
-        else ""
-    String record_count_arg = if (record_count > 0) then "-n ~{record_count}" else ""
-
     String r1_dst = prefix + ".R1.subsampled.fastq.gz"
     String r2_dst = prefix + ".R2.subsampled.fastq.gz"
 
     command <<<
         set -euo pipefail
 
-        # shellcheck disable=SC2086
         fq subsample \
-            ~{probability_arg} \
-            ~{record_count_arg} \
+            ~{if (probability < 1.0 && probability > 0) then "-p ~{probability}" else ""} \
+            ~{if (record_count > 0) then "-n ~{record_count}" else ""} \
             --r1-dst "~{r1_dst}" \
             ~{if defined(read_two_fastq) then "--r2-dst '" + r2_dst + "'" else ""} \
             "~{read_one_fastq}" \
@@ -162,7 +156,7 @@ task subsample {
         File? subsampled_read2 = prefix + ".R2.subsampled.fastq.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/fq:0.12.0--h9ee0642_0"

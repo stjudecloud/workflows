@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 task process_raw_idats {
     meta {
@@ -66,7 +66,7 @@ task process_raw_idats {
         File non_genomic_probes = out_base + ".non_genomic_probes.tab"
     }
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/minfi:1.48.0-8"
         memory: "8 GB"
         cpu: 1
@@ -99,7 +99,7 @@ task list_sex_probes {
         File probe_list = "sex_probes.txt"
     }
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/minfi:1.48.0-8"
         memory: "3 GB"
         cpu: 1

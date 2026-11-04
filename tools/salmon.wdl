@@ -128,31 +128,6 @@ task quant {
             description: "Prefix for the Salmon quantification output. The extension `.tar.gz` will be added.",
             group: "Common",
         }
-        num_bootstraps: {
-            description: "Compute bootstrapped abundance estimates.",
-            help: "This is done by resampling (with replacement) from the counts assigned to the fragment equivalence classes, and then re-running the optimization procedure for each such sample.",
-            group: "Salmon Options",
-        }
-        incompat_prior: {
-            description: "This parameter governs the a priori probability that a fragment mapping is nonetheless the correct mapping.",
-            help: "Specifically, this is for a fragment mapping or aligning to the reference in a manner incompatible with the prescribed library type.",
-            group: "Salmon Options",
-        }
-        range_factorization_bins: {
-            description: "The range-factorization feature allows using a data-driven likelihood factorization.",
-            help: "This can improve quantification accuracy on certain classes of difficult transcripts.",
-            group: "Salmon Options",
-        }
-        fld_mean: {
-            description: "Allows the user to set the expected mean fragment length of the sequencing library.",
-            help: "Since the empirical fragment length distribution cannot be estimated from the mappings of single-end reads, this is only important when running Salmon with single-end reads.",
-            group: "Salmon Options",
-        }
-        fld_sd: {
-            description: "Allows the user to set the expected standard deviation of the fragment length distribution.",
-            help: "Since the empirical fragment length distribution cannot be estimated from the mappings of single-end reads, this is only important when running Salmon with single-end reads.",
-            group: "Salmon Options",
-        }
         seq_bias: {
             description: "Passing this flag will enable it to learn and correct for sequence-specific biases in the input data.",
             group: "Salmon Options",
@@ -195,6 +170,31 @@ task quant {
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             group: "Resources",
+        }
+        incompat_prior: {
+            description: "This parameter governs the a priori probability that a fragment mapping is nonetheless the correct mapping.",
+            help: "Specifically, this is for a fragment mapping or aligning to the reference in a manner incompatible with the prescribed library type.",
+            group: "Salmon Options",
+        }
+        num_bootstraps: {
+            description: "Compute bootstrapped abundance estimates.",
+            help: "This is done by resampling (with replacement) from the counts assigned to the fragment equivalence classes, and then re-running the optimization procedure for each such sample.",
+            group: "Salmon Options",
+        }
+        range_factorization_bins: {
+            description: "The range-factorization feature allows using a data-driven likelihood factorization.",
+            help: "This can improve quantification accuracy on certain classes of difficult transcripts.",
+            group: "Salmon Options",
+        }
+        fld_mean: {
+            description: "Allows the user to set the expected mean fragment length of the sequencing library.",
+            help: "Since the empirical fragment length distribution cannot be estimated from the mappings of single-end reads, this is only important when running Salmon with single-end reads.",
+            group: "Salmon Options",
+        }
+        fld_sd: {
+            description: "Allows the user to set the expected standard deviation of the fragment length distribution.",
+            help: "Since the empirical fragment length distribution cannot be estimated from the mappings of single-end reads, this is only important when running Salmon with single-end reads.",
+            group: "Salmon Options",
         }
         ncpu: {
             description: "Number of cores to allocate for task",
