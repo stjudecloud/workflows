@@ -1,8 +1,12 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
- 
+
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
+
+## Changed
+
+- Updated all WDL to v1.3 [#338](https://github.com/stjudecloud/workflows/pull/338)
 
 ## 2026 September
 
@@ -39,4 +43,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - `read_group_to_string` workflow, which validates `ReadGroup` structs prior to converting them to strings [#235](https://github.com/stjudecloud/workflows/pull/235).
-    - This should be used instead of the `inner_read_group_to_string` task.
+  - This should be used instead of the `inner_read_group_to_string` task.
