@@ -1,7 +1,8 @@
-import csv
-import pandas as pd
-import numpy as np
 import argparse
+import csv
+
+import numpy as np
+import pandas as pd
 
 
 def get_args():

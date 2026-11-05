@@ -1,5 +1,85 @@
-## [Homepage](https://software.broadinstitute.org/gatk)
-version 1.1
+version 1.3
+
+#@ except: NamingConvention
+enum RefConfidence {
+    NONE,
+    GVCF,
+    BP_RESOLUTION,
+}
+
+#@ except: NamingConvention
+enum VariantMode {
+    SNP,
+    INDEL,
+    BOTH,
+}
+
+struct Resource {
+    meta {
+        description: "Struct representing a resource to be used in GATK VariantRecalibrator."
+        help: "This includes both the VCF file for the resource and metadata about how to use the resource in building the recalibration model."
+    }
+
+    parameter_meta {
+        name: "Name of the resource. This is an arbitrary string that is used to identify the resource in the recalibration model."
+        known: "Boolean indicating whether the resource is a known set of variants."
+        training: "Boolean indicating whether the resource is a training set of variants to be used for building the recalibration model."
+        truth: "Boolean indicating whether the resource is a truth set of variants to be used for building the recalibration model."
+        prior: "Prior probability for the resource."
+        vcf: "VCF file for the resource."
+        vcf_index: "Index file for the VCF."
+    }
+
+    String name
+    Boolean known
+    Boolean training
+    Boolean truth
+    Float prior
+    File vcf
+    File vcf_index
+}
+
+task resource_to_string {
+    meta {
+        description: "Converts a resource struct to a string representation for use in GATK commands."
+        outputs: {
+            res_string: "String representation of the input resource struct formatted for GATK VariantRecalibrator.",
+            res_vcf: "VCF file from the input resource struct",
+            res_vcf_index: "Index file for the VCF from the input resource struct",
+        }
+    }
+
+    parameter_meta {
+        res: "Resource struct containing information about a resource to be used in GATK VariantRecalibrator."
+    }
+
+    input {
+        Resource res
+    }
+
+    command <<<
+        set -euo pipefail
+
+        echo "~{res.name},known=~{res.known},training=~{res.training},truth=~{res.truth},prior=~{
+            res.prior
+        } ~{basename(res.vcf)}"
+    >>>
+
+    output {
+        String res_string = read_string(stdout())
+        File res_vcf = res.vcf
+        File res_vcf_index = res.vcf_index
+    }
+
+    requirements {
+        container: "ghcr.io/stjudecloud/util:3.0.4"
+        maxRetries: 1
+    }
+
+    hints {
+        localization_optional: true
+    }
+}
 
 task split_n_cigar_reads {
     meta {
@@ -42,16 +122,27 @@ task split_n_cigar_reads {
     command <<<
         set -euo pipefail
 
+        bam_name=~{basename(bam)}
+        ln -sf "~{bam}" "$bam_name"
+        ln -sf "~{bam_index}" "$bam_name.bai"
+
+        ref_fasta=~{sub(basename(fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{fasta}" "$ref_fasta.fa"
+        ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{dict}" "$ref_fasta.dict"
+
         gatk \
             --java-options "-Xms4000m -Xmx~{java_heap_size}g" \
             SplitNCigarReads \
             -R "~{fasta}" \
-            -I "~{bam}" \
+            -I "$bam_name" \
             -O "~{prefix}.bam" \
             -OBM true
 
         # GATK is unreasonable and uses the plain ".bai" suffix.
         mv "~{prefix}.bai" "~{prefix}.bam.bai"
+        rm "$bam_name" "$bam_name.bai" "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
     >>>
 
     output {
@@ -60,11 +151,11 @@ task split_n_cigar_reads {
         File split_n_reads_bam_md5 = "~{prefix}.bam.md5"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
+        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
         maxRetries: 1
     }
 }
@@ -79,7 +170,7 @@ task base_recalibrator {
     }
 
     parameter_meta {
-        bam: "Input BAM format file on which to recabilbrate base quality scores"
+        bam: "Input BAM format file on which to recalibrate base quality scores"
         bam_index: "BAM index file corresponding to the input BAM"
         fasta: "Reference genome in FASTA format"
         fasta_index: "Index for FASTA format genome"
@@ -101,15 +192,15 @@ task base_recalibrator {
         File fasta
         File fasta_index
         File dict
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf_index
         Array[File] known_indels_sites_vcfs
         Array[File] known_indels_sites_indices
         String outfile_name = basename(bam, ".bam") + ".recal.txt"
         Boolean use_original_quality_scores = false
-        Int memory_gb = 25
+        Int memory_gb = 50
         Int modify_disk_size_gb = 0
         Int ncpu = 4
     }
@@ -118,28 +209,51 @@ task base_recalibrator {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
+        bam_name=~{basename(bam)}
+        ln -sf "~{bam}" "$bam_name"
+        ln -sf "~{bam_index}" "$bam_name.bai"
+
+        ref_fasta=~{sub(basename(fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{fasta}" "$ref_fasta.fa"
+        ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{dict}" "$ref_fasta.dict"
+
+        ln -sf "~{dbSNP_vcf}" "~{basename(dbSNP_vcf)}"
+        ln -sf "~{dbSNP_vcf_index}" "~{basename(dbSNP_vcf)}".tbi
+
+        while read -r vcf <&3 && read -r index <&4; do
+            basename="$(basename "$vcf")"
+            ln -s "$vcf" "$basename"
+            ln -s "$index" "$basename".tbi
+            basenames+=( "--known-sites $basename" )
+        done 3< "~{write_lines(known_indels_sites_vcfs)}" 4< "~{write_lines(
+            known_indels_sites_indices
+        )}"
+
         # shellcheck disable=SC2102
         gatk \
             --java-options \
-                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g" \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms4000m -Xmx~{java_heap_size}g -XX:-UseContainerSupport" \
             BaseRecalibratorSpark \
-            -R "~{fasta}" \
-            -I "~{bam}" \
-            ~{if use_original_quality_scores
-                then "--use-original-qualities"
-                else ""
-            } \
+            -R "$ref_fasta.fa" \
+            -I "$bam_name" \
+            ~{if use_original_quality_scores then "--use-original-qualities" else ""} \
             -O "~{outfile_name}" \
-            --known-sites "~{dbSNP_vcf}" \
-            ~{sep(" ", prefix("--known-sites ", squote(known_indels_sites_vcfs)))} \
+            --known-sites "~{basename(dbSNP_vcf)}" \
+            ~{if length(known_indels_sites_vcfs) > 0 then "\${basenames[@]}" else ""} \
             --spark-master local[~{ncpu}]
+
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
         File recalibration_report = "~{outfile_name}"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -175,7 +289,7 @@ task apply_bqsr {
         File recalibration_report
         String prefix = basename(bam, ".bam")
         Boolean use_original_quality_scores = false
-        Int memory_gb = 25
+        Int memory_gb = 50
         Int modify_disk_size_gb = 0
         Int ncpu = 4
     }
@@ -186,19 +300,22 @@ task apply_bqsr {
     command <<<
         set -euo pipefail
 
+        bam_name=~{basename(bam)}
+        ln -sf "~{bam}" "$bam_name"
+        ln -sf "~{bam_index}" "$bam_name.bai"
+
         # shellcheck disable=SC2102
         gatk \
             --java-options \
-                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g" \
+                "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m -Xmx~{java_heap_size}g -XX:-UseContainerSupport" \
             ApplyBQSRSpark \
             --spark-master local[~{ncpu}] \
-            -I "~{bam}" \
-            ~{if use_original_quality_scores
-                then "--use-original-qualities"
-                else ""
-            } \
+            -I "$bam_name" \
+            ~{if use_original_quality_scores then "--use-original-qualities" else ""} \
             -O "~{prefix}.bqsr.bam" \
             --bqsr-recal-file "~{recalibration_report}"
+
+        rm "$bam_name" "$bam_name.bai"
     >>>
 
     output {
@@ -206,7 +323,7 @@ task apply_bqsr {
         File recalibrated_bam_index = "~{prefix}.bqsr.bam.bai"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -237,6 +354,12 @@ task haplotype_caller {
         dict: "Dictionary file for FASTA format genome"
         dbSNP_vcf: "dbSNP VCF file"
         dbSNP_vcf_index: "dbSNP VCF index file"
+        reference_confidence: {
+            description: "Reference confidence mode to run HaplotypeCaller in.",
+            help: "If `NONE`, HaplotypeCaller will run in default mode and only output variant sites. If `GVCF`, HaplotypeCaller will run in GVCF mode and output both variant and non-variant sites with reference confidence scores. If `BP_RESOLUTION`, HaplotypeCaller will run in GVCF mode but output non-variant sites at base pair resolution instead of block resolution.",
+            warning: "If using a disk-constrained backend and changing this from `NONE`, `modify_disk_size_gb` will likely need to be increased, as `GVCF`/`BP_RESOLUTION` modes can produce substantially larger output than the default.",
+            external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller#--emit-ref-confidence",
+        }
         prefix: "Prefix for the output VCF. The extension `.vcf.gz` will be added."
         use_soft_clipped_bases: "Use soft clipped bases in variant calling. Default is to ignore soft clipped bases."
         stand_call_conf: {
@@ -255,10 +378,11 @@ task haplotype_caller {
         File fasta
         File fasta_index
         File dict
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         File dbSNP_vcf_index
+        RefConfidence reference_confidence = RefConfidence.NONE
         String prefix = basename(bam, ".bam")
         Boolean use_soft_clipped_bases = false
         Int stand_call_conf = 20
@@ -270,21 +394,42 @@ task haplotype_caller {
     Int disk_size_gb = ceil(size(bam, "GB") * 2) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
+    String sample = basename(bam)
+    String snp_vcf = basename(dbSNP_vcf)
+    String snp_vcf_index = basename(dbSNP_vcf_index)
+
     command <<<
+        set -euo pipefail
+
+        ref_fasta=~{sub(basename(fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{fasta}" "$ref_fasta.fa"
+        ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{dict}" "$ref_fasta.dict"
+
+        ln -sf "~{bam}" "~{sample}"
+        ln -sf "~{bam_index}" "~{sample}.bai"
+
+        ln -sf "~{dbSNP_vcf}" "~{snp_vcf}"
+        ln -sf "~{dbSNP_vcf_index}" "~{snp_vcf_index}"
+
         gatk \
             --java-options \
                 "-Xms6000m -Xmx~{java_heap_size}g -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
             HaplotypeCaller \
-            -R "~{fasta}" \
-            -I "~{bam}" \
+            -R "$ref_fasta.fa" \
+            -I "~{sample}" \
             -L "~{interval_list}" \
             -O "~{prefix}.vcf.gz" \
             ~{if use_soft_clipped_bases
                 then ""
-                else "--dont-use-soft-clipped-bases"
-            } \
+                else "--dont-use-soft-clipped-bases"  # cSpell:disable-line
+} \
             --standard-min-confidence-threshold-for-calling ~{stand_call_conf} \
-            --dbsnp "~{dbSNP_vcf}"
+            --dbsnp "~{snp_vcf}" \
+            --emit-ref-confidence "~{reference_confidence}"
+
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -292,11 +437,11 @@ task haplotype_caller {
         File vcf_index = "~{prefix}.vcf.gz.tbi"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
+        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
         maxRetries: 1
     }
 }
@@ -338,14 +483,8 @@ task variant_filtration {
         File fasta
         File fasta_index
         File dict
-        Array[String] filter_names = [
-            "FS",
-            "QD",
-        ]
-        Array[String] filter_expressions = [
-            "FS > 30.0",
-            "QD < 2.0",
-        ]
+        Array[String] filter_names = ["FS", "QD"]
+        Array[String] filter_expressions = ["FS > 30.0", "QD < 2.0"]
         String prefix = basename(vcf, ".vcf.gz")
         Int cluster = 3
         Int window = 35
@@ -356,14 +495,28 @@ task variant_filtration {
     Int disk_size_gb = ceil(size(vcf, "GB") * 2) + 30 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
+        vcf_name=~{basename(vcf)}
+        ln -sf "~{vcf}" "$vcf_name"
+        ln -sf "~{vcf_index}" "$vcf_name.tbi"
+
+        ref_fasta=~{sub(basename(fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{fasta}" "$ref_fasta.fa"
+        ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{dict}" "$ref_fasta.dict"
+
         gatk VariantFiltration \
-            --R "~{fasta}" \
-            --V "~{vcf}" \
+            --R "$ref_fasta.fa" \
+            --V "$vcf_name" \
             --window ~{window} \
             --cluster ~{cluster} \
             ~{sep(" ", prefix("--filter-name ", quote(filter_names)))} \
             ~{sep(" ", prefix("--filter-expression ", squote(filter_expressions)))} \
             -O "~{prefix}.filtered.vcf.gz"
+
+        rm "$vcf_name" "$vcf_name.tbi" "$ref_fasta.fa" "$ref_fasta.fa.fai" "$ref_fasta.dict"
     >>>
 
     output {
@@ -371,11 +524,11 @@ task variant_filtration {
         File vcf_filtered_index = "~{prefix}.filtered.vcf.gz.tbi"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "15 GB"
         disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
+        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
         maxRetries: 1
     }
 }
@@ -412,7 +565,7 @@ task mark_duplicates_spark {
         tagging_policy: {
             description: "Tagging policy for the output BAM.",
             choices: [
-                "DontTag",
+                "DontTag",  # cSpell:disable-line
                 "OpticalOnly",
                 "All",
             ],
@@ -458,8 +611,7 @@ task mark_duplicates_spark {
     Int memory_gb = min(ceil(bam_size + 15), 50) + modify_memory_gb
     Int disk_size_gb = (if create_bam
         then ceil((bam_size * 2) + 10)
-        else ceil(bam_size + 10)
-    ) + modify_disk_size_gb
+        else ceil(bam_size + 10)) + modify_disk_size_gb
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
@@ -468,20 +620,16 @@ task mark_duplicates_spark {
 
         # shellcheck disable=SC2102
         gatk MarkDuplicatesSpark \
-            --java-options "-Xmx~{java_heap_size}g" \
+            --java-options "-Xmx~{java_heap_size}g -XX:-UseContainerSupport" \
             -I "~{bam}" \
             -M "~{prefix}.metrics.txt" \
-            -O "~{if create_bam
-                then prefix + ".bam"
-                else "/dev/null"
-            }" \
+            -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
             --create-output-bam-index ~{create_bam} \
             --read-validation-stringency "~{validation_stringency}" \
             --duplicate-scoring-strategy "~{duplicate_scoring_strategy}" \
             --read-name-regex '~{if (optical_distance > 0)
                 then read_name_regex
-                else "null"
-            }' \
+                else "null"}' \
             --duplicate-tagging-policy "~{tagging_policy}" \
             --optical-duplicate-pixel-distance ~{optical_distance} \
             --spark-master local[~{ncpu}]
@@ -493,11 +641,455 @@ task mark_duplicates_spark {
         File mark_duplicates_metrics = "~{prefix}.metrics.txt"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/gatk4:4.4.0.0--py36hdfd78af_0"
         maxRetries: 1
+    }
+}
+
+task apply_vqsr {
+    meta {
+        description: "Applies variant quality score recalibration to a VCF file."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/35967650663195-ApplyVQSR"
+        outputs: {
+            vcf_recalibrated: "Recalibrated VCF file",
+            vcf_recalibrated_index: "Index file for the recalibrated VCF",
+        }
+    }
+
+    parameter_meta {
+        reference_fasta: "Reference genome in FASTA format"
+        reference_fasta_index: "Index for FASTA format genome"
+        reference_dict: "Dictionary file for FASTA format genome"
+        vcf: "Input VCF format file on which to apply variant quality score recalibration"
+        vcf_index: "VCF index file corresponding to the input VCF"
+        recal_file: "Recalibration file generated by the VariantRecalibrator tool"
+        recal_file_index: "Index file for the recalibration file"
+        tranches_file: "Tranches file generated by the VariantRecalibrator tool"
+        mode: {
+            description: "Variant type to apply variant quality score recalibration for.",
+            help: "If `BOTH`, then the same model will be applied to both SNPs and indels.",
+        }
+        prefix: "Prefix for the output recalibrated VCF. The extension `.recalibrated.vcf.gz` will be added."
+        truth_sensitivity_filter_level: {
+            description: "Truth sensitivity level at which to filter variants.",
+            help: "This corresponds to the `--truth-sensitivity-filter-level` argument of GATK ApplyVQSR. Default is 99.0, which means that variants will be filtered at the threshold that achieves 99.0% sensitivity on the truth set used to build the model.",
+        }
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File reference_fasta
+        File reference_fasta_index
+        File reference_dict
+        File vcf
+        File vcf_index
+        File recal_file
+        File recal_file_index
+        File tranches_file
+        VariantMode mode = VariantMode.SNP
+        String prefix = basename(vcf, ".vcf.gz")
+        Float truth_sensitivity_filter_level = 99.0
+        Int modify_disk_size_gb = 0
+    }
+
+    Int disk_size_gb = ceil(size(vcf, "GB") * 2) + ceil(size(reference_fasta, "GB") * 2) + 30
+        + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        ref_fasta=~{sub(basename(reference_fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{reference_fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta.fa"
+        ln -sf "~{reference_fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{reference_dict}" "$ref_fasta.dict"
+
+        ln -sf "~{vcf}" "~{basename(vcf)}"
+        ln -sf "~{vcf_index}" "~{basename(vcf)}".tbi
+
+        ln -sf "~{recal_file}" "~{basename(recal_file)}"
+        ln -sf "~{recal_file_index}" "~{basename(recal_file)}".tbi
+
+        gatk ApplyVQSR \
+            -R "$ref_fasta.fa" \
+            -V "~{basename(vcf)}" \
+            --recal-file "~{basename(recal_file)}" \
+            --tranches-file "~{tranches_file}" \
+            --truth-sensitivity-filter-level ~{truth_sensitivity_filter_level} \
+            --mode "~{mode}" \
+            -O "~{prefix}.recalibrated.vcf.gz"
+
+        find . -maxdepth 1 -type l -delete
+    >>>
+
+    output {
+        File vcf_recalibrated = "~{prefix}.recalibrated.vcf.gz"
+        File vcf_recalibrated_index = "~{prefix}.recalibrated.vcf.gz.tbi"
+    }
+
+    requirements {
+        cpu: 1
+        memory: "25 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
+        maxRetries: 1
+    }
+}
+
+task variant_recalibrator {
+    meta {
+        description: "Generates recalibration tables for variant quality score recalibration."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/35967662766235-VariantRecalibrator"
+        outputs: {
+            recal_file: "Recalibration file containing the model generated by VariantRecalibrator",
+            recal_index: "Index file for the recalibration file",
+            tranches_file: "Tranches file containing information about the sensitivity and specificity of the model at different score thresholds",
+            rscript_file: "R script file for generating plots to evaluate the model.",
+        }
+    }
+
+    parameter_meta {
+        reference_fasta: "Reference genome in FASTA format"
+        reference_fasta_index: "Index for FASTA format genome"
+        reference_dict: "Dictionary file for FASTA format genome"
+        vcf: "Input VCF format file on which to perform variant quality score recalibration"
+        vcf_index: "VCF index file corresponding to the input VCF"
+        resource_vcfs: "List of VCF files corresponding to the resources in `resources`"
+        resource_vcf_indices: "List of VCF index files corresponding to the VCF files in `resource_vcfs`"
+        resources: "List of resources to use for building the recalibration model"
+        annotations: "List of annotations to use for building the recalibration model."
+        mode: "Variant type (SNP or INDEL) to build the recalibration model for. If `BOTH`, then separate models will be built for SNPs and indels."
+        prefix: "Prefix for the output recalibration files. The extensions `.recal` and `.tranches` will be added."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File reference_fasta
+        File reference_fasta_index
+        File reference_dict
+        File vcf
+        File vcf_index
+        Array[File] resource_vcfs
+        Array[File] resource_vcf_indices
+        # TODO: improve UX for constructing this mess of an argument
+        # It is a string but must reference files in the `resource_vcfs` array.
+        Array[String] resources
+        Array[String] annotations = [
+            "QD",
+            "MQ",
+            "MQRankSum",
+            "ReadPosRankSum",
+            "FS",
+            "SOR",
+        ]
+        VariantMode mode = VariantMode.SNP
+        String prefix = basename(vcf, ".vcf.gz")
+        Int modify_disk_size_gb = 0
+    }
+
+    Int disk_size_gb = ceil(size(vcf, "GB") * 2) + ceil(size(reference_fasta, "GB") * 2) + 30
+        + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        ref_fasta=~{sub(basename(reference_fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{reference_fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta.fa"
+        ln -sf "~{reference_fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{reference_dict}" "$ref_fasta.dict"
+
+        ln -sf "~{vcf}" "~{basename(vcf)}"
+        ln -sf "~{vcf_index}" "~{basename(vcf_index)}"
+
+        while read -r vcf <&3 && read -r index <&4; do
+            basename="$(basename "$vcf")"
+            ln -s "$vcf" "$basename"
+            ln -s "$index" "$basename".tbi
+            vcf_basenames+=( "$basename" )
+        done 3< "~{write_lines(resource_vcfs)}" 4< "~{write_lines(resource_vcf_indices)}"
+
+        gatk VariantRecalibrator \
+            -R "$ref_fasta.fa" \
+            -V "~{basename(vcf)}" \
+            --mode "~{mode}" \
+            -O "~{prefix}.recal" \
+            --tranches-file "~{prefix}.tranches" \
+            --rscript-file "~{prefix}.plots.R" \
+            --dont-run-rscript \
+            ~{sep(" ", prefix("--resource:", quote(resources)))} \
+            ~{sep(" ", prefix("-an ", quote(annotations)))}
+
+        find . -maxdepth 1 -type l -delete
+    >>>
+
+    output {
+        File recal_file = "~{prefix}.recal"
+        File recal_index = "~{prefix}.recal.idx"
+        File tranches_file = "~{prefix}.tranches"
+        File rscript_file = "~{prefix}.plots.R"
+    }
+
+    requirements {
+        cpu: 1
+        memory: "25 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
+        maxRetries: 1
+    }
+}
+
+task calculate_genotype_posteriors {
+    meta {
+        description: "Calculates posterior genotype probabilities for a VCF file using population allele frequencies."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/35967653366299-CalculateGenotypePosteriors"
+        outputs: {
+            vcf_posteriors: "VCF file with updated genotype posteriors",
+            vcf_posteriors_index: "Index file for the VCF with updated genotype posteriors",
+        }
+    }
+
+    parameter_meta {
+        vcf: "Input VCF format file on which to calculate genotype posteriors"
+        vcf_index: "VCF index file corresponding to the input VCF"
+        supporting_vcf: "VCF file containing population allele frequencies to use as support for calculating genotype posteriors"
+        supporting_vcf_index: "VCF index file corresponding to the supporting VCF"
+        prefix: "Prefix for the output VCF with updated genotype posteriors. The extension `.posteriors.vcf.gz` will be added."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation."
+    }
+
+    input {
+        File vcf
+        File vcf_index
+        File supporting_vcf
+        File supporting_vcf_index
+        String prefix = basename(vcf, ".vcf.gz")
+        Int modify_disk_size_gb = 0
+    }
+
+    Int disk_size_gb = ceil(size(vcf, "GB") * 2) + 30 + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        ln -sf "~{vcf}" "~{basename(vcf)}"
+        ln -sf "~{vcf_index}" "~{basename(vcf_index)}"
+        ln -sf "~{supporting_vcf}" "supporting.vcf.gz"
+        ln -sf "~{supporting_vcf_index}" "supporting.vcf.gz.tbi"
+
+        gatk CalculateGenotypePosteriors \
+            -V "~{basename(vcf)}" \
+            -supporting "supporting.vcf.gz" \
+            -O "~{prefix}.posteriors.vcf.gz"
+
+        find . -maxdepth 1 -type l -delete
+    >>>
+
+    output {
+        File vcf_posteriors = "~{prefix}.posteriors.vcf.gz"
+        File vcf_posteriors_index = "~{prefix}.posteriors.vcf.gz.tbi"
+    }
+
+    requirements {
+        cpu: 1
+        memory: "25 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
+        maxRetries: 1
+    }
+}
+
+task genotype_gvcfs {
+    meta {
+        description: "Generates per-sample GVCF files from BAM files using GATK's HaplotypeCaller in GVCF mode."
+        external_help: "https://gatk.broadinstitute.org/hc/en-us/articles/35967678260379-GenotypeGVCFs"
+        outputs: {
+            vcf: "VCF file containing variant and non-variant sites with genotype likelihoods",
+            vcf_index: "Index file for the VCF",
+        }
+    }
+
+    parameter_meta {
+        gvcf: "Input GVCF format file containing GVCF records to genotype"
+        gvcf_index: "GVCF index file corresponding to the input GVCF"
+        fasta: "Reference genome in FASTA format"
+        fasta_index: "Index for FASTA format genome"
+        dict: "Dictionary file for FASTA format genome"
+        prefix: "Prefix for the output GVCF. The extension `.g.vcf.gz` will be added."
+        modify_disk_size_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File gvcf
+        File gvcf_index
+        File fasta
+        File fasta_index
+        File dict
+        String prefix
+        Int modify_disk_size_gb = 0
+    }
+
+    Int disk_size_gb = ceil(size(gvcf, "GB") * 2) + 30 + ceil(size(fasta, "GB")) + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        ref_fasta=~{sub(basename(fasta, ".gz"), ".(fasta|fa)?$", "")}
+        gunzip -c "~{fasta}" > "$ref_fasta.fa" \
+            || ln -sf "~{fasta}" "$ref_fasta.fa"
+        ln -sf "~{fasta_index}" "$ref_fasta.fa.fai"
+        ln -sf "~{dict}" "$ref_fasta.dict"
+
+        ln -sf "~{gvcf}" "~{basename(gvcf)}"
+        ln -sf "~{gvcf_index}" "~{basename(gvcf_index)}"
+
+        gatk \
+           --java-options "-Xmx4g" \
+            GenotypeGVCFs \
+            -R "$ref_fasta.fa" \
+            -V "~{basename(gvcf)}" \
+            -O "~{prefix}.g.vcf.gz" \
+
+        find . -maxdepth 1 -type l -delete
+    >>>
+
+    output {
+        File vcf = "~{prefix}.g.vcf.gz"
+        File vcf_index = "~{prefix}.g.vcf.gz.tbi"
+    }
+
+    requirements {
+        cpu: 1
+        memory: "25 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
+    }
+}
+
+task scatter_interval_list {
+    meta {
+        description: "Splits an interval list into multiple interval lists for parallel processing."
+        outputs: {
+            intervals: "Array of interval list files generated by scattering",
+            interval_count: "Number of interval list files generated by scattering",
+        }
+    }
+
+    parameter_meta {
+        interval_list: "Interval list file to be scattered"
+        scatter_count: "Number of interval lists to generate"
+        break_bands_at_multiples_of: "Break bands at multiples of this value"
+    }
+
+    input {
+        File interval_list
+        Int scatter_count
+        Int break_bands_at_multiples_of = 1000000
+    }
+
+    Int disk_size_gb = ceil(size(interval_list, "GB") * 2)
+
+    command <<<
+        set -euo pipefail
+
+        ln -s "~{interval_list}" .
+
+        gatk \
+           --java-options "-Xmx4g" \
+            IntervalListTools \
+            SCATTER_COUNT=~{scatter_count} \
+            SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
+            UNIQUE=true \
+            SORT=true \
+            BREAK_BANDS_AT_MULTIPLES_OF=~{break_bands_at_multiples_of} \
+            INPUT="~{basename(interval_list)}" \
+            OUTPUT=out
+
+
+        python3 > "interval_count.txt" <<PYTHON
+        import glob, os
+        # Works around a JES limitation where multiples files with the same name overwrite each other when globbed
+        intervals = sorted(glob.glob("out/*/*.interval_list"))
+        for i, interval in enumerate(intervals):
+            (directory, filename) = os.path.split(interval)
+            newName = os.path.join(directory, str(i + 1) + "." + filename)
+            os.rename(interval, newName)
+        print(len(intervals))
+        PYTHON
+
+        find . -maxdepth 1 -type l -delete
+    >>>
+
+    output {
+        Array[File] intervals = glob("out/*/*.interval_list")
+        Int interval_count = read_int("interval_count.txt")
+    }
+
+    requirements {
+        cpu: 1
+        memory: "6 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
+    }
+}
+
+task merge_vcfs {
+    meta {
+        description: "Combine one or more VCF files into a single VCF"
+        outputs: {
+            vcf: "Merged VCF file",
+            vcf_index: "Index file for the merged VCF",
+        }
+    }
+
+    parameter_meta {
+        vcfs: "Array of VCF files to be merged"
+        vcfs_indexes: "Array of index files corresponding to the VCF files"
+        output_vcf_name: "Name of the output VCF file"
+    }
+
+    input {
+        Array[File] vcfs
+        Array[File] vcfs_indexes
+        String output_vcf_name
+    }
+
+    Int disk_size_gb = ceil(size(vcfs, "GB") * 2 + size(vcfs_indexes, "GB") * 2)
+
+    command <<<
+        set -euo pipefail
+
+        for f in ~{sep(" ", squote(vcfs))}
+        do
+            ln -s "$f" .
+            basename "$f" >> "interval.list"
+        done
+
+        for f in ~{sep(" ", squote(vcfs_indexes))}
+        do
+            ln -s "$f" .
+        done
+
+        gatk \
+            --java-options "-Xmx4g" \
+            MergeVcfs \
+            INPUT="interval.list" \
+            OUTPUT="~{output_vcf_name}"
+    >>>
+
+    output {
+        File vcf = "~{output_vcf_name}"
+        File vcf_index = "~{output_vcf_name}.tbi"
+    }
+
+    requirements {
+        cpu: 1
+        memory: "6 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/gatk4:4.6.2.0--py310hdfd78af_1"
     }
 }

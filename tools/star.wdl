@@ -1,5 +1,4 @@
-## [Homepage](https://github.com/alexdobin/STAR)
-version 1.1
+version 1.3
 
 task build_star_db {
     meta {
@@ -21,7 +20,7 @@ task build_star_db {
             group: "Common",
         }
         sjdb_gtf_feature_exon: "feature type in GTF file to be used as exons for building transcripts"
-        sjdb_gtf_tag_exon_parant_transcript: "GTF attribute name for parent transcript ID"
+        sjdb_gtf_tag_exon_parent_transcript: "GTF attribute name for parent transcript ID"
         sjdb_gtf_tag_exon_parent_gene: "GTF attribute name for parent gene ID"
         sjdb_gtf_tag_exon_parent_gene_name: "GTF attribute name for parent gene name"
         sjdb_gtf_tag_exon_parent_gene_type: "GTF attribute name for parent gene type"
@@ -64,15 +63,15 @@ task build_star_db {
         String db_name = "star_db"
         String sjdb_gtf_chr_prefix = "-"
         String sjdb_gtf_feature_exon = "exon"
-        String sjdb_gtf_tag_exon_parant_transcript = "transcript_id"
+        String sjdb_gtf_tag_exon_parent_transcript = "transcript_id"
         String sjdb_gtf_tag_exon_parent_gene = "gene_id"
         String sjdb_gtf_tag_exon_parent_gene_name = "gene_name"
         String sjdb_gtf_tag_exon_parent_gene_type = "gene_type gene_biotype"
         Boolean use_all_cores = false
         Int genome_chr_bin_n_bits = 18
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int genome_SA_index_n_bases = 14
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int genome_SA_sparse_d = 1
         Int genome_suffix_length_max = -1
         Int sjdb_overhang = 125
@@ -115,7 +114,7 @@ task build_star_db {
             --sjdbGTFfile "$gtf_name" \
             --sjdbGTFchrPrefix "~{sjdb_gtf_chr_prefix}" \
             --sjdbGTFfeatureExon "~{sjdb_gtf_feature_exon}" \
-            --sjdbGTFtagExonParentTranscript "~{sjdb_gtf_tag_exon_parant_transcript}" \
+            --sjdbGTFtagExonParentTranscript "~{sjdb_gtf_tag_exon_parent_transcript}" \
             --sjdbGTFtagExonParentGene "~{sjdb_gtf_tag_exon_parent_gene}" \
             --sjdbGTFtagExonParentGeneName "~{sjdb_gtf_tag_exon_parent_gene_name}" \
             --sjdbGTFtagExonParentGeneType "~{sjdb_gtf_tag_exon_parent_gene_type}" \
@@ -134,7 +133,7 @@ task build_star_db {
         File star_db = star_db_tar_gz
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -146,6 +145,16 @@ task build_star_db {
 task alignment {
     meta {
         description: "Runs the STAR aligner on a set of RNA-Seq FASTQ files"
+        omitted_parameters: [
+            {
+                flag: "--outSAMtype",
+                reason: "STAR's default sort implementation is inefficient in the worst case and can blow up memory/time on some samples. Sorting is disabled here and handled by a dedicated downstream sorting task instead.",
+            },
+            {
+                flag: "--outMultimapperOrder",
+                reason: "Hardcoded to `Random`. The alternative, `Old_2.4`, is a biased quasi-random order used before STAR 2.5.0 and is expected to be deprecated in future STAR releases.",
+            },
+        ]
         external_help: "https://github.com/alexdobin/STAR/blob/2.7.11b/doc/STARmanual.pdf"
         outputs: {
             star_log: {
@@ -172,6 +181,26 @@ task alignment {
         }
         read_two_fastqs_gz: {
             description: "An array of gzipped FASTQ files containing read two information",
+            group: "Common",
+        }
+        out_sam_attributes: {
+            description: "an array of desired SAM attributes, in the order desired for the output SAM.",
+            help: "Tags can be listed in any combination/order.",
+            tool_default: "NH HS AS nM",
+            choices: {
+                NH: "number of loci the reads maps to: =1 for unique mappers, >1 for multimappers. Standard SAM tag.",
+                HI: "multiple alignment index, starts with --outSAMattrIHstart (=1 by default). Standard SAM tag.",
+                AS: "local alignment score, +1/-1 for matches/mismatches, score* penalties for indels and gaps. For PE reads, total score for two mates. Standard SAM tag.",
+                nM: "number of mismatches. For PE reads, sum over two mates.",
+                NM: "edit distance to the reference (number of mismatched + inserted + deleted bases) for each mate. Standard SAM tag.",
+                MD: "string encoding mismatched and deleted reference bases (see standard SAM specifications). Standard SAM tag.",
+                jM: "intron motifs for all junctions (i.e. N in CIGAR): 0: non-canonical; 1: GT/AG, 2: CT/AC, 3: GC/AG, 4: CT/GC, 5: AT/AC, 6: GT/AT. If splice junctions database is used, and a junction is annotated, 20 is added to its motif value.",
+                jI: "start and end of introns for all junctions (1-based).",
+                XS: "alignment strand according to --outSAMstrandField.",
+                MC: "mate's CIGAR string. Standard SAM tag.",
+                ch: "marks all segments of all chimeric alignments for --chimOutType WithinBAM output.",
+                cN: "number of bases clipped from the read ends: 5' and 3'",
+            },
             group: "Common",
         }
         out_sj_filter_intron_max_vs_read_n: {
@@ -243,26 +272,6 @@ task alignment {
             choices: {
                 None: "not used",
                 intronMotif: "strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out.",
-            },
-            group: "Common",
-        }
-        out_sam_attributes: {
-            description: "a string of desired SAM attributes, in the order desired for the output SAM.",
-            help: "Tags can be listed in any combination/order.",
-            tool_default: "NH HS AS nM",
-            choices: {
-                NH: "number of loci the reads maps to: =1 for unique mappers, >1 for multimappers. Standard SAM tag.",
-                HI: "multiple alignment index, starts with --outSAMattrIHstart (=1 by default). Standard SAM tag.",
-                AS: "local alignment score, +1/-1 for matches/mismateches, score* penalties for indels and gaps. For PE reads, total score for two mates. Standard SAM tag.",
-                nM: "number of mismatches. For PE reads, sum over two mates.",
-                NM: "edit distance to the reference (number of mismatched + inserted + deleted bases) for each mate. Standard SAM tag.",
-                MD: "string encoding mismatched and deleted reference bases (see standard SAM specifications). Standard SAM tag.",
-                jM: "intron motifs for all junctions (i.e. N in CIGAR): 0: non-canonical; 1: GT/AG, 2: CT/AC, 3: GC/AG, 4: CT/GC, 5: AT/AC, 6: GT/AT. If splice junctions database is used, and a junction is annotated, 20 is added to its motif value.",
-                jI: "start and end of introns for all junctions (1-based).",
-                XS: "alignment strand according to --outSAMstrandField.",
-                MC: "mate's CIGAR string. Standard SAM tag.",
-                ch: "marks all segments of all chimeric alignments for --chimOutType WithinBAM output.",
-                cN: "number of bases clipped from the read ends: 5' and 3'",
             },
             group: "Common",
         }
@@ -553,14 +562,11 @@ task alignment {
 
     input {
         File star_db_tar_gz
-        Array[File] read_one_fastqs_gz
-        Array[String] read_groups
+        Array[File]+ read_one_fastqs_gz
+        Array[String]+ read_groups
         Array[File]? read_two_fastqs_gz
-        Array[Int] out_sj_filter_intron_max_vs_read_n = [
-            50000,
-            100000,
-            200000,
-        ]
+        Array[String] out_sam_attributes = ["NH", "HI", "AS", "nM", "NM", "MD", "XS"]
+        Array[Int] out_sj_filter_intron_max_vs_read_n = [50000, 100000, 200000]
         SpliceJunctionMotifs out_sj_filter_overhang_min = SpliceJunctionMotifs {
             noncanonical_motifs: 30,
             GT_AG_and_CT_AC_motif: 12,
@@ -603,7 +609,6 @@ task alignment {
         String read_name_separator = "/"
         String clip_adapter_type = "Hamming"
         String out_sam_strand_field = "intronMotif"
-        String out_sam_attributes = "NH HI AS nM NM MD XS"
         String out_sam_unmapped = "Within"
         String out_sam_order = "Paired"
         String out_sam_read_id = "Standard"
@@ -615,7 +620,7 @@ task alignment {
         String align_ends_type = "Local"
         String align_soft_clip_at_reference_ends = "Yes"  # TODO: make a boolean
         String align_insertion_flush = "None"
-        String chim_out_type = "WithinBAM HardClip"
+        String chim_out_type = "WithinBAM HardClip"  # TODO: make Array[enum]
         String chim_filter = "banGenomicN"
         String chim_out_junction_format = "plain"  # TODO: make a boolean
         String twopass_mode = "Basic"  # TODO: make a boolean
@@ -635,14 +640,14 @@ task alignment {
         Int limit_out_sj_one_read = 1000
         Int limit_out_sj_collapsed = 1000000
         Int limit_sjdb_insert_n_sj = 1000000
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int out_QS_conversion_add = 0
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int out_sam_attr_IH_start = 1
         Int out_sam_mapq_unique = 254
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int out_sam_flag_OR = 0
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int out_sam_flag_AND = 65535
         Int out_filter_multimap_score_range = 1
         Int out_filter_multimap_n_max = 10
@@ -651,9 +656,9 @@ task alignment {
         Int out_filter_match_n_min = 0
         Int score_gap = 0
         Int score_gap_noncanon = -8
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int score_gap_GCAG = -4
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int score_gap_ATAC = -8
         Int score_del_open = -2
         Int score_del_base = -2
@@ -686,7 +691,7 @@ task alignment {
         Int chim_score_min = 0
         Int chim_score_drop_max = 20
         Int chim_score_separation = 10
-        #@ except: SnakeCase
+        #@ except: NamingConvention
         Int chim_score_junction_nonGTAG = -1
         Int chim_junction_overhang_min = 20
         Int chim_segment_read_gap_max = 0
@@ -699,10 +704,7 @@ task alignment {
         Int modify_disk_size_gb = 0
     }
 
-    Array[File] read_twos = select_first([
-        read_two_fastqs_gz,
-        [],
-    ])
+    Array[File] read_twos = select_first([read_two_fastqs_gz, []])
 
     Float read_one_fastqs_size = size(read_one_fastqs_gz, "GB")
     Float read_two_fastqs_size = size(read_twos, "GB")
@@ -732,7 +734,7 @@ task alignment {
             --outMultimapperOrder Random \
             --outFileNamePrefix "~{prefix + "."}" \
             --twopassMode "~{twopass_mode}" \
-            --outSAMattrRGline ~{sep(" , ", read_groups)} \
+            --outSAMattrRGline ~{sep(" , ", quote(read_groups))} \
             --outSJfilterIntronMaxVsReadN ~{sep(" ", quote(
                 out_sj_filter_intron_max_vs_read_n
             ))} \
@@ -768,34 +770,28 @@ task alignment {
             ]))} \
             --clip3pAdapterSeq "~{clip_3p_adapter_seq.left}" ~{if (length(read_twos) != 0)
                 then "'" + clip_3p_adapter_seq.right + "'"
-                else ""
-            } \
+                else ""} \
             --clip3pAdapterMMp ~{clip_3p_adapter_mmp.left} ~{if (length(read_twos) != 0)
                 then clip_3p_adapter_mmp.right
-                else None
-            } \
+                else None} \
             --alignEndsProtrude ~{align_ends_protrude.left} "~{if (length(read_twos) != 0)
                 then align_ends_protrude.right
-                else None
-            }" \
+                else None}" \
             --clip3pNbases ~{clip_3p_n_bases.left} ~{if (length(read_twos) != 0)
                 then clip_3p_n_bases.right
-                else None
-            } \
+                else None} \
             --clip3pAfterAdapterNbases ~{clip_3p_after_adapter_n_bases.left} ~{if (length(
                 read_twos
             ) != 0)
                 then clip_3p_after_adapter_n_bases.right
-                else None
-            } \
+                else None} \
             --clip5pNbases ~{clip_5p_n_bases.left} ~{if (length(read_twos) != 0)
                 then clip_5p_n_bases.right
-                else None
-            } \
+                else None} \
             --readNameSeparator "~{read_name_separator}" \
             --clipAdapterType "~{clip_adapter_type}" \
             --outSAMstrandField "~{out_sam_strand_field}" \
-            --outSAMattributes ~{out_sam_attributes} \
+            --outSAMattributes ~{sep(" ", quote(out_sam_attributes))} \
             --outSAMunmapped "~{out_sam_unmapped}" \
             --outSAMorder "~{out_sam_order}" \
             --outSAMreadID "~{out_sam_read_id}" \
@@ -803,8 +799,7 @@ task alignment {
                 then "1"
                 else if (out_sam_tlen == "left_any")
                 then "2"
-                else "error"
-            } \
+                else "error"} \
             --outFilterType "~{out_filter_type}" \
             --outFilterIntronMotifs "~{out_filter_intron_motifs}" \
             --outFilterIntronStrands "~{out_filter_intron_strands}" \
@@ -812,7 +807,7 @@ task alignment {
             --alignEndsType "~{align_ends_type}" \
             --alignSoftClipAtReferenceEnds "~{align_soft_clip_at_reference_ends}" \
             --alignInsertionFlush "~{align_insertion_flush}" \
-            --chimOutType ~{chim_out_type} \
+            --chimOutType ~{sep(" ", squote(split(chim_out_type, " ")))} \
             --chimFilter "~{chim_filter}" \
             --chimOutJunctionFormat "~{chim_out_junction_format}" \
             --outFilterMismatchNoverLmax ~{out_filter_mismatch_n_over_l_max} \
@@ -895,7 +890,7 @@ task alignment {
         File? star_chimeric_junctions = prefix + ".Chimeric.out.junction"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
@@ -904,9 +899,9 @@ task alignment {
     }
 }
 
-# There are multiple Splice Junction Motif arguments for STAR
-# that are all formatted the same. Use this struct for consistency.
-#@ except: SnakeCase
+## There are multiple Splice Junction Motif arguments for STAR
+## that are all formatted the same. Use this struct for consistency.
+#@ except: MetaSections, NamingConvention
 struct SpliceJunctionMotifs {
     Int noncanonical_motifs
     Int GT_AG_and_CT_AC_motif

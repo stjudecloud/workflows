@@ -52,7 +52,7 @@ manifest <- getManifest(red_green_channel_set)
 manifest
 
 # Load raw data into a MethylSet object be converting red/green
-# channels into a matrix of methlyated and unmethylated signals.
+# channels into a matrix of methylated and unmethylated signals.
 methyl_set <- preprocessRaw(red_green_channel_set)
 saveRDS(methyl_set, paste0(args$out_base, ".MSet.rds"))
 

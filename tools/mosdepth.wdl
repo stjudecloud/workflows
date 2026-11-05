@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/brentp/mosdepth)
-version 1.1
+version 1.3
 
 task coverage {
     meta {
@@ -38,7 +38,7 @@ task coverage {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -52,10 +52,7 @@ task coverage {
             -n \
             ~{"-b '" + coverage_bed + "'"} \
             -Q ~{min_mapping_quality} \
-            ~{if (use_fast_mode)
-                then "-x"
-                else ""
-            } \
+            ~{if (use_fast_mode) then "-x" else ""} \
             "~{prefix}" \
             "$CWD_BAM"
 
@@ -68,7 +65,7 @@ task coverage {
         File? region_dist = prefix + ".mosdepth.region.dist.txt"
     }
 
-    runtime {
+    requirements {
         memory: "8 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/mosdepth:0.3.6--hd299d5a_0"

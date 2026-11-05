@@ -1,5 +1,5 @@
 ## [Homepage](https://lomereiter.github.io/sambamba/)
-version 1.1
+version 1.3
 
 task index {
     meta {
@@ -49,7 +49,7 @@ task index {
         File bam_index = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -81,7 +81,7 @@ task merge {
     }
 
     input {
-        Array[File] bams
+        Array[File]+ bams
         String prefix
         Boolean use_all_cores = false
         Int ncpu = 2
@@ -109,7 +109,7 @@ task merge {
         File merged_bam = prefix + ".bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -156,10 +156,7 @@ task sort {
         sambamba sort \
             --nthreads ~{ncpu} \
             -o "~{outfile_name}" \
-            ~{if queryname_sort
-                then "-n"
-                else ""
-            } \
+            ~{if queryname_sort then "-n" else ""} \
             "~{bam}"
     >>>
 
@@ -167,7 +164,7 @@ task sort {
         File sorted_bam = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
@@ -209,12 +206,11 @@ task markdup {
     Int disk_size_gb = ceil((bam_size * 2) + 10) + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         sambamba markdup \
             --nthreads ~{ncpu} \
-            ~{if remove_duplicates
-                then "--remove-duplicates"
-                else ""
-            } \
+            ~{if remove_duplicates then "--remove-duplicates" else ""} \
             "~{bam}" \
             "~{prefix}.markdup.bam" \
             > "~{prefix}.markdup_log.txt"
@@ -226,7 +222,7 @@ task markdup {
         File markdup_log = "~{prefix}.markdup_log.txt"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "50 GB"
         disks: "~{disk_size_gb} GB"
@@ -283,7 +279,7 @@ task flagstat {
         File flagstat_report = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"

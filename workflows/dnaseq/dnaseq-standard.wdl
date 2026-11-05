@@ -1,5 +1,5 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-version 1.1
+version 1.3
 
 import "../../data_structures/read_group.wdl"
 import "../../tools/picard.wdl"
@@ -53,34 +53,31 @@ workflow dnaseq_standard_experimental {
         Int subsample_n_reads = -1
     }
 
-    call parse_input { input:
+    call parse_input {
         aligner,
     }
 
     if (validate_input) {
-        call picard.validate_bam as validate_input_bam after parse_input { input:
+        call picard.validate_bam as validate_input_bam after parse_input {
             bam,
         }
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample after validate_input_bam { input:
+        call samtools.subsample after validate_input_bam {
             bam,
             desired_reads = subsample_n_reads,
             use_all_cores,
         }
     }
-    File selected_bam = select_first([
-        subsample.sampled_bam,
-        bam,
-    ])
+    File selected_bam = select_first([subsample.sampled_bam, bam])
 
-    call read_group.get_read_groups after parse_input { input:
+    call read_group.get_read_groups after parse_input {
         bam = selected_bam,
     }
     scatter (rg in get_read_groups.read_groups) {
         if (defined(sample_override)) {
-            ReadGroup overriden_rg = ReadGroup {
+            ReadGroup overridden_rg = ReadGroup {
                 ID: rg.ID,
                 BC: rg.BC,
                 CN: rg.CN,
@@ -97,27 +94,24 @@ workflow dnaseq_standard_experimental {
                 SM: sample_override,
             }
         }
-        ReadGroup selected_rg = select_first([
-            overriden_rg,
-            rg,
-        ])
-        call read_group.read_group_to_string { input:
+        ReadGroup selected_rg = select_first([overridden_rg, rg])
+        call read_group.read_group_to_string {
             read_group = selected_rg,
             format_as_sam_record = true,
         }
     }
 
-    call bam_to_fastqs_wf.bam_to_fastqs after validate_input_bam { input:
+    call bam_to_fastqs_wf.bam_to_fastqs after validate_input_bam {
         bam = selected_bam,
         paired_end = true,  # matches default but prevents user from overriding
         use_all_cores,
     }
 
-    call dnaseq_core_wf.dnaseq_core_experimental { input:
+    call dnaseq_core_wf.dnaseq_core_experimental {
         read_one_fastqs_gz = bam_to_fastqs.read1s,
         read_two_fastqs_gz = select_all(bam_to_fastqs.read2s),
         bwa_db,
-        read_groups = read_group_to_string.validated_read_group,
+        read_groups = select_all(read_group_to_string.validated_read_group),
         prefix,
         aligner,
         enable_read_trimming,
@@ -154,6 +148,8 @@ task parse_input {
     }
 
     command <<<
+        set -euo pipefail
+
         if [ "~{aligner}" != "mem" ] \
             && [ "~{aligner}" != "aln" ]
         then
@@ -163,7 +159,7 @@ task parse_input {
         fi
     >>>
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }

@@ -1,5 +1,5 @@
 ## [Homepage](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
-version 1.1
+version 1.3
 
 task fastqc {
     meta {
@@ -61,7 +61,7 @@ task fastqc {
         File results = out_tar_gz
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"

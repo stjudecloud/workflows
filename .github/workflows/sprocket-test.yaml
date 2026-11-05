@@ -9,33 +9,26 @@ jobs:
     outputs:
         files: ${{ steps.set-files.outputs.files }}
     steps:
-        - name: checkout
-          uses: actions/checkout@v4
-        - name: set files
-          id: set-files
+        - uses: actions/checkout@v7
+        - id: set-files
           run: echo "files=$(find . -name '*.wdl' -print -o -path "./template" -prune | jq -ncR '[inputs]')" >> $GITHUB_OUTPUT
-  sprocket_test:
+  sprocket-test:
     needs: list-files
     runs-on: ubuntu-latest
     strategy:
       matrix:
         file: ${{ fromJson(needs.list-files.outputs.files) }}
-        runner: [sprocket]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         lfs: true
-    - name: Update Rust
-      run: rustup update stable && rustup default stable
-    - name: Build Sprocket
-      run: |
-        cargo install sprocket --locked
+    - uses: stjude-rust-labs/setup-sprocket@v1
+      with:
+        github-token: ${{ github.token }}
     - name: Update containers
       run: |
         ./developer_scripts/update_container_tags.sh ${GITHUB_REF##*/}
     - name: Run sprocket test
-      env: 
-        RUNNER: ${{ matrix.runner }}
       run: |
-        sprocket dev test --filter-tag reference --filter-tag slow --filter-tag high_mem ${{ matrix.file }}
+        sprocket test --clean-all --exclude-tag slow --exclude-tag high_mem --exclude-tag gpu ${{ matrix.file }}

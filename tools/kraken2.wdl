@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/DerrickWood/kraken2)
-version 1.1
+version 1.3
 
 task download_taxonomy {
     meta {
@@ -26,10 +26,7 @@ task download_taxonomy {
         set -euo pipefail
 
         kraken2-build --download-taxonomy \
-            ~{if protein
-                then "--protein"
-                else ""
-            } \
+            ~{if protein then "--protein" else ""} \
             --use-ftp \
             --db "~{db_name}" 2>&1 \
             | awk '/gunzip:/ { print; exit 42 } !/gunzip:/ { print }' 1>&2
@@ -43,7 +40,7 @@ task download_taxonomy {
         File taxonomy = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "60 GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
@@ -104,18 +101,14 @@ task download_library {
         then 600
         else if library_name == "nt"
         then 2500
-        else 25
-    ) + modify_disk_size_gb
+        else 25) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
 
         kraken2-build --download-library \
             "~{library_name}" \
-            ~{if protein
-                then "--protein"
-                else ""
-            } \
+            ~{if protein then "--protein" else ""} \
             --use-ftp \
             --db "~{db_name}" 2>&1 \
             | awk '/gunzip:/ { print; exit 42 } !/gunzip:/ { print }' 1>&2
@@ -129,7 +122,7 @@ task download_library {
         File library = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
@@ -158,7 +151,7 @@ task create_library_from_fastas {
     }
 
     input {
-        Array[File] fastas_gz
+        Array[File]+ fastas_gz
         Boolean protein = false
         Int modify_disk_size_gb = 0
     }
@@ -176,10 +169,7 @@ task create_library_from_fastas {
         while read -r fasta; do
             gunzip -c "$fasta" > tmp.fa
             kraken2-build \
-                ~{if protein
-                    then "--protein"
-                    else ""
-                } \
+                ~{if protein then "--protein" else ""} \
                 --add-to-library tmp.fa \
                 --db "~{db_name}"
         done < fastas.txt
@@ -195,7 +185,7 @@ task create_library_from_fastas {
         File custom_library = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/kraken2:2.1.3--pl5321hdcf5f25_0"
@@ -241,19 +231,13 @@ task build_db {
     }
 
     input {
-        Array[File] tarballs
+        Array[File]+ tarballs
         String db_name = "kraken2_db"
         Boolean protein = false
         Boolean use_all_cores = false
-        Int kmer_len = if protein
-            then 15
-            else 35
-        Int minimizer_len = if protein
-            then 12
-            else 31
-        Int minimizer_spaces = if protein
-            then 0
-            else 7
+        Int kmer_len = if protein then 15 else 35
+        Int minimizer_len = if protein then 12 else 31
+        Int minimizer_spaces = if protein then 0 else 7
         Int max_db_size_gb = -1
         Int ncpu = 4
         Int modify_memory_gb = 0
@@ -264,8 +248,7 @@ task build_db {
     Int disk_size_gb = ceil(tarballs_size * 6) + 10 + modify_disk_size_gb
     Int memory_gb = (if (max_db_size_gb > 0)
         then ceil(max_db_size_gb * 1.2)
-        else ceil(tarballs_size * 2)
-    ) + modify_memory_gb
+        else ceil(tarballs_size * 2)) + modify_memory_gb
 
     String max_db_size_bytes = "~{max_db_size_gb}000000000"
 
@@ -287,17 +270,13 @@ task build_db {
 
         >&2 echo "*** start DB build ***"
         kraken2-build --build \
-            ~{if protein
-                then "--protein"
-                else ""
-            } \
+            ~{if protein then "--protein" else ""} \
             --kmer-len ~{kmer_len} \
             --minimizer-len ~{minimizer_len} \
             --minimizer-spaces ~{minimizer_spaces} \
             ~{if (max_db_size_gb > 0)
                 then "--max-db-size '" + max_db_size_bytes + "'"
-                else ""
-            } \
+                else ""} \
             --threads "$n_cores" \
             --db "~{db_name}"
 
@@ -315,7 +294,7 @@ task build_db {
         File built_db = db_name + ".tar.gz"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -327,6 +306,12 @@ task build_db {
 task kraken {
     meta {
         description: "Runs Kraken2 on a pair of fastq files"
+        omitted_parameters: [
+            {
+                flag: "--memory-mapping",
+                reason: "Enabling this would reduce RAM usage at the cost of a slower run time and higher disk usage. This trade is usually undesirable. Without further investigation to determine the generalized costs and benefits, this option will not be exposed.",
+            },
+        ]
         outputs: {
             report: {
                 description: "A Kraken2 summary report",
@@ -353,11 +338,17 @@ task kraken {
             group: "Common",
         }
         use_names: "Print scientific names instead of just taxids?"
+        quick: "Stop classification at the first hit instead of an exhaustive k-mer search? Faster but less accurate."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
             group: "Common",
         }
+        confidence: {
+            description: "Confidence score threshold. Classifications below this threshold are unclassified.",
+            external_help: "https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#confidence-scoring",
+        }
         min_base_quality: "Minimum base quality used in classification"
+        minimum_hit_groups: "Minimum number of hit groups (overlapping k-mers sharing the same minimizer) needed to make a classification call"
         ncpu: {
             description: "Number of cores to allocate for task",
             group: "Common",
@@ -376,8 +367,11 @@ task kraken {
         )
         Boolean store_sequences = false
         Boolean use_names = true
+        Boolean quick = false
         Boolean use_all_cores = false
+        Float confidence = 0.0
         Int min_base_quality = 0
+        Int minimum_hit_groups = 2
         Int ncpu = 4
         Int modify_memory_gb = 0
         Int modify_disk_size_gb = 0
@@ -409,18 +403,15 @@ task kraken {
 
         kraken2 --db kraken2_db/ \
             --paired \
-            --output ~{if store_sequences
-                then "'" + out_sequences + "'"
-                else "-"
-            } \
+            --output ~{if store_sequences then "'" + out_sequences + "'" else "-"} \
             --threads "$n_cores" \
             --minimum-base-quality ~{min_base_quality} \
+            --confidence ~{confidence} \
+            --minimum-hit-groups ~{minimum_hit_groups} \
+            ~{if quick then "--quick" else ""} \
             --report "~{out_report}" \
             --report-zero-counts \
-            ~{if use_names
-                then "--use-names"
-                else ""
-            } \
+            ~{if use_names then "--use-names" else ""} \
             "~{read_one_fastq_gz}" \
             "~{read_two_fastq_gz}"
 
@@ -436,7 +427,7 @@ task kraken {
         File? sequences = out_sequences + ".gz"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"

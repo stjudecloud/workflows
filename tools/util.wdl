@@ -1,5 +1,5 @@
 ## # Utilities
-version 1.1
+version 1.3
 
 task download {
     meta {
@@ -38,7 +38,7 @@ task download {
         File downloaded_file = outfile_name
     }
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
@@ -57,7 +57,7 @@ task split_string {
     }
 
     parameter_meta {
-        string: "String to split on occurences of `delimiter`"
+        string: "String to split on occurrences of `delimiter`"
         delimiter: {
             description: "Delimiter on which to split `input_string`",
         }
@@ -78,7 +78,7 @@ task split_string {
         Array[String] split_strings = read_lines("split_strings.txt")
     }
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
@@ -114,6 +114,8 @@ task calc_feature_lengths {
     Int disk_size_gb = ceil(gtf_size * 2) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         python3 /scripts/util/calc_feature_lengths.py \
             --id_attr "~{idattr}" \
             "~{gtf}" \
@@ -124,7 +126,7 @@ task calc_feature_lengths {
         File feature_lengths = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "16 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"
@@ -149,13 +151,15 @@ task compression_integrity {
     }
 
     Float file_size = size(bgzipped_file, "GB")
-    Int disk_size_gb = ceil(file_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(file_size) + 30 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         bgzip -t "~{bgzipped_file}"
     >>>
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -204,7 +208,7 @@ task add_to_bam_header {
         File reheadered_bam = outfile_name
     }
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -245,7 +249,7 @@ task unpack_tarball {
         Array[File] tarball_contents = read_lines("file_list.txt")
     }
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
@@ -303,7 +307,8 @@ task make_coverage_regions_bed {
         File bed = outfile_name
     }
 
-    runtime {
+    requirements {
+        memory: "8 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0"
         maxRetries: 1
@@ -333,16 +338,15 @@ task global_phred_scores {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     String outfile_name = prefix + ".global_PHRED_scores.tsv"
 
     command <<<
+        set -euo pipefail
+
         python3 /scripts/util/calc_global_phred_scores.py \
-            ~{if fast_mode
-                then "--fast_mode"
-                else ""
-            } \
+            ~{if fast_mode then "--fast_mode" else ""} \
             "~{bam}" \
             "~{prefix}"
     >>>
@@ -351,7 +355,7 @@ task global_phred_scores {
         File phred_scores = "~{outfile_name}"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"
@@ -363,7 +367,7 @@ task global_phred_scores {
 task check_fastq_and_rg_concordance {
     meta {
         description: "Validates FASTQs and read group records are concordant"
-        help: "Each read1 FASTQ must correspond to exactly one read group record. This correspondance is encoded in two ways, both of which must match. 1) the FASTQ and its read group share the same index of their respective lists and 2) the `ID` field value must be contained somewhere within the FASTQ file basename. If `read_two_names` is non-empty, the same checks are performed on each of these names as well (i.e. all 3 of the read1 FASTQ, read2 FASTQ, and read group ID must match and be in the same position of their list). Additionally, the `ID` field must be the first field of the read group record, and each `ID` value must be unique."
+        help: "Each read1 FASTQ must correspond to exactly one read group record. This correspondence is encoded in two ways, both of which must match. 1) the FASTQ and its read group share the same index of their respective lists and 2) the `ID` field value must be contained somewhere within the FASTQ file basename. If `read_two_names` is non-empty, the same checks are performed on each of these names as well (i.e. all 3 of the read1 FASTQ, read2 FASTQ, and read group ID must match and be in the same position of their list). Additionally, the `ID` field must be the first field of the read group record, and each `ID` value must be unique."
         warning: "This task does not do any validation outside of what is described. i.e. only the first field of read group records are checked, and any malformed records beyond that field will go undetected."
     }
 
@@ -383,27 +387,25 @@ task check_fastq_and_rg_concordance {
     }
 
     input {
-        Array[String] read_one_names
-        Array[String] read_groups
+        Array[String]+ read_one_names
+        Array[String]+ read_groups
         Array[String]? read_two_names
     }
 
-    Array[String] read_twos = select_first([
-        read_two_names,
-        [],
-    ])
+    Array[String] read_twos = select_first([read_two_names, []])
 
     command <<<
+        set -euo pipefail
+
         python3 /scripts/util/check_FQs_and_RGs.py \
             --read-one-fastqs "~{sep(",", squote(read_one_names))}" \
             ~{if length(read_twos) > 0
                 then "--read-two-fastqs \"" + sep(",", squote(read_twos)) + "\""
-                else ""
-            } \
+                else ""} \
             --read-groups "~{sep(",", squote(read_groups))}"
     >>>
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
@@ -460,7 +462,7 @@ task split_fastq {
         Array[File] fastqs = glob("~{prefix}*")
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"

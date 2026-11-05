@@ -1,10 +1,10 @@
-version 1.1
+version 1.3
 
 import "../../data_structures/flag_filter.wdl"
 import "../../tools/fastp.wdl" as fp
 import "../../tools/fq.wdl"
 import "../../tools/kraken2.wdl"
-import "../../tools/librarian.wdl" as libraran_tasks
+import "../../tools/librarian.wdl" as librarian_tasks
 import "../../tools/md5sum.wdl"
 import "../../tools/mosdepth.wdl"
 import "../../tools/multiqc.wdl" as multiqc_tasks
@@ -29,7 +29,7 @@ workflow quality_check_standard {
             },
             multiqc_data: {
                 description: "Parquet format file output by MultiQC.",
-                help: "Can be used to recapitualate the created HTML report without access to all the raw data files analyzed.",
+                help: "Can be used to recapitulate the created HTML report without access to all the raw data files analyzed.",
             },
             analyzed_by_multiqc: {
                 description: "All files produced during QC which were analyzed by MultiQC",
@@ -84,11 +84,11 @@ workflow quality_check_standard {
         mark_duplicates: {
             description: "Mark duplicates before select analyses?",
             help: "Default behavior is to set this to the value of the `rna` parameter. This is because DNA files are often duplicate marked already, and RNA-Seq files are usually _not_ duplicate marked. If set to `true`, a BAM will be generated and passed to selected downstream analyses. For more details about what analyses are run, review `./markdups-post.wdl`.",
-            warning: "This duplicate marked BAM is _not_ ouput by default. If you would like to output this file, set `output_intermediate_files = true`.",
+            warning: "This duplicate marked BAM is _not_ output by default. If you would like to output this file, set `output_intermediate_files = true`.",
         }
         run_fastp: {
             description: "Run the `fastp` tool on generated FASTQs?",
-            help: "`fastp` produces similar metrics as `fastqc`, but more comprehensively and efficiently. We always recommend running `fastp` for the valuable metrics it produces, but `fastp` is also run during our harmonization workflows so users of those workflows should supply the `fastp_json` output as an input via `extra_multiqc_inputs` and set this option to `false` to prevent runnning the tool twice.",
+            help: "`fastp` produces similar metrics as `fastqc`, but more comprehensively and efficiently. We always recommend running `fastp` for the valuable metrics it produces, but `fastp` is also run during our harmonization workflows so users of those workflows should supply the `fastp_json` output as an input via `extra_multiqc_inputs` and set this option to `false` to prevent running the tool twice.",
         }
         run_librarian: {
             description: "Run the `librarian` tool to generate a report of the likely Illumina library prep kit used to generate the data",
@@ -109,6 +109,10 @@ workflow quality_check_standard {
             warning: "These files can be very large.",
         }
         use_all_cores: "Use all cores? Recommended for cloud environments."
+        run_fastq_analysis: {
+            description: "Create FASTQs from the input BAM and run FASTQ-level analyses?",
+            help: "If false, the pipeline skips FASTQ generation and subsequent FASTQ checks (Kraken2, fastp, librarian, comparative Kraken2, and fqlint). Also disables qualimap_rnaseq (requires a collated BAM from bam_to_fastq). The steps disabled by this option can have heavy resource utilization.",
+        }
         optical_distance: {
             description: "Maximum distance between read coordinates to consider them optical duplicates instead of library duplicates (e.g. PCR duplicates).",
             help: "If `mark_duplicates == false`, this parameter is ignored. If `0`, then _optical_ duplicate marking is disabled and only traditional duplicate marking will be performed. Suggested settings of 100 for unpatterned versions of the Illumina platform (e.g. HiSeq) or 2500 for patterned flowcell models (e.g. NovaSeq). Review the `mark_duplicates` task in `../../tools/picard.wdl` for more information.",
@@ -116,7 +120,7 @@ workflow quality_check_standard {
         }
         subsample_n_reads: {
             description: "Only process a random sampling of approximately `n` reads. Any `n <= 0` for processing entire input.",
-            warning: "Subsampling is done probabalistically so the exact number of reads in the output will have some variation.",
+            warning: "Subsampling is done probabilistically so the exact number of reads in the output will have some variation.",
         }
     }
 
@@ -151,68 +155,60 @@ workflow quality_check_standard {
         Boolean store_kraken_sequences = false
         Boolean output_intermediate_files = false
         Boolean use_all_cores = false
+        Boolean run_fastq_analysis = true
         Int optical_distance = 0
         Int subsample_n_reads = -1
     }
 
-    call parse_input { input:
+    call parse_input {
         gtf_provided = defined(gtf),
         rna,
         coverage_beds_len = length(coverage_beds),
         coverage_labels,
     }
-    call flag_filter.validate_flag_filter as kraken_filter_validator { input:
+    call flag_filter.validate_flag_filter as kraken_filter_validator {
         flags = standard_filter,
     }
-    if (run_comparative_kraken) {
-        call flag_filter.validate_flag_filter as comparative_kraken_filter_validator { input:
+    if (run_comparative_kraken && run_fastq_analysis) {
+        call flag_filter.validate_flag_filter as comparative_kraken_filter_validator {
             flags = comparative_filter,
         }
     }
 
-    call md5sum.compute_checksum after parse_input { input:
+    call md5sum.compute_checksum after parse_input {
         file = bam,
     }
 
-    call samtools.quickcheck after parse_input { input:
+    call samtools.quickcheck after parse_input {
         bam,
     }
-    call util.compression_integrity after parse_input { input:
+    call util.compression_integrity after parse_input {
         bgzipped_file = bam,
     }
 
     if (subsample_n_reads > 0) {
-        call samtools.subsample after quickcheck { input:
+        call samtools.subsample after quickcheck {
             bam,
             prefix,
             desired_reads = subsample_n_reads,
             use_all_cores,
         }
         if (defined(subsample.sampled_bam)) {
-            call samtools.index as subsample_index { input:
-                bam = select_first([
-                    subsample.sampled_bam,
-                    "undefined",
-                ]),
+            call samtools.index as subsample_index {
+                bam = select_first([subsample.sampled_bam, "undefined"]),
                 use_all_cores,
             }
         }
     }
     # If subsampling is disabled **or** input BAM has fewer reads than
     # `subsample_n_reads` this will be `bam`
-    File post_subsample_bam = select_first([
-        subsample.sampled_bam,
-        bam,
-    ])
-    File post_subsample_bam_index = select_first([
-        subsample_index.bam_index,
-        bam_index,
-    ])
+    File post_subsample_bam = select_first([subsample.sampled_bam, bam])
+    File post_subsample_bam_index = select_first([subsample_index.bam_index, bam_index])
     String post_subsample_prefix = if (defined(subsample.sampled_bam))
         then prefix + ".subsampled"
         else prefix
 
-    call picard.validate_bam after quickcheck { input:
+    call picard.validate_bam after quickcheck {
         bam = post_subsample_bam,
         outfile_name = post_subsample_prefix + ".ValidateSamFile.txt",
         deny_errors = false,
@@ -220,152 +216,139 @@ workflow quality_check_standard {
         summary_mode = true,
     }
 
-    call picard.collect_alignment_summary_metrics after quickcheck { input:
+    call picard.collect_alignment_summary_metrics after quickcheck {
         bam = post_subsample_bam,
         prefix = post_subsample_prefix + ".CollectAlignmentSummaryMetrics",
     }
-    call picard.quality_score_distribution after quickcheck { input:
+    call picard.quality_score_distribution after quickcheck {
         bam = post_subsample_bam,
         prefix = post_subsample_prefix + ".QualityScoreDistribution",
     }
-    call ngsderive.instrument after quickcheck { input:
+    call ngsderive.instrument after quickcheck {
         bam = post_subsample_bam,
         outfile_name = post_subsample_prefix + ".instrument.tsv",
     }
-    call ngsderive.read_length after quickcheck { input:
+    call ngsderive.read_length after quickcheck {
         bam = post_subsample_bam,
         bam_index = post_subsample_bam_index,
         outfile_name = post_subsample_prefix + ".readlength.tsv",
     }
-    call ngsderive.encoding after quickcheck { input:
-        ngs_files = [
-            post_subsample_bam,
-        ],
+    call ngsderive.encoding after quickcheck {
+        ngs_files = [post_subsample_bam],
         outfile_name = post_subsample_prefix + ".encoding.tsv",
         num_reads = -1,
     }
-    call ngsderive.endedness after quickcheck { input:
+    call ngsderive.endedness after quickcheck {
         bam = post_subsample_bam,
         outfile_name = post_subsample_prefix + ".endedness.tsv",
         lenient = true,
     }
-    call util.global_phred_scores after quickcheck { input:
+    call util.global_phred_scores after quickcheck {
         bam = post_subsample_bam,
         prefix = post_subsample_prefix,
     }
 
-    call samtools.bam_to_fastq after quickcheck after kraken_filter_validator { input:
-        bam = post_subsample_bam,
-        bitwise_filter = standard_filter,
-        prefix = post_subsample_prefix,
-        # RNA needs a collated BAM for Qualimap
-        # DNA can skip the associated storage costs
-        retain_collated_bam = rna,
-        # disabling fast_mode enables writing of secondary and supplementary alignments
-        # to the collated BAM when processing RNA.
-        # Those alignments are used downstream by Qualimap.
-        fast_mode = (!rna),
-        paired_end = true,  # matches default but prevents user from overriding
-        use_all_cores,
-    }
-
-    call fq.fqlint { input:
-        read_one_fastq = select_first([
-            bam_to_fastq.read_one_fastq_gz,
-            "undefined",
-        ]),
-        read_two_fastq = select_first([
-            bam_to_fastq.read_two_fastq_gz,
-            "undefined",
-        ]),
-    }
-    call kraken2.kraken after fqlint { input:
-        read_one_fastq_gz = select_first([
-            bam_to_fastq.read_one_fastq_gz,
-            "undefined",
-        ]),
-        read_two_fastq_gz = select_first([
-            bam_to_fastq.read_two_fastq_gz,
-            "undefined",
-        ]),
-        db = kraken_db,
-        store_sequences = store_kraken_sequences,
-        prefix = post_subsample_prefix,
-        use_all_cores,
-    }
-    if (run_fastp) {
-        call fp.fastp after fqlint { input:
-            read_one_fastq = select_first([
-                bam_to_fastq.read_one_fastq_gz,
-                "undefined",
-            ]),
-            read_two_fastq = select_first([
-                bam_to_fastq.read_two_fastq_gz,
-                "undefined",
-            ]),
-            output_fastq = false,
-        }
-    }
-    if (run_librarian) {
-        call libraran_tasks.librarian after fqlint { input:
-            read_one_fastq = select_first([
-                bam_to_fastq.read_one_fastq_gz,
-                "undefined",
-            ]),
-        }
-    }
-
-    if (run_comparative_kraken) {
-        call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck after comparative_kraken_filter_validator {
-            input:
+    if (run_fastq_analysis) {
+        call samtools.bam_to_fastq after quickcheck after kraken_filter_validator {
             bam = post_subsample_bam,
-            bitwise_filter = comparative_filter,
-            prefix = post_subsample_prefix + ".alt_filtered",
-            # matches default but prevents user from overriding
-            # If the user wants a collated BAM, they should save the one
-            # from the first bam_to_fastq call.
-            retain_collated_bam = false,
-            # matches default but prevents user from overriding
-            # Since the only output here is FASTQs, we can disable fast mode.
-            # This discards secondary and supplementary alignments, which should not
-            # be converted to FASTQs. (Is that true?)
-            fast_mode = true,
+            bitwise_filter = standard_filter,
+            prefix = post_subsample_prefix,
+            # RNA needs a collated BAM for Qualimap
+            # DNA can skip the associated storage costs
+            retain_collated_bam = rna,
+            # disabling fast_mode enables writing of secondary and supplementary alignments
+            # to the collated BAM when processing RNA.
+            # Those alignments are used downstream by Qualimap.
+            fast_mode = (!rna),
             paired_end = true,  # matches default but prevents user from overriding
             use_all_cores,
         }
-        call fq.fqlint as alt_filtered_fqlint { input:
-            read_one_fastq = select_first([
-                alt_filtered_fastq.read_one_fastq_gz,
-                "undefined",
-            ]),
-            read_two_fastq = select_first([
-                alt_filtered_fastq.read_two_fastq_gz,
-                "undefined",
-            ]),
+
+        call fq.fqlint {
+            read_one_fastq = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]),
+            read_two_fastq = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]),
         }
-        call kraken2.kraken as comparative_kraken after alt_filtered_fqlint { input:
-            read_one_fastq_gz = select_first([
-                alt_filtered_fastq.read_one_fastq_gz,
-                "undefined",
-            ]),
-            read_two_fastq_gz = select_first([
-                alt_filtered_fastq.read_two_fastq_gz,
-                "undefined",
-            ]),
+        call kraken2.kraken after fqlint {
+            read_one_fastq_gz = select_first([bam_to_fastq.read_one_fastq_gz, "undefined"]
+            ),
+            read_two_fastq_gz = select_first([bam_to_fastq.read_two_fastq_gz, "undefined"]
+            ),
             db = kraken_db,
             store_sequences = store_kraken_sequences,
-            prefix = post_subsample_prefix + ".alt_filtered",
+            prefix = post_subsample_prefix,
             use_all_cores,
+        }
+        if (run_fastp) {
+            call fp.fastp after fqlint {
+                read_one_fastq = select_first([
+                    bam_to_fastq.read_one_fastq_gz,
+                    "undefined",
+                ]),
+                read_two_fastq = select_first([
+                    bam_to_fastq.read_two_fastq_gz,
+                    "undefined",
+                ]),
+                output_fastq = false,
+            }
+        }
+        if (run_librarian) {
+            call librarian_tasks.librarian after fqlint {
+                read_one_fastq = select_first([
+                    bam_to_fastq.read_one_fastq_gz,
+                    "undefined",
+                ]),
+            }
+        }
+
+        if (run_comparative_kraken) {
+            call samtools.bam_to_fastq as alt_filtered_fastq after quickcheck after comparative_kraken_filter_validator {
+                bam = post_subsample_bam,
+                bitwise_filter = comparative_filter,
+                prefix = post_subsample_prefix + ".alt_filtered",
+                # If the user wants a collated BAM, they should save the one
+                # from the first bam_to_fastq call.
+                retain_collated_bam = false,
+                # Since the only output here is FASTQs, we can enable fast mode.
+                # This discards secondary and supplementary alignments, which should not
+                # be converted to FASTQs.
+                fast_mode = true,
+                paired_end = true,  # INVARIANT: this workflow only supports PE data
+                use_all_cores,
+            }
+            call fq.fqlint as alt_filtered_fqlint {
+                read_one_fastq = select_first([
+                    alt_filtered_fastq.read_one_fastq_gz,
+                    "undefined",
+                ]),
+                read_two_fastq = select_first([
+                    alt_filtered_fastq.read_two_fastq_gz,
+                    "undefined",
+                ]),
+            }
+            call kraken2.kraken as comparative_kraken after alt_filtered_fqlint {
+                read_one_fastq_gz = select_first([
+                    alt_filtered_fastq.read_one_fastq_gz,
+                    "undefined",
+                ]),
+                read_two_fastq_gz = select_first([
+                    alt_filtered_fastq.read_two_fastq_gz,
+                    "undefined",
+                ]),
+                db = kraken_db,
+                store_sequences = store_kraken_sequences,
+                prefix = post_subsample_prefix + ".alt_filtered",
+                use_all_cores,
+            }
         }
     }
 
-    call mosdepth.coverage as wg_coverage after quickcheck { input:
+    call mosdepth.coverage as wg_coverage after quickcheck {
         bam = post_subsample_bam,
         bam_index = post_subsample_bam_index,
         prefix = post_subsample_prefix + ".whole_genome",
     }
     scatter (coverage_pair in zip(coverage_beds, parse_input.labels)) {
-        call mosdepth.coverage as regions_coverage after quickcheck { input:
+        call mosdepth.coverage as regions_coverage after quickcheck {
             bam = post_subsample_bam,
             bam_index = post_subsample_bam_index,
             coverage_bed = coverage_pair.left,
@@ -374,40 +357,30 @@ workflow quality_check_standard {
     }
 
     if (rna) {
-        call ngsderive.junction_annotation after quickcheck { input:
+        call ngsderive.junction_annotation after quickcheck {
             bam = post_subsample_bam,
             bam_index = post_subsample_bam_index,
-            gene_model = select_first([
-                gtf,
-                "undefined",
-            ]),
+            gene_model = select_first([gtf, "undefined"]),
             prefix = post_subsample_prefix,
         }
-        call ngsderive.strandedness after quickcheck { input:
+        call ngsderive.strandedness after quickcheck {
             bam = post_subsample_bam,
             bam_index = post_subsample_bam_index,
-            gene_model = select_first([
-                gtf,
-                "undefined",
-            ]),
+            gene_model = select_first([gtf, "undefined"]),
             outfile_name = post_subsample_prefix + ".strandedness.tsv",
         }
-        call qualimap.rnaseq as qualimap_rnaseq { input:
-            bam = select_first([
-                bam_to_fastq.collated_bam,
-                "undefined",
-            ]),
-            prefix = post_subsample_prefix + ".qualimap_rnaseq_results",
-            gtf = select_first([
-                gtf,
-                "undefined",
-            ]),
-            name_sorted = true,
-            paired_end = true,  # matches default but prevents user from overriding
+        if (run_fastq_analysis) {
+            call qualimap.rnaseq as qualimap_rnaseq {
+                bam = select_first([bam_to_fastq.collated_bam, "undefined"]),
+                prefix = post_subsample_prefix + ".qualimap_rnaseq_results",
+                gtf = select_first([gtf, "undefined"]),
+                name_sorted = true,
+                paired_end = true,  # INVARIANT: this workflow only supports PE data
+            }
         }
     }
     if (mark_duplicates) {
-        call picard.mark_duplicates as markdups after quickcheck { input:
+        call picard.mark_duplicates as markdups after quickcheck {
             bam = post_subsample_bam,
             create_bam = true,
             prefix = post_subsample_prefix + ".MarkDuplicates",
@@ -416,11 +389,8 @@ workflow quality_check_standard {
         if (optical_distance > 0) {
             File markdups_metrics = markdups.mark_duplicates_metrics
         }
-        call markdups_post_wf.markdups_post { input:
-            markdups_bam = select_first([
-                markdups.duplicate_marked_bam,
-                "undefined",
-            ]),
+        call markdups_post_wf.markdups_post {
+            markdups_bam = select_first([markdups.duplicate_marked_bam, "undefined"]),
             markdups_bam_index = select_first([
                 markdups.duplicate_marked_bam_index,
                 "undefined",
@@ -433,11 +403,11 @@ workflow quality_check_standard {
     if (!mark_duplicates) {
         # These analyses are called in the markdups_post workflow.
         # They should still be run if duplicates were not marked.
-        call picard.collect_insert_size_metrics after quickcheck { input:
+        call picard.collect_insert_size_metrics after quickcheck {
             bam = post_subsample_bam,
             prefix = post_subsample_prefix + ".CollectInsertSizeMetrics",
         }
-        call samtools.flagstat after quickcheck { input:
+        call samtools.flagstat after quickcheck {
             bam = post_subsample_bam,
             outfile_name = post_subsample_prefix + ".flagstat.txt",
         }
@@ -473,27 +443,15 @@ workflow quality_check_standard {
         ],
         regions_coverage.summary,
         select_all(regions_coverage.region_dist),
-        select_first([
-            markdups_post.mosdepth_region_summary,
-            [],
-        ]),
-        select_first([
-            markdups_post.mosdepth_region_dist,
-            [],
-        ]),
+        select_first([markdups_post.mosdepth_region_summary, []]),
+        select_first([markdups_post.mosdepth_region_dist, []]),
         (if (mark_duplicates && optical_distance > 0)
-            then [
-                markdups.mark_duplicates_metrics,
-            ]
-            else []
-        ),
+            then [markdups.mark_duplicates_metrics]
+            else []),
     ]))
 
-    call multiqc_tasks.multiqc { input:
-        files = flatten([
-            multiqc_files,
-            extra_multiqc_inputs,
-        ]),
+    call multiqc_tasks.multiqc {
+        files = flatten([multiqc_files, extra_multiqc_inputs]),
         config = multiqc_config,
         report_name = post_subsample_prefix + ".multiqc",
     }
@@ -532,10 +490,7 @@ workflow quality_check_standard {
         File? kraken_sequences = kraken.sequences
         File? comparative_kraken_sequences = comparative_kraken.sequences
         File? junctions = junction_annotation.junctions
-        Array[File] intermediate_files = select_first([
-            optional_files,
-            [],
-        ])
+        Array[File] intermediate_files = select_first([optional_files, []])
     }
 }
 
@@ -567,6 +522,8 @@ task parse_input {
     Int coverage_labels_len = length(coverage_labels)
 
     command <<<
+        set -euo pipefail
+
         EXITCODE=0
 
         if ~{rna} && ! ~{gtf_provided}; then
@@ -596,7 +553,7 @@ task parse_input {
             else []
     }
 
-    runtime {
+    requirements {
         container: "ghcr.io/stjudecloud/util:3.0.4"
         maxRetries: 1
     }
