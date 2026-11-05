@@ -1,5 +1,5 @@
 ## **WARNING:** this workflow is experimental! Use at your own risk!
-version 1.1
+version 1.3
 
 import "../../tools/bwa.wdl"
 import "../../tools/fastp.wdl" as fp
@@ -45,9 +45,9 @@ workflow dnaseq_core_experimental {
 
     input {
         File bwa_db
-        Array[File] read_one_fastqs_gz
+        Array[File]+ read_one_fastqs_gz
         Array[File] read_two_fastqs_gz
-        Array[String] read_groups
+        Array[String]+ read_groups
         String prefix
         String aligner
         Boolean enable_read_trimming
@@ -62,7 +62,7 @@ workflow dnaseq_core_experimental {
         String read_two_names = basename(fq)
     }
 
-    call util.check_fastq_and_rg_concordance as validate { input:
+    call util.check_fastq_and_rg_concordance as validate {
         read_one_names,
         read_two_names,
         read_groups,
@@ -70,40 +70,34 @@ workflow dnaseq_core_experimental {
 
     scatter (tuple in zip(zip(read_one_fastqs_gz, read_two_fastqs_gz), read_groups)) {
         if (enable_read_trimming) {
-            call fp.fastp as trim after validate { input:
+            call fp.fastp as trim after validate {
                 read_one_fastq = tuple.left.left,
                 read_two_fastq = tuple.left.right,
                 output_fastq = enable_read_trimming,
             }
         }
         if (!enable_read_trimming) {
-            call fp.fastp after validate { input:
+            call fp.fastp after validate {
                 read_one_fastq = tuple.left.left,
                 read_two_fastq = tuple.left.right,
                 output_fastq = enable_read_trimming,
             }
         }
-        File chosen_r1_fastq = select_first([
-            trim.read_one_fastq_gz,
-            tuple.left.left,
-        ])
-        File chosen_r2_fastq = select_first([
-            trim.read_two_fastq_gz,
-            tuple.left.right,
-        ])
+        File chosen_r1_fastq = select_first([trim.read_one_fastq_gz, tuple.left.left])
+        File chosen_r2_fastq = select_first([trim.read_two_fastq_gz, tuple.left.right])
 
-        call util.split_fastq as read_ones after validate { input:
+        call util.split_fastq as read_ones after validate {
             fastq = chosen_r1_fastq,
             reads_per_file,
         }
-        call util.split_fastq as read_twos after validate { input:
+        call util.split_fastq as read_twos after validate {
             fastq = chosen_r2_fastq,
             reads_per_file,
         }
 
         scatter (t in zip(read_ones.fastqs, read_twos.fastqs)) {
             if (aligner == "mem") {
-                call bwa.bwa_mem { input:
+                call bwa.bwa_mem {
                     read_one_fastq_gz = t.left,
                     read_two_fastq_gz = t.right,
                     bwa_db_tar_gz = bwa_db,
@@ -114,7 +108,7 @@ workflow dnaseq_core_experimental {
                 }
             }
             if (aligner == "aln") {
-                call bwa.bwa_aln_pe { input:
+                call bwa.bwa_aln_pe {
                     read_one_fastq_gz = t.left,
                     read_two_fastq_gz = t.right,
                     bwa_db_tar_gz = bwa_db,
@@ -124,34 +118,26 @@ workflow dnaseq_core_experimental {
                     use_all_cores,
                 }
             }
-            call picard.sort as sort { input:
-                bam = select_first([
-                    bwa_mem.bam,
-                    bwa_aln_pe.bam,
-                ]),
+            call picard.sort as sort {
+                bam = select_first([bwa_mem.bam, bwa_aln_pe.bam]),
             }
         }
     }
-    call samtools_merge_wf.samtools_merge as merge { input:
+    call samtools_merge_wf.samtools_merge as merge {
         bams = flatten(sort.sorted_bam),
         prefix,
         use_all_cores,
     }
 
-    call samtools.index { input:
+    call samtools.index {
         bam = merge.merged_bam,
     }
 
     output {
         File harmonized_bam = merge.merged_bam
         File harmonized_bam_index = index.bam_index
-        Array[File] fastp_reports = select_all(flatten([
-            fastp.report,
-            trim.report,
-        ]))
-        Array[File] fastp_jsons = select_all(flatten([
-            fastp.report_json,
-            trim.report_json,
-        ]))
+        Array[File] fastp_reports = select_all(flatten([fastp.report, trim.report]))
+        Array[File] fastp_jsons = select_all(flatten([fastp.report_json, trim.report_json]
+        ))
     }
 }

@@ -1,5 +1,5 @@
 ## [Homepage](https://arriba.readthedocs.io/en/latest/)
-version 1.1
+version 1.3
 
 task arriba {
     meta {
@@ -164,10 +164,7 @@ task arriba {
             "AC_*",
             "NC_*",
         ]
-        Array[String] viral_contigs = [
-            "AC_*",
-            "NC_*",
-        ]
+        Array[String] viral_contigs = ["AC_*", "NC_*"]
         Array[String] disable_filters = []
         String feature_name = "gene_name=gene_name|gene_id,gene_id=gene_id,transcript_id=transcript_id,feature_exon=exon,feature_CDS=CDS"
         String prefix = basename(bam, ".bam") + ".fusions"
@@ -200,11 +197,13 @@ task arriba {
     }
 
     Int bam_size_gb = ceil(size(bam, "GB"))
-    Int disk_size_gb = bam_size_gb + ceil(size(gtf, "GB")) + ceil(size(reference_fasta_gz,
-        "GB")) + modify_disk_size_gb
+    Int disk_size_gb = bam_size_gb + ceil(size(gtf, "GB")) + ceil(size(reference_fasta_gz, "GB"
+    )) + modify_disk_size_gb
     Int memory_gb = bam_size_gb + modify_memory_gb
 
     command <<<
+        set -euo pipefail
+
         arriba \
             -x "~{bam}" \
             ~{"-c '" + chimeric_sam + "'"} \
@@ -222,16 +221,13 @@ task arriba {
             -s "~{strandedness}" \
             ~{if length(interesting_contigs) > 0
                 then "-i " + sep(",", quote(interesting_contigs))
-                else ""
-            } \
+                else ""} \
             ~{if length(viral_contigs) > 0
                 then "-v " + sep(",", quote(viral_contigs))
-                else ""
-            } \
+                else ""} \
             ~{if length(disable_filters) > 0
                 then "-f " + sep(",", quote(disable_filters))
-                else ""
-            } \
+                else ""} \
             -E ~{max_e_value} \
             -S ~{min_supporting_reads} \
             -m ~{max_mismappers} \
@@ -251,18 +247,9 @@ task arriba {
             -l ~{max_itd_length} \
             -z ~{min_itd_allele_fraction} \
             -Z ~{min_itd_supporting_reads} \
-            ~{if mark_duplicates
-                then ""
-                else "-u"
-            } \
-            ~{if report_additional_columns
-                then "-X"
-                else ""
-            } \
-            ~{if fill_gaps
-                then "-I"
-                else ""
-            }
+            ~{if mark_duplicates then "" else "-u"} \
+            ~{if report_additional_columns then "-X" else ""} \
+            ~{if fill_gaps then "-I" else ""}
     >>>
 
     output {
@@ -270,7 +257,7 @@ task arriba {
         File discarded_fusions = "~{prefix}.discarded.tsv"
     }
 
-    runtime {
+    requirements {
         cpu: 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -321,7 +308,7 @@ task arriba_tsv_to_vcf {
         File fusions_vcf = "~{prefix}.vcf"
     }
 
-    runtime {
+    requirements {
         cpu: 1
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -359,10 +346,18 @@ task arriba_extract_fusion_supporting_alignments {
     Int disk_size_gb = ceil(input_size_gb) + 5 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
+        bam_name=~{basename(bam)}
+        ln -sf "~{bam}" "$bam_name"
+        ln -sf "~{bam_index}" "$bam_name.bai"
+
         extract_fusion-supporting_alignments.sh \
             "~{fusions}" \
-            "~{bam}" \
+            "$bam_name" \
             "~{prefix}"
+
+        rm "$bam_name" "$bam_name.bai"
     >>>
 
     output {
@@ -370,7 +365,7 @@ task arriba_extract_fusion_supporting_alignments {
         Array[File] fusion_bam_indexes = glob("~{prefix}_*.bam.bai")
     }
 
-    runtime {
+    requirements {
         cpu: 1
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/arriba:2.4.0--h0033a41_2"
@@ -419,7 +414,7 @@ task arriba_annotate_exon_numbers {
         File fusion_tsv = "~{prefix}.annotated.tsv"
     }
 
-    runtime {
+    requirements {
         cpu: 1
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/arriba:2.4.0--h0033a41_2"

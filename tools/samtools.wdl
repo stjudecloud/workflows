@@ -1,5 +1,5 @@
 ## [Homepage](http://samtools.sourceforge.net/)
-version 1.1
+version 1.3
 
 import "../data_structures/flag_filter.wdl"
 
@@ -21,13 +21,15 @@ task quickcheck {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         samtools quickcheck "~{bam}"
     >>>
 
-    runtime {
+    requirements {
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -88,7 +90,7 @@ task split {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools split \
             --threads "$n_cores" \
@@ -139,7 +141,7 @@ task split {
         Array[File] split_bams = glob("*.bam")
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -179,7 +181,7 @@ task flagstat {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -189,7 +191,7 @@ task flagstat {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools flagstat --threads "$n_cores" "~{bam}" > "~{outfile_name}"
     >>>
@@ -198,7 +200,7 @@ task flagstat {
         File flagstat_report = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
@@ -247,7 +249,7 @@ task index {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools index --threads "$n_cores" "~{bam}" "~{outfile_name}"
     >>>
@@ -256,7 +258,7 @@ task index {
         File bam_index = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -268,7 +270,7 @@ task index {
 task subsample {
     meta {
         description: "Randomly subsamples the input BAM, in order to produce an output BAM with approximately the desired number of reads."
-        help: "A `desired_reads` **greater than zero** must be supplied. A `desired_reads <= 0` will result in task failure. Sampling is probabalistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
+        help: "A `desired_reads` **greater than zero** must be supplied. A `desired_reads <= 0` will result in task failure. Sampling is probabilistic and will be approximate to `desired_reads`. Read count will not be exact. A `sampled_bam` will not be produced if the input BAM read count is less than or equal to `desired_reads`."
         outputs: {
             orig_read_count: {
                 description: "A TSV report containing the original read count before subsampling.",
@@ -280,7 +282,7 @@ task subsample {
 
     parameter_meta {
         bam: "Input BAM format file to subsample"
-        desired_reads: "How many reads should be in the ouput BAM? Output BAM read count will be approximate to this value. **Must be greater than zero.**"
+        desired_reads: "How many reads should be in the output BAM? Output BAM read count will be approximate to this value. **Must be greater than zero.**"
         prefix: "Prefix for the BAM file. The extension `.sampled.bam` will be added."
         use_all_cores: {
             description: "Use all cores? Recommended for cloud environments.",
@@ -315,7 +317,7 @@ task subsample {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         if [[ ~{desired_reads} -le 0 ]]; then
             >&2 echo "'desired_reads' must be greater than zero!"
@@ -404,7 +406,7 @@ task subsample {
         File? sampled_bam = suffixed + ".bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -457,7 +459,7 @@ task filter {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools view \
             --threads "$n_cores" \
@@ -491,7 +493,7 @@ task filter {
         File filtered_bam = prefix + ".bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -547,7 +549,7 @@ task merge {
     }
 
     input {
-        Array[File] bams
+        Array[File]+ bams
         String prefix
         File? new_header
         # String region = ""
@@ -572,7 +574,7 @@ task merge {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         for file in ~{sep(" ", squote(bams))}; do
           # This will fail (intentionally) if there are duplicate names
@@ -584,22 +586,10 @@ task merge {
         samtools merge \
             --threads "$n_cores" \
             ~{"-h \"" + new_header + "\""} \
-            ~{if name_sorted
-                then "-n"
-                else ""
-            } \
-            ~{if attach_rg
-                then "-r"
-                else ""
-            } \
-            ~{if combine_rg
-                then "-c"
-                else ""
-            } \
-            ~{if combine_pg
-                then "-p"
-                else ""
-            } \
+            ~{if name_sorted then "-n" else ""} \
+            ~{if attach_rg then "-r" else ""} \
+            ~{if combine_rg then "-c" else ""} \
+            ~{if combine_pg then "-p" else ""} \
             "~{prefix}.bam" \
             "${bams[@]}"
 
@@ -611,7 +601,7 @@ task merge {
         File merged_bam = prefix + ".bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -674,7 +664,7 @@ task addreplacerg {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size * 2) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 2) + 50 + modify_disk_size_gb
 
     String outfile_name = prefix + ".bam"
 
@@ -686,20 +676,14 @@ task addreplacerg {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools addreplacerg \
             --threads "$n_cores" \
             ~{sep(" ", prefix("-r ", squote(read_group_line)))} \
             ~{"-R \"" + read_group_id + "\""} \
-            -m ~{if orphan_only
-                then "orphan_only"
-                else "overwrite_all"
-            } \
-            ~{if overwrite_header_record
-                then "-w"
-                else ""
-            } \
+            -m ~{if orphan_only then "orphan_only" else "overwrite_all"} \
+            ~{if overwrite_header_record then "-w" else ""} \
             -o "~{outfile_name}" \
             "~{bam}"
     >>>
@@ -708,9 +692,9 @@ task addreplacerg {
         File tagged_bam = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
-        memory: "4 GB"
+        memory: "8 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -768,14 +752,11 @@ task collate {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools collate \
             --threads "$n_cores" \
-            ~{if fast_mode
-                then "-f"
-                else ""
-            } \
+            ~{if fast_mode then "-f" else ""} \
             -o "~{outfile_name}" \
             "~{bam}"
     >>>
@@ -784,7 +765,7 @@ task collate {
         File collated_bam = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -878,14 +859,11 @@ task bam_to_fastq {
     }
 
     Float bam_size = size(bam, "GB")
-    Int memory_gb = (if (collated || !paired_end)
-        then 4
-        else (ceil(bam_size * 0.4) + 4)
-    ) + modify_memory_gb
+    Int memory_gb = (if (collated || !paired_end) then 4 else (ceil(bam_size * 0.4) + 4))
+        + modify_memory_gb
     Int disk_size_gb = ceil(bam_size * if (retain_collated_bam && !collated && paired_end)
         then 5
-        else 2
-    ) + 10 + modify_disk_size_gb
+        else 2) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -895,26 +873,19 @@ task bam_to_fastq {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         mkfifo bam_pipe
         if ! ~{collated} && ~{paired_end}; then
             samtools collate \
-                ~{if retain_collated_bam
-                    then ""
-                    else "-u"
-                } \
+                ~{if retain_collated_bam then "" else "-u"} \
                 --threads "$n_cores" \
-                ~{if fast_mode
-                    then "-f"
-                    else ""
-                } \
+                ~{if fast_mode then "-f" else ""} \
                 -O \
                 "~{bam}" \
                 | tee ~{if retain_collated_bam
                     then "\"" + prefix + ".collated.bam\""
-                    else ""
-                } \
+                    else ""} \
                 > bam_pipe \
                 &
         else
@@ -927,28 +898,21 @@ task bam_to_fastq {
             -F "~{bitwise_filter.exclude_if_any}" \
             --rf "~{bitwise_filter.include_if_any}" \
             -G "~{bitwise_filter.exclude_if_all}" \
-            ~{if append_read_number
-                then "-N"
-                else "-n"
-            } \
+            ~{if append_read_number then "-N" else "-n"} \
             -1 ~{if paired_end
                 then "\"" + prefix + ".R1.fastq.gz\""
-                else "\"" + prefix + ".fastq.gz\""
-            } \
+                else "\"" + prefix + ".fastq.gz\""} \
             -2 ~{if paired_end
                 then "\"" + prefix + ".R2.fastq.gz\""
-                else "\"" + prefix + ".fastq.gz\""
-            } \
+                else "\"" + prefix + ".fastq.gz\""} \
             ~{if paired_end
                 then if output_singletons
                     then "-s \"" + prefix + ".singleton.fastq.gz\""
                     else "-s junk.singleton.fastq.gz"
-                else ""
-            } \
+                else ""} \
             -0 ~{if paired_end
                 then "junk.unknown_bit_setting.fastq.gz"
-                else "\"" + prefix + ".fastq.gz\""
-            } \
+                else "\"" + prefix + ".fastq.gz\""} \
             bam_pipe
 
         rm bam_pipe
@@ -977,7 +941,7 @@ task bam_to_fastq {
         File? single_end_reads_fastq_gz = "~{prefix}.fastq.gz"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
@@ -1058,30 +1022,15 @@ task fixmate {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools fixmate \
             --threads "$n_cores" \
-            ~{if remove_unaligned_and_secondary
-                then "-r"
-                else ""
-            } \
-            ~{if disable_proper_pair_check
-                then "-p"
-                else ""
-            } \
-            ~{if add_cigar
-                then "-c"
-                else ""
-            } \
-            ~{if add_mate_score
-                then "-m"
-                else ""
-            } \
-            ~{if disable_flag_sanitization
-                then "-z off"
-                else ""
-            } \
+            ~{if remove_unaligned_and_secondary then "-r" else ""} \
+            ~{if disable_proper_pair_check then "-p" else ""} \
+            ~{if add_cigar then "-c" else ""} \
+            ~{if add_mate_score then "-m" else ""} \
+            ~{if disable_flag_sanitization then "-z off" else ""} \
             "~{bam}" \
             "~{prefix}~{extension}"
     >>>
@@ -1090,7 +1039,7 @@ task fixmate {
         File fixmate_bam = "~{prefix}~{extension}"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
@@ -1168,40 +1117,22 @@ task position_sorted_fixmate {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools collate \
             --threads "$n_cores" \
-            ~{if fast_mode
-                then "-f"
-                else ""
-            } \
+            ~{if fast_mode then "-f" else ""} \
             -u \
             -O \
             "~{bam}" \
             | samtools fixmate \
                 --threads "$n_cores" \
                 -u \
-                ~{if remove_unaligned_and_secondary
-                    then "-r"
-                    else ""
-                } \
-                ~{if disable_proper_pair_check
-                    then "-p"
-                    else ""
-                } \
-                ~{if add_cigar
-                    then "-c"
-                    else ""
-                } \
-                ~{if add_mate_score
-                    then "-m"
-                    else ""
-                } \
-                ~{if disable_flag_sanitization
-                    then "-z off"
-                    else ""
-                } \
+                ~{if remove_unaligned_and_secondary then "-r" else ""} \
+                ~{if disable_proper_pair_check then "-p" else ""} \
+                ~{if add_cigar then "-c" else ""} \
+                ~{if add_mate_score then "-m" else ""} \
+                ~{if disable_flag_sanitization then "-z off" else ""} \
                 - \
                 - \
                 | samtools sort \
@@ -1214,55 +1145,9 @@ task position_sorted_fixmate {
         File fixmate_bam = "~{prefix}.bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
-        disks: "~{disk_size_gb} GB"
-        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
-        maxRetries: 1
-    }
-}
-
-task faidx {
-    meta {
-        description: "Creates a `.fai` FASTA index for the input FASTA"
-        outputs: {
-            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`.",
-        }
-    }
-
-    parameter_meta {
-        fasta: "Input FASTA format file to index. Optionally gzip compressed."
-        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
-    }
-
-    input {
-        File fasta
-        Int modify_disk_size_gb = 0
-    }
-
-    Float fasta_size = size(fasta, "GB")
-    Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
-
-    String outfile_name = basename(fasta, ".gz") + ".fai"
-
-    command <<<
-        set -euo pipefail
-
-        ref_fasta=~{basename(fasta, ".gz")}
-        gunzip -c "~{fasta}" > "$ref_fasta" \
-            || ln -sf "~{fasta}" "$ref_fasta"
-
-        samtools faidx -o "~{outfile_name}" "$ref_fasta"
-    >>>
-
-    output {
-        File fasta_index = outfile_name
-    }
-
-    runtime {
-        cpu: 1
-        memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
@@ -1309,7 +1194,7 @@ task markdup {
         }
         json: "Output a JSON report instead of a text report? Either are parseable by MultiQC."
         mark_duplicates_with_do_tag: {
-            description: "Mark duplicates with the `do` (`d`uplicate `o`riginal) tag?",
+            description: "Mark duplicates with the `do` (`d`uplicate `o`riginal) tag?",  # cSpell:disable-line
             help: "The `do` tag contains the name of the \"original\" read that was duplicated. Ignored if `create_bam == false`.",
         }
         duplicate_count: "Record the original primary read duplication count (include itself) in a `dc` tag? Ignored if `create_bam == false`."
@@ -1374,65 +1259,206 @@ task markdup {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( n_cores -= 1 ))
+        n_cores=$(( n_cores - 1 ))
 
         samtools markdup \
             --threads "$n_cores" \
-            -f "~{prefix + if json
-                then ".json"
-                else ".txt"
-            }" \
+            -f "~{prefix + if json then ".json" else ".txt"}" \
             --read-coords '~{read_coords_regex}' \
             --coords-order "~{coordinates_order}" \
-            ~{if remove_duplicates
-                then "-r"
-                else ""
-            } \
-            ~{if mark_supp_or_sec_or_unmapped_as_duplicates
-                then "-S"
-                else ""
-            } \
-            ~{if mark_duplicates_with_do_tag
-                then "-t"
-                else ""
-            } \
-            ~{if duplicate_count
-                then "--duplicate-count"
-                else ""
-            } \
-            ~{if include_qc_fails
-                then "--include-fails"
-                else ""
-            } \
-            ~{if duplicates_of_duplicates_check
-                then ""
-                else "--no-multi-dup"
-            } \
-            ~{if use_read_groups
-                then "--use-read-groups"
-                else ""
-            } \
+            ~{if remove_duplicates then "-r" else ""} \
+            ~{if mark_supp_or_sec_or_unmapped_as_duplicates then "-S" else ""} \
+            ~{if mark_duplicates_with_do_tag then "-t" else ""} \
+            ~{if duplicate_count then "--duplicate-count" else ""} \
+            ~{if include_qc_fails then "--include-fails" else ""} \
+            ~{if duplicates_of_duplicates_check then "" else "--no-multi-dup"} \
+            ~{if use_read_groups then "--use-read-groups" else ""} \
             -l ~{max_readlen} \
             -d ~{optical_distance} \
             -c \
             "~{bam}" \
-            "~{if create_bam
-                then prefix + ".bam"
-                else "/dev/null"
-            }"
+            "~{if create_bam then prefix + ".bam" else "/dev/null"}"
     >>>
 
     output {
-        File markdup_report = prefix + if json
-            then ".json"
-            else ".txt"
+        File markdup_report = prefix + if json then ".json" else ".txt"
         File? markdup_bam = prefix + ".bam"
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         disks: "~{disk_size_gb} GB"
         memory: "~{memory_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 1
+    }
+}
+
+task faidx {
+    meta {
+        description: "Creates a `.fai` FASTA index for the input FASTA"
+        outputs: {
+            fasta_index: "A `.fai` FASTA index associated with the input FASTA. Filename will be `basename(fasta) + '.fai'`.",
+        }
+    }
+
+    parameter_meta {
+        fasta: "Input FASTA format file to index. Optionally gzip compressed."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File fasta
+        Int modify_disk_size_gb = 0
+    }
+
+    Float fasta_size = size(fasta, "GB")
+    Int disk_size_gb = ceil(fasta_size * 2.5) + 10 + modify_disk_size_gb
+
+    String outfile_name = basename(fasta, ".gz") + ".fai"
+
+    command <<<
+        set -euo pipefail
+
+        ref_fasta=~{basename(fasta, ".gz")}
+        gunzip -c "~{fasta}" > "$ref_fasta" \
+            || ln -sf "~{fasta}" "$ref_fasta"
+
+        samtools faidx -o "~{outfile_name}" "$ref_fasta"
+    >>>
+
+    output {
+        File fasta_index = outfile_name
+    }
+
+    requirements {
+        cpu: 1
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 1
+    }
+}
+
+task calmd {
+    meta {
+        description: "Calculates MD and NM tags"
+        warning: "This is a minimal working implementation. Not all `samtools calmd` parameters are exposed."
+        outputs: {
+            calmd_bam: "A BAM file with the MD and NM tags calculated. Output filename is `basename(bam) + '.calmd.bam'`.",
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to quickcheck"
+        reference_fasta: "Reference FASTA format file. Must be indexed with a `.fai` file."
+        prefix: "Prefix for the output file. The extension `.bam` will be added."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+        ncpu: "Number of cores to allocate for task"
+    }
+
+    input {
+        File bam
+        File reference_fasta
+        String prefix = basename(bam, ".bam") + ".calmd"
+        Int modify_disk_size_gb = 0
+        Int ncpu = 2
+    }
+
+    Float bam_size = size(bam, "GiB")
+    Int disk_size_gb = ceil(bam_size * 2.5) + ceil(size(reference_fasta, "GiB") * 2) + 30
+        + modify_disk_size_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=$(( ~{ncpu} - 1 ))
+
+        ref_fasta=~{basename(reference_fasta, ".gz")}
+        gunzip -c "~{reference_fasta}" > "$ref_fasta" \
+            || ln -sf "~{reference_fasta}" "$ref_fasta"
+
+        samtools calmd \
+            --threads "$n_cores" \
+            -b \
+            "~{bam}" \
+            "$ref_fasta" \
+            > "~{prefix}.bam"
+    >>>
+
+    output {
+        File calmd_bam = "~{prefix}.bam"
+    }
+
+    requirements {
+        cpu: ncpu
+        memory: "4 GB"
+        disks: "~{disk_size_gb} GB"
+        container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
+        maxRetries: 2
+    }
+}
+
+task sort {
+    meta {
+        description: "Sorts the input BAM file using `samtools sort`."
+        outputs: {
+            sorted_bam: "A sorted BAM file",
+        }
+    }
+
+    parameter_meta {
+        bam: "Input BAM format file to sort"
+        prefix: "Prefix for the output file. The extension `.bam` will be added."
+        use_all_cores: {
+            description: "Use all cores? Recommended for cloud environments.",
+            group: "Common",
+        }
+        ncpu: {
+            description: "Number of cores to allocate for task",
+            group: "Common",
+        }
+        modify_memory_gb: "Add to or subtract from dynamic memory allocation. Default memory is determined by the size of the inputs. Specified in GB."
+        modify_disk_size_gb: "Add to or subtract from dynamic disk space allocation. Default disk size is determined by the size of the inputs. Specified in GB."
+    }
+
+    input {
+        File bam
+        String prefix = basename(bam, ".bam") + ".sorted"
+        Boolean use_all_cores = false
+        Int ncpu = 4
+        Int modify_memory_gb = 0
+        Int modify_disk_size_gb = 0
+    }
+
+    # Original BAM, intermediate BAM chunks (~1.5x), final BAM, hence 4x
+    Int disk_size_gb = ceil(size(bam, "GB") * 5) + 10 + modify_disk_size_gb
+    Int memory_gb = ncpu + 4 + modify_memory_gb
+
+    command <<<
+        set -euo pipefail
+
+        n_cores=~{ncpu}
+        if ~{use_all_cores}; then
+            n_cores=$(nproc)
+        fi
+        # -1 because samtools uses one more core than `--threads` specifies
+        n_cores=$(( n_cores - 1 ))
+
+        samtools sort \
+            --threads "$n_cores" \
+            -o "~{prefix}.bam" \
+            "~{bam}"
+    >>>
+
+    output {
+        File sorted_bam = "~{prefix}.bam"
+    }
+
+    requirements {
+        cpu: ncpu
+        memory: "~{memory_gb} GB"
+        disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0"
         maxRetries: 1
     }

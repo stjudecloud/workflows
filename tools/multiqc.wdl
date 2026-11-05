@@ -1,4 +1,4 @@
-version 1.1
+version 1.3
 
 task multiqc {
     meta {
@@ -9,7 +9,7 @@ task multiqc {
             data: "Gzipped tar archive of data compiled by MultiQC",
             parquet: {
                 description: "Parquet format file output by MultiQC.",
-                help: "Can be used to recapitualate the created HTML report without access to all the raw data files used as input for this task.",
+                help: "Can be used to recapitulate the created HTML report without access to all the raw data files used as input for this task.",
             },
         }
     }
@@ -22,7 +22,7 @@ task multiqc {
     }
 
     input {
-        Array[File] files
+        Array[File]+ files
         String report_name
         File? config
         Int modify_disk_size_gb = 0
@@ -63,7 +63,7 @@ task multiqc {
         File parquet = report_name + ".parquet"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/multiqc/multiqc:v1.31"

@@ -1,10 +1,14 @@
-## [Homepage](http://qualimap.bioinfo.cipf.es/)
-version 1.1
+version 1.3
 
 task rnaseq {
     meta {
         description: "Generates runs QualiMap's rnaseq tool on the input BAM file."
-        help: "Note that we don't expose the `-p` parameter. This is used to set strandedness protocol of the sample, however in practice it only disables certain calculations. We do not expose the parameter so that the full suite of calculations is always performed."
+        omitted_parameters: [
+            {
+                flag: "-p, --sequencing-protocol",
+                reason: "Used to set the strandedness protocol of the sample; in practice it only disables certain calculations. Omitted so that the full suite of calculations is always performed.",
+            },
+        ]
         outputs: {
             raw_summary: "Raw text summary of QualiMap's results. Can be parsed by MultiQC.",
             raw_coverage: "Raw text of QualiMap's coverage analysis results. Can be parsed by MultiQC.",
@@ -40,12 +44,8 @@ task rnaseq {
     }
 
     String out_tar_gz = prefix + ".tar.gz"
-    String name_sorted_arg = if name_sorted
-        then "-s"
-        else ""
-    String paired_end_arg = if paired_end
-        then "-pe"
-        else ""
+    String name_sorted_arg = if name_sorted then "-s" else ""
+    String paired_end_arg = if paired_end then "-pe" else ""
 
     Int java_heap_size = ceil(memory_gb * 0.9)
     Float bam_size = size(bam, "GB")
@@ -55,8 +55,7 @@ task rnaseq {
     # use an excessive amount of storage.
     Int disk_size_gb = (if name_sorted
         then ceil(bam_size + gtf_size + 15)
-        else ceil(((bam_size + gtf_size) * 12) + 10)
-    ) + modify_disk_size_gb
+        else ceil(((bam_size + gtf_size) * 12) + 10)) + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -71,8 +70,8 @@ task rnaseq {
             -oc qualimap_counts.txt \
             -gtf "$gtf_name" \
             -outdir "~{prefix}" \
-            ~{name_sorted_arg} \
-            ~{paired_end_arg} \
+            "~{name_sorted_arg}" \
+            "~{paired_end_arg}" \
             --java-mem-size=~{java_heap_size}G
         rm "$gtf_name"
 
@@ -85,7 +84,7 @@ task rnaseq {
         File results = out_tar_gz
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/qualimap:2.3--hdfd78af_0"
@@ -153,7 +152,7 @@ task bamqc {
         File results = out_tar_gz
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"

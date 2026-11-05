@@ -54,9 +54,10 @@ subsample:
         - bams/test.bwa_aln_pe.chrY_chrM.bam
       desired_reads:
         - 10
-    outputs:
-      sampled_bam:
-        defined: true
+    assertions:
+      outputs:
+        sampled_bam:
+          - Defined: true
   - name: desired_gt_read_count
     inputs:
       bam:
@@ -65,9 +66,10 @@ subsample:
         - bams/test.bwa_aln_pe.chrY_chrM.bam
       desired_reads:
         - 9999999
-    outputs:
-      sampled_bam:
-        defined: false
+    assertions:
+      outputs:
+        sampled_bam:
+          - Defined: false
   - name: fails_for_zero
     inputs:
       bam:
@@ -296,3 +298,23 @@ faidx:
         - reference/GRCh38.chr1_chr19.fa
         - reference/GRCh38.chr9_chr22.fa.gz
         - reference/GRCh38.chrY_chrM.fa
+calmd:
+  - name: works
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      reference_fasta:
+        - reference/GRCh38.chrY_chrM.fa
+sort:
+  - name: works
+    inputs:
+      bam:
+        - bams/Aligned.sortedByCoord.chr9_chr22.bam
+        - bams/test_rnaseq_variant.bam
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+  - name: single_core
+    inputs:
+      bam:
+        - bams/test.bwa_aln_pe.chrY_chrM.bam
+      ncpu:
+        - 1

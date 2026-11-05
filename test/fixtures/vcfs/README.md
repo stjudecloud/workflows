@@ -4,6 +4,18 @@ All the files in this directory were either randomly generated or sourced from p
 
 The following list is sorted alphabetically:
 
+## test.bwa_aln_pe.chrY_chrM.mutect2.vcf.gz
+
+Unfiltered Mutect2 somatic VCF produced by running `gatk Mutect2` with `test/fixtures/bams/test.bwa_aln_pe.with_variants.chrY_chrM.bam` as the tumor sample and `test/fixtures/bams/test.bwa_aln_pe.chrY_chrM.bam` as the matched normal, against `test/fixtures/reference/GRCh38.chrY_chrM.fa`. Used as the `unfiltered_somatic_vcf` input for the `filter_mutect` task in `tools/mutect2.wdl`.
+
+## test.bwa_aln_pe.chrY_chrM.mutect2.vcf.gz.tbi
+
+Tabix index for `test.bwa_aln_pe.chrY_chrM.mutect2.vcf.gz`.
+
+## test.bwa_aln_pe.chrY_chrM.mutect2.vcf.gz.stats
+
+Mutect2 stats sidecar emitted alongside `test.bwa_aln_pe.chrY_chrM.mutect2.vcf.gz`. Used as the `unfiltered_somatic_vcf_stats` input for the `filter_mutect` task.
+
 ## test1.vcf.gz
 
 Single position VCF file
@@ -19,3 +31,11 @@ Single position VCF file
 ## test2.vcf.gz.tbi
 
 Index file for `test2.vcf.gz`.
+
+## testY.vcf.gz
+
+Single position VCF file on `chrY`
+
+## testY.vcf.gz.tbi
+
+Index file for `testY.vcf.gz`.

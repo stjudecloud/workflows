@@ -1,5 +1,4 @@
-## [Homepage](https://broadinstitute.github.io/picard/)
-version 1.1
+version 1.3
 
 task mark_duplicates {
     meta {
@@ -35,7 +34,7 @@ task mark_duplicates {
         tagging_policy: {
             description: "Tagging policy for the output BAM.",
             choices: [
-                "DontTag",
+                "DontTag",  # cSpell:disable-line
                 "OpticalOnly",
                 "All",
             ],
@@ -83,31 +82,30 @@ task mark_duplicates {
 
     Float bam_size = size(bam, "GB")
     Int memory_gb = min(ceil(bam_size + 12), 50) + modify_memory_gb
+
     Int disk_size_gb = (if create_bam
-        then ceil((bam_size * 2) + 10)
-        else ceil(bam_size + 10)
-    ) + modify_disk_size_gb
+        then ceil((bam_size * 2) + 30)
+        else ceil(bam_size + 30)) + modify_disk_size_gb
 
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
         set -euo pipefail
 
+        mkdir tmp
+
         picard -Xmx~{java_heap_size}g MarkDuplicates \
+             -Djava.io.tmpdir="$(pwd)/tmp" \
             -I "~{bam}" \
             --METRICS_FILE "~{prefix}.metrics.txt" \
-            -O "~{if create_bam
-                then prefix + ".bam"
-                else "/dev/null"
-            }" \
+            -O "~{if create_bam then prefix + ".bam" else "/dev/null"}" \
             --CREATE_INDEX ~{create_bam} \
             --CREATE_MD5_FILE ~{create_bam} \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
             --DUPLICATE_SCORING_STRATEGY "~{duplicate_scoring_strategy}" \
             --READ_NAME_REGEX '~{if (optical_distance > 0)
                 then read_name_regex
-                else "null"
-            }' \
+                else "null"}' \
             --TAGGING_POLICY "~{tagging_policy}" \
             --CLEAR_DT ~{clear_dt} \
             --REMOVE_DUPLICATES ~{remove_duplicates} \
@@ -117,6 +115,8 @@ task mark_duplicates {
         if ~{create_bam}; then
             mv "~{prefix}.bai" "~{prefix}.bam.bai"
         fi
+
+        rm -rf ./tmp
     >>>
 
     output {
@@ -126,7 +126,7 @@ task mark_duplicates {
         File mark_duplicates_metrics = "~{prefix}.metrics.txt"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -195,14 +195,9 @@ task validate_bam {
         Int modify_disk_size_gb = 0
     }
 
-    String outfile = if summary_mode
-        then outfile_name
-        else outfile_name + ".gz"
-    String mode_arg = if summary_mode
-        then "--MODE SUMMARY"
-        else ""
+    String outfile = if summary_mode then outfile_name else outfile_name + ".gz"
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size * 4) + 50 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
@@ -213,14 +208,11 @@ task validate_bam {
         picard -Xmx~{java_heap_size}g ValidateSamFile \
             -I "~{bam}" \
             ~{"-R '" + reference_fasta + "'"} \
-            ~{mode_arg} \
+            ~{if summary_mode then "--MODE SUMMARY" else ""} \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
             ~{sep(" ", prefix("--IGNORE ", squote(ignore_list)))} \
             --MAX_OUTPUT ~{max_errors} \
-            ~{if !summary_mode
-                then "| gzip"
-                else ""
-            } \
+            ~{if !summary_mode then "| gzip" else ""} \
             > "~{outfile}" \
             || rc=$?
 
@@ -242,7 +234,7 @@ task validate_bam {
         File validate_report = outfile
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -291,12 +283,13 @@ task sort {
         String sort_order = "coordinate"
         String prefix = basename(bam, ".bam") + ".sorted"
         String validation_stringency = "SILENT"
-        Int memory_gb = 25
+        Int memory_gb = 35
         Int modify_disk_size_gb = 0
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size * 4) + 10 + modify_disk_size_gb
+    # Original BAM, sorted fragments (~2.5x original BAM size), final BAM
+    Int disk_size_gb = ceil(bam_size * 5) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     String outfile_name = prefix + ".bam"
@@ -304,10 +297,15 @@ task sort {
     command <<<
         set -euo pipefail
 
-        picard -Xmx~{java_heap_size}g SortSam \
+        mkdir tmp
+
+        picard -Xmx~{java_heap_size}g \
+            -Djava.io.tmpdir="$(pwd)/tmp" \
+            SortSam \
             -I "~{bam}" \
             -O "~{outfile_name}" \
             -SO "~{sort_order}" \
+            --TMP_DIR "$(pwd)/tmp" \
             --CREATE_INDEX true \
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY "~{validation_stringency}"
@@ -317,6 +315,8 @@ task sort {
         if [ -f "~{prefix}.bai" ]; then
             mv "~{prefix}.bai" "~{outfile_name}.bai"
         fi
+
+        rm -rf ./tmp
     >>>
 
     output {
@@ -325,7 +325,7 @@ task sort {
         File sorted_bam_md5 = outfile_name + ".md5"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -375,7 +375,7 @@ task merge_sam_files {
     }
 
     input {
-        Array[File] bams
+        Array[File]+ bams
         String prefix
         String sort_order = "coordinate"
         String validation_stringency = "SILENT"
@@ -400,10 +400,7 @@ task merge_sam_files {
             --ASSUME_SORTED true \
             --SORT_ORDER "~{sort_order}" \
             --USE_THREADING ~{threading} \
-            ~{if sort_order == "coordinate"
-                then "--CREATE_INDEX true"
-                else ""
-            } \
+            ~{if sort_order == "coordinate" then "--CREATE_INDEX true" else ""} \
             --CREATE_MD5_FILE true \
             --VALIDATION_STRINGENCY "~{validation_stringency}"
 
@@ -420,10 +417,8 @@ task merge_sam_files {
         File merged_bam_md5 = outfile_name + ".md5"
     }
 
-    runtime {
-        cpu: if threading
-            then 2
-            else 1
+    requirements {
+        cpu: if threading then 2 else 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -491,7 +486,7 @@ task clean_sam {
         File cleaned_bam_md5 = outfile_name + ".md5"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -543,6 +538,8 @@ task collect_wgs_metrics {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g CollectWgsMetrics \
             -I "~{bam}" \
             -R "~{reference_fasta}" \
@@ -555,7 +552,7 @@ task collect_wgs_metrics {
         File wgs_metrics = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -602,10 +599,12 @@ task collect_alignment_summary_metrics {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g CollectAlignmentSummaryMetrics \
             -I "~{bam}" \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
@@ -618,7 +617,7 @@ task collect_alignment_summary_metrics {
         File alignment_metrics_pdf = prefix + ".pdf"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -674,6 +673,8 @@ task collect_gc_bias_metrics {
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g CollectGcBiasMetrics \
             -I "~{bam}" \
             -R "~{reference_fasta}" \
@@ -689,7 +690,7 @@ task collect_gc_bias_metrics {
         File gc_bias_metrics_pdf = prefix + ".pdf"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -736,10 +737,12 @@ task collect_insert_size_metrics {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g CollectInsertSizeMetrics \
             -I "~{bam}" \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
@@ -752,7 +755,7 @@ task collect_insert_size_metrics {
         File insert_size_metrics_pdf = prefix + ".pdf"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -795,10 +798,12 @@ task quality_score_distribution {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
     Int java_heap_size = ceil(memory_gb * 0.9)
 
     command <<<
+        set -euo pipefail
+
         picard -Xmx~{java_heap_size}g QualityScoreDistribution \
             --VALIDATION_STRINGENCY "~{validation_stringency}" \
             -I "~{bam}" \
@@ -811,7 +816,7 @@ task quality_score_distribution {
         File quality_score_distribution_pdf = prefix + ".pdf"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -837,8 +842,8 @@ task merge_vcfs {
     }
 
     input {
-        Array[File] vcfs
-        Array[File] vcfs_indexes
+        Array[File]+ vcfs
+        Array[File]+ vcfs_indexes
         String output_vcf_name
         Int modify_disk_size_gb = 0
     }
@@ -846,10 +851,22 @@ task merge_vcfs {
     Int disk_size_gb = ceil(size(vcfs, "GB") * 2) + 10 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
+        while read -r vcf <&3 && read -r index <&4; do
+            basename="$(basename "$vcf")"
+            ln -s "$vcf" "$basename"
+            ln -s "$index" "$basename".tbi
+            basenames+=( "$basename" )
+        done 3< "~{write_lines(vcfs)}" 4< "~{write_lines(vcfs_indexes)}"
+
+        # shellcheck disable=SC2046
         picard -Xms2000m \
             MergeVcfs \
-            ~{sep(" ", prefix("--INPUT ", squote(vcfs)))} \
+            $(for bn in "${basenames[@]}"; do echo "--INPUT $bn"; done) \
             --OUTPUT "~{output_vcf_name}"
+
+        find . -maxdepth 1 -type l -delete
     >>>
 
     output {
@@ -857,7 +874,7 @@ task merge_vcfs {
         File merged_vcf_index = "~{output_vcf_name}.tbi"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -918,7 +935,7 @@ task scatter_interval_list {
            I=\$((I+1))
            dir=\$(dirname \$list)
            name=\$(basename \$list)
-           mv \$list \${dir}/\${I}\${name}
+           mv \$list \${dir}/\${I}.\${name}
         done
         echo \$I > interval_count.txt
         CODE
@@ -929,7 +946,7 @@ task scatter_interval_list {
         Int interval_count = read_int("interval_count.txt")
     }
 
-    runtime {
+    requirements {
         memory: "2 GB"
         disks: "1 GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"
@@ -961,7 +978,7 @@ task create_sequence_dictionary {
         String? assembly_name
         String? fasta_url
         String? species
-        String outfile_name = basename(fasta, ".fa") + ".dict"
+        String outfile_name = sub(basename(fasta), "\\.(fa|fasta|fna)(\\.gz)?$", "") + ".dict"
         Int memory_gb = 16
         Int modify_disk_size_gb = 0
     }
@@ -985,7 +1002,7 @@ task create_sequence_dictionary {
         File dictionary = outfile_name
     }
 
-    runtime {
+    requirements {
         cpu: 1
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
@@ -1030,18 +1047,12 @@ task bam_to_fastq {
 
         picard -Xmx~{java_heap_size}g SamToFastq INPUT="~{bam}" \
             FASTQ="~{prefix}.R1.fastq" \
-            ~{if paired
-                then "SECOND_END_FASTQ='" + prefix + ".R2.fastq'"
-                else ""
-            } \
+            ~{if paired then "SECOND_END_FASTQ='" + prefix + ".R2.fastq'" else ""} \
             RE_REVERSE=true \
             VALIDATION_STRINGENCY=SILENT
 
         gzip "~{prefix}.R1.fastq" \
-            ~{if paired
-                then "'" + prefix + ".R2.fastq'"
-                else ""
-            }
+            ~{if paired then "'" + prefix + ".R2.fastq'" else ""}
     >>>
 
     output {
@@ -1049,7 +1060,7 @@ task bam_to_fastq {
         File? read_two_fastq_gz = "~{prefix}.R2.fastq.gz"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/picard:3.1.1--hdfd78af_0"

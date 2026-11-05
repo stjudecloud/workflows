@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/stjudecloud/ngsderive)
-version 1.1
+version 1.3
 
 task strandedness {
     meta {
@@ -47,7 +47,7 @@ task strandedness {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -60,10 +60,7 @@ task strandedness {
         ln -s "~{gene_model}" "$CWD_GFF"
 
         ngsderive strandedness --verbose \
-            ~{if split_by_rg
-                then "--split-by-rg"
-                else ""
-            } \
+            ~{if split_by_rg then "--split-by-rg" else ""} \
             -m ~{min_reads_per_gene} \
             -n ~{num_genes} \
             -q ~{min_mapq} \
@@ -85,7 +82,7 @@ task strandedness {
         String strandedness_string = read_string("strandedness.txt")
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
@@ -97,7 +94,7 @@ task instrument {
     meta {
         description: "Derives the instrument used to sequence the input BAM file. Reports evidence supporting final results."
         outputs: {
-            instrument_file: "TSV file containing the `ngsderive isntrument` report for the input BAM file",
+            instrument_file: "TSV file containing the `ngsderive instrument` report for the input BAM file",
             instrument_string: "The derived instrument, in string format",
         }
     }
@@ -120,7 +117,7 @@ task instrument {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -138,7 +135,7 @@ task instrument {
         String instrument_string = read_string("instrument.txt")
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
@@ -179,7 +176,7 @@ task read_length {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -202,7 +199,7 @@ task read_length {
         File read_length_file = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
@@ -229,16 +226,18 @@ task encoding {
     }
 
     input {
-        Array[File] ngs_files
+        Array[File]+ ngs_files
         String outfile_name
         Int num_reads = 1000000
         Int modify_disk_size_gb = 0
     }
 
     Float files_size = size(ngs_files, "GB")
-    Int disk_size_gb = ceil(files_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(files_size) + 30 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         ngsderive encoding --verbose \
             -n ~{num_reads} \
             ~{sep(" ", squote(ngs_files))} \
@@ -249,7 +248,7 @@ task encoding {
         File encoding_file = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
@@ -304,7 +303,7 @@ task junction_annotation {
     }
 
     Float bam_size = size(bam, "GB")
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -337,7 +336,7 @@ task junction_annotation {
         File junctions = "~{prefix}.junctions.tsv.gz"
     }
 
-    runtime {
+    requirements {
         memory: "56 GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"
@@ -400,29 +399,17 @@ task endedness {
     }
 
     Float bam_size = size(bam, "GB")
-    Int memory_gb = if calc_rpt
-        then (ceil(bam_size * 2.5) + 4 + modify_memory_gb)
-        else 4
-    Int disk_size_gb = ceil(bam_size) + 10 + modify_disk_size_gb
+    Int memory_gb = if calc_rpt then (ceil(bam_size * 2.5) + 4 + modify_memory_gb) else 4
+    Int disk_size_gb = ceil(bam_size) + 30 + modify_disk_size_gb
 
     command <<<
+        set -euo pipefail
+
         ngsderive endedness --verbose \
-            ~{if lenient
-                then "--lenient"
-                else ""
-            } \
-            ~{if calc_rpt
-                then "-r"
-                else ""
-            } \
-            ~{if round_rpt
-                then "--round-rpt"
-                else ""
-            } \
-            ~{if split_by_rg
-                then "--split-by-rg"
-                else ""
-            } \
+            ~{if lenient then "--lenient" else ""} \
+            ~{if calc_rpt then "-r" else ""} \
+            ~{if round_rpt then "--round-rpt" else ""} \
+            ~{if split_by_rg then "--split-by-rg" else ""} \
             --paired-deviance ~{paired_deviance} \
             -n ~{num_reads} \
             "~{bam}" \
@@ -433,7 +420,7 @@ task endedness {
         File endedness_file = outfile_name
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/ngsderive:3.3.2--pyhdfd78af_0"

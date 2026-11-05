@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/htseq/htseq)
-version 1.1
+version 1.3
 
 task count {
     meta {
@@ -95,15 +95,9 @@ task count {
     Float bam_size = size(bam, "GB")
     Float gtf_size = size(gtf, "GB")
 
-    Int memory_gb = (if pos_sorted
-        then ceil(bam_size) + 4
-        else 4
-    ) + modify_memory_gb
+    Int memory_gb = (if pos_sorted then ceil(bam_size) + 4 else 4) + modify_memory_gb
 
-    Int disk_size_gb = ceil((bam_size + gtf_size) * if pos_sorted
-        then 4
-        else 1
-    ) + 10 + modify_disk_size_gb
+    Int disk_size_gb = ceil((bam_size + gtf_size) * if pos_sorted then 4 else 1) + 10 + modify_disk_size_gb
 
     command <<<
         set -euo pipefail
@@ -117,27 +111,17 @@ task count {
         # 9223372036854776000 == max 64 bit Float
         htseq-count -f bam \
             --max-reads-in-buffer 9223372036854776000 \
-            -r ~{if pos_sorted
-                then "pos"
-                else "name"
-            } \
+            -r ~{if pos_sorted then "pos" else "name"} \
             -s "~{strandedness}" \
             -a ~{minaqual} \
             -t "~{feature_type}" \
             -m "~{mode}" \
             -i "~{idattr}" \
-            --nonunique ~{if nonunique
-                then "all"
-                else "none"
-            } \
-            --secondary-alignments ~{if secondary_alignments
-                then "score"
-                else "ignore"
-            } \
+            --nonunique ~{if nonunique then "all" else "none"} \
+            --secondary-alignments ~{if secondary_alignments then "score" else "ignore"} \
             --supplementary-alignments ~{if supplementary_alignments
                 then "score"
-                else "ignore"
-            } \
+                else "ignore"} \
             "~{bam}" \
             "~{gtf}" \
             >> "~{outfile_name}"
@@ -147,7 +131,7 @@ task count {
         File feature_counts = "~{outfile_name}"
     }
 
-    runtime {
+    requirements {
         memory: "~{memory_gb} GB"
         disks: "~{disk_size_gb} GB"
         container: "quay.io/biocontainers/htseq:2.0.5--py310h5aa3a86_0"
@@ -187,21 +171,20 @@ task calc_tpm {
     String outfile_name = prefix + ".TPM.txt"
 
     command <<<
+        set -euo pipefail
+
         python3 /scripts/htseq/calc_tpm.py \
             "~{counts}" \
             "~{feature_lengths}" \
             "~{outfile_name}" \
-            ~{if has_header
-                then "--counts_has_header"
-                else ""
-            }
+            ~{if has_header then "--counts_has_header" else ""}
     >>>
 
     output {
         File tpm_file = "~{outfile_name}"
     }
 
-    runtime {
+    requirements {
         memory: "4 GB"
         disks: "10 GB"
         container: "ghcr.io/stjudecloud/util:3.0.4"

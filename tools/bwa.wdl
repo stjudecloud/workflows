@@ -1,5 +1,5 @@
 ## [Homepage](https://github.com/lh3/bwa)
-version 1.1
+version 1.3
 
 task bwa_aln {
     meta {
@@ -58,7 +58,7 @@ task bwa_aln {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( samtools_cores = n_cores - 1 ))
+        samtools_cores=$(( n_cores - 1 ))
 
         mkdir bwa_db
         tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
@@ -81,7 +81,7 @@ task bwa_aln {
         File bam = output_bam
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
@@ -151,7 +151,7 @@ task bwa_aln_pe {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( samtools_cores = n_cores - 1 ))
+        samtools_cores=$(( n_cores - 1 ))
 
         mkdir bwa_db
         tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
@@ -180,7 +180,7 @@ task bwa_aln_pe {
         File bam = output_bam
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "17 GB"
         disks: "~{disk_size_gb} GB"
@@ -243,7 +243,7 @@ task bwa_mem {
             n_cores=$(nproc)
         fi
         # -1 because samtools uses one more core than `--threads` specifies
-        (( samtools_cores = n_cores - 1 ))
+        samtools_cores=$(( n_cores - 1 ))
 
         mkdir bwa_db
         tar -C bwa_db -xzf "~{bwa_db_tar_gz}" --no-same-owner
@@ -261,8 +261,7 @@ task bwa_mem {
                 then "'" + basename(select_first([
                     read_two_fastq_gz,
                 ])) + "'"
-                else ""
-            } \
+                else ""} \
             | samtools view --no-PG --threads "$samtools_cores" -hb - \
             > "~{output_bam}"
 
@@ -272,15 +271,14 @@ task bwa_mem {
             then "rm '" + basename(select_first([
                 read_two_fastq_gz,
             ])) + "'"
-            else ""
-        }
+            else ""}
     >>>
 
     output {
         File bam = output_bam
     }
 
-    runtime {
+    requirements {
         cpu: ncpu
         memory: "25 GB"
         disks: "~{disk_size_gb} GB"
@@ -332,7 +330,7 @@ task build_bwa_db {
         File bwa_db_tar_gz = bwa_db_out_name
     }
 
-    runtime {
+    requirements {
         memory: "5 GB"
         disks: "~{disk_size_gb} GB"
         container: "ghcr.io/stjudecloud/bwa:0.7.17-2"

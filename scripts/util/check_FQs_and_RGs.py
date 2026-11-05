@@ -15,13 +15,12 @@ Read group records may be optionally prefixed with `@RG` and may use either tab 
 
 import argparse
 import os
-from typing import List
 
 
 def validate(
-    read1_fastqs: List[str],
-    read2_fastqs: List[str],
-    rgids: List[str],
+    read1_fastqs: list[str],
+    read2_fastqs: list[str],
+    rgids: list[str],
 ) -> None:
     """Ensure that each FASTQ basename contains the expected RG ID and that each ID is unique.
 
@@ -70,11 +69,10 @@ if __name__ == "__main__":
             for fq in args.read_two_fastqs.split(",")
         ]
 
-    if read2_fastqs != []:
-        if len(read1_fastqs) != len(read2_fastqs):
-            raise SystemExit(
-                "Must have the same number of read one FASTQs as read two FASTQs"
-            )
+    if read2_fastqs != [] and len(read1_fastqs) != len(read2_fastqs):
+        raise SystemExit(
+            "Must have the same number of read one FASTQs as read two FASTQs"
+        )
 
     rg_records = [rg.strip().strip("'") for rg in args.read_groups.split(",")]
 
